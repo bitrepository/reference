@@ -21,6 +21,8 @@
  */
 package org.bitrepository.common.filestore;
 
+import org.bitrepository.common.ArgumentValidator;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -38,6 +40,7 @@ public class DefaultFileInfo implements FileInfo {
      * @param file The file for the file info.
      */
     public DefaultFileInfo(File file) {
+        ArgumentValidator.checkTrue(file.isFile(), "The file '" + file.getAbsolutePath() + "' is not a valid file.");
         this.file = file;
     }
     

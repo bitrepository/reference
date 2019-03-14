@@ -133,10 +133,10 @@ public class HdfsArchive {
 
         try {
             if(fileSystem.exists(archiveFile)) {
-                throw new IllegalStateException("The file '" + fileID + "' does not exist within the tempDir.");
+                throw new IllegalStateException("The file '" + fileID + "' does already exist within the fileDir.");
             }
             if(!fileSystem.exists(tempFile)) {
-                throw new IllegalStateException("The file '" + fileID + "' does already exist within the fileDir.");
+                throw new IllegalStateException("The file '" + fileID + "' does not exist within the tempDir.");
             }
 
             // TODO: is it local from local seems wrong?
