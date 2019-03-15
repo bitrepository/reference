@@ -54,6 +54,58 @@
     <HdfsSitePath>../bitrepository-core/src/test/resources/settings/xml/bitrepository-devel/hdfs-site.xml</HdfsSitePath>
     <HdfsRootPath>/bitmag-test/</HdfsRootPath>
   </PillarSettings>
+  <DeleteFileSettings></DeleteFileSettings>
+  <GetAuditTrailSettings></GetAuditTrailSettings>
+  <GetChecksumsSettings></GetChecksumsSettings>
+  <GetFileSettings></GetFileSettings>
+  <GetFileIDsSettings></GetFileIDsSettings>
+  <GetStatusSettings></GetStatusSettings>
+  <PutFileSettings></PutFileSettings>
+  <ReplaceFileSettings></ReplaceFileSettings>
+  <AlarmServiceSettings>
+    <ID>alarm-service</ID>
+    <AlarmServiceDatabase>
+      <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
+      <DatabaseURL>jdbc:derby:target/test/alarmservice/alarmservicedb</DatabaseURL>
+    </AlarmServiceDatabase>
+  </AlarmServiceSettings>
+  <AuditTrailServiceSettings>
+    <ID>audit-trail-service</ID>
+    <AuditTrailServiceDatabase>
+      <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
+      <DatabaseURL>jdbc:derby:target/auditservicedb</DatabaseURL>
+    </AuditTrailServiceDatabase>
+    <CollectAuditInterval>3600000</CollectAuditInterval>
+    <TimerTaskCheckInterval>60000</TimerTaskCheckInterval>
+    <AuditTrailPreservation>
+      <AuditTrailPreservationInterval>604800000</AuditTrailPreservationInterval>
+      <AuditTrailPreservationCollection>TwoPillarCollection</AuditTrailPreservationCollection>
+      <AuditTrailPreservationTemporaryDirectory>target/test/audittrailservice/tmpDir</AuditTrailPreservationTemporaryDirectory>
+    </AuditTrailPreservation>
+  </AuditTrailServiceSettings>
+  <IntegrityServiceSettings>
+    <ID>integrity-service</ID>
+    <Workflows>
+      <Workflow>
+        <WorkflowClass>org.bitrepository.integrityservice.workflow.CompleteIntegrityCheck</WorkflowClass>
+      </Workflow>
+    </Workflows>
+    <IntegrityDatabase>
+      <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
+      <DatabaseURL>jdbc:derby:target/test/integrityservice/integritydb</DatabaseURL>
+    </IntegrityDatabase>
+    <TimeBeforeMissingFileCheck>60000</TimeBeforeMissingFileCheck>
+    <AuditTrailContributerDatabase>
+      <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
+      <DatabaseURL>jdbc:derby:target/test/integrityservice/auditcontributerdb</DatabaseURL>
+    </AuditTrailContributerDatabase>
+    <IntegrityReportsDir>target/</IntegrityReportsDir>
+  </IntegrityServiceSettings>
+  <MonitoringServiceSettings>
+    <ID>monitoring-service</ID>
+    <CollectionInterval>300000</CollectionInterval>
+    <MaxRetries>3</MaxRetries>
+  </MonitoringServiceSettings>
   <FileExchangeSettings>
     <ProtocolType>FILE</ProtocolType>
     <Path>../bitrepository-core/src/test/resources/test-files/</Path>

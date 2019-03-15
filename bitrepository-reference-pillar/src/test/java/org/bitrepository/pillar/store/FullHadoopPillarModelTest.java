@@ -22,6 +22,7 @@
 package org.bitrepository.pillar.store;
 
 import bsh.CollectionManager;
+import org.apache.hadoop.security.AccessControlException;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.common.filestore.FileInfo;
@@ -35,6 +36,7 @@ import org.bitrepository.pillar.store.hadooparchive.CollectionHdfsManager;
 import org.bitrepository.protocol.LocalFileExchange;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.exception.RequestHandlerException;
+import org.testng.SkipException;
 import org.testng.annotations.Test;
 
 import java.io.ByteArrayInputStream;
@@ -64,9 +66,9 @@ public class FullHadoopPillarModelTest extends DefaultFixturePillarTest {
         alarmDispatcher = new AlarmDispatcher(settingsForCUT, messageBus);
         pillarModel = new FileStorageModel(archives, cache, alarmDispatcher, settingsForCUT,
                 new LocalFileExchange("src/test/resources"));
-        
+
         defaultCsType = ChecksumUtils.getDefault(settingsForCUT);
-        
+
         nonDefaultCsType = new ChecksumSpecTYPE();
         nonDefaultCsType.setChecksumType(ChecksumType.HMAC_SHA384);
         nonDefaultCsType.setChecksumSalt(new byte[]{'a', 'z'});
@@ -154,10 +156,14 @@ public class FullHadoopPillarModelTest extends DefaultFixturePillarTest {
     }
     
     private void initializeWithDefaultFile() throws IOException {
-        emptyArchive();
-        
-        archives.downloadFileForValidation(DEFAULT_FILE_ID, collectionID, new ByteArrayInputStream(new byte[0]));
-        archives.moveToArchive(DEFAULT_FILE_ID, collectionID);
-        pillarModel.recalculateChecksum(DEFAULT_FILE_ID, collectionID);
+        try {
+            emptyArchive();
+
+            archives.downloadFileForValidation(DEFAULT_FILE_ID, collectionID, new ByteArrayInputStream(new byte[0]));
+            archives.moveToArchive(DEFAULT_FILE_ID, collectionID);
+            pillarModel.recalculateChecksum(DEFAULT_FILE_ID, collectionID);
+        } catch (AccessControlException e) {
+            throw new SkipException("Cannot instantiate hadoop stuff", e);
+        }
     }
 }
