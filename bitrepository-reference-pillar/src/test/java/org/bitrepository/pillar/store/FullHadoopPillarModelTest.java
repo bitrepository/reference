@@ -21,7 +21,6 @@
  */
 package org.bitrepository.pillar.store;
 
-import bsh.CollectionManager;
 import org.apache.hadoop.security.AccessControlException;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
@@ -31,7 +30,6 @@ import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.store.checksumcache.MemoryCacheMock;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumStore;
-import org.bitrepository.pillar.store.filearchive.CollectionArchiveManager;
 import org.bitrepository.pillar.store.hadooparchive.CollectionHdfsManager;
 import org.bitrepository.protocol.LocalFileExchange;
 import org.bitrepository.service.AlarmDispatcher;
@@ -56,7 +54,7 @@ public class FullHadoopPillarModelTest extends DefaultFixturePillarTest {
     ChecksumSpecTYPE defaultCsType;
     ChecksumSpecTYPE nonDefaultCsType;
     
-    protected static final String EMPTY_HMAC_SHA385_CHECKSUM = "3e7012b39d4f6c503b2a4846fff3f4d0d61fb1a58b81035765f283cfa5f1b93e57ded9e0a946447ff24e5c9be39c8573";
+    protected static final String EMPTY_HMAC_SHA384_CHECKSUM = "3e7012b39d4f6c503b2a4846fff3f4d0d61fb1a58b81035765f283cfa5f1b93e57ded9e0a946447ff24e5c9be39c8573";
     protected static final String EMPTY_MD5_CHECKSUM = "d41d8cd98f00b204e9800998ecf8427e";
 
     @Override
@@ -117,7 +115,7 @@ public class FullHadoopPillarModelTest extends DefaultFixturePillarTest {
         String md5Checksum = pillarModel.getNonDefaultChecksum(DEFAULT_FILE_ID, collectionID, defaultCsType);
         assertEquals(EMPTY_MD5_CHECKSUM, md5Checksum);        
         String otherChecksum = pillarModel.getNonDefaultChecksum(DEFAULT_FILE_ID, collectionID, nonDefaultCsType);
-        assertEquals(EMPTY_HMAC_SHA385_CHECKSUM, otherChecksum);
+        assertEquals(EMPTY_HMAC_SHA384_CHECKSUM, otherChecksum);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})

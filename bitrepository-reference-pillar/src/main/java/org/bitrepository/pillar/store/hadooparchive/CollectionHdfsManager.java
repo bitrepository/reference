@@ -4,6 +4,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hdfs.HdfsConfiguration;
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.filestore.FileInfo;
 import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.common.settings.Settings;
@@ -43,7 +44,6 @@ public class CollectionHdfsManager implements FileStore, AutoCloseable{
         this.settings = settings;
 
         try {
-            
             HdfsConfiguration conf = new HdfsConfiguration();
     
             File coreSiteConfigFile = new File(settings.getReferenceSettings()
@@ -87,34 +87,46 @@ public class CollectionHdfsManager implements FileStore, AutoCloseable{
 
     @Override
     public FileInfo getFileInfo(String fileID, String collectionID) {
+        ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
+        ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
         return getArchive(collectionID).getFileInfo(fileID);
     }
 
     @Override
     public boolean hasFile(String fileID, String collectionID) {
+        ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
+        ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
         return getArchive(collectionID).hasFile(fileID);
     }
 
     @Override
     public Collection<String> getAllFileIds(String collectionID) {
+        ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
         return getArchive(collectionID).getAllFileIds();
     }
 
     @Override
     public FileInfo downloadFileForValidation(String fileID, String collectionID, InputStream inputStream)
             throws IOException {
+        ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
+        ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
+        ArgumentValidator.checkNotNull(inputStream, "InputStream inputStream");
         return getArchive(collectionID).downloadFileForValidation(fileID, inputStream);
     }
 
     @Override
     public void moveToArchive(String fileID, String collectionID) {
+        ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
+        ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
         if (!getArchive(collectionID).moveToArchive(fileID)){
             throw new IllegalStateException("FileID" + fileID + " in collection "+collectionID + " not moved");
-        };
+        }
     }
 
     @Override
     public void deleteFile(String fileID, String collectionID) {
+        ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
+        ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
         if (!getArchive(collectionID).deleteFile(fileID)){
             throw new IllegalStateException("FileID" + fileID + " in collection "+collectionID + " not deleted");
         }
@@ -122,6 +134,8 @@ public class CollectionHdfsManager implements FileStore, AutoCloseable{
 
     @Override
     public void replaceFile(String fileID, String collectionID) {
+        ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
+        ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
         if (!getArchive(collectionID).replaceFile(fileID)){
             throw new IllegalStateException("FileID" + fileID + " in collection "+collectionID + " not replaced");
         }
@@ -129,16 +143,21 @@ public class CollectionHdfsManager implements FileStore, AutoCloseable{
 
     @Override
     public long sizeLeftInArchive(String collectionID) {
+        ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
         return getArchive(collectionID).sizeLeftInArchive();
     }
 
     @Override
     public FileInfo getFileInTmpDir(String fileID, String collectionID) {
+        ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
+        ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
         return getArchive(collectionID).getFileInTmpDir(fileID);
     }
 
     @Override
     public void ensureFileNotInTmpDir(String fileID, String collectionID) {
+        ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
+        ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
         if (!getArchive(collectionID).ensureFileNotInTmpDir(fileID)){
             throw new IllegalStateException("FileID" + fileID + " in collection "+collectionID + " not deleted from tmpdir");
         }

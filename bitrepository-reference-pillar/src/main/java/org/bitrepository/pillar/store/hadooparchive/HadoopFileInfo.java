@@ -2,6 +2,7 @@ package org.bitrepository.pillar.store.hadooparchive;
 
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.filestore.FileInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,10 @@ public class HadoopFileInfo implements FileInfo {
      * @param fileID The ID of the file.
      */
     public HadoopFileInfo(FileSystem fileSystem, Path path, String fileID) {
+        ArgumentValidator.checkNotNull(fileSystem, "FileSystem fileSystem");
+        ArgumentValidator.checkNotNull(path, "Path path");
+        ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
+
         this.fileSystem = fileSystem;
         this.filePath = path;
         this.fileID = fileID;
