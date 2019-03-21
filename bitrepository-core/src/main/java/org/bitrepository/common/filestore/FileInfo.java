@@ -40,12 +40,17 @@ public interface FileInfo {
     InputStream getInputstream() throws IOException;
     
     /**
+     *
      * @return The last modified timestamp.
+     * If anything fails, this method can return null, 0L or -1L, or whatever the implementation desires
+     * It might also throw a RuntimeException
      */
     Long getLastModifiedDate();
     
     /**
      * @return The size of the file.
+     * If anything fails, this method can return null, 0L or -1L, or whatever the implementation desires
+     * It might also throw a RuntimeException
      */
     long getSize();
 }

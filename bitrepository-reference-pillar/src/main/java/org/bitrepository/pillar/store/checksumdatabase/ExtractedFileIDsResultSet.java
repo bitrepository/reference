@@ -54,6 +54,7 @@ public class ExtractedFileIDsResultSet {
      * @param fileInfo The fileinfo for the file to insert.
      */
     public void insertFileInfo(FileInfo fileInfo) {
+        //TODO should probably check the return values from fileInfo, to see if there was any error.
         insertFileID(fileInfo.getFileID(), BigInteger.valueOf(fileInfo.getSize()), 
                 CalendarUtils.getFromMillis(fileInfo.getLastModifiedDate()));
     }
