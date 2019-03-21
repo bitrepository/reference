@@ -64,8 +64,8 @@ public final class ChecksumUtils {
      * @return The checksum of the file in hexadecimal.
      */
     public static String generateChecksum(File file, ChecksumSpecTYPE csSpec) {
-        try {
-            return generateChecksum(new FileInputStream(file), csSpec);
+        try (InputStream is = new FileInputStream(file)){
+            return generateChecksum(is, csSpec);
         } catch (IOException e) {
             throw new CoordinationLayerException("Could not calculate the checksum for the file '"
                     + file.getAbsolutePath() + "'.", e);
@@ -80,8 +80,8 @@ public final class ChecksumUtils {
      * @return The checksum of the file in hexadecimal.
      */
     public static String generateChecksum(FileInfo fileInfo, ChecksumSpecTYPE csSpec) {
-        try {
-            return generateChecksum(fileInfo.getInputstream(), csSpec);
+        try (InputStream is = fileInfo.getInputstream()){
+            return generateChecksum(is, csSpec);
         } catch (IOException e) {
             throw new CoordinationLayerException("Could not calculate the checksum for the file '"
                     + fileInfo.getFileID() + "'.", e);
@@ -205,8 +205,7 @@ public final class ChecksumUtils {
             
             return messageAuthenticationCode.doFinal();
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new CoordinationLayerException("Cannot calculate the checksum with algorithm '" + algorithmName 
+            throw new CoordinationLayerException("Cannot calculate the checksum with algorithm '" + algorithmName
                     + "' and salt '" + salt + "'", e);
         }
     }

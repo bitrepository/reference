@@ -24,6 +24,7 @@
  */
 package org.bitrepository.pillar.store.filearchive;
 
+import org.apache.commons.io.FileUtils;
 import org.bitrepository.common.ArgumentValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,20 +130,13 @@ public class ReferenceArchive {
         ArgumentValidator.checkNotNull(inputStream, "inputStream");
 
         ArchiveDirectory dir = getDirWithMostSpace();
-        File downloadedFile = null;
+        File downloadedFile;
         synchronized(dir) {
             downloadedFile = dir.getNewFileInTempDir(fileID);
             log.debug("Downloading the file '" + fileID + "' for validation.");
-            
+    
             // Save InputStream to the file.
-            try (BufferedOutputStream bufferedOutputstream 
-                    = new BufferedOutputStream(new FileOutputStream(downloadedFile))){
-                byte[] buffer = new byte[MAX_BUFFER_SIZE];
-                int bytesRead = 0;
-                while ((bytesRead = inputStream.read(buffer)) != -1) {
-                    bufferedOutputstream.write(buffer, 0, bytesRead);
-                }
-            } 
+            FileUtils.copyInputStreamToFile(inputStream,downloadedFile);
         }
         return downloadedFile;
     }

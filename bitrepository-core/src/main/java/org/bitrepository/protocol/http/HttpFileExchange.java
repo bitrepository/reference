@@ -39,6 +39,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPut;
@@ -153,8 +154,9 @@ public class HttpFileExchange implements FileExchange {
             throw new IllegalArgumentException("OutputStream out: '" + out
                     + "', URL: '" + url + "'");
         }
-        InputStream is = retrieveStream(url);
-        StreamUtils.copyInputStreamToOutputStream(is, out);
+        try(InputStream is = retrieveStream(url)) {
+            IOUtils.copyLarge(is,out);
+        }
     }
     
     /**

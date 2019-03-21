@@ -24,6 +24,7 @@
  */
 package org.bitrepository.pillar.messagehandler;
 
+import org.apache.commons.io.IOUtils;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -119,9 +120,8 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
             throws RequestHandlerException {
         FileInfo requestedFile = getPillarModel().getFileInfoForActualFile(message.getFileID(), 
                 message.getCollectionID());
-
+        InputStream is = null;
         try {
-            InputStream is;
             if(message.getFilePart() == null) {
                 is = requestedFile.getInputstream();
             } else {
@@ -135,6 +135,8 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
                     + "' could not be uploaded at '" + message.getFileAddress() + "'");
             throw new InvalidMessageException(ResponseCode.FILE_TRANSFER_FAILURE, "Could not deliver file to address '" 
                     + message.getFileAddress() + "'", e);
+        } finally {
+            IOUtils.closeQuietly(is);
         }
     }
     
@@ -149,17 +151,12 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
         int offset = filePart.getPartOffSet().intValue();
         int size = filePart.getPartLength().intValue();
         byte[] partOfFile = new byte[size];
-        InputStream fis  = null;
-        try {
-            log.debug("Extracting " + size + " bytes with offset " + offset + " from " + fileInfo.getFileID());
-            fis = fileInfo.getInputstream();
+
+        log.debug("Extracting " + size + " bytes with offset " + offset + " from " + fileInfo.getFileID());
+        try (InputStream fis = fileInfo.getInputstream();){
             
-            fis.read(new byte[offset]);
-            fis.read(partOfFile);
-        } finally {
-            if(fis != null) {
-                fis.close();
-            }
+            IOUtils.skipFully(fis,offset);
+            IOUtils.readFully(fis,partOfFile);
         }
         return new ByteArrayInputStream(partOfFile);
     }

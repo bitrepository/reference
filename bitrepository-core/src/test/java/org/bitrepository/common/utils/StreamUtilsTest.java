@@ -24,6 +24,7 @@ package org.bitrepository.common.utils;
 import java.io.ByteArrayOutputStream;
 
 import org.apache.activemq.util.ByteArrayInputStream;
+import org.apache.commons.io.IOUtils;
 import org.bitrepository.common.TestValidationUtils;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
@@ -47,21 +48,27 @@ public class StreamUtilsTest extends ExtendedTestCase {
 
         addStep("Test with null arguments", "Should throw exceptions");
         try {
-            StreamUtils.copyInputStreamToOutputStream(null, out);
+            IOUtils.copyLarge(null, out);
             Assert.fail("Should throw an exception here.");
         } catch (Exception e) {
-            Assert.assertTrue(e instanceof IllegalArgumentException);
+            Assert.assertTrue(e instanceof NullPointerException);
+        } finally {
+            //reset the stream in case the copy moved the cursor
+            out.reset();
         }
         
         try {
-            StreamUtils.copyInputStreamToOutputStream(in, null);
+            IOUtils.copyLarge(in, null);
             Assert.fail("Should throw an exception here.");
         } catch (Exception e) {
-            Assert.assertTrue(e instanceof IllegalArgumentException);
+            Assert.assertTrue(e instanceof NullPointerException);
+        } finally {
+            //Reset the stream in case the copy moved the cursor
+            in.reset();
         }
         
         addStep("Test copying the input stream to the output stream.", "Should contain the same data.");
-        StreamUtils.copyInputStreamToOutputStream(in, out);
+        IOUtils.copyLarge(in, out);
         
         Assert.assertEquals(new String(out.toByteArray()), DATA);
     }

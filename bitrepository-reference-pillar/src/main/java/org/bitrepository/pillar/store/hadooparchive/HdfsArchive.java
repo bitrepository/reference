@@ -1,5 +1,6 @@
 package org.bitrepository.pillar.store.hadooparchive;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.bitrepository.common.ArgumentValidator;
@@ -116,7 +117,7 @@ public class HdfsArchive {
 
         Path tempPath = inTemp(fileID);
         try (OutputStream out = fileSystem.create(tempPath, true);) {
-            StreamUtils.copyInputStreamToOutputStream(inputStream, out);
+            IOUtils.copyLarge(inputStream,out);
         }
         return new HadoopFileInfo(fileSystem, tempPath, fileID);
     }

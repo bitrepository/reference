@@ -31,6 +31,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import org.apache.commons.io.IOUtils;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.common.utils.StreamUtils;
 
@@ -73,7 +74,7 @@ public class LocalFileExchange implements FileExchange {
     @Override
     public void getFile(OutputStream out, URL url) throws IOException {
         try(InputStream fis = url.openStream()) {
-            StreamUtils.copyInputStreamToOutputStream(fis, out);    
+            IOUtils.copyLarge(fis,out);
         }
     }
 

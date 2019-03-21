@@ -50,6 +50,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Date;
 import java.util.Map;
@@ -319,9 +320,8 @@ public class FileStorageModel extends StorageModel {
             throws RequestHandlerException {
         log.debug("Retrieving the data to be stored from URL: '" + fileAddress + "'");
 
-        try {
-            fileArchive.downloadFileForValidation(fileID, collectionID,
-                    fileExchange.getFile(new URL(fileAddress)));
+        try (InputStream is = fileExchange.getFile(new URL(fileAddress))){
+            fileArchive.downloadFileForValidation(fileID, collectionID, is);
         } catch (IOException e) {
             String errMsg = "Could not retrieve the file from '" + fileAddress + "'";
             log.error(errMsg, e);
