@@ -45,11 +45,13 @@
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
       <DatabaseURL>jdbc:derby:target/test/referencepillar/auditcontributerdb</DatabaseURL>
     </AuditTrailContributerDatabase>
-
     <ChecksumDatabase>
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
       <DatabaseURL>jdbc:derby:target/test/referencepillar/checksumdb</DatabaseURL>
     </ChecksumDatabase>
+    <ChecksumPillarFileDownload>DOWNLOAD_WHEN_MISSING_FROM_MESSAGE</ChecksumPillarFileDownload>
+    <FileStoreClass>org.bitrepository.pillar.store.filearchive.CollectionArchiveManager</FileStoreClass>
+    <VerifyDataConsistencyOnMessage>false</VerifyDataConsistencyOnMessage>
     <HadoopCoreSitePath>../bitrepository-core/src/test/resources/settings/xml/bitrepository-devel/core-site.xml</HadoopCoreSitePath>
     <HdfsSitePath>../bitrepository-core/src/test/resources/settings/xml/bitrepository-devel/hdfs-site.xml</HdfsSitePath>
     <HdfsRootPath>/bitmag-test/</HdfsRootPath>
