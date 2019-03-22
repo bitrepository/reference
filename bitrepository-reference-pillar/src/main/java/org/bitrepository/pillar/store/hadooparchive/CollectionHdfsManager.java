@@ -22,6 +22,7 @@ import java.util.Map;
 
 /**
  * Collection managed HDFS file store.
+ * Implemented cf. issue: https://sbprojects.statsbiblioteket.dk/jira/browse/DKUPB-203
  */
 public class CollectionHdfsManager implements FileStore, AutoCloseable{
     /** The log.*/
