@@ -37,6 +37,7 @@ import org.bitrepository.integrityservice.workflow.step.HandleMissingFilesStep;
 import org.bitrepository.integrityservice.workflow.step.HandleObsoleteChecksumsStep;
 import org.bitrepository.integrityservice.workflow.step.UpdateChecksumsStep;
 import org.bitrepository.integrityservice.workflow.step.UpdateFileIDsStep;
+import org.bitrepository.integrityservice.workflow.step.UpdateFileInfosStep;
 import org.bitrepository.service.workflow.JobID;
 import org.bitrepository.service.workflow.Workflow;
 import org.bitrepository.service.workflow.WorkflowContext;
@@ -75,6 +76,8 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
     
     protected abstract UpdateChecksumsStep getUpdateChecksumsStep();
     
+    protected abstract UpdateFileInfosStep getUpdateFileInfosStep();
+    
     protected abstract boolean cleanDeletedFiles();
     
     protected abstract Date getChecksumUpdateCutoffDate();
@@ -99,14 +102,17 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
             integrityContributors = new IntegrityContributors(SettingsUtils.getPillarIDsForCollection(collectionID), 
                     maxRetries == null ? DEFAULT_MAX_RETRIES : maxRetries);
             
-            UpdateFileIDsStep updateFileIDsStep = getUpdateFileIDsStep();
+            /*UpdateFileIDsStep updateFileIDsStep = getUpdateFileIDsStep();
             performStep(updateFileIDsStep);
             
             integrityContributors.reloadActiveContributors();
             
             UpdateChecksumsStep updateChecksumStep = getUpdateChecksumsStep();
-            performStep(updateChecksumStep);
+            performStep(updateChecksumStep);*/
 
+            UpdateFileInfosStep updateFileInfosStep = getUpdateFileInfosStep();
+            performStep(updateFileInfosStep);
+            
             if(cleanDeletedFiles()) {
                 HandleDeletedFilesStep handleDeletedFilesStep = new HandleDeletedFilesStep(context.getStore(), 
                         reporter, workflowStart, integrityContributors.getFinishedContributors());

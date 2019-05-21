@@ -28,6 +28,8 @@ import java.util.Map;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
+import org.bitrepository.bitrepositoryelements.FileInfosData;
+import org.bitrepository.bitrepositoryelements.FileInfosDataItem;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
 import org.bitrepository.integrityservice.cache.database.IntegrityDAOFactory;
@@ -56,6 +58,11 @@ public class IntegrityDatabase implements IntegrityModel {
     public void addChecksums(List<ChecksumDataForChecksumSpecTYPE> data, String pillarID, String collectionID) {
         store.updateChecksums(data, pillarID, collectionID);
     }
+    
+    @Override
+    public void addFileInfos(List<FileInfosDataItem> data, String pillarID, String collectionID) {
+        store.updateFileInfos(data, pillarID, collectionID);
+    }
 
     @Override
     public Collection<FileInfo> getFileInfos(String fileID, String collectionID) {
@@ -70,6 +77,11 @@ public class IntegrityDatabase implements IntegrityModel {
     @Override
     public void resetChecksumCollectionProgress(String collectionID) {
         store.resetChecksumCollectionProgress(collectionID);
+    }
+    
+    @Override
+    public void resetFileInfoCollectionProgress(String collectionID) {
+        store.resetFileInfoCollectionProgress(collectionID);
     }
 
     @Override

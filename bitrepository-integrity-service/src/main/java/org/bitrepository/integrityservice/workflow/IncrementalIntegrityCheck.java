@@ -26,8 +26,10 @@ import java.util.Date;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.integrityservice.workflow.step.IncrementalUpdateChecksumsStep;
 import org.bitrepository.integrityservice.workflow.step.IncrementalUpdateFileIDsStep;
+import org.bitrepository.integrityservice.workflow.step.IncrementalUpdateFileInfosStep;
 import org.bitrepository.integrityservice.workflow.step.UpdateChecksumsStep;
 import org.bitrepository.integrityservice.workflow.step.UpdateFileIDsStep;
+import org.bitrepository.integrityservice.workflow.step.UpdateFileInfosStep;
 
 /**
  * Simple workflow for performing integrity checks of the system. 
@@ -56,6 +58,13 @@ public class IncrementalIntegrityCheck extends IntegrityCheckWorkflow {
     @Override
     protected UpdateChecksumsStep getUpdateChecksumsStep() {
         return new IncrementalUpdateChecksumsStep(context.getCollector(), context.getStore(), context.getAlerter(),
+                ChecksumUtils.getDefault(context.getSettings()), context.getSettings(), collectionID, 
+                integrityContributors);
+    }
+    
+    @Override
+    protected UpdateFileInfosStep getUpdateFileInfosStep() {
+        return new IncrementalUpdateFileInfosStep(context.getCollector(), context.getStore(), context.getAlerter(),
                 ChecksumUtils.getDefault(context.getSettings()), context.getSettings(), collectionID, 
                 integrityContributors);
     }

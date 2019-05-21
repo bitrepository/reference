@@ -34,6 +34,8 @@ import java.util.Map;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
+import org.bitrepository.bitrepositoryelements.FileInfosData;
+import org.bitrepository.bitrepositoryelements.FileInfosDataItem;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.cache.CollectionStat;
@@ -128,6 +130,21 @@ public abstract class IntegrityDAO {
         ChecksumUpdater cu = new ChecksumUpdater(pillarID, dbConnector.getConnection(), collectionID);
         cu.updateChecksums(data);
     }
+    
+    /**
+     * Update the database with a batch of fileinfo data from a pillar for a given collection. 
+     * @param data The list of FileInfosData to update the database with
+     * @param pillarID The ID of the pillar to update with the data
+     * @param collectionID The ID of the collection to update with the data
+     */
+    public void updateFileInfos(List<FileInfosDataItem> data, String pillarID, String collectionID) {
+        ArgumentValidator.checkNotNull(data, "List<ChecksumDataForChecksumSpecTYPE> data");
+        ArgumentValidator.checkNotNullOrEmpty(pillarID, "String pillarID");
+        ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
+        
+        FileInfoUpdater cu = new FileInfoUpdater(pillarID, dbConnector.getConnection(), collectionID);
+        cu.updateFileInfos(data);
+    }
 
     /**
      * Get the date of latest file known on the given pillar in the given collection.
@@ -204,6 +221,20 @@ public abstract class IntegrityDAO {
         
         DatabaseUtils.executeStatement(dbConnector, resetSql, collectionID);
     }
+    
+    /**
+     * Reset the fileinfo collection progress for a given collection
+     * @param collectionID The ID of the collection to reset fileinfo collection progress for
+     */
+    public void resetFileInfoCollectionProgress(String collectionID) {
+        ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
+        String resetSql = "UPDATE collection_progress"
+                + " SET latest_file_timestamp = NULL,"
+                + " latest_checksum_timestamp = NULL"
+                + " WHERE collectionID = ?";
+        
+        DatabaseUtils.executeStatement(dbConnector, resetSql, collectionID);
+    }    
     
     /**
      * Get fileIDs for those files which have outdated checksums

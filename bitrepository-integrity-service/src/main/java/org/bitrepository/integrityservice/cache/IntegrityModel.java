@@ -31,6 +31,8 @@ import java.util.Map;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
+import org.bitrepository.bitrepositoryelements.FileInfosData;
+import org.bitrepository.bitrepositoryelements.FileInfosDataItem;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.integrityservice.statistics.StatisticsCollector;
 
@@ -53,6 +55,14 @@ public interface IntegrityModel {
      * @param collectionID The id of the collection the received data belongs to.
      */
     void addChecksums(List<ChecksumDataForChecksumSpecTYPE> data, String pillarID, String collectionID);
+    
+    /**
+     * Add fileinfo data to cache.
+     * @param data The received data.
+     * @param pillarID The id of the pillar the received data comes from.
+     * @param collectionID The id of the collection the received data belongs to.
+     */
+    void addFileInfos(List<FileInfosDataItem> data, String pillarID, String collectionID);
 
     /**
      * Retrieves the information of a given file id for all pillars.
@@ -73,6 +83,12 @@ public interface IntegrityModel {
      * @param collectionID The collection to reset the checksum collection status of
      */
     void resetChecksumCollectionProgress(String collectionID);
+    
+    /**
+     * Reset the status of the fileinfo collection
+     * @param collectionID The collection to reset the fileinfo collection status of
+     */
+    void resetFileInfoCollectionProgress(String collectionID);
     
     /**
      * Retrieves the number of files in a collection
