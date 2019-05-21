@@ -13,6 +13,7 @@ set JAVA_OPTS=%JAVA_OPTS% "-DBASEDIR=%BASEDIR%"
 set CMD=help
 if /I x%1%==xdelete        set CMD=DeleteFileCmd
 if /I x%1%==xget-checksums set CMD=GetChecksumsCmd
+if /I x%1%==xget-fileinfos set CMD=GetFileInfosCmd
 if /I x%1%==xget-file      set CMD=GetFileCmd
 if /I x%1%==xget-file-ids  set CMD=GetFileIDsCmd
 if /I x%1%==xput-file      set CMD=PutFileCmd -d
@@ -23,6 +24,7 @@ echo. usage: %0% CMD PARAMS
 echo.   CMD is one of
 echo.     delete
 echo.     get-checksums
+echo.     get-fileinfos
 echo.     get-file
 echo.     get-file-ids
 echo.     put-file
