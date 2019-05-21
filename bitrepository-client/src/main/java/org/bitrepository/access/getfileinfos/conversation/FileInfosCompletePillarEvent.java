@@ -78,7 +78,7 @@ public class FileInfosCompletePillarEvent extends ContributorCompleteEvent {
     @Override
     public String additionalInfo() {
         StringBuilder infoSB = new StringBuilder(super.additionalInfo());
-        if (result != null && result.getFileInfosData().getFileInfosDataItems() != null) {
+        if (result != null && result.getFileInfosData() != null) {
             infoSB.append(", NumberOfFileInfos=" +
                     result.getFileInfosData().getFileInfosDataItems().getFileInfosDataItem().size());
         }

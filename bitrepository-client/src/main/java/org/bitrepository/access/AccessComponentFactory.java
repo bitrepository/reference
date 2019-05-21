@@ -32,6 +32,8 @@ import org.bitrepository.access.getfile.ConversationBasedGetFileClient;
 import org.bitrepository.access.getfile.GetFileClient;
 import org.bitrepository.access.getfileids.ConversationBasedGetFileIDsClient;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
+import org.bitrepository.access.getfileinfos.ConversationBasedGetFileInfosClient;
+import org.bitrepository.access.getfileinfos.GetFileInfosClient;
 import org.bitrepository.access.getstatus.ConversationBasedGetStatusClient;
 import org.bitrepository.access.getstatus.GetStatusClient;
 import org.bitrepository.common.settings.Settings;
@@ -95,6 +97,20 @@ public final class AccessComponentFactory {
                 settings, clientID);
     }
 
+    /**
+     * Method for instantiating a GetFileInfosClient as defined in the access configurations.
+     * @param settings The settings for the GetChecksumsClient.
+     * @param securityManager The SecurityManager for the client
+     * @param clientID The ID of the client
+     * @return The GetFileInfosClient
+     */
+    public GetFileInfosClient createGetFileInfosClient(Settings settings, SecurityManager securityManager, String clientID) {
+        return new ConversationBasedGetFileInfosClient(
+                ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), 
+                ConversationMediatorManager.getConversationMediator(settings, securityManager),
+                settings, clientID);
+    }   
+    
     /**
      * Method for getting a GetFileIDsClient as defined in the access configuration.<p>
      * @param settings The settings for the GetFileIDsClient.

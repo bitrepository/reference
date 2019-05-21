@@ -28,7 +28,6 @@ import java.math.BigInteger;
 import java.util.Collection;
 
 import org.bitrepository.access.ContributorQuery;
-import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileInfosFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileInfosRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
@@ -61,7 +60,7 @@ public class GettingFileInfos extends PerformingOperationState {
 
     @Override
     protected void generateContributorCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
-        if (msg instanceof GetChecksumsFinalResponse) {
+        if (msg instanceof GetFileInfosFinalResponse) {
             GetFileInfosFinalResponse response = (GetFileInfosFinalResponse) msg;
             boolean isPartialResult = response.isPartialResult() == null ? false : response.isPartialResult();
             getContext().getMonitor().contributorComplete(new FileInfosCompletePillarEvent(
