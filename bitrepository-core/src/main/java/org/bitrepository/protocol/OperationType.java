@@ -40,6 +40,7 @@ public enum OperationType {
     REPLACE_FILE("ReplaceFile"),
     GET_CHECKSUMS("GetChecksums"),
     GET_FILE_IDS("GetFileIDs"),
+    GET_FILE_INFOS("GetFileInfos"),
     GET_AUDIT_TRAILS("GetAuditTrails"),
     ALARMS("Alarms"),
     GET_STATUS("GetStatus");
