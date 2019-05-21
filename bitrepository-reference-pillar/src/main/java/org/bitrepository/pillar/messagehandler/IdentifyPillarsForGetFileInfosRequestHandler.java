@@ -27,8 +27,6 @@ package org.bitrepository.pillar.messagehandler;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileInfosRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileInfosResponse;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
@@ -59,7 +57,8 @@ public class IdentifyPillarsForGetFileInfosRequestHandler
     }
 
     @Override
-    protected void validateRequest(IdentifyPillarsForGetFileInfosRequest request, MessageContext requestContext) throws RequestHandlerException {
+    protected void validateRequest(IdentifyPillarsForGetFileInfosRequest request, MessageContext requestContext)
+            throws RequestHandlerException {
         validateCollectionID(request);
         getPillarModel().verifyChecksumAlgorithm(request.getChecksumRequestForExistingFile(),
                 request.getCollectionID());
@@ -67,11 +66,11 @@ public class IdentifyPillarsForGetFileInfosRequestHandler
             validateFileIDFormat(request.getFileIDs().getFileID());
             checkThatAllRequestedFilesAreAvailable(request);
         }
-
     }
 
     @Override
-    protected void sendPositiveResponse(IdentifyPillarsForGetFileInfosRequest request, MessageContext requestContext) throws RequestHandlerException {
+    protected void sendPositiveResponse(IdentifyPillarsForGetFileInfosRequest request, MessageContext requestContext)
+            throws RequestHandlerException {
         IdentifyPillarsForGetFileInfosResponse response = createFinalResponse(request);
 
         response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
@@ -94,7 +93,7 @@ public class IdentifyPillarsForGetFileInfosRequestHandler
 
     @Override
     public MessageResponse generateFailedResponse(IdentifyPillarsForGetFileInfosRequest request) {
-        return null;
+        return createFinalResponse(request);
     }
 
     /**
