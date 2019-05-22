@@ -65,7 +65,7 @@ public class FileInfoUpdater {
     private final String updateFileInfoSql = "UPDATE fileinfo "
             + "	SET checksum = ?,"
             + " file_timestamp = ?,"
-            + " last_seen_getfileids = ?"
+            + " last_seen_getfileids = ?,"
             + " checksum_timestamp = ?,"
             + " last_seen_getchecksums = ?"
             + " WHERE fileID = ?"
