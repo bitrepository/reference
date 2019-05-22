@@ -236,7 +236,7 @@ public class GetFileInfosRequestHandler extends PerformRequestHandler<GetFileInf
         if(fileData == null) {
             // from Checksum Replica
             res.setLastModificationTime(cs.getCalculationTimestamp());
-            res.setFileSize(BigInteger.valueOf(-1L));
+            res.setFileSize(BigInteger.valueOf(0L));
         } else {
             res.setLastModificationTime(CalendarUtils.getFromMillis(fileData.getLastModifiedDate()));
             res.setFileSize(BigInteger.valueOf(fileData.getSize()));
