@@ -212,7 +212,14 @@ public class GetFileInfosRequestHandler extends PerformRequestHandler<GetFileInf
      */
     protected FileInfosDataItem getFileInfoDataItem(ChecksumDataForChecksumSpecTYPE cs, GetFileInfosRequest request)
             throws RequestHandlerException {
-        FileInfo fileData = getPillarModel().getFileInfoForActualFile(cs.getFileID(), request.getCollectionID());
+        FileInfo fileData = null;
+        
+        try {
+            fileData = getPillarModel().getFileInfoForActualFile(cs.getFileID(), request.getCollectionID());
+        } catch(RequestHandlerException e) {
+            log.trace("Unable to obtain fileData as it is a checksumpillar", e);
+        }
+        
         if(fileData != null) {
             Long fileDate = fileData.getLastModifiedDate();
             if(!CalendarUtils.isDateBetween(fileDate, request.getMinFileTimestamp(), request.getMaxFileTimestamp())) {
