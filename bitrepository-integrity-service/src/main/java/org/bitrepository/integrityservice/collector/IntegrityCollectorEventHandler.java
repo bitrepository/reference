@@ -25,8 +25,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
-import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEvent;
 import org.bitrepository.access.getfileinfos.conversation.FileInfosCompletePillarEvent;
 import org.bitrepository.client.eventhandler.ContributorFailedEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
@@ -103,28 +101,7 @@ public class IntegrityCollectorEventHandler implements EventHandler {
      * @param event The event for the completion of a GetChecksums for a single pillar.
      */
     private void handleResult(OperationEvent event) {
-        if(event instanceof ChecksumsCompletePillarEvent) {
-            ChecksumsCompletePillarEvent checksumEvent = (ChecksumsCompletePillarEvent) event;
-            log.trace("Receiving GetChecksums result: {}", 
-                    checksumEvent.getChecksums().getChecksumDataItems().toString());
-            store.addChecksums(checksumEvent.getChecksums().getChecksumDataItems(), checksumEvent.getContributorID(), 
-                    checksumEvent.getCollectionID());
-            if(checksumEvent.isPartialResult()) {
-                integrityContributors.succeedContributor(checksumEvent.getContributorID());
-            } else {
-                integrityContributors.finishContributor(checksumEvent.getContributorID());
-            }
-        } else if(event instanceof FileIDsCompletePillarEvent) {
-            FileIDsCompletePillarEvent fileidEvent = (FileIDsCompletePillarEvent) event;
-            log.trace("Receiving GetFileIDs result: {}", fileidEvent.getFileIDs().getFileIDsData().toString());
-            store.addFileIDs(fileidEvent.getFileIDs().getFileIDsData(), fileidEvent.getContributorID(),
-                    fileidEvent.getCollectionID());
-            if(fileidEvent.isPartialResult()) {
-                integrityContributors.succeedContributor(fileidEvent.getContributorID());
-            } else {
-                integrityContributors.finishContributor(fileidEvent.getContributorID());
-            }
-        } else if(event instanceof FileInfosCompletePillarEvent) {
+        if(event instanceof FileInfosCompletePillarEvent) {
             FileInfosCompletePillarEvent fileinfoEvent = (FileInfosCompletePillarEvent) event;
             log.trace("Receiving GetFileIDs result: {}", fileinfoEvent.getFileInfos().getFileInfosData().getFileInfosDataItems().toString());
             store.addFileInfos(fileinfoEvent.getFileInfos().getFileInfosData().getFileInfosDataItems().getFileInfosDataItem(), fileinfoEvent.getContributorID(),

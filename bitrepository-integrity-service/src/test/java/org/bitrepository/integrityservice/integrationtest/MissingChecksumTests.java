@@ -30,7 +30,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
 import java.math.BigInteger;
@@ -45,14 +44,16 @@ import java.util.Map;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.bitrepository.access.ContributorQuery;
-import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
-import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
+import org.bitrepository.access.getfileinfos.conversation.FileInfosCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
-import org.bitrepository.bitrepositoryelements.ResultingChecksums;
+import org.bitrepository.bitrepositoryelements.FileInfosData;
+import org.bitrepository.bitrepositoryelements.FileInfosData.FileInfosDataItems;
+import org.bitrepository.bitrepositoryelements.FileInfosDataItem;
+import org.bitrepository.bitrepositoryelements.ResultingFileInfos;
 import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.IdentificationCompleteEvent;
@@ -62,7 +63,6 @@ import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
-import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityDatabase;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.PillarCollectionMetric;
@@ -72,9 +72,9 @@ import org.bitrepository.integrityservice.collector.IntegrityInformationCollecto
 import org.bitrepository.integrityservice.reports.IntegrityReporter;
 import org.bitrepository.integrityservice.statistics.StatisticsCollector;
 import org.bitrepository.integrityservice.workflow.IntegrityContributors;
-import org.bitrepository.integrityservice.workflow.step.FullUpdateChecksumsStep;
+import org.bitrepository.integrityservice.workflow.step.FullUpdateFileInfosStep;
 import org.bitrepository.integrityservice.workflow.step.HandleMissingChecksumsStep;
-import org.bitrepository.integrityservice.workflow.step.UpdateChecksumsStep;
+import org.bitrepository.integrityservice.workflow.step.UpdateFileInfosStep;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.service.exception.WorkflowAbortedException;
 import org.jaccept.structure.ExtendedTestCase;
@@ -161,27 +161,27 @@ public class MissingChecksumTests extends ExtendedTestCase {
         populateDatabase(model, TEST_FILE_1);
         
         addStep("Add checksum results for only one pillar.", "");
-        final ResultingChecksums resultingChecksums = createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1);
+        final ResultingFileInfos resultingChecksums = createResultingFileInfos(DEFAULT_CHECKSUM, TEST_FILE_1);
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
                 eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(PILLAR_1, PILLAR_2)));
-                eventHandler.handleEvent(new ChecksumsCompletePillarEvent(PILLAR_1, TEST_COLLECTION,
+                eventHandler.handleEvent(new FileInfosCompletePillarEvent(PILLAR_1, TEST_COLLECTION,
                         resultingChecksums, createChecksumSpecTYPE(), false));
                 eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
                 return null;
             }
-        }).when(collector).getChecksums(
+        }).when(collector).getFileInfos(
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(), anyString(),
                 any(ContributorQuery[].class), any(EventHandler.class));
 
         when(integrityContributors.getActiveContributors())
             .thenReturn(new HashSet<>(Arrays.asList(PILLAR_1, PILLAR_2))).thenReturn(new HashSet<>());
         
-        UpdateChecksumsStep step = new FullUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), 
+        UpdateFileInfosStep step = new FullUpdateFileInfosStep(collector, model, alerter, createChecksumSpecTYPE(), 
                 settings, TEST_COLLECTION, integrityContributors);
         step.performStep();
-        verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(),
+        verify(collector).getFileInfos(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(),
                 any(ChecksumSpecTYPE.class), anyString(), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         verifyNoMoreInteractions(alerter);
         
@@ -209,29 +209,29 @@ public class MissingChecksumTests extends ExtendedTestCase {
         populateDatabase(model, TEST_FILE_1);
         
         addStep("Add checksum results for both pillar.", "");
-        final ResultingChecksums resultingChecksums = createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1);
+        final ResultingFileInfos resultingFileInfos = createResultingFileInfos(DEFAULT_CHECKSUM, TEST_FILE_1);
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
                 eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(PILLAR_1, PILLAR_2)));
-                eventHandler.handleEvent(new ChecksumsCompletePillarEvent(PILLAR_1, TEST_COLLECTION,
-                        resultingChecksums, createChecksumSpecTYPE(), false));
-                eventHandler.handleEvent(new ChecksumsCompletePillarEvent(PILLAR_2, TEST_COLLECTION,
-                        resultingChecksums, createChecksumSpecTYPE(), false));
+                eventHandler.handleEvent(new FileInfosCompletePillarEvent(PILLAR_1, TEST_COLLECTION,
+                        resultingFileInfos, createChecksumSpecTYPE(), false));
+                eventHandler.handleEvent(new FileInfosCompletePillarEvent(PILLAR_2, TEST_COLLECTION,
+                        resultingFileInfos, createChecksumSpecTYPE(), false));
                 eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
                 return null;
             }
-        }).when(collector).getChecksums(
+        }).when(collector).getFileInfos(
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
                 anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         
         when(integrityContributors.getActiveContributors())
             .thenReturn(new HashSet<>(Arrays.asList(PILLAR_1, PILLAR_2))).thenReturn(new HashSet<>());
                 
-        UpdateChecksumsStep step1 = new FullUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), 
+        UpdateFileInfosStep step1 = new FullUpdateFileInfosStep(collector, model, alerter, createChecksumSpecTYPE(), 
                 settings, TEST_COLLECTION, integrityContributors);
         step1.performStep();
-        verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(),
+        verify(collector).getFileInfos(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(),
                 any(ChecksumSpecTYPE.class), anyString(), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         verifyNoMoreInteractions(alerter);
         
@@ -251,12 +251,12 @@ public class MissingChecksumTests extends ExtendedTestCase {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
                 eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(PILLAR_1, PILLAR_2)));
-                eventHandler.handleEvent(new ChecksumsCompletePillarEvent(PILLAR_2, TEST_COLLECTION,
-                        resultingChecksums, createChecksumSpecTYPE(), false));
+                eventHandler.handleEvent(new FileInfosCompletePillarEvent(PILLAR_2, TEST_COLLECTION,
+                        resultingFileInfos, createChecksumSpecTYPE(), false));
                 eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
                 return null;
             }
-        }).when(collector).getChecksums(
+        }).when(collector).getFileInfos(
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
                 anyString(), any(ContributorQuery[].class), any(EventHandler.class));
 
@@ -264,7 +264,7 @@ public class MissingChecksumTests extends ExtendedTestCase {
             .thenReturn(new HashSet<>(Arrays.asList(PILLAR_1, PILLAR_2))).thenReturn(new HashSet<>());
         
         Date secondUpdate = new Date();
-        UpdateChecksumsStep step2 = new FullUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), 
+        UpdateFileInfosStep step2 = new FullUpdateFileInfosStep(collector, model, alerter, createChecksumSpecTYPE(), 
                 settings, TEST_COLLECTION, integrityContributors);
         step2.performStep();
         verifyNoMoreInteractions(alerter);
@@ -298,24 +298,6 @@ public class MissingChecksumTests extends ExtendedTestCase {
         model.addFileIDs(data, PILLAR_1, collectionID);
         model.addFileIDs(data, PILLAR_2, collectionID);
     }
-    
-    private ResultingChecksums createResultingChecksums(String checksum, String ... fileids) {
-        ResultingChecksums res = new ResultingChecksums();
-        res.getChecksumDataItems().addAll(createChecksumData(checksum, fileids));
-        return res;
-    }
-    
-    private List<ChecksumDataForChecksumSpecTYPE> createChecksumData(String checksum, String ... fileids) {
-        List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
-        for(String fileID : fileids) {
-            ChecksumDataForChecksumSpecTYPE csData = new ChecksumDataForChecksumSpecTYPE();
-            csData.setCalculationTimestamp(CalendarUtils.getNow());
-            csData.setChecksumValue(Base16Utils.encodeBase16(checksum));
-            csData.setFileID(fileID);
-            res.add(csData);
-        }
-        return res;
-    }
 
     private ChecksumSpecTYPE createChecksumSpecTYPE() {
         ChecksumSpecTYPE res = new ChecksumSpecTYPE();
@@ -335,5 +317,28 @@ public class MissingChecksumTests extends ExtendedTestCase {
         }
         
         return issues;
+    }
+    
+    private ResultingFileInfos createResultingFileInfos(String checksum, String ... fileids) {
+        ResultingFileInfos res = new ResultingFileInfos();
+        FileInfosData fid = new FileInfosData();
+        FileInfosDataItems fids = new FileInfosDataItems();
+        fids.getFileInfosDataItem().addAll(createFileInfoData(checksum, fileids));
+        fid.setFileInfosDataItems(fids);
+        res.setFileInfosData(fid);
+        return res;
+    }
+
+    private List<FileInfosDataItem> createFileInfoData(String checksum, String ... fileids) {
+        List<FileInfosDataItem> res = new ArrayList<FileInfosDataItem>();
+        for(String fileID : fileids) {
+            FileInfosDataItem item = new FileInfosDataItem();
+            item.setLastModificationTime(CalendarUtils.getNow());
+            item.setCalculationTimestamp(CalendarUtils.getNow());
+            item.setChecksumValue(Base16Utils.encodeBase16(checksum));
+            item.setFileID(fileID);
+            res.add(item);
+        }
+        return res;
     }
 }

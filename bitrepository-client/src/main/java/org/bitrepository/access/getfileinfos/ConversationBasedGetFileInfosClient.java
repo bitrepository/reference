@@ -26,8 +26,6 @@ package org.bitrepository.access.getfileinfos;
 
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.ContributorQueryUtils;
-import org.bitrepository.access.getchecksums.conversation.GetChecksumsConversationContext;
-import org.bitrepository.access.getchecksums.conversation.IdentifyPillarsForGetChecksums;
 import org.bitrepository.access.getfileinfos.conversation.GetFileInfosConversationContext;
 import org.bitrepository.access.getfileinfos.conversation.IdentifyPillarsForGetFileInfos;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;

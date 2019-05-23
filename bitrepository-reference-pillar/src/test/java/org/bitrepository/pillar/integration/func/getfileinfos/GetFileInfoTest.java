@@ -19,16 +19,16 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.integration.func.getchecksums;
+package org.bitrepository.pillar.integration.func.getfileinfos;
 
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.assertNotNull;
 
 import java.util.List;
 
-import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
+import org.bitrepository.bitrepositoryelements.FileInfosDataItem;
 import org.bitrepository.client.exceptions.NegativeResponseException;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.pillar.PillarTestGroups;
@@ -36,7 +36,7 @@ import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-public class GetChecksumTest extends PillarFunctionTest {
+public class GetFileInfoTest extends PillarFunctionTest {
 
     @BeforeClass
     public void retrieveFirst2Files() {
@@ -52,7 +52,7 @@ public class GetChecksumTest extends PillarFunctionTest {
             "A list (at least 2 long) of MD5 checksums should be returned.");
         ChecksumSpecTYPE checksumSpec = new ChecksumSpecTYPE();
         checksumSpec.setChecksumType(ChecksumType.MD5);
-        List<ChecksumDataForChecksumSpecTYPE> checksums = pillarFileManager.getChecksums(checksumSpec,
+        List<FileInfosDataItem> checksums = pillarFileManager.getFileInfos(checksumSpec,
                 null, null);
         assertTrue(checksums.size() >= 2, "The length of the returned checksums were less that 2");
 
@@ -70,7 +70,7 @@ public class GetChecksumTest extends PillarFunctionTest {
             "The SHA1 checksum for the default file should be returned should be returned (Not checked yet).");
         ChecksumSpecTYPE checksumSpec = new ChecksumSpecTYPE();
         checksumSpec.setChecksumType(ChecksumType.SHA1);
-        List<ChecksumDataForChecksumSpecTYPE> checksums = pillarFileManager.getChecksums(
+        List<FileInfosDataItem> checksums = pillarFileManager.getFileInfos(
                 checksumSpec, null, DEFAULT_FILE_ID);
         assertNotNull(checksums.get(0));
     }
@@ -85,7 +85,7 @@ public class GetChecksumTest extends PillarFunctionTest {
         ChecksumSpecTYPE checksumSpec = new ChecksumSpecTYPE();
         checksumSpec.setChecksumType(ChecksumType.HMAC_MD5);
         checksumSpec.setChecksumSalt(Base16Utils.encodeBase16("abab"));
-        List<ChecksumDataForChecksumSpecTYPE> checksums = pillarFileManager.getChecksums(
+        List<FileInfosDataItem> checksums = pillarFileManager.getFileInfos(
                 checksumSpec, null, DEFAULT_FILE_ID);
         assertNotNull(checksums.get(0));
     }
@@ -100,7 +100,7 @@ public class GetChecksumTest extends PillarFunctionTest {
         ChecksumSpecTYPE checksumSpec = new ChecksumSpecTYPE();
         checksumSpec.setChecksumType(ChecksumType.HMAC_SHA1);
         checksumSpec.setChecksumSalt(Base16Utils.encodeBase16("abab"));
-        List<ChecksumDataForChecksumSpecTYPE> checksums = pillarFileManager.getChecksums(
+        List<FileInfosDataItem> checksums = pillarFileManager.getFileInfos(
                 checksumSpec, null, DEFAULT_FILE_ID);
         assertNotNull(checksums.get(0));
     }    

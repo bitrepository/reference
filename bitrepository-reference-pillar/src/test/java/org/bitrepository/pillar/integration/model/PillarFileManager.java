@@ -25,12 +25,12 @@ package org.bitrepository.pillar.integration.model;
 import java.util.List;
 
 import org.bitrepository.access.ContributorQuery;
-import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
-import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEvent;
+import org.bitrepository.access.getfileinfos.conversation.FileInfosCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
+import org.bitrepository.bitrepositoryelements.FileInfosDataItem;
 import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.common.exceptions.OperationFailedException;
 import org.bitrepository.common.settings.Settings;
@@ -70,8 +70,8 @@ public class PillarFileManager {
      * Deletes the files one by one on the pillar.
      */
     public void deleteAllFiles() {
-        List<ChecksumDataForChecksumSpecTYPE> filesWithChecksums = getChecksums(null, null, null);
-        for (ChecksumDataForChecksumSpecTYPE checksumData: filesWithChecksums) {
+        List<FileInfosDataItem> filesWithChecksums = getFileInfos(null, null, null);
+        for (FileInfosDataItem checksumData: filesWithChecksums) {
             ChecksumDataForFileTYPE checksumDataForFile = new ChecksumDataForFileTYPE();
             checksumDataForFile.setCalculationTimestamp(checksumData.getCalculationTimestamp());
             checksumDataForFile.setChecksumSpec(ChecksumUtils.getDefault(mySettings));
@@ -93,7 +93,7 @@ public class PillarFileManager {
      */
     public void ensureNumberOfFilesOnPillar(int desiredNumberOfFiles, String newFileIDPrefix) {
         if (desiredNumberOfFiles >= knownNumberOfFilesOnPillar) {
-            knownNumberOfFilesOnPillar = getFileIDs(null).size();
+            knownNumberOfFilesOnPillar = getFileInfos(null, null, null).size();
         }
 
         if (desiredNumberOfFiles >= knownNumberOfFilesOnPillar) {
@@ -117,6 +117,7 @@ public class PillarFileManager {
         }
     }
 
+    /*
     public List<FileIDsDataItem> getFileIDs(ContributorQuery query) {
         if(query == null) {
             query = new ContributorQuery(pillarID, null, null, null);
@@ -131,8 +132,10 @@ public class PillarFileManager {
             throw new RuntimeException("Failed to fileIDs from pillar " + pillarID, e);
         }
     }
+    */
 
-    public List<ChecksumDataForChecksumSpecTYPE> getChecksums(ChecksumSpecTYPE checksumSpec,
+    
+   /* public List<ChecksumDataForChecksumSpecTYPE> getChecksums(ChecksumSpecTYPE checksumSpec,
                                                               ContributorQuery query,
                                                               String fileID) {
         if (checksumSpec == null) {
@@ -151,5 +154,27 @@ public class PillarFileManager {
         } catch (Exception e) {
             throw new RuntimeException("Failed to fileIDs from pillar " + pillarID, e);
         }
+    }*/
+    
+    public List<FileInfosDataItem> getFileInfos(ChecksumSpecTYPE checksumSpec,
+            ContributorQuery query,
+            String fileID) {
+        if (checksumSpec == null) {
+            checksumSpec = ChecksumUtils.getDefault(mySettings);
+        }
+
+        if (query == null) {
+            query = new ContributorQuery(pillarID, null, null, null);
+        }
+
+        try {
+            List<ContributorEvent> result = clientProvider.getGetFileInfosClient().getFileInfos(collectionID,
+                new ContributorQuery[]{query}, fileID, checksumSpec,  null, null, null);
+            FileInfosCompletePillarEvent pillarResult = (FileInfosCompletePillarEvent) result.get(0);
+            return pillarResult.getFileInfos().getFileInfosData().getFileInfosDataItems().getFileInfosDataItem();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to fileIDs from pillar " + pillarID, e);
+        }
     }
+
 }

@@ -58,7 +58,7 @@ public class BlockingGetFileInfosClient {
      * @return The list of ContributorEvents containing the results
      * @throws NegativeResponseException in case of the operation fails. 
      */
-    public List<ContributorEvent> getChecksums(String collectionID, ContributorQuery[] contributorQueries,
+    public List<ContributorEvent> getFileInfos(String collectionID, ContributorQuery[] contributorQueries,
         String fileID, ChecksumSpecTYPE checksumSpec, URL urlForResult, EventHandler eventHandler,
         String auditTrailInformation) throws NegativeResponseException {
 

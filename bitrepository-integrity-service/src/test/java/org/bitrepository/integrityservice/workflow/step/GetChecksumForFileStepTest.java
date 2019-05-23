@@ -33,11 +33,13 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.bitrepository.access.ContributorQuery;
-import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
-import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
+import org.bitrepository.access.getfileinfos.conversation.FileInfosCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.FileInfosData;
+import org.bitrepository.bitrepositoryelements.FileInfosDataItem;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositoryelements.ResultingChecksums;
+import org.bitrepository.bitrepositoryelements.ResultingFileInfos;
+import org.bitrepository.bitrepositoryelements.FileInfosData.FileInfosDataItems;
 import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.client.eventhandler.ContributorFailedEvent;
@@ -90,7 +92,7 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
                 eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
                 return null;
             }
-        }).when(collector).getChecksums(
+        }).when(collector).getFileInfos(
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
                 anyString(), any(ContributorQuery[].class), any(EventHandler.class));
 
@@ -101,7 +103,7 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
 
         Assert.assertTrue(step.getResults().isEmpty());
         verifyZeroInteractions(alerter);
-        verify(collector).getChecksums(anyString(), any(), eq(checksumType), eq(FILE_1), anyString(), any(), any(EventHandler.class));
+        verify(collector).getFileInfos(anyString(), any(), eq(checksumType), eq(FILE_1), anyString(), any(), any(EventHandler.class));
         verifyNoMoreInteractions(collector);
     }
     
@@ -115,14 +117,14 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
 
-                ResultingChecksums res = createResultingChecksums((String) invocation.getArguments()[3], "checksum");
-                eventHandler.handleEvent(new ChecksumsCompletePillarEvent(TEST_PILLAR_1, TEST_COLLECTION, res, (ChecksumSpecTYPE) invocation.getArguments()[2], false));
-                eventHandler.handleEvent(new ChecksumsCompletePillarEvent(TEST_PILLAR_2, TEST_COLLECTION, res, (ChecksumSpecTYPE) invocation.getArguments()[2], false));
-                eventHandler.handleEvent(new ChecksumsCompletePillarEvent(TEST_PILLAR_3, TEST_COLLECTION, res, (ChecksumSpecTYPE) invocation.getArguments()[2], false));
+                ResultingFileInfos res = createResultingFileInfos((String) invocation.getArguments()[3], "checksum");
+                eventHandler.handleEvent(new FileInfosCompletePillarEvent(TEST_PILLAR_1, TEST_COLLECTION, res, (ChecksumSpecTYPE) invocation.getArguments()[2], false));
+                eventHandler.handleEvent(new FileInfosCompletePillarEvent(TEST_PILLAR_2, TEST_COLLECTION, res, (ChecksumSpecTYPE) invocation.getArguments()[2], false));
+                eventHandler.handleEvent(new FileInfosCompletePillarEvent(TEST_PILLAR_3, TEST_COLLECTION, res, (ChecksumSpecTYPE) invocation.getArguments()[2], false));
                 eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
                 return null;
             }
-        }).when(collector).getChecksums(
+        }).when(collector).getFileInfos(
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
                 anyString(), any(ContributorQuery[].class), any(EventHandler.class));
 
@@ -138,7 +140,7 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
         Assert.assertTrue(step.getResults().keySet().contains(TEST_PILLAR_3));
         
         verifyZeroInteractions(alerter);
-        verify(collector).getChecksums(anyString(), any(), eq(checksumType), eq(FILE_1), anyString(), any(), any(EventHandler.class));
+        verify(collector).getFileInfos(anyString(), any(), eq(checksumType), eq(FILE_1), anyString(), any(), any(EventHandler.class));
         verifyNoMoreInteractions(collector);
     }
 
@@ -152,9 +154,9 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
 
-                ResultingChecksums res = createResultingChecksums((String) invocation.getArguments()[3], "checksum");
-                ContributorEvent e1 = new ChecksumsCompletePillarEvent(TEST_PILLAR_1, TEST_COLLECTION, res, (ChecksumSpecTYPE) invocation.getArguments()[2], false);
-                ContributorEvent e2 = new ChecksumsCompletePillarEvent(TEST_PILLAR_2, TEST_COLLECTION, res, (ChecksumSpecTYPE) invocation.getArguments()[2], false);
+                ResultingFileInfos res = createResultingFileInfos((String) invocation.getArguments()[3], "checksum");
+                ContributorEvent e1 = new FileInfosCompletePillarEvent(TEST_PILLAR_1, TEST_COLLECTION, res, (ChecksumSpecTYPE) invocation.getArguments()[2], false);
+                ContributorEvent e2 = new FileInfosCompletePillarEvent(TEST_PILLAR_2, TEST_COLLECTION, res, (ChecksumSpecTYPE) invocation.getArguments()[2], false);
                 ContributorEvent e3 = new ContributorFailedEvent(TEST_PILLAR_3, TEST_COLLECTION, ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
                 eventHandler.handleEvent(e1);
                 eventHandler.handleEvent(e2);
@@ -162,7 +164,7 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
                 eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "COMPONENT FAILED", Arrays.asList(e1, e2, e3)));
                 return null;
             }
-        }).when(collector).getChecksums(
+        }).when(collector).getFileInfos(
                 eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
                 anyString(), any(ContributorQuery[].class), any(EventHandler.class));
 
@@ -179,17 +181,25 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
         
         verify(alerter).integrityFailed(anyString(), eq(TEST_COLLECTION));
         verifyNoMoreInteractions(alerter);
-        verify(collector).getChecksums(anyString(), any(), eq(checksumType), eq(FILE_1), anyString(), any(), any(EventHandler.class));
+        verify(collector).getFileInfos(anyString(), any(), eq(checksumType), eq(FILE_1), anyString(), any(), any(EventHandler.class));
         verifyNoMoreInteractions(collector);
     }
     
-    private ResultingChecksums createResultingChecksums(String fileId, String checksum) {
-        ChecksumDataForChecksumSpecTYPE csData = new ChecksumDataForChecksumSpecTYPE();
-        csData.setCalculationTimestamp(CalendarUtils.getNow());
-        csData.setFileID(fileId);
-        csData.setChecksumValue(Base16Utils.encodeBase16(checksum));
-        ResultingChecksums res = new ResultingChecksums();
-        res.getChecksumDataItems().add(csData);
+    private ResultingFileInfos createResultingFileInfos(String fileId, String checksum) {
+        ResultingFileInfos res = new ResultingFileInfos();
+        FileInfosData fid = new FileInfosData();
+        FileInfosDataItems fids = new FileInfosDataItems();
+        
+        FileInfosDataItem item = new FileInfosDataItem();
+        item.setLastModificationTime(CalendarUtils.getNow());
+        item.setCalculationTimestamp(CalendarUtils.getNow());
+        item.setChecksumValue(Base16Utils.encodeBase16(checksum));
+        item.setFileID(fileId);
+                
+        fids.getFileInfosDataItem().add(item);
+        fid.setFileInfosDataItems(fids);
+        res.setFileInfosData(fid);
         return res;
     }
+
 }

@@ -19,54 +19,56 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.pillar.integration.func.getfileids;
+package org.bitrepository.pillar.integration.func.getfileinfos;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
+import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileInfosRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileInfosResponse;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.DefaultPillarIdentificationTest;
-import org.bitrepository.pillar.messagefactories.GetFileIDsMessageFactory;
+import org.bitrepository.pillar.messagefactories.GetFileInfosMessageFactory;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class IdentifyPillarsForGetFileIDsIT extends DefaultPillarIdentificationTest {
-    protected GetFileIDsMessageFactory msgFactory;
+public class IdentifyPillarsForGetFileInfosIT extends DefaultPillarIdentificationTest {
+    protected GetFileInfosMessageFactory msgFactory;
 
     @BeforeMethod(alwaysRun=true)
     public void initialiseReferenceTest() throws Exception {
-        msgFactory = new GetFileIDsMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
+        msgFactory = new GetFileInfosMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
         clearReceivers();
     }
 
     @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
     public void normalIdentificationTest() {
-        addDescription("Verifies the normal behaviour for getFileIDs identification");
+        addDescription("Verifies the normal behaviour for getFileInfos identification");
         addStep("Setup for test", "2 files on the pillar");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
-        clearReceivers();
         
         addStep("Sending a identify request.",
             "The pillar under test should make a response with the correct elements.");
         FileIDs fileids = FileIDsUtils.createFileIDs(DEFAULT_FILE_ID);
+        ChecksumSpecTYPE csSpec = ChecksumUtils.getDefault(settingsForCUT);
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
-        IdentifyPillarsForGetFileIDsRequest identifyRequest =
-                msgFactory.createIdentifyPillarsForGetFileIDsRequest(fileids);
+        IdentifyPillarsForGetFileInfosRequest identifyRequest =
+                msgFactory.createIdentifyPillarsForGetFileInfosRequest(csSpec, fileids);
         messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response getPillarID() the pillar.",
                 "The pillar should make a response.");
-        IdentifyPillarsForGetFileIDsResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
-                IdentifyPillarsForGetFileIDsResponse.class);
+        IdentifyPillarsForGetFileInfosResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
+                IdentifyPillarsForGetFileInfosResponse.class);
         assertNotNull(receivedIdentifyResponse);
         assertEquals(receivedIdentifyResponse.getCollectionID(), identifyRequest.getCollectionID(),
                 "Received unexpected 'CollectionID' in response.");
@@ -84,23 +86,24 @@ public class IdentifyPillarsForGetFileIDsIT extends DefaultPillarIdentificationT
 
     @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
     public void nonExistingFileTest() {
-        addDescription("Tests that the pillar is able to reject a GetFileIDs requests for a file, which it " +
+        addDescription("Tests that the pillar is able to reject a GetFileInfos requests for a file, which it " +
                        "does not have during the identification phase.");
         addStep("Setup for test", "2 files on the pillar");
         //pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
         FileIDs fileids = FileIDsUtils.createFileIDs(NON_DEFAULT_FILE_ID);
+        ChecksumSpecTYPE csSpec = ChecksumUtils.getDefault(settingsForCUT);
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
-        IdentifyPillarsForGetFileIDsRequest identifyRequest =
-                msgFactory.createIdentifyPillarsForGetFileIDsRequest(fileids);
+        IdentifyPillarsForGetFileInfosRequest identifyRequest =
+                msgFactory.createIdentifyPillarsForGetFileInfosRequest(csSpec, fileids);
         messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response getPillarID() the pillar.",
                 "The pillar should make a response.");
-        IdentifyPillarsForGetFileIDsResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
-                IdentifyPillarsForGetFileIDsResponse.class);
+        IdentifyPillarsForGetFileInfosResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
+                IdentifyPillarsForGetFileInfosResponse.class);
         assertNotNull(receivedIdentifyResponse.getFileIDs().getFileID());
         assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
                 ResponseCode.FILE_NOT_FOUND_FAILURE,
@@ -109,19 +112,20 @@ public class IdentifyPillarsForGetFileIDsIT extends DefaultPillarIdentificationT
     
     @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
     public void allFilesTest() {
-        addDescription("Tests that the pillar accepts a GetFileIDs requests for all files, even though it does not have any files.");
+        addDescription("Tests that the pillar accepts a GetFileInfos requests for all files, even though it does not have any files.");
         FileIDs fileids = FileIDsUtils.getAllFileIDs();
+        ChecksumSpecTYPE csSpec = ChecksumUtils.getDefault(settingsForCUT);
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
-        IdentifyPillarsForGetFileIDsRequest identifyRequest =
-                msgFactory.createIdentifyPillarsForGetFileIDsRequest(fileids);
+        IdentifyPillarsForGetFileInfosRequest identifyRequest =
+                msgFactory.createIdentifyPillarsForGetFileInfosRequest(csSpec, fileids);
         messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response getPillarID() the pillar.",
                 "The pillar should make a response.");
-        IdentifyPillarsForGetFileIDsResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
-                IdentifyPillarsForGetFileIDsResponse.class);
+        IdentifyPillarsForGetFileInfosResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
+                IdentifyPillarsForGetFileInfosResponse.class);
         assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
                 ResponseCode.IDENTIFICATION_POSITIVE,
                 "Received unexpected 'ResponseCode' in response.");
@@ -129,16 +133,17 @@ public class IdentifyPillarsForGetFileIDsIT extends DefaultPillarIdentificationT
 
     @Override
     protected MessageRequest createRequest() {
-        return msgFactory.createIdentifyPillarsForGetFileIDsRequest(null);
+        return msgFactory.createIdentifyPillarsForGetFileInfosRequest(ChecksumUtils.getDefault(settingsForCUT), 
+                FileIDsUtils.getAllFileIDs());
     }
 
     @Override
     protected MessageResponse receiveResponse() {
-        return clientReceiver.waitForMessage(IdentifyPillarsForGetFileIDsResponse.class);
+        return clientReceiver.waitForMessage(IdentifyPillarsForGetFileInfosResponse.class);
     }
 
     @Override
     protected void assertNoResponseIsReceived() {
-        clientReceiver.checkNoMessageIsReceived(IdentifyPillarsForGetFileIDsResponse.class);
+        clientReceiver.checkNoMessageIsReceived(IdentifyPillarsForGetFileInfosResponse.class);
     }
 }

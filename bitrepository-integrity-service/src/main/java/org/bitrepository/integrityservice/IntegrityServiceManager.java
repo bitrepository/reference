@@ -123,8 +123,6 @@ public final class IntegrityServiceManager {
         ModifyComponentFactory mcf = ModifyComponentFactory.getInstance();
         
         collector = new DelegatingIntegrityInformationCollector(
-                acf.createGetFileIDsClient(settings, securityManager, id),
-                acf.createGetChecksumsClient(settings, securityManager, id),
                 acf.createGetFileInfosClient(settings, securityManager, id),
                 acf.createGetFileClient(settings, securityManager, id),
                 mcf.retrievePutClient(settings, securityManager, id));

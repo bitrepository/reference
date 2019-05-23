@@ -25,6 +25,8 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.bitrepository.access.ContributorQuery;
+import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.client.exceptions.NegativeResponseException;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.PillarTestGroups;
@@ -42,19 +44,22 @@ public class MultipleCollectionIT extends PillarIntegrationTest {
         addDescription("Tests that a file is put correctly to a second collection, and that the file can be access " +
                 "with getFile, getChecksums, getFileIDs and can be replaced and deleted correctly.");
         addStep("Put the file to the second collection", "Should complete successfully");
+        ChecksumSpecTYPE checksumspec = new ChecksumSpecTYPE();
+        checksumspec.setChecksumType(ChecksumType.MD5);
+        
         clientProvider.getPutClient().putFile(
                 nonDefaultCollectionId, DEFAULT_FILE_URL, NON_DEFAULT_FILE_ID, 10L, TestFileHelper.getDefaultFileChecksum(),
                 null, null, null);
 
         addStep("Send a getFileIDs for the file in the second collection", "The fileID should be retrieved");
         ContributorQuery query = new ContributorQuery(getPillarID(), null, null, null);
-        Assert.assertEquals(1, clientProvider.getGetFileIDsClient().getGetFileIDs(
-                nonDefaultCollectionId, new ContributorQuery[] {query}, NON_DEFAULT_FILE_ID, DEFAULT_FILE_URL, null).size());
+        Assert.assertEquals(1, clientProvider.getGetFileInfosClient().getFileInfos(
+                nonDefaultCollectionId, new ContributorQuery[] {query}, NON_DEFAULT_FILE_ID, checksumspec, DEFAULT_FILE_URL, null, null).size());
 
         addStep("Send a getFileIDs for the file in the other collections", "The file should not be found here");
         try {
-            clientProvider.getGetFileIDsClient().getGetFileIDs(
-                    collectionID, new ContributorQuery[] {query}, NON_DEFAULT_FILE_ID, DEFAULT_FILE_URL, null).size();
+            clientProvider.getGetFileInfosClient().getFileInfos(
+                    collectionID, new ContributorQuery[] {query}, NON_DEFAULT_FILE_ID, checksumspec, DEFAULT_FILE_URL, null, null).size();
             Assert.fail("Should have throw a NegativeResponseException as the file doesn't exist in the default " +
                     "collection");
         } catch (NegativeResponseException nre){

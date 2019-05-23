@@ -15,10 +15,8 @@ JAVA_OPTS+=(-DBASEDIR="$BASEDIR")
 
 case "$1" in
     delete)		CMD=DeleteFileCmd		;;
-    get-checksums)	CMD=GetChecksumsCmd	;;
     get-fileinfos)	CMD=GetFileInfosCmd	;;
     get-file)		CMD=GetFileCmd		;;
-    get-file-ids)	CMD=GetFileIDsCmd		;;
     put-file)		CMD=PutFileCmd		;;
     replace-file)	CMD=ReplaceFileCmd		;;
     *)
@@ -26,10 +24,8 @@ case "$1" in
 	echo "usage: $0 CMD PARAMS"
 	echo "  CMD is one of"
 	echo "    delete"
-	echo "    get-checksums"
 	echo "    get-fileinfos"
 	echo "    get-file"
-	echo "    get-file-ids"
 	echo "    put-file"
 	echo "    replace-file"
 	exit 1

@@ -36,9 +36,7 @@ import java.util.Arrays;
 
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.ContributorQueryUtils;
-import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getfile.GetFileClient;
-import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.access.getfileinfos.GetFileInfosClient;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -56,71 +54,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
 
     public final static String collectionID = "dummy-collection";
     public final static String fileId = "FILE_ID";
-    
-    @Test(groups = {"regressiontest", "integritytest"})
-    public void testCollectorGetFileIDs() throws Exception {
-        addDescription("Tests that the collector calls the GetFileClient");
-        addStep("Define variables", "No errors");
-        String pillarID = "TEST-PILLAR";
-        ContributorQuery[] contributorQueries = ContributorQueryUtils.createFullContributorQuery(Arrays.asList(pillarID));
-        String auditTrailInformation = "audit trail for this test";
-        
-        addStep("Setup a GetFileIDsClient for test purpose.", "Should be OK.");
-        GetFileIDsClient getFileIDsClient = mock(GetFileIDsClient.class);
-        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(getFileIDsClient, null, null, null, null);
-        EventHandler eventHandler = mock(EventHandler.class);
-        
-        addStep("Call the getFileIDs on the collector.", "Should go directly to the GetFileIDsClient");
-        collector.getFileIDs(collectionID, Arrays.asList(pillarID), auditTrailInformation, contributorQueries, eventHandler);
-        verify(getFileIDsClient).getFileIDs(eq(collectionID), any(), anyString(), any(URL.class), any(EventHandler.class));
-
-        
-        addStep("Call the getFileIDs on the collector four times more.", 
-                "The GetFileIDsClient should have been called 5 times.");
-        collector.getFileIDs(collectionID, Arrays.asList(pillarID), auditTrailInformation, contributorQueries, null);
-        collector.getFileIDs(collectionID, Arrays.asList(pillarID), auditTrailInformation, contributorQueries, null);
-        collector.getFileIDs(collectionID, Arrays.asList(pillarID), auditTrailInformation, contributorQueries, null);
-        collector.getFileIDs(collectionID, Arrays.asList(pillarID), auditTrailInformation, contributorQueries, null);
-        verify(getFileIDsClient, times(5)).getFileIDs(eq(collectionID), any(), anyString(), any(URL.class), any(EventHandler.class));
-        
-        verifyNoMoreInteractions(getFileIDsClient);
-        verifyNoMoreInteractions(eventHandler);
-    }
-
-    @Test(groups = {"regressiontest", "integritytest"})
-    public void testCollectorGetChecksums() throws Exception {
-        addDescription("Tests that the collector calls the GetChecksumsClient");
-        addStep("Define variables", "No errors");
-        String pillarID = "TEST-PILLAR";
-        ContributorQuery[] contributorQueries = ContributorQueryUtils.createFullContributorQuery(
-                Arrays.asList(pillarID));
-        ChecksumSpecTYPE csType = new ChecksumSpecTYPE();
-        csType.setChecksumType(ChecksumType.MD5);
-        String auditTrailInformation = "audit trail for this test";
-        
-        addStep("Setup a GetChecksumsClient for test purpose.", "Should be OK.");
-        GetChecksumsClient getChecksumsClient = mock(GetChecksumsClient.class);
-        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(
-                null, getChecksumsClient, null, null, null);
-        EventHandler eventHandler = mock(EventHandler.class);
-        
-        addStep("Call the getChecksumsClient on the collector.", "Should go directly to the GetChecksumsClient");
-        collector.getChecksums(collectionID, Arrays.asList(pillarID), csType, null, auditTrailInformation, contributorQueries, eventHandler);
-        verify(getChecksumsClient).getChecksums(eq(collectionID), any(), anyString(), any(ChecksumSpecTYPE.class), any(URL.class), any(EventHandler.class), anyString());
-        
-        addStep("Call the getChecksumsClient on the collector four times more.", 
-                "The GetChecksumsClient should have been called 5 times.");
-        collector.getChecksums(collectionID, Arrays.asList(pillarID), csType, null, auditTrailInformation, contributorQueries, null);
-        collector.getChecksums(collectionID, Arrays.asList(pillarID), csType, null, auditTrailInformation, contributorQueries, null);
-        collector.getChecksums(collectionID, Arrays.asList(pillarID), csType, null, auditTrailInformation, contributorQueries, null);
-        collector.getChecksums(collectionID, Arrays.asList(pillarID), csType, null, auditTrailInformation, contributorQueries, null);
-        verify(getChecksumsClient, times(5)).getChecksums(eq(collectionID), any(), anyString(), any(ChecksumSpecTYPE.class), any(URL.class), 
-                any(EventHandler.class), anyString());
-                
-        verifyNoMoreInteractions(getChecksumsClient);
-        verifyNoMoreInteractions(eventHandler);
-
-    }
+   
     
     @Test(groups = {"regressiontest", "integritytest"})
     public void testCollectorGetFileInfos() throws Exception {
@@ -135,8 +69,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         
         addStep("Setup a GetFileInfosClient for test purpose.", "Should be OK.");
         GetFileInfosClient getFileInfosClient = mock(GetFileInfosClient.class);
-        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(
-                null, null, getFileInfosClient, null, null);
+        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(getFileInfosClient, null, null);
         EventHandler eventHandler = mock(EventHandler.class);
         
         addStep("Call the getChecksumsClient on the collector.", "Should go directly to the GetChecksumsClient");
@@ -166,8 +99,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         
         addStep("Setup a GetFileClient for test purpose.", "Should be OK.");
         GetFileClient getFileClient = mock(GetFileClient.class);
-        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(
-                null, null, null, getFileClient, null);
+        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(null, getFileClient, null);
         EventHandler eventHandler = mock(EventHandler.class);
 
         addStep("Call the GetFileClient on the collector.", "Should go directly to the GetFileClient");
@@ -195,8 +127,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         
         addStep("Setup a PutFileClient for test purpose.", "Should be OK.");
         PutFileClient putFileClient = mock(PutFileClient.class);
-        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(
-                null, null, null, null, putFileClient);
+        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(null, null, putFileClient);
         EventHandler eventHandler = mock(EventHandler.class);
 
         addStep("Call the PutFileClient on the collector.", "Should go directly to the PutFileClient");
@@ -215,28 +146,6 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         verifyNoMoreInteractions(putFileClient);
         verifyNoMoreInteractions(eventHandler);
     }
-    
-    @Test(groups = {"regressiontest", "integritytest"})
-    public void testCollectorHandleChecksumClientFailures() throws Exception {
-        addDescription("Test that the IntegrityInformationCollector works as a fault-barrier.");
-        addStep("Setup variables for the test", "Should be OK");
-        String pillarID = "TEST-PILLAR";
-        ContributorQuery[] contributorQueries = ContributorQueryUtils.createFullContributorQuery(
-                Arrays.asList(pillarID));
-        ChecksumSpecTYPE csType = new ChecksumSpecTYPE();
-        csType.setChecksumType(ChecksumType.MD5);
-        String auditTrailInformation = "audit trail for this test";
-
-        addStep("Setup a failing GetChecksumClient for test purpose.", "Should be OK.");
-        GetChecksumsClient getChecksumsClient = mock(GetChecksumsClient.class);
-        doThrow(new RuntimeException()).when(getChecksumsClient).getChecksums(anyString(), any(), anyString(), any(ChecksumSpecTYPE.class), any(URL.class), any(EventHandler.class), anyString());
-
-        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(null, getChecksumsClient, null, null, null);
-        
-        addStep("Verify that the collector does not fail, just because the GetChecksumClient does so", 
-                "Should not throw an unexpected exception");
-        collector.getChecksums(collectionID, Arrays.asList(pillarID), csType, null, auditTrailInformation, contributorQueries, null);
-    }
 
     @Test(groups = {"regressiontest", "integritytest"})
     public void testCollectorHandleFileInfosClientFailures() throws Exception {
@@ -253,32 +162,13 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         GetFileInfosClient getFileInfosClient = mock(GetFileInfosClient.class);
         doThrow(new RuntimeException()).when(getFileInfosClient).getFileInfos(anyString(), any(), anyString(), any(ChecksumSpecTYPE.class), any(URL.class), any(EventHandler.class), anyString());
 
-        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(null, null, getFileInfosClient, null, null);
+        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(getFileInfosClient, null, null);
         
         addStep("Verify that the collector does not fail, just because the GetFileInfosClient does so", 
                 "Should not throw an unexpected exception");
         collector.getFileInfos(collectionID, Arrays.asList(pillarID), csType, null, auditTrailInformation, contributorQueries, null);
     }
-    
-    @Test(groups = {"regressiontest", "integritytest"})
-    public void testCollectorHandleGetFileIDsClientFailures() throws Exception {
-        addDescription("Test that the IntegrityInformationCollector works as a fault-barrier.");
-        addStep("Setup variables for the test", "Should be OK");
-        String pillarID = "TEST-PILLAR";
-        ContributorQuery[] contributorQueries = ContributorQueryUtils.createFullContributorQuery(
-                Arrays.asList(pillarID));
-        String auditTrailInformation = "audit trail for this test";
-
-        addStep("Setup a DyingGetFileIDsClient for test purpose.", "Should be OK.");
-        GetFileIDsClient getFileIDsClient = mock(GetFileIDsClient.class);
-        doThrow(new RuntimeException()).when(getFileIDsClient).getFileIDs(anyString(), any(), anyString(), any(URL.class), any(EventHandler.class));
-        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(getFileIDsClient, null, null, null, null);
         
-        addStep("Verify that the collector does not fail, just because the GetChecksumClient does so", 
-                "Should not throw an unexpected exception");
-        collector.getFileIDs(collectionID, Arrays.asList(pillarID), auditTrailInformation, contributorQueries, null);
-    }
-    
     @Test(groups = {"regressiontest", "integritytest"})
     public void testCollectorHandleGetFileClientFailures() throws Exception {
         addDescription("Test that the IntegrityInformationCollector works as a fault-barrier.");
@@ -288,8 +178,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         
         addStep("Setup a GetFileClient for test purpose, and ensure that it throws an error when called.", "Should be OK.");
         GetFileClient getFileClient = mock(GetFileClient.class);
-        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(
-                null, null, null, getFileClient, null);
+        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(null, getFileClient, null);
         EventHandler eventHandler = mock(EventHandler.class);
         doThrow(new RuntimeException()).when(getFileClient).getFileFromFastestPillar(anyString(), anyString(), any(FilePart.class), 
                 any(URL.class), any(EventHandler.class), anyString());
@@ -309,8 +198,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         
         addStep("Setup a PutFileClient for test purpose, and ensure that it throws an error when called.", "Should be OK.");
         PutFileClient putFileClient = mock(PutFileClient.class);
-        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(
-                null, null, null, null, putFileClient);
+        IntegrityInformationCollector collector = new DelegatingIntegrityInformationCollector(null, null, putFileClient);
         EventHandler eventHandler = mock(EventHandler.class);
         doThrow(new RuntimeException()).when(putFileClient).putFile(anyString(), any(URL.class), anyString(), anyLong(), any(ChecksumDataForFileTYPE.class), 
                 any(ChecksumSpecTYPE.class), any(EventHandler.class), anyString());

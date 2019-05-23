@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ResultingChecksums;
+import org.bitrepository.bitrepositoryelements.ResultingFileInfos;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
@@ -63,7 +63,7 @@ public class GetChecksumForFileStep extends AbstractWorkFlowStep {
     /** Contributors for collecting information */
     private final IntegrityContributors integrityContributors;
     /** Map between pillar and their checksum results. */
-    private Map<String, ResultingChecksums> checksumResults = null;
+    private Map<String, ResultingFileInfos> checksumResults = null;
     
     /**
      * Constructor.
@@ -94,7 +94,7 @@ public class GetChecksumForFileStep extends AbstractWorkFlowStep {
             log.debug("Collecting checksums from '" + pillarsToCollectFrom + "' for collection '" 
                     + collectionID + "'.");
             SimpleChecksumEventHandler eventHandler = new SimpleChecksumEventHandler(timeout, integrityContributors);
-            collector.getChecksums(collectionID, pillarsToCollectFrom, checksumType, fileID, "Getting salted " 
+            collector.getFileInfos(collectionID, pillarsToCollectFrom, checksumType, fileID, "Getting salted " 
                     + checksumType.getChecksumType() + " checksum for spot integrity check", null, eventHandler);
             
             OperationEvent event = eventHandler.getFinish();
@@ -133,13 +133,13 @@ public class GetChecksumForFileStep extends AbstractWorkFlowStep {
             return null;
         }
         Map<String, String> res = new HashMap<String, String>();
-        for(Map.Entry<String, ResultingChecksums> entry : checksumResults.entrySet()) {
+        for(Map.Entry<String, ResultingFileInfos> entry : checksumResults.entrySet()) {
             if(!validateResults(entry.getValue())) {
                 log.warn("No or invalid checksum results from pillar '" + entry.getKey() + "': " + entry.getValue());
                 continue;
             }
-            String checksum = Base16Utils.decodeBase16(
-                    entry.getValue().getChecksumDataItems().get(0).getChecksumValue());
+            String checksum = Base16Utils.decodeBase16(entry.getValue().getFileInfosData().getFileInfosDataItems().
+                    getFileInfosDataItem().get(0).getChecksumValue());
             res.put(entry.getKey(), checksum);
         }
         return res;
@@ -151,11 +151,13 @@ public class GetChecksumForFileStep extends AbstractWorkFlowStep {
      * @param checksumData The resulting checksum data to validate.
      * @return Whether it is valid.
      */
-    private boolean validateResults(ResultingChecksums checksumData) {
-        if(checksumData.getChecksumDataItems().isEmpty()) {
+    private boolean validateResults(ResultingFileInfos fileInfosData) {
+        
+        if(fileInfosData.getFileInfosData().getFileInfosDataItems().getFileInfosDataItem().isEmpty()) {
             return false;
         }
-        if(!checksumData.getChecksumDataItems().get(0).getFileID().equalsIgnoreCase(fileID)) {
+        if(!fileInfosData.getFileInfosData().getFileInfosDataItems().getFileInfosDataItem()
+                .get(0).getFileID().equalsIgnoreCase(fileID)) {
             return false;
         }
         return true;

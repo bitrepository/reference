@@ -24,11 +24,7 @@ package org.bitrepository.integrityservice.workflow;
 import java.util.Date;
 
 import org.bitrepository.common.utils.ChecksumUtils;
-import org.bitrepository.integrityservice.workflow.step.FullUpdateChecksumsStep;
-import org.bitrepository.integrityservice.workflow.step.FullUpdateFileIDsStep;
 import org.bitrepository.integrityservice.workflow.step.FullUpdateFileInfosStep;
-import org.bitrepository.integrityservice.workflow.step.UpdateChecksumsStep;
-import org.bitrepository.integrityservice.workflow.step.UpdateFileIDsStep;
 import org.bitrepository.integrityservice.workflow.step.UpdateFileInfosStep;
 
 /**
@@ -48,20 +44,6 @@ public class CompleteIntegrityCheck extends IntegrityCheckWorkflow {
     public String getDescription() {
         return "Retrieves all fileIDs and checksums from all pillars and checks for all potential integrity " +
                 "problems.";
-    }
-
-    @Override
-    protected UpdateFileIDsStep getUpdateFileIDsStep() {
-        return new FullUpdateFileIDsStep(context.getCollector(), context.getStore(),
-                context.getAlerter(), context.getSettings(), collectionID, integrityContributors);
-    }
-
-
-    @Override
-    protected UpdateChecksumsStep getUpdateChecksumsStep() {
-        return  new FullUpdateChecksumsStep(
-                context.getCollector(), context.getStore(), context.getAlerter(),
-                ChecksumUtils.getDefault(context.getSettings()), context.getSettings(), collectionID, integrityContributors);
     }
 
     @Override

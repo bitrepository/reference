@@ -27,8 +27,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
-import org.bitrepository.bitrepositoryelements.ResultingChecksums;
+import org.bitrepository.access.getfileinfos.conversation.FileInfosCompletePillarEvent;
+import org.bitrepository.bitrepositoryelements.ResultingFileInfos;
 import org.bitrepository.client.eventhandler.ContributorFailedEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
@@ -53,7 +53,7 @@ public class SimpleChecksumEventHandler implements EventHandler {
     /** The integrity contributors, keeps track of who have failed, are active or finished */
     private final IntegrityContributors integrityContributors;
     /** Map between pillars and their checksum results.*/
-    private Map<String, ResultingChecksums> checksumResults = new HashMap<String, ResultingChecksums>();
+    private Map<String, ResultingFileInfos> fileInfoResults = new HashMap<>();
     
     /**
      * Constructor.
@@ -100,15 +100,15 @@ public class SimpleChecksumEventHandler implements EventHandler {
      * @param event The event for the completion of a GetChecksums for a single pillar.
      */
     private void handleResult(OperationEvent event) {
-        if(event instanceof ChecksumsCompletePillarEvent) {
-            ChecksumsCompletePillarEvent checksumEvent = (ChecksumsCompletePillarEvent) event;
+        if(event instanceof FileInfosCompletePillarEvent) {
+            FileInfosCompletePillarEvent fileInfoEvent = (FileInfosCompletePillarEvent) event;
             log.trace("Receiving GetChecksums result: {}", 
-                    checksumEvent.getChecksums().getChecksumDataItems().toString());
-            checksumResults.put(checksumEvent.getContributorID(), checksumEvent.getChecksums());
-            if(checksumEvent.isPartialResult()) {
-                integrityContributors.succeedContributor(checksumEvent.getContributorID());
+                    fileInfoEvent.getFileInfos().getFileInfosData().getFileInfosDataItems().getFileInfosDataItem().toString());
+            fileInfoResults.put(fileInfoEvent.getContributorID(), fileInfoEvent.getFileInfos());
+            if(fileInfoEvent.isPartialResult()) {
+                integrityContributors.succeedContributor(fileInfoEvent.getContributorID());
             } else {
-                integrityContributors.finishContributor(checksumEvent.getContributorID());
+                integrityContributors.finishContributor(fileInfoEvent.getContributorID());
             }
         } else {
             log.warn("Unexpected component complete event: " + event.toString());
@@ -118,7 +118,7 @@ public class SimpleChecksumEventHandler implements EventHandler {
     /**
      * @return The map of the checksum results for each pillar.
      */
-    public Map<String, ResultingChecksums> getResults() {
-        return checksumResults;
+    public Map<String, ResultingFileInfos> getResults() {
+        return fileInfoResults;
     }
 }

@@ -34,11 +34,13 @@ import static org.mockito.Mockito.times;
 
 import java.util.Arrays;
 
-import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
-import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
+import org.bitrepository.access.getfileinfos.conversation.FileInfosCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.FileInfosData;
+import org.bitrepository.bitrepositoryelements.FileInfosDataItem;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositoryelements.ResultingChecksums;
+import org.bitrepository.bitrepositoryelements.ResultingFileInfos;
+import org.bitrepository.bitrepositoryelements.FileInfosData.FileInfosDataItems;
 import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.client.eventhandler.ContributorFailedEvent;
@@ -127,13 +129,13 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
-                ResultingChecksums res = createResultingChecksums((String) invocation.getArguments()[3], "checksum");
-                eventHandler.handleEvent(new ChecksumsCompletePillarEvent(PILLAR_1, TEST_COLLECTION, res, (ChecksumSpecTYPE) invocation.getArguments()[2], false));
-                eventHandler.handleEvent(new ChecksumsCompletePillarEvent(PILLAR_2, TEST_COLLECTION, res, (ChecksumSpecTYPE) invocation.getArguments()[2], false));
+                ResultingFileInfos res = createResultingFileInfos((String) invocation.getArguments()[3], "checksum");
+                eventHandler.handleEvent(new FileInfosCompletePillarEvent(PILLAR_1, TEST_COLLECTION, res, (ChecksumSpecTYPE) invocation.getArguments()[2], false));
+                eventHandler.handleEvent(new FileInfosCompletePillarEvent(PILLAR_2, TEST_COLLECTION, res, (ChecksumSpecTYPE) invocation.getArguments()[2], false));
                 eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
                 return null;
             }
-        }).when(collector).getChecksums(anyString(), any(), any(), anyString(), anyString(), any(), any(EventHandler.class));
+        }).when(collector).getFileInfos(anyString(), any(), any(), anyString(), anyString(), any(), any(EventHandler.class));
         
         addStep("Run workflow for checking salted checksum.", "Should send alarm about failure");
 
@@ -144,7 +146,7 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         
         verifyZeroInteractions(alerter);
         
-        verify(collector).getChecksums(eq(TEST_COLLECTION), any(), any(), anyString(), anyString(), any(), any(EventHandler.class));
+        verify(collector).getFileInfos(eq(TEST_COLLECTION), any(), any(), anyString(), anyString(), any(), any(EventHandler.class));
         verifyNoMoreInteractions(collector);
         
         verify(model).getNumberOfFilesInCollection(eq(TEST_COLLECTION));
@@ -165,9 +167,9 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
-                ResultingChecksums res = createResultingChecksums((String) invocation.getArguments()[3], "checksum");
-                ContributorEvent e1 = new ChecksumsCompletePillarEvent(PILLAR_1, TEST_COLLECTION, res, (ChecksumSpecTYPE) invocation.getArguments()[2], false);
-                ContributorEvent e2 = new ChecksumsCompletePillarEvent(PILLAR_2, TEST_COLLECTION, res, (ChecksumSpecTYPE) invocation.getArguments()[2], false);
+                ResultingFileInfos res = createResultingFileInfos((String) invocation.getArguments()[3], "checksum");
+                ContributorEvent e1 = new FileInfosCompletePillarEvent(PILLAR_1, TEST_COLLECTION, res, (ChecksumSpecTYPE) invocation.getArguments()[2], false);
+                ContributorEvent e2 = new FileInfosCompletePillarEvent(PILLAR_2, TEST_COLLECTION, res, (ChecksumSpecTYPE) invocation.getArguments()[2], false);
                 ContributorEvent e3 = new ContributorFailedEvent(PILLAR_3, TEST_COLLECTION, ResponseCode.FAILURE);
                 eventHandler.handleEvent(e1);
                 eventHandler.handleEvent(e2);
@@ -175,7 +177,7 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
                 eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "COMPONENT FAILED", Arrays.asList(e1, e2, e3)));
                 return null;
             }
-        }).when(collector).getChecksums(anyString(), any(), any(), anyString(), anyString(), any(), any(EventHandler.class));
+        }).when(collector).getFileInfos(anyString(), any(), any(), anyString(), anyString(), any(), any(EventHandler.class));
         
         addStep("Run workflow for checking salted checksum.", "Should send alarm about failure");
 
@@ -187,7 +189,7 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         verify(alerter).integrityFailed(anyString(), eq(TEST_COLLECTION));
         verifyNoMoreInteractions(alerter);
         
-        verify(collector).getChecksums(eq(TEST_COLLECTION), any(), any(), anyString(), anyString(), any(), any(EventHandler.class));
+        verify(collector).getFileInfos(eq(TEST_COLLECTION), any(), any(), anyString(), anyString(), any(), any(EventHandler.class));
         verifyNoMoreInteractions(collector);
         
         verify(model).getNumberOfFilesInCollection(eq(TEST_COLLECTION));
@@ -208,10 +210,10 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
-                ResultingChecksums res1 = createResultingChecksums((String) invocation.getArguments()[3], "checksum");
-                ResultingChecksums res2 = createResultingChecksums((String) invocation.getArguments()[3], "muskcehc");
-                ContributorEvent e1 = new ChecksumsCompletePillarEvent(PILLAR_1, TEST_COLLECTION, res1, (ChecksumSpecTYPE) invocation.getArguments()[2], false);
-                ContributorEvent e2 = new ChecksumsCompletePillarEvent(PILLAR_2, TEST_COLLECTION, res2, (ChecksumSpecTYPE) invocation.getArguments()[2], false);
+                ResultingFileInfos res1 = createResultingFileInfos((String) invocation.getArguments()[3], "checksum");
+                ResultingFileInfos res2 = createResultingFileInfos((String) invocation.getArguments()[3], "muskcehc");
+                ContributorEvent e1 = new FileInfosCompletePillarEvent(PILLAR_1, TEST_COLLECTION, res1, (ChecksumSpecTYPE) invocation.getArguments()[2], false);
+                ContributorEvent e2 = new FileInfosCompletePillarEvent(PILLAR_2, TEST_COLLECTION, res2, (ChecksumSpecTYPE) invocation.getArguments()[2], false);
                 ContributorEvent e3 = new ContributorFailedEvent(PILLAR_3, TEST_COLLECTION, ResponseCode.FAILURE);
                 eventHandler.handleEvent(e1);
                 eventHandler.handleEvent(e2);
@@ -219,7 +221,7 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
                 eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "COMPONENT FAILED", Arrays.asList(e1, e2, e3)));
                 return null;
             }
-        }).when(collector).getChecksums(anyString(), any(), any(), anyString(), anyString(), any(), any(EventHandler.class));
+        }).when(collector).getFileInfos(anyString(), any(), any(), anyString(), anyString(), any(), any(EventHandler.class));
         
         addStep("Run workflow for checking salted checksum.", "Should send alarm about failure");
 
@@ -231,7 +233,7 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         verify(alerter, times(2)).integrityFailed(anyString(), eq(TEST_COLLECTION));
         verifyNoMoreInteractions(alerter);
         
-        verify(collector).getChecksums(eq(TEST_COLLECTION), any(), any(), anyString(), anyString(), any(), any(EventHandler.class));
+        verify(collector).getFileInfos(eq(TEST_COLLECTION), any(), any(), anyString(), anyString(), any(), any(EventHandler.class));
         verifyNoMoreInteractions(collector);
         
         verify(model).getNumberOfFilesInCollection(eq(TEST_COLLECTION));
@@ -252,14 +254,14 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
-                ResultingChecksums res1 = createResultingChecksums((String) invocation.getArguments()[3], "checksum");
-                ResultingChecksums res2 = createResultingChecksums((String) invocation.getArguments()[3], "muskcehc");
-                eventHandler.handleEvent(new ChecksumsCompletePillarEvent(PILLAR_1, TEST_COLLECTION, res1, (ChecksumSpecTYPE) invocation.getArguments()[2], false));
-                eventHandler.handleEvent(new ChecksumsCompletePillarEvent(PILLAR_2, TEST_COLLECTION, res2, (ChecksumSpecTYPE) invocation.getArguments()[2], false));
+                ResultingFileInfos res1 = createResultingFileInfos((String) invocation.getArguments()[3], "checksum");
+                ResultingFileInfos res2 = createResultingFileInfos((String) invocation.getArguments()[3], "muskcehc");
+                eventHandler.handleEvent(new FileInfosCompletePillarEvent(PILLAR_1, TEST_COLLECTION, res1, (ChecksumSpecTYPE) invocation.getArguments()[2], false));
+                eventHandler.handleEvent(new FileInfosCompletePillarEvent(PILLAR_2, TEST_COLLECTION, res2, (ChecksumSpecTYPE) invocation.getArguments()[2], false));
                 eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
                 return null;
             }
-        }).when(collector).getChecksums(anyString(), any(), any(), anyString(), anyString(), any(), any(EventHandler.class));
+        }).when(collector).getFileInfos(anyString(), any(), any(), anyString(), anyString(), any(), any(EventHandler.class));
         
         addStep("Run workflow for checking salted checksum.", "Should send alarm about failure");
 
@@ -268,7 +270,7 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         workflow.initialise(context, TEST_COLLECTION);
         workflow.start();
         
-        verify(collector).getChecksums(eq(TEST_COLLECTION), any(), any(), anyString(), anyString(), any(), any(EventHandler.class));
+        verify(collector).getFileInfos(eq(TEST_COLLECTION), any(), any(), anyString(), anyString(), any(), any(EventHandler.class));
         verifyNoMoreInteractions(collector);
         
         verify(model).getNumberOfFilesInCollection(eq(TEST_COLLECTION));
@@ -296,7 +298,7 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
                 eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "", null));
                 return null;
             }
-        }).when(collector).getChecksums(anyString(), any(), any(), anyString(), anyString(), any(), any(EventHandler.class));
+        }).when(collector).getFileInfos(anyString(), any(), any(), anyString(), anyString(), any(), any(EventHandler.class));
         
         addStep("Run workflow for checking salted checksum.", "Should send alarm about failure");
 
@@ -305,7 +307,7 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         workflow.initialise(context, TEST_COLLECTION);
         workflow.start();
         
-        verify(collector).getChecksums(eq(TEST_COLLECTION), any(), any(), anyString(), anyString(), any(), any(EventHandler.class));
+        verify(collector).getFileInfos(eq(TEST_COLLECTION), any(), any(), anyString(), anyString(), any(), any(EventHandler.class));
         verifyNoMoreInteractions(collector);
         
         verify(model).getNumberOfFilesInCollection(eq(TEST_COLLECTION));
@@ -320,13 +322,21 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         verifyNoMoreInteractions(alerter);
     }
     
-    private ResultingChecksums createResultingChecksums(String fileId, String checksum) {
-        ChecksumDataForChecksumSpecTYPE csData = new ChecksumDataForChecksumSpecTYPE();
-        csData.setCalculationTimestamp(CalendarUtils.getNow());
-        csData.setFileID(fileId);
-        csData.setChecksumValue(Base16Utils.encodeBase16(checksum));
-        ResultingChecksums res = new ResultingChecksums();
-        res.getChecksumDataItems().add(csData);
+    private ResultingFileInfos createResultingFileInfos(String fileId, String checksum) {
+        ResultingFileInfos res = new ResultingFileInfos();
+        FileInfosData fid = new FileInfosData();
+        FileInfosDataItems fids = new FileInfosDataItems();
+        
+        FileInfosDataItem item = new FileInfosDataItem();
+        item.setLastModificationTime(CalendarUtils.getNow());
+        item.setCalculationTimestamp(CalendarUtils.getNow());
+        item.setChecksumValue(Base16Utils.encodeBase16(checksum));
+        item.setFileID(fileId);
+                
+        fids.getFileInfosDataItem().add(item);
+        fid.setFileInfosDataItems(fids);
+        res.setFileInfosData(fid);
         return res;
     }
+    
 }

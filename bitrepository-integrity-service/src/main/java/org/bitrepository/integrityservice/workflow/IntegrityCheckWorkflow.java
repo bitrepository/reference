@@ -35,8 +35,6 @@ import org.bitrepository.integrityservice.workflow.step.HandleDeletedFilesStep;
 import org.bitrepository.integrityservice.workflow.step.HandleMissingChecksumsStep;
 import org.bitrepository.integrityservice.workflow.step.HandleMissingFilesStep;
 import org.bitrepository.integrityservice.workflow.step.HandleObsoleteChecksumsStep;
-import org.bitrepository.integrityservice.workflow.step.UpdateChecksumsStep;
-import org.bitrepository.integrityservice.workflow.step.UpdateFileIDsStep;
 import org.bitrepository.integrityservice.workflow.step.UpdateFileInfosStep;
 import org.bitrepository.service.workflow.JobID;
 import org.bitrepository.service.workflow.Workflow;
@@ -72,10 +70,6 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
         jobID = new JobID(getClass().getSimpleName(), collectionID);
     }
     
-    protected abstract UpdateFileIDsStep getUpdateFileIDsStep();
-    
-    protected abstract UpdateChecksumsStep getUpdateChecksumsStep();
-    
     protected abstract UpdateFileInfosStep getUpdateFileInfosStep();
     
     protected abstract boolean cleanDeletedFiles();
@@ -101,14 +95,6 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
                 = context.getSettings().getReferenceSettings().getIntegrityServiceSettings().getComponentRetries();
             integrityContributors = new IntegrityContributors(SettingsUtils.getPillarIDsForCollection(collectionID), 
                     maxRetries == null ? DEFAULT_MAX_RETRIES : maxRetries);
-            
-            /*UpdateFileIDsStep updateFileIDsStep = getUpdateFileIDsStep();
-            performStep(updateFileIDsStep);
-            
-            integrityContributors.reloadActiveContributors();
-            
-            UpdateChecksumsStep updateChecksumStep = getUpdateChecksumsStep();
-            performStep(updateChecksumStep);*/
 
             UpdateFileInfosStep updateFileInfosStep = getUpdateFileInfosStep();
             performStep(updateFileInfosStep);

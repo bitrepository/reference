@@ -24,7 +24,7 @@ package org.bitrepository.pillar.integration;
 import java.util.Collection;
 
 import org.bitrepository.access.AccessComponentFactory;
-import org.bitrepository.access.getfileids.GetFileIDsClient;
+import org.bitrepository.access.getfileinfos.GetFileInfosClient;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.deletefile.DeleteFileClient;
@@ -40,7 +40,7 @@ public class CollectionTestHelper {
     private final HttpServerConfiguration httpServerConfiguration;
     private final SecurityManager securityManager;
 
-    private final GetFileIDsClient getFileIDsClient;
+    private final GetFileInfosClient getFileInfosClient;
     private final DeleteFileClient deleteFileClient;
     protected PutFileClient putClient;
 
@@ -54,7 +54,7 @@ public class CollectionTestHelper {
         putClient = ModifyComponentFactory.getInstance().retrievePutClient(
                 settings, new DummySecurityManager(), settings.getComponentID()
         );
-        getFileIDsClient = AccessComponentFactory.getInstance().createGetFileIDsClient(
+        getFileInfosClient = AccessComponentFactory.getInstance().createGetFileInfosClient(
                 settings, securityManager, settings.getComponentID()
         );
         deleteFileClient = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(

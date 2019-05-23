@@ -38,16 +38,13 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.bitrepository.access.ContributorQuery;
-import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
 import org.bitrepository.access.getfileinfos.conversation.FileInfosCompletePillarEvent;
-import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileInfosData;
 import org.bitrepository.bitrepositoryelements.FileInfosData.FileInfosDataItems;
 import org.bitrepository.bitrepositoryelements.FileInfosDataItem;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositoryelements.ResultingChecksums;
 import org.bitrepository.bitrepositoryelements.ResultingFileInfos;
 import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.ContributorFailedEvent;
@@ -406,18 +403,6 @@ public class UpdateFileInfosStepTest extends WorkflowstepTest {
             item.setChecksumValue(Base16Utils.encodeBase16(checksum));
             item.setFileID(fileID);
             res.add(item);
-        }
-        return res;
-    }
-    
-    private List<ChecksumDataForChecksumSpecTYPE> createChecksumData(String checksum, String ... fileids) {
-        List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
-        for(String fileID : fileids) {
-            ChecksumDataForChecksumSpecTYPE csData = new ChecksumDataForChecksumSpecTYPE();
-            csData.setCalculationTimestamp(CalendarUtils.getNow());
-            csData.setChecksumValue(Base16Utils.encodeBase16(checksum));
-            csData.setFileID(fileID);
-            res.add(csData);
         }
         return res;
     }

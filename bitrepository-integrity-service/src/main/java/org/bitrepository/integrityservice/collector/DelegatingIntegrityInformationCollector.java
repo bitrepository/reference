@@ -28,9 +28,7 @@ import java.net.URL;
 import java.util.Collection;
 
 import org.bitrepository.access.ContributorQuery;
-import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getfile.GetFileClient;
-import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.access.getfileinfos.GetFileInfosClient;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -47,10 +45,6 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
 
-    /** The client for retrieving file IDs. */
-    private final GetFileIDsClient getFileIDsClient;
-    /** The client for retrieving checksums. */
-    private final GetChecksumsClient getChecksumsClient;
     /** The client for retrieving fileinfos. */
     private final GetFileInfosClient getFileInfosClient;
     /** The client for performing GetFile operations.*/
@@ -64,38 +58,12 @@ public class DelegatingIntegrityInformationCollector implements IntegrityInforma
      * @param getChecksumsClient The client for retrieving checksums.
      */
     public DelegatingIntegrityInformationCollector(
-            GetFileIDsClient getFileIDsClient,
-            GetChecksumsClient getChecksumsClient,
             GetFileInfosClient getFileInfosClient,
             GetFileClient getFileClient,
             PutFileClient putFileClient) {
-        this.getFileIDsClient = getFileIDsClient;
-        this.getChecksumsClient = getChecksumsClient;
         this.getFileInfosClient = getFileInfosClient;
         this.getFileClient = getFileClient;
         this.putFileClient = putFileClient;
-    }
-
-    @Override
-    public synchronized void getFileIDs(String collectionID, Collection<String> pillarIDs, String auditTrailInformation, 
-            ContributorQuery[] queries, EventHandler eventHandler) {
-        try {
-            getFileIDsClient.getFileIDs(collectionID, queries, null, null, eventHandler);
-        } catch (Exception e) {
-            // Barrier
-            log.error("Unexpected failure!", e);
-        }
-    }
-
-    @Override
-    public synchronized void getChecksums(String collectionID, Collection<String> pillarIDs, ChecksumSpecTYPE checksumType, 
-            String fileID, String auditTrailInformation, ContributorQuery[] queries, EventHandler eventHandler) {
-        try {
-            getChecksumsClient.getChecksums(collectionID, queries, fileID, checksumType, null, eventHandler,
-                    auditTrailInformation);
-        } catch (Exception e) {
-            log.error("Unexpected failure!", e);
-        }
     }
     
     @Override

@@ -23,10 +23,8 @@ package org.bitrepository.pillar.integration;/*
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getaudittrails.AuditTrailClientTestWrapper;
 import org.bitrepository.access.getaudittrails.BlockingAuditTrailClient;
-import org.bitrepository.access.getchecksums.BlockingGetChecksumsClient;
-import org.bitrepository.access.getchecksums.GetChecksumsClientTestWrapper;
-import org.bitrepository.access.getfileids.BlockingGetFileIDsClient;
-import org.bitrepository.access.getfileids.GetFileIDsClientTestWrapper;
+import org.bitrepository.access.getfileinfos.BlockingGetFileInfosClient;
+import org.bitrepository.access.getfileinfos.GetFileInfosClientTestWrapper;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.deletefile.BlockingDeleteFileClient;
@@ -48,8 +46,7 @@ public class ClientProvider {
     private BlockingPutFileClient putFileClient;
     private BlockingReplaceFileClient replaceFileClient;
     private BlockingDeleteFileClient getDeleteFileClient;
-    private BlockingGetChecksumsClient getChecksumsClient;
-    private BlockingGetFileIDsClient getFileIDsClient;
+    private BlockingGetFileInfosClient getFileInfosClient;
     private BlockingAuditTrailClient getAuditTrailsClient;
 
     /**
@@ -106,30 +103,18 @@ public class ClientProvider {
         return getDeleteFileClient;
     }
 
-    public synchronized BlockingGetChecksumsClient getGetChecksumsClient() {
-        if (getChecksumsClient == null) {
-            getChecksumsClient = new BlockingGetChecksumsClient(
-                new GetChecksumsClientTestWrapper(
-                    AccessComponentFactory.getInstance().createGetChecksumsClient(
-                        settings, securityManager, settings.getComponentID()
-                    ), eventManager
-                )
-            );
-        }
-        return getChecksumsClient;
-    }
 
-    public synchronized BlockingGetFileIDsClient getGetFileIDsClient() {
-        if (getFileIDsClient == null) {
-            getFileIDsClient = new BlockingGetFileIDsClient(
-                new GetFileIDsClientTestWrapper(
-                    AccessComponentFactory.getInstance().createGetFileIDsClient(
+    public synchronized BlockingGetFileInfosClient getGetFileInfosClient() {
+        if (getFileInfosClient == null) {
+            getFileInfosClient = new BlockingGetFileInfosClient(
+                new GetFileInfosClientTestWrapper(
+                    AccessComponentFactory.getInstance().createGetFileInfosClient(
                         settings, securityManager, settings.getComponentID()
                     ), eventManager
                 )
             );
         }
-        return getFileIDsClient;
+        return getFileInfosClient;
     }
 
 

@@ -26,12 +26,8 @@ package org.bitrepository.access;
 
 import org.bitrepository.access.getaudittrails.AuditTrailClient;
 import org.bitrepository.access.getaudittrails.ConversationBasedAuditTrailClient;
-import org.bitrepository.access.getchecksums.ConversationBasedGetChecksumsClient;
-import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getfile.ConversationBasedGetFileClient;
 import org.bitrepository.access.getfile.GetFileClient;
-import org.bitrepository.access.getfileids.ConversationBasedGetFileIDsClient;
-import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.access.getfileinfos.ConversationBasedGetFileInfosClient;
 import org.bitrepository.access.getfileinfos.GetFileInfosClient;
 import org.bitrepository.access.getstatus.ConversationBasedGetStatusClient;
@@ -82,20 +78,6 @@ public final class AccessComponentFactory {
                 ConversationMediatorManager.getConversationMediator(settings, securityManager), 
                 settings, clientID);
     }
-    
-    /**
-     * Method for instantiating a GetChecksumsClient as defined in the access configurations.
-     * @param settings The settings for the GetChecksumsClient.
-     * @param securityManager The SecurityManager for the client
-     * @param clientID The ID of the client
-     * @return The GetChecksumsClient
-     */
-    public GetChecksumsClient createGetChecksumsClient(Settings settings, SecurityManager securityManager, String clientID) {
-        return new ConversationBasedGetChecksumsClient(
-                ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), 
-                ConversationMediatorManager.getConversationMediator(settings, securityManager),
-                settings, clientID);
-    }
 
     /**
      * Method for instantiating a GetFileInfosClient as defined in the access configurations.
@@ -110,20 +92,6 @@ public final class AccessComponentFactory {
                 ConversationMediatorManager.getConversationMediator(settings, securityManager),
                 settings, clientID);
     }   
-    
-    /**
-     * Method for getting a GetFileIDsClient as defined in the access configuration.<p>
-     * @param settings The settings for the GetFileIDsClient.
-     * @param securityManager The SecurityManager for the client
-     * @param clientID The ID of the client
-     * @return A GetFileIDsClient.
-     */
-    public GetFileIDsClient createGetFileIDsClient(Settings settings, SecurityManager securityManager, String clientID) {
-        return new ConversationBasedGetFileIDsClient(
-                ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager), 
-                ConversationMediatorManager.getConversationMediator(settings, securityManager),
-                settings, clientID);
-    }
     
     /**
      * Method for getting a GetStatusClient as defined in the access configuration.<p>
