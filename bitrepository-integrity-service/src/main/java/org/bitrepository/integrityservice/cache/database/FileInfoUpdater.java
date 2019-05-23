@@ -72,17 +72,17 @@ public class FileInfoUpdater {
             + "	AND collectionID = ?"
             + " AND pillarID = ?";	
 
-    private final String insertLatestChecksumTime = "INSERT INTO collection_progress "
-            + "(collectionID, pillarID, latest_checksum_timestamp)"
-            + " ( SELECT collectionID, ?, ? FROM collections"
+    private final String insertLatestFileInfoTime = "INSERT INTO collection_progress "
+            + "(collectionID, pillarID, latest_file_timestamp, latest_checksum_timestamp)"
+            + " ( SELECT collectionID, ?, ?, ? FROM collections"
                 + " WHERE collectionID = ?"
                 + " AND NOT EXISTS ("
                     + " SELECT * FROM collection_progress"
                     + " WHERE collectionID = ?"
                     + " AND pillarID = ?))";
 
-    private final String updateLatestChecksumTime = "UPDATE collection_progress"
-            + " SET latest_checksum_timestamp = ? "
+    private final String updateLatestFileInfoTime = "UPDATE collection_progress"
+            + " SET latest_file_timestamp = ?, latest_checksum_timestamp = ? "
             + " WHERE collectionID = ?"
             + " AND pillarID = ?";
 
@@ -106,8 +106,8 @@ public class FileInfoUpdater {
         conn.setAutoCommit(false);
         insertFileInfoPS = conn.prepareStatement(insertFileInfoSql);
         updateChecksumPS = conn.prepareStatement(updateFileInfoSql);
-        insertLatestChecksumTimePS = conn.prepareStatement(insertLatestChecksumTime);
-        updateLatestChecksumTimePS = conn.prepareStatement(updateLatestChecksumTime);
+        insertLatestChecksumTimePS = conn.prepareStatement(insertLatestFileInfoTime);
+        updateLatestChecksumTimePS = conn.prepareStatement(updateLatestFileInfoTime);
     }
 
     /**
@@ -120,14 +120,17 @@ public class FileInfoUpdater {
             init();
             log.debug("Initialized fileInfoUpdater");
             try {
-                Date maxDate = new Date(0);
+                Date maxFileDate = new Date(0);
+                Date maxChecksumDate = new Date(0);
                 for(FileInfosDataItem infoData : data) {
                     updateFileInfo(infoData);
                     addFileInfo(infoData);
-                    maxDate = TimeUtils.getMaxDate(maxDate, 
+                    maxChecksumDate = TimeUtils.getMaxDate(maxFileDate, 
+                            CalendarUtils.convertFromXMLGregorianCalendar(infoData.getLastModificationTime()));
+                    maxChecksumDate = TimeUtils.getMaxDate(maxChecksumDate, 
                             CalendarUtils.convertFromXMLGregorianCalendar(infoData.getCalculationTimestamp()));                	
                 }
-                updateMaxTime(maxDate);
+                updateMaxTimes(maxFileDate, maxChecksumDate);
                 log.debug("Done building file update batch");
                 execute();
                 log.debug("Done executing file update batch");
@@ -174,16 +177,18 @@ public class FileInfoUpdater {
         updateChecksumPS.addBatch();
     }
 
-    private void updateMaxTime(Date maxDate) throws SQLException {
-        updateLatestChecksumTimePS.setLong(1, maxDate.getTime());
-        updateLatestChecksumTimePS.setString(2, collectionID);
-        updateLatestChecksumTimePS.setString(3, pillar);
+    private void updateMaxTimes(Date maxFileDate, Date maxChecksumDate) throws SQLException {
+        updateLatestChecksumTimePS.setLong(1, maxFileDate.getTime());
+        updateLatestChecksumTimePS.setLong(2, maxChecksumDate.getTime());
+        updateLatestChecksumTimePS.setString(3, collectionID);
+        updateLatestChecksumTimePS.setString(4, pillar);
 
         insertLatestChecksumTimePS.setString(1, pillar);
-        insertLatestChecksumTimePS.setLong(2, maxDate.getTime());
-        insertLatestChecksumTimePS.setString(3, collectionID);
+        insertLatestChecksumTimePS.setLong(2, maxFileDate.getTime());
+        insertLatestChecksumTimePS.setLong(3, maxChecksumDate.getTime());
         insertLatestChecksumTimePS.setString(4, collectionID);
-        insertLatestChecksumTimePS.setString(5, pillar);
+        insertLatestChecksumTimePS.setString(5, collectionID);
+        insertLatestChecksumTimePS.setString(6, pillar);
     }
 
     private void execute() throws SQLException {
