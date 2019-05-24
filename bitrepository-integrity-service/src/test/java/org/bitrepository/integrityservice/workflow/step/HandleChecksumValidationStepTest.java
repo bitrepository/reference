@@ -33,7 +33,11 @@ import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
+import org.bitrepository.bitrepositoryelements.FileInfosData.FileInfosDataItems;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
+import org.bitrepository.bitrepositoryelements.FileInfosData;
+import org.bitrepository.bitrepositoryelements.FileInfosDataItem;
+import org.bitrepository.bitrepositoryelements.ResultingFileInfos;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.SettingsUtils;
@@ -99,10 +103,10 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter, cs);
         
         addStep("Add data to the cache", "");
-        List<ChecksumDataForChecksumSpecTYPE> csData = createChecksumData("1234cccc4321", FILE_1);
-        insertChecksumDataForModel(cache, csData, TEST_PILLAR_1, TEST_COLLECTION);
-        insertChecksumDataForModel(cache, csData, TEST_PILLAR_2, TEST_COLLECTION);
-        insertChecksumDataForModel(cache, csData, TEST_PILLAR_3, TEST_COLLECTION);
+        List<FileInfosDataItem> fiData = createFileInfoData("1234cccc4321", FILE_1);
+        insertFileInfosDataForModel(cache, fiData, TEST_PILLAR_1, TEST_COLLECTION);
+        insertFileInfosDataForModel(cache, fiData, TEST_PILLAR_2, TEST_COLLECTION);
+        insertFileInfosDataForModel(cache, fiData, TEST_PILLAR_3, TEST_COLLECTION);
         
         addStep("Perform the step", "");
         step.performStep();
@@ -127,9 +131,9 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter, cs);
 
         addStep("Update the cache with identitical data for both pillars.", "");
-        List<ChecksumDataForChecksumSpecTYPE> csData = createChecksumData("1234cccc4321", FILE_1);
-        insertChecksumDataForModel(cache, csData, TEST_PILLAR_1, TEST_COLLECTION);
-        insertChecksumDataForModel(cache, csData, TEST_PILLAR_2, TEST_COLLECTION);
+        List<FileInfosDataItem> fiData = createFileInfoData("1234cccc4321", FILE_1);
+        insertFileInfosDataForModel(cache, fiData, TEST_PILLAR_1, TEST_COLLECTION);
+        insertFileInfosDataForModel(cache, fiData, TEST_PILLAR_2, TEST_COLLECTION);
         
         addStep("Perform the step", "");
         step.performStep();
@@ -147,10 +151,10 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter, cs);
         
         addStep("Add data to the cache", "");
-        List<ChecksumDataForChecksumSpecTYPE> csData1 = createChecksumData("1234cccc4321", FILE_1);
-        insertChecksumDataForModel(cache, csData1, TEST_PILLAR_1, TEST_COLLECTION);
-        List<ChecksumDataForChecksumSpecTYPE> csData2 = createChecksumData("1c2c3c44c3c2c1", FILE_1);
-        insertChecksumDataForModel(cache, csData2, TEST_PILLAR_2, TEST_COLLECTION);
+        List<FileInfosDataItem> fiData1 = createFileInfoData("1234cccc4321", FILE_1);
+        insertFileInfosDataForModel(cache, fiData1, TEST_PILLAR_1, TEST_COLLECTION);
+        List<FileInfosDataItem> fiData2 = createFileInfoData("1c2c3c44c3c2c1", FILE_1);
+        insertFileInfosDataForModel(cache, fiData2, TEST_PILLAR_2, TEST_COLLECTION);
         
         addStep("Perform the step", "");
         step.performStep();
@@ -174,12 +178,12 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter, cs);
         
         addStep("Add data to the cache", "");
-        List<ChecksumDataForChecksumSpecTYPE> csData1 = createChecksumData("1234cccc4321", FILE_1);
-        insertChecksumDataForModel(cache, csData1, TEST_PILLAR_1, TEST_COLLECTION);
-        List<ChecksumDataForChecksumSpecTYPE> csData2 = createChecksumData("cccc12344321cccc", FILE_1);
-        insertChecksumDataForModel(cache, csData2, TEST_PILLAR_2, TEST_COLLECTION);
-        List<ChecksumDataForChecksumSpecTYPE> csData3 = createChecksumData("1c2c3c44c3c2c1", FILE_1);
-        insertChecksumDataForModel(cache, csData3, TEST_PILLAR_3, TEST_COLLECTION);
+        List<FileInfosDataItem> fiData1 = createFileInfoData("1234cccc4321", FILE_1);
+        insertFileInfosDataForModel(cache, fiData1, TEST_PILLAR_1, TEST_COLLECTION);
+        List<FileInfosDataItem> fiData2 = createFileInfoData("cccc12344321cccc", FILE_1);
+        insertFileInfosDataForModel(cache, fiData2, TEST_PILLAR_2, TEST_COLLECTION);
+        List<FileInfosDataItem> fiData3 = createFileInfoData("1c2c3c44c3c2c1", FILE_1);
+        insertFileInfosDataForModel(cache, fiData3, TEST_PILLAR_3, TEST_COLLECTION);
         
         addStep("Perform the step", "");
         step.performStep();
@@ -202,12 +206,12 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter, cs);
         
         addStep("Add data to the cache", "");
-        List<ChecksumDataForChecksumSpecTYPE> csData1 = createChecksumData("1234cccc4321", FILE_1);
-        insertChecksumDataForModel(cache, csData1, TEST_PILLAR_1, TEST_COLLECTION);
-        List<ChecksumDataForChecksumSpecTYPE> csData2 = createChecksumData("1234cccc4321", FILE_1);
-        insertChecksumDataForModel(cache, csData2, TEST_PILLAR_2, TEST_COLLECTION);
-        List<ChecksumDataForChecksumSpecTYPE> csData3 = createChecksumData("1c2c3c44c3c2c1", FILE_1);
-        insertChecksumDataForModel(cache, csData3, TEST_PILLAR_3, TEST_COLLECTION);
+        List<FileInfosDataItem> fiData1 = createFileInfoData("1234cccc4321", FILE_1);
+        insertFileInfosDataForModel(cache, fiData1, TEST_PILLAR_1, TEST_COLLECTION);
+        List<FileInfosDataItem> fiData2 = createFileInfoData("1234cccc4321", FILE_1);
+        insertFileInfosDataForModel(cache, fiData2, TEST_PILLAR_2, TEST_COLLECTION);
+        List<FileInfosDataItem> fiData3 = createFileInfoData("1c2c3c44c3c2c1", FILE_1);
+        insertFileInfosDataForModel(cache, fiData3, TEST_PILLAR_3, TEST_COLLECTION);
         
         addStep("Perform the checksum validation step", "");
         step.performStep();
@@ -231,17 +235,17 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter, cs);
         
         addStep("Test step on data without checksum error", "No audit trails.");
-        List<ChecksumDataForChecksumSpecTYPE> csData = createChecksumData("1234cccc4321", FILE_1);
-        insertChecksumDataForModel(cache, csData, TEST_PILLAR_1, TEST_COLLECTION);
-        insertChecksumDataForModel(cache, csData, TEST_PILLAR_2, TEST_COLLECTION);
-        insertChecksumDataForModel(cache, csData, TEST_PILLAR_3, TEST_COLLECTION);
+        List<FileInfosDataItem> fiData = createFileInfoData("1234cccc4321", FILE_1);
+        insertFileInfosDataForModel(cache, fiData, TEST_PILLAR_1, TEST_COLLECTION);
+        insertFileInfosDataForModel(cache, fiData, TEST_PILLAR_2, TEST_COLLECTION);
+        insertFileInfosDataForModel(cache, fiData, TEST_PILLAR_3, TEST_COLLECTION);
         step.performStep();
         Assert.assertNull(auditManager.latestAuditInfo);
         
         addStep("Test step on data where only two pillars have the file and they disagree about the checksum.",
                 "An audit trail with fileID and collectionID, but no pillar pointed out as cause");
-        insertChecksumDataForModel(cache, createChecksumData("1234cccc4321", FILE_2), TEST_PILLAR_1, TEST_COLLECTION);
-        insertChecksumDataForModel(cache, createChecksumData("cc12344321cc", FILE_2), TEST_PILLAR_2, TEST_COLLECTION);
+        insertFileInfosDataForModel(cache, createFileInfoData("1234cccc4321", FILE_2), TEST_PILLAR_1, TEST_COLLECTION);
+        insertFileInfosDataForModel(cache, createFileInfoData("cc12344321cc", FILE_2), TEST_PILLAR_2, TEST_COLLECTION);
         
         List<FileInfo> fis = (List<FileInfo>) cache.getFileInfos(FILE_1, TEST_COLLECTION);
         System.out.println("number of files in the collection" + cache.getNumberOfFilesInCollection(TEST_COLLECTION));
@@ -261,9 +265,9 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         
         addStep("Test step on data where two pillars have one checksum and the last pillar has a different one",
                 "An audit trail with fileID and collectionID, and the lone pillar is pointed out as possible cause");
-        insertChecksumDataForModel(cache, createChecksumData("1234cccc4321", FILE_2), TEST_PILLAR_1, TEST_COLLECTION);
-        insertChecksumDataForModel(cache, createChecksumData("cc12344321cc", FILE_2), TEST_PILLAR_2, TEST_COLLECTION);
-        insertChecksumDataForModel(cache, createChecksumData("cc12344321cc", FILE_2), TEST_PILLAR_3, TEST_COLLECTION);
+        insertFileInfosDataForModel(cache, createFileInfoData("1234cccc4321", FILE_2), TEST_PILLAR_1, TEST_COLLECTION);
+        insertFileInfosDataForModel(cache, createFileInfoData("cc12344321cc", FILE_2), TEST_PILLAR_2, TEST_COLLECTION);
+        insertFileInfosDataForModel(cache, createFileInfoData("cc12344321cc", FILE_2), TEST_PILLAR_3, TEST_COLLECTION);
         step.performStep();
         Assert.assertNotNull(auditManager.latestAuditInfo);
         Assert.assertTrue(auditManager.latestAuditInfo.contains(TEST_PILLAR_1), auditManager.latestAuditInfo);
@@ -273,32 +277,6 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         Assert.assertTrue(auditManager.latestAuditInfo.contains(TEST_COLLECTION), auditManager.latestAuditInfo);
     }
     
-    private FileIDsData createFileIdData(String ... fileids) {
-        FileIDsData res = new FileIDsData();
-        FileIDsDataItems items = new FileIDsDataItems();
-        for(String fileid : fileids) {
-            FileIDsDataItem item = new FileIDsDataItem();
-            item.setFileID(fileid);
-            item.setFileSize(BigInteger.ONE);
-            item.setLastModificationTime(CalendarUtils.getNow());
-            items.getFileIDsDataItem().add(item);
-        }
-        res.setFileIDsDataItems(items);
-        return res;
-    }
-    
-    private List<ChecksumDataForChecksumSpecTYPE> createChecksumData(String checksum, String ... fileids) {
-        List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
-        for(String fileID : fileids) {
-            ChecksumDataForChecksumSpecTYPE csData = new ChecksumDataForChecksumSpecTYPE();
-            csData.setCalculationTimestamp(CalendarUtils.getNow());
-            csData.setChecksumValue(Base16Utils.encodeBase16(checksum));
-            csData.setFileID(fileID);
-            res.add(csData);
-        }
-        return res;
-    }
-
     private IntegrityModel getIntegrityModel() {
         return new IntegrityDatabase(settings);
     }

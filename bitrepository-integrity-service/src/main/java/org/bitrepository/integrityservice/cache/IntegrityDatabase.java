@@ -26,9 +26,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.FileIDsData;
-import org.bitrepository.bitrepositoryelements.FileInfosData;
 import org.bitrepository.bitrepositoryelements.FileInfosDataItem;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
@@ -49,16 +46,6 @@ public class IntegrityDatabase implements IntegrityModel {
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
     }
 
-    @Override
-    public void addFileIDs(FileIDsData data, String pillarID, String collectionID) {
-        store.updateFileIDs(data, pillarID, collectionID);
-    }
-
-    @Override
-    public void addChecksums(List<ChecksumDataForChecksumSpecTYPE> data, String pillarID, String collectionID) {
-        store.updateChecksums(data, pillarID, collectionID);
-    }
-    
     @Override
     public void addFileInfos(List<FileInfosDataItem> data, String pillarID, String collectionID) {
         store.updateFileInfos(data, pillarID, collectionID);

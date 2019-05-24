@@ -24,8 +24,11 @@ package org.bitrepository.integrityservice.cache.database;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Date;
 import java.util.List;
+
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.bitrepository.bitrepositoryelements.FileInfosDataItem;
 import org.bitrepository.common.ArgumentValidator;
@@ -52,9 +55,9 @@ public class FileInfoUpdater {
      * tuple is not already found in the database  
      */
     private final String insertFileInfoSql = "INSERT INTO fileinfo ("
-            + " collectionID, pillarID, fileID, file_timestamp, last_seen_getfileids,"
+            + " collectionID, pillarID, fileID, filesize, file_timestamp, last_seen_getfileids,"
             + " checksum, checksum_timestamp, last_seen_getchecksums)"
-            + " (SELECT collectionID, ?, ?, ?, ?, ?, ?, ? FROM collections"
+            + " (SELECT collectionID, ?, ?, ?, ?, ?, ?, ?, ? FROM collections"
                 + " WHERE collectionID = ?"
                 + " AND NOT EXISTS ("
                     + " SELECT * FROM fileinfo "
@@ -63,7 +66,8 @@ public class FileInfoUpdater {
                     + " AND pillarID = ?))";
 
     private final String updateFileInfoSql = "UPDATE fileinfo "
-            + "	SET checksum = ?,"
+            + "	SET filesize = ?,"
+            + " checksum = ?,"
             + " file_timestamp = ?,"
             + " last_seen_getfileids = ?,"
             + " checksum_timestamp = ?,"
@@ -73,8 +77,8 @@ public class FileInfoUpdater {
             + " AND pillarID = ?";	
 
     private final String insertLatestChecksumTime = "INSERT INTO collection_progress "
-            + "(collectionID, pillarID, latest_checksum_timestamp)"
-            + " ( SELECT collectionID, ?, ? FROM collections"
+            + "(collectionID, pillarID, latest_file_timestamp, latest_checksum_timestamp)"
+            + " ( SELECT collectionID, ?, ?, ? FROM collections"
                 + " WHERE collectionID = ?"
                 + " AND NOT EXISTS ("
                     + " SELECT * FROM collection_progress"
@@ -82,7 +86,7 @@ public class FileInfoUpdater {
                     + " AND pillarID = ?))";
 
     private final String updateLatestChecksumTime = "UPDATE collection_progress"
-            + " SET latest_checksum_timestamp = ? "
+            + " SET latest_file_timestamp = ?, latest_checksum_timestamp = ? "
             + " WHERE collectionID = ?"
             + " AND pillarID = ?";
 
@@ -120,14 +124,15 @@ public class FileInfoUpdater {
             init();
             log.debug("Initialized fileInfoUpdater");
             try {
-                Date maxDate = new Date(0);
+                Date maxFileDate = null;
+                Date maxChecksumDate = null;
                 for(FileInfosDataItem infoData : data) {
                     updateFileInfo(infoData);
                     addFileInfo(infoData);
-                    maxDate = TimeUtils.getMaxDate(maxDate, 
-                            CalendarUtils.convertFromXMLGregorianCalendar(infoData.getCalculationTimestamp()));                	
+                    maxFileDate = getNewestDate(maxFileDate, infoData.getLastModificationTime());
+                    maxChecksumDate = getNewestDate(maxChecksumDate, infoData.getCalculationTimestamp());
                 }
-                updateMaxTime(maxDate);
+                updateMaxTimes(maxFileDate, maxChecksumDate);
                 log.debug("Done building file update batch");
                 execute();
                 log.debug("Done executing file update batch");
@@ -140,52 +145,101 @@ public class FileInfoUpdater {
     } 
 
     private void addFileInfo(FileInfosDataItem item) throws SQLException {
-        long fileTime = CalendarUtils.convertFromXMLGregorianCalendar(item.getLastModificationTime()).getTime();
-        long checksumTime = CalendarUtils.convertFromXMLGregorianCalendar(item.getCalculationTimestamp()).getTime();
+        Long fileTime = CalendarUtils.convertFromXMLGregorianCalendar(item.getLastModificationTime()).getTime();
+        Long checksumTime;
+        if(item.getCalculationTimestamp() == null) {
+            checksumTime= null;
+        } else {
+            checksumTime = CalendarUtils.convertFromXMLGregorianCalendar(item.getCalculationTimestamp()).getTime();
+        }
         
         Date now = new Date();
         insertFileInfoPS.setString(1, pillar);
         insertFileInfoPS.setString(2, item.getFileID());
-        insertFileInfoPS.setLong(3, fileTime);
-        insertFileInfoPS.setLong(4, now.getTime());
-        insertFileInfoPS.setString(5, Base16Utils.decodeBase16(item.getChecksumValue()));
-        insertFileInfoPS.setLong(6, checksumTime);
-        insertFileInfoPS.setLong(7, now.getTime());
-        insertFileInfoPS.setString(8, collectionID);
-        insertFileInfoPS.setString(9, item.getFileID());
-        insertFileInfoPS.setString(10, collectionID);
-        insertFileInfoPS.setString(11, pillar);
+        if(item.getFileSize() == null) {
+            insertFileInfoPS.setNull(3, Types.BIGINT);
+        } else {
+            insertFileInfoPS.setLong(3, item.getFileSize().longValue());
+        }
+        insertFileInfoPS.setLong(4, fileTime);
+        insertFileInfoPS.setLong(5, now.getTime());
+        insertFileInfoPS.setString(6, Base16Utils.decodeBase16(item.getChecksumValue()));
+        
+        if(checksumTime == null) {
+            insertFileInfoPS.setNull(7,  Types.BIGINT);
+        } else {
+            insertFileInfoPS.setLong(7, checksumTime);
+        }
+        
+        insertFileInfoPS.setLong(8, now.getTime());
+        insertFileInfoPS.setString(9, collectionID);
+        insertFileInfoPS.setString(10, item.getFileID());
+        insertFileInfoPS.setString(11, collectionID);
+        insertFileInfoPS.setString(12, pillar);
         insertFileInfoPS.addBatch();
     }
 
     private void updateFileInfo(FileInfosDataItem item) throws SQLException {
-        long fileTime = CalendarUtils.convertFromXMLGregorianCalendar(item.getLastModificationTime()).getTime();
-        long calculationTime = CalendarUtils.convertFromXMLGregorianCalendar(item.getCalculationTimestamp()).getTime();
-
+        Long fileTime = CalendarUtils.convertFromXMLGregorianCalendar(item.getLastModificationTime()).getTime();
+        Long calculationTime;
+        if(item.getCalculationTimestamp() == null) {
+            calculationTime= null;
+        } else {
+            calculationTime = CalendarUtils.convertFromXMLGregorianCalendar(item.getCalculationTimestamp()).getTime();
+        }
+        
         Date now = new Date();
-        updateChecksumPS.setString(1, Base16Utils.decodeBase16(item.getChecksumValue()));
-        updateChecksumPS.setLong(2, fileTime);
-        updateChecksumPS.setLong(3, now.getTime());
-        updateChecksumPS.setLong(4, calculationTime);
-        updateChecksumPS.setLong(5, now.getTime());
-        updateChecksumPS.setString(6, item.getFileID());
-        updateChecksumPS.setString(7, collectionID);
-        updateChecksumPS.setString(8, pillar);
+        if(item.getFileSize() == null) {
+            updateChecksumPS.setNull(1, Types.BIGINT);
+        } else {
+            updateChecksumPS.setLong(1, item.getFileSize().longValue());
+        }
+        updateChecksumPS.setString(2, Base16Utils.decodeBase16(item.getChecksumValue()));
+        updateChecksumPS.setLong(3, fileTime);
+        updateChecksumPS.setLong(4, now.getTime());
+        if(calculationTime == null) {
+            updateChecksumPS.setNull(5, Types.BIGINT);
+        } else {
+            updateChecksumPS.setLong(5, calculationTime);
+        }
+        updateChecksumPS.setLong(6, now.getTime());
+        updateChecksumPS.setString(7, item.getFileID());
+        updateChecksumPS.setString(8, collectionID);
+        updateChecksumPS.setString(9, pillar);
         updateChecksumPS.addBatch();
     }
 
-    private void updateMaxTime(Date maxDate) throws SQLException {
-        updateLatestChecksumTimePS.setLong(1, maxDate.getTime());
-        updateLatestChecksumTimePS.setString(2, collectionID);
-        updateLatestChecksumTimePS.setString(3, pillar);
+    private void updateMaxTimes(Date maxFileDate, Date maxChecksumDate) throws SQLException {
+        if(maxFileDate == null) {
+            updateLatestChecksumTimePS.setNull(1, Types.BIGINT);
+        } else {
+            updateLatestChecksumTimePS.setLong(1, maxFileDate.getTime());
+        }
+        if(maxChecksumDate == null) {
+            updateLatestChecksumTimePS.setNull(2, Types.BIGINT);
+        } else {
+            updateLatestChecksumTimePS.setLong(2, maxChecksumDate.getTime());
+        }
+        updateLatestChecksumTimePS.setString(3, collectionID);
+        updateLatestChecksumTimePS.setString(4, pillar);
 
+        
         insertLatestChecksumTimePS.setString(1, pillar);
-        insertLatestChecksumTimePS.setLong(2, maxDate.getTime());
-        insertLatestChecksumTimePS.setString(3, collectionID);
+        if(maxFileDate == null) {
+            insertLatestChecksumTimePS.setNull(2, Types.BIGINT);
+        } else {
+            insertLatestChecksumTimePS.setLong(2, maxFileDate.getTime());
+        }
+        if(maxChecksumDate == null) {
+            insertLatestChecksumTimePS.setNull(3, Types.BIGINT);
+        } else {
+            insertLatestChecksumTimePS.setLong(3, maxChecksumDate.getTime());
+        }
         insertLatestChecksumTimePS.setString(4, collectionID);
-        insertLatestChecksumTimePS.setString(5, pillar);
+        insertLatestChecksumTimePS.setString(5, collectionID);
+        insertLatestChecksumTimePS.setString(6, pillar);
     }
-
+ 
     private void execute() throws SQLException {
         updateChecksumPS.executeBatch();
         insertFileInfoPS.executeBatch();
@@ -206,4 +260,24 @@ public class FileInfoUpdater {
             conn.close();
         }
     }
+    
+    private Date getNewestDate(Date currentDate, XMLGregorianCalendar timestamp) {
+        if(currentDate == null && timestamp == null) {
+            return null;
+        }
+        
+        if(timestamp == null) {
+            return currentDate;
+        }
+        
+        Date newDate = CalendarUtils.convertFromXMLGregorianCalendar(timestamp); 
+        
+        if(currentDate == null) {
+            return newDate;
+        }
+        
+        return TimeUtils.getMaxDate(currentDate, newDate);    
+    }
+    
+
 }

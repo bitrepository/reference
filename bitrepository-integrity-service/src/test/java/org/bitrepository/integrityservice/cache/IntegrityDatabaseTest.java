@@ -26,17 +26,14 @@ package org.bitrepository.integrityservice.cache;
 
 import static org.mockito.Mockito.mock;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.FileIDsData;
-import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
-import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
+import org.bitrepository.bitrepositoryelements.FileInfosData.FileInfosDataItems;
+import org.bitrepository.bitrepositoryelements.FileInfosDataItem;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.SettingsUtils;
@@ -122,35 +119,14 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     }
     
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
-    public void testIngestOfFileIDsData() throws Exception {
-        addDescription("Tests the ingesting of file ids data");
+    public void testIngestOfFileInfosData() throws Exception {
+        addDescription("Tests the ingesting of fileinfo data");
         IntegrityModel model = new IntegrityDatabase(settings);
         
         addStep("Create data", "Should be ingested into the database");
-        FileIDsData data1 = getFileIDsData(TEST_FILE_ID);
-        model.addFileIDs(data1, TEST_PILLAR_1, TEST_COLLECTIONID);
-        model.addFileIDs(data1, TEST_PILLAR_2, TEST_COLLECTIONID);
-        
-        addStep("Extract the data", "Should be identical to the ingested data");
-        Collection<FileInfo> fileinfos = model.getFileInfos(TEST_FILE_ID, TEST_COLLECTIONID);
-        Assert.assertNotNull(fileinfos);
-        for(FileInfo fi : fileinfos) {
-            Assert.assertEquals(fi.getFileId(), TEST_FILE_ID);
-            Assert.assertNull(fi.getChecksum());
-            Assert.assertEquals(fi.getDateForLastChecksumCheck(), CalendarUtils.getEpoch());
-            Assert.assertEquals(fi.getDateForLastFileIDCheck(), data1.getFileIDsDataItems().getFileIDsDataItem().get(0).getLastModificationTime());
-        }
-    }
-
-    @Test(groups = {"regressiontest", "databasetest", "integritytest"})
-    public void testIngestOfChecksumsData() throws Exception {
-        addDescription("Tests the ingesting of checksums data");
-        IntegrityModel model = new IntegrityDatabase(settings);
-        
-        addStep("Create data", "Should be ingested into the database");
-        List<ChecksumDataForChecksumSpecTYPE> csData = getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM);
-        insertChecksumDataForModel(model, csData, TEST_PILLAR_1, TEST_COLLECTIONID);
-        insertChecksumDataForModel(model, csData, TEST_PILLAR_2, TEST_COLLECTIONID);
+        List<FileInfosDataItem> fileInfoData = getFileInfoResults(TEST_FILE_ID, TEST_CHECKSUM);
+        model.addFileInfos(fileInfoData, TEST_PILLAR_1, TEST_COLLECTIONID);
+        model.addFileInfos(fileInfoData, TEST_PILLAR_2, TEST_COLLECTIONID);
         
         addStep("Extract the data", "Should be identical to the ingested data");
         Collection<FileInfo> fileinfos = model.getFileInfos(TEST_FILE_ID, TEST_COLLECTIONID);
@@ -158,7 +134,7 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         for(FileInfo fi : fileinfos) {
             Assert.assertEquals(fi.getFileId(), TEST_FILE_ID);
             Assert.assertEquals(fi.getChecksum(), TEST_CHECKSUM);
-            Assert.assertEquals(fi.getDateForLastChecksumCheck(), csData.get(0).getCalculationTimestamp());
+            Assert.assertEquals(fi.getDateForLastChecksumCheck(), fileInfoData.get(0).getCalculationTimestamp());
         }
     }
     
@@ -168,10 +144,10 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         IntegrityModel model = new IntegrityDatabase(settings);
 
         addStep("Create data", "Should be ingested into the database");
-        FileIDsData data1 = getFileIDsData(TEST_FILE_ID);
-        model.addFileIDs(data1, TEST_PILLAR_1, TEST_COLLECTIONID);
-        model.addFileIDs(data1, TEST_PILLAR_2, TEST_COLLECTIONID);
-        
+        List<FileInfosDataItem> fileInfoData = getFileInfoResults(TEST_FILE_ID, TEST_CHECKSUM);
+        model.addFileInfos(fileInfoData, TEST_PILLAR_1, TEST_COLLECTIONID);
+        model.addFileInfos(fileInfoData, TEST_PILLAR_2, TEST_COLLECTIONID);
+ 
         Collection<FileInfo> fileinfos = model.getFileInfos(TEST_FILE_ID, TEST_COLLECTIONID);
         Assert.assertNotNull(fileinfos);
         Assert.assertEquals(fileinfos.size(), 2);
@@ -186,33 +162,18 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         Assert.assertNotNull(fileinfos);
         Assert.assertEquals(fileinfos.size(), 0);
     }
-    
-    private List<ChecksumDataForChecksumSpecTYPE> getChecksumResults(String fileID, String checksum) {
-        List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
+
+    private List<FileInfosDataItem> getFileInfoResults(String fileID, String checksum) {
+        FileInfosDataItems fids = new FileInfosDataItems();
+        FileInfosDataItem item = new FileInfosDataItem();
+        item.setLastModificationTime(CalendarUtils.getNow());
+        item.setCalculationTimestamp(CalendarUtils.getNow());
+        item.setChecksumValue(Base16Utils.encodeBase16(checksum));
+        item.setFileID(fileID);
+        fids.getFileInfosDataItem().add(item);
         
-        ChecksumDataForChecksumSpecTYPE csData = new ChecksumDataForChecksumSpecTYPE();
-        csData.setChecksumValue(Base16Utils.encodeBase16(checksum));
-        csData.setCalculationTimestamp(CalendarUtils.getNow());
-        csData.setFileID(fileID);
-        res.add(csData);
-        return res;
-    }
-    
-    private FileIDsData getFileIDsData(String... fileIDs) {
-        FileIDsData res = new FileIDsData();
-        FileIDsDataItems items = new FileIDsDataItems();
-        
-        for(String fileID : fileIDs) {
-            FileIDsDataItem dataItem = new FileIDsDataItem();
-            dataItem.setFileID(fileID);
-            dataItem.setFileSize(BigInteger.valueOf(items.getFileIDsDataItem().size() + 1));
-            dataItem.setLastModificationTime(CalendarUtils.getNow());
-            items.getFileIDsDataItem().add(dataItem);
-        } 
-        
-        res.setFileIDsDataItems(items);
-        return res;
-    }
+        return fids.getFileInfosDataItem();
+    }  
     
     /**
      * This is not the way to handle the iterators, as the lists might grow really long. 

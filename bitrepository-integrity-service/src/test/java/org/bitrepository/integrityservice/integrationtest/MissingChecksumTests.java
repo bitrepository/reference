@@ -161,13 +161,13 @@ public class MissingChecksumTests extends ExtendedTestCase {
         populateDatabase(model, TEST_FILE_1);
         
         addStep("Add checksum results for only one pillar.", "");
-        final ResultingFileInfos resultingChecksums = createResultingFileInfos(DEFAULT_CHECKSUM, TEST_FILE_1);
+        final ResultingFileInfos resultingFileInfos = createResultingFileInfos(DEFAULT_CHECKSUM, TEST_FILE_1);
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
                 eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(PILLAR_1, PILLAR_2)));
                 eventHandler.handleEvent(new FileInfosCompletePillarEvent(PILLAR_1, TEST_COLLECTION,
-                        resultingChecksums, createChecksumSpecTYPE(), false));
+                        resultingFileInfos, createChecksumSpecTYPE(), false));
                 eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
                 return null;
             }
@@ -283,20 +283,10 @@ public class MissingChecksumTests extends ExtendedTestCase {
     }
     
     protected void populateDatabase(IntegrityModel model, String ... files) {
-        FileIDsData data = new FileIDsData();
-        FileIDsDataItems items = new FileIDsDataItems();
-        XMLGregorianCalendar lastModificationTime = CalendarUtils.getNow();
-        for(String f : files) {
-            FileIDsDataItem item = new FileIDsDataItem();
-            item.setFileID(f);
-            item.setFileSize(BigInteger.ONE);
-            item.setLastModificationTime(lastModificationTime);
-            items.getFileIDsDataItem().add(item);
-        }
-        data.setFileIDsDataItems(items);
+        ResultingFileInfos rfi = createResultingFileInfos(null, files);
         String collectionID = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
-        model.addFileIDs(data, PILLAR_1, collectionID);
-        model.addFileIDs(data, PILLAR_2, collectionID);
+        model.addFileInfos(rfi.getFileInfosData().getFileInfosDataItems().getFileInfosDataItem(), PILLAR_1, collectionID);
+        model.addFileInfos(rfi.getFileInfosData().getFileInfosDataItems().getFileInfosDataItem(), PILLAR_2, collectionID);
     }
 
     private ChecksumSpecTYPE createChecksumSpecTYPE() {
@@ -336,6 +326,7 @@ public class MissingChecksumTests extends ExtendedTestCase {
             item.setLastModificationTime(CalendarUtils.getNow());
             item.setCalculationTimestamp(CalendarUtils.getNow());
             item.setChecksumValue(Base16Utils.encodeBase16(checksum));
+            item.setFileSize(BigInteger.valueOf(0L));
             item.setFileID(fileID);
             res.add(item);
         }

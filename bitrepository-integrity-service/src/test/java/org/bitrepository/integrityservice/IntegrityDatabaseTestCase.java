@@ -22,14 +22,18 @@
 package org.bitrepository.integrityservice;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
+import org.bitrepository.bitrepositoryelements.FileInfosDataItem;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
+import org.bitrepository.common.utils.Base16Utils;
+import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.database.IntegrityDatabaseCreator;
@@ -70,35 +74,27 @@ public abstract class IntegrityDatabaseTestCase extends ExtendedTestCase {
     /**
      * Inserts the checksumdata, but ensures that the data can be inserted, by inserting the file-id-data before. 
      * @param cache The integrity cache.
-     * @param csData The checksum data.
+     * @param fileInfos The checksum data.
      * @param pillarID The id of the pillar.
      * @param collectionID The id of the collection.
      */
-    protected void insertChecksumDataForModel(IntegrityModel cache, List<ChecksumDataForChecksumSpecTYPE> csData, 
+    protected void insertFileInfosDataForModel(IntegrityModel cache, List<FileInfosDataItem> fileInfos, 
             String pillarID, String collectionID) {
-        insertMissingFilesInChecksumDataForModel(cache, csData, pillarID, collectionID);
-        cache.addChecksums(csData, pillarID, collectionID);
+        cache.addFileInfos(fileInfos, pillarID, collectionID);
     }
     
-    /**
-     * Converts a piece of checksum data into file id data.
-     * @param csData The checksum data to convert.
-     */
-    protected void insertMissingFilesInChecksumDataForModel(IntegrityModel cache, List<ChecksumDataForChecksumSpecTYPE> csData, 
-            String pillarID, String collectionID) {
-        FileIDsData res = new FileIDsData();
-        FileIDsDataItems items = new FileIDsDataItems();
-        
-        for(ChecksumDataForChecksumSpecTYPE entry : csData) {
-            FileIDsDataItem dataItem = new FileIDsDataItem();
-            dataItem.setFileID(entry.getFileID());
-            dataItem.setFileSize(BigInteger.ZERO);
-            dataItem.setLastModificationTime(entry.getCalculationTimestamp());
-            items.getFileIDsDataItem().add(dataItem);
-        } 
-        
-        res.setFileIDsDataItems(items);
-        cache.addFileIDs(res, pillarID, collectionID);
+    protected List<FileInfosDataItem> createFileInfoData(String checksum, String ... fileids) {
+        List<FileInfosDataItem> res = new ArrayList<FileInfosDataItem>();
+        for(String fileID : fileids) {
+            FileInfosDataItem item = new FileInfosDataItem();
+            item.setLastModificationTime(CalendarUtils.getNow());
+            item.setCalculationTimestamp(CalendarUtils.getNow());
+            item.setChecksumValue(Base16Utils.encodeBase16(checksum));
+            item.setFileSize(BigInteger.valueOf(0L));
+            item.setFileID(fileID);
+            res.add(item);
+        }
+        return res;
     }
     
     /**

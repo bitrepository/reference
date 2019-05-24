@@ -39,22 +39,7 @@ import org.bitrepository.integrityservice.statistics.StatisticsCollector;
  * Store of cached integrity information.
  */
 public interface IntegrityModel {
-    /**
-     * Add file ID data to cache.
-     * @param data The received data.
-     * @param pillarID The id of the pillar the received data comes from.
-     * @param collectionID The id of the collection the received data belongs to.
-     */
-    void addFileIDs(FileIDsData data, String pillarID, String collectionID);
-
-    /**
-     * Add checksum data to cache.
-     * @param data The received data.
-     * @param pillarID The id of the pillar the received data comes from.
-     * @param collectionID The id of the collection the received data belongs to.
-     */
-    void addChecksums(List<ChecksumDataForChecksumSpecTYPE> data, String pillarID, String collectionID);
-    
+   
     /**
      * Add fileinfo data to cache.
      * @param data The received data.
