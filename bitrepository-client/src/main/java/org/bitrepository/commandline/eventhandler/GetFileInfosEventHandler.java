@@ -24,7 +24,6 @@ package org.bitrepository.commandline.eventhandler;
 import org.bitrepository.access.getfileinfos.conversation.FileInfosCompletePillarEvent;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.commandline.output.OutputHandler;
-import org.bitrepository.commandline.resultmodel.GetChecksumsResultModel;
 import org.bitrepository.commandline.resultmodel.GetFileInfosResultModel;
 
 /**

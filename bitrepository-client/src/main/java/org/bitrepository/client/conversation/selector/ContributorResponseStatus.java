@@ -29,7 +29,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
-import org.bitrepository.client.exceptions.UnexpectedResponseException;
 import org.bitrepository.protocol.utils.MessageUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -30,7 +30,6 @@ import org.bitrepository.commandline.eventhandler.CompleteEventAwaiter;
 import org.bitrepository.commandline.eventhandler.GetFileEventHandler;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.protocol.http.HttpFileExchange;
 
 import java.io.File;
 import java.net.MalformedURLException;

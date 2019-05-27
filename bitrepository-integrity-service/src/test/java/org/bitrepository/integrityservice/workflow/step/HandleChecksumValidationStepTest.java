@@ -24,22 +24,11 @@ package org.bitrepository.integrityservice.workflow.step;
 import static org.mockito.Mockito.mock;
 
 import java.io.File;
-import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileAction;
-import org.bitrepository.bitrepositoryelements.FileIDsData;
-import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
-import org.bitrepository.bitrepositoryelements.FileInfosData.FileInfosDataItems;
-import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
-import org.bitrepository.bitrepositoryelements.FileInfosData;
 import org.bitrepository.bitrepositoryelements.FileInfosDataItem;
-import org.bitrepository.bitrepositoryelements.ResultingFileInfos;
-import org.bitrepository.common.utils.Base16Utils;
-import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.IntegrityDatabaseTestCase;
 import org.bitrepository.integrityservice.cache.FileInfo;

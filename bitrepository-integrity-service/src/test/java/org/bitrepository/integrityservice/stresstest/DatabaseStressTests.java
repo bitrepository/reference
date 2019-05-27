@@ -28,13 +28,9 @@ import java.util.List;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.bitrepository.bitrepositoryelements.FileIDsData;
-import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
-import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.bitrepositoryelements.FileInfosDataItem;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
-import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.integrityservice.cache.IntegrityDatabaseManager;

@@ -41,15 +41,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.getfileinfos.conversation.FileInfosCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
-import org.bitrepository.bitrepositoryelements.FileIDsData;
-import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
-import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.bitrepositoryelements.FileInfosData;
 import org.bitrepository.bitrepositoryelements.FileInfosData.FileInfosDataItems;
 import org.bitrepository.bitrepositoryelements.FileInfosDataItem;

@@ -24,8 +24,6 @@ package org.bitrepository.integrityservice.workflow;
 import java.util.Arrays;
 import java.util.Set;
 
-import javax.validation.constraints.AssertTrue;
-
 import org.testng.annotations.Test;
 import org.testng.Assert;
 

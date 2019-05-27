@@ -23,7 +23,6 @@ package org.bitrepository.commandline.outputformatter;
 
 import java.util.Collection;
 
-import org.bitrepository.commandline.resultmodel.ChecksumResult;
 import org.bitrepository.commandline.resultmodel.FileInfoResult;
 
 /**

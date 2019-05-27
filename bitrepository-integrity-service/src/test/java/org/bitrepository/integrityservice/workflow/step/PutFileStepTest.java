@@ -35,7 +35,6 @@ import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.integrityservice.workflow.IntegrityWorkflowContext;
-import org.bitrepository.service.exception.WorkflowAbortedException;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.testng.annotations.Test;
