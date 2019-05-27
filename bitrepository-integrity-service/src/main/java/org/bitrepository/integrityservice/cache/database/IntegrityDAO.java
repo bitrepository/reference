@@ -97,39 +97,7 @@ public abstract class IntegrityDAO {
         String sql = "SELECT pillarID FROM pillar";
         return DatabaseUtils.selectStringList(dbConnector, sql, new Object[0]);
     }
-    
-    /**
-     * Update the database with a batch of fileIDs data from a pillar for a given collection. 
-     * If the fileIDs is not already present in the database a new record will be created
-     * @param data The FileIDsData to update the database with
-     * @param pillarID The ID of the pillar to update the with the FileIDsData
-     * @param collectionID The ID of the collection to update with the FileIDsData
-     */
-    public void updateFileIDs(FileIDsData data, String pillarID, String collectionID) {
-        ArgumentValidator.checkNotNull(data, "FileIDsData data");
-        ArgumentValidator.checkNotNullOrEmpty(pillarID, "String pillarID");
-        ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
-        log.trace("Updating the file ids '" + data + "' for pillar '" + pillarID + "'");
-        
-        FileUpdater fu = new FileUpdater(pillarID, dbConnector.getConnection(), collectionID);
-        fu.updateFiles(data.getFileIDsDataItems());
-    }
-    
-    /**
-     * Update the database with a batch of checksum data from a pillar for a given collection. 
-     * @param data The list of ChecksumDataForChecksumSpecTYPE to update the database with
-     * @param pillarID The ID of the pillar to update with the data
-     * @param collectionID The ID of the collection to update with the data
-     */
-    public void updateChecksums(List<ChecksumDataForChecksumSpecTYPE> data, String pillarID, String collectionID) {
-    	ArgumentValidator.checkNotNull(data, "List<ChecksumDataForChecksumSpecTYPE> data");
-        ArgumentValidator.checkNotNullOrEmpty(pillarID, "String pillarID");
-        ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
-        
-        ChecksumUpdater cu = new ChecksumUpdater(pillarID, dbConnector.getConnection(), collectionID);
-        cu.updateChecksums(data);
-    }
-    
+       
     /**
      * Update the database with a batch of fileinfo data from a pillar for a given collection. 
      * @param data The list of FileInfosData to update the database with

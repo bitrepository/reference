@@ -33,6 +33,7 @@ import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
+import org.bitrepository.bitrepositoryelements.FileInfosDataItem;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.IntegrityDatabaseTestCase;
@@ -232,6 +233,30 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         String checksum3bad = "baad";
         String checksum4 = "ccaa";
         String checksum5 = "ddaa";
+        FileInfosDataItem data1 = makeFileInfoDataItem(checksum1, TEST_FILE_ID, size1);
+        FileInfosDataItem data2 = makeFileInfoDataItem(checksum2, file2, size2);
+        FileInfosDataItem data3 = makeFileInfoDataItem(checksum3, file3, size3);
+        FileInfosDataItem data3bad = makeFileInfoDataItem(checksum3bad, file3, size3);
+        FileInfosDataItem data4 = makeFileInfoDataItem(checksum4, file4, size4);
+        FileInfosDataItem data5 = makeFileInfoDataItem(checksum5, file5, size5);
+        
+        List<FileInfosDataItem> dataPillar1 = new ArrayList<>();
+        dataPillar1.add(data1);
+        dataPillar1.add(data3bad);
+        dataPillar1.add(data4);
+        dataPillar1.add(data5);
+
+        List<FileInfosDataItem> dataPillar2 = new ArrayList<>();
+        dataPillar2.add(data1);
+        dataPillar2.add(data2);
+        dataPillar2.add(data3);
+        dataPillar2.add(data4);
+        
+        
+        dao.updateFileInfos(dataPillar1, TEST_PILLAR_1, collectionID);
+        dao.updateFileInfos(dataPillar2, TEST_PILLAR_2, collectionID);
+        
+        /*
         FileIDsData data1 = makeFileIDsDataWithGivenFileSize(TEST_FILE_ID, size1);
         FileIDsData data2 = makeFileIDsDataWithGivenFileSize(file2, size2);
         FileIDsData data3 = makeFileIDsDataWithGivenFileSize(file3, size3);
@@ -258,6 +283,7 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         dao.updateFileIDs(data3, TEST_PILLAR_1, collectionID);
         dao.updateFileIDs(data4, TEST_PILLAR_1, collectionID);
         dao.updateFileIDs(data5, TEST_PILLAR_1, collectionID);
+        
         dao.updateFileIDs(data1, TEST_PILLAR_2, collectionID);
         dao.updateFileIDs(data2, TEST_PILLAR_2, collectionID);
         dao.updateFileIDs(data3, TEST_PILLAR_2, collectionID);
@@ -265,7 +291,18 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
 
         dao.updateChecksums(csDataPillar1, TEST_PILLAR_1, collectionID);
         dao.updateChecksums(csDataPillar2, TEST_PILLAR_2, collectionID);
-        
+        */
+    }
+    
+    private FileInfosDataItem makeFileInfoDataItem(String checksum, String fileID, long size) {
+        FileInfosDataItem item = new FileInfosDataItem();
+        item.setLastModificationTime(CalendarUtils.getNow());
+        item.setCalculationTimestamp(CalendarUtils.getNow());
+        item.setChecksumValue(Base16Utils.encodeBase16(checksum));
+        item.setFileSize(BigInteger.valueOf(0L));
+        item.setFileID(fileID);
+                
+        return item;
     }
     
     private FileIDsData makeFileIDsDataWithGivenFileSize(String fileID, Long size) {

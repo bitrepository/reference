@@ -22,15 +22,19 @@
 package org.bitrepository.integrityservice.stresstest;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
+import org.bitrepository.bitrepositoryelements.FileInfosDataItem;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
+import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.integrityservice.cache.IntegrityDatabaseManager;
@@ -78,22 +82,22 @@ public class DatabaseStressTests extends ExtendedTestCase {
     }
     
     protected void populateDatabase(IntegrityDAO cache) {
-        FileIDsData data = new FileIDsData();
-        FileIDsDataItems items = new FileIDsDataItems();
+        List<FileInfosDataItem> data = new ArrayList<>();
         XMLGregorianCalendar lastModificationTime = CalendarUtils.getNow();
         for(int i = 0; i < NUMBER_OF_FILES; i++) {
-            FileIDsDataItem item = new FileIDsDataItem();
-            item.setFileID("fileid-" + i);
-            item.setFileSize(BigInteger.valueOf(i));
+            
+            FileInfosDataItem item = new FileInfosDataItem();
             item.setLastModificationTime(lastModificationTime);
-            items.getFileIDsDataItem().add(item);
+            item.setFileSize(BigInteger.valueOf(i));
+            item.setFileID("fileid-" + i);
+                
+            data.add(item);
         }
-        data.setFileIDsDataItems(items);
         String collectionID = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
-        cache.updateFileIDs(data, PILLAR_1, collectionID);
-        cache.updateFileIDs(data, PILLAR_2, collectionID);
-        cache.updateFileIDs(data, PILLAR_3, collectionID);
-        cache.updateFileIDs(data, PILLAR_4, collectionID);
+        cache.updateFileInfos(data, PILLAR_1, collectionID);
+        cache.updateFileInfos(data, PILLAR_2, collectionID);
+        cache.updateFileInfos(data, PILLAR_3, collectionID);
+        cache.updateFileInfos(data, PILLAR_4, collectionID);
     }
     
     @AfterMethod (alwaysRun = true)
