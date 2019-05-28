@@ -103,7 +103,7 @@ public class SimpleChecksumEventHandler implements EventHandler {
         if(event instanceof FileInfosCompletePillarEvent) {
             FileInfosCompletePillarEvent fileInfoEvent = (FileInfosCompletePillarEvent) event;
             log.trace("Receiving GetChecksums result: {}", 
-                    fileInfoEvent.getFileInfos().getFileInfosData().getFileInfosDataItems().getFileInfosDataItem().toString());
+                    fileInfoEvent.getFileInfos().getFileInfosDataItem().toString());
             fileInfoResults.put(fileInfoEvent.getContributorID(), fileInfoEvent.getFileInfos());
             if(fileInfoEvent.isPartialResult()) {
                 integrityContributors.succeedContributor(fileInfoEvent.getContributorID());

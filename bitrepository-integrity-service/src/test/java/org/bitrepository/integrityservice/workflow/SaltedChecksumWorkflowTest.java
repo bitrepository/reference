@@ -36,11 +36,9 @@ import java.util.Arrays;
 
 import org.bitrepository.access.getfileinfos.conversation.FileInfosCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.FileInfosData;
 import org.bitrepository.bitrepositoryelements.FileInfosDataItem;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResultingFileInfos;
-import org.bitrepository.bitrepositoryelements.FileInfosData.FileInfosDataItems;
 import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.client.eventhandler.ContributorFailedEvent;
@@ -324,8 +322,6 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
     
     private ResultingFileInfos createResultingFileInfos(String fileId, String checksum) {
         ResultingFileInfos res = new ResultingFileInfos();
-        FileInfosData fid = new FileInfosData();
-        FileInfosDataItems fids = new FileInfosDataItems();
         
         FileInfosDataItem item = new FileInfosDataItem();
         item.setLastModificationTime(CalendarUtils.getNow());
@@ -333,9 +329,7 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         item.setChecksumValue(Base16Utils.encodeBase16(checksum));
         item.setFileID(fileId);
                 
-        fids.getFileInfosDataItem().add(item);
-        fid.setFileInfosDataItems(fids);
-        res.setFileInfosData(fid);
+        res.getFileInfosDataItem().add(item);
         return res;
     }
     

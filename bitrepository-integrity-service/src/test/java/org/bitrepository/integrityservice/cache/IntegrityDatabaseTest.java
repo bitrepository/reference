@@ -32,7 +32,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.bitrepository.bitrepositoryelements.FileInfosData.FileInfosDataItems;
 import org.bitrepository.bitrepositoryelements.FileInfosDataItem;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
@@ -164,15 +163,15 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     }
 
     private List<FileInfosDataItem> getFileInfoResults(String fileID, String checksum) {
-        FileInfosDataItems fids = new FileInfosDataItems();
+        List<FileInfosDataItem> res = new ArrayList<>();
         FileInfosDataItem item = new FileInfosDataItem();
         item.setLastModificationTime(CalendarUtils.getNow());
         item.setCalculationTimestamp(CalendarUtils.getNow());
         item.setChecksumValue(Base16Utils.encodeBase16(checksum));
         item.setFileID(fileID);
-        fids.getFileInfosDataItem().add(item);
+        res.add(item);
         
-        return fids.getFileInfosDataItem();
+        return res;
     }  
     
     /**

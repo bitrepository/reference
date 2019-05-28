@@ -41,8 +41,6 @@ import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.getfileinfos.conversation.FileInfosCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
-import org.bitrepository.bitrepositoryelements.FileInfosData;
-import org.bitrepository.bitrepositoryelements.FileInfosData.FileInfosDataItems;
 import org.bitrepository.bitrepositoryelements.FileInfosDataItem;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResultingFileInfos;
@@ -163,8 +161,7 @@ public class UpdateFileInfosStepTest extends WorkflowstepTest {
         step.performStep();
         verify(collector, times(2)).getFileInfos(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(),
                 any(ChecksumSpecTYPE.class), anyString(), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
-        verify(model).addFileInfos(resultingFileInfos.getFileInfosData().getFileInfosDataItems().getFileInfosDataItem(), 
-                TEST_PILLAR_1, TEST_COLLECTION);
+        verify(model).addFileInfos(resultingFileInfos.getFileInfosDataItem(), TEST_PILLAR_1, TEST_COLLECTION);
         verifyNoMoreInteractions(alerter);
         verify(integrityContributors).failContributor(eq(TEST_PILLAR_1));
         verify(integrityContributors).finishContributor(eq(TEST_PILLAR_1));
@@ -229,8 +226,7 @@ public class UpdateFileInfosStepTest extends WorkflowstepTest {
         step.performStep();
         verify(collector).getFileInfos(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(),
                 any(ChecksumSpecTYPE.class), anyString(), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
-        verify(model).addFileInfos(resultingFileInfos.getFileInfosData().getFileInfosDataItems().getFileInfosDataItem(), 
-                TEST_PILLAR_1, TEST_COLLECTION);
+        verify(model).addFileInfos(resultingFileInfos.getFileInfosDataItem(), TEST_PILLAR_1, TEST_COLLECTION);
         verifyNoMoreInteractions(alerter);
     }
 
@@ -260,8 +256,7 @@ public class UpdateFileInfosStepTest extends WorkflowstepTest {
         verify(collector).getFileInfos(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(),
                 any(ChecksumSpecTYPE.class), anyString(), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         verify(model).resetFileInfoCollectionProgress(TEST_COLLECTION);
-        verify(model).addFileInfos(resultingFileInfos.getFileInfosData().getFileInfosDataItems().getFileInfosDataItem(),
-                TEST_PILLAR_1, TEST_COLLECTION);
+        verify(model).addFileInfos(resultingFileInfos.getFileInfosDataItem(), TEST_PILLAR_1, TEST_COLLECTION);
         verifyNoMoreInteractions(alerter);
     }
     
@@ -298,8 +293,7 @@ public class UpdateFileInfosStepTest extends WorkflowstepTest {
                 settings, TEST_COLLECTION, integrityContributors);
 
         step.performStep();
-        verify(model, times(2)).addFileInfos(resultingFileInfos.getFileInfosData().getFileInfosDataItems().getFileInfosDataItem(), 
-                TEST_PILLAR_1, TEST_COLLECTION);
+        verify(model, times(2)).addFileInfos(resultingFileInfos.getFileInfosDataItem(), TEST_PILLAR_1, TEST_COLLECTION);
         verify(collector, times(2)).getFileInfos(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(),
                 any(ChecksumSpecTYPE.class), anyString(), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
     }
@@ -386,11 +380,7 @@ public class UpdateFileInfosStepTest extends WorkflowstepTest {
 
     private ResultingFileInfos createResultingFileInfos(String checksum, String ... fileids) {
         ResultingFileInfos res = new ResultingFileInfos();
-        FileInfosData fid = new FileInfosData();
-        FileInfosDataItems fids = new FileInfosDataItems();
-        fids.getFileInfosDataItem().addAll(createFileInfoData(checksum, fileids));
-        fid.setFileInfosDataItems(fids);
-        res.setFileInfosData(fid);
+        res.getFileInfosDataItem().addAll(createFileInfoData(checksum, fileids));
         return res;
     }
 

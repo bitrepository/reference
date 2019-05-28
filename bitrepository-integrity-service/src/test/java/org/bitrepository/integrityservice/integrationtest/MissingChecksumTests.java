@@ -45,8 +45,6 @@ import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.getfileinfos.conversation.FileInfosCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
-import org.bitrepository.bitrepositoryelements.FileInfosData;
-import org.bitrepository.bitrepositoryelements.FileInfosData.FileInfosDataItems;
 import org.bitrepository.bitrepositoryelements.FileInfosDataItem;
 import org.bitrepository.bitrepositoryelements.ResultingFileInfos;
 import org.bitrepository.client.eventhandler.CompleteEvent;
@@ -280,8 +278,8 @@ public class MissingChecksumTests extends ExtendedTestCase {
     protected void populateDatabase(IntegrityModel model, String ... files) {
         ResultingFileInfos rfi = createResultingFileInfos(null, files);
         String collectionID = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
-        model.addFileInfos(rfi.getFileInfosData().getFileInfosDataItems().getFileInfosDataItem(), PILLAR_1, collectionID);
-        model.addFileInfos(rfi.getFileInfosData().getFileInfosDataItems().getFileInfosDataItem(), PILLAR_2, collectionID);
+        model.addFileInfos(rfi.getFileInfosDataItem(), PILLAR_1, collectionID);
+        model.addFileInfos(rfi.getFileInfosDataItem(), PILLAR_2, collectionID);
     }
 
     private ChecksumSpecTYPE createChecksumSpecTYPE() {
@@ -306,11 +304,7 @@ public class MissingChecksumTests extends ExtendedTestCase {
     
     private ResultingFileInfos createResultingFileInfos(String checksum, String ... fileids) {
         ResultingFileInfos res = new ResultingFileInfos();
-        FileInfosData fid = new FileInfosData();
-        FileInfosDataItems fids = new FileInfosDataItems();
-        fids.getFileInfosDataItem().addAll(createFileInfoData(checksum, fileids));
-        fid.setFileInfosDataItems(fids);
-        res.setFileInfosData(fid);
+        res.getFileInfosDataItem().addAll(createFileInfoData(checksum, fileids));
         return res;
     }
 

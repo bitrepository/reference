@@ -38,8 +38,6 @@ import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
-import org.bitrepository.bitrepositoryelements.FileInfosData;
-import org.bitrepository.bitrepositoryelements.FileInfosData.FileInfosDataItems;
 import org.bitrepository.bitrepositoryelements.FileInfosDataItem;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
@@ -152,19 +150,15 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Date wintertimeUnix = new Date(1445738394000L);
         Assert.assertEquals(wintertimeTS, wintertimeUnix);
         
-        FileInfosData summertimeData = getFileInfosData(TEST_CHECKSUM, "summertime");
-        summertimeData.getFileInfosDataItems().getFileInfosDataItem().get(0)
-            .setLastModificationTime(CalendarUtils.getXmlGregorianCalendar(summertimeTS));
-        summertimeData.getFileInfosDataItems().getFileInfosDataItem().get(0)
-            .setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(summertimeTS));
-        FileInfosData wintertimeData = getFileInfosData(TEST_CHECKSUM, "wintertime");
-        wintertimeData.getFileInfosDataItems().getFileInfosDataItem().get(0)
-            .setLastModificationTime(CalendarUtils.getXmlGregorianCalendar(wintertimeTS));
-        wintertimeData.getFileInfosDataItems().getFileInfosDataItem().get(0)
-            .setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(wintertimeTS));
+        List<FileInfosDataItem> summertimeData = getFileInfosData(TEST_CHECKSUM, "summertime");
+        summertimeData.get(0).setLastModificationTime(CalendarUtils.getXmlGregorianCalendar(summertimeTS));
+        summertimeData.get(0).setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(summertimeTS));
+        List<FileInfosDataItem> wintertimeData = getFileInfosData(TEST_CHECKSUM, "wintertime");
+        wintertimeData.get(0).setLastModificationTime(CalendarUtils.getXmlGregorianCalendar(wintertimeTS));
+        wintertimeData.get(0).setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(wintertimeTS));
         
-        cache.updateFileInfos(summertimeData.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateFileInfos(wintertimeData.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.updateFileInfos(summertimeData, TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.updateFileInfos(wintertimeData, TEST_PILLAR_1, TEST_COLLECTIONID);
 
         List<FileInfo> fis = cache.getFileInfosForFile("summertime", TEST_COLLECTIONID);
         Assert.assertEquals(fis.size(), 1, fis.toString());
@@ -188,9 +182,9 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Assert.assertEquals(cache.getNumberOfFilesInCollection(EXTRA_COLLECTION), new Long(0));
         
         addStep("Create data", "Should be ingested into the database");
-        FileInfosData data1 = getFileInfosData(null, TEST_FILE_ID);
-        cache.updateFileInfos(data1.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateFileInfos(data1.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_2, TEST_COLLECTIONID);
+        List<FileInfosDataItem> data1 = getFileInfosData(null, TEST_FILE_ID);
+        cache.updateFileInfos(data1, TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.updateFileInfos(data1, TEST_PILLAR_2, TEST_COLLECTIONID);
         
         addStep("Extract the data", "Should be identical to the ingested data");
         Collection<FileInfo> fileinfos = cache.getFileInfosForFile(TEST_FILE_ID, TEST_COLLECTIONID);
@@ -200,8 +194,8 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
             Assert.assertEquals(fi.getFileId(), TEST_FILE_ID);
             Assert.assertNull(fi.getChecksum());
             Assert.assertEquals(fi.getDateForLastChecksumCheck(), CalendarUtils.getEpoch());
-            Assert.assertEquals(fi.getDateForLastFileIDCheck(), data1.getFileInfosDataItems().getFileInfosDataItem().get(0).getLastModificationTime());
-            Assert.assertEquals(fi.getFileSize(), new Long(data1.getFileInfosDataItems().getFileInfosDataItem().get(0).getFileSize().longValue()));
+            Assert.assertEquals(fi.getDateForLastFileIDCheck(), data1.get(0).getLastModificationTime());
+            Assert.assertEquals(fi.getFileSize(), new Long(data1.get(0).getFileSize().longValue()));
         }
         
         addStep("Check that the extra collection is untouched by the ingest", "should deliver an empty collection and no errors");
@@ -218,9 +212,9 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Assert.assertEquals(cache.getNumberOfFilesInCollection(EXTRA_COLLECTION), new Long(0));
         
         addStep("Create data", "Should be ingested into the database");
-        FileInfosData fiData = getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID);
-        cache.updateFileInfos(fiData.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateFileInfos(fiData.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_2, TEST_COLLECTIONID);
+        List<FileInfosDataItem> fiData = getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID);
+        cache.updateFileInfos(fiData, TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.updateFileInfos(fiData, TEST_PILLAR_2, TEST_COLLECTIONID);
         
         addStep("Extract the data", "Should be identical to the ingested data");
         Collection<FileInfo> fileinfos = cache.getFileInfosForFile(TEST_FILE_ID, TEST_COLLECTIONID);
@@ -228,7 +222,7 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         for(FileInfo fi : fileinfos) {
             Assert.assertEquals(fi.getFileId(), TEST_FILE_ID);
             Assert.assertEquals(fi.getChecksum(), TEST_CHECKSUM);
-            Assert.assertEquals(fi.getDateForLastChecksumCheck(), fiData.getFileInfosDataItems().getFileInfosDataItem().get(0).getCalculationTimestamp());
+            Assert.assertEquals(fi.getDateForLastChecksumCheck(), fiData.get(0).getCalculationTimestamp());
         }
         
         addStep("Check that the extra collection is untouched by the ingest", "should deliver an empty collection and no errors");
@@ -248,12 +242,12 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Assert.assertEquals(fileinfos.size(), 0);
 
         addStep("Create data", "Should be ingested into the database");
-        FileInfosData data1 = getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID);
-        cache.updateFileInfos(data1.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_1, TEST_COLLECTIONID);       
-        cache.updateFileInfos(data1.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_2, TEST_COLLECTIONID);
+        List<FileInfosDataItem> data1 = getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID);
+        cache.updateFileInfos(data1, TEST_PILLAR_1, TEST_COLLECTIONID);       
+        cache.updateFileInfos(data1, TEST_PILLAR_2, TEST_COLLECTIONID);
         
-        cache.updateFileInfos(data1.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_1, EXTRA_COLLECTION);
-        cache.updateFileInfos(data1.getFileInfosDataItems().getFileInfosDataItem(), EXTRA_PILLAR, EXTRA_COLLECTION);
+        cache.updateFileInfos(data1, TEST_PILLAR_1, EXTRA_COLLECTION);
+        cache.updateFileInfos(data1, EXTRA_PILLAR, EXTRA_COLLECTION);
         
         addStep("Ensure that the data is present", "the data is present");
         fileinfos = cache.getFileInfosForFile(TEST_FILE_ID, TEST_COLLECTIONID);
@@ -290,9 +284,9 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         String nonexistingFileEntry = "NON-EXISTING-FILE-ENTRY" + new Date().getTime();
 
         addStep("Create data", "Should be ingested into the database");
-        FileInfosData data1 = getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID);
-        cache.updateFileInfos(data1.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateFileInfos(data1.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_2, TEST_COLLECTIONID);
+        List<FileInfosDataItem> data1 = getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID);
+        cache.updateFileInfos(data1, TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.updateFileInfos(data1, TEST_PILLAR_2, TEST_COLLECTIONID);
         
         Collection<FileInfo> fileinfos = cache.getFileInfosForFile(nonexistingFileEntry, TEST_COLLECTIONID);
         Assert.assertNotNull(fileinfos);
@@ -318,19 +312,19 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         addStep("Create data", "Should be ingested into the database");
         String orphanFile = "orphan";
         String existingFile = "existing";
-        FileInfosData data1 = getFileInfosData(TEST_CHECKSUM, existingFile);
-        FileInfosData data3 = getFileInfosData(TEST_CHECKSUM, orphanFile);
-        cache.updateFileInfos(data1.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateFileInfos(data1.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_2, TEST_COLLECTIONID);
-        cache.updateFileInfos(data3.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateFileInfos(data3.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_2, TEST_COLLECTIONID);
+        List<FileInfosDataItem> data1 = getFileInfosData(TEST_CHECKSUM, existingFile);
+        List<FileInfosDataItem> data3 = getFileInfosData(TEST_CHECKSUM, orphanFile);
+        cache.updateFileInfos(data1, TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.updateFileInfos(data1, TEST_PILLAR_2, TEST_COLLECTIONID);
+        cache.updateFileInfos(data3, TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.updateFileInfos(data3, TEST_PILLAR_2, TEST_COLLECTIONID);
         Assert.assertEquals(cache.getNumberOfFilesInCollection(TEST_COLLECTIONID), new Long(2));
         Assert.assertEquals(cache.getNumberOfFilesInCollection(EXTRA_COLLECTION), new Long(0));
         Thread.sleep(100);
         Date updateTime = new Date();
-        cache.updateFileInfos(data1.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateFileInfos(data1.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_2, TEST_COLLECTIONID);
-        cache.updateFileInfos(data3.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.updateFileInfos(data1, TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.updateFileInfos(data1, TEST_PILLAR_2, TEST_COLLECTIONID);
+        cache.updateFileInfos(data3, TEST_PILLAR_1, TEST_COLLECTIONID);
         
         List<String> orphanFilesPillar1 = getIssuesFromIterator(cache.getOrphanFilesOnPillar(TEST_COLLECTIONID, 
                 TEST_PILLAR_1, updateTime));
@@ -357,18 +351,18 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
 
         addStep("Update the database with 2 inconsistent files and one consistent file.", 
                 "Ingesting the data into the database");
-        FileInfosData fiData1_1 = getFileInfosData(checksum1_1, BAD_FILE_ID_1);
-        FileInfosData fiData1_2 = getFileInfosData(checksum1_2, BAD_FILE_ID_2);
-        FileInfosData fiData1_3 = getFileInfosData(checksum3, GOOD_FILE_ID);
-        cache.updateFileInfos(fiData1_1.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateFileInfos(fiData1_2.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateFileInfos(fiData1_3.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_1, TEST_COLLECTIONID);
-        FileInfosData fiData2_1 = getFileInfosData(checksum2_1, BAD_FILE_ID_1);
-        FileInfosData fiData2_2 = getFileInfosData(checksum2_2, BAD_FILE_ID_2);
-        FileInfosData fiData2_3 = getFileInfosData(checksum3, GOOD_FILE_ID);
-        cache.updateFileInfos(fiData2_1.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_2, TEST_COLLECTIONID);
-        cache.updateFileInfos(fiData2_2.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_2, TEST_COLLECTIONID);
-        cache.updateFileInfos(fiData2_3.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_2, TEST_COLLECTIONID);
+        List<FileInfosDataItem> fiData1_1 = getFileInfosData(checksum1_1, BAD_FILE_ID_1);
+        List<FileInfosDataItem> fiData1_2 = getFileInfosData(checksum1_2, BAD_FILE_ID_2);
+        List<FileInfosDataItem> fiData1_3 = getFileInfosData(checksum3, GOOD_FILE_ID);
+        cache.updateFileInfos(fiData1_1, TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.updateFileInfos(fiData1_2, TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.updateFileInfos(fiData1_3, TEST_PILLAR_1, TEST_COLLECTIONID);
+        List<FileInfosDataItem> fiData2_1 = getFileInfosData(checksum2_1, BAD_FILE_ID_1);
+        List<FileInfosDataItem> fiData2_2 = getFileInfosData(checksum2_2, BAD_FILE_ID_2);
+        List<FileInfosDataItem> fiData2_3 = getFileInfosData(checksum3, GOOD_FILE_ID);
+        cache.updateFileInfos(fiData2_1, TEST_PILLAR_2, TEST_COLLECTIONID);
+        cache.updateFileInfos(fiData2_2, TEST_PILLAR_2, TEST_COLLECTIONID);
+        cache.updateFileInfos(fiData2_3, TEST_PILLAR_2, TEST_COLLECTIONID);
 
         addStep("Find the files with inconsistent checksums", "Bad file 1 and 2");
         List<String> filesWithChecksumError
@@ -383,9 +377,9 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         
         addStep("Update the database with 2 inconsistent files and one consistent file.", 
                 "Ingesting the data into the database");
-        FileInfosData data1 = getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID);
-        cache.updateFileInfos(data1.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateFileInfos(data1.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_2, TEST_COLLECTIONID);
+        List<FileInfosDataItem> data1 = getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID);
+        cache.updateFileInfos(data1, TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.updateFileInfos(data1, TEST_PILLAR_2, TEST_COLLECTIONID);
 
         addStep("Finding the files with inconsistent checksums", "No checksum thus no errors");
         List<String> filesWithChecksumError
@@ -401,12 +395,10 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Date testStart = new Date();
         addStep("Update the database with 1 file, missing its checksum on one pillar.", 
                 "Ingesting the data into the database");
-        cache.updateFileInfos(getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID).getFileInfosDataItems().getFileInfosDataItem(),
+        cache.updateFileInfos(getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID),
                 TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateFileInfos(getFileInfosData(null, TEST_FILE_ID).getFileInfosDataItems().getFileInfosDataItem(), 
+        cache.updateFileInfos(getFileInfosData(null, TEST_FILE_ID), 
                 TEST_PILLAR_2, TEST_COLLECTIONID);
-        
-        //cache.updateChecksums(getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM),TEST_PILLAR_1, TEST_COLLECTIONID);
         
         addStep("Finding the files with inconsistent checksums", "No checksum thus no errors");
         List<String> filesWithChecksumError 
@@ -429,10 +421,8 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Date testStart = new Date();
         addStep("Update the database with 1 file, no missing checksums.", 
                 "Ingesting the data into the database");
-        cache.updateFileInfos(getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID).getFileInfosDataItems().getFileInfosDataItem(),
-                TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateFileInfos(getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID).getFileInfosDataItems().getFileInfosDataItem(), 
-                TEST_PILLAR_2, TEST_COLLECTIONID);
+        cache.updateFileInfos(getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID), TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.updateFileInfos(getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID), TEST_PILLAR_2, TEST_COLLECTIONID);
         
         addStep("Finding the files with inconsistent checksums", "No checksum thus no errors");
         List<String> filesWithChecksumError 
@@ -450,8 +440,7 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
                 "The second pillar is reported to be missing the checksum for the file");
         Date secondUpdate = new Date();
         Thread.sleep(1000);
-        cache.updateFileInfos(getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID).getFileInfosDataItems().getFileInfosDataItem(), 
-                TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.updateFileInfos(getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID), TEST_PILLAR_1, TEST_COLLECTIONID);
         addStep("Finding the files with inconsistent checksums", "No checksum thus no errors");
         filesWithChecksumError = getIssuesFromIterator(cache.findFilesWithChecksumInconsistincies(TEST_COLLECTIONID));      
         Assert.assertEquals(filesWithChecksumError, Arrays.asList());
@@ -474,12 +463,10 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         
         addStep("Update the database with one file, one pillar having an outdated checksum.", 
                 "Ingesting the data into the database");
-        cache.updateFileInfos(getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID).getFileInfosDataItems().getFileInfosDataItem(), 
-                TEST_PILLAR_1, TEST_COLLECTIONID);
-        FileInfosData outdatedChecksumData = getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID);
-        outdatedChecksumData.getFileInfosDataItems().getFileInfosDataItem().get(0).setCalculationTimestamp(CalendarUtils.getEpoch());
-        cache.updateFileInfos(outdatedChecksumData.getFileInfosDataItems().getFileInfosDataItem(), 
-                TEST_PILLAR_2, TEST_COLLECTIONID);
+        cache.updateFileInfos(getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID), TEST_PILLAR_1, TEST_COLLECTIONID);
+        List<FileInfosDataItem> outdatedChecksumData = getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID);
+        outdatedChecksumData.get(0).setCalculationTimestamp(CalendarUtils.getEpoch());
+        cache.updateFileInfos(outdatedChecksumData, TEST_PILLAR_2, TEST_COLLECTIONID);
         
         addStep("Finding the files with inconsistent checksums", "No checksum thus no errors");
         List<String> filesWithChecksumError 
@@ -503,11 +490,10 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         String file3 = TEST_FILE_ID + "-3";
         
         addStep("Insert two files into database for a pillar", "Ingesting the data into the database");
-        cache.updateFileInfos(getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID, file2).getFileInfosDataItems().getFileInfosDataItem(), 
+        cache.updateFileInfos(getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID, file2), 
                 TEST_PILLAR_1, TEST_COLLECTIONID);
         addStep("Insert a file to the extra collection for the common pillar", "Data is ingested into the database");
-        cache.updateFileInfos(getFileInfosData(TEST_CHECKSUM, file3).getFileInfosDataItems().getFileInfosDataItem(), 
-                TEST_PILLAR_1, EXTRA_COLLECTION);
+        cache.updateFileInfos(getFileInfosData(TEST_CHECKSUM, file3), TEST_PILLAR_1, EXTRA_COLLECTION);
         
         addStep("Extract all the existing file ids for the pillar for collection '" + TEST_COLLECTIONID + "'", "Both file ids is found.");
         IntegrityIssueIterator it = cache.getAllFileIDsOnPillar(TEST_COLLECTIONID, TEST_PILLAR_1, new Long(0), Long.MAX_VALUE);
@@ -538,7 +524,7 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         String file2 = TEST_FILE_ID + "-2";
         
         addStep("Insert two files into database for a pillar", "Ingesting the data into the database");
-        cache.updateFileInfos(getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID, file2).getFileInfosDataItems().getFileInfosDataItem(), 
+        cache.updateFileInfos(getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID, file2), 
                 TEST_PILLAR_1, TEST_COLLECTIONID);
 
         addStep("Extract with a maximum of 1", "The first file.");
@@ -563,10 +549,9 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         addStep("Insert two files into database for a pillar and mark them as missing", 
                 "Ingesting the data into the database");
         
-        cache.updateFileInfos(getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID, file2).getFileInfosDataItems().getFileInfosDataItem(), 
+        cache.updateFileInfos(getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID, file2), 
                 TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateFileInfos(getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID).getFileInfosDataItems().getFileInfosDataItem(), 
-                TEST_PILLAR_2, TEST_COLLECTIONID);
+        cache.updateFileInfos(getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID), TEST_PILLAR_2, TEST_COLLECTIONID);
         
         addStep("Check the number of files in collection and on pillars", 
                 "The collection should have two files, the first pillar two, the second one");
@@ -590,10 +575,9 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         
         addStep("Insert two files into database for a pillar and set them to missing", 
                 "Ingesting the data into the database");
-        cache.updateFileInfos(getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID, file2, file3).getFileInfosDataItems().getFileInfosDataItem(), 
+        cache.updateFileInfos(getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID, file2, file3), 
                 TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateFileInfos(getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID).getFileInfosDataItems().getFileInfosDataItem(), 
-                TEST_PILLAR_2, TEST_COLLECTIONID);
+        cache.updateFileInfos(getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID), TEST_PILLAR_2, TEST_COLLECTIONID);
 
         addStep("Extract with a maximum of 1", "The first file.");
         IntegrityIssueIterator it = cache.findFilesWithMissingCopies(TEST_COLLECTIONID, 2, 0L, 1L);
@@ -618,16 +602,15 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Assert.assertNull(cache.getLatestFileDate(TEST_COLLECTIONID, TEST_PILLAR_1));
         Assert.assertNull(cache.getLatestFileDate(TEST_COLLECTIONID, TEST_PILLAR_2));
         
-        FileInfosData fidsPillar1 = getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID);
+        List<FileInfosDataItem> fidsPillar1 = getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID);
         Date expectedLatestFileDatePillar1 = CalendarUtils.convertFromXMLGregorianCalendar(
-                fidsPillar1.getFileInfosDataItems().getFileInfosDataItem().get(0).getLastModificationTime());
-        cache.updateFileInfos(fidsPillar1.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_1, TEST_COLLECTIONID);
+                fidsPillar1.get(0).getLastModificationTime());
+        cache.updateFileInfos(fidsPillar1, TEST_PILLAR_1, TEST_COLLECTIONID);
         
-        FileInfosData fidsPillar2 = getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID);
+        List<FileInfosDataItem> fidsPillar2 = getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID);
         Date expectedLatestFileDatePillar2 = new Date(expectedLatestFileDatePillar1.getTime() + 100);
-        fidsPillar2.getFileInfosDataItems().getFileInfosDataItem().get(0)
-            .setLastModificationTime(CalendarUtils.getXmlGregorianCalendar(expectedLatestFileDatePillar2));
-        cache.updateFileInfos(fidsPillar2.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_2, TEST_COLLECTIONID);
+        fidsPillar2.get(0).setLastModificationTime(CalendarUtils.getXmlGregorianCalendar(expectedLatestFileDatePillar2));
+        cache.updateFileInfos(fidsPillar2, TEST_PILLAR_2, TEST_COLLECTIONID);
         
         Assert.assertEquals(cache.getLatestFileDate(TEST_COLLECTIONID, TEST_PILLAR_1), expectedLatestFileDatePillar1);
         Assert.assertEquals(cache.getLatestFileDate(TEST_COLLECTIONID, TEST_PILLAR_2), expectedLatestFileDatePillar2);
@@ -650,11 +633,11 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Assert.assertNull(cache.getLatestChecksumDate(TEST_COLLECTIONID, TEST_PILLAR_1));
         Assert.assertNull(cache.getLatestChecksumDate(TEST_COLLECTIONID, TEST_PILLAR_2));
         
-        FileInfosData fiData = getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID); 
-        cache.updateFileInfos(fiData.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateFileInfos(fiData.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_2, TEST_COLLECTIONID);
+        List<FileInfosDataItem> fiData = getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID); 
+        cache.updateFileInfos(fiData, TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.updateFileInfos(fiData, TEST_PILLAR_2, TEST_COLLECTIONID);
         Date expectedLatestChecksum = CalendarUtils.convertFromXMLGregorianCalendar(
-                fiData.getFileInfosDataItems().getFileInfosDataItem().get(0).getCalculationTimestamp());
+                fiData.get(0).getCalculationTimestamp());
         Assert.assertEquals(cache.getLatestChecksumDate(TEST_COLLECTIONID, TEST_PILLAR_1), expectedLatestChecksum);
         Assert.assertEquals(cache.getLatestChecksumDate(TEST_COLLECTIONID, TEST_PILLAR_2), expectedLatestChecksum);
         
@@ -675,17 +658,17 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Long size2 = new Long(200);
         Long size3 = new Long(300);
         
-        FileInfosData data1 = getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID);
-        data1.getFileInfosDataItems().getFileInfosDataItem().get(0).setFileSize(BigInteger.valueOf(size1));
-        FileInfosData data2 = getFileInfosData(TEST_CHECKSUM, file2);
-        data2.getFileInfosDataItems().getFileInfosDataItem().get(0).setFileSize(BigInteger.valueOf(size2));
-        FileInfosData data3 = getFileInfosData(TEST_CHECKSUM, file3); 
-        data3.getFileInfosDataItems().getFileInfosDataItem().get(0).setFileSize(BigInteger.valueOf(size3));
+        List<FileInfosDataItem> data1 = getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID);
+        data1.get(0).setFileSize(BigInteger.valueOf(size1));
+        List<FileInfosDataItem> data2 = getFileInfosData(TEST_CHECKSUM, file2);
+        data2.get(0).setFileSize(BigInteger.valueOf(size2));
+        List<FileInfosDataItem> data3 = getFileInfosData(TEST_CHECKSUM, file3); 
+        data3.get(0).setFileSize(BigInteger.valueOf(size3));
         
-        cache.updateFileInfos(data1.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateFileInfos(data2.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_1, TEST_COLLECTIONID);      
-        cache.updateFileInfos(data2.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_2, TEST_COLLECTIONID);
-        cache.updateFileInfos(data3.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_2, TEST_COLLECTIONID);
+        cache.updateFileInfos(data1, TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.updateFileInfos(data2, TEST_PILLAR_1, TEST_COLLECTIONID);      
+        cache.updateFileInfos(data2, TEST_PILLAR_2, TEST_COLLECTIONID);
+        cache.updateFileInfos(data3, TEST_PILLAR_2, TEST_COLLECTIONID);
         
         long pillar1Size = size1 + size2;
         long pillar2Size = size2 + size3;
@@ -709,10 +692,10 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Assert.assertNull(cache.getFileIdAtIndex(TEST_COLLECTIONID, 0L));
         
         addStep("Insert test data into database", "Data is ingested");
-        FileInfosData data = getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID);
-        data.getFileInfosDataItems().getFileInfosDataItem().get(0).setFileSize(BigInteger.valueOf(100L));
-        cache.updateFileInfos(data.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateFileInfos(data.getFileInfosDataItems().getFileInfosDataItem(), TEST_PILLAR_2, TEST_COLLECTIONID);
+        List<FileInfosDataItem> data = getFileInfosData(TEST_CHECKSUM, TEST_FILE_ID);
+        data.get(0).setFileSize(BigInteger.valueOf(100L));
+        cache.updateFileInfos(data, TEST_PILLAR_1, TEST_COLLECTIONID);
+        cache.updateFileInfos(data, TEST_PILLAR_2, TEST_COLLECTIONID);
 
         addStep("Extract the first fileID", "The inserted fileID");
         Assert.assertEquals(cache.getFileIdAtIndex(TEST_COLLECTIONID, 0L), TEST_FILE_ID);
@@ -721,63 +704,22 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Assert.assertNull(cache.getFileIdAtIndex(TEST_COLLECTIONID, Long.MAX_VALUE));
     }
     
-    private FileIDsData makeFileIDsDataWithGivenFileSize(String fileID, Long size) {
-        FileIDsData res = new FileIDsData();
-        FileIDsDataItems items = new FileIDsDataItems();
-        FileIDsDataItem dataItem = new FileIDsDataItem();
-        dataItem.setFileID(fileID);
-        dataItem.setFileSize(BigInteger.valueOf(size));
-        dataItem.setLastModificationTime(CalendarUtils.getNow());
-        items.getFileIDsDataItem().add(dataItem);
-        res.setFileIDsDataItems(items);
-        return res;
-    }
-    
-    private List<ChecksumDataForChecksumSpecTYPE> getChecksumResults(String fileID, String checksum) {
-        List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
-        
-        ChecksumDataForChecksumSpecTYPE csData = new ChecksumDataForChecksumSpecTYPE();
-        csData.setChecksumValue(Base16Utils.encodeBase16(checksum));
-        csData.setCalculationTimestamp(CalendarUtils.getNow());
-        csData.setFileID(fileID);
-        res.add(csData);
-        return res;
-    }
-    
-    private FileIDsData getFileIDsData(String... fileIDs) {
-        FileIDsData res = new FileIDsData();
-        FileIDsDataItems items = new FileIDsDataItems();
-        
-        for(String fileID : fileIDs) {
-            FileIDsDataItem dataItem = new FileIDsDataItem();
-            dataItem.setFileID(fileID);
-            dataItem.setFileSize(BigInteger.valueOf(items.getFileIDsDataItem().size() + 1));
-            dataItem.setLastModificationTime(CalendarUtils.getNow());
-            items.getFileIDsDataItem().add(dataItem);
-        } 
-        
-        res.setFileIDsDataItems(items);
-        return res;
-    }
-    
-    private FileInfosData getFileInfosData(String checksum, String... fileIDs) {
-        FileInfosData res = new FileInfosData();
-        FileInfosDataItems items = new FileInfosDataItems();
+    private List<FileInfosDataItem> getFileInfosData(String checksum, String... fileIDs) {
+        List<FileInfosDataItem> items = new ArrayList<>();
         
         for(String fileID : fileIDs) {
             FileInfosDataItem dataItem = new FileInfosDataItem();
             dataItem.setFileID(fileID);
-            dataItem.setFileSize(BigInteger.valueOf(items.getFileInfosDataItem().size() + 1));
+            dataItem.setFileSize(BigInteger.valueOf(items.size() + 1));
             dataItem.setLastModificationTime(CalendarUtils.getNow());
             if(checksum != null) {
                 dataItem.setChecksumValue(Base16Utils.encodeBase16(checksum));
                 dataItem.setCalculationTimestamp(CalendarUtils.getNow());
             }
-            items.getFileInfosDataItem().add(dataItem);
+            items.add(dataItem);
         } 
         
-        res.setFileInfosDataItems(items);
-        return res;
+        return items;
     }
     
     

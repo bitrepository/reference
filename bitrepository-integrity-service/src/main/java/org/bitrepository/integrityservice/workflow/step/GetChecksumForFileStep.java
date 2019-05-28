@@ -138,8 +138,7 @@ public class GetChecksumForFileStep extends AbstractWorkFlowStep {
                 log.warn("No or invalid checksum results from pillar '" + entry.getKey() + "': " + entry.getValue());
                 continue;
             }
-            String checksum = Base16Utils.decodeBase16(entry.getValue().getFileInfosData().getFileInfosDataItems().
-                    getFileInfosDataItem().get(0).getChecksumValue());
+            String checksum = Base16Utils.decodeBase16(entry.getValue().getFileInfosDataItem().get(0).getChecksumValue());
             res.put(entry.getKey(), checksum);
         }
         return res;
@@ -153,11 +152,10 @@ public class GetChecksumForFileStep extends AbstractWorkFlowStep {
      */
     private boolean validateResults(ResultingFileInfos fileInfosData) {
         
-        if(fileInfosData.getFileInfosData().getFileInfosDataItems().getFileInfosDataItem().isEmpty()) {
+        if(fileInfosData.getFileInfosDataItem().isEmpty()) {
             return false;
         }
-        if(!fileInfosData.getFileInfosData().getFileInfosDataItems().getFileInfosDataItem()
-                .get(0).getFileID().equalsIgnoreCase(fileID)) {
+        if(!fileInfosData.getFileInfosDataItem().get(0).getFileID().equalsIgnoreCase(fileID)) {
             return false;
         }
         return true;

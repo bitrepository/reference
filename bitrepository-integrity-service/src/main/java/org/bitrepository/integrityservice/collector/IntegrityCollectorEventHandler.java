@@ -103,8 +103,8 @@ public class IntegrityCollectorEventHandler implements EventHandler {
     private void handleResult(OperationEvent event) {
         if(event instanceof FileInfosCompletePillarEvent) {
             FileInfosCompletePillarEvent fileinfoEvent = (FileInfosCompletePillarEvent) event;
-            log.trace("Receiving GetFileIDs result: {}", fileinfoEvent.getFileInfos().getFileInfosData().getFileInfosDataItems().toString());
-            store.addFileInfos(fileinfoEvent.getFileInfos().getFileInfosData().getFileInfosDataItems().getFileInfosDataItem(), fileinfoEvent.getContributorID(),
+            log.trace("Receiving GetFileIDs result: {}", fileinfoEvent.getFileInfos().getFileInfosDataItem().toString());
+            store.addFileInfos(fileinfoEvent.getFileInfos().getFileInfosDataItem(), fileinfoEvent.getContributorID(),
                     fileinfoEvent.getCollectionID());
             if(fileinfoEvent.isPartialResult()) {
                 integrityContributors.succeedContributor(fileinfoEvent.getContributorID());

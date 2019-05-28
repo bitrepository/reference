@@ -64,7 +64,7 @@ public class GetFileInfosResultModel {
      */
     public void addResults(String contributor, ResultingFileInfos results) {
         Date latestContribution = latestContributorDate.get(contributor);
-        for(FileInfosDataItem item : results.getFileInfosData().getFileInfosDataItems().getFileInfosDataItem()) {
+        for(FileInfosDataItem item : results.getFileInfosDataItem()) {
             if(lastCompletedIDs.contains(item.getFileID())) {
                 continue;
             }
