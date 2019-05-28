@@ -293,8 +293,8 @@ public class GetFileInfosTest extends MockedPillarTest {
         assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
         assertEquals(finalResponse.getPillarID(), getPillarID());
         assertEquals(finalResponse.getFileIDs().getFileID(), FILE_ID);
-        assertEquals(finalResponse.getResultingFileInfos().getFileInfosData().getFileInfosDataItems().getFileInfosDataItem().size(), 1);
-        assertEquals(finalResponse.getResultingFileInfos().getFileInfosData().getFileInfosDataItems().getFileInfosDataItem().get(0).getFileID(), FILE_ID);
+        assertEquals(finalResponse.getResultingFileInfos().getFileInfosDataItem().size(), 1);
+        assertEquals(finalResponse.getResultingFileInfos().getFileInfosDataItem().get(0).getFileID(), FILE_ID);
     }
 
     @SuppressWarnings("rawtypes")
@@ -347,7 +347,7 @@ public class GetFileInfosTest extends MockedPillarTest {
         assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
         assertEquals(finalResponse.getPillarID(), getPillarID());
         assertEquals(finalResponse.getFileIDs().getFileID(), FILE_ID);
-        assertEquals(finalResponse.getResultingFileInfos().getFileInfosData().getFileInfosDataItems().getFileInfosDataItem().size(), 0);
+        assertEquals(finalResponse.getResultingFileInfos().getFileInfosDataItem().size(), 0);
     }
 
     @SuppressWarnings("rawtypes")
@@ -400,7 +400,7 @@ public class GetFileInfosTest extends MockedPillarTest {
         assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
         assertEquals(finalResponse.getPillarID(), getPillarID());
         assertEquals(finalResponse.getFileIDs().getFileID(), FILE_ID);
-        assertEquals(finalResponse.getResultingFileInfos().getFileInfosData().getFileInfosDataItems().getFileInfosDataItem().size(), 0);
+        assertEquals(finalResponse.getResultingFileInfos().getFileInfosDataItem().size(), 0);
     }
 
     @SuppressWarnings("rawtypes")
@@ -435,109 +435,4 @@ public class GetFileInfosTest extends MockedPillarTest {
         assertEquals(finalResponse.getPillarID(), getPillarID());
         assertEquals(finalResponse.getFileIDs().getFileID(), FILE_ID);
     }
-
-//    @SuppressWarnings("rawtypes")
-//    //@Test( groups = {"regressiontest", "pillartest"})
-//    // FAILS, when combined with other tests...
-//    public void goodCaseOperationAllFiles() throws Exception {
-//        addDescription("Tests the GetFileIDs operation on the pillar for the successful scenario, when requesting all files.");
-//        addStep("Set up constants and variables.", "Should not fail here!");
-//        String FILE_ID = DEFAULT_FILE_ID + testMethodName;
-//        FileIDs fileids = FileIDsUtils.getAllFileIDs();
-//
-//        addStep("Setup for having the file and delivering result-set", "No failure here");
-//        doAnswer(new Answer() {
-//            public Boolean answer(InvocationOnMock invocation) {
-//                return true;
-//            }
-//        }).when(model).hasFileID(eq(FILE_ID), anyString());
-//        doAnswer(new Answer() {
-//            public String answer(InvocationOnMock invocation) {
-//                return settingsForCUT.getComponentID();
-//            }
-//        }).when(model).getPillarID();
-//        doAnswer(new Answer() {
-//            public ExtractedFileIDsResultSet answer(InvocationOnMock invocation) {
-//                ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
-//                res.insertFileID(DEFAULT_FILE_ID, new Date(0));
-//                res.insertFileID(NON_DEFAULT_FILE_ID, new Date());
-//                return res;
-//            }
-//        }).when(model).getFileIDsResultSet(isNull(String.class), any(XMLGregorianCalendar.class), any(XMLGregorianCalendar.class), anyLong(), anyString());
-//
-//        addStep("Create and send the actual GetFileIDs message to the pillar.",
-//                "Should be received and handled by the pillar.");
-//        GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(fileids, null);
-//        messageBus.sendMessage(getFileIDsRequest);
-//
-//        addStep("Retrieve the ProgressResponse for the GetFileIDs request",
-//                "The GetFileIDs progress response should be sent by the pillar.");
-//        GetFileIDsProgressResponse progressResponse = clientReceiver.waitForMessage(GetFileIDsProgressResponse.class);
-//        assertEquals(progressResponse.getFileIDs(), fileids);
-//        assertEquals(progressResponse.getPillarID(), getPillarID());
-//        assertNull(progressResponse.getResultAddress());
-//
-//        addStep("Retrieve the FinalResponse for the GetFileIDs request",
-//                "The final response should say 'operation_complete', and give the requested data.");
-//        GetFileIDsFinalResponse finalResponse = clientReceiver.waitForMessage(GetFileIDsFinalResponse.class);
-//        assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
-//        assertEquals(finalResponse.getPillarID(), getPillarID());
-//        assertNull(finalResponse.getFileIDs().getFileID());
-//        assertEquals(finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size(), 2);
-//    }
-//
-//    @SuppressWarnings("rawtypes")
-//    //@Test( groups = {"regressiontest", "pillartest"})
-//    // FAILS, when combined with other tests...
-//    public void testRestrictions() throws Exception {
-//        addDescription("Tests that the restrictions are correctly passed on to the cache.");
-//
-//        addStep("Set up constants and variables.", "Should not fail here!");
-//        final String FILE_ID = DEFAULT_FILE_ID + testMethodName;
-//        FileIDs fileids = FileIDsUtils.getAllFileIDs();
-//
-//        final XMLGregorianCalendar MIN_DATE = CalendarUtils.getXmlGregorianCalendar(new Date(12345));
-//        final XMLGregorianCalendar MAX_DATE = CalendarUtils.getXmlGregorianCalendar(new Date());
-//        final Long MAX_RESULTS = 12345L;
-//
-//        doAnswer(new Answer() {
-//            public Boolean answer(InvocationOnMock invocation) {
-//                return true;
-//            }
-//        }).when(model).hasFileID(eq(FILE_ID), eq(collectionID));
-//        doAnswer(new Answer() {
-//            public String answer(InvocationOnMock invocation) {
-//                return settingsForCUT.getComponentID();
-//            }
-//        }).when(model).getPillarID();
-//        addStep("Setup for only delivering result-set when the correct restrictions are given.", "No failure here");
-//        doAnswer(new Answer() {
-//            public ExtractedFileIDsResultSet answer(InvocationOnMock invocation) {
-//                ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
-//                res.insertFileID(FILE_ID, new Date(1234567890));
-//                return res;
-//            }
-//        }).when(model).getFileIDsResultSet(isNull(String.class), eq(MIN_DATE), eq(MAX_DATE), eq(MAX_RESULTS), eq(collectionID));
-//
-//        addStep("Create and send the actual GetFileIDs message to the pillar.",
-//                "Should be received and handled by the pillar.");
-//        GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(fileids, null, MAX_RESULTS, MAX_DATE, MIN_DATE);
-//        messageBus.sendMessage(getFileIDsRequest);
-//
-//        addStep("Retrieve the ProgressResponse for the GetFileIDs request",
-//                "The GetFileIDs progress response should be sent by the pillar.");
-//        GetFileIDsProgressResponse progressResponse = clientReceiver.waitForMessage(GetFileIDsProgressResponse.class);
-//        assertEquals(progressResponse.getFileIDs(), fileids);
-//        assertEquals(progressResponse.getPillarID(), getPillarID());
-//        assertNull(progressResponse.getResultAddress());
-//
-//        addStep("Retrieve the FinalResponse for the GetFileIDs request",
-//                "The final response should say 'operation_complete', and give the requested data.");
-//        GetFileIDsFinalResponse finalResponse = clientReceiver.waitForMessage(GetFileIDsFinalResponse.class);
-//        assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
-//        assertEquals(finalResponse.getPillarID(), getPillarID());
-//        assertNull(finalResponse.getFileIDs().getFileID());
-//        assertEquals(finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size(), 1);
-//        assertEquals(finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID(), FILE_ID);
-//    }
 }

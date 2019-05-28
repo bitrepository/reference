@@ -27,8 +27,6 @@ package org.bitrepository.pillar.messagehandler;
 import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositorydata.GetFileInfosResults;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.FileInfosData;
-import org.bitrepository.bitrepositoryelements.FileInfosData.FileInfosDataItems;
 import org.bitrepository.bitrepositoryelements.FileInfosDataItem;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
@@ -38,8 +36,6 @@ import org.bitrepository.bitrepositorymessages.GetFileInfosProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileInfosRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.JaxbHelper;
-import org.bitrepository.common.filestore.FileInfo;
-import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;
@@ -59,7 +55,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.math.BigInteger;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -189,14 +184,12 @@ public class GetFileInfosRequestHandler extends PerformRequestHandler<GetFileInf
     private ResultingFileInfos compileResultsForMessage(ExtractedChecksumResultSet checksumResultSet,
             GetFileInfosRequest request) throws RequestHandlerException {
         ResultingFileInfos res = new ResultingFileInfos();
-        res.setFileInfosData(new FileInfosData());
-        res.getFileInfosData().setFileInfosDataItems(new FileInfosDataItems());
-        
+
         for(ChecksumDataForChecksumSpecTYPE cs : checksumResultSet.getEntries()) {
             FileInfosDataItem info = getPillarModel().getFileInfosDataItemFromChecksumDataItem(cs,
                     request.getCollectionID());
             if(info != null) {
-                res.getFileInfosData().getFileInfosDataItems().getFileInfosDataItem().add(info);
+                res.getFileInfosDataItem().add(info);
             }
         }
 
