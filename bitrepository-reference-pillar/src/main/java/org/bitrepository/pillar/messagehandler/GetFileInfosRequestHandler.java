@@ -27,8 +27,6 @@ package org.bitrepository.pillar.messagehandler;
 import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositorydata.GetFileInfosResults;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.FileInfosData;
-import org.bitrepository.bitrepositoryelements.FileInfosData.FileInfosDataItems;
 import org.bitrepository.bitrepositoryelements.FileInfosDataItem;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
@@ -38,8 +36,6 @@ import org.bitrepository.bitrepositorymessages.GetFileInfosProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileInfosRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.JaxbHelper;
-import org.bitrepository.common.filestore.FileInfo;
-import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;
@@ -59,7 +55,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.math.BigInteger;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -189,58 +184,15 @@ public class GetFileInfosRequestHandler extends PerformRequestHandler<GetFileInf
     private ResultingFileInfos compileResultsForMessage(ExtractedChecksumResultSet checksumResultSet,
             GetFileInfosRequest request) throws RequestHandlerException {
         ResultingFileInfos res = new ResultingFileInfos();
-        res.setFileInfosData(new FileInfosData());
-        res.getFileInfosData().setFileInfosDataItems(new FileInfosDataItems());
-        
+
         for(ChecksumDataForChecksumSpecTYPE cs : checksumResultSet.getEntries()) {
-            FileInfosDataItem info = getFileInfoDataItem(cs, request);
+            FileInfosDataItem info = getPillarModel().getFileInfosDataItemFromChecksumDataItem(cs,
+                    request.getCollectionID());
             if(info != null) {
-                res.getFileInfosData().getFileInfosDataItems().getFileInfosDataItem().add(info);
+                res.getFileInfosDataItem().add(info);
             }
         }
 
-        return res;
-    }
-
-    /**
-     * Creates a FileInfoDataItem from a checksum extraction.
-     * If the last modified date for the file is not between the file dates, then a null is returned.
-     * @param cs The checksum results from the database.
-     * @param request The GetFileInfosRequest.
-     * @return The FileInfoDataItem corresponding to the checksum result. Or null if it does not
-     * @throws RequestHandlerException If it fails to extract the data for the file.
-     */
-    protected FileInfosDataItem getFileInfoDataItem(ChecksumDataForChecksumSpecTYPE cs, GetFileInfosRequest request)
-            throws RequestHandlerException {
-        FileInfo fileData = null;
-        
-        try {
-            fileData = getPillarModel().getFileInfoForActualFile(cs.getFileID(), request.getCollectionID());
-        } catch(RequestHandlerException e) {
-            log.trace("Unable to obtain fileData as it is a checksumpillar", e);
-        }
-        
-        if(fileData != null) {
-            Long fileDate = fileData.getLastModifiedDate();
-            if(!CalendarUtils.isDateBetween(fileDate, request.getMinFileTimestamp(), request.getMaxFileTimestamp())) {
-                log.debug("Ignoring " + fileData.getFileID() + ", since it does not have a ");
-                return null;
-            }
-        }
-
-        FileInfosDataItem res = new FileInfosDataItem();
-        res.setCalculationTimestamp(cs.getCalculationTimestamp());
-        res.setChecksumValue(cs.getChecksumValue());
-        res.setFileID(cs.getFileID());
-
-        if(fileData == null) {
-            // from Checksum Replica
-            res.setLastModificationTime(cs.getCalculationTimestamp());
-            res.setFileSize(BigInteger.valueOf(0L));
-        } else {
-            res.setLastModificationTime(CalendarUtils.getFromMillis(fileData.getLastModifiedDate()));
-            res.setFileSize(BigInteger.valueOf(fileData.getSize()));
-        }
         return res;
     }
 
@@ -268,7 +220,8 @@ public class GetFileInfosRequestHandler extends PerformRequestHandler<GetFileInf
         results.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
         results.setCollectionID(request.getCollectionID());
         for(ChecksumDataForChecksumSpecTYPE cs : checksumResultSet.getEntries()) {
-            FileInfosDataItem dataItem = getFileInfoDataItem(cs, request);
+            FileInfosDataItem dataItem = getPillarModel().getFileInfosDataItemFromChecksumDataItem(cs,
+                    request.getCollectionID());
             if(dataItem != null) {
                 results.getFileInfosDataItem().add(dataItem);
             }

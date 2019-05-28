@@ -156,9 +156,7 @@ public class PillarFileManager {
         }
     }*/
     
-    public List<FileInfosDataItem> getFileInfos(ChecksumSpecTYPE checksumSpec,
-            ContributorQuery query,
-            String fileID) {
+    public List<FileInfosDataItem> getFileInfos(ChecksumSpecTYPE checksumSpec, ContributorQuery query, String fileID) {
         if (checksumSpec == null) {
             checksumSpec = ChecksumUtils.getDefault(mySettings);
         }
@@ -171,7 +169,7 @@ public class PillarFileManager {
             List<ContributorEvent> result = clientProvider.getGetFileInfosClient().getFileInfos(collectionID,
                 new ContributorQuery[]{query}, fileID, checksumSpec,  null, null, null);
             FileInfosCompletePillarEvent pillarResult = (FileInfosCompletePillarEvent) result.get(0);
-            return pillarResult.getFileInfos().getFileInfosData().getFileInfosDataItems().getFileInfosDataItem();
+            return pillarResult.getFileInfos().getFileInfosDataItem();
         } catch (Exception e) {
             throw new RuntimeException("Failed to fileIDs from pillar " + pillarID, e);
         }
