@@ -76,7 +76,7 @@ public class FileInfoUpdater {
             + "	AND collectionID = ?"
             + " AND pillarID = ?";	
 
-    private final String insertLatestChecksumTime = "INSERT INTO collection_progress "
+    private final String insertLatestFileInfoTime = "INSERT INTO collection_progress "
             + "(collectionID, pillarID, latest_file_timestamp, latest_checksum_timestamp)"
             + " ( SELECT collectionID, ?, ?, ? FROM collections"
                 + " WHERE collectionID = ?"
@@ -85,7 +85,8 @@ public class FileInfoUpdater {
                     + " WHERE collectionID = ?"
                     + " AND pillarID = ?))";
 
-    private final String updateLatestChecksumTime = "UPDATE collection_progress"
+    private final String updateLatestFileInfoTime = "UPDATE collection_progress"
+
             + " SET latest_file_timestamp = ?, latest_checksum_timestamp = ? "
             + " WHERE collectionID = ?"
             + " AND pillarID = ?";
@@ -110,8 +111,8 @@ public class FileInfoUpdater {
         conn.setAutoCommit(false);
         insertFileInfoPS = conn.prepareStatement(insertFileInfoSql);
         updateChecksumPS = conn.prepareStatement(updateFileInfoSql);
-        insertLatestChecksumTimePS = conn.prepareStatement(insertLatestChecksumTime);
-        updateLatestChecksumTimePS = conn.prepareStatement(updateLatestChecksumTime);
+        insertLatestChecksumTimePS = conn.prepareStatement(insertLatestFileInfoTime);
+        updateLatestChecksumTimePS = conn.prepareStatement(updateLatestFileInfoTime);
     }
 
     /**
