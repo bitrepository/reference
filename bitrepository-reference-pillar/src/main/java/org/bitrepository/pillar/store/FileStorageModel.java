@@ -25,6 +25,7 @@
 package org.bitrepository.pillar.store;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.URL;
 import java.util.Date;
 import java.util.Map;
@@ -34,8 +35,10 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
+import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.FileInfosDataItem;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.common.filestore.FileInfo;
 import org.bitrepository.common.filestore.FileStore;
@@ -158,6 +161,22 @@ public class FileStorageModel extends StorageModel {
             res.insertChecksumEntry(entry);
         }
         return res;
+    }
+
+    @Override
+    public FileInfosDataItem getFileInfosDataItemFromChecksumDataItem(ChecksumDataForChecksumSpecTYPE cs,
+                                                                        String collectionID) {
+        FileInfo fileData = getFileInfoForActualFile(cs.getFileID(), collectionID);
+
+        FileInfosDataItem res = new FileInfosDataItem();
+        res.setCalculationTimestamp(cs.getCalculationTimestamp());
+        res.setChecksumValue(cs.getChecksumValue());
+        res.setFileID(cs.getFileID());
+        res.setLastModificationTime(CalendarUtils.getFromMillis(fileData.getLastModifiedDate()));
+        res.setFileSize(BigInteger.valueOf(fileData.getSize()));
+
+        return res;
+
     }
 
     @Override

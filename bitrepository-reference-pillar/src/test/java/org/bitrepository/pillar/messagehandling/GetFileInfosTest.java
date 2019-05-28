@@ -24,8 +24,10 @@
  */
 package org.bitrepository.pillar.messagehandling;
 
+import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
+import org.bitrepository.bitrepositoryelements.FileInfosDataItem;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
@@ -234,66 +236,12 @@ public class GetFileInfosTest extends MockedPillarTest {
 
     @SuppressWarnings("rawtypes")
     @Test( groups = {"regressiontest", "pillartest"})
-    public void goodCaseOperationSingleFileForChecksumPillar() throws Exception {
-        addDescription("Tests the GetFileInfos operation on the checksum pillar for the successful scenario when requesting one specific file.");
-        addStep("Set up constants and variables.", "Should not fail here!");
-        final String FILE_ID = DEFAULT_FILE_ID + testMethodName;
-        FileIDs fileids = FileIDsUtils.getSpecificFileIDs(FILE_ID);
-        addStep("Setup for having the file and delivering result-set", "No failure here");
-        doAnswer(new Answer() {
-            public Boolean answer(InvocationOnMock invocation) {
-                return true;
-            }
-        }).when(model).hasFileID(eq(FILE_ID), anyString());
-        doAnswer(new Answer() {
-            public String answer(InvocationOnMock invocation) {
-                return settingsForCUT.getComponentID();
-            }
-        }).when(model).getPillarID();
-        doAnswer(new Answer() {
-            public ExtractedChecksumResultSet answer(InvocationOnMock invocation) {
-                ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
-                res.insertChecksumEntry(new ChecksumEntry(FILE_ID, DEFAULT_MD5_CHECKSUM, new Date()));
-                return res;
-
-            }
-        }).when(model).getSingleChecksumResultSet(eq(FILE_ID), anyString(), any(XMLGregorianCalendar.class), any(XMLGregorianCalendar.class), any(ChecksumSpecTYPE.class));
-        doAnswer(new Answer() {
-            public FileInfo answer(InvocationOnMock invocation) {
-                return null;
-
-            }
-        }).when(model).getFileInfoForActualFile(eq(FILE_ID), anyString());
-
-        addStep("Create and send the actual GetFileInfos message to the pillar.",
-                "Should be received and handled by the pillar.");
-        GetFileInfosRequest getFileInfosRequest = msgFactory.createGetFileInfosRequest(csSpec, fileids, null);
-        messageBus.sendMessage(getFileInfosRequest);
-
-        addStep("Retrieve the ProgressResponse for the GetFileInfos request",
-                "The GetFileInfos progress response should be sent by the pillar.");
-        GetFileInfosProgressResponse progressResponse = clientReceiver.waitForMessage(GetFileInfosProgressResponse.class);
-        assertEquals(progressResponse.getFileIDs(), fileids);
-        assertEquals(progressResponse.getPillarID(), getPillarID());
-        assertNull(progressResponse.getResultAddress());
-
-        addStep("Retrieve the FinalResponse for the GetFileInfos request",
-                "The final response should say 'operation_complete', and give the requested data.");
-        GetFileInfosFinalResponse finalResponse = clientReceiver.waitForMessage(GetFileInfosFinalResponse.class);
-        assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
-        assertEquals(finalResponse.getPillarID(), getPillarID());
-        assertEquals(finalResponse.getFileIDs().getFileID(), FILE_ID);
-        assertEquals(finalResponse.getResultingFileInfos().getFileInfosData().getFileInfosDataItems().getFileInfosDataItem().size(), 1);
-        assertEquals(finalResponse.getResultingFileInfos().getFileInfosData().getFileInfosDataItems().getFileInfosDataItem().get(0).getFileID(), FILE_ID);
-    }
-
-    @SuppressWarnings("rawtypes")
-    @Test( groups = {"regressiontest", "pillartest"})
-    public void goodCaseOperationSingleFileForFilePillar() throws Exception {
+    public void goodCaseOperationSingleFile() throws Exception {
         addDescription("Tests the GetFileInfos operation on the pillar for the successful scenario when requesting one specific file.");
         addStep("Set up constants and variables.", "Should not fail here!");
         final String FILE_ID = DEFAULT_FILE_ID + testMethodName;
         FileIDs fileids = FileIDsUtils.getSpecificFileIDs(FILE_ID);
+        ChecksumEntry cs = new ChecksumEntry(FILE_ID, DEFAULT_MD5_CHECKSUM, new Date());
         addStep("Setup for having the file and delivering result-set", "No failure here");
         doAnswer(new Answer() {
             public Boolean answer(InvocationOnMock invocation) {
@@ -308,17 +256,24 @@ public class GetFileInfosTest extends MockedPillarTest {
         doAnswer(new Answer() {
             public ExtractedChecksumResultSet answer(InvocationOnMock invocation) {
                 ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
-                res.insertChecksumEntry(new ChecksumEntry(FILE_ID, DEFAULT_MD5_CHECKSUM, new Date()));
+                res.insertChecksumEntry(cs);
                 return res;
 
             }
         }).when(model).getSingleChecksumResultSet(eq(FILE_ID), anyString(), any(XMLGregorianCalendar.class), any(XMLGregorianCalendar.class), any(ChecksumSpecTYPE.class));
         doAnswer(new Answer() {
-            public FileInfo answer(InvocationOnMock invocation) {
-                return new FileInfoStub(FILE_ID, System.currentTimeMillis(), 1L, null);
+            public FileInfosDataItem answer(InvocationOnMock invocation) {
+                ChecksumDataForChecksumSpecTYPE cs = (ChecksumDataForChecksumSpecTYPE) invocation.getArguments()[0];
+                FileInfosDataItem res = new FileInfosDataItem();
+                res.setCalculationTimestamp(cs.getCalculationTimestamp());
+                res.setChecksumValue(cs.getChecksumValue());
+                res.setFileID(cs.getFileID());
+                res.setLastModificationTime(cs.getCalculationTimestamp());
+
+                return res;
 
             }
-        }).when(model).getFileInfoForActualFile(eq(FILE_ID), anyString());
+        }).when(model).getFileInfosDataItemFromChecksumDataItem(any(ChecksumDataForChecksumSpecTYPE.class), eq(collectionID));
 
         addStep("Create and send the actual GetFileInfos message to the pillar.",
                 "Should be received and handled by the pillar.");
