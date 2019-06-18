@@ -32,6 +32,7 @@ import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.ChunkyManagedHttpClientConnectionFactory;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
@@ -80,33 +81,39 @@ public class HttpsFileExchange extends HttpFileExchange {
             throw new CoordinationLayerException("Could not open the connection to the url '" + url + "'", e);
         }
     }
-
-    @Override
-    protected CloseableHttpClient getHttpClient() {
-        HttpClientBuilder builder = HttpClientBuilder.create();
+    
+    protected HttpClientBuilder sslHttpClient(HttpClientBuilder builder) {
         try {
-            Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
-                    .register("http", PlainConnectionSocketFactory.getSocketFactory())
-                    .register("https", new SSLConnectionSocketFactory(
-                            SSLContext.getDefault(),
-                            hostnameVerifier))
-                    .build();
-            final PoolingHttpClientConnectionManager poolingmgr = new PoolingHttpClientConnectionManager(
-                    socketFactoryRegistry,
-                    new ChunkyManagedHttpClientConnectionFactory(HTTP_CHUNK_SIZE),
-                    SystemDefaultDnsResolver.INSTANCE);
-
-            SocketConfig socketConfig = SocketConfig.custom()
-                    .setSoKeepAlive(true)
-                    .setSndBufSize(HTTP_BUFFER_SIZE)
-                    .setRcvBufSize(HTTP_BUFFER_SIZE).build();
-            poolingmgr.setDefaultSocketConfig(socketConfig);
-
+            Registry<ConnectionSocketFactory> socketFactoryRegistry =
+                    RegistryBuilder.<ConnectionSocketFactory>create()
+                            .register("http", PlainConnectionSocketFactory.getSocketFactory())
+                            .register("https", new SSLConnectionSocketFactory(
+                                    SSLContext.getDefault(),
+                                    hostnameVerifier))
+                            .build();
+    
+            final PoolingHttpClientConnectionManager poolingmgr =
+                    new PoolingHttpClientConnectionManager(
+                            socketFactoryRegistry,
+                            new ChunkyManagedHttpClientConnectionFactory(HTTP_CHUNK_SIZE),
+                            SystemDefaultDnsResolver.INSTANCE);
+    
             builder.setConnectionManager(poolingmgr);
+            return builder;
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException("Could not make Https Client.", e);
         }
+    }
+
+    @Override
+    protected CloseableHttpClient getHttpClient() {
+        HttpClientBuilder builder = sslHttpClient(basicHttpClient());
+        return builder.build();
+    }
     
+    @Override
+    protected CloseableHttpClient getNonRetryingHttpClient() {
+        HttpClientBuilder builder = nonRetryingHttpClient(sslHttpClient(basicHttpClient()));
         return builder.build();
     }
 }

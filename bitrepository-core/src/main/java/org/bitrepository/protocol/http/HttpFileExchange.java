@@ -39,12 +39,14 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.config.SocketConfig;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.ChunkyManagedHttpClientConnectionFactory;
@@ -188,7 +190,7 @@ public class HttpFileExchange implements FileExchange {
         ArgumentValidator.checkNotNull(url, "URL url");
         
 
-        try (CloseableHttpClient httpClient = getHttpClient()) {
+        try (CloseableHttpClient httpClient = getNonRetryingHttpClient()) { //non-retrying client as the stream cannot be retried
             HttpPut httpPut = new HttpPut(url.toExternalForm());
             InputStreamEntity reqEntity = new LargeChunkedInputStreamEntity(in);
             reqEntity.setChunked(true);
@@ -236,24 +238,47 @@ public class HttpFileExchange implements FileExchange {
         }
     }
     
+
+    protected HttpClientBuilder basicHttpClient(){
+        HttpClientBuilder builder = HttpClients.custom();
+        PoolingHttpClientConnectionManager poolingmgr = new PoolingHttpClientConnectionManager(
+                new ChunkyManagedHttpClientConnectionFactory(HTTP_CHUNK_SIZE));
+        SocketConfig socketConfig = SocketConfig.custom()
+                                                .setSoKeepAlive(true)
+                                                .setSndBufSize(HTTP_BUFFER_SIZE)
+                                                .setRcvBufSize(HTTP_BUFFER_SIZE)
+                                                .build();
+        poolingmgr.setDefaultSocketConfig(socketConfig);
+        builder.setConnectionManager(poolingmgr);
+        return builder;
+    }
+    
+    protected HttpClientBuilder nonRetryingHttpClient(HttpClientBuilder builder){
+        return builder.setRetryHandler(new DefaultHttpRequestRetryHandler(0,false));
+    
+    }
+    
     /**
      * Retrieves the HttpClient with the correct setup.
      * For HTTPS this should be overridden with SSL context.
      * @return The HttpClient for this FileExchange.
      */
     protected CloseableHttpClient getHttpClient() {
-        HttpClientBuilder builder = HttpClients.custom();
-        PoolingHttpClientConnectionManager poolingmgr = new PoolingHttpClientConnectionManager(
-                new ChunkyManagedHttpClientConnectionFactory(HTTP_CHUNK_SIZE));
-        SocketConfig socketConfig = SocketConfig.custom()
-                .setSndBufSize(HTTP_BUFFER_SIZE)
-                .setRcvBufSize(HTTP_BUFFER_SIZE)
-                .build();
-        poolingmgr.setDefaultSocketConfig(socketConfig);
-        builder.setConnectionManager(poolingmgr);
-        return builder.build();
+        return basicHttpClient().build();
     }
-
+    
+    /**
+     * Retrieves the HttpClient with the correct setup.
+     * For HTTPS this should be overridden with SSL context.
+     * @return The HttpClient for this FileExchange.
+     */
+    protected CloseableHttpClient getNonRetryingHttpClient() {
+        return nonRetryingHttpClient(basicHttpClient()).build();
+    }
+    
+    
+    
+    
     @Override
     public void deleteFile(URL url) throws IOException, URISyntaxException {
         try (CloseableHttpClient httpClient = getHttpClient()) {
