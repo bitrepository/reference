@@ -34,7 +34,9 @@ import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.PillarSettingsProvider;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.model.PillarFileManager;
+import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.IntegrationTest;
+import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.*;
 import org.bitrepository.protocol.security.SecurityManager;
@@ -47,6 +49,7 @@ import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 
+import java.io.File;
 import java.util.Arrays;
 
 import javax.jms.JMSException;
@@ -236,6 +239,10 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
 
     protected void putDefaultFile() {
         try {
+            FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(settingsForCUT);
+            File defaultFile = new File(getClass().getClassLoader().getResource("default-test-file.txt").getFile());
+            fe.putFile(defaultFile);
+            
             clientProvider.getPutClient().putFile(
                     collectionID, DEFAULT_FILE_URL, DEFAULT_FILE_ID, 10L, TestFileHelper.getDefaultFileChecksum(),
                 null, clientEventHandler, null);
