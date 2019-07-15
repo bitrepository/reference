@@ -50,6 +50,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 
 import javax.jms.JMSException;
@@ -240,8 +242,13 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     protected void putDefaultFile() {
         try {
             FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(settingsForCUT);
-            File defaultFile = new File(getClass().getClassLoader().getResource("default-test-file.txt").getFile());
-            fe.putFile(defaultFile);
+            try(InputStream fis = getClass().getClassLoader().getResourceAsStream("default-test-file.txt")) {
+                fe.putFile(fis, DEFAULT_FILE_URL);    
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            
             
             clientProvider.getPutClient().putFile(
                     collectionID, DEFAULT_FILE_URL, DEFAULT_FILE_ID, 10L, TestFileHelper.getDefaultFileChecksum(),
