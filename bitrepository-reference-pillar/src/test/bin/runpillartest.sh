@@ -36,3 +36,4 @@ rm -r target
 
 $JAVA $DEBUG_OPTS $LOGBACK $JAVA_OPTS $TEST_FILE
 
+exit $?
