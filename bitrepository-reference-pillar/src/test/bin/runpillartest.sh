@@ -33,6 +33,7 @@ JAVA_OPTS="-classpath ..:testprops/::lib/* org.testng.TestNG"
 rm -r log
 rm -r test-output
 rm -r target
+mkdir target
 
 $JAVA $DEBUG_OPTS $LOGBACK $JAVA_OPTS $TEST_FILE
 
