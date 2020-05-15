@@ -48,7 +48,7 @@ public class DeleteFileRequestIT extends DefaultPillarOperationTest {
 
     @BeforeMethod(alwaysRun=true)
     public void initialiseReferenceTest(Method method) throws Exception {
-        pillarDestination = lookupReplaceFileDestination();
+        pillarDestination = lookupDeleteFileDestination();
         msgFactory = new DeleteFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), pillarDestination);
         clientProvider.getPutClient().putFile(
                 collectionID, DEFAULT_FILE_URL, testSpecificFileID, 10L, TestFileHelper.getDefaultFileChecksum(),
@@ -83,7 +83,7 @@ public class DeleteFileRequestIT extends DefaultPillarOperationTest {
         Assert.assertEquals(finalResponse.getPillarID(), getPillarID());
     }
     
-    @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
+    @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST})
     public void requestNewChecksumDeleteFileTest() {
         addDescription("Tests a normal DeleteFile sequence");
         addStep("Send a DeleteFile request to " + testConfiguration.getPillarUnderTestID(),
@@ -131,7 +131,7 @@ public class DeleteFileRequestIT extends DefaultPillarOperationTest {
         clientReceiver.checkNoMessageIsReceived(DeleteFileFinalResponse.class);
     }
 
-    public String lookupReplaceFileDestination() {
+    public String lookupDeleteFileDestination() {
         DeleteFileMessageFactory deleteLookupMessageFactory =
                 new DeleteFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
         IdentifyPillarsForDeleteFileRequest identifyRequest = deleteLookupMessageFactory.createIdentifyPillarsForDeleteFileRequest(
