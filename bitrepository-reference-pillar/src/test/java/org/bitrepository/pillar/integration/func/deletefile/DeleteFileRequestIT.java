@@ -114,7 +114,7 @@ public class DeleteFileRequestIT extends DefaultPillarOperationTest {
         Assert.assertEquals(finalResponse.getFrom(), getPillarID());
         Assert.assertNotNull(finalResponse.getChecksumDataForExistingFile());
         Assert.assertEquals(finalResponse.getChecksumDataForExistingFile().getChecksumSpec(), 
-                requestedChecksumSpec.getChecksumType());
+                requestedChecksumSpec);
         Assert.assertEquals(finalResponse.getPillarID(), getPillarID());
     }
 
