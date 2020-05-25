@@ -64,12 +64,13 @@ public class DeleteFileRequestIT extends DefaultPillarOperationTest {
         addStep("Send a DeleteFile request to " + testConfiguration.getPillarUnderTestID(),
                 "The pillar should generate a OPERATION_ACCEPTED_PROGRESS progress response followed by a " +
                 "OPERATION_COMPLETED final response");
-        DeleteFileRequest putRequest = (DeleteFileRequest) createRequest();
-        messageBus.sendMessage(putRequest);
+        DeleteFileRequest deleteRequest = (DeleteFileRequest) createRequest();
+        deleteRequest.setFileID(testSpecificFileID);
+        messageBus.sendMessage(deleteRequest);
 
         DeleteFileProgressResponse progressResponse = clientReceiver.waitForMessage(DeleteFileProgressResponse.class);
         Assert.assertNotNull(progressResponse);
-        Assert.assertEquals(progressResponse.getCorrelationID(), putRequest.getCorrelationID());
+        Assert.assertEquals(progressResponse.getCorrelationID(), deleteRequest.getCorrelationID());
         Assert.assertEquals(progressResponse.getFrom(), getPillarID());
         Assert.assertEquals(progressResponse.getPillarID(), getPillarID());
         Assert.assertEquals(progressResponse.getResponseInfo().getResponseCode(),
@@ -78,7 +79,7 @@ public class DeleteFileRequestIT extends DefaultPillarOperationTest {
         DeleteFileFinalResponse finalResponse = clientReceiver.waitForMessage(DeleteFileFinalResponse.class);
         Assert.assertNotNull(finalResponse);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
-        Assert.assertEquals(finalResponse.getCorrelationID(), putRequest.getCorrelationID());
+        Assert.assertEquals(finalResponse.getCorrelationID(), deleteRequest.getCorrelationID());
         Assert.assertEquals(finalResponse.getFrom(), getPillarID());
         Assert.assertEquals(finalResponse.getPillarID(), getPillarID());
     }
@@ -94,13 +95,13 @@ public class DeleteFileRequestIT extends DefaultPillarOperationTest {
         requestedChecksumSpec.setChecksumType(ChecksumType.HMAC_MD5);
         requestedChecksumSpec.setChecksumSalt(Base16Utils.encodeBase16("abab"));
         
-        DeleteFileRequest putRequest = msgFactory.createDeleteFileRequest(
-                TestFileHelper.getDefaultFileChecksum(), requestedChecksumSpec, DEFAULT_FILE_ID);
-        messageBus.sendMessage(putRequest);
+        DeleteFileRequest deleteRequest = msgFactory.createDeleteFileRequest(
+                TestFileHelper.getDefaultFileChecksum(), requestedChecksumSpec, testSpecificFileID);
+        messageBus.sendMessage(deleteRequest);
 
         DeleteFileProgressResponse progressResponse = clientReceiver.waitForMessage(DeleteFileProgressResponse.class);
         Assert.assertNotNull(progressResponse);
-        Assert.assertEquals(progressResponse.getCorrelationID(), putRequest.getCorrelationID());
+        Assert.assertEquals(progressResponse.getCorrelationID(), deleteRequest.getCorrelationID());
         Assert.assertEquals(progressResponse.getFrom(), getPillarID());
         Assert.assertEquals(progressResponse.getPillarID(), getPillarID());
         Assert.assertEquals(progressResponse.getResponseInfo().getResponseCode(),
@@ -109,7 +110,7 @@ public class DeleteFileRequestIT extends DefaultPillarOperationTest {
         DeleteFileFinalResponse finalResponse = clientReceiver.waitForMessage(DeleteFileFinalResponse.class);
         Assert.assertNotNull(finalResponse);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
-        Assert.assertEquals(finalResponse.getCorrelationID(), putRequest.getCorrelationID());
+        Assert.assertEquals(finalResponse.getCorrelationID(), deleteRequest.getCorrelationID());
         Assert.assertEquals(finalResponse.getFrom(), getPillarID());
         Assert.assertNull(finalResponse.getChecksumDataForExistingFile());
         Assert.assertEquals(finalResponse.getChecksumDataForExistingFile().getChecksumSpec(), 
