@@ -61,14 +61,14 @@ public class ReplaceFileRequestIT extends DefaultPillarOperationTest {
         addStep("Send a ReplaceFile request to " + testConfiguration.getPillarUnderTestID(),
                 "The pillar should generate a OPERATION_ACCEPTED_PROGRESS progress response followed by a " +
                 "OPERATION_COMPLETED final response");
-        ReplaceFileRequest putRequest = msgFactory.createReplaceFileRequest(
+        ReplaceFileRequest replaceRequest = msgFactory.createReplaceFileRequest(
                 TestFileHelper.getDefaultFileChecksum(), TestFileHelper.getDefaultFileChecksum(),
                 null, null, DEFAULT_DOWNLOAD_FILE_ADDRESS, testSpecificFileID, DEFAULT_FILE_SIZE);
-        messageBus.sendMessage(putRequest);
+        messageBus.sendMessage(replaceRequest);
 
         ReplaceFileProgressResponse progressResponse = clientReceiver.waitForMessage(ReplaceFileProgressResponse.class);
         Assert.assertNotNull(progressResponse);
-        Assert.assertEquals(progressResponse.getCorrelationID(), putRequest.getCorrelationID());
+        Assert.assertEquals(progressResponse.getCorrelationID(), replaceRequest.getCorrelationID());
         Assert.assertEquals(progressResponse.getFrom(), getPillarID());
         Assert.assertEquals(progressResponse.getPillarID(), getPillarID());
         Assert.assertEquals(progressResponse.getResponseInfo().getResponseCode(),
@@ -77,7 +77,7 @@ public class ReplaceFileRequestIT extends DefaultPillarOperationTest {
         ReplaceFileFinalResponse finalResponse = clientReceiver.waitForMessage(ReplaceFileFinalResponse.class);
         Assert.assertNotNull(finalResponse);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
-        Assert.assertEquals(finalResponse.getCorrelationID(), putRequest.getCorrelationID());
+        Assert.assertEquals(finalResponse.getCorrelationID(), replaceRequest.getCorrelationID());
         Assert.assertEquals(finalResponse.getFrom(), getPillarID());
         Assert.assertNull(finalResponse.getChecksumDataForExistingFile());
         Assert.assertNull(finalResponse.getChecksumDataForNewFile());
