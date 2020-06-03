@@ -75,7 +75,7 @@ public class GettingChecksums extends PerformingOperationState {
 
     @Override
     protected void sendRequest() {
-        context.getMonitor().requestSent("Sending GetFileIDsRequest's", activeContributors.keySet().toString());
+        context.getMonitor().requestSent("Sending GetChecksumsRequest's", activeContributors.keySet().toString());
         for(ContributorQuery query : context.getContributorQueries()) {
             if (activeContributors.containsKey(query.getComponentID())) {
                 GetChecksumsRequest msg = new GetChecksumsRequest();
