@@ -21,13 +21,9 @@
  */
 package org.bitrepository.protocol.security;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStore.PrivateKeyEntry;
@@ -166,7 +162,7 @@ public class BasicSecurityManager implements SecurityManager {
         if(repositorySettings.getProtocolSettings().isRequireMessageAuthentication()) {
             try {
                 byte[] signature = signer.signMessage(message.getBytes(SecurityModuleConstants.defaultEncodingType));
-                return new String(Base64.encode(signature));   
+                return new String(Base64.encode(signature), StandardCharsets.UTF_8);
             } catch (UnsupportedEncodingException e) {
                 throw new SecurityException(SecurityModuleConstants.defaultEncodingType + " encoding not supported", e);
             }           
@@ -185,10 +181,10 @@ public class BasicSecurityManager implements SecurityManager {
     public void authorizeCertificateUse(String certificateUser, String messageData, String signature) 
             throws CertificateUseException {
         if(repositorySettings.getProtocolSettings().isRequireOperationAuthorization()) {
-            byte[] decodeSig = Base64.decode(signature.getBytes());
+            byte[] decodeSig = Base64.decode(signature.getBytes(StandardCharsets.UTF_8));
             CMSSignedData s;
             try {
-                s = new CMSSignedData(new CMSProcessableByteArray(messageData.getBytes()), decodeSig);
+                s = new CMSSignedData(new CMSProcessableByteArray(messageData.getBytes(StandardCharsets.UTF_8)), decodeSig);
             } catch (CMSException e) {
                 throw new SecurityException(e.getMessage(), e);
             }
@@ -213,10 +209,10 @@ public class BasicSecurityManager implements SecurityManager {
     public void authorizeOperation(String operationType, String messageData, String signature, String collectionID) 
             throws OperationAuthorizationException {
         if(repositorySettings.getProtocolSettings().isRequireOperationAuthorization()) {
-            byte[] decodeSig = Base64.decode(signature.getBytes());
+            byte[] decodeSig = Base64.decode(signature.getBytes(StandardCharsets.UTF_8));
             CMSSignedData s;
             try {
-                s = new CMSSignedData(new CMSProcessableByteArray(messageData.getBytes()), decodeSig);
+                s = new CMSSignedData(new CMSProcessableByteArray(messageData.getBytes(StandardCharsets.UTF_8)), decodeSig);
             } catch (CMSException e) {
                 throw new SecurityException(e.getMessage(), e);
             }
@@ -322,7 +318,8 @@ public class BasicSecurityManager implements SecurityManager {
             log.info("Key file '" + privateKeyFile + "' with private key and certificate does not exist!");
             return;
         }
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(privateKeyFile));
+        BufferedReader bufferedReader = new BufferedReader(
+                new InputStreamReader(new FileInputStream(privateKeyFile), StandardCharsets.UTF_8));
         PEMParser pemParser = new PEMParser(bufferedReader);
         Object pemObj = pemParser.readObject();
 

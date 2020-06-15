@@ -24,11 +24,9 @@
  */
 package org.bitrepository.common;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
+import java.io.*;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -116,7 +114,13 @@ public final class JaxbHelper {
     public String serializeToXml(Object object) throws JAXBException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         JAXBContext.newInstance(object.getClass()).createMarshaller().marshal(object, baos);
-        return baos.toString();
+        String baosContent;
+        try {
+            baosContent = baos.toString(StandardCharsets.UTF_8.name());
+        } catch (UnsupportedEncodingException e) {
+            throw new AssertionError("UTF-8 not supported");
+        }
+        return baosContent;
     }
 
     private static class ResourceResolver implements LSResourceResolver {

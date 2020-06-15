@@ -24,6 +24,7 @@ package org.bitrepository.common.utils;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -73,7 +74,7 @@ public class CalendarUtilsTest extends ExtendedTestCase {
     public void startDateTest() throws ParseException {
         addDescription("Test that the start date is considered as localtime and converted into UTC.");
         CalendarUtils cu = CalendarUtils.getInstance(TimeZone.getTimeZone("Europe/Copenhagen"));
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.ROOT);
         Date expectedStartOfDay = sdf.parse("2015-02-25T23:00:00.000Z");
         
         Date parsedStartOfDay = cu.makeStartDateObject("2015/02/26");
@@ -84,7 +85,7 @@ public class CalendarUtilsTest extends ExtendedTestCase {
     public void endDateTest() throws ParseException {
         addDescription("Test that the end date is considered as localtime and converted into UTC.");
         CalendarUtils cu = CalendarUtils.getInstance(TimeZone.getTimeZone("Europe/Copenhagen"));
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.ROOT);
         Date expectedStartOfDay = sdf.parse("2015-02-26T22:59:59.999Z");
         
         Date parsedStartOfDay = cu.makeEndDateObject("2015/02/26");
@@ -95,7 +96,7 @@ public class CalendarUtilsTest extends ExtendedTestCase {
     public void endDateRolloverTest() throws ParseException {
         addDescription("Test that the end date is correctly rolls over a year and month change.");
         CalendarUtils cu = CalendarUtils.getInstance(TimeZone.getTimeZone("Europe/Copenhagen"));
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.ROOT);
         Date expectedStartOfDay = sdf.parse("2016-01-01T22:59:59.999Z");
         
         Date parsedStartOfDay = cu.makeEndDateObject("2015/12/32");
@@ -106,7 +107,7 @@ public class CalendarUtilsTest extends ExtendedTestCase {
     public void testBeginningOfDay() throws ParseException {
         addDescription("Tests that the time is converted to the beginning of the day localtime, not UTC");
         CalendarUtils cu = CalendarUtils.getInstance(TimeZone.getTimeZone("Europe/Copenhagen"));
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.ROOT);
         Date expectedStartOfDayInUTC = sdf.parse("2016-01-31T23:00:00.000Z");
         System.out.println("expectedSTartofDayInUTC parsed: " + expectedStartOfDayInUTC.getTime());
         Date parsedStartOfDay = cu.makeStartDateObject("2016/02/01");
@@ -117,7 +118,7 @@ public class CalendarUtilsTest extends ExtendedTestCase {
     public void testEndOfDay() throws ParseException {
         addDescription("Tests that the time is converted to the beginning of the day localtime, not UTC");
         CalendarUtils cu = CalendarUtils.getInstance(TimeZone.getTimeZone("Europe/Copenhagen"));
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.ROOT);
         Date expectedEndOfDayInUTC = sdf.parse("2016-02-01T22:59:59.999Z");
         Date parsedEndOfDay = cu.makeEndDateObject("2016/02/01");
         Assert.assertEquals(parsedEndOfDay, expectedEndOfDayInUTC);

@@ -21,10 +21,8 @@
  */
 package org.bitrepository.audittrails.preserver;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -124,7 +122,8 @@ public class AuditPacker {
     private void packContributors(File container) throws IOException {
         PrintWriter writer = null;
         try {
-            writer = new PrintWriter(new FileOutputStream(container, APPEND));
+            writer = new PrintWriter(
+                    new OutputStreamWriter(new FileOutputStream(container, APPEND), StandardCharsets.UTF_8));
             for(String contributor : contributors) {
                 packContributor(contributor, writer);
             }

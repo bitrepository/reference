@@ -21,10 +21,8 @@
  */
 package org.bitrepository.integrityservice.reports;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -61,7 +59,7 @@ public class IntegrityReportPartWriter {
         BufferedWriter issueWriter;
         if(!pillarParts.containsKey(pillarID)) {
             File checksumIssueFile = ReportWriterUtils.makeEmptyFile(reportDir, part.getPartname() + "-" + pillarID);
-            issueWriter = new BufferedWriter(new FileWriter(checksumIssueFile, true));
+            issueWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(checksumIssueFile, true), StandardCharsets.UTF_8));
             pillarParts.put(pillarID, issueWriter);
         } else {
            issueWriter = pillarParts.get(pillarID); 

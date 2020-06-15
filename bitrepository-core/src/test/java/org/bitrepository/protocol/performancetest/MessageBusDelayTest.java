@@ -23,6 +23,7 @@ package org.bitrepository.protocol.performancetest;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -118,15 +119,15 @@ public class MessageBusDelayTest extends ExtendedTestCase {
             FileOutputStream fos = null;
             try {
                 fos = new FileOutputStream(new File("statistic-" + new Date().getTime()));
-                fos.write(new String("Maximum;" + maximum + "\n").getBytes());
-                fos.write(new String("Minimum;" + minimum + "\n").getBytes());
-                fos.write(new String("Median;" + median + "\n").getBytes());
-                fos.write(new String("Average;" + average + "\n").getBytes());
-                fos.write(new String("StdDeviation;" + deviation + "\n").getBytes());
-                fos.write(new String("\n").getBytes());
+                fos.write(new String("Maximum;" + maximum + "\n").getBytes(StandardCharsets.UTF_8));
+                fos.write(new String("Minimum;" + minimum + "\n").getBytes(StandardCharsets.UTF_8));
+                fos.write(new String("Median;" + median + "\n").getBytes(StandardCharsets.UTF_8));
+                fos.write(new String("Average;" + average + "\n").getBytes(StandardCharsets.UTF_8));
+                fos.write(new String("StdDeviation;" + deviation + "\n").getBytes(StandardCharsets.UTF_8));
+                fos.write(new String("\n").getBytes(StandardCharsets.UTF_8));
                 
                 for(Long l : list) {
-                    fos.write(new String(l + "\n").getBytes());
+                    fos.write(new String(l + "\n").getBytes(StandardCharsets.UTF_8));
                 }
             } finally {
                 if(fos != null) {

@@ -25,28 +25,15 @@
 package org.bitrepository.protocol.bus;
 
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
-import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.common.TestValidationUtils;
 import org.bitrepository.protocol.IntegrationTest;
-import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.jaccept.TestEventManager;
-import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
-import javax.jms.Message;
-import javax.jms.MessageListener;
 import java.util.Arrays;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.TimeUnit;
-
-import static org.testng.Assert.assertEquals;
 
 /**
  * Class for testing the interface with the message bus.

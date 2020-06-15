@@ -231,7 +231,7 @@ public class FileStorageModel extends StorageModel {
         ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
 
         // Map between lastModifiedDate and fileInfo.
-        ConcurrentSkipListMap<Long, FileInfo> sortedDateFileIDMap = new ConcurrentSkipListMap<Long, FileInfo>();
+        ConcurrentSkipListMap<Long, FileInfo> sortedDateFileIDMap = new ConcurrentSkipListMap<>();
         for(String fileID : fileArchive.getAllFileIds(collectionID)) {
             FileInfo fi = fileArchive.getFileInfo(fileID, collectionID);
             if((minTime == null || minTime <= fi.getLastModifiedDate()) &&
@@ -265,7 +265,7 @@ public class FileStorageModel extends StorageModel {
             verifyArchiveToCacheConsistencyForFile(fileID, collectionID);
         }
 
-        Long maxAgeForChecksums = settings.getReferenceSettings().getPillarSettings()
+        long maxAgeForChecksums = settings.getReferenceSettings().getPillarSettings()
                 .getMaxAgeForChecksums().longValue();
         Date checksumDate = new Date(System.currentTimeMillis() - maxAgeForChecksums);
         for(String fileID : cache.getFileIDsWithOldChecksums(checksumDate, collectionID)) {

@@ -43,6 +43,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_TABLE;
 import static org.bitrepository.alarm.store.AlarmDatabaseConstants.COMPONENT_TABLE;
@@ -221,7 +222,7 @@ public class AlarmDatabaseTest extends ExtendedTestCase {
                 settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase());
         
         addStep("Prepare, check and ingest alarms", "");
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.ROOT);
         Date summertimeTS = sdf.parse("2015-10-25T02:59:54.000+02:00");
         Date summertimeUnix = new Date(1445734794000L);
         Assert.assertEquals(summertimeTS, summertimeUnix);
@@ -261,7 +262,7 @@ public class AlarmDatabaseTest extends ExtendedTestCase {
     }
 
     private List<Alarm> makeAlarms() {
-        List<Alarm> res = new ArrayList<Alarm>();
+        List<Alarm> res = new ArrayList<>();
         
         Alarm alarm1 = new Alarm();
         alarm1.setAlarmCode(AlarmCode.COMPONENT_FAILURE);

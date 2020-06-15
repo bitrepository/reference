@@ -22,6 +22,7 @@
 package org.bitrepository.protocol.security;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
@@ -160,7 +161,7 @@ public class SecurityManagerTest extends ExtendedTestCase  {
         }
         permissionStore.loadPermissions(getSigningCertPermission(), SecurityTestConstants.getComponentID());
         
-        String signatureString = new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)));
+        String signatureString = new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)), StandardCharsets.UTF_8);
         log.info("Signature for testdata is: " + signatureString);
         
         addStep("Check signature matches the data ", "Signature and data matches");
@@ -182,7 +183,7 @@ public class SecurityManagerTest extends ExtendedTestCase  {
         } catch (MessageSigningException e) {
             Assert.fail("Failed signing test data!", e);
         }
-        String signatureString = new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)));
+        String signatureString = new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)), StandardCharsets.UTF_8);
         log.info("Signature for testdata is: " + signatureString);
         
         addStep("Check signature matches the data", "Signature cant be matched as certificate is unknown.");
@@ -208,7 +209,7 @@ public class SecurityManagerTest extends ExtendedTestCase  {
         }
         permissionStore.loadPermissions(getSigningCertPermission(), SecurityTestConstants.getComponentID());
         
-        String signatureString = new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)));
+        String signatureString = new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)), StandardCharsets.UTF_8);
         log.info("Signature for testdata is: " + signatureString);
         
         addStep("Check signature matches the data ", "Signature and data matches does not match");

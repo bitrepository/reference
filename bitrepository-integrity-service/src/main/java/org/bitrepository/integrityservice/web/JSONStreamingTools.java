@@ -21,11 +21,8 @@
  */
 package org.bitrepository.integrityservice.web;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.StreamingOutput;
@@ -93,7 +90,7 @@ public class JSONStreamingTools {
                 JsonFactory jf = new JsonFactory();
                 JsonGenerator jg = jf.createGenerator(output, JsonEncoding.UTF8);
                 
-                try (BufferedReader b = new BufferedReader(new FileReader(input));) {
+                try (BufferedReader b = new BufferedReader(new InputStreamReader(new FileInputStream(input), StandardCharsets.UTF_8))) {
                     int linesRead = 0;
                     jg.writeStartArray();
                     String line;

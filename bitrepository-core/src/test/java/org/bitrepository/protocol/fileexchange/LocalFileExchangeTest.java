@@ -9,6 +9,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -105,7 +106,7 @@ public class LocalFileExchangeTest {
         
         FileExchange lfe = new LocalFileExchange(BASE_FILE_EXCHANGE_DIR);
         
-        InputStream is = new ByteArrayInputStream(testFileContent.getBytes());
+        InputStream is = new ByteArrayInputStream(testFileContent.getBytes(StandardCharsets.UTF_8));
         URL fileExchangeUrl = lfe.getURL(testFileName);
         lfe.putFile(is, fileExchangeUrl);
         
@@ -173,7 +174,7 @@ public class LocalFileExchangeTest {
         
         FileExchange lfe = new LocalFileExchange(BASE_FILE_EXCHANGE_DIR);
         
-        InputStream is = new ByteArrayInputStream(testFileContent.getBytes());
+        InputStream is = new ByteArrayInputStream(testFileContent.getBytes(StandardCharsets.UTF_8));
         URL fileExchangeUrl = lfe.getURL(testFileName);
         lfe.putFile(is, fileExchangeUrl);
         
@@ -184,14 +185,14 @@ public class LocalFileExchangeTest {
     }
     
     private File createTestFile(String filename, String content) throws IOException {
-        Files.write(Paths.get(filename), content.getBytes());
+        Files.write(Paths.get(filename), content.getBytes(StandardCharsets.UTF_8));
         File f = Paths.get(filename).toFile();
         f.deleteOnExit();
         return f;
     }
     
     private String readTestFileContent(File testFile) throws IOException {
-        String content = new String(Files.readAllBytes(Paths.get(testFile.toURI())));
+        String content = new String(Files.readAllBytes(Paths.get(testFile.toURI())), StandardCharsets.UTF_8);
         return content;
     }
     

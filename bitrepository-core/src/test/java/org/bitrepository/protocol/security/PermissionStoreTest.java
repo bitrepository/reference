@@ -25,6 +25,7 @@ import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.Locale;
 
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
@@ -112,6 +113,6 @@ public class PermissionStoreTest extends ExtendedTestCase  {
                 "used to generate reference finger print");
         String certificateFingerprintFromStore = permissionStore.getCertificateFingerprint(signer.getSID());
         String referenceCertificateFingerprint = SecurityTestConstants.getFingerprintForSignatureCert();
-        assertEquals(referenceCertificateFingerprint.toLowerCase().replaceAll(":", ""), certificateFingerprintFromStore);
+        assertEquals(referenceCertificateFingerprint.toLowerCase(Locale.ROOT).replaceAll(":", ""), certificateFingerprintFromStore);
     }
 }

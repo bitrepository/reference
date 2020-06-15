@@ -21,13 +21,8 @@
  */
 package org.bitrepository.integrityservice.reports;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import org.bitrepository.integrityservice.reports.IntegrityReportConstants.ReportPart;
@@ -125,7 +120,8 @@ public class IntegrityReportWriter {
             if(reportFile.exists()) {
                 reportFile.delete();
             }
-            reportFileWriter = new BufferedWriter(new FileWriter(reportFile, true));
+            reportFileWriter = new BufferedWriter(
+                    new OutputStreamWriter(new FileOutputStream(reportFile, true), StandardCharsets.UTF_8));
         }
         reportFileWriter.append(reportHeader);
         reportFileWriter.newLine();
@@ -229,7 +225,8 @@ public class IntegrityReportWriter {
      * @param report the report writer
      */
     private void writeSectionPart(BufferedWriter report, File partData) throws FileNotFoundException {
-        BufferedReader br = new BufferedReader(new FileReader(partData));
+        BufferedReader br = new BufferedReader(
+                new InputStreamReader(new FileInputStream(partData), StandardCharsets.UTF_8));
         String fileID;
         try {
             while ((fileID = br.readLine()) != null) {

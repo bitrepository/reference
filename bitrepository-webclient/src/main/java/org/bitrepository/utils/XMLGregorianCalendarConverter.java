@@ -23,6 +23,8 @@ package org.bitrepository.utils;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
+import java.util.TimeZone;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -57,7 +59,7 @@ public class XMLGregorianCalendarConverter {
         if (date == null) {
             return null;
         } else {
-            GregorianCalendar gc = new GregorianCalendar();
+            GregorianCalendar gc = new GregorianCalendar(TimeZone.getDefault(), Locale.ROOT);
             gc.setTimeInMillis(date.getTime());
             return df.newXMLGregorianCalendar(gc);
         }

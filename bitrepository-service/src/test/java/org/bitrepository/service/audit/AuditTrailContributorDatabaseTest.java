@@ -24,6 +24,7 @@ package org.bitrepository.service.audit;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.settings.Settings;
@@ -169,7 +170,7 @@ public class AuditTrailContributorDatabaseTest extends ExtendedTestCase {
         AuditTrailContributerDAO daba = new DerbyAuditTrailContributorDAO(dm);
         daba.initialize(settings.getComponentID());
         
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.ROOT);
         Date summertimeTS = sdf.parse("2015-10-25T02:59:54.000+02:00");
         Date summertimeUnix = new Date(1445734794000L);
         Assert.assertEquals(summertimeTS, summertimeUnix);

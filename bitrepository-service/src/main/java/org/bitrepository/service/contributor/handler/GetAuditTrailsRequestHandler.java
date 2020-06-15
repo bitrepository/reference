@@ -27,6 +27,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 import javax.xml.bind.JAXBException;
@@ -207,8 +208,8 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
             is = new FileOutputStream(checksumResultFile);
             JaxbHelper jaxb = new JaxbHelper(XSD_CLASSPATH, XSD_BR_DATA);
             String xmlMessage = jaxb.serializeToXml(results);
-            jaxb.validate(new ByteArrayInputStream(xmlMessage.getBytes()));
-            is.write(xmlMessage.getBytes());
+            jaxb.validate(new ByteArrayInputStream(xmlMessage.getBytes(StandardCharsets.UTF_8)));
+            is.write(xmlMessage.getBytes(StandardCharsets.UTF_8));
             is.flush();
         } finally {
             if(is != null) {

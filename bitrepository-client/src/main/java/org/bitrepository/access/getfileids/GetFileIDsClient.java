@@ -57,10 +57,10 @@ public interface GetFileIDsClient {
      * returned through the messages.
      * @param eventHandler The eventHandler to keep track of the operation.
      */
-    public void getFileIDs(
-            String collectionID,
-            ContributorQuery[] contributorQueries,
-            String fileID,
-            URL addressForResult,
-            EventHandler eventHandler);
+    void getFileIDs(
+        String collectionID,
+        ContributorQuery[] contributorQueries,
+        String fileID,
+        URL addressForResult,
+        EventHandler eventHandler);
 }

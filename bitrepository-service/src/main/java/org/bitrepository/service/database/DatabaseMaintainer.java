@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -101,7 +102,7 @@ public class DatabaseMaintainer {
             throw new FileNotFoundException("Didn't find any file in classpath corresponding to " + filePath);
         }
 
-        return new BufferedReader(new InputStreamReader(is));
+        return new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
     }
 
     /**

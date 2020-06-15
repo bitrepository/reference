@@ -34,7 +34,7 @@ public interface RequestHandler<T extends MessageRequest> {
     /** Return the request class which is handled by this handler.
      * @return the class of requests handled by this RequestHandler
      * */
-    public Class<T> getRequestClass();
+    Class<T> getRequestClass();
 
     /**
      * Implements the concrete handling of a received request.
@@ -43,7 +43,7 @@ public interface RequestHandler<T extends MessageRequest> {
      * @param messageContext the message context
      * @throws RequestHandlerException If something goes wrong while handling the
      */
-    public void processRequest(T request, MessageContext messageContext) throws RequestHandlerException;
+    void processRequest(T request, MessageContext messageContext) throws RequestHandlerException;
 
     /**
      * Used for creating responses signaling general failures to handle the request.
@@ -51,5 +51,5 @@ public interface RequestHandler<T extends MessageRequest> {
      * @param request the request to create a response for
      * @return The failure response.
      */
-    public MessageResponse generateFailedResponse(T request);
+    MessageResponse generateFailedResponse(T request);
 }

@@ -317,7 +317,7 @@ public abstract class IntegrityDAO {
      * @param collectionID The ID of the collection
      * @return Iterator with the fileIDs that have checksum inconsistencies
      */
-    public IntegrityIssueIterator findFilesWithChecksumInconsistincies(String collectionID) {
+    public IntegrityIssueIterator findFilesWithChecksumInconsistencies(String collectionID) {
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
                 
         String findInconsistentChecksumsSql = "SELECT fileID FROM ("

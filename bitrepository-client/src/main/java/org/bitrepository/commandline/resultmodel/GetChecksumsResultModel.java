@@ -37,7 +37,7 @@ import org.bitrepository.common.utils.CalendarUtils;
 
 /**
  * Model for keeping results from a GetFileIDs call. The model is intended to act as a buffer for
- * completed and uncompleted data. The intension is that completed data can be fetched while the 
+ * completed and uncompleted data. The intention is that completed data can be fetched while the
  * remaining data is still being fetched - this should serve to keep memory use down. 
  */
 public class GetChecksumsResultModel {
@@ -48,13 +48,13 @@ public class GetChecksumsResultModel {
     private Map<String, Date> latestContributorDate;
     
     public GetChecksumsResultModel(Collection<String> expectedContributors) {
-        latestContributorDate = new HashMap<String, Date>();
+        latestContributorDate = new HashMap<>();
         for(String contributor : expectedContributors) {
             latestContributorDate.put(contributor, new Date(0));
         }
-        completeResults = new ArrayList<ChecksumResult>();
-        lastCompletedIDs = new HashSet<String>();
-        uncompleteResults = new HashMap<String, ChecksumResult>();
+        completeResults = new ArrayList<>();
+        lastCompletedIDs = new HashSet<>();
+        uncompleteResults = new HashMap<>();
     }
     
     /**
@@ -100,8 +100,8 @@ public class GetChecksumsResultModel {
     public Collection<ChecksumResult> getCompletedResults() {
         List<ChecksumResult> completed = completeResults;
         completeResults = null;
-        completeResults = new ArrayList<ChecksumResult>();
-        lastCompletedIDs = new HashSet<String>();
+        completeResults = new ArrayList<>();
+        lastCompletedIDs = new HashSet<>();
         for(ChecksumResult result : completed) {
             lastCompletedIDs.add(result.getID());
         }

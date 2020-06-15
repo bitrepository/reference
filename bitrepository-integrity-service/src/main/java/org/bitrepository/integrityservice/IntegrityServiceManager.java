@@ -24,10 +24,8 @@
  */
 package org.bitrepository.integrityservice;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.Properties;
 
@@ -168,7 +166,7 @@ public final class IntegrityServiceManager {
             String propertiesFile = confDir + "/" + CONFIGFILE;
             BufferedReader propertiesReader = null;
             try {
-                propertiesReader = new BufferedReader(new FileReader(propertiesFile));
+                propertiesReader = new BufferedReader(new InputStreamReader(new FileInputStream(propertiesFile), StandardCharsets.UTF_8));
                 properties.load(propertiesReader);
                 privateKeyFile = properties.getProperty(PRIVATE_KEY_FILE);
             } finally {

@@ -23,6 +23,7 @@ package org.bitrepository.protocol.security;
 
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.Security;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -53,7 +54,7 @@ public class CertificateIDTest extends ExtendedTestCase  {
                 new CertificateID(myCertificate.getIssuerX500Principal(), myCertificate.getSerialNumber());
         
         addStep("Create CertificateID object based on signature", "Certificate object not null");
-        byte[] decodeSig = Base64.decode(SecurityTestConstants.getSignature().getBytes());
+        byte[] decodeSig = Base64.decode(SecurityTestConstants.getSignature().getBytes(StandardCharsets.UTF_8));
         CMSSignedData s = new CMSSignedData(new CMSProcessableByteArray(
                 SecurityTestConstants.getTestData().getBytes(SecurityModuleConstants.defaultEncodingType)), decodeSig);
         SignerInformation signer = (SignerInformation) s.getSignerInfos().getSigners().iterator().next();
@@ -78,7 +79,7 @@ public class CertificateIDTest extends ExtendedTestCase  {
         
         
         addStep("Create CertificateID object based on signature", "Certificate object not null");
-        byte[] decodeSig = Base64.decode(SecurityTestConstants.getSignature().getBytes());
+        byte[] decodeSig = Base64.decode(SecurityTestConstants.getSignature().getBytes(StandardCharsets.UTF_8));
         CMSSignedData s = new CMSSignedData(new CMSProcessableByteArray(
                 SecurityTestConstants.getTestData().getBytes(SecurityModuleConstants.defaultEncodingType)), decodeSig);
         SignerInformation signer = (SignerInformation) s.getSignerInfos().getSigners().iterator().next();

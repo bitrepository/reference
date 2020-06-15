@@ -24,10 +24,8 @@
  */
 package org.bitrepository.alarm;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.Properties;
 
@@ -115,7 +113,8 @@ public class AlarmServiceFactory {
     private static void loadProperties() throws IOException {
         Properties properties = new Properties();
         File propertiesFile = new File(configurationDir, CONFIGFILE);
-        BufferedReader propertiesReader = new BufferedReader(new FileReader(propertiesFile));
+        BufferedReader propertiesReader = new BufferedReader(
+                new InputStreamReader(new FileInputStream(propertiesFile), StandardCharsets.UTF_8));
         properties.load(propertiesReader);
         privateKeyFile = properties.getProperty(PRIVATE_KEY_FILE);
     }

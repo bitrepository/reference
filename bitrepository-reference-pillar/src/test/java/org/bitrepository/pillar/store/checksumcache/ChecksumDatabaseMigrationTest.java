@@ -25,6 +25,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
+
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
@@ -149,7 +152,8 @@ public class ChecksumDatabaseMigrationTest extends ExtendedTestCase {
                 + CS_FILE_ID + " = ?";
         Long extractedDate = DatabaseUtils.selectFirstLongValue(connector, retrieveCollectionIdSql, FILE_ID);
         
-        Date testDateAtTimeZone = new Date(testDate.getTime() + Calendar.getInstance().getTimeZone().getRawOffset());
+        Date testDateAtTimeZone = new Date(testDate.getTime()
+                + Calendar.getInstance(TimeZone.getDefault(), Locale.ROOT).getTimeZone().getRawOffset());
         
         Assert.assertEquals(extractedDate.longValue(), testDateAtTimeZone.getTime());
     }

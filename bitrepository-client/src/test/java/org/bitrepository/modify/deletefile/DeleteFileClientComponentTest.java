@@ -46,6 +46,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 
 public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
     private TestDeleteFileMessageFactory messageFactory;
@@ -81,7 +82,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         checksumForPillar.setChecksumType(ChecksumType.MD5);
         ChecksumDataForFileTYPE checksumData = new ChecksumDataForFileTYPE();
         checksumData.setChecksumSpec(checksumForPillar);
-        checksumData.setChecksumValue(checksum.getBytes());
+        checksumData.setChecksumValue(checksum.getBytes(StandardCharsets.UTF_8));
         checksumData.setCalculationTimestamp(CalendarUtils.getEpoch());
 
         ChecksumSpecTYPE checksumRequest = new ChecksumSpecTYPE();
@@ -201,7 +202,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         checksumForPillar.setChecksumType(ChecksumType.MD5);
         ChecksumDataForFileTYPE checksumData = new ChecksumDataForFileTYPE();
         checksumData.setChecksumSpec(checksumForPillar);
-        checksumData.setChecksumValue(checksum.getBytes());
+        checksumData.setChecksumValue(checksum.getBytes(StandardCharsets.UTF_8));
         checksumData.setCalculationTimestamp(CalendarUtils.getEpoch());
 
         ChecksumSpecTYPE checksumRequest = new ChecksumSpecTYPE();
@@ -239,7 +240,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         checksumForPillar.setChecksumType(ChecksumType.MD5);
         ChecksumDataForFileTYPE checksumData = new ChecksumDataForFileTYPE();
         checksumData.setChecksumSpec(checksumForPillar);
-        checksumData.setChecksumValue(checksum.getBytes());
+        checksumData.setChecksumValue(checksum.getBytes(StandardCharsets.UTF_8));
         checksumData.setCalculationTimestamp(CalendarUtils.getEpoch());
 
         ChecksumSpecTYPE checksumRequest = new ChecksumSpecTYPE();
@@ -289,7 +290,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         checksumForPillar.setChecksumType(ChecksumType.MD5);
         ChecksumDataForFileTYPE checksumData = new ChecksumDataForFileTYPE();
         checksumData.setChecksumSpec(checksumForPillar);
-        checksumData.setChecksumValue(checksum.getBytes());
+        checksumData.setChecksumValue(checksum.getBytes(StandardCharsets.UTF_8));
         checksumData.setCalculationTimestamp(CalendarUtils.getEpoch());
 
         ChecksumSpecTYPE checksumRequest = new ChecksumSpecTYPE();

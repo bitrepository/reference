@@ -8,7 +8,7 @@
     <parent>
         <groupId>org.sbforge</groupId>
         <artifactId>sbforge-parent</artifactId>
-        <version>19</version>
+        <version>22</version>
     </parent>
 
     <name>Bitrepository</name>
@@ -168,22 +168,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <phase>none</phase><!--Disable the release-profile broken source plugin. See http://blog.peterlynch.ca/2010/05/maven-how-to-prevent-generate-sources.html-->
-                    </execution>
-                    <execution>
-                        <id>attach-sources-no-fork</id>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -203,13 +187,6 @@
                     <extraExtensions>
                         <xsd>xml</xsd>
                     </extraExtensions>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
                 </configuration>
             </plugin>
 
@@ -382,46 +359,46 @@
                     <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
                 </configuration>
             </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>2.8</version>
-        <configuration>
-          <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>2.15</version>
-        <configuration>
-          <configLocation>sonarCheckstyle.xml</configLocation>
-        </configuration>
-      </plugin>      
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>findbugs-maven-plugin</artifactId>
-        <version>3.0.2</version>
-        <configuration>
-           <failOnError>false</failOnError>
-           <formats>
-               <format>html</format>
-               <format>xml</format>
-           </formats>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.7.5.201505241946</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-pmd-plugin</artifactId>
-        <version>3.7</version>
-      </plugin>
-    </plugins>
-  </reporting>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.8</version>
+                <configuration>
+                    <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>2.15</version>
+                <configuration>
+                    <configLocation>sonarCheckstyle.xml</configLocation>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>3.0.2</version>
+                <configuration>
+                    <failOnError>false</failOnError>
+                    <formats>
+                        <format>html</format>
+                        <format>xml</format>
+                    </formats>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.7.5.201505241946</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>3.7</version>
+            </plugin>
+        </plugins>
+    </reporting>
 
     <profiles>
         <profile>
@@ -470,6 +447,11 @@
     </profiles>
 
     <properties>
+        <!-- Specify java version here, to support forbiddenapis plugin -->
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <!-- Enable forbiddenapis plugin, do disable set to none -->
+        <api.check.phase>process-classes</api.check.phase> <!-- forbidden-apis dislikes TestValidationUtils #validateUtilityClass -->
         <message.xml.version>30</message.xml.version>
         <repository.settings.version>12</repository.settings.version>
         <derby.version>10.12.1.1</derby.version>

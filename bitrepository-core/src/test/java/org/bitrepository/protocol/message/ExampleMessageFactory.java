@@ -25,6 +25,7 @@
 package org.bitrepository.protocol.message;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.activemq.util.ByteArrayInputStream;
 import org.apache.commons.io.IOUtils;
@@ -41,9 +42,9 @@ public class ExampleMessageFactory {
     public static <T> T createMessage(Class<T> messageType) throws Exception {
         String xmlMessage = loadXMLExample(messageType.getSimpleName());
         JaxbHelper jaxbHelper = new JaxbHelper(PATH_TO_SCHEMA, SCHEMA_NAME);
-        jaxbHelper.validate(new ByteArrayInputStream(xmlMessage.getBytes()));
+        jaxbHelper.validate(new ByteArrayInputStream(xmlMessage.getBytes(StandardCharsets.UTF_8)));
         return jaxbHelper.loadXml(messageType,
-                new ByteArrayInputStream(xmlMessage.getBytes()));
+                new ByteArrayInputStream(xmlMessage.getBytes(StandardCharsets.UTF_8)));
     }
 
     /**

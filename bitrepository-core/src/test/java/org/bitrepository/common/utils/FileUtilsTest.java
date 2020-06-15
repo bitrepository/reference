@@ -22,6 +22,7 @@
 package org.bitrepository.common.utils;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.common.TestValidationUtils;
@@ -180,7 +181,7 @@ public class FileUtilsTest extends ExtendedTestCase {
         File dir = FileUtils.retrieveDirectory(DIR);
         File testFile = new File(dir, TEST_FILE_NAME);
         Assert.assertFalse(testFile.exists());
-        ByteArrayInputStream in = new ByteArrayInputStream(DATA.getBytes());
+        ByteArrayInputStream in = new ByteArrayInputStream(DATA.getBytes(StandardCharsets.UTF_8));
 
         addStep("Write the input stream to the file", "The file should exist and have same size as the data.");
         FileUtils.writeStreamToFile(in, testFile);

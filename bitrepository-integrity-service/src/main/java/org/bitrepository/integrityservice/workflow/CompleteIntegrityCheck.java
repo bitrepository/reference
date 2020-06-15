@@ -57,7 +57,7 @@ public class CompleteIntegrityCheck extends IntegrityCheckWorkflow {
 
     @Override
     protected UpdateChecksumsStep getUpdateChecksumsStep() {
-        return  new FullUpdateChecksumsStep(
+        return new FullUpdateChecksumsStep(
                 context.getCollector(), context.getStore(), context.getAlerter(),
                 ChecksumUtils.getDefault(context.getSettings()), context.getSettings(), collectionID, integrityContributors);
     }
