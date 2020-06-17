@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * instantiation for loading stored settings.
  */
 public class SettingsProvider {
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
     /** The loader to use for accessing stored settings*/
     private final SettingsLoader settingsReader;
     /** The loaded settings */

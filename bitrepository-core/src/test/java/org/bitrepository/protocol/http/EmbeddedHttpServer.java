@@ -24,14 +24,14 @@
  */
 package org.bitrepository.protocol.http;
 
-import java.io.File;
-
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
-import org.eclipse.jetty.server.nio.SelectChannelConnector;
+
+import java.io.File;
 
 /**
  * May be use to programmatically start an embedded http server, replacing the need for an already running server. 
@@ -50,7 +50,7 @@ public class EmbeddedHttpServer {
     private final Server server = new Server();
 
     public EmbeddedHttpServer() {
-        SelectChannelConnector connector = new SelectChannelConnector();
+        ServerConnector connector = new ServerConnector(server);
         connector.setPort(PORT_NUMBER);
         server.addConnector(connector);
 

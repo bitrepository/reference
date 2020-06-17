@@ -21,18 +21,12 @@ package org.bitrepository.pillar.integration.perf;
  * #L%
  */
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.common.utils.TimeUtils;
-import org.bitrepository.pillar.integration.CollectionTestHelper;
 import org.bitrepository.pillar.integration.PillarIntegrationTest;
 import org.bitrepository.pillar.integration.perf.metrics.ConsoleMetricAppender;
 import org.bitrepository.pillar.integration.perf.metrics.MetricAppender;
@@ -46,9 +40,14 @@ import org.slf4j.LoggerFactory;
 import org.testng.ITestContext;
 import org.testng.annotations.BeforeSuite;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 public class PillarPerformanceTest extends PillarIntegrationTest {
     protected final Logger log = LoggerFactory.getLogger(getClass());
-    protected List<MetricAppender> metricAppenders = new LinkedList<MetricAppender>();
+    protected List<MetricAppender> metricAppenders = new LinkedList<>();
     protected String[] existingFiles;
 
     @BeforeSuite

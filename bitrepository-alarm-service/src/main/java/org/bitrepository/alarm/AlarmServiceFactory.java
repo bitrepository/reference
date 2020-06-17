@@ -113,9 +113,10 @@ public class AlarmServiceFactory {
     private static void loadProperties() throws IOException {
         Properties properties = new Properties();
         File propertiesFile = new File(configurationDir, CONFIGFILE);
-        BufferedReader propertiesReader = new BufferedReader(
-                new InputStreamReader(new FileInputStream(propertiesFile), StandardCharsets.UTF_8));
-        properties.load(propertiesReader);
-        privateKeyFile = properties.getProperty(PRIVATE_KEY_FILE);
+        try (BufferedReader propertiesReader = new BufferedReader(
+                new InputStreamReader(new FileInputStream(propertiesFile), StandardCharsets.UTF_8))) {
+            properties.load(propertiesReader);
+            privateKeyFile = properties.getProperty(PRIVATE_KEY_FILE);
+        }
     }
 }
