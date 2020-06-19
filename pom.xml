@@ -122,7 +122,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.1.7</version>
+            <version>1.2.3</version>
         </dependency>
         <dependency>
             <groupId>org.jvnet.jaxb2_commons</groupId>
@@ -132,13 +132,13 @@
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
-            <version>6.9.10</version>
+            <version>7.1.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>1.9.5</version>
+            <version>3.3.3</version>
             <scope>test</scope>
         </dependency>
         <!-- Hook up the other loggers to use SLF4J -->
@@ -387,10 +387,6 @@
                 <version>4.0.0</version>
                 <configuration>
                     <failOnError>false</failOnError>
-                    <formats>
-                        <format>html</format>
-                        <format>xml</format>
-                    </formats>
                 </configuration>
             </plugin>
             <plugin>
@@ -460,8 +456,8 @@
         <api.check.phase>process-classes</api.check.phase> <!-- forbidden-apis dislikes TestValidationUtils #validateUtilityClass -->
         <message.xml.version>30</message.xml.version>
         <repository.settings.version>12</repository.settings.version>
-        <derby.version>10.12.1.1</derby.version>
-        <activemq.version>5.13.3</activemq.version>
+        <derby.version>10.14.2.0</derby.version>
+        <activemq.version>5.15.13</activemq.version>
         <project.site.location>dav:https://sbforge.org/maven/bitrepository/sites/reference/${project.version}</project.site.location>
         <slf4j.version>1.7.30</slf4j.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

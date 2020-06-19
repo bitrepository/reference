@@ -21,38 +21,10 @@
  */
 package org.bitrepository.integrityservice.integrationtest;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNull;
-import static org.testng.Assert.assertTrue;
-
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
-import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumType;
-import org.bitrepository.bitrepositoryelements.FileIDsData;
+import org.bitrepository.bitrepositoryelements.*;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
-import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
-import org.bitrepository.bitrepositoryelements.ResultingChecksums;
 import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.IdentificationCompleteEvent;
@@ -62,7 +34,6 @@ import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
-import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityDatabase;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.PillarCollectionMetric;
@@ -78,11 +49,20 @@ import org.bitrepository.integrityservice.workflow.step.UpdateChecksumsStep;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.service.exception.WorkflowAbortedException;
 import org.jaccept.structure.ExtendedTestCase;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.math.BigInteger;
+import java.util.*;
+
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 @SuppressWarnings("rawtypes")
 public class MissingChecksumTests extends ExtendedTestCase {
@@ -172,7 +152,7 @@ public class MissingChecksumTests extends ExtendedTestCase {
                 return null;
             }
         }).when(collector).getChecksums(
-                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(), anyString(),
+                eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class), any(), anyString(),
                 any(ContributorQuery[].class), any(EventHandler.class));
 
         when(integrityContributors.getActiveContributors())
@@ -181,8 +161,8 @@ public class MissingChecksumTests extends ExtendedTestCase {
         UpdateChecksumsStep step = new FullUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), 
                 settings, TEST_COLLECTION, integrityContributors);
         step.performStep();
-        verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(),
-                any(ChecksumSpecTYPE.class), anyString(), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
+        verify(collector).getChecksums(eq(TEST_COLLECTION), any(),
+                any(ChecksumSpecTYPE.class), any(), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         verifyNoMoreInteractions(alerter);
         
         addStep("Check whether checksum is missing", "Should be missing at pillar two only.");
@@ -222,7 +202,7 @@ public class MissingChecksumTests extends ExtendedTestCase {
                 return null;
             }
         }).when(collector).getChecksums(
-                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
+                eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class), any(),
                 anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         
         when(integrityContributors.getActiveContributors())
@@ -231,8 +211,8 @@ public class MissingChecksumTests extends ExtendedTestCase {
         UpdateChecksumsStep step1 = new FullUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(), 
                 settings, TEST_COLLECTION, integrityContributors);
         step1.performStep();
-        verify(collector).getChecksums(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(),
-                any(ChecksumSpecTYPE.class), anyString(), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
+        verify(collector).getChecksums(eq(TEST_COLLECTION), any(),
+                any(ChecksumSpecTYPE.class), any(), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         verifyNoMoreInteractions(alerter);
         
         addStep("Check whether checksum is missing", "Should be missing at pillar two only.");
@@ -257,7 +237,7 @@ public class MissingChecksumTests extends ExtendedTestCase {
                 return null;
             }
         }).when(collector).getChecksums(
-                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
+                eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class), any(),
                 anyString(), any(ContributorQuery[].class), any(EventHandler.class));
 
         when(integrityContributors.getActiveContributors())
@@ -328,8 +308,8 @@ public class MissingChecksumTests extends ExtendedTestCase {
      * It's here to make the tests simple, and can be done as there's only small amounts of test data in the tests. 
      */
     private List<String> getIssuesFromIterator(IntegrityIssueIterator it) {
-        List<String> issues = new ArrayList<String>();
-        String issue = null;
+        List<String> issues = new ArrayList<>();
+        String issue;
         while((issue = it.getNextIntegrityIssue()) != null) {
             issues.add(issue);
         }

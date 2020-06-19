@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GetChecksumForFileStep extends AbstractWorkFlowStep {
     /** The log.*/
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
     
     /** The collector for retrieving the checksums.*/
     private final IntegrityInformationCollector collector;
@@ -132,7 +132,7 @@ public class GetChecksumForFileStep extends AbstractWorkFlowStep {
         if(checksumResults == null) {
             return null;
         }
-        Map<String, String> res = new HashMap<String, String>();
+        Map<String, String> res = new HashMap<>();
         for(Map.Entry<String, ResultingChecksums> entry : checksumResults.entrySet()) {
             if(!validateResults(entry.getValue())) {
                 log.warn("No or invalid checksum results from pillar '" + entry.getKey() + "': " + entry.getValue());
@@ -155,10 +155,7 @@ public class GetChecksumForFileStep extends AbstractWorkFlowStep {
         if(checksumData.getChecksumDataItems().isEmpty()) {
             return false;
         }
-        if(!checksumData.getChecksumDataItems().get(0).getFileID().equalsIgnoreCase(fileID)) {
-            return false;
-        }
-        return true;
+        return checksumData.getChecksumDataItems().get(0).getFileID().equalsIgnoreCase(fileID);
     }
 
     @Override

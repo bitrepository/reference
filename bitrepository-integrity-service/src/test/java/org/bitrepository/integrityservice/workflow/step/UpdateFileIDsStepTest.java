@@ -21,9 +21,9 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -49,7 +49,7 @@ import org.bitrepository.client.eventhandler.IdentificationCompleteEvent;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.service.exception.WorkflowAbortedException;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.testng.Assert;
@@ -70,7 +70,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
                 return null;
             }
         }).when(collector).getFileIDs(
-                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), anyString(), any(ContributorQuery[].class),
+                eq(TEST_COLLECTION), any(), anyString(), any(ContributorQuery[].class),
                 any(EventHandler.class));
 
         when(integrityContributors.getActiveContributors())
@@ -80,7 +80,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
                 integrityContributors);
         step.performStep();
         verify(collector).getFileIDs(
-                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), anyString(), any(ContributorQuery[].class),
+                eq(TEST_COLLECTION), any(), anyString(), any(ContributorQuery[].class),
                 any(EventHandler.class));
         verifyNoMoreInteractions(alerter);
     }
@@ -97,7 +97,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
                 return null;
             }
         }).when(collector).getFileIDs(
-                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), anyString(), any(ContributorQuery[].class),
+                eq(TEST_COLLECTION), any(), anyString(), any(ContributorQuery[].class),
                 any(EventHandler.class));
         
         when(integrityContributors.getActiveContributors())
@@ -117,7 +117,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
         }
         
         verify(collector).getFileIDs(
-                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), anyString(), any(ContributorQuery[].class),
+                eq(TEST_COLLECTION), any(), anyString(), any(ContributorQuery[].class),
                 any(EventHandler.class));
         verify(integrityContributors).failContributor(eq(TEST_PILLAR_1));
         verify(alerter).integrityFailed(anyString(), anyString());
@@ -145,7 +145,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
             }
         };
         doAnswer(callbackAnswer).when(collector).getFileIDs(
-                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), anyString(), any(ContributorQuery[].class),
+                eq(TEST_COLLECTION), any(), anyString(), any(ContributorQuery[].class),
                 any(EventHandler.class));
         
         when(integrityContributors.getActiveContributors())
@@ -161,7 +161,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
         step.performStep();
         
         verify(collector, times(2)).getFileIDs(
-                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), anyString(), any(ContributorQuery[].class),
+                eq(TEST_COLLECTION), any(), anyString(), any(ContributorQuery[].class),
                 any(EventHandler.class));
         verify(integrityContributors).failContributor(eq(TEST_PILLAR_1));
         verify(integrityContributors).finishContributor(eq(TEST_PILLAR_1));
@@ -179,7 +179,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
                 return null;
             }
         }).when(collector).getFileIDs(
-                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), anyString(), any(ContributorQuery[].class),
+                eq(TEST_COLLECTION), any(), anyString(), any(ContributorQuery[].class),
                 any(EventHandler.class));
         
         when(integrityContributors.getActiveContributors())
@@ -194,7 +194,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
         verify(integrityContributors).failContributor(eq(TEST_PILLAR_1));
         verify(alerter).integrityFailed(anyString(), anyString());
         verify(collector).getFileIDs(
-                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), anyString(), any(ContributorQuery[].class),
+                eq(TEST_COLLECTION), any(), anyString(), any(ContributorQuery[].class),
                 any(EventHandler.class));
     }
 
@@ -214,7 +214,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
                 return null;
             }
         }).when(collector).getFileIDs(
-                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), anyString(), any(ContributorQuery[].class),
+                eq(TEST_COLLECTION), any(), anyString(), any(ContributorQuery[].class),
                 any(EventHandler.class));
         
         when(integrityContributors.getActiveContributors())
@@ -249,7 +249,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
             }
         };
         doAnswer(callbackAnswer).when(collector).getFileIDs(
-                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), anyString(),
+                eq(TEST_COLLECTION), any(), anyString(),
                 any(ContributorQuery[].class),
                 any(EventHandler.class));
 
@@ -266,7 +266,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
         verify(integrityContributors).succeedContributor(eq(TEST_PILLAR_1));
         verify(integrityContributors).finishContributor(eq(TEST_PILLAR_1));
         verify(collector, times(2)).getFileIDs(
-                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), anyString(), any(ContributorQuery[].class),
+                eq(TEST_COLLECTION), any(), anyString(), any(ContributorQuery[].class),
                 any(EventHandler.class));
     }
 

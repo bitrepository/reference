@@ -24,7 +24,7 @@
  */
 package org.bitrepository.pillar.messagehandling;
 
-import static org.mockito.Matchers.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doAnswer;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;

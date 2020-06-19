@@ -38,7 +38,7 @@ public class FileInfoTest extends ExtendedTestCase {
     private static final long LAST_CHECKSUM_CHECK_MILLIS = 2000000;
     private static final XMLGregorianCalendar LAST_CHECKSUM_CHECK = CalendarUtils.getFromMillis(LAST_CHECKSUM_CHECK_MILLIS);
     private static final String PILLAR_ID = "test-pillar";
-    private static final Long FILE_SIZE = new Long(12345);
+    private static final Long FILE_SIZE = 12345L;
     
     @Test(groups = {"regressiontest", "integritytest"})
     public void testFileInfo() {
@@ -56,21 +56,21 @@ public class FileInfoTest extends ExtendedTestCase {
         addStep("Change the checksum", "Should be possible to extract it again.");
         String newChecksum = "NEW-CHECKSUM";
         fi.setChecksum(newChecksum);
-        Assert.assertFalse(CHECKSUM.equals(newChecksum));
+        Assert.assertNotEquals(newChecksum, CHECKSUM);
         Assert.assertEquals(fi.getChecksum(), newChecksum);
 
         addStep("Change the date for last file id check", "Should be possible to extract it again.");
         long newLastFileMillis = 1234567;
         XMLGregorianCalendar newLastFileCheck = CalendarUtils.getFromMillis(newLastFileMillis);
         fi.setDateForLastFileIDCheck(newLastFileCheck);
-        Assert.assertFalse(LAST_FILE_CHECK.compare(newLastFileCheck) == DatatypeConstants.EQUAL);
+        Assert.assertNotEquals(DatatypeConstants.EQUAL, LAST_FILE_CHECK.compare(newLastFileCheck));
         Assert.assertEquals(fi.getDateForLastFileIDCheck().toGregorianCalendar().getTimeInMillis(), newLastFileMillis);
         
         addStep("Change the date for last checksum check", "Should be possible to extract it again.");
         long newLastChecksumMillis = 7654321;
         XMLGregorianCalendar newLastChecksumCheck = CalendarUtils.getFromMillis(newLastChecksumMillis);
         fi.setDateForLastChecksumCheck(newLastChecksumCheck);
-        Assert.assertFalse(LAST_CHECKSUM_CHECK.compare(newLastChecksumCheck) == DatatypeConstants.EQUAL);
+        Assert.assertNotEquals(DatatypeConstants.EQUAL, LAST_CHECKSUM_CHECK.compare(newLastChecksumCheck));
         Assert.assertEquals(fi.getDateForLastChecksumCheck().toGregorianCalendar().getTimeInMillis(), newLastChecksumMillis);
     }
 }

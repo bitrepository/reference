@@ -21,38 +21,29 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
-
-import java.util.Arrays;
-import java.util.Collection;
-
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResultingChecksums;
-import org.bitrepository.client.eventhandler.CompleteEvent;
-import org.bitrepository.client.eventhandler.ContributorEvent;
-import org.bitrepository.client.eventhandler.ContributorFailedEvent;
-import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.client.eventhandler.OperationFailedEvent;
+import org.bitrepository.client.eventhandler.*;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.integrityservice.workflow.IntegrityContributors;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.util.Arrays;
+import java.util.Collection;
+
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Performs the validation of the integrity for the checksums.
@@ -65,7 +56,7 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
     
     public static final String FILE_1 = "test-file-1";
     public static final String FILE_2 = "test-file-2";
-    String TEST_COLLECTION;
+    String TEST_COLLECTION = "test-collection";
     
     @BeforeMethod(alwaysRun = true)
     public void setup() {
@@ -91,8 +82,8 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
                 return null;
             }
         }).when(collector).getChecksums(
-                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
-                anyString(), any(ContributorQuery[].class), any(EventHandler.class));
+                eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class), anyString(),
+                anyString(), any(), any(EventHandler.class));
 
         GetChecksumForFileStep step = new GetChecksumForFileStep(collector, alerter, checksumType, FILE_1, settings, TEST_COLLECTION, integrityContributors);
         
@@ -100,7 +91,7 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
         step.performStep();
 
         Assert.assertTrue(step.getResults().isEmpty());
-        verifyZeroInteractions(alerter);
+        verifyNoInteractions(alerter);
         verify(collector).getChecksums(anyString(), any(), eq(checksumType), eq(FILE_1), anyString(), any(), any(EventHandler.class));
         verifyNoMoreInteractions(collector);
     }
@@ -123,8 +114,8 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
                 return null;
             }
         }).when(collector).getChecksums(
-                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
-                anyString(), any(ContributorQuery[].class), any(EventHandler.class));
+                eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class), anyString(),
+                anyString(), any(), any(EventHandler.class));
 
         GetChecksumForFileStep step = new GetChecksumForFileStep(collector, alerter, checksumType, FILE_1, settings, TEST_COLLECTION, integrityContributors);
         
@@ -133,11 +124,11 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
 
         Assert.assertFalse(step.getResults().isEmpty());
         Assert.assertEquals(step.getResults().size(), 3);
-        Assert.assertTrue(step.getResults().keySet().contains(TEST_PILLAR_1));
-        Assert.assertTrue(step.getResults().keySet().contains(TEST_PILLAR_2));
-        Assert.assertTrue(step.getResults().keySet().contains(TEST_PILLAR_3));
+        Assert.assertTrue(step.getResults().containsKey(TEST_PILLAR_1));
+        Assert.assertTrue(step.getResults().containsKey(TEST_PILLAR_2));
+        Assert.assertTrue(step.getResults().containsKey(TEST_PILLAR_3));
         
-        verifyZeroInteractions(alerter);
+        verifyNoInteractions(alerter);
         verify(collector).getChecksums(anyString(), any(), eq(checksumType), eq(FILE_1), anyString(), any(), any(EventHandler.class));
         verifyNoMoreInteractions(collector);
     }
@@ -163,8 +154,8 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
                 return null;
             }
         }).when(collector).getChecksums(
-                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
-                anyString(), any(ContributorQuery[].class), any(EventHandler.class));
+                eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class), anyString(),
+                anyString(), any(), any(EventHandler.class));
 
         GetChecksumForFileStep step = new GetChecksumForFileStep(collector, alerter, checksumType, FILE_1, settings, TEST_COLLECTION, integrityContributors);
         
@@ -173,9 +164,9 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
 
         Assert.assertFalse(step.getResults().isEmpty());
         Assert.assertEquals(step.getResults().size(), 2);
-        Assert.assertTrue(step.getResults().keySet().contains(TEST_PILLAR_1));
-        Assert.assertTrue(step.getResults().keySet().contains(TEST_PILLAR_2));
-        Assert.assertFalse(step.getResults().keySet().contains(TEST_PILLAR_3));
+        Assert.assertTrue(step.getResults().containsKey(TEST_PILLAR_1));
+        Assert.assertTrue(step.getResults().containsKey(TEST_PILLAR_2));
+        Assert.assertFalse(step.getResults().containsKey(TEST_PILLAR_3));
         
         verify(alerter).integrityFailed(anyString(), eq(TEST_COLLECTION));
         verifyNoMoreInteractions(alerter);
