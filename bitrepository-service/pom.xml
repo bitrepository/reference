@@ -39,17 +39,17 @@
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <version>9.4.1211</version>
+      <version>42.2.14</version>
     </dependency>
     <dependency>
       <groupId>com.mchange</groupId>
       <artifactId>c3p0</artifactId>
-      <version>0.9.5.4</version>
+      <version>0.9.5.5</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
-      <version>3.1.0</version>
+      <version>${javax.servlet.version}</version>
       <scope>provided</scope>
     </dependency>
     <!--  Test dependencies -->
