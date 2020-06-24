@@ -52,7 +52,7 @@ public class MockStatusStore implements StatusStore {
     @Override
     public Map<String, ComponentStatus> getStatusMap() {
         callsForGetStatusMap++;
-        return new HashMap<String, ComponentStatus>();
+        return new HashMap<>();
     }
     public int getCallsForGetStatusMap() {
         return callsForGetStatusMap;

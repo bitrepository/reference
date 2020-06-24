@@ -23,7 +23,7 @@ package org.bitrepository.service.contributor.handler;
 
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
-import org.bitrepository.protocol.*;
+import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.exception.RequestHandlerException;
 
 /**

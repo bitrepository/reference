@@ -114,7 +114,7 @@ public class PutFileStressIT extends PillarPerformanceTest {
         private final BlockingQueue<String> activePuts;
 
         ParallelPutLimiter(int limit) {
-            activePuts = new LinkedBlockingQueue<String>(limit);
+            activePuts = new LinkedBlockingQueue<>(limit);
         }
 
         void addJob(String fileID) {

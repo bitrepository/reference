@@ -46,8 +46,8 @@ import org.slf4j.LoggerFactory;
 
 public class RawMessagebus {
     private final Logger log = LoggerFactory.getLogger(getClass());
-    private final Map<String, Destination> destinations = new HashMap<String, Destination>();
-    private final Map<String, MessageConsumer> consumers = new HashMap<String, MessageConsumer>();
+    private final Map<String, Destination> destinations = new HashMap<>();
+    private final Map<String, MessageConsumer> consumers = new HashMap<>();
     private final Session producerSession;
     private final Session consumerSession;
     private final Connection connection;

@@ -188,7 +188,7 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     }
     
     private List<ChecksumDataForChecksumSpecTYPE> getChecksumResults(String fileID, String checksum) {
-        List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
+        List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<>();
         
         ChecksumDataForChecksumSpecTYPE csData = new ChecksumDataForChecksumSpecTYPE();
         csData.setChecksumValue(Base16Utils.encodeBase16(checksum));
@@ -219,7 +219,7 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
      * It's here to make the tests simple, and can be done as there's only small amounts of test data in the tests. 
      */
     private List<String> getIssuesFromIterator(IntegrityIssueIterator it) {
-        List<String> issues = new ArrayList<String>();
+        List<String> issues = new ArrayList<>();
         String issue = null;
         while((issue = it.getNextIntegrityIssue()) != null) {
             issues.add(issue);

@@ -33,7 +33,17 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.*;
+import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_ACTOR_NAME;
+import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_AUDIT_TRAIL;
+import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_CONTRIBUTOR_ID;
+import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_FILE_ID;
+import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_FINGERPRINT;
+import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_INFORMATION;
+import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_OPERATION;
+import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_OPERATION_DATE;
+import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_OPERATION_ID;
+import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_SEQUENCE_NUMBER;
+
 
 /**
  * Class to iterate over the set of AuditTrailEvents produced by a resultset.  
@@ -41,7 +51,7 @@ import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.*;
 public class AuditEventIterator {
 
     /** The log.*/
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
     private ResultSet auditResultSet = null;
     private Connection conn = null;
     private final PreparedStatement ps;

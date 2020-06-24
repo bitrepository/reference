@@ -44,7 +44,7 @@ import java.util.List;
  */
 public class DatabaseUtils {
     /** The log.*/
-    private static Logger log = LoggerFactory.getLogger(DatabaseUtils.class);
+    private static final Logger log = LoggerFactory.getLogger(DatabaseUtils.class);
 
     /** The name of the embedded derby driver.*/
     public static final String DERBY_EMBEDDED_DRIVER = "org.apache.derby.jdbc.EmbeddedDriver";
@@ -215,7 +215,7 @@ public class DatabaseUtils {
         
         try (Connection conn = dbConnector.getConnection();
             PreparedStatement ps = createPreparedStatement(conn, query, args)) {
-            List<Long> list = new ArrayList<Long>();
+            List<Long> list = new ArrayList<>();
             try (ResultSet res = ps.executeQuery()) {
                 while(res.next()) {
                     list.add(res.getLong(1));
@@ -344,7 +344,7 @@ public class DatabaseUtils {
         try (Connection conn = dbConnector.getConnection();
              PreparedStatement ps = createPreparedStatement(conn, query, args)) {
             try (ResultSet res = ps.executeQuery()) {
-                 List<String> list = new ArrayList<String>();
+                 List<String> list = new ArrayList<>();
                 while(res.next()) {
                     list.add(res.getString(1));
                 }

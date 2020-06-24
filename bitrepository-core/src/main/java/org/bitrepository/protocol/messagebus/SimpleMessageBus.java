@@ -34,8 +34,8 @@ import javax.jms.JMSException;
 
 public class SimpleMessageBus implements MessageBus {
     Map<String,Set<MessageListener>> listeners = new HashMap<>();
-    private final Set<String> componentFilter = new HashSet<String>();
-    private final Set<String> collectionFilter = new HashSet<String>();
+    private final Set<String> componentFilter = new HashSet<>();
+    private final Set<String> collectionFilter = new HashSet<>();
 
     @Override
     public void addListener(String destinationId, MessageListener listener) {

@@ -42,7 +42,7 @@ public class IntegrityEventCompleteAwaiter implements EventHandler {
     private final Long timeout;
     
     /** The queue used to store the received operation events. */
-    private final BlockingQueue<OperationEvent> finalEventQueue = new LinkedBlockingQueue<OperationEvent>(1);
+    private final BlockingQueue<OperationEvent> finalEventQueue = new LinkedBlockingQueue<>(1);
 
     /**
      * Constructor.

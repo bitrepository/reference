@@ -24,24 +24,27 @@
  */
 package org.bitrepository.common.utils;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.function.Consumer;
-
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.bitrepository.common.ArgumentValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
+import java.util.TimeZone;
+import java.util.function.Consumer;
 
 /**
  * Utility class for calendar issues. 
  */
 public final class CalendarUtils {
     /** The log.*/
-    private static Logger log = LoggerFactory.getLogger(CalendarUtils.class);
+    private static final Logger log = LoggerFactory.getLogger(CalendarUtils.class);
     private TimeZone localTimeZone = TimeZone.getDefault();
     
     /**

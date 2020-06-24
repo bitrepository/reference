@@ -44,7 +44,7 @@ public class ComponentStatusStore implements StatusStore {
      * @param components The components whose status are to be stored in this store.
      */
     public ComponentStatusStore(Set<String> components) {
-        statusMap = new ConcurrentHashMap<String, ComponentStatus>();
+        statusMap = new ConcurrentHashMap<>();
         for(String component : components) {
             statusMap.put(component, new ComponentStatus());
         }

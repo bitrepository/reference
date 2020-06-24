@@ -385,7 +385,7 @@ public abstract class IntegrityDAO {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
         
-        List<FileInfo> res = new ArrayList<FileInfo>();
+        List<FileInfo> res = new ArrayList<>();
         String getFileInfoSql = "SELECT pillarID, filesize, checksum, file_timestamp,"
                 + " checksum_timestamp, last_seen_getfileids, last_seen_getchecksums FROM fileinfo"
                 + " WHERE collectionID = ?"

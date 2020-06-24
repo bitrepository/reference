@@ -78,7 +78,7 @@ public class TestFileHelper {
     }
     
     public static List<File> getAllFilesFromSubDirs(File dir) {
-        List<File> res = new ArrayList<File>();
+        List<File> res = new ArrayList<>();
         if(dir.isDirectory()) {
             for(File f : dir.listFiles()) {
                 if(f.isFile()) {

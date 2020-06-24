@@ -48,11 +48,11 @@ import org.slf4j.LoggerFactory;
  * Class for handling the ReplaceFile operation.
  * In the positive scenario: <ul> 
  * <li> It starts by validating the message </li> 
- * <li> Afterwards it sends a positive progress to tell that the new file is being downloaded </li>
- * <li> Then the new file is downloaded to 'tempDir' </li>
- * <li> A progress message is then send to tell that the new file is replacing the old one.</li>
+ * <li> Afterwards it sends a positive progress to tell that the new file is being downloaded <>
+ * <li> Then the new file is downloaded to 'tempDir' <>
+ * <li> A progress message is then send to tell that the new file is replacing the old one.<>
  * <li> Then it performs the replacement of the file by deleting the old one (moving it from 'fileDir' to 'retainDir') 
- * and then moves the new file from 'tempDir' to 'fileDir'</li>
+ * and then moves the new file from 'tempDir' to 'fileDir'<>
  * <li> Finally the complete message is send.</li>
  * </ul>
  * If anything goes wrong a FinalResponse is send telling about the failure.

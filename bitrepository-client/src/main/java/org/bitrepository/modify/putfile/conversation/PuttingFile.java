@@ -46,7 +46,7 @@ import org.bitrepository.common.utils.ChecksumUtils;
  */
 public class PuttingFile extends PerformingOperationState {
     private final PutFileConversationContext context;
-    private final Map<String, Integer> componentRequestCount= new HashMap<String, Integer>();
+    private final Map<String, Integer> componentRequestCount= new HashMap<>();
 
     /*
      * @param context The conversation context.

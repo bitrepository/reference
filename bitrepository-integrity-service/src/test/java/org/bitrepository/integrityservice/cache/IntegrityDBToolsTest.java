@@ -244,12 +244,12 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         List<ChecksumDataForChecksumSpecTYPE> csData4 = getChecksumResults(file4, checksum4);
         List<ChecksumDataForChecksumSpecTYPE> csData5 = getChecksumResults(file5, checksum5);
 
-        List<ChecksumDataForChecksumSpecTYPE> csDataPillar1 = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
+        List<ChecksumDataForChecksumSpecTYPE> csDataPillar1 = new ArrayList<>();
         csDataPillar1.addAll(csData1);
         csDataPillar1.addAll(csData3bad);
         csDataPillar1.addAll(csData4);
         csDataPillar1.addAll(csData5);
-        List<ChecksumDataForChecksumSpecTYPE> csDataPillar2 = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
+        List<ChecksumDataForChecksumSpecTYPE> csDataPillar2 = new ArrayList<>();
         csDataPillar2.addAll(csData1);
         csDataPillar2.addAll(csData2);
         csDataPillar2.addAll(csData3);
@@ -281,7 +281,7 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
     }
     
     private List<ChecksumDataForChecksumSpecTYPE> getChecksumResults(String fileID, String checksum) {
-        List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
+        List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<>();
         
         ChecksumDataForChecksumSpecTYPE csData = new ChecksumDataForChecksumSpecTYPE();
         csData.setChecksumValue(Base16Utils.encodeBase16(checksum));

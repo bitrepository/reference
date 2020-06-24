@@ -158,7 +158,7 @@ public class AlarmDatabaseIngestor {
      * @return The list of elements in the model which are not null.
      */
     private Object[] extractArgumentsFromEvent(Alarm alarm) {
-        List<Object> res = new ArrayList<Object>();
+        List<Object> res = new ArrayList<>();
 
         if(alarm.getAlarmRaiser() != null) {
             Long componentGuid = retrieveComponentGuid(alarm.getAlarmRaiser());

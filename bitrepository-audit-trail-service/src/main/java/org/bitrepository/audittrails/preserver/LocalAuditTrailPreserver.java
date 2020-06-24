@@ -69,7 +69,7 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
     /** The timertask for preserving the audit trails.*/
     private AuditPreservationTimerTask auditTask = null;
     /** The mapping between collection and the Audit trail packer for packing and compressing the audit trails.*/
-    Map<String, AuditPacker> auditPackers = new HashMap<>();
+    private final Map<String, AuditPacker> auditPackers = new HashMap<>();
     /** The preservationSettings for the local audit trail preserver.*/
     private final AuditTrailPreservation preservationSettings;
     /** The full settings (needed for checksum calculation) */

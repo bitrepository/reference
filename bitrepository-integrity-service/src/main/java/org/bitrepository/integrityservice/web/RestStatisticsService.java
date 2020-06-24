@@ -59,7 +59,7 @@ public class RestStatisticsService {
     public List<StatisticsDataSize> getDataSizeHistory(@QueryParam("collectionID") String collectionID, 
             @QueryParam("maxEntries") @DefaultValue("1000") int maxEntries) {
         List<CollectionStat> stats = model.getLatestCollectionStat(collectionID, maxEntries);
-        List<StatisticsDataSize> data = new ArrayList<StatisticsDataSize>();
+        List<StatisticsDataSize> data = new ArrayList<>();
         for(CollectionStat stat : stats) {
             StatisticsDataSize obj = new StatisticsDataSize();
             Date statTime = stat.getStatsTime();
@@ -84,7 +84,7 @@ public class RestStatisticsService {
     @Path("/getLatestcollectionDataSize/")
     @Produces(MediaType.APPLICATION_JSON)
     public List<StatisticsCollectionSize> getLatestCollectionDataSize() {
-        List<StatisticsCollectionSize> data = new ArrayList<StatisticsCollectionSize>();
+        List<StatisticsCollectionSize> data = new ArrayList<>();
         List<CollectionStat> stats = getLatestCollectionStatistics();
         for(CollectionStat stat : stats) {
             StatisticsCollectionSize obj = new StatisticsCollectionSize();
@@ -98,7 +98,7 @@ public class RestStatisticsService {
     }
 
     public List<CollectionStat> getLatestCollectionStatistics() {
-        List<CollectionStat> res = new ArrayList<CollectionStat>();
+        List<CollectionStat> res = new ArrayList<>();
         for(String collection : SettingsUtils.getAllCollectionsIDs()) {
             List<CollectionStat> stats = model.getLatestCollectionStat(collection, 1);
             if(!stats.isEmpty()) {
@@ -109,7 +109,7 @@ public class RestStatisticsService {
     }
 
     public List<StatisticsPillarSize> getCurrentPillarsDataSize() {
-        Map<String, StatisticsPillarSize> stats = new HashMap<String, StatisticsPillarSize>();
+        Map<String, StatisticsPillarSize> stats = new HashMap<>();
         for(String pillar: SettingsUtils.getAllPillarIDs()) {
             StatisticsPillarSize stat = new StatisticsPillarSize();
             stat.setPillarID(pillar);
@@ -125,6 +125,6 @@ public class RestStatisticsService {
                 stats.put(stat.getPillarID(), stat);
             }
         }
-        return new ArrayList<StatisticsPillarSize>(stats.values());
+        return new ArrayList<>(stats.values());
     }
 }

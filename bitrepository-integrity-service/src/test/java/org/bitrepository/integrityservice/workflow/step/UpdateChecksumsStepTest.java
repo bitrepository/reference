@@ -357,7 +357,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
     }
     
     private ContributorQuery[] makeFullQueries(List<String> pillars, IntegrityModel store) {
-        List<ContributorQuery> res = new ArrayList<ContributorQuery>();
+        List<ContributorQuery> res = new ArrayList<>();
         for(String pillar : pillars) {
             Date latestChecksumDate = new Date(0);
             res.add(new ContributorQuery(pillar, latestChecksumDate, null, SettingsUtils.DEFAULT_MAX_CLIENT_PAGE_SIZE));
@@ -367,7 +367,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
     }
     
     private ContributorQuery[] makeQueries(List<String> pillars, IntegrityModel store) {
-        List<ContributorQuery> res = new ArrayList<ContributorQuery>();
+        List<ContributorQuery> res = new ArrayList<>();
         for(String pillar : pillars) {
         	Date latestChecksumDate = store.getDateForNewestChecksumEntryForPillar(pillar, TEST_COLLECTION);
             res.add(new ContributorQuery(pillar, latestChecksumDate, null, SettingsUtils.DEFAULT_MAX_CLIENT_PAGE_SIZE));
@@ -384,7 +384,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
     }
     
     private List<ChecksumDataForChecksumSpecTYPE> createChecksumData(String checksum, String ... fileids) {
-        List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
+        List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<>();
         for(String fileID : fileids) {
             ChecksumDataForChecksumSpecTYPE csData = new ChecksumDataForChecksumSpecTYPE();
             csData.setCalculationTimestamp(CalendarUtils.getNow());

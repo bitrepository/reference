@@ -35,7 +35,7 @@ public class FinishedState extends GeneralConversationState {
     protected final ConversationContext context;
     
     public FinishedState(ConversationContext context) {
-        super(new LinkedList<String>());
+        super(new LinkedList<>());
         this.context = context;
     }
 

@@ -421,7 +421,7 @@ public class AuditDatabaseTest extends ExtendedTestCase {
     }
     
     private List<AuditTrailEvent> getEventsFromIterator(AuditEventIterator it) {
-        List<AuditTrailEvent> events = new ArrayList<AuditTrailEvent>();
+        List<AuditTrailEvent> events = new ArrayList<>();
         AuditTrailEvent event;
         while((event = it.getNextAuditTrailEvent()) != null) {
             events.add(event);

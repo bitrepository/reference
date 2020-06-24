@@ -85,7 +85,7 @@ public class MessageBusDelayTest extends ExtendedTestCase {
         destinationReceiver = new MessageReceiver("Performance test topic receiver", null); //testEventManager);
         messageBus.addListener(destination, destinationReceiver.getMessageListener());
         
-        List<Long> delayList = new ArrayList<Long>(PERFORMANCE_COUNT);
+        List<Long> delayList = new ArrayList<>(PERFORMANCE_COUNT);
         AlarmMessage message = ExampleMessageFactory.createMessage(AlarmMessage.class);
         message.setDestination(destination);
         

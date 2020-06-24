@@ -103,7 +103,7 @@ public class PillarMediator extends AbstractContributorMediator {
     @SuppressWarnings("rawtypes")
     @Override
     protected RequestHandler[] createListOfHandlers() {
-        List<RequestHandler> handlers = new ArrayList<RequestHandler>();
+        List<RequestHandler> handlers = new ArrayList<>();
         
         handlers.add(new IdentifyPillarsForGetFileRequestHandler(context, pillarModel));
         handlers.add(new GetFileRequestHandler(context, pillarModel));

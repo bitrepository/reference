@@ -128,7 +128,7 @@ public class TestFileStore implements FileStore {
     @Override
     public Collection<String> getAllFileIds(String collectionID) {
         String[] ids = new File(storageDir).list();
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
         for(String id : ids) {
             res.add(id);
         }

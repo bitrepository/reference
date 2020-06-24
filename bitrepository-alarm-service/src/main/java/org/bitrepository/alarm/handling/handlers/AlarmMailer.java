@@ -40,7 +40,8 @@ import org.bitrepository.alarm.handling.AlarmHandler;
 //import org.bitrepository.alarm_service.alarmconfiguration.AlarmConfiguration;
 //import org.bitrepository.alarm_service.alarmconfiguration.AlarmConfiguration.MailingConfiguration;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
-import org.bitrepository.settings.referencesettings.*;
+import org.bitrepository.settings.referencesettings.AlarmServiceSettings;
+import org.bitrepository.settings.referencesettings.MailingConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

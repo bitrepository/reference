@@ -40,7 +40,7 @@ import org.bitrepository.protocol.OperationType;
 public class MessageLoggerProvider implements MessageLogger {
     private final static MessageLoggerProvider instance = new MessageLoggerProvider();
 
-    private final Map<String, MessageLogger> messageToLoggerMap = new HashMap<String, MessageLogger>();
+    private final Map<String, MessageLogger> messageToLoggerMap = new HashMap<>();
     private final MessageLogger defaultLogger = new DefaultMessagingLogger();
 
     private MessageLoggerProvider() {}

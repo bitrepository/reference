@@ -47,7 +47,7 @@ public class ReferenceArchive {
     public static final int MAX_BUFFER_SIZE = 32 * 1024;
 
     /** The list of directories to manage.*/
-    private final List<ArchiveDirectory> directories = new ArrayList<ArchiveDirectory>();
+    private final List<ArchiveDirectory> directories = new ArrayList<>();
     
     /** 
      * Constructor. Initializes the file directory. 
@@ -97,7 +97,7 @@ public class ReferenceArchive {
      * @return All the file ids within this archive.
      */
     public Collection<String> getAllFileIds() {
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
         for(ArchiveDirectory dir : directories) {
             res.addAll(dir.getFileIds());
         }

@@ -31,7 +31,7 @@ import org.bitrepository.protocol.messagebus.MessageBus;
  */
 public class MessageReceiverManager {
     private final List<MessageReceiver> messageReceivers =
-            new LinkedList<MessageReceiver>();
+            new LinkedList<>();
     private final MessageBus messageBus;
 
     public MessageReceiverManager (MessageBus messageBus) {

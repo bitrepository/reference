@@ -97,7 +97,7 @@ public class ActiveMQMessageBusTest extends GeneralMessageBusTest {
         addStep("Send a message with the 'Recipient' parameter set to at specific component",
                 "The MESSAGE_TO_KEY ");
         String receiverID = "specificReceiver";
-        final BlockingQueue<Message> messageList = new LinkedBlockingDeque<Message>();
+        final BlockingQueue<Message> messageList = new LinkedBlockingDeque<>();
         RawMessagebus rawMessagebus = new RawMessagebus(
                 settingsForTestClient.getMessageBusConfiguration(),
                 securityManager);

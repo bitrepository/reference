@@ -37,7 +37,7 @@ public class ConversationMediatorManager {
     public static final String DEFAULT_MEDIATOR = "Default mediator";
 
     /** Map of the loaded mediators */
-    private static final Map<String,ConversationMediator> mediatorMap = new HashMap<String,ConversationMediator>();
+    private static final Map<String,ConversationMediator> mediatorMap = new HashMap<>();
     
     /**
      * Private constructor. To prevent instantiation of this utility class.

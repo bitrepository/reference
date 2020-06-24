@@ -27,13 +27,21 @@ import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.service.scheduler.TimerbasedScheduler;
 import org.bitrepository.service.workflow.WorkflowManager;
-import org.bitrepository.settings.referencesettings.*;
+import org.bitrepository.settings.referencesettings.Collections;
+import org.bitrepository.settings.referencesettings.Schedule;
+import org.bitrepository.settings.referencesettings.Schedules;
+import org.bitrepository.settings.referencesettings.WorkflowConfiguration;
+import org.bitrepository.settings.referencesettings.WorkflowSettings;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 

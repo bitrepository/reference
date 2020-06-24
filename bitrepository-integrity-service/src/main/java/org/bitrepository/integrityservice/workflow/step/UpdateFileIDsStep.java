@@ -150,7 +150,7 @@ public abstract class UpdateFileIDsStep extends AbstractWorkFlowStep {
      * @return The queries for the pillars for collecting the file ids.
      */
     private ContributorQuery[] getQueries(Collection<String> pillars) {
-        List<ContributorQuery> res = new ArrayList<ContributorQuery>();
+        List<ContributorQuery> res = new ArrayList<>();
         for(String pillar : pillars) {
             Date latestFileIDEntry = store.getDateForNewestFileEntryForPillar(pillar, collectionID);
             res.add(new ContributorQuery(pillar, latestFileIDEntry, null, maxNumberOfResultsPerConversation));

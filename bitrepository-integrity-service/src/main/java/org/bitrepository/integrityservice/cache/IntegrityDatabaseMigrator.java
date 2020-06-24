@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  */
 public class IntegrityDatabaseMigrator extends DatabaseMigrator {
     /** The log.*/
-    private static Logger log = LoggerFactory.getLogger(DatabaseUtils.class);
+    private static final Logger log = LoggerFactory.getLogger(DatabaseUtils.class);
     
     /** The name of the version table entry for the database.*/
     private final static String DATABASE_VERSION_ENTRY = "integritydb";

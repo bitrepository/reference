@@ -212,7 +212,7 @@ public class RestIntegrityService {
         JsonFactory jf = new JsonFactory();
         JsonGenerator jg = jf.createGenerator(writer);
         List<String> pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
-        Map<String, PillarCollectionStat> stats = new HashMap<String, PillarCollectionStat>();
+        Map<String, PillarCollectionStat> stats = new HashMap<>();
         for(PillarCollectionStat stat : model.getLatestPillarStats(collectionID)) {
             if(pillars.contains(stat.getPillarID())) {
                 stats.put(stat.getPillarID(), stat);
@@ -268,7 +268,7 @@ public class RestIntegrityService {
     @Path("/getWorkflowList/")
     @Produces(MediaType.APPLICATION_JSON)
     public List<String> getWorkflowList(@QueryParam("collectionID") String collectionID) {
-        List<String> workflowIDs = new ArrayList<String>();
+        List<String> workflowIDs = new ArrayList<>();
         for(JobID workflowID : workflowManager.getWorkflows(collectionID)) {
             workflowIDs.add(workflowID.getWorkflowName());
         }

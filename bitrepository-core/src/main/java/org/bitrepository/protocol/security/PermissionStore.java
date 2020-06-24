@@ -66,7 +66,7 @@ public class PermissionStore {
      * Public constructor, initializes the store. 
      */
     public PermissionStore() {
-        permissionMap = new HashMap<CertificateID, CertificatePermission>();
+        permissionMap = new HashMap<>();
         Provider provider = new BouncyCastleProvider();
         Security.addProvider(provider);
     }
@@ -84,7 +84,7 @@ public class PermissionStore {
             for(Permission permission : permissions.getPermission()) {
                 try {
                     if(permission.getCertificate().getAllowedCertificateUsers() != null) {
-                        allowedUsers = new HashSet<String>();
+                        allowedUsers = new HashSet<>();
                         allowedUsers.addAll(permission.getCertificate().getAllowedCertificateUsers().getIDs());
                     } else {
                         allowedUsers = null;
@@ -239,7 +239,7 @@ public class PermissionStore {
             if(allowedUsers == null) {
                 this.allowedUsers = null;
             } else {
-                this.allowedUsers = new HashSet<String>();
+                this.allowedUsers = new HashSet<>();
                 this.allowedUsers.addAll(allowedUsers);
             }
             this.permissions = new HashMap<>();

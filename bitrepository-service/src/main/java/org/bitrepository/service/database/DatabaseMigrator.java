@@ -63,7 +63,7 @@ public abstract class DatabaseMigrator extends DatabaseMaintainer {
      * @return The mapping between the table names and their respective version number.
      */
     protected Map<String, Integer> getTableVersions() {
-        Map<String, Integer> resultMap = new HashMap<String, Integer>();
+        Map<String, Integer> resultMap = new HashMap<>();
         
         // Extract the table name as first coloumn and version as second coloumn. 
         String sql = "SELECT " + TV_TABLENAME + " , " + TV_VERSION + " FROM " + TABLEVERSIONS_TABLE;

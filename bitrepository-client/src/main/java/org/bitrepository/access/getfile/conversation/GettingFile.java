@@ -53,7 +53,7 @@ class GettingFile extends PerformingOperationState {
         super(pillar.getID());
         this.context = context;
         this.selectedPillar = pillar;
-        Collection<String> contributors = new HashSet<String>();
+        Collection<String> contributors = new HashSet<>();
         contributors.add(pillar.getID());
     }
 

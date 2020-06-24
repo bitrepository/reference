@@ -54,7 +54,7 @@ public class MonitorAlerterTest extends IntegrationTest {
         Assert.assertEquals(store.getCallsForGetStatusMap(), 0);
         
         addStep("Check statuses with an empty map.", "Should only make a call for GetStatusMap");
-        store.statuses = new HashMap<String, ComponentStatus>();
+        store.statuses = new HashMap<>();
         alerter.checkStatuses();
         Assert.assertEquals(store.getCallsForGetStatusMap(), 1);
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
@@ -94,7 +94,7 @@ public class MonitorAlerterTest extends IntegrationTest {
     }
 
     class AlerterStatusStore extends MockStatusStore {
-        public Map<String, ComponentStatus> statuses = new HashMap<String, ComponentStatus>();
+        public Map<String, ComponentStatus> statuses = new HashMap<>();
         @Override
         public Map<String, ComponentStatus> getStatusMap() {
             super.getStatusMap();

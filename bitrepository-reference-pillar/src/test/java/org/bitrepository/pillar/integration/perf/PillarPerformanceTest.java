@@ -114,7 +114,7 @@ public class PillarPerformanceTest extends PillarIntegrationTest {
         private final BlockingQueue<String> activeOperationss;
 
         ParallelOperationLimiter(int limit) {
-            activeOperationss = new LinkedBlockingQueue<String>(limit);
+            activeOperationss = new LinkedBlockingQueue<>(limit);
         }
 
         void addJob(String fileID) {

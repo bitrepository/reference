@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class FileUtils {
     /** The log.*/
-    private static Logger log = LoggerFactory.getLogger(FileUtils.class);
+    private static final Logger log = LoggerFactory.getLogger(FileUtils.class);
     /** The maximal size of the byte array for digest.*/
     private static final int BYTE_ARRAY_SIZE = 4096;
     

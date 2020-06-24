@@ -161,7 +161,7 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
      * @return The queries for the pillars for collecting the file ids.
      */
     private ContributorQuery[] getQueries(Collection<String> pillars) {
-        List<ContributorQuery> res = new ArrayList<ContributorQuery>();
+        List<ContributorQuery> res = new ArrayList<>();
         for(String pillar : pillars) {
             Date latestChecksumEntry = store.getDateForNewestChecksumEntryForPillar(pillar, collectionID);
             res.add(new ContributorQuery(pillar, latestChecksumEntry, null, maxNumberOfResultsPerConversation));

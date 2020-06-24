@@ -40,9 +40,9 @@ public abstract class PagingEventHandler implements EventHandler {
     /** The amount of milliseconds before the results are required.*/
     private final Long timeout;
     /** The queue used to store the received operation events. */
-    private final BlockingQueue<OperationEvent> finalEventQueue = new LinkedBlockingQueue<OperationEvent>(1);
+    private final BlockingQueue<OperationEvent> finalEventQueue = new LinkedBlockingQueue<>(1);
     
-    protected List<String> pillarsWithPartialResults = new ArrayList<String>();
+    protected List<String> pillarsWithPartialResults = new ArrayList<>();
     
     private final OutputHandler outputHandler;
 

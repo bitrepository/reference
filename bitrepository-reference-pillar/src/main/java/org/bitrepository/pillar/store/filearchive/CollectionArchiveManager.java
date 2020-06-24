@@ -42,7 +42,7 @@ import org.bitrepository.settings.referencesettings.CollectionDirs;
  */
 public class CollectionArchiveManager implements FileStore {
     /** The mapping between the collections and their archives.*/
-    private final Map<String, ReferenceArchive> archives = new HashMap<String, ReferenceArchive>();
+    private final Map<String, ReferenceArchive> archives = new HashMap<>();
     
     /**
      * Constructor.
@@ -89,7 +89,7 @@ public class CollectionArchiveManager implements FileStore {
      */
     private void initiateArchive(Collection<String> collectionIDs, Collection<String> fileDirs) {
         for(String colId : collectionIDs) {
-            List<String> dirs = new ArrayList<String>();
+            List<String> dirs = new ArrayList<>();
             for(String dir : fileDirs) {
                 dirs.add(new File(dir, colId).getPath());
             }

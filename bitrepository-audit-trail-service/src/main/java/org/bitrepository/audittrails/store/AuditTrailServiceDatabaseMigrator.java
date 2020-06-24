@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  */
 public class AuditTrailServiceDatabaseMigrator extends DatabaseMigrator {
     /** The log.*/
-    private static Logger log = LoggerFactory.getLogger(DatabaseUtils.class);
+    private static final Logger log = LoggerFactory.getLogger(DatabaseUtils.class);
     
     /** The name of the update script for version 1 to 2.*/
     private static final String UPDATE_SCRIPT_VERSION_1_TO_2 = "sql/derby/auditTrailServiceDBUpdate1to2.sql";

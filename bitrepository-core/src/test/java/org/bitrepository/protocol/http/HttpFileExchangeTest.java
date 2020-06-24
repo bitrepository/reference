@@ -21,22 +21,17 @@
  */
 package org.bitrepository.protocol.http;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.settings.TestSettingsProvider;
+import org.bitrepository.settings.referencesettings.ProtocolType;
+import org.jaccept.structure.ExtendedTestCase;
+import org.testng.annotations.Test;
+
 import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.bitrepository.common.settings.Settings;
-import org.bitrepository.common.settings.TestSettingsProvider;
-import org.bitrepository.common.utils.ChecksumUtils;
-import org.bitrepository.settings.referencesettings.ProtocolType;
-import org.jaccept.structure.ExtendedTestCase;
-import org.testng.Assert;
-import org.testng.annotations.Test;
-
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
 
 public class HttpFileExchangeTest extends ExtendedTestCase {
     @Test(groups = { "regressiontest" })

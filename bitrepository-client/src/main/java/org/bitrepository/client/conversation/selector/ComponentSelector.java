@@ -34,7 +34,7 @@ import org.bitrepository.client.exceptions.UnexpectedResponseException;
  */
 public class ComponentSelector {
     /** Used for tracking who has answered. */
-    protected final Set<SelectedComponentInfo> selectedComponents = new HashSet<SelectedComponentInfo>();
+    protected final Set<SelectedComponentInfo> selectedComponents = new HashSet<>();
 
     public void  selectComponent(MessageResponse response) throws UnexpectedResponseException {
         selectedComponents.add(new SelectedComponentInfo(response.getFrom(), response.getReplyTo()));

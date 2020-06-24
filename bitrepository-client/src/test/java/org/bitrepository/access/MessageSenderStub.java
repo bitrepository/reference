@@ -34,7 +34,7 @@ public class MessageSenderStub implements MessageSender {
     /** The <code>TestEventManager</code> used to manage the event for the associated test. */
     private final TestEventManager testEventManager;
     /** The queue used to store the received messages. */
-    private final BlockingQueue<Message> messageQueue = new LinkedBlockingQueue<Message>();
+    private final BlockingQueue<Message> messageQueue = new LinkedBlockingQueue<>();
     /** The default time to wait for messages */
     private static final long DEFAULT_WAIT_SECONDS = 10;  
     

@@ -49,11 +49,11 @@ public class SimpleChecksumEventHandler implements EventHandler {
     private final long timeout;
     
     /** The queue used to store the received operation events. */
-    private final BlockingQueue<OperationEvent> finalEventQueue = new LinkedBlockingQueue<OperationEvent>();
+    private final BlockingQueue<OperationEvent> finalEventQueue = new LinkedBlockingQueue<>();
     /** The integrity contributors, keeps track of who have failed, are active or finished */
     private final IntegrityContributors integrityContributors;
     /** Map between pillars and their checksum results.*/
-    private Map<String, ResultingChecksums> checksumResults = new HashMap<String, ResultingChecksums>();
+    private Map<String, ResultingChecksums> checksumResults = new HashMap<>();
     
     /**
      * Constructor.

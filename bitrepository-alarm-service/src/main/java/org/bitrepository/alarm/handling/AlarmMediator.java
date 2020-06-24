@@ -58,7 +58,7 @@ public class AlarmMediator implements MessageListener {
         this.destination = listenerDestination;
         
         messageBus.addListener(listenerDestination, this, true);
-        handlers = new ArrayList<AlarmHandler>();
+        handlers = new ArrayList<>();
     }
     
     /**

@@ -103,7 +103,7 @@ public class ReceivedMessageHandler {
     private class ExecutorModel {
         private CollectionExecutorModel defaultCollectionExecutorModel;
         private final Map<String, CollectionExecutorModel> collectionExecutorModelMap =
-                new HashMap<String, CollectionExecutorModel>();
+                new HashMap<>();
 
         /**
          * Creates the different executor services based on the supplied configuration.
@@ -173,8 +173,8 @@ public class ReceivedMessageHandler {
          */
         private class CollectionExecutorModel {
             private ExecutorService defaultexecutor;
-            private final Map<MessageCategory, ExecutorService> categoryExecutorMap = new HashMap<MessageCategory, ExecutorService>();
-            private final Map<String, ExecutorService> messageExecutorMap = new HashMap<String, ExecutorService>();
+            private final Map<MessageCategory, ExecutorService> categoryExecutorMap = new HashMap<>();
+            private final Map<String, ExecutorService> messageExecutorMap = new HashMap<>();
 
             void addPool(MessageThreadPool messageThreadPool) {
                 List<String> messageNames = messageThreadPool.getMessageName();

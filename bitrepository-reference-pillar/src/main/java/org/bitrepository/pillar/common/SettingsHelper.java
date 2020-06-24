@@ -42,7 +42,7 @@ public final class SettingsHelper {
      * @return all pillars in collections with the provided pillarID
      */
     public static List<String> getPillarCollections(String pillarID, List<Collection> collections) {
-        List<String> relevantCollectionIDs = new ArrayList<String>();
+        List<String> relevantCollectionIDs = new ArrayList<>();
         for (Collection collection : collections) {
             for (String pillar : collection.getPillarIDs().getPillarID()) {
                 if (pillarID.equals(pillar)) {

@@ -25,7 +25,12 @@ import org.bitrepository.access.getaudittrails.AuditTrailClient;
 import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
 import org.bitrepository.audittrails.store.AuditTrailStore;
-import org.bitrepository.bitrepositoryelements.*;
+import org.bitrepository.bitrepositoryelements.Alarm;
+import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
+import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
+import org.bitrepository.bitrepositoryelements.FileAction;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResultingAuditTrails;
 import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.ContributorFailedEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
@@ -45,8 +50,15 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 public class IncrementalCollectorTest extends ExtendedTestCase{
     
@@ -289,7 +301,7 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
         addStep("Send an auditTrail result from contributor 1 with a wrong collection id.",
                 "It is not added to the audit store");
         EventHandler eventHandler = eventHandlerCaptor.getValue();
-        eventHandler.handleEvent(new AuditTrailResult(TEST_CONTRIBUTOR2, FALSE_COLLECTION, new ResultingAuditTrails(), 
+        eventHandler.handleEvent(new AuditTrailResult(TEST_CONTRIBUTOR2, FALSE_COLLECTION, new ResultingAuditTrails(),
                 true));
         
         verify(store, timeout(3000).times(contributors.size()))
@@ -303,7 +315,7 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
     private ResultingAuditTrails getResultingAuditTrailsWithSingleAudit(String contributor, BigInteger seq) {
         ResultingAuditTrails rats = new ResultingAuditTrails();
         AuditTrailEvents ates = new AuditTrailEvents();
-        ates.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.OTHER, 
+        ates.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.OTHER,
                 "actor", "auditInfo", "fileID", "info", contributor, seq, "1234", "abab"));
         rats.setAuditTrailEvents(ates);
         return rats;

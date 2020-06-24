@@ -45,8 +45,8 @@ public class ContributorResponseStatus {
      * @param componentsWhichShouldRespond An array of componentIDs specifying which components are expected to respond 
      */
     public ContributorResponseStatus(Collection<String> componentsWhichShouldRespond) {
-        this.componentsWhichShouldRespond = new HashSet<String>(componentsWhichShouldRespond);
-        this.componentsWithOutstandingResponse = new HashSet<String>(componentsWhichShouldRespond);
+        this.componentsWhichShouldRespond = new HashSet<>(componentsWhichShouldRespond);
+        this.componentsWithOutstandingResponse = new HashSet<>(componentsWhichShouldRespond);
     }
 
     /**

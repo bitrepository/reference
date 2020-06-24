@@ -88,7 +88,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
      */
     public CollectionBasedConversationMediator(Settings settings, SecurityManager securityManager) {
         log.debug("Initializing the CollectionBasedConversationMediator");
-        this.conversations = Collections.synchronizedMap(new HashMap<String, Conversation>());
+        this.conversations = Collections.synchronizedMap(new HashMap<>());
         this.settings = settings;
         messagebus = MessageBusManager.getMessageBus(settings, securityManager);
         start();

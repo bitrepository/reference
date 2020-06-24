@@ -81,7 +81,7 @@ public class GetChecksumDistributionFormatter implements GetChecksumsOutputForma
      * @return The map between checksum and pillars.
      */
     private Map<String, List<String>> retrieveChecksumDistribution(ChecksumResult result) {
-        Map<String, List<String>> res = new HashMap<String, List<String>>();
+        Map<String, List<String>> res = new HashMap<>();
         
         for(String pillarID : result.getContributors()){
             String checksum = result.getChecksum(pillarID);
@@ -89,7 +89,7 @@ public class GetChecksumDistributionFormatter implements GetChecksumsOutputForma
             if(res.containsKey(checksum)) {
                 pillarIDs = res.get(checksum);
             } else {
-                pillarIDs = new ArrayList<String>();
+                pillarIDs = new ArrayList<>();
             }
             pillarIDs.add(pillarID);
             res.put(checksum, pillarIDs);

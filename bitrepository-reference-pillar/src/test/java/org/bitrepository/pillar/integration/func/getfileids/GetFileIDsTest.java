@@ -38,7 +38,11 @@ import org.bitrepository.pillar.messagefactories.GetFileIDsMessageFactory;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
 
 public class GetFileIDsTest extends DefaultPillarOperationTest {
     protected GetFileIDsMessageFactory msgFactory;

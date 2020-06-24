@@ -165,7 +165,7 @@ public class SaltedChecksumWorkflow extends Workflow {
                     + currentFileID + "'.");
             return;
         }
-        List<String> cs = new ArrayList<String>();
+        List<String> cs = new ArrayList<>();
         for(Map.Entry<String, String> entry : checksums.entrySet()) {
             if(!cs.contains(entry.getValue())) {
                 cs.add(entry.getValue());

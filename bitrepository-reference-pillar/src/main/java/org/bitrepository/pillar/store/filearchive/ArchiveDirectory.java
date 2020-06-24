@@ -123,7 +123,7 @@ public class ArchiveDirectory {
      * @return Retrieves the list of archived files.
      */
     public List<String> getFileIds() {
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
         res.addAll(Arrays.asList(fileDir.list()));
         res.addAll(getSubFolderFileIDs(folderDir, ""));
         return res;
@@ -246,7 +246,7 @@ public class ArchiveDirectory {
      * @return The list of file-ids in the current folder and all the sub-folders.
      */
     protected List<String> getSubFolderFileIDs(File dir, String dirPath) {
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
         if(dir.list() != null) {
             for(File f : dir.listFiles()) {
                 String path = dirPath + f.getName();

@@ -24,7 +24,8 @@ package org.bitrepository.access.getaudittrails;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNull;
 
 public class AuditTrailQueryTest extends ExtendedTestCase {
     private static final int DEFAULT_MAX_NUMBER_OF_RESULTS = 10000;

@@ -37,7 +37,7 @@ public class WorkflowStatistic {
     private WorkflowState finishState;
     private Date start;
     private Date finish;
-    private final List<WorkflowStatistic> subStatistics = new LinkedList<WorkflowStatistic>();
+    private final List<WorkflowStatistic> subStatistics = new LinkedList<>();
 
     private static final String LINEFEED = "\n";
 

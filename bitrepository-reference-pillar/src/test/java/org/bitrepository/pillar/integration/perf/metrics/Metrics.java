@@ -35,7 +35,7 @@ public class Metrics {
     private long lastPartTime;
     private int lastPartCount = 0;
 
-    private List<MetricAppender> appenderList = new LinkedList<MetricAppender>();
+    private List<MetricAppender> appenderList = new LinkedList<>();
 
     public Metrics(String operationName, int numberOfFiles, int partInterval) {
         this.operationName = operationName;

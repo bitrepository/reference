@@ -71,7 +71,7 @@ import org.slf4j.LoggerFactory;
  */
 public class AuditDatabaseExtractor {
     /** The log.*/
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
     
     /** Position of the FileId in the extraction.*/
     public static final int POSITION_FILE_ID = 1;
@@ -268,7 +268,7 @@ public class AuditDatabaseExtractor {
      * @return The list of elements in the model which are not null.
      */
     private Object[] extractArgumentsFromModel() {
-        List<Object> res = new ArrayList<Object>();
+        List<Object> res = new ArrayList<>();
         
         if(model.getFileId() != null) {
             res.add(model.getFileId());

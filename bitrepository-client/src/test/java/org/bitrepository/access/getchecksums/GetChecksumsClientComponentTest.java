@@ -107,7 +107,7 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
         addStep("Request the delivery of the checksum of a file from pillar1.",
                 "A IdentifyPillarsForGetChecksumsRequest will be sent to the pillars and a IDENTIFY_REQUEST_SENT event" +
                         "should be generated.");
-        Collection<String> pillar1AsCollection = new LinkedList<String>();
+        Collection<String> pillar1AsCollection = new LinkedList<>();
         pillar1AsCollection.add(PILLAR1_ID);
         getChecksumsClient.getChecksums(collectionID, new ContributorQuery[] {new ContributorQuery(PILLAR1_ID, null,
                 null,

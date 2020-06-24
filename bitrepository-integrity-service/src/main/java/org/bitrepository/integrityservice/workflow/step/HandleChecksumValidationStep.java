@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
     /** The log.*/
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
     /** The Integrity Model. */
     private final IntegrityModel store;
     /** The report model to populate. */
@@ -159,13 +159,13 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
      * @return The mapping between checksums and the pillars with that checksum.
      */
     private Map<String, List<String>> getChecksumMapping(Collection<FileInfo> infos) {
-        Map<String, List<String>> checksumMap = new HashMap<String, List<String>>();
+        Map<String, List<String>> checksumMap = new HashMap<>();
         for(FileInfo info : infos) {
             List<String> pillarIDsForChecksum;
             if(checksumMap.containsKey(info.getChecksum())) {
                 pillarIDsForChecksum = checksumMap.get(info.getChecksum());
             } else {
-                pillarIDsForChecksum = new ArrayList<String>();
+                pillarIDsForChecksum = new ArrayList<>();
             }
             pillarIDsForChecksum.add(info.getPillarId());
             checksumMap.put(info.getChecksum(), pillarIDsForChecksum);
@@ -185,7 +185,7 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
         if(checksumMap.size() != 2) {
             return null;
         }
-        List<List<String>> pillarLists = new ArrayList<List<String>>(checksumMap.values());
+        List<List<String>> pillarLists = new ArrayList<>(checksumMap.values());
         
         if((pillarLists.get(0).size() > 1) && (pillarLists.get(1).size() > 1)) {
             return null;

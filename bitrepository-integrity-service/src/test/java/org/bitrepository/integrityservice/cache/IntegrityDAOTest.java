@@ -27,7 +27,13 @@ package org.bitrepository.integrityservice.cache;
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
@@ -708,7 +714,7 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
     }
     
     private List<ChecksumDataForChecksumSpecTYPE> getChecksumResults(String fileID, String checksum) {
-        List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
+        List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<>();
         
         ChecksumDataForChecksumSpecTYPE csData = new ChecksumDataForChecksumSpecTYPE();
         csData.setChecksumValue(Base16Utils.encodeBase16(checksum));
@@ -745,7 +751,7 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
      * It's here to make the tests simple, and can be done as there's only small amounts of test data in the tests. 
      */
     private List<String> getIssuesFromIterator(IntegrityIssueIterator it) {
-        List<String> issues = new ArrayList<String>();
+        List<String> issues = new ArrayList<>();
         String issue = null;
         while((issue = it.getNextIntegrityIssue()) != null) {
             issues.add(issue);

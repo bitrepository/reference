@@ -44,8 +44,13 @@ import org.testng.annotations.Test;
 
 import java.util.concurrent.ThreadFactory;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class AuditTrailServiceTest extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/

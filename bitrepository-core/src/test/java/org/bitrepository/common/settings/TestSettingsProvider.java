@@ -33,7 +33,7 @@ import org.bitrepository.common.ArgumentValidator;
  * Helper class for easy access to the settings located in the <code>settings/xml</code> dir.
  */
 public class TestSettingsProvider {
-    private static final Map<String, SettingsProvider> settingsproviders = new HashMap<String, SettingsProvider>();
+    private static final Map<String, SettingsProvider> settingsproviders = new HashMap<>();
 
     private static final String SETTINGS_LOCATION = "settings/xml/bitrepository-devel";
 
