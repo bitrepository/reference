@@ -25,9 +25,8 @@
 
 
 <!-- Work in progress, creating zip distributable for running reference pillar tests. -->
-<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.0 http://maven.apache.org/xsd/assembly-2.1.0.xsd">
   <id>acceptance-test</id>
 
   <formats>
@@ -66,7 +65,7 @@
     </fileSet>
     <fileSet>
       <outputDirectory>bin</outputDirectory>
-        <directory>src/test/bin</directory>
+      <directory>src/test/bin</directory>
       <directoryMode>0755</directoryMode>
       <fileMode>0744</fileMode>
       <filtered>true</filtered>
