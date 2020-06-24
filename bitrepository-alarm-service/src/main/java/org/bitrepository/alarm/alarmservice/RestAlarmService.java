@@ -63,7 +63,7 @@ public class RestAlarmService {
     @Path("/getShortAlarmList/")
     @Produces("application/json")
     public List<Alarm> getShortAlarmList() {
-        List<Alarm> alarmList = new ArrayList<Alarm>();
+        List<Alarm> alarmList = new ArrayList<>();
         alarmList.addAll(alarmService.extractAlarms(null, null, null, null, null, null, 10, false));
         return alarmList;
     }
@@ -76,7 +76,7 @@ public class RestAlarmService {
     @Path("/getFullAlarmList/")
     @Produces("application/json")
     public List<Alarm> getFullAlarmList() {
-        List<Alarm> alarmList = new ArrayList<Alarm>();
+        List<Alarm> alarmList = new ArrayList<>();
         alarmList.addAll(alarmService.extractAlarms(null, null, null, null, null, null, null, true));
         return alarmList;
     }
@@ -114,7 +114,7 @@ public class RestAlarmService {
         Collection<Alarm> alarms = alarmService.extractAlarms(contentOrNull(input.getReportingComponent()), makeAlarmCode(input.getAlarmCode()),
                 from, to, contentOrNull(input.getFileID()), makeCollectionID(input.getCollectionID()), input.getMaxAlarms(), input.isOldestAlarmsFirst());
        
-        return new ArrayList<Alarm>(alarms);
+        return new ArrayList<>(alarms);
         
     }
     

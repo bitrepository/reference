@@ -458,7 +458,8 @@
     <repository.settings.version>12</repository.settings.version>
     <derby.version>10.14.2.0</derby.version>
     <activemq.version>5.15.13</activemq.version>
-    <jersey.version>3.0.0-M1</jersey.version>
+    <cxf.version>3.3.6</cxf.version>
+    <jackson.version>2.11.0</jackson.version>
     <javax.ws.rs.version>2.1.1</javax.ws.rs.version>
     <javaee.web.version>8.0.1</javaee.web.version>
     <javax.servlet.version>4.0.1</javax.servlet.version>

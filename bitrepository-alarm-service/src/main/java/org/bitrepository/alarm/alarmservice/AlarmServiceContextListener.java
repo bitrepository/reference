@@ -43,7 +43,7 @@ public class AlarmServiceContextListener extends AbstractBitrepositoryContextLis
     }
 
     @Override
-    public void initialize(String configutrationDir) {
-        AlarmServiceFactory.init(configutrationDir);        
+    public void initialize(String configurationDir) {
+        AlarmServiceFactory.init(configurationDir);
     }
 }
