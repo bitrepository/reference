@@ -42,7 +42,7 @@ import java.sql.Statement;
  */
 public class SqlScriptRunner {
     private static final String DEFAULT_DELIMITER = ";";
-    private static Logger log = LoggerFactory.getLogger(SqlScriptRunner.class);
+    private static final Logger log = LoggerFactory.getLogger(SqlScriptRunner.class);
 
     private Connection connection;
 

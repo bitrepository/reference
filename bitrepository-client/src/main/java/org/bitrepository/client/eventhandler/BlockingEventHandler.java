@@ -30,8 +30,8 @@ import java.util.List;
 public class BlockingEventHandler implements EventHandler {
     private final EventHandler eventHandler;
     private OperationEvent finishEvent;
-    private List<ContributorEvent> componentCompleteEvents = new LinkedList<ContributorEvent>();
-    private List<ContributorFailedEvent> componentFailedEvents = new LinkedList<ContributorFailedEvent>();
+    private List<ContributorEvent> componentCompleteEvents = new LinkedList<>();
+    private List<ContributorFailedEvent> componentFailedEvents = new LinkedList<>();
 
     public BlockingEventHandler() {
         eventHandler = null;

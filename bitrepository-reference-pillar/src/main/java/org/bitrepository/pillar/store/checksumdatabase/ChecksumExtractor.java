@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ChecksumExtractor {
     /** The log.*/
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     /** The default amount of results to fetch out of the database for each call.*/
     protected static final int DEFAULT_FETCH_SIZE = 100;
@@ -149,7 +149,7 @@ public class ChecksumExtractor {
             XMLGregorianCalendar maxTimeStamp, String fileID, String collectionID) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
 
-        List<Object> args = new ArrayList<Object>();
+        List<Object> args = new ArrayList<>();
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT " + CS_FILE_ID + " , " + CS_CHECKSUM + " , "  + CS_DATE + " FROM " + CHECKSUM_TABLE 
                 + " WHERE " + CS_FILE_ID + " = ? AND " + CS_COLLECTION_ID + " = ?");
@@ -194,7 +194,7 @@ public class ChecksumExtractor {
      */
     public ExtractedFileIDsResultSet getFileIDs(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
             Long maxNumberOfResults, String fileID, String collectionID) {
-        List<Object> args = new ArrayList<Object>(); 
+        List<Object> args = new ArrayList<>();
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT " + CS_FILE_ID + " , " + CS_DATE + " FROM " + CHECKSUM_TABLE + " WHERE " 
                 + CS_COLLECTION_ID + " = ?");
@@ -267,7 +267,7 @@ public class ChecksumExtractor {
      */
     public ExtractedChecksumResultSet extractEntries(XMLGregorianCalendar minTimeStamp, 
             XMLGregorianCalendar maxTimeStamp, Long maxNumberOfResults, String collectionID) {
-        List<Object> args = new ArrayList<Object>(); 
+        List<Object> args = new ArrayList<>();
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT " + CS_FILE_ID + " , " + CS_CHECKSUM + " , " + CS_DATE + " FROM " + CHECKSUM_TABLE 
                 + " WHERE " + CS_COLLECTION_ID + " = ?");
@@ -323,14 +323,14 @@ public class ChecksumExtractor {
     public List<String> extractFileIDsWithMaxChecksumDate(Long maxTimeStamp, String collectionID) {
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
         ArgumentValidator.checkNotNull(maxTimeStamp, "Long maxTimeStamp");
-        List<Object> args = new ArrayList<Object>(); 
+        List<Object> args = new ArrayList<>();
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT " + CS_FILE_ID + " FROM " + CHECKSUM_TABLE + " WHERE " + CS_COLLECTION_ID + " = ? AND " 
                 + CS_DATE + " <= ? " + " ORDER BY " + CS_DATE + " ASC ");
         args.add(collectionID);
         args.add(maxTimeStamp);
         
-        List<String> results = new ArrayList<String>();
+        List<String> results = new ArrayList<>();
         try (Connection conn = connector.getConnection();
              PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql.toString(), args.toArray())) {
             conn.setAutoCommit(false);

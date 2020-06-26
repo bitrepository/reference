@@ -40,13 +40,13 @@ import org.slf4j.LoggerFactory;
  */
 public final class MessageBusManager {
     public static final String DEFAULT_MESSAGE_BUS = "Default message bus";
-    private static Logger log = LoggerFactory.getLogger(MessageBusManager.class);
+    private static final Logger log = LoggerFactory.getLogger(MessageBusManager.class);
 
     /**
      * Map of the loaded mediators for the different collectionsIDs.
      * The keys are the collectionID and the values are the message buses
      */
-    private static final Map<String,MessageBus> messageBusMap = new HashMap<String,MessageBus>();
+    private static final Map<String,MessageBus> messageBusMap = new HashMap<>();
     
     /** Do not instantiate */
     private MessageBusManager() {}

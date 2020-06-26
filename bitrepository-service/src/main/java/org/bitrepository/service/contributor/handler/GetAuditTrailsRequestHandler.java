@@ -27,6 +27,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 import javax.xml.bind.JAXBException;
@@ -42,7 +43,8 @@ import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.protocol.*;
+import org.bitrepository.protocol.MessageContext;
+import org.bitrepository.protocol.ProtocolVersionLoader;
 import org.bitrepository.service.audit.AuditTrailDatabaseResults;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.ContributorContext;
@@ -207,8 +209,8 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
             is = new FileOutputStream(checksumResultFile);
             JaxbHelper jaxb = new JaxbHelper(XSD_CLASSPATH, XSD_BR_DATA);
             String xmlMessage = jaxb.serializeToXml(results);
-            jaxb.validate(new ByteArrayInputStream(xmlMessage.getBytes()));
-            is.write(xmlMessage.getBytes());
+            jaxb.validate(new ByteArrayInputStream(xmlMessage.getBytes(StandardCharsets.UTF_8)));
+            is.write(xmlMessage.getBytes(StandardCharsets.UTF_8));
             is.flush();
         } finally {
             if(is != null) {

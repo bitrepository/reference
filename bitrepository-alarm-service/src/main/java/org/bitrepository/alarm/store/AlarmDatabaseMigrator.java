@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  */
 public class AlarmDatabaseMigrator extends DatabaseMigrator {
     /** The log.*/
-    private static Logger log = LoggerFactory.getLogger(DatabaseUtils.class);
+    private static final Logger log = LoggerFactory.getLogger(DatabaseUtils.class);
     
     /** The name of the script for updating the database from version 1 to 2.*/
     private static final String UPDATE_SCRIPT_VERSION_1_TO_2 = "sql/derby/alarmServiceDB1to2migration.sql";

@@ -27,6 +27,7 @@ package org.bitrepository.common.utils;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -72,11 +73,11 @@ public class ChecksumUtilsTest extends ExtendedTestCase {
                 "b613679a0814d9ec772f95d778c35fc5ff1697c493715653c6c712144292c5ad");
         
         String message = "The quick brown fox jumps over the lazy dog";
-        InputStream data2 = new ByteArrayInputStream(message.getBytes());
+        InputStream data2 = new ByteArrayInputStream(message.getBytes(StandardCharsets.UTF_8));
         String key = "key";
-        csHmacMD5.setChecksumSalt(key.getBytes());
-        csHmacSHA1.setChecksumSalt(key.getBytes());
-        csHmacSHA256.setChecksumSalt(key.getBytes());
+        csHmacMD5.setChecksumSalt(key.getBytes(StandardCharsets.UTF_8));
+        csHmacSHA1.setChecksumSalt(key.getBytes(StandardCharsets.UTF_8));
+        csHmacSHA256.setChecksumSalt(key.getBytes(StandardCharsets.UTF_8));
         
         addStep("Test with the text '" + message + "' and key '" + key + "' for MD5, SHA1, and SHA256", 
                 "Should give expected results.");
@@ -124,7 +125,7 @@ public class ChecksumUtilsTest extends ExtendedTestCase {
         
         addStep("Test with text ", "Should giver different checksums");
         String message = "The quick brown fox jumps over the lazy dog";
-        InputStream data2 = new ByteArrayInputStream(message.getBytes());
+        InputStream data2 = new ByteArrayInputStream(message.getBytes(StandardCharsets.UTF_8));
         Assert.assertEquals(ChecksumUtils.generateChecksum(data2, csMD5),
                 "9e107d9d372bb6826bd81d3542a419d6");
         data2.reset();
@@ -136,7 +137,7 @@ public class ChecksumUtilsTest extends ExtendedTestCase {
         data2.reset();
 
         addStep("add a salt to the checksum", "Should throw an exception");
-        csMD5.setChecksumSalt("key".getBytes());
+        csMD5.setChecksumSalt("key".getBytes(StandardCharsets.UTF_8));
         try {
             ChecksumUtils.generateChecksum(data1, csMD5);
             Assert.fail("Should throw an IllegalArgumentException here!");

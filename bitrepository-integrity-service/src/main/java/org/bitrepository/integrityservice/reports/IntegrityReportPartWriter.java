@@ -23,8 +23,10 @@ package org.bitrepository.integrityservice.reports;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -39,7 +41,7 @@ public class IntegrityReportPartWriter {
 
     private final ReportPart part;
     private final File reportDir;
-    private final Map<String, BufferedWriter> pillarParts = new TreeMap<String, BufferedWriter>();
+    private final Map<String, BufferedWriter> pillarParts = new TreeMap<>();
 
     /**
      * Constructor
@@ -61,7 +63,7 @@ public class IntegrityReportPartWriter {
         BufferedWriter issueWriter;
         if(!pillarParts.containsKey(pillarID)) {
             File checksumIssueFile = ReportWriterUtils.makeEmptyFile(reportDir, part.getPartname() + "-" + pillarID);
-            issueWriter = new BufferedWriter(new FileWriter(checksumIssueFile, true));
+            issueWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(checksumIssueFile, true), StandardCharsets.UTF_8));
             pillarParts.put(pillarID, issueWriter);
         } else {
            issueWriter = pillarParts.get(pillarID); 
@@ -94,7 +96,7 @@ public class IntegrityReportPartWriter {
      * @return Mapping between pillarID and the file with the issues for the given pillar.
      */
     public Map<String, File> getSectionFiles() {
-        Map<String, File> files = new HashMap<String, File>();
+        Map<String, File> files = new HashMap<>();
         for(String part : pillarParts.keySet()) {
             File f = new File(reportDir, this.part.getPartname() + "-" + part);
             files.put(part, f);

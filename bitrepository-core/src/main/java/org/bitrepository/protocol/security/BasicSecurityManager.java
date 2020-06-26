@@ -21,31 +21,6 @@
  */
 package org.bitrepository.protocol.security;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStore.PrivateKeyEntry;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.Security;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
-import java.util.Enumeration;
-
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManagerFactory;
-
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.protocol.security.exception.CertificateUseException;
 import org.bitrepository.protocol.security.exception.MessageAuthenticationException;
@@ -71,6 +46,31 @@ import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.bouncycastle.util.encoders.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStore.PrivateKeyEntry;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.Security;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+import java.util.Enumeration;
 
 /**
  * Class to handle:
@@ -166,7 +166,7 @@ public class BasicSecurityManager implements SecurityManager {
         if(repositorySettings.getProtocolSettings().isRequireMessageAuthentication()) {
             try {
                 byte[] signature = signer.signMessage(message.getBytes(SecurityModuleConstants.defaultEncodingType));
-                return new String(Base64.encode(signature));   
+                return new String(Base64.encode(signature), StandardCharsets.UTF_8);
             } catch (UnsupportedEncodingException e) {
                 throw new SecurityException(SecurityModuleConstants.defaultEncodingType + " encoding not supported", e);
             }           
@@ -185,10 +185,10 @@ public class BasicSecurityManager implements SecurityManager {
     public void authorizeCertificateUse(String certificateUser, String messageData, String signature) 
             throws CertificateUseException {
         if(repositorySettings.getProtocolSettings().isRequireOperationAuthorization()) {
-            byte[] decodeSig = Base64.decode(signature.getBytes());
+            byte[] decodeSig = Base64.decode(signature.getBytes(StandardCharsets.UTF_8));
             CMSSignedData s;
             try {
-                s = new CMSSignedData(new CMSProcessableByteArray(messageData.getBytes()), decodeSig);
+                s = new CMSSignedData(new CMSProcessableByteArray(messageData.getBytes(StandardCharsets.UTF_8)), decodeSig);
             } catch (CMSException e) {
                 throw new SecurityException(e.getMessage(), e);
             }
@@ -213,10 +213,10 @@ public class BasicSecurityManager implements SecurityManager {
     public void authorizeOperation(String operationType, String messageData, String signature, String collectionID) 
             throws OperationAuthorizationException {
         if(repositorySettings.getProtocolSettings().isRequireOperationAuthorization()) {
-            byte[] decodeSig = Base64.decode(signature.getBytes());
+            byte[] decodeSig = Base64.decode(signature.getBytes(StandardCharsets.UTF_8));
             CMSSignedData s;
             try {
-                s = new CMSSignedData(new CMSProcessableByteArray(messageData.getBytes()), decodeSig);
+                s = new CMSSignedData(new CMSProcessableByteArray(messageData.getBytes(StandardCharsets.UTF_8)), decodeSig);
             } catch (CMSException e) {
                 throw new SecurityException(e.getMessage(), e);
             }
@@ -322,7 +322,8 @@ public class BasicSecurityManager implements SecurityManager {
             log.info("Key file '" + privateKeyFile + "' with private key and certificate does not exist!");
             return;
         }
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(privateKeyFile));
+        BufferedReader bufferedReader = new BufferedReader(
+                new InputStreamReader(new FileInputStream(privateKeyFile), StandardCharsets.UTF_8));
         PEMParser pemParser = new PEMParser(bufferedReader);
         Object pemObj = pemParser.readObject();
 

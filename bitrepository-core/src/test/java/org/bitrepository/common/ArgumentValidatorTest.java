@@ -135,7 +135,7 @@ public class ArgumentValidatorTest extends ExtendedTestCase {
             // expected
         }
         try {
-            ArgumentValidator.checkNotNullOrEmpty(new HashSet<String>(), "Exception expected.");
+            ArgumentValidator.checkNotNullOrEmpty(new HashSet<>(), "Exception expected.");
             Assert.fail("Should throw an exception here.");
         } catch (IllegalArgumentException e) {
             // expected

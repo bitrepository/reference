@@ -43,7 +43,7 @@ public abstract class AbstractContributorMediator implements ContributorMediator
     /** The log.*/
     private Logger log = LoggerFactory.getLogger(getClass());
     /** The map of request handlers. Mapping between request name and message handler for the given request.*/
-    private final Map<String, RequestHandler> handlerMap = new HashMap<String, RequestHandler>();
+    private final Map<String, RequestHandler> handlerMap = new HashMap<>();
     /** The message bus.*/
     private final MessageBus messageBus;
     /** The intermediate message handler for retrieving the messages from the messagebus. */

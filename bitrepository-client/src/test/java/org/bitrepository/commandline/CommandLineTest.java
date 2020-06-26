@@ -26,7 +26,9 @@ import org.bitrepository.commandline.utils.CommandLineArgumentsHandler;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 
 public class CommandLineTest extends ExtendedTestCase {
     private static final String SETTINGS_DIR = "SettingsDir";

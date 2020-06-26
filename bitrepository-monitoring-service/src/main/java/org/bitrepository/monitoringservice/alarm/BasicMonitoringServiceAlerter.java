@@ -60,7 +60,7 @@ public class BasicMonitoringServiceAlerter extends AlarmDispatcher implements Mo
     @Override
     public void checkStatuses() {
         Map<String, ComponentStatus> statusMap = statusStore.getStatusMap();
-        List<String> nonRespondingComponents = new ArrayList<String>();
+        List<String> nonRespondingComponents = new ArrayList<>();
         for(String ID : statusMap.keySet()) {
             ComponentStatus componentStatus = statusMap.get(ID);
             if(componentStatus.getNumberOfMissingReplies() >= maxRetries.intValue()) {

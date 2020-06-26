@@ -49,7 +49,7 @@ public class TimerbasedScheduler implements JobScheduler {
     /** The timer that schedules events. */
     private final Timer timer;
     /** The map between the running timertasks and their names. */
-    private Map<JobID, JobTimerTask> intervalTasks = new HashMap<JobID, JobTimerTask>();
+    private Map<JobID, JobTimerTask> intervalTasks = new HashMap<>();
     public static final long SCHEDULE_INTERVAL = 60000;
 
     /** The name of the timer.*/
@@ -58,7 +58,7 @@ public class TimerbasedScheduler implements JobScheduler {
     private static final boolean TIMER_IS_DAEMON = true;
     /** A timer delay of 0 seconds.*/
     private static final Long NO_DELAY = 0L;
-    private List<JobEventListener> jobListeners = new LinkedList<JobEventListener>();
+    private List<JobEventListener> jobListeners = new LinkedList<>();
 
     /** Setup a timer task for running the workflows at requested interval.
      */

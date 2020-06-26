@@ -28,6 +28,8 @@ import org.bitrepository.settings.repositorysettings.OperationPermission;
 import org.bitrepository.settings.repositorysettings.Permission;
 import org.bitrepository.settings.repositorysettings.PermissionSet;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * Class to hold constants for used with the security module tests.
  */
@@ -178,7 +180,7 @@ public class SecurityTestConstants {
         
         Permission perm1 = new Permission();
         Certificate cert1 = new Certificate();
-        cert1.setCertificateData(POSITIVECERT.getBytes());
+        cert1.setCertificateData(POSITIVECERT.getBytes(StandardCharsets.UTF_8));
         cert1.setAllowedCertificateUsers(allowedUsers);
         perm1.setCertificate(cert1);
         OperationPermission opPerm = new OperationPermission();
@@ -187,7 +189,7 @@ public class SecurityTestConstants {
         
         Permission perm2 = new Permission();
         Certificate cert2 = new Certificate();
-        cert2.setCertificateData(NEGATIVECERT.getBytes());
+        cert2.setCertificateData(NEGATIVECERT.getBytes(StandardCharsets.UTF_8));
         cert2.setAllowedCertificateUsers(allowedUsers);
         perm2.setCertificate(cert2);
         

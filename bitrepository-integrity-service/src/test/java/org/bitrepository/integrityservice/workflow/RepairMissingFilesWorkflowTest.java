@@ -21,11 +21,11 @@
  */
 package org.bitrepository.integrityservice.workflow;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -282,7 +282,7 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
     }
     
     private List<FileInfo> createMockFileInfo(String fileId, String checksum, String ... pillars) {
-        List<FileInfo> res = new ArrayList<FileInfo>();
+        List<FileInfo> res = new ArrayList<>();
         for(String pillar : pillars) {
             res.add(new FileInfo(fileId, null, checksum, 0L, null, pillar));
         }

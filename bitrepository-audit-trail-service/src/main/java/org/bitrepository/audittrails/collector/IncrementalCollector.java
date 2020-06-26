@@ -120,7 +120,7 @@ public class IncrementalCollector {
      * @return Collection<String> the contributors that have more audits to collect 
      */
     private Collection<String> collect(Collection<String> contributors) {
-        List<AuditTrailQuery> queries = new ArrayList<AuditTrailQuery>();
+        List<AuditTrailQuery> queries = new ArrayList<>();
         
         for(String contributorId : contributors) {
             long seq = store.largestSequenceNumber(contributorId, collectionID);
@@ -151,7 +151,7 @@ public class IncrementalCollector {
      * audit trail store.
      */
     private class AuditCollectorEventHandler implements EventHandler {
-        List<String> contributorsWithPartialResults = new LinkedList<String>();
+        List<String> contributorsWithPartialResults = new LinkedList<>();
         private final long startTime = System.currentTimeMillis();
 
         Collection<String> getContributorsWithPartialResults() {

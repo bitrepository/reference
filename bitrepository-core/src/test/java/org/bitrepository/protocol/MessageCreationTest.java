@@ -26,6 +26,7 @@ package org.bitrepository.protocol;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 
 import javax.xml.bind.JAXBException;
@@ -74,8 +75,8 @@ public class MessageCreationTest extends ExtendedTestCase {
                 "BadDateAlarmMessage" + ExampleMessageFactory.EXAMPLE_FILE_POSTFIX;
         String message = IOUtils.toString(Thread.currentThread().getContextClassLoader().getResourceAsStream(messagePath));
         JaxbHelper jaxbHelper = new JaxbHelper(ExampleMessageFactory.PATH_TO_SCHEMA, ExampleMessageFactory.SCHEMA_NAME);
-        jaxbHelper.validate(new ByteArrayInputStream(message.getBytes()));
-        AlarmMessage am = jaxbHelper.loadXml(AlarmMessage.class, new ByteArrayInputStream(message.getBytes()));
+        jaxbHelper.validate(new ByteArrayInputStream(message.getBytes(StandardCharsets.UTF_8)));
+        AlarmMessage am = jaxbHelper.loadXml(AlarmMessage.class, new ByteArrayInputStream(message.getBytes(StandardCharsets.UTF_8)));
     }
 
     /**

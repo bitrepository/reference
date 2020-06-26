@@ -26,8 +26,10 @@ package org.bitrepository.audittrails;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.Properties;
 
@@ -63,7 +65,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class AuditTrailServiceFactory {
 
-    private static Logger log = LoggerFactory.getLogger(AuditTrailServiceFactory.class);
+    private static final Logger log = LoggerFactory.getLogger(AuditTrailServiceFactory.class);
     /** The audit trail service. 
      * @see #getAuditTrailService().*/
     private static AuditTrailService auditTrailService;
@@ -138,7 +140,7 @@ public final class AuditTrailServiceFactory {
     }
     
     /**
-     * Retrieves the shared settings based on the directory specified in the {@link #initialize(String)} method.
+     * Retrieves the shared settings based on the directory specified in the {@link #init(String)} method.
      */
     private static void loadSettings() {
         if(configurationDir == null) {
@@ -153,15 +155,15 @@ public final class AuditTrailServiceFactory {
     
     /**
      * Loads the properties.
-     * @throws IOException If any input/output issues occurs.
+     * @throws IllegalStateException If any input/output issues occurs.
      */
     private static void loadProperties() {
-        try {
         Properties properties = new Properties();
         File propertiesFile = new File(configurationDir, CONFIGFILE);
-        BufferedReader propertiesReader = new BufferedReader(new FileReader(propertiesFile));
-        properties.load(propertiesReader);
-        privateKeyFile = properties.getProperty(PRIVATE_KEY_FILE);
+        try (BufferedReader propertiesReader = new BufferedReader(
+                new InputStreamReader(new FileInputStream(propertiesFile), StandardCharsets.UTF_8))) {
+            properties.load(propertiesReader);
+            privateKeyFile = properties.getProperty(PRIVATE_KEY_FILE);
         } catch (IOException e) {
             throw new IllegalStateException("Could not instantiate the properties.", e);
         }

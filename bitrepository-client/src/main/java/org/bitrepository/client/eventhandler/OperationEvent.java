@@ -48,7 +48,7 @@ public interface OperationEvent {
      * <li>TimeOut: The operation did't finish before a timeout occurred.
      * </ol>
      */
-    public enum OperationEventType {
+    enum OperationEventType {
         IDENTIFY_REQUEST_SENT,
         COMPONENT_IDENTIFIED,
         IDENTIFICATION_COMPLETE,

@@ -27,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -217,7 +218,7 @@ public class AuditDatabaseTest extends ExtendedTestCase {
                 settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase());
         AuditTrailServiceDAO database = new AuditTrailServiceDAO(dm);
         
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.ROOT);
         Date summertimeTS = sdf.parse("2015-10-25T02:59:54.000+02:00");
         Date summertimeUnix = new Date(1445734794000L);
         Assert.assertEquals(summertimeTS, summertimeUnix);
@@ -420,7 +421,7 @@ public class AuditDatabaseTest extends ExtendedTestCase {
     }
     
     private List<AuditTrailEvent> getEventsFromIterator(AuditEventIterator it) {
-        List<AuditTrailEvent> events = new ArrayList<AuditTrailEvent>();
+        List<AuditTrailEvent> events = new ArrayList<>();
         AuditTrailEvent event;
         while((event = it.getNextAuditTrailEvent()) != null) {
             events.add(event);

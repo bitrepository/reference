@@ -23,8 +23,10 @@ package org.bitrepository.integrityservice.reports;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.annotations.Test;
@@ -85,7 +87,7 @@ public class ExampleReportGenerationTest extends ExtendedTestCase {
     
     
     private void printReport(File report) throws IOException {
-        BufferedReader br = new BufferedReader(new FileReader(report));
+        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(report), StandardCharsets.UTF_8));
         String line;
         while ((line = br.readLine()) != null) {
             System.out.println(line);

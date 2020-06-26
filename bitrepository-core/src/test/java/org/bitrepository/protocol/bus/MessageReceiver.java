@@ -170,7 +170,7 @@ public class MessageReceiver {
     }
 
     private class MessageModel {
-        private Map<Class<?>, BlockingQueue<?>> messageMap = new HashMap<Class<?>, BlockingQueue<?>>();
+        private Map<Class<?>, BlockingQueue<?>> messageMap = new HashMap<>();
         private Collection<String> pillarFilter;
 
         private <T> void addMessage(T message) {
@@ -185,7 +185,7 @@ public class MessageReceiver {
 
         private synchronized <T> BlockingQueue<T> getMessageQueue(Class<T> messageType) {
             if (!messageMap.containsKey(messageType)) {
-                messageMap.put(messageType, new LinkedBlockingQueue<T>());
+                messageMap.put(messageType, new LinkedBlockingQueue<>());
             }
 
             @SuppressWarnings("unchecked")

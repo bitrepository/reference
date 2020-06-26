@@ -53,7 +53,7 @@ public class SettingsUtils {
      * @return The list of collection ids, which this pillar is part of.
      */
     public static List<String> getCollectionIDsForPillar(String pillarID) {
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
         for(Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
             if(c.getPillarIDs().getPillarID().contains(pillarID)) {
                 res.add(c.getID());
@@ -68,7 +68,7 @@ public class SettingsUtils {
      * @return all collections in the repository
      */
     public static List<String> getAllCollectionsIDs() {
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
         for(Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
             res.add(c.getID());
         }       
@@ -111,7 +111,7 @@ public class SettingsUtils {
      * @return The list of pillar ids. 
      */
     public static List<String> getAllPillarIDs() {
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
         for(Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
             for(String pillarID : c.getPillarIDs().getPillarID()) {
                 if(!res.contains(pillarID)) {
@@ -123,7 +123,7 @@ public class SettingsUtils {
     }
     
     public static List<String> getPillarIDsForCollection(String collectionID) {
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
         for(Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
             if(c.getID().equals(collectionID)) {
                 res.addAll(c.getPillarIDs().getPillarID());
@@ -148,7 +148,7 @@ public class SettingsUtils {
      * @return The list of ids for the contributors of audittrails for the collection
      */
     public static Set<String> getAuditContributorsForCollection(String collectionID) {
-        Set<String> contributors = new HashSet<String>();
+        Set<String> contributors = new HashSet<>();
         contributors.addAll(
                 settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs());
         contributors.addAll(SettingsUtils.getPillarIDsForCollection(collectionID));
@@ -160,7 +160,7 @@ public class SettingsUtils {
      * @return The list of ids for the status contributors.
      */
     public static Set<String> getStatusContributorsForCollection() {
-        Set<String> contributors = new HashSet<String>();
+        Set<String> contributors = new HashSet<>();
         contributors.addAll(
                 settings.getRepositorySettings().getGetStatusSettings().getNonPillarContributorIDs());
         contributors.addAll(SettingsUtils.getAllPillarIDs());

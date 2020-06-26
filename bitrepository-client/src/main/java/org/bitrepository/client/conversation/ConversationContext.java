@@ -44,7 +44,7 @@ public class ConversationContext {
     private final ConversationEventMonitor monitor;
     private final String auditTrailInformation;
     private GeneralConversationState state;
-    private final Set<String> checksumPillars = new HashSet<String>();
+    private final Set<String> checksumPillars = new HashSet<>();
 
     /**
      * Encapsulates the common state maintained in a conversation. Will typically be subclasses to provide

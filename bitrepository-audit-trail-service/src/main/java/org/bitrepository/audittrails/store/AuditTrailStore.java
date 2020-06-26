@@ -50,9 +50,9 @@ public interface AuditTrailStore {
      * @param operationID [OPTIONAL] The ID of the operation (conversationID) for the audits
      * @return The requested audit trails from the store.
      */
-    public AuditEventIterator getAuditTrailsByIterator(String fileID, String collectionID, String contributorId,
-            Long minSeqNumber, Long maxSeqNumber, String actorName, FileAction operation, Date startDate, 
-            Date endDate, String fingerprint, String operationID);
+    AuditEventIterator getAuditTrailsByIterator(String fileID, String collectionID, String contributorId,
+                                                Long minSeqNumber, Long maxSeqNumber, String actorName, FileAction operation, Date startDate,
+                                                Date endDate, String fingerprint, String operationID);
     
     /**
      * ingest audit trails into the store. 
@@ -60,7 +60,7 @@ public interface AuditTrailStore {
      * @param collectionID The id of the collection, where the audit trail events belong.
      * @param contributorID The id of the contributor, that the audit trail event belongs to.
      */
-    public void addAuditTrails(AuditTrailEvents auditTrailsEvents, String collectionID, String contributorID);
+    void addAuditTrails(AuditTrailEvents auditTrailsEvents, String collectionID, String contributorID);
     
     /**
      * Retrieves the largest sequence number for a given contributor.
@@ -69,7 +69,7 @@ public interface AuditTrailStore {
      * @param collectionID The id of the collection for the sequence number of the contributor.
      * @return The largest sequence number.
      */
-    public long largestSequenceNumber(String contributorId, String collectionID);
+    long largestSequenceNumber(String contributorId, String collectionID);
     
     /**
      * Retrieves the preservation sequence number for the given contributor, which tells how far the preservation
@@ -79,7 +79,7 @@ public interface AuditTrailStore {
      * @param collectionID The id of the collection for the sequence number of the contributor.
      * @return The preservation sequence number for the given contributor.
      */
-    public long getPreservationSequenceNumber(String contributorId, String collectionID);
+    long getPreservationSequenceNumber(String contributorId, String collectionID);
     
     /**
      * Set the preservation sequence number for the given contributor.
@@ -88,7 +88,7 @@ public interface AuditTrailStore {
      * @param collectionID The id of the collection for the sequence number of the contributor.
      * @param seqNumber The new preservation sequence number for the given contributor.
      */
-    public void setPreservationSequenceNumber(String contributorId, String collectionID, long seqNumber);
+    void setPreservationSequenceNumber(String contributorId, String collectionID, long seqNumber);
 
     /**
      * Check to see if the database knows a contributor
@@ -109,5 +109,5 @@ public interface AuditTrailStore {
     /**
      * Closes the store.
      */
-    public void close();
+    void close();
 }

@@ -50,7 +50,7 @@ public class IntegrityCollectorEventHandler implements EventHandler {
     private final long timeout;
     
     /** The queue used to store the received operation events. */
-    private final BlockingQueue<OperationEvent> finalEventQueue = new LinkedBlockingQueue<OperationEvent>();
+    private final BlockingQueue<OperationEvent> finalEventQueue = new LinkedBlockingQueue<>();
     /** The integrity contributors, keeps track of who have failed, are active or finished */
     private final IntegrityContributors integrityContributors;
     

@@ -58,7 +58,7 @@ import org.slf4j.LoggerFactory;
  */
 public class LocalAuditTrailPreserver implements AuditTrailPreserver {
     /** The log.*/
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
     /** The audit trails store, where the audit trails can be extracted.*/
     private final AuditTrailStore store;
     /** The put file client for sending the resulting files. */
@@ -69,7 +69,7 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
     /** The timertask for preserving the audit trails.*/
     private AuditPreservationTimerTask auditTask = null;
     /** The mapping between collection and the Audit trail packer for packing and compressing the audit trails.*/
-    Map<String, AuditPacker> auditPackers = new HashMap<String, AuditPacker>();
+    private final Map<String, AuditPacker> auditPackers = new HashMap<>();
     /** The preservationSettings for the local audit trail preserver.*/
     private final AuditTrailPreservation preservationSettings;
     /** The full settings (needed for checksum calculation) */

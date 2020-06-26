@@ -437,7 +437,7 @@ public abstract class AuditTrailContributerDAO implements AuditTrailManager {
          * @return The arguments for the SQL statement.
          */
         public Object[] getArguments() {
-            List<Object> res = new ArrayList<Object>();
+            List<Object> res = new ArrayList<>();
             if(collectionID != null) {
                 res.add(collectionID);
             }

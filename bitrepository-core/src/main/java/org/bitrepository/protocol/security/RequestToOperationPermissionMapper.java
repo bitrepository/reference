@@ -57,50 +57,50 @@ public class RequestToOperationPermissionMapper {
      * Constructor for the class. Initiates the default permission mappings.  
      */
     public RequestToOperationPermissionMapper() {
-        mapping = new HashMap<String, List<Operation>>();
-        ArrayList<Operation> requiredPermissions = new ArrayList<Operation>();
+        mapping = new HashMap<>();
+        ArrayList<Operation> requiredPermissions = new ArrayList<>();
         requiredPermissions.add(Operation.ALL);
         requiredPermissions.add(Operation.GET_FILE);
         mapping.put(IdentifyPillarsForGetFileRequest.class.getSimpleName(), requiredPermissions);
         mapping.put(GetFileRequest.class.getSimpleName(), requiredPermissions);
         
-        requiredPermissions = new ArrayList<Operation>();
+        requiredPermissions = new ArrayList<>();
         requiredPermissions.add(Operation.ALL);
         requiredPermissions.add(Operation.PUT_FILE);
         mapping.put(IdentifyPillarsForPutFileRequest.class.getSimpleName(), requiredPermissions);
         mapping.put(PutFileRequest.class.getSimpleName(), requiredPermissions);
         
-        requiredPermissions = new ArrayList<Operation>();
+        requiredPermissions = new ArrayList<>();
         requiredPermissions.add(Operation.ALL);
         requiredPermissions.add(Operation.GET_FILE_I_DS);
         mapping.put(IdentifyPillarsForGetFileIDsRequest.class.getSimpleName(), requiredPermissions);
         mapping.put(GetFileIDsRequest.class.getSimpleName(), requiredPermissions);
         
-        requiredPermissions = new ArrayList<Operation>();
+        requiredPermissions = new ArrayList<>();
         requiredPermissions.add(Operation.ALL);
         requiredPermissions.add(Operation.GET_CHECKSUMS);
         mapping.put(IdentifyPillarsForGetChecksumsRequest.class.getSimpleName(), requiredPermissions);
         mapping.put(GetChecksumsRequest.class.getSimpleName(), requiredPermissions);
         
-        requiredPermissions = new ArrayList<Operation>();
+        requiredPermissions = new ArrayList<>();
         requiredPermissions.add(Operation.ALL);
         requiredPermissions.add(Operation.GET_AUDIT_TRAILS);
         mapping.put(IdentifyContributorsForGetAuditTrailsRequest.class.getSimpleName(), requiredPermissions);
         mapping.put(GetAuditTrailsRequest.class.getSimpleName(), requiredPermissions);
         
-        requiredPermissions = new ArrayList<Operation>();
+        requiredPermissions = new ArrayList<>();
         requiredPermissions.add(Operation.ALL);
         requiredPermissions.add(Operation.DELETE_FILE);
         mapping.put(IdentifyPillarsForDeleteFileRequest.class.getSimpleName(), requiredPermissions);
         mapping.put(DeleteFileRequest.class.getSimpleName(), requiredPermissions);
         
-        requiredPermissions = new ArrayList<Operation>();
+        requiredPermissions = new ArrayList<>();
         requiredPermissions.add(Operation.ALL);
         requiredPermissions.add(Operation.REPLACE_FILE);
         mapping.put(IdentifyPillarsForReplaceFileRequest.class.getSimpleName(), requiredPermissions);
         mapping.put(ReplaceFileRequest.class.getSimpleName(), requiredPermissions);
 
-        requiredPermissions = new ArrayList<Operation>();
+        requiredPermissions = new ArrayList<>();
         requiredPermissions.add(Operation.ALL);
         requiredPermissions.add(Operation.GET_STATUS);
         mapping.put(IdentifyContributorsForGetStatusRequest.class.getSimpleName(), requiredPermissions);

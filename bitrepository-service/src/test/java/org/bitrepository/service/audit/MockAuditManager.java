@@ -35,7 +35,7 @@ import java.util.List;
  */
 public class MockAuditManager implements AuditTrailManager {
 
-    List<AuditTrailEvent> events = new ArrayList<AuditTrailEvent>();
+    List<AuditTrailEvent> events = new ArrayList<>();
     
     private int callsForAuditEvent = 0;
     @Override

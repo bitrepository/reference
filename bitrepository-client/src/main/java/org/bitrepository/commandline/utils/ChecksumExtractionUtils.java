@@ -27,6 +27,8 @@ import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.ChecksumUtils;
 
+import java.util.Locale;
+
 /**
  * Utility class for extraction of checksum parameters from the commandline arguments.
  */
@@ -45,7 +47,7 @@ public class ChecksumExtractionUtils {
             OutputHandler output) {
         String type;
         if(cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_TYPE_ARG)) {
-            type = cmdHandler.getOptionValue(Constants.REQUEST_CHECKSUM_TYPE_ARG).toUpperCase();
+            type = cmdHandler.getOptionValue(Constants.REQUEST_CHECKSUM_TYPE_ARG).toUpperCase(Locale.ROOT);
         } else { 
             type = ChecksumUtils.getDefault(settings).getChecksumType().name();
         }

@@ -21,17 +21,6 @@
  */
 package org.bitrepository.audittrails;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.timeout;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
-import java.util.Date;
-import java.util.concurrent.ThreadFactory;
-
 import org.bitrepository.access.getaudittrails.AuditTrailClient;
 import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
@@ -52,6 +41,16 @@ import org.jaccept.structure.ExtendedTestCase;
 import org.mockito.ArgumentCaptor;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import java.util.concurrent.ThreadFactory;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class AuditTrailServiceTest extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/
@@ -99,7 +98,7 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
         
         ArgumentCaptor<EventHandler> eventHandlerCaptor = ArgumentCaptor.forClass(EventHandler.class);
         verify(client, timeout(3000).times(1)).getAuditTrails(eq(TEST_COLLECTION), any(AuditTrailQuery[].class),
-                isNull(String.class), isNull(String.class), eventHandlerCaptor.capture(), any(String.class));
+                isNull(), isNull(), eventHandlerCaptor.capture(), any(String.class));
         
         AuditTrailResult event = new AuditTrailResult(DEFAULT_CONTRIBUTOR, TEST_COLLECTION, new ResultingAuditTrails(), false);
         eventHandlerCaptor.getValue().handleEvent(event);
@@ -109,15 +108,15 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
         
         verify(store, times(1)).addAuditTrails(any(AuditTrailEvents.class), eq(TEST_COLLECTION), eq(DEFAULT_CONTRIBUTOR));
         service.queryAuditTrailEventsByIterator(null, null, null, null, null, null, null, null, null);
-        verify(store, times(1)).getAuditTrailsByIterator(isNull(String.class), isNull(String.class), 
-                isNull(String.class), isNull(Long.class), isNull(Long.class), isNull(String.class), 
-                isNull(FileAction.class), isNull(Date.class), isNull(Date.class), isNull(String.class), 
-                isNull(String.class));
+        verify(store, times(1)).getAuditTrailsByIterator(isNull(), isNull(),
+                isNull(), isNull(), isNull(), isNull(),
+                isNull(), isNull(), isNull(), isNull(),
+                isNull());
         service.queryAuditTrailEventsByIterator(null, null, null, null, null, null, FileAction.FAILURE, null, null);
-        verify(store, times(1)).getAuditTrailsByIterator(isNull(String.class), isNull(String.class), 
-                isNull(String.class), isNull(Long.class), isNull(Long.class), isNull(String.class), 
-                eq(FileAction.FAILURE), isNull(Date.class), isNull(Date.class), isNull(String.class), 
-                isNull(String.class));
+        verify(store, times(1)).getAuditTrailsByIterator(isNull(), isNull(),
+                isNull(), isNull(), isNull(), isNull(),
+                eq(FileAction.FAILURE), isNull(), isNull(), isNull(),
+                isNull());
 
         
         addStep("Shutdown", "");

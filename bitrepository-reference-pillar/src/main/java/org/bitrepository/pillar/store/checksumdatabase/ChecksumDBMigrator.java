@@ -38,7 +38,7 @@ import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.
  */
 public class ChecksumDBMigrator extends DatabaseMigrator {
     /** The log.*/
-    private static Logger log = LoggerFactory.getLogger(DatabaseUtils.class);
+    private static final Logger log = LoggerFactory.getLogger(DatabaseUtils.class);
     /** The settings.*/
     private final Settings settings;
     /** The current version of the database. */

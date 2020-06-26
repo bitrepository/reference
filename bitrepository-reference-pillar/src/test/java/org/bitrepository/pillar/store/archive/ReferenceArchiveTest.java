@@ -25,7 +25,10 @@
 package org.bitrepository.pillar.store.archive;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import org.bitrepository.common.utils.FileUtils;
@@ -133,9 +136,9 @@ public class ReferenceArchiveTest extends DefaultPillarTest {
     }
     
     private void createExistingFile() throws Exception {
-        FileWriter fw = new FileWriter(new File(FILE_DIR_NAME, EXISTING_FILE), false);
-        fw.write("test-data\n");
-        fw.flush();
-        fw.close();
+        OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(new File(FILE_DIR_NAME, EXISTING_FILE), false), StandardCharsets.UTF_8);
+        osw.write("test-data\n");
+        osw.flush();
+        osw.close();
     }
 }

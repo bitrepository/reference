@@ -41,7 +41,7 @@ public class ExtractedChecksumResultSet {
      * Constructor.
      */
     public ExtractedChecksumResultSet() {
-        entries = new ArrayList<ChecksumDataForChecksumSpecTYPE>();
+        entries = new ArrayList<>();
         moreEntriesReported = false;
     }
     
@@ -69,7 +69,7 @@ public class ExtractedChecksumResultSet {
      * @return A list with all the reported entries.
      */
     public List<ChecksumDataForChecksumSpecTYPE> getEntries() {
-        return new ArrayList<ChecksumDataForChecksumSpecTYPE>(entries);
+        return new ArrayList<>(entries);
     }
     
     /**

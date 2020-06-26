@@ -32,7 +32,7 @@ import org.bitrepository.settings.referencesettings.WorkflowSettings;
 
 /**
  * Manages the workflows for the integrity service. Delegates most functionality to the <code>Workflow</code>
- * class, put handles som configation specif to the integrity workflows.
+ * class, but handles som configuration specific to the integrity workflows.
  */
 public class IntegrityWorkflowManager extends WorkflowManager {
     public static final long DAILY = 86400000;

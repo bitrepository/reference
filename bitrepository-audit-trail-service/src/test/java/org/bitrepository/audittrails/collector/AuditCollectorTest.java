@@ -21,9 +21,9 @@
  */
 package org.bitrepository.audittrails.collector;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
@@ -79,7 +79,7 @@ public class AuditCollectorTest extends ExtendedTestCase {
         
         ArgumentCaptor<EventHandler> eventHandlerCaptor = ArgumentCaptor.forClass(EventHandler.class);
         verify(client, timeout(3000).times(1)).getAuditTrails(eq(TEST_COLLECTION), any(AuditTrailQuery[].class),
-                isNull(String.class), isNull(String.class), eventHandlerCaptor.capture(), any(String.class));
+                isNull(), isNull(), eventHandlerCaptor.capture(), any(String.class));
         EventHandler eventHandler = eventHandlerCaptor.getValue(); 
         
         Assert.assertNotNull(eventHandler, "Should have an event handler");
@@ -87,7 +87,7 @@ public class AuditCollectorTest extends ExtendedTestCase {
         eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
         
         verify(client, timeout(3000).times(2)).getAuditTrails(eq(TEST_COLLECTION), any(AuditTrailQuery[].class),
-                isNull(String.class), isNull(String.class), eventHandlerCaptor.capture(), any(String.class));
+                isNull(), isNull(), eventHandlerCaptor.capture(), any(String.class));
         eventHandler = eventHandlerCaptor.getValue();
         eventHandler.handleEvent(new AuditTrailResult(DEFAULT_CONTRIBUTOR, TEST_COLLECTION, new ResultingAuditTrails(), false));
         eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));

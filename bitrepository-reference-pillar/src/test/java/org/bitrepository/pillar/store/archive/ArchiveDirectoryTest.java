@@ -22,7 +22,10 @@ package org.bitrepository.pillar.store.archive;
  */
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -362,18 +365,19 @@ public class ArchiveDirectoryTest extends ExtendedTestCase {
     }
 
     private void createExistingFile() throws Exception {
-        FileWriter fw = new FileWriter(new File(FILE_DIR_NAME, FILE_ID), false);
-        fw.write("test-data\n");
-        fw.flush();
-        fw.close();
+        OutputStreamWriter osw = new OutputStreamWriter(
+                new FileOutputStream(new File(FILE_DIR_NAME, FILE_ID), false), StandardCharsets.UTF_8);
+        osw.write("test-data\n");
+        osw.flush();
+        osw.close();
     }
     
     private void createExistingFolderFile() throws Exception {
         File f = new File(FOLDER_DIR_NAME, FOLDER_FILE_ID);
         f.getParentFile().mkdirs();
-        FileWriter fw = new FileWriter(f, false);
-        fw.write("test-data\n");
-        fw.flush();
-        fw.close();
+        OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(f, false), StandardCharsets.UTF_8);
+        osw.write("test-data\n");
+        osw.flush();
+        osw.close();
     }
 }

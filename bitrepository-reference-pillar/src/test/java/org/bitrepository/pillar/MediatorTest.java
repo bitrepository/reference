@@ -35,7 +35,7 @@ import org.bitrepository.pillar.common.PillarAlarmDispatcher;
 import org.bitrepository.pillar.common.SettingsHelper;
 import org.bitrepository.pillar.messagehandler.PillarMediator;
 import org.bitrepository.pillar.store.StorageModel;
-import org.bitrepository.protocol.*;
+import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
 import org.bitrepository.service.contributor.handler.RequestHandler;
@@ -104,7 +104,7 @@ public class MediatorTest extends DefaultFixturePillarTest {
         @SuppressWarnings("rawtypes")
         @Override
         protected RequestHandler[] createListOfHandlers() {
-            List<RequestHandler> handlers = new ArrayList<RequestHandler>();
+            List<RequestHandler> handlers = new ArrayList<>();
             handlers.add(new ErroneousRequestHandler());
             return handlers.toArray(new RequestHandler[handlers.size()]);
         }

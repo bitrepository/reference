@@ -21,6 +21,8 @@
  */
 package org.bitrepository.common.utils;
 
+import java.util.Locale;
+
 /**
  * Util class for handling formatting of datasizes. 
  */
@@ -157,7 +159,7 @@ public class FileSizeUtils {
 
     private static String formatShortDecimalExa(long size) {
         double EB = ((double) size / exaSize);
-        return String.format(decimalFormat, EB) + exaPostfix;
+        return String.format(Locale.ROOT, decimalFormat, EB) + exaPostfix;
     }
 
     private static String formatShortPeta(long size) {
@@ -167,7 +169,7 @@ public class FileSizeUtils {
 
     private static String formatShortDecimalPeta(long size) {
         double PB = ((double) size / petaSize);
-        return String.format(decimalFormat, PB) + petaPostfix;
+        return String.format(Locale.ROOT, decimalFormat, PB) + petaPostfix;
     }
 
     private static String formatShortTera(long size) {
@@ -177,7 +179,7 @@ public class FileSizeUtils {
 
     private static String formatShortDecimalTera(long size) {
         double TB = ((double) size / teraSize);
-        return String.format(decimalFormat, TB) + teraPostfix;
+        return String.format(Locale.ROOT, decimalFormat, TB) + teraPostfix;
     }	
 
     private static String formatShortGiga(long size) {
@@ -187,7 +189,7 @@ public class FileSizeUtils {
 
     private static String formatShortDecimalGiga(long size) {
         double GB = ((double) size / gigaSize);
-        return String.format(decimalFormat, GB) + gigaPostfix;
+        return String.format(Locale.ROOT, decimalFormat, GB) + gigaPostfix;
     }
 
     private static String formatShortMega(long size) {
@@ -197,7 +199,7 @@ public class FileSizeUtils {
 
     private static String formatShortDecimalMega(long size) {
         double MB = ((double) size / megaSize);
-        return String.format(decimalFormat, MB) + megaPostfix;
+        return String.format(Locale.ROOT, decimalFormat, MB) + megaPostfix;
     }
 
     private static String formatShortKilo(long size) {
@@ -207,7 +209,7 @@ public class FileSizeUtils {
 
     private static String formatShortDecimalKilo(long size) {
         double KB = ((double) size / kiloSize);
-        return String.format(decimalFormat, KB) + kiloPostfix;
+        return String.format(Locale.ROOT, decimalFormat, KB) + kiloPostfix;
     }
 
     private static String formatShortByte(long size) {

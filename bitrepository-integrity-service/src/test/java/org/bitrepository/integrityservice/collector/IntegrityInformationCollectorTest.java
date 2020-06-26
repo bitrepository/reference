@@ -21,19 +21,6 @@
  */
 package org.bitrepository.integrityservice.collector;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-
-import java.net.URL;
-import java.util.Arrays;
-
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.ContributorQueryUtils;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
@@ -47,6 +34,19 @@ import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.annotations.Test;
+
+import java.net.URL;
+import java.util.Arrays;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * Test that collecting integrity information has the desired effect.
@@ -71,7 +71,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         
         addStep("Call the getFileIDs on the collector.", "Should go directly to the GetFileIDsClient");
         collector.getFileIDs(collectionID, Arrays.asList(pillarID), auditTrailInformation, contributorQueries, eventHandler);
-        verify(getFileIDsClient).getFileIDs(eq(collectionID), any(), anyString(), any(URL.class), any(EventHandler.class));
+        verify(getFileIDsClient).getFileIDs(eq(collectionID), any(), any(), any(), any(EventHandler.class));
 
         
         addStep("Call the getFileIDs on the collector four times more.", 
@@ -80,7 +80,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         collector.getFileIDs(collectionID, Arrays.asList(pillarID), auditTrailInformation, contributorQueries, null);
         collector.getFileIDs(collectionID, Arrays.asList(pillarID), auditTrailInformation, contributorQueries, null);
         collector.getFileIDs(collectionID, Arrays.asList(pillarID), auditTrailInformation, contributorQueries, null);
-        verify(getFileIDsClient, times(5)).getFileIDs(eq(collectionID), any(), anyString(), any(URL.class), any(EventHandler.class));
+        verify(getFileIDsClient, times(5)).getFileIDs(eq(collectionID), any(), any(), any(), any());
         
         verifyNoMoreInteractions(getFileIDsClient);
         verifyNoMoreInteractions(eventHandler);
@@ -105,7 +105,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         
         addStep("Call the getChecksumsClient on the collector.", "Should go directly to the GetChecksumsClient");
         collector.getChecksums(collectionID, Arrays.asList(pillarID), csType, null, auditTrailInformation, contributorQueries, eventHandler);
-        verify(getChecksumsClient).getChecksums(eq(collectionID), any(), anyString(), any(ChecksumSpecTYPE.class), any(URL.class), any(EventHandler.class), anyString());
+        verify(getChecksumsClient).getChecksums(eq(collectionID), any(), any(), any(ChecksumSpecTYPE.class), any(), any(EventHandler.class), anyString());
         
         addStep("Call the getChecksumsClient on the collector four times more.", 
                 "The GetChecksumsClient should have been called 5 times.");
@@ -113,8 +113,8 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         collector.getChecksums(collectionID, Arrays.asList(pillarID), csType, null, auditTrailInformation, contributorQueries, null);
         collector.getChecksums(collectionID, Arrays.asList(pillarID), csType, null, auditTrailInformation, contributorQueries, null);
         collector.getChecksums(collectionID, Arrays.asList(pillarID), csType, null, auditTrailInformation, contributorQueries, null);
-        verify(getChecksumsClient, times(5)).getChecksums(eq(collectionID), any(), anyString(), any(ChecksumSpecTYPE.class), any(URL.class), 
-                any(EventHandler.class), anyString());
+        verify(getChecksumsClient, times(5)).getChecksums(eq(collectionID), any(), any(), any(ChecksumSpecTYPE.class), any(),
+                any(), anyString());
                 
         verifyNoMoreInteractions(getChecksumsClient);
         verifyNoMoreInteractions(eventHandler);
@@ -166,7 +166,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         addStep("Call the PutFileClient on the collector.", "Should go directly to the PutFileClient");
         collector.putFile(collectionID, fileId, uploadUrl, csForValidation, eventHandler, auditTrailInformation);
         verify(putFileClient).putFile(eq(collectionID), eq(uploadUrl), eq(fileId), anyLong(), any(ChecksumDataForFileTYPE.class), 
-                any(ChecksumSpecTYPE.class), any(EventHandler.class), eq(auditTrailInformation));
+                any(), any(EventHandler.class), eq(auditTrailInformation));
         
         addStep("Call the PutFileClient on the collector four times more.", 
                 "The PutFileClient should have been called 5 times.");
@@ -175,7 +175,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         collector.putFile(collectionID, fileId, uploadUrl, csForValidation, eventHandler, auditTrailInformation);
         collector.putFile(collectionID, fileId, uploadUrl, csForValidation, eventHandler, auditTrailInformation);
         verify(putFileClient, times(5)).putFile(eq(collectionID), eq(uploadUrl), eq(fileId), anyLong(), any(ChecksumDataForFileTYPE.class), 
-                any(ChecksumSpecTYPE.class), any(EventHandler.class), eq(auditTrailInformation));
+                any(), any(EventHandler.class), eq(auditTrailInformation));
         verifyNoMoreInteractions(putFileClient);
         verifyNoMoreInteractions(eventHandler);
     }

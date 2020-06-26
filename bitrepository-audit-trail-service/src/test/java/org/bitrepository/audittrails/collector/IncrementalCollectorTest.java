@@ -21,23 +21,6 @@
  */
 package org.bitrepository.audittrails.collector;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.timeout;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-
-import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.bitrepository.access.getaudittrails.AuditTrailClient;
 import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
@@ -53,7 +36,6 @@ import org.bitrepository.client.eventhandler.ContributorFailedEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.common.DefaultThreadFactory;
-import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.service.AlarmDispatcher;
 import org.jaccept.structure.ExtendedTestCase;
@@ -61,6 +43,22 @@ import org.mockito.ArgumentCaptor;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 public class IncrementalCollectorTest extends ExtendedTestCase{
     
@@ -93,7 +91,7 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
         
         ArgumentCaptor<EventHandler> eventHandlerCaptor = ArgumentCaptor.forClass(EventHandler.class);
         verify(client, timeout(3000).times(1)).getAuditTrails(eq(TEST_COLLECTION), any(AuditTrailQuery[].class),
-                isNull(String.class), isNull(String.class), eventHandlerCaptor.capture(), any(String.class));
+                isNull(), isNull(), eventHandlerCaptor.capture(), any(String.class));
         verify(store, timeout(3000).times(contributors.size()))
             .largestSequenceNumber(any(String.class), eq(TEST_COLLECTION));
 
@@ -122,7 +120,7 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
             "no partialResults where received");
         verifyNoMoreInteractions(store);
         verifyNoMoreInteractions(client);
-        verifyZeroInteractions(alarmDispatcher);
+        verifyNoInteractions(alarmDispatcher);
     }
 
     @Test(groups = {"regressiontest"})
@@ -152,7 +150,7 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
         
         ArgumentCaptor<EventHandler> eventHandlerCaptor = ArgumentCaptor.forClass(EventHandler.class);
         verify(client, timeout(3000).times(1)).getAuditTrails(eq(TEST_COLLECTION), any(AuditTrailQuery[].class),
-                isNull(String.class), isNull(String.class), eventHandlerCaptor.capture(), any(String.class));
+                isNull(), isNull(), eventHandlerCaptor.capture(), any(String.class));
         EventHandler eventHandler = eventHandlerCaptor.getValue();
         
         addStep("Send a audit trail result from contributor 1 and 2 with the PartialResults boolean set to true",
@@ -167,9 +165,9 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
             .addAuditTrails(any(AuditTrailEvents.class), eq(TEST_COLLECTION), eq(TEST_CONTRIBUTOR1));
         verify(store, timeout(3000).times(1))
             .addAuditTrails(any(AuditTrailEvents.class), eq(TEST_COLLECTION), eq(TEST_CONTRIBUTOR2));
-        
-        Assert.assertTrue(!collectionRunner.finished, "The collector should not have finished after the complete " +
-            "event, as partialResults where received");
+
+        Assert.assertFalse(collectionRunner.finished, "The collector should not have finished after the complete " +
+                "event, as partialResults where received");
 
         addStep("Send another audit trail result from the contributors, now with PartialResults set to false",
             "Two more AddAuditTrails calls should be made and the collector should finished");
@@ -178,7 +176,7 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
             .largestSequenceNumber(any(String.class), eq(TEST_COLLECTION));
         
         verify(client, timeout(3000).times(2)).getAuditTrails(eq(TEST_COLLECTION), any(AuditTrailQuery[].class),
-                isNull(String.class), isNull(String.class), eventHandlerCaptor.capture(), any(String.class));
+                isNull(), isNull(), eventHandlerCaptor.capture(), any(String.class));
         eventHandler = eventHandlerCaptor.getValue();
         eventHandler.handleEvent(new AuditTrailResult(TEST_CONTRIBUTOR1, TEST_COLLECTION, 
                 getResultingAuditTrailsWithSingleAudit(TEST_CONTRIBUTOR1, new BigInteger("2")), false));
@@ -197,7 +195,7 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
         
         verifyNoMoreInteractions(store);
         verifyNoMoreInteractions(client);
-        verifyZeroInteractions(alarmDispatcher);
+        verifyNoInteractions(alarmDispatcher);
     }
 
     @Test(groups = {"regressiontest"})
@@ -227,7 +225,7 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
 
         ArgumentCaptor<EventHandler> eventHandlerCaptor = ArgumentCaptor.forClass(EventHandler.class);
         verify(client, timeout(3000).times(1)).getAuditTrails(eq(TEST_COLLECTION), any(AuditTrailQuery[].class),
-                isNull(String.class), isNull(String.class), eventHandlerCaptor.capture(), any(String.class));
+                isNull(), isNull(), eventHandlerCaptor.capture(), any(String.class));
         
         verify(store, timeout(3000).times(contributors.size()))
             .largestSequenceNumber(any(String.class), eq(TEST_COLLECTION));
@@ -250,7 +248,7 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
         addStep("Send another audit trail result from contributor 2 with PartialResults set to false",
             "One more AddAuditTrails calls should be made and the collector should finished");
         verify(client, timeout(3000).times(2)).getAuditTrails(eq(TEST_COLLECTION), any(AuditTrailQuery[].class),
-                isNull(String.class), isNull(String.class), eventHandlerCaptor.capture(), any(String.class));
+                isNull(), isNull(), eventHandlerCaptor.capture(), any(String.class));
         eventHandler = eventHandlerCaptor.getValue();
         
         verify(store, timeout(3000).times(contributors.size() + 1))
@@ -298,26 +296,26 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
 
         ArgumentCaptor<EventHandler> eventHandlerCaptor = ArgumentCaptor.forClass(EventHandler.class);
         verify(client, timeout(3000).times(1)).getAuditTrails(eq(TEST_COLLECTION), any(AuditTrailQuery[].class),
-                isNull(String.class), isNull(String.class), eventHandlerCaptor.capture(), any(String.class));
+                isNull(), isNull(), eventHandlerCaptor.capture(), any(String.class));
 
         addStep("Send an auditTrail result from contributor 1 with a wrong collection id.",
                 "It is not added to the audit store");
         EventHandler eventHandler = eventHandlerCaptor.getValue();
-        eventHandler.handleEvent(new AuditTrailResult(TEST_CONTRIBUTOR2, FALSE_COLLECTION, new ResultingAuditTrails(), 
+        eventHandler.handleEvent(new AuditTrailResult(TEST_CONTRIBUTOR2, FALSE_COLLECTION, new ResultingAuditTrails(),
                 true));
         
         verify(store, timeout(3000).times(contributors.size()))
             .largestSequenceNumber(any(String.class), eq(TEST_COLLECTION));
         
         Thread.sleep(100);
-        verifyZeroInteractions(alarmDispatcher);
+        verifyNoInteractions(alarmDispatcher);
         verifyNoMoreInteractions(store);
     }
     
     private ResultingAuditTrails getResultingAuditTrailsWithSingleAudit(String contributor, BigInteger seq) {
         ResultingAuditTrails rats = new ResultingAuditTrails();
         AuditTrailEvents ates = new AuditTrailEvents();
-        ates.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.OTHER, 
+        ates.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.OTHER,
                 "actor", "auditInfo", "fileID", "info", contributor, seq, "1234", "abab"));
         rats.setAuditTrailEvents(ates);
         return rats;

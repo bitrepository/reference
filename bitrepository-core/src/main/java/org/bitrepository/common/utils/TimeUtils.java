@@ -24,6 +24,7 @@ package org.bitrepository.common.utils;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -51,7 +52,7 @@ public final class TimeUtils {
     public static final long MS_PER_YEAR = DAYS_PER_YEAR * MS_PER_DAY;
 
     /** DateFormat used for outputting data strings */
-    public final static DateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+    public final static DateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.ROOT);
     
     /** Private constructor, util class.*/
     private TimeUtils() {}

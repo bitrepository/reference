@@ -25,6 +25,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,17 +48,17 @@ import org.slf4j.LoggerFactory;
  */
 public class AuditPacker {
     /** The log.*/
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
     /** The audit trail store.*/
     private final AuditTrailStore store;
     /** The id of the collection to pack audits for.*/
     private final String collectionID;
     /** The list of contributors for this collection. */
-    private final List<String> contributors = new ArrayList<String>();
+    private final List<String> contributors = new ArrayList<>();
     /** The directory where the temporary files are stored.*/
     private final File directory;
     /** Map between the contributor id and the reached preservation sequence number. */
-    private Map<String, Long> seqReached = new HashMap<String, Long>();
+    private Map<String, Long> seqReached = new HashMap<>();
         
     /** Whether the output stream should be appended to the file.*/
     private static final boolean APPEND = true;
@@ -81,7 +83,7 @@ public class AuditPacker {
      * @return A mapping between the contributor ids and their preservation sequence numbers.
      */
     public Map<String, Long> getSequenceNumbersReached() {
-        return new HashMap<String, Long>(seqReached);
+        return new HashMap<>(seqReached);
     }
     
     /**
@@ -124,7 +126,8 @@ public class AuditPacker {
     private void packContributors(File container) throws IOException {
         PrintWriter writer = null;
         try {
-            writer = new PrintWriter(new FileOutputStream(container, APPEND));
+            writer = new PrintWriter(
+                    new OutputStreamWriter(new FileOutputStream(container, APPEND), StandardCharsets.UTF_8));
             for(String contributor : contributors) {
                 packContributor(contributor, writer);
             }
@@ -148,7 +151,7 @@ public class AuditPacker {
         log.debug("Starting to pack audittrails for contributor: " + contributorId + " for collection: " + collectionID);
         AuditEventIterator iterator = store.getAuditTrailsByIterator(null, collectionID, contributorId, nextSeqNumber,
                 null, null, null, null, null, null, null);
-        Long timeStart = System.currentTimeMillis();
+        long timeStart = System.currentTimeMillis();
         long logInterval = 1000;
 
         AuditTrailEvent event;

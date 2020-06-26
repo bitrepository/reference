@@ -47,13 +47,13 @@ public class GetFileIDsResultModel {
     private Map<String, Date> latestContributorDate;
         
     public GetFileIDsResultModel(Collection<String> expectedContributors) {
-        latestContributorDate = new HashMap<String, Date>();
+        latestContributorDate = new HashMap<>();
         for(String contributor : expectedContributors) {
             latestContributorDate.put(contributor, new Date(0));
         }
-        completeResults = new ArrayList<FileIDsResult>();
-        lastCompletedIDs = new HashSet<String>();
-        uncompleteResults = new HashMap<String, FileIDsResult>();
+        completeResults = new ArrayList<>();
+        lastCompletedIDs = new HashSet<>();
+        uncompleteResults = new HashMap<>();
     }
     
     /**
@@ -99,8 +99,8 @@ public class GetFileIDsResultModel {
     public Collection<FileIDsResult> getCompletedResults() {
         List<FileIDsResult> completed = completeResults;
         completeResults = null;
-        completeResults = new ArrayList<FileIDsResult>();
-        lastCompletedIDs = new HashSet<String>();
+        completeResults = new ArrayList<>();
+        lastCompletedIDs = new HashSet<>();
         for(FileIDsResult result : completed) {
             lastCompletedIDs.add(result.getID());
         }

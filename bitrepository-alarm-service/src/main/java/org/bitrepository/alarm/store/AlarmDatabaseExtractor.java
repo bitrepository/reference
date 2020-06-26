@@ -37,7 +37,16 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.bitrepository.alarm.store.AlarmDatabaseConstants.*;
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_CODE;
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_COLLECTION_ID;
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_COMPONENT_GUID;
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_DATE;
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_FILE_ID;
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_TABLE;
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_TEXT;
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.COMPONENT_GUID;
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.COMPONENT_ID;
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.COMPONENT_TABLE;
 
 /**
  * Extractor for the alarms from the AlarmServiceDatabase.
@@ -52,7 +61,7 @@ import static org.bitrepository.alarm.store.AlarmDatabaseConstants.*;
  */
 public abstract class AlarmDatabaseExtractor {
     /** The log.*/
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
     
     /** Position of the component id in the extraction.*/
     private static final int POSITION_COMPONENT_GUID = 1;
@@ -100,7 +109,7 @@ public abstract class AlarmDatabaseExtractor {
         
         try (Connection conn = dbConnector.getConnection();
              PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql, extractArgumentsFromModel())) {
-            List<Alarm> res = new ArrayList<Alarm>();
+            List<Alarm> res = new ArrayList<>();
             ps.setFetchSize(100);
             try (ResultSet result = ps.executeQuery()) {
                 log.debug("Extracting sql '" + sql + "' with arguments '" + Arrays.asList(extractArgumentsFromModel()) + "'");
@@ -219,7 +228,7 @@ public abstract class AlarmDatabaseExtractor {
      * @return The list of elements in the model which are not null.
      */
     private Object[] extractArgumentsFromModel() {
-        List<Object> res = new ArrayList<Object>();
+        List<Object> res = new ArrayList<>();
         
         if(model.getComponentId() != null) {
             res.add(model.getComponentId());

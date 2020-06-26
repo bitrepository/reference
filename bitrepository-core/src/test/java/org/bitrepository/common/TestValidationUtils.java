@@ -40,13 +40,13 @@ public class TestValidationUtils {
         Constructor[] constructors = utilityClass.getDeclaredConstructors();
         Assert.assertEquals(constructors.length, 1);
         Assert.assertFalse(constructors[0].isAccessible(), "The constructor should not be accessible.");
-        Assert.assertFalse((constructors[0].getModifiers() & Modifier.PRIVATE) == 0, 
+        Assert.assertNotEquals((constructors[0].getModifiers() & Modifier.PRIVATE), 0,
                 "The constructor should be private: " + constructors[0]);
         
         // instantiate the class
         constructors[0].setAccessible(true);
         try {
-            constructors[0].newInstance(new Object[0]);
+            constructors[0].newInstance();
         } catch (Exception e) {
             Assert.fail("Could not instantiate the constructor.", e);
         }

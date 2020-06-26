@@ -169,7 +169,7 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
 
 
     public void testListeners(MessageBusConfiguration conf, SecurityManager securityManager) throws Exception {
-        List<NotificationMessageListener> listeners = new ArrayList<NotificationMessageListener>(NUMBER_OF_LISTENERS);
+        List<NotificationMessageListener> listeners = new ArrayList<>(NUMBER_OF_LISTENERS);
 
         try {
             addStep("Initialise the message listeners.", "Should be created and connected to the message bus.");

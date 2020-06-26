@@ -22,8 +22,10 @@
 package org.bitrepository;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 import org.bitrepository.common.settings.Settings;
@@ -82,7 +84,8 @@ public class BasicClientFactory {
         Properties properties = new Properties();
         try {
             String propertiesFile = confDir + "/" + CONFIGFILE;
-            BufferedReader reader = new BufferedReader(new FileReader(propertiesFile));
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(new FileInputStream(propertiesFile), StandardCharsets.UTF_8));
             properties.load(reader);
             clientID = properties.getProperty(CLIENT_ID);
         } catch (IOException e) {

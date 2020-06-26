@@ -24,7 +24,7 @@
  */
 package org.bitrepository.protocol.messagebus;
 
-import org.bitrepository.bitrepositorymessages.*;
+import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocol.MessageContext;
 
 

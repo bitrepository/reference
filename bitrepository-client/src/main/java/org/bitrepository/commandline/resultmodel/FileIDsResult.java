@@ -40,7 +40,7 @@ public class FileIDsResult {
     public FileIDsResult(String id, BigInteger size, String contributor) {
         this.id = id;
         this.size = size;
-        contributors = new ArrayList<String>();
+        contributors = new ArrayList<>();
         contributors.add(contributor);
     }
     

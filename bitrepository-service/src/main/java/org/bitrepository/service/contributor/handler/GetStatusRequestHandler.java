@@ -31,7 +31,8 @@ import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ResponseInfoUtils;
-import org.bitrepository.protocol.*;
+import org.bitrepository.protocol.MessageContext;
+import org.bitrepository.protocol.MessageVersionValidator;
 import org.bitrepository.service.contributor.ContributorContext;
 
 /**

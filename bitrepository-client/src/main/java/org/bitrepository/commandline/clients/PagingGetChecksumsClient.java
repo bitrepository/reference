@@ -79,7 +79,7 @@ public class PagingGetChecksumsClient {
     
     
     private ContributorQuery[] makeQuery(List<String> pillars) {
-        List<ContributorQuery> res = new ArrayList<ContributorQuery>();
+        List<ContributorQuery> res = new ArrayList<>();
         for(String pillar : pillars) {
             Date latestResult = model.getLatestContribution(pillar);
             res.add(new ContributorQuery(pillar, latestResult, null, pageSize));

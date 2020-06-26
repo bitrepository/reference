@@ -40,7 +40,12 @@
 package org.bitrepository.access.getaudittrails;
 
 import org.bitrepository.bitrepositoryelements.ResultingAuditTrails;
-import org.bitrepository.bitrepositorymessages.*;
+
+import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetAuditTrailsProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsResponse;
 import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
 /**

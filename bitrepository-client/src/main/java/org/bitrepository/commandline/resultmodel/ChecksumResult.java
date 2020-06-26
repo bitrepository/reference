@@ -36,7 +36,7 @@ public class ChecksumResult {
     private boolean dirty;
     
     public ChecksumResult(String id, String contributor, String checksum) {
-        pillarChecksumMap = new HashMap<String, String>();
+        pillarChecksumMap = new HashMap<>();
         this.id = id;
         dirty = false;
         pillarChecksumMap.put(contributor, checksum);
@@ -67,7 +67,7 @@ public class ChecksumResult {
      * @return the set of contributors which have delivered a checksum 
      */
     public List<String> getContributors() {
-        return new ArrayList<String>(pillarChecksumMap.keySet());
+        return new ArrayList<>(pillarChecksumMap.keySet());
     }
     
     /**

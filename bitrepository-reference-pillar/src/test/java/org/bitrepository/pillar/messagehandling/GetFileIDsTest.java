@@ -24,11 +24,11 @@
  */
 package org.bitrepository.pillar.messagehandling;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
@@ -221,7 +221,7 @@ public class GetFileIDsTest extends MockedPillarTest {
                 res.insertFileID(NON_DEFAULT_FILE_ID, new Date());
                 return res;
             }
-        }).when(model).getFileIDsResultSet(isNull(String.class), any(XMLGregorianCalendar.class), any(XMLGregorianCalendar.class), anyLong(), anyString());
+        }).when(model).getFileIDsResultSet(isNull(), any(XMLGregorianCalendar.class), any(XMLGregorianCalendar.class), anyLong(), anyString());
         
         addStep("Create and send the actual GetFileIDs message to the pillar.",
                 "Should be received and handled by the pillar.");
@@ -313,7 +313,7 @@ public class GetFileIDsTest extends MockedPillarTest {
                 res.insertFileID(FILE_ID, new Date(1234567890));
                 return res;                
             }
-        }).when(model).getFileIDsResultSet(isNull(String.class), eq(MIN_DATE), eq(MAX_DATE), eq(MAX_RESULTS), eq(collectionID));
+        }).when(model).getFileIDsResultSet(isNull(), eq(MIN_DATE), eq(MAX_DATE), eq(MAX_RESULTS), eq(collectionID));
 
         addStep("Create and send the actual GetFileIDs message to the pillar.",
                 "Should be received and handled by the pillar.");

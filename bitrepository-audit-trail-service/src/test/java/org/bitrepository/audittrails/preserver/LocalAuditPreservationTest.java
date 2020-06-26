@@ -21,18 +21,6 @@
  */
 package org.bitrepository.audittrails.preserver;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
-import static org.testng.Assert.*;
-import static org.testng.Assert.assertEquals;
-
-import java.io.FileInputStream;
-import java.math.BigInteger;
-import java.net.URL;
-import java.sql.Date;
-
 import org.bitrepository.audittrails.store.AuditEventIterator;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
@@ -52,9 +40,23 @@ import org.bitrepository.settings.repositorysettings.Collection;
 import org.jaccept.structure.ExtendedTestCase;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import java.io.FileInputStream;
+import java.math.BigInteger;
+import java.net.URL;
+import java.sql.Date;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+import static org.testng.Assert.assertEquals;
 
 public class LocalAuditPreservationTest extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/
@@ -173,9 +175,8 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
             public AuditEventIterator answer(InvocationOnMock invocation) {
                 return iterator;
             }
-        }).when(store).getAuditTrailsByIterator(anyString(), anyString(), anyString(), any(Long.class),
-                any(Long.class), anyString(), any(FileAction.class), any(Date.class), any(Date.class),
-                anyString(), anyString());
+        }).when(store).getAuditTrailsByIterator(any(), anyString(), anyString(), any(Long.class),
+                any(), any(), any(), any(), any(), any(), any());
         
         when(fileExchange.getURL(anyString())).thenReturn(testUploadUrl);
                 

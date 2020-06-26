@@ -21,8 +21,8 @@
  */
 package org.bitrepository.audittrails.preserver;
 
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
@@ -44,7 +44,7 @@ public class AuditPreservationEventHandlerTest extends ExtendedTestCase {
     public void auditPreservationEventHandlerTest() throws Exception {
         addDescription("Test the handling of the audit trail event handler.");
         addStep("Setup", "");
-        Map<String, Long> map = new HashMap<String, Long>();
+        Map<String, Long> map = new HashMap<>();
         map.put(PILLARID, 1L);
         AuditTrailStore store = mock(AuditTrailStore.class);
         when(store.havePreservationKey(eq(PILLARID), eq(TEST_COLLECTION))).thenReturn(true);

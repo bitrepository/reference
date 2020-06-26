@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
 public class BasicClient {
     private Settings settings;
     private final Logger log = LoggerFactory.getLogger(getClass());
-
     public BasicClient(Settings settings) {
         log.debug("---- Basic client instantiating ----");
         this.settings = settings;
@@ -42,7 +41,7 @@ public class BasicClient {
     }
     
     public List<String> getCollectionIDs() {
-        List<String> collections = new ArrayList<String>();
+        List<String> collections = new ArrayList<>();
         for(Collection collection : settings.getRepositorySettings().getCollections().getCollection()) {
             collections.add(collection.getID());
         }

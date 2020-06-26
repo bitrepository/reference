@@ -49,7 +49,7 @@ public class ComponentStatusStoreTest extends ExtendedTestCase {
         addDescription("Tests the compontent status");
         addStep("Setup", "");
         String componentId = "componentId";
-        Set<String> contributors = new HashSet<String>();
+        Set<String> contributors = new HashSet<>();
         contributors.add(componentId);
         ComponentStatusStore store = new ComponentStatusStore(contributors);
         

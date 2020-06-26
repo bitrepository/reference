@@ -24,6 +24,7 @@
  */
 package org.bitrepository.protocol.activemq;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -110,9 +111,9 @@ public class ActiveMQMessageBus implements MessageBus {
      * Used to identify if a listener is already registered.
      */
     private final Map<String, MessageConsumer> consumers = Collections
-            .synchronizedMap(new HashMap<String, MessageConsumer>());
+            .synchronizedMap(new HashMap<>());
     /** Map of destinations, mapping from ID to destination. */
-    private final Map<String, Destination> destinations = new HashMap<String, Destination>();
+    private final Map<String, Destination> destinations = new HashMap<>();
     /** The configuration for the connection to the activeMQ. */
     private final MessageBusConfiguration configuration;
     private String schemaLocation = "BitRepositoryMessages.xsd";
@@ -120,8 +121,8 @@ public class ActiveMQMessageBus implements MessageBus {
     private final Connection connection;
     private final SecurityManager securityManager;
 
-    private final Set<String> componentFilter = new HashSet<String>();
-    private final Set<String> collectionFilter = new HashSet<String>();
+    private final Set<String> componentFilter = new HashSet<>();
+    private final Set<String> collectionFilter = new HashSet<>();
 
     /** The single producer used to send all messages. The destination need to be sent on the messages. */
     private final MessageProducer producer;
@@ -178,14 +179,11 @@ public class ActiveMQMessageBus implements MessageBus {
      * so the main thread can continue without having to wait for the messagebus listening to start.
      */
     private void startListeningForMessages() {
-        Thread connectionStarter = threadFactory.newThread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    connection.start();
-                } catch (Exception e) {
-                    throw new RuntimeException("Unable to start listening on the message bus", e);
-                }
+        Thread connectionStarter = threadFactory.newThread(() -> {
+            try {
+                connection.start();
+            } catch (Exception e) {
+                throw new RuntimeException("Unable to start listening on the message bus", e);
             }
         });
         connectionStarter.start();
@@ -199,7 +197,7 @@ public class ActiveMQMessageBus implements MessageBus {
     @Override
     public synchronized void addListener(String destinationID, final MessageListener listener, boolean durable) {
         log.debug("Adding " + (durable?"durable ":"") + "listener '{}' to destination: '{}' on message-bus '{}'.",
-                new Object[] {listener, destinationID, configuration.getName()});
+                listener, destinationID, configuration.getName());
         MessageConsumer consumer = getMessageConsumer(destinationID, listener, durable);
         try {
             consumer.setMessageListener(new ActiveMQMessageListener(listener));
@@ -266,7 +264,7 @@ public class ActiveMQMessageBus implements MessageBus {
         String xmlContent = null;
         try {
             xmlContent = jaxbHelper.serializeToXml(content);
-            jaxbHelper.validate(new ByteArrayInputStream(xmlContent.getBytes()));
+            jaxbHelper.validate(new ByteArrayInputStream(xmlContent.getBytes(StandardCharsets.UTF_8)));
             log.trace("The following message is sent to the destination '" + destinationID + "'" + " on message-bus '"
                     + configuration.getName() + "': \n{}", xmlContent);
 
@@ -355,17 +353,22 @@ public class ActiveMQMessageBus implements MessageBus {
                 if (parts.length == 1) {
                     destination = session.createTopic(destinationID);
                 } else if (parts.length == 2) {
-                    if (parts[0].equals("topic")) {
-                        destination = session.createTopic(parts[1]);
-                    } else if (parts[0].equals("queue")) {
-                        destination = session.createQueue(parts[1]);
-                    } else if (parts[0].equals("temporary-queue")) {
-                        destination = session.createTemporaryQueue();
-                    } else if (parts[0].equals("temporary-topic")) {
-                        destination = session.createTemporaryTopic();
-                    } else {
-                        throw new CoordinationLayerException("Unable to create destination '" +
-                                destination + "'. Unknown type.");
+                    switch (parts[0]) {
+                        case "topic":
+                            destination = session.createTopic(parts[1]);
+                            break;
+                        case "queue":
+                            destination = session.createQueue(parts[1]);
+                            break;
+                        case "temporary-queue":
+                            destination = session.createTemporaryQueue();
+                            break;
+                        case "temporary-topic":
+                            destination = session.createTemporaryTopic();
+                            break;
+                        default:
+                            throw new CoordinationLayerException("Unable to create destination '" +
+                                    destination + "'. Unknown type.");
                     }
                 }
             } catch (JMSException e) {
@@ -438,10 +441,10 @@ public class ActiveMQMessageBus implements MessageBus {
                 String signature = jmsMessage.getStringProperty(MESSAGE_SIGNATURE_KEY);
                 text = ((TextMessage) jmsMessage).getText();
                 log.trace("Received xml message: " + text);
-                jaxbHelper.validate(new ByteArrayInputStream(text.getBytes("UTF-8")));
+                jaxbHelper.validate(new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8)));
                 Message content = (Message) jaxbHelper.loadXml(
                         Class.forName("org.bitrepository.bitrepositorymessages." + type),
-                        new ByteArrayInputStream(text.getBytes("UTF-8")));
+                        new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8)));
                 log.trace("Checking signature " + signature);
                 SignerId signer = securityManager.authenticateMessage(text, signature);
                 securityManager.authorizeCertificateUse((content).getFrom(), text, signature);

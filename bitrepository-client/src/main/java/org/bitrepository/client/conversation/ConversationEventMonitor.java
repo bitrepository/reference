@@ -45,7 +45,13 @@ import org.bitrepository.protocol.OperationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.bitrepository.client.eventhandler.OperationEvent.OperationEventType.*;
+import static org.bitrepository.client.eventhandler.OperationEvent.OperationEventType.COMPONENT_IDENTIFIED;
+import static org.bitrepository.client.eventhandler.OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT;
+import static org.bitrepository.client.eventhandler.OperationEvent.OperationEventType.IDENTIFY_TIMEOUT;
+import static org.bitrepository.client.eventhandler.OperationEvent.OperationEventType.PROGRESS;
+import static org.bitrepository.client.eventhandler.OperationEvent.OperationEventType.REQUEST_SENT;
+import static org.bitrepository.client.eventhandler.OperationEvent.OperationEventType.WARNING;
+
 
 /**
  * Encapsulates the concrete handling of conversation events. Should be called every time a conversation event happens.
@@ -61,9 +67,9 @@ public class ConversationEventMonitor {
     private final String fileID;
     private final EventHandler eventHandler;
     /** Used to aggregate the conversation complete events, so these can be added to the final complete event. */
-    private final List<ContributorEvent> contributorCompleteEvents = new LinkedList<ContributorEvent>();
+    private final List<ContributorEvent> contributorCompleteEvents = new LinkedList<>();
     /** Used to aggregate the conversation failed events, so these can be added to the final failed event. */
-    private final List<ContributorFailedEvent> contributorFailedEvents = new LinkedList<ContributorFailedEvent>();
+    private final List<ContributorFailedEvent> contributorFailedEvents = new LinkedList<>();
     /**
      * Indicated whether the final operation event should be a complete event or a failed event in case of individual
      * component failures.

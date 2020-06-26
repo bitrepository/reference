@@ -47,6 +47,7 @@ import org.testng.annotations.Test;
 
 import java.math.BigInteger;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
     private ChecksumSpecTYPE DEFAULT_CHECKSUM_SPEC;
@@ -338,7 +339,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
     private ChecksumDataForFileTYPE createChecksumData(String checksum) {
         ChecksumDataForFileTYPE checksumData = new ChecksumDataForFileTYPE();
         checksumData.setChecksumSpec(DEFAULT_CHECKSUM_SPEC);
-        checksumData.setChecksumValue(checksum.getBytes());
+        checksumData.setChecksumValue(checksum.getBytes(StandardCharsets.UTF_8));
         checksumData.setCalculationTimestamp(CalendarUtils.getEpoch());
         return checksumData;
     }

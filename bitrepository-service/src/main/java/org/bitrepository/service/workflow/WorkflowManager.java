@@ -31,7 +31,11 @@ import org.bitrepository.settings.referencesettings.WorkflowSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * WorkflowManager manages one or more workflows including statistics and monitors state.
@@ -41,10 +45,10 @@ public abstract class WorkflowManager {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private final JobScheduler scheduler;
     private final WorkflowContext context;
-    private final Map<JobID, Workflow> workflows = new HashMap<JobID, Workflow>();
-    private final Map<String, List<JobID>> collectionWorkflows = new HashMap<String, List<JobID>>();
-    private final Map<JobID, List<WorkflowStatistic>> statistics = new HashMap<JobID, List<WorkflowStatistic>>();
-    public static final int MAX_NUMBER_OF_STATISTISCS_FOR_A_WORKFLOW = 1;
+    private final Map<JobID, Workflow> workflows = new HashMap<>();
+    private final Map<String, List<JobID>> collectionWorkflows = new HashMap<>();
+    private final Map<JobID, List<WorkflowStatistic>> statistics = new HashMap<>();
+    public static final int MAX_NUMBER_OF_STATISTICS_FOR_A_WORKFLOW = 1;
 
     public WorkflowManager(
             WorkflowContext context,
@@ -111,7 +115,7 @@ public abstract class WorkflowManager {
     private void loadWorkFlows(WorkflowSettings configuration) {
         for (WorkflowConfiguration workflowConf:configuration.getWorkflow()) {
             log.info("Scheduling from configuration: " + workflowConf);
-            List<String> unscheduledCollections = new LinkedList<String>(SettingsUtils.getAllCollectionsIDs());
+            List<String> unscheduledCollections = new LinkedList<>(SettingsUtils.getAllCollectionsIDs());
             try {
                 if (workflowConf.getSchedules() != null) {
                     for (Schedule schedule:workflowConf.getSchedules().getSchedule()) {
@@ -157,7 +161,7 @@ public abstract class WorkflowManager {
     private void addWorkflow(String collectionID, Workflow workflow) {
         workflows.put(workflow.getJobID(), workflow);
         if (!collectionWorkflows.containsKey(collectionID)) {
-            collectionWorkflows.put(collectionID, new LinkedList<JobID>());
+            collectionWorkflows.put(collectionID, new LinkedList<>());
         }
         collectionWorkflows.get(collectionID).add(workflow.getJobID());
     }
@@ -180,20 +184,20 @@ public abstract class WorkflowManager {
         public void jobFailed(SchedulableJob job) {}
 
         /**
-         * Adds the workflow statistics to the statistics list for this workflow. Will also remove older statistisics
-         * if the number of statistics exceeds <code>MAX_NUMBER_OF_STATISTISCS_FOR_A_WORKFLOW</code>.
+         * Adds the workflow statistics to the statistics list for this workflow. Will also remove older statistics
+         * if the number of statistics exceeds <code>MAX_NUMBER_OF_STATISTICS_FOR_A_WORKFLOW</code>.
          * @param job The job which finished and to add statistics from 
          */
         @Override
         public void jobFinished(SchedulableJob job) {
             if (workflows.containsKey(job.getJobID())) { // One of mine
                 if (!statistics.containsKey(job.getJobID())) {
-                    statistics.put(job.getJobID(), new LinkedList<WorkflowStatistic>());
+                    statistics.put(job.getJobID(), new LinkedList<>());
                 }
 
                 List<WorkflowStatistic> workflowStatistics = statistics.get(job.getJobID());
                 workflowStatistics.add((((Workflow)job).getWorkflowStatistics()));
-                if (workflowStatistics.size() > MAX_NUMBER_OF_STATISTISCS_FOR_A_WORKFLOW) {
+                if (workflowStatistics.size() > MAX_NUMBER_OF_STATISTICS_FOR_A_WORKFLOW) {
                     workflowStatistics.remove(0);
                 }
             }

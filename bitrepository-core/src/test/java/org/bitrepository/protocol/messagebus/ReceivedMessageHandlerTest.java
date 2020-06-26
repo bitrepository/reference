@@ -34,7 +34,10 @@ import org.bitrepository.settings.referencesettings.MessageThreadPools;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.annotations.Test;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class ReceivedMessageHandlerTest extends ExtendedTestCase {
 

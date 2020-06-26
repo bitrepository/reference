@@ -26,7 +26,8 @@ import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.protocol.*;
+import org.bitrepository.protocol.FileExchange;
+import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.audit.AuditTrailManager;
@@ -50,7 +51,7 @@ import java.util.List;
  * GetAuditTrails identification and operation. 
  */
 public class SimpleContributorMediator extends AbstractContributorMediator {
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
     private final ContributorContext context;
     private AuditTrailManager auditManager;
     
@@ -74,7 +75,7 @@ public class SimpleContributorMediator extends AbstractContributorMediator {
     @SuppressWarnings("rawtypes")
     @Override
     protected RequestHandler[] createListOfHandlers() {
-        List<RequestHandler> handlers = new ArrayList<RequestHandler>();
+        List<RequestHandler> handlers = new ArrayList<>();
         
         handlers.add(new IdentifyContributorsForGetStatusRequestHandler(getContext()));
         handlers.add(new GetStatusRequestHandler(getContext()));

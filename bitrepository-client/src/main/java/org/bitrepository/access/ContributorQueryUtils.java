@@ -33,7 +33,7 @@ public class ContributorQueryUtils {
      * @return A <code>AuditTrailQuery[]</code> array requesting all audit trails from all the defined contributers.
      */
     public static ContributorQuery[] createFullContributorQuery(Collection<String> contributorIDs) {
-        List<ContributorQuery> componentQueryList = new ArrayList<ContributorQuery>(contributorIDs.size());
+        List<ContributorQuery> componentQueryList = new ArrayList<>(contributorIDs.size());
         for (String contributer : contributorIDs) {
             componentQueryList.add(new ContributorQuery(contributer, null, null, null));
         }
@@ -46,7 +46,7 @@ public class ContributorQueryUtils {
      * @return The list of ContributorIDs in the supplied queries
      */
     public static Collection<String> getContributors(ContributorQuery[] queries) {
-        Collection<String> contributors = new HashSet<String>();
+        Collection<String> contributors = new HashSet<>();
         for (ContributorQuery query: queries) {
             contributors.add(query.getComponentID());
         }

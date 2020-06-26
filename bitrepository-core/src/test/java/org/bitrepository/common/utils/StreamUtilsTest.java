@@ -22,6 +22,7 @@
 package org.bitrepository.common.utils;
 
 import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.common.TestValidationUtils;
@@ -43,7 +44,7 @@ public class StreamUtilsTest extends ExtendedTestCase {
         addDescription("Tests the SteamUtils class.");
         addStep("Setup variables", "");
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ByteArrayInputStream in = new ByteArrayInputStream(DATA.getBytes());
+        ByteArrayInputStream in = new ByteArrayInputStream(DATA.getBytes(StandardCharsets.UTF_8));
 
         addStep("Test with null arguments", "Should throw exceptions");
         try {
@@ -63,7 +64,7 @@ public class StreamUtilsTest extends ExtendedTestCase {
         addStep("Test copying the input stream to the output stream.", "Should contain the same data.");
         StreamUtils.copyInputStreamToOutputStream(in, out);
         
-        Assert.assertEquals(new String(out.toByteArray()), DATA);
+        Assert.assertEquals(new String(out.toByteArray(), StandardCharsets.UTF_8), DATA);
     }
 
 }

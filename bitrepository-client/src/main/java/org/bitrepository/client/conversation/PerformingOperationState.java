@@ -45,7 +45,7 @@ public abstract class PerformingOperationState extends GeneralConversationState 
      */
     protected PerformingOperationState(Collection<SelectedComponentInfo> expectedContributors) {
         super(toComponentIDs(expectedContributors));
-        this.activeContributors = new HashMap<String,String>();
+        this.activeContributors = new HashMap<>();
         for (SelectedComponentInfo contributorInfo : expectedContributors) {
             activeContributors.put(contributorInfo.getID(), contributorInfo.getDestination());
         }
@@ -107,7 +107,7 @@ public abstract class PerformingOperationState extends GeneralConversationState 
     protected abstract void generateContributorCompleteEvent(MessageResponse msg) throws UnexpectedResponseException;
 
     private static Collection<String> toComponentIDs(Collection<SelectedComponentInfo> contributors) {
-        Collection<String> componentIDs = new HashSet<String>();
+        Collection<String> componentIDs = new HashSet<>();
         for (SelectedComponentInfo componentInfo: contributors) {
             componentIDs.add(componentInfo.getID());
         }

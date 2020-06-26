@@ -48,7 +48,7 @@ public class MultiThreadedMessageBusTest extends IntegrationTest {
     private final static int threadCount = 3;
     private int count = 0;
     private final static String FINISH = "FINISH";
-    private BlockingQueue<String> finishQueue = new LinkedBlockingQueue<String>(1);
+    private BlockingQueue<String> finishQueue = new LinkedBlockingQueue<>(1);
     MultiMessageListener listener;
     
     @Override
@@ -85,7 +85,7 @@ public class MultiThreadedMessageBusTest extends IntegrationTest {
     }
 
     protected class MultiMessageListener implements MessageListener {
-        private BlockingQueue<String> queue = new LinkedBlockingQueue<String>(threadCount);
+        private BlockingQueue<String> queue = new LinkedBlockingQueue<>(threadCount);
         
         @Override
         public final void onMessage(Message message, MessageContext messageContext) {

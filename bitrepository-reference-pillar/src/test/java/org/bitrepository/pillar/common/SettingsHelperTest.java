@@ -36,7 +36,7 @@ public class SettingsHelperTest {
     public void getPillarCollectionsTest() {
         String myPillarID = "myPillarID";
         String otherPillarID = "OtherPillar";
-        List<Collection> collection = new ArrayList<Collection>();
+        List<Collection> collection = new ArrayList<>();
 
         collection.add(createCollection("myFirstCollection", new String[] {myPillarID}));
         collection.add(createCollection("mySecondCollection", new String[] {myPillarID, otherPillarID}));

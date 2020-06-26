@@ -43,7 +43,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 /**
- * The class exposes the REST webservices provided by the Bitrepository-webclient using Jersey. 
+ * The class exposes the REST webservices provided by the Bitrepository-webclient using CXF.
  */
 
 @Path("/reposervice")

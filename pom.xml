@@ -1,239 +1,235 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>org.bitrepository.reference</groupId>
-    <artifactId>bitrepository-parent</artifactId>
-    <version>1.10-SNAPSHOT</version>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.bitrepository.reference</groupId>
+  <artifactId>bitrepository-parent</artifactId>
+  <version>1.10-SNAPSHOT</version>
 
-    <parent>
-        <groupId>org.sbforge</groupId>
-        <artifactId>sbforge-parent</artifactId>
-        <version>19</version>
-    </parent>
+  <parent>
+    <groupId>org.sbforge</groupId>
+    <artifactId>sbforge-parent</artifactId>
+    <version>22</version>
+  </parent>
 
-    <name>Bitrepository</name>
+  <name>Bitrepository</name>
 
-    <packaging>pom</packaging>
+  <packaging>pom</packaging>
 
-    <modules>
-        <module>bitrepository-reference-settings</module>
-        <module>bitrepository-core</module>
-        <module>bitrepository-client</module>
-        <module>bitrepository-service</module>
-        <module>bitrepository-integrity-service</module>
-        <module>bitrepository-alarm-service</module>
-        <module>bitrepository-audit-trail-service</module>
-        <module>bitrepository-reference-pillar</module>
-        <module>bitrepository-monitoring-service</module>
-        <module>bitrepository-integration</module>
-        <module>bitrepository-webclient</module>
-    </modules>
+  <modules>
+    <module>bitrepository-reference-settings</module>
+    <module>bitrepository-core</module>
+    <module>bitrepository-client</module>
+    <module>bitrepository-service</module>
+    <module>bitrepository-integrity-service</module>
+    <module>bitrepository-alarm-service</module>
+    <module>bitrepository-audit-trail-service</module>
+    <module>bitrepository-reference-pillar</module>
+    <module>bitrepository-monitoring-service</module>
+    <module>bitrepository-integration</module>
+    <module>bitrepository-webclient</module>
+  </modules>
 
-    <repositories>
-        <repository>
-            <id>sbforge-nexus</id>
-            <url>https://sbforge.org/nexus/content/groups/public</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
+  <repositories>
+    <repository>
+      <id>sbforge-nexus</id>
+      <url>https://sbforge.org/nexus/content/groups/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 
-    <developers>
-        <developer>
-            <name>Mikis Seth Sørensen</name>
-            <email>mss@statsbiblioteket.dk</email>
-            <organization>The Danish State and University Library</organization>
-            <organizationUrl>http://en.statsbiblioteket.dk</organizationUrl>
-        </developer>
-        <developer>
-            <name>Kim Teglgaard Christensen   </name>
-            <email>ktc@statsbiblioteket.dk</email>
-            <organization>The Danish State and University Library</organization>
-            <organizationUrl>http://en.statsbiblioteket.dk</organizationUrl>
-            <roles>
-                <role>Project Manager and Developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Jonas Lindberg Frellesen</name>
-            <email>jolf@kb.dk</email>
-            <organization>kb</organization>
-            <organizationUrl>http://kb.dk</organizationUrl>
-            <roles>
-                <role>Developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Asger Askov-Blekinge</name>
-            <email>abr@statsbiblioteket.dk</email>
-            <organization>The Danish State and University Library</organization>
-            <organizationUrl>http://en.statsbiblioteket.dk</organizationUrl>
-        </developer>
-    </developers>
+  <developers>
+    <developer>
+      <name>Mikis Seth Sørensen</name>
+      <email>mss@statsbiblioteket.dk</email>
+      <organization>The Danish State and University Library</organization>
+      <organizationUrl>http://en.statsbiblioteket.dk</organizationUrl>
+    </developer>
+    <developer>
+      <name>Kim Teglgaard Christensen   </name>
+      <email>ktc@statsbiblioteket.dk</email>
+      <organization>The Danish State and University Library</organization>
+      <organizationUrl>http://en.statsbiblioteket.dk</organizationUrl>
+      <roles>
+        <role>Project Manager and Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Jonas Lindberg Frellesen</name>
+      <email>jolf@kb.dk</email>
+      <organization>kb</organization>
+      <organizationUrl>http://kb.dk</organizationUrl>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Asger Askov-Blekinge</name>
+      <email>abr@statsbiblioteket.dk</email>
+      <organization>The Danish State and University Library</organization>
+      <organizationUrl>http://en.statsbiblioteket.dk</organizationUrl>
+    </developer>
+  </developers>
 
-    <inceptionYear>2010</inceptionYear>
+  <inceptionYear>2010</inceptionYear>
 
-    <licenses>
-        <license>
-            <name>LGPL v2.1</name>
-            <distribution>repo</distribution>
-            <url>http://www.gnu.org/licenses/lgpl-2.1.txt</url>
-        </license>
-    </licenses>
+  <licenses>
+    <license>
+      <name>LGPL v2.1</name>
+      <distribution>repo</distribution>
+      <url>http://www.gnu.org/licenses/lgpl-2.1.txt</url>
+    </license>
+  </licenses>
 
-    <issueManagement>
-        <system>JIRA</system>
-        <url>https://sbforge.org/jira/browse/BITMAG</url>
-    </issueManagement>
+  <issueManagement>
+    <system>JIRA</system>
+    <url>https://sbforge.org/jira/browse/BITMAG</url>
+  </issueManagement>
 
-    <ciManagement>
-        <system>Jenkins</system>
-        <url>https://sbforge.org/jenkins/</url>
-    </ciManagement>
+  <ciManagement>
+    <system>Jenkins</system>
+    <url>https://sbforge.org/jenkins/</url>
+  </ciManagement>
 
-    <description>The Bit Repository system enables long-term preservation of data in a distributed, highly redundant
-        architecture. The data integrity is ensured by using multiple, independently developed data storage systems (﻿Pillars)
-        across different organizations, together with functionality for maintaining the ﻿integrity of the data over time.
-    </description>
+  <description>The Bit Repository system enables long-term preservation of data in a distributed, highly redundant
+    architecture. The data integrity is ensured by using multiple, independently developed data storage systems (﻿Pillars)
+    across different organizations, together with functionality for maintaining the ﻿integrity of the data over time.
+  </description>
+  <url>https://sbforge.org/display/BITMAG</url>
+
+  <organization>
+    <name>The State and University Library, The Royal Library and The State Archives, Denmark</name>
     <url>https://sbforge.org/display/BITMAG</url>
+  </organization>
 
-    <organization>
-        <name>The State and University Library, The Royal Library and The State Archives, Denmark</name>
-        <url>https://sbforge.org/display/BITMAG</url>
-    </organization>
+  <scm>
+    <url>https://sbforge.org/fisheye/browse/bitrepository-reference</url>
+    <connection>scm:git:git@github.com:bitrepository/reference.git</connection>
+    <developerConnection>scm:git:git@github.com:bitrepository/reference.git</developerConnection>
+    <tag>HEAD</tag>
+  </scm>
 
-    <scm>
-        <url>https://sbforge.org/fisheye/browse/bitrepository-reference</url>
-        <connection>scm:git:git@github.com:bitrepository/reference.git</connection>
-        <developerConnection>scm:git:git@github.com:bitrepository/reference.git</developerConnection>
-        <tag>HEAD</tag>
-    </scm>
+  <dependencies>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.2.3</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jvnet.jaxb2_commons</groupId>
+      <artifactId>jaxb2-basics-runtime</artifactId>
+      <version>0.11.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>7.1.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>3.3.3</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- Hook up the other loggers to use SLF4J -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jul-to-slf4j</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>log4j-over-slf4j</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.1.7</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jvnet.jaxb2_commons</groupId>
-            <artifactId>jaxb2-basics-runtime</artifactId>
-            <version>0.11.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>6.9.10</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>1.9.5</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- Hook up the other loggers to use SLF4J -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jul-to-slf4j</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>log4j-over-slf4j</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
+    <dependency>
+      <groupId>org.jaccept</groupId>
+      <artifactId>jaccept-core</artifactId>
+      <version>0.4</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
-        <dependency>
-            <groupId>org.jaccept</groupId>
-            <artifactId>jaccept-core</artifactId>
-            <version>0.4</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.0.0-M3</version>
+        <executions>
+          <execution>
+            <id>enforce-maven</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireMavenVersion>
+                  <version>2.2.1</version>
+                </requireMavenVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <configuration>
+          <verbose>true</verbose>
+          <generateBundle>true</generateBundle>
+          <failIfWarning>true</failIfWarning>
+          <licenseName>lgpl_v2_1</licenseName>
+          <useMissingFile>true</useMissingFile>
+          <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
+          <includes>
+            <include>**/*.java</include>
+            <include>**/*.xsd</include>
+            <include>**/*.sql</include>
+          </includes>
+          <extraExtensions>
+            <xsd>xml</xsd>
+          </extraExtensions>
+        </configuration>
+      </plugin>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <phase>none</phase><!--Disable the release-profile broken source plugin. See http://blog.peterlynch.ca/2010/05/maven-how-to-prevent-generate-sources.html-->
-                    </execution>
-                    <execution>
-                        <id>attach-sources-no-fork</id>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>license-maven-plugin</artifactId>
-                <configuration>
-                    <verbose>true</verbose>
-                    <generateBundle>true</generateBundle>
-                    <failIfWarning>true</failIfWarning>
-                    <licenseName>lgpl_v2_1</licenseName>
-                    <useMissingFile>true</useMissingFile>
-                    <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
-                    <includes>
-                        <include>**/*.java</include>
-                        <include>**/*.xsd</include>
-                        <include>**/*.sql</include>
-                    </includes>
-                    <extraExtensions>
-                        <xsd>xml</xsd>
-                    </extraExtensions>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <groups>regressiontest</groups>
-                    <runOrder>random</runOrder>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                        </manifest>
-                        <manifestEntries>
-                            <key>value</key>
-                        </manifestEntries>
-                    </archive>
-                    <forceCreation>true</forceCreation>
-                </configuration>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <groups>regressiontest</groups>
+          <runOrder>random</runOrder>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+            </manifest>
+            <manifestEntries>
+              <key>value</key>
+            </manifestEntries>
+          </archive>
+          <forceCreation>true</forceCreation>
+        </configuration>
         <executions>
           <execution>
             <goals>
@@ -241,32 +237,33 @@
             </goals>
           </execution>
         </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-release-plugin</artifactId>
-                <configuration>
-                    <!-- Auto-Version all modules the same as the parent module -->
-                    <autoVersionSubmodules>true</autoVersionSubmodules>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-war-plugin</artifactId>
-                <configuration>
-                    <!--
-                      Exclude JCL and LOG4J since all logging should go through SLF4J.
-                      Note that we're excluding log4j-<version>.jar but keeping
-                      log4j-over-slf4j-<version>.jar
-                    -->
-                    <packagingExcludes>
-                        WEB-INF/lib/commons-logging-*.jar,
-                        %regex[WEB-INF/lib/log4j-(?!over-slf4j).*.jar]
-                    </packagingExcludes>
-                </configuration>
-            </plugin>
+      </plugin>
+      <plugin>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <!-- Auto-Version all modules the same as the parent module -->
+          <autoVersionSubmodules>true</autoVersionSubmodules>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+          <!--
+            Exclude JCL and LOG4J since all logging should go through SLF4J.
+            Note that we're excluding log4j-<version>.jar but keeping
+            log4j-over-slf4j-<version>.jar
+          -->
+          <packagingExcludes>
+            WEB-INF/lib/commons-logging-*.jar,
+            %regex[WEB-INF/lib/log4j-(?!over-slf4j).*.jar]
+          </packagingExcludes>
+          <failOnMissingWebXml>false</failOnMissingWebXml>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.7.5.201505241946</version>
+        <version>0.8.5</version>
         <executions>
           <execution>
             <goals>
@@ -282,200 +279,192 @@
           </execution>
         </executions>
       </plugin>
-        </plugins>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>license-maven-plugin</artifactId>
-                    <version>1.8</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.1</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <version>2.2.1</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>2.9.1</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-release-plugin</artifactId>
-                    <version>2.5</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>2.4</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.17</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>2.17</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-war-plugin</artifactId>
-                    <version>2.4</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-assembly-plugin</artifactId>
-                    <version>2.4</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-resources-plugin</artifactId>
-                    <version>2.6</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-remote-resources-plugin</artifactId>
-                    <version>1.5</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-clean-plugin</artifactId>
-                    <version>2.5</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-install-plugin</artifactId>
-                    <version>2.5.1</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-deploy-plugin</artifactId>
-                    <version>2.8.1</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-dependency-plugin</artifactId>
-                    <version>2.8</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.jvnet.jaxb2.maven2</groupId>
-                    <artifactId>maven-jaxb2-plugin</artifactId>
-                    <version>0.11.0</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.tomcat.maven</groupId>
-                    <artifactId>tomcat7-maven-plugin</artifactId>
-                    <version>2.2</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>exec-maven-plugin</artifactId>
-                    <version>1.2.1</version>
-                </plugin>
+    </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>license-maven-plugin</artifactId>
+          <version>2.0.0</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.8.1</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>3.2.1</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>3.2.0</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>3.0.0-M1</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>3.2.0</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>3.0.0-M4</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>3.0.0-M4</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-war-plugin</artifactId>
+          <version>3.3.0</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>3.3.0</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>3.1.0</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-remote-resources-plugin</artifactId>
+          <version>1.7.0</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>3.1.0</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>3.0.0-M1</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>3.0.0-M1</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <version>3.1.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.jvnet.jaxb2.maven2</groupId>
+          <artifactId>maven-jaxb2-plugin</artifactId>
+          <version>0.14.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.tomcat.maven</groupId>
+          <artifactId>tomcat7-maven-plugin</artifactId>
+          <version>2.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>3.0.0</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 
-            </plugins>
-        </pluginManagement>
-    </build>
-
-    <prerequisites>
-        <maven>2.2.1</maven>
-    </prerequisites>
-
-    <reporting>
-        <plugins>
-            <plugin>
-                <artifactId>maven-project-info-reports-plugin</artifactId>
-                <configuration>
-                    <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-                </configuration>
-            </plugin>
+  <reporting>
+    <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>2.8</version>
-        <configuration>
-          <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-        </configuration>
+        <version>3.1.0</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>2.15</version>
+        <version>3.1.1</version>
         <configuration>
           <configLocation>sonarCheckstyle.xml</configLocation>
         </configuration>
-      </plugin>      
+      </plugin>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>findbugs-maven-plugin</artifactId>
-        <version>3.0.2</version>
+        <groupId>com.github.spotbugs</groupId>
+        <artifactId>spotbugs-maven-plugin</artifactId>
+        <version>4.0.0</version>
         <configuration>
-           <failOnError>false</failOnError>
-           <formats>
-               <format>html</format>
-               <format>xml</format>
-           </formats>
+          <failOnError>false</failOnError>
         </configuration>
       </plugin>
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.7.5.201505241946</version>
+        <version>0.8.5</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
-        <version>3.7</version>
+        <version>3.13.0</version>
       </plugin>
     </plugins>
   </reporting>
 
-    <profiles>
-        <profile>
-            <id>deploy</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>skip-unit-tests</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <!-- skips surefire tests without skipping failsafe tests. -->
-                            <skipTests>true</skipTests>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+  <profiles>
+    <profile>
+      <id>deploy</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-source-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>skip-unit-tests</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <!-- skips surefire tests without skipping failsafe tests. -->
+              <skipTests>true</skipTests>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
-    <properties>
-        <message.xml.version>30</message.xml.version>
-        <repository.settings.version>12</repository.settings.version>
-        <derby.version>10.12.1.1</derby.version>
-        <activemq.version>5.13.3</activemq.version>
-        <project.site.location>dav:https://sbforge.org/maven/bitrepository/sites/reference/${project.version}</project.site.location>
-        <slf4j.version>1.7.21</slf4j.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+  <properties>
+    <!-- Specify java version here, to support forbiddenapis plugin -->
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <!-- Enable forbiddenapis plugin, do disable set to none -->
+    <api.check.phase>process-classes</api.check.phase> <!-- forbidden-apis dislikes TestValidationUtils #validateUtilityClass -->
+    <message.xml.version>30</message.xml.version>
+    <repository.settings.version>12</repository.settings.version>
+    <derby.version>10.14.2.0</derby.version>
+    <activemq.version>5.15.13</activemq.version>
+    <cxf.version>3.3.6</cxf.version>
+    <jackson.version>2.11.0</jackson.version>
+    <javax.ws.rs.version>2.1.1</javax.ws.rs.version>
+    <javaee.web.version>8.0.1</javaee.web.version>
+    <javax.servlet.version>4.0.1</javax.servlet.version>
+    <slf4j.version>1.7.30</slf4j.version>
+    <project.site.location>dav:https://sbforge.org/maven/bitrepository/sites/reference/${project.version}</project.site.location>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
 </project>

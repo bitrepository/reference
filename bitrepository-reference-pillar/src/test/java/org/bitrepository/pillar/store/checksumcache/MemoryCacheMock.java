@@ -45,7 +45,7 @@ public class MemoryCacheMock implements ChecksumStore {
     /**
      * The checksum mapping between the file ids and their checksum.
      */
-    private Map<String, ChecksumEntry> checksumMap = new HashMap<String, ChecksumEntry>();
+    private Map<String, ChecksumEntry> checksumMap = new HashMap<>();
     
     public MemoryCacheMock() {}
     
@@ -132,7 +132,7 @@ public class MemoryCacheMock implements ChecksumStore {
 
     @Override
     public List<String> getFileIDsWithOldChecksums(Date checksumDate, String collectionID) {
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
         for(ChecksumEntry ce : checksumMap.values()) {
             if(ce.getCalculationDate().getTime() < checksumDate.getTime()) {
                 res.add(ce.getFileId());

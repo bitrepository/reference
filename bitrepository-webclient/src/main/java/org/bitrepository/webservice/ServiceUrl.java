@@ -22,8 +22,10 @@
 package org.bitrepository.webservice;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 import javax.ws.rs.GET;
@@ -64,8 +66,8 @@ public class ServiceUrl {
         Properties properties = new Properties();
         try {
             String propertiesFile = configDir + "/" + CONFIGFILE;
-            BufferedReader reader
-            = new BufferedReader(new FileReader(propertiesFile));
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(new FileInputStream(propertiesFile), StandardCharsets.UTF_8));
             properties.load(reader);
 
             alarmUrl = properties.getProperty(ALARMURL);

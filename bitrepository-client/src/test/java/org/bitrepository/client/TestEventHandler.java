@@ -40,7 +40,7 @@ public class TestEventHandler implements EventHandler {
     /** The <code>TestEventManager</code> used to manage the event for the associated test. */
     private final TestEventManager testEventManager;
     /** The queue used to store the received operation events. */
-    private final BlockingQueue<OperationEvent> eventQueue = new LinkedBlockingQueue<OperationEvent>();
+    private final BlockingQueue<OperationEvent> eventQueue = new LinkedBlockingQueue<>();
 
     /** The default time to wait for events */
     private static final long DEFAULT_WAIT_SECONDS = 3;

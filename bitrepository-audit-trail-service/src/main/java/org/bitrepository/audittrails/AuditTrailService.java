@@ -122,7 +122,7 @@ public class AuditTrailService implements LifeCycledService {
      * @return The list of CollectorInfo
      */
     public List<CollectorInfo> getCollectorInfos() {
-        List<CollectorInfo> infos = new ArrayList<CollectorInfo>();
+        List<CollectorInfo> infos = new ArrayList<>();
         for(org.bitrepository.settings.repositorysettings.Collection c 
                 : settings.getRepositorySettings().getCollections().getCollection()) {
             infos.add(collector.getCollectorInfo(c.getID()));
