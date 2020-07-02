@@ -105,7 +105,7 @@ public class PutFileRequestIT extends DefaultPillarOperationTest {
     public void putFileWithMD5ReturnChecksumTest() {
         addDescription("Tests that the pillar is able to return the default type checksum in the final response");
         addStep("Send a putFile request to " + testConfiguration.getPillarUnderTestID() + " with the ",
-                "The pillar should send a final response with the ChecksumRequestForNewFile elemets containing the MD5 " +
+                "The pillar should send a final response with the ChecksumRequestForNewFile elements containing the MD5 " +
                         "checksum for the supplied file.");
         PutFileRequest putRequest = msgFactory.createPutFileRequest(
                 TestFileHelper.getDefaultFileChecksum(), null, DEFAULT_DOWNLOAD_FILE_ADDRESS, testSpecificFileID,
@@ -125,7 +125,7 @@ public class PutFileRequestIT extends DefaultPillarOperationTest {
         addDescription("Tests a that a pillar sends progress response after receiving a putFile request.");
 
         addStep("Send a putFile request to " + testConfiguration.getPillarUnderTestID(),
-                "The pillar should generate a  progress response with the following elements: <ol>" +
+                "The pillar should generate a progress response with the following elements: <ol>" +
                         "<li>'CollectionID' element corresponding to the value in the request.</li>" +
                         "<li>'CorrelationID' element corresponding to the value in the request.</li>" +
                         "<li>'From' element corresponding to the pillars component ID</li>" +
@@ -178,8 +178,8 @@ public class PutFileRequestIT extends DefaultPillarOperationTest {
     }
 
     public String lookupPutFileDestination() {
-        PutFileMessageFactory pillarLookupmMsgFactory = new PutFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
-        IdentifyPillarsForPutFileRequest identifyRequest = pillarLookupmMsgFactory.createIdentifyPillarsForPutFileRequest(
+        PutFileMessageFactory pillarLookupMsgFactory = new PutFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
+        IdentifyPillarsForPutFileRequest identifyRequest = pillarLookupMsgFactory.createIdentifyPillarsForPutFileRequest(
                 TestFileHelper.DEFAULT_FILE_ID, 0L);
         messageBus.sendMessage(identifyRequest);
         return clientReceiver.waitForMessage(IdentifyPillarsForPutFileResponse.class).getReplyTo();

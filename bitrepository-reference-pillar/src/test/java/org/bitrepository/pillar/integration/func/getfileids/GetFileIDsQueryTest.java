@@ -24,6 +24,7 @@ package org.bitrepository.pillar.integration.func.getfileids;
 import static org.bitrepository.pillar.integration.func.Assert.assertEmpty;
 import static org.bitrepository.pillar.integration.func.Assert.assertEquals;
 import static org.bitrepository.pillar.integration.func.Assert.assertTrue;
+import static org.testng.Assert.assertFalse;
 
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -158,7 +159,7 @@ public class GetFileIDsQueryTest extends PillarFunctionTest {
         query = new ContributorQuery(getPillarID(),
                 null, oldestTimestamp.toGregorianCalendar().getTime(), null);
         limitedFileIDsList = pillarFileManager.getFileIDs(query);
-        assertTrue(!limitedFileIDsList.isEmpty(), "At least one file id with the oldest timestamp should be " +
+        assertFalse(limitedFileIDsList.isEmpty(), "At least one file id with the oldest timestamp should be " +
                 "returned. The folliwing fileIDs where received: ");
         assertTrue(limitedFileIDsList.get(0).getLastModificationTime().compare(oldestTimestamp) == 0,
                 "Different timestamps in the set of oldest file ids." + limitedFileIDsList);
