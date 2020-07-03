@@ -42,7 +42,13 @@ public class SecurityTestConstants {
      */
     private static final String DATA = "Hello world!";
     // Use output from SignatureGeneratorTest to make a new signature if certificate changes
-    private static final String SIGNATURE = "MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgMFADCABgkqhkiG9w0BBwEAADGCAZcwggGTAgEBMGwwXzELMAkGA1UEBhMCREsxEDAOBgNVBAgMB0Rlbm1hcmsxDzANBgNVBAcMBkFhcmh1czEaMBgGA1UECgwRQml0cmVwb3NpdG9yeS5vcmcxETAPBgNVBAMMCGNsaWVudDgwAgkAnwg/Emx5gB8wDQYJYIZIAWUDBAIDBQAwDQYJKoZIhvcNAQEBBQAEggEABkj3VQR6B5Lc0LZ7YAHvFCvDn2tCObPlLNpq0U1VRkLgIVMFQkZL4PpvG/MS/nEPI+VFz8Cty/UtODd23il6PnLjwwqYHKGCDnbJSg8YkX+UOO0NBr6Th6a6NWyeOElWiKxJ6pysXTV/b1DtY/uFFprLOPAgLVnp4TjZBtNuPFU+EBvvO1aFzKESpNPCs/qzF8Usf1ZqE+OPh49XLMqlKv4h8w1pjWLaZg4yCcqvPbqu1VjkvjNhkGHpc/k1whblBmMZ8JpdLlKCsWvj0+IuoztnClFQ/aDL1dkexnEaTf/CDhI8tFP1CEJZBUp0MjOtyPQbHGMe+1lxRWbsGYzusgAAAAAAAA==";
+    private static final String SIGNATURE_JAVA = "MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgMFADCABgkqhkiG9w0BBwEAADGCAZcwggGTAgEBMGwwXzELMAkGA1UEBhMCREsxEDAOBgNVBAgMB0Rlbm1hcmsxDzANBgNVBAcMBkFhcmh1czEaMBgGA1UECgwRQml0cmVwb3NpdG9yeS5vcmcxETAPBgNVBAMMCGNsaWVudDgwAgkAnwg/Emx5gB8wDQYJYIZIAWUDBAIDBQAwDQYJKoZIhvcNAQEBBQAEggEABkj3VQR6B5Lc0LZ7YAHvFCvDn2tCObPlLNpq0U1VRkLgIVMFQkZL4PpvG/MS/nEPI+VFz8Cty/UtODd23il6PnLjwwqYHKGCDnbJSg8YkX+UOO0NBr6Th6a6NWyeOElWiKxJ6pysXTV/b1DtY/uFFprLOPAgLVnp4TjZBtNuPFU+EBvvO1aFzKESpNPCs/qzF8Usf1ZqE+OPh49XLMqlKv4h8w1pjWLaZg4yCcqvPbqu1VjkvjNhkGHpc/k1whblBmMZ8JpdLlKCsWvj0+IuoztnClFQ/aDL1dkexnEaTf/CDhI8tFP1CEJZBUp0MjOtyPQbHGMe+1lxRWbsGYzusgAAAAAAAA==";
+    // Use openssl to generate signature: 
+    // openssl smime -sign -md sha512 -binary -nocerts -noattr -in message -out new.sig -outform der -inkey pkey.pem -signer cert.pem
+    // base64 new.sig > signature.openssl
+    // After which concatenate the lines of signature.openssl to a single line
+    private static final String SIGNATURE = "MIIBzwYJKoZIhvcNAQcCoIIBwDCCAbwCAQExDzANBglghkgBZQMEAgMFADALBgkqhkiG9w0BBwExggGXMIIBkwIBATBsMF8xCzAJBgNVBAYTAkRLMRAwDgYDVQQIDAdEZW5tYXJrMQ8wDQYDVQQHDAZBYXJodXMxGjAYBgNVBAoMEUJpdHJlcG9zaXRvcnkub3JnMREwDwYDVQQDDAhjbGllbnQ4MAIJAJ8IPxJseYAfMA0GCWCGSAFlAwQCAwUAMA0GCSqGSIb3DQEBAQUABIIBAAZI91UEegeS3NC2e2AB7xQrw59rQjmz5SzaatFNVUZC4CFTBUJGS+D6bxvzEv5xDyPlRc/Arcv1LTg3dt4pej5y48MKmByhgg52yUoPGJF/lDjtDQa+k4emujVsnjhJVoisSeqcrF01f29Q7WP7hRaayzjwIC1Z6eE42QbTbjxVPhAb7ztWhcyhEqTTwrP6sxfFLH9WahPjj4ePVyzKpSr+IfMNaY1i2mYOMgnKrz26rtVY5L4zYZBh6XP5NcIW5QZjGfCaXS5SgrFr49PiLqM7ZwpRUP2gy9XZHsZxGk3/wg4SPLRT9QhCWQVKdDIzrcj0GxxjHvtZcUVm7BmM7rI="; 
+    
     // When certificate POSITIVECERT is changed, use openssl x509 -in <certificate.pem> -fingerprint to obtain new fingerprint
     private static final String FINGERPRINT = "D3:CC:F2:AE:36:4C:FB:85:F0:70:9A:59:8F:14:EF:8B:52:D4:A5:30";
     
