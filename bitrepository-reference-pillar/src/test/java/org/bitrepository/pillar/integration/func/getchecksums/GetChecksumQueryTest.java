@@ -103,7 +103,10 @@ public class GetChecksumQueryTest extends PillarFunctionTest {
                 "Different first list element when setting oldest minTimestamp");
         Assert.assertEquals(limitedChecksumList.get(limitedChecksumList.size()-1), originalChecksumList.get(originalChecksumList.size()-1),
                 "Different last list element when setting oldest minTimestamp");
-        
+        Assert.assertTrue(limitedChecksumList.get(0).getCalculationTimestamp().compare(
+                limitedChecksumList.get(limitedChecksumList.size()-1).getCalculationTimestamp()) <= 0,
+                "First checksum has newer timestamp than last checksum");
+
         addStep("Request checksums with MinTimeStamp set to the timestamp of the newest checksum",
                 "Only checksum with the timestamp equal to MinTimeStamp are returned.");
         XMLGregorianCalendar newestTimestamp = originalChecksumList.get(originalChecksumList.size()-1).getCalculationTimestamp();
@@ -155,6 +158,9 @@ public class GetChecksumQueryTest extends PillarFunctionTest {
                 "Different first list element when setting newest maxTimestamp");
         Assert.assertEquals(limitedChecksumList.get(limitedChecksumList.size()-1), originalChecksumList.get(originalChecksumList.size()-1),
                 "Different last list element when setting newest maxTimestamp");
+        Assert.assertTrue(limitedChecksumList.get(0).getCalculationTimestamp().compare(
+                limitedChecksumList.get(limitedChecksumList.size()-1).getCalculationTimestamp()) <= 0,
+                "First checksum has newer timestamp than last checksum");
         
         addStep("Request checksums with MaxTimeStamp set to the timestamp of the oldest checksum",
                 "Only checksum with the timestamp equal to MaxTimeStamp are returned.");
