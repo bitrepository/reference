@@ -11,7 +11,8 @@ import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.PillarTestGroups;
-import org.bitrepository.pillar.integration.func.DefaultPillarOperationTest;
+import org.bitrepository.pillar.integration.func.Assert;
+import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -32,7 +33,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 
-public class GetFileRequestIT extends DefaultPillarOperationTest {
+public class GetFileRequestIT extends PillarFunctionTest {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     protected GetFileMessageFactory msgFactory;
     protected URL testFileURL = null;
@@ -152,17 +153,40 @@ public class GetFileRequestIT extends DefaultPillarOperationTest {
                 "Received unexpected 'ResponseCode' element.");
     }
 
-    @Override
+    @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST} )
+    public void missingCollectionIDTest() {
+        addDescription("Verifies the a missing collectionID in the request is rejected");
+        addStep("Sending a request without a collectionID.",
+                "The pillar should send a REQUEST_NOT_UNDERSTOOD_FAILURE Response.");
+        MessageRequest request = createRequest();
+        request.setCollectionID(null);
+        messageBus.sendMessage(request);
+
+        MessageResponse receivedResponse = receiveResponse();
+        Assert.assertEquals(receivedResponse.getResponseInfo().getResponseCode(),
+                ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
+    }
+
+    @Test ( groups = {PillarTestGroups.FULL_PILLAR_TEST} )
+    public void otherCollectionTest() {
+        addDescription("Verifies identification works correctly for a second collection defined for pillar");
+        addStep("Sending a identify request with a non-default collectionID (not the first collection) " +
+                        "the pillar is part of",
+                "The pillar under test should make a positive response");
+        MessageRequest request = createRequest();
+        request.setCollectionID(nonDefaultCollectionId);
+        messageBus.sendMessage(request);
+        assertPositivResponseIsReceived();
+    }
+
     protected MessageRequest createRequest() {
         return msgFactory.createGetFileRequest(testFileURL.toExternalForm(), DEFAULT_FILE_ID);
     }
 
-    @Override
     protected MessageResponse receiveResponse() {
         return clientReceiver.waitForMessage(GetFileFinalResponse.class);
     }
 
-    @Override
     protected void assertNoResponseIsReceived() {
         clientReceiver.checkNoMessageIsReceived(GetFileFinalResponse.class);
     }
@@ -174,5 +198,11 @@ public class GetFileRequestIT extends DefaultPillarOperationTest {
                 TestFileHelper.DEFAULT_FILE_ID);
         messageBus.sendMessage(identifyRequest);
         return clientReceiver.waitForMessage(IdentifyPillarsForGetFileResponse.class).getReplyTo();
+    }
+
+    protected void assertPositivResponseIsReceived() {
+        MessageResponse receivedResponse = receiveResponse();
+        Assert.assertEquals(receivedResponse.getResponseInfo().getResponseCode(),
+                ResponseCode.OPERATION_COMPLETED);
     }
 }
