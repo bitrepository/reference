@@ -60,7 +60,7 @@ public interface GetChecksumsClient extends BitrepositoryClient {
      * connection with the pillar communication.
      * @param auditTrailInformation Audittrail information for the contributors
      */
-    public void getChecksums(String collectionID, ContributorQuery[] contributorQueries, String fileID,
-        ChecksumSpecTYPE checksumSpec, URL addressForResult, EventHandler eventHandler,
-        String auditTrailInformation);
+    void getChecksums(String collectionID, ContributorQuery[] contributorQueries, String fileID,
+                      ChecksumSpecTYPE checksumSpec, URL addressForResult, EventHandler eventHandler,
+                      String auditTrailInformation);
 }

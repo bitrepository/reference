@@ -15,18 +15,16 @@ import org.bitrepository.pillar.integration.func.DefaultPillarOperationTest;
 import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
@@ -35,27 +33,29 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 
 public class GetFileRequestIT extends DefaultPillarOperationTest {
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
     protected GetFileMessageFactory msgFactory;
-    protected String testFileURL = null;
-    protected FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(settingsForCUT);
+    protected URL testFileURL = null;
+    protected FileExchange fe = null;
 
     @BeforeMethod(alwaysRun=true)
     public void initialiseReferenceTest(Method method) throws Exception {
         String pillarDestination = lookupGetFileDestination();
         msgFactory = new GetFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), pillarDestination);
-        testFileURL = DEFAULT_FILE_URL.toExternalForm() + System.currentTimeMillis();
+        testFileURL = new URL(DEFAULT_FILE_URL.toExternalForm() + System.currentTimeMillis());
+        fe = ProtocolComponentFactory.getInstance().getFileExchange(settingsForCUT);
     }
 
-    @AfterMethod
-    public void cleanUp() {
+    @AfterMethod(alwaysRun=true)
+    public void cleanUp(Method method) {
         try {
-            fe.deleteFile(new URL(testFileURL));
-        } catch (IOException | URISyntaxException e) {
-            throw new AssertionError("Could not delete file at '" + testFileURL + "'");
+            fe.deleteFile(testFileURL);
+        } catch (Exception e) {
+            log.warn("Could not clean up file '{}' after method '{}'", testFileURL, method.getName());
         }
     }
 
-    @Test(groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
+    @Test(groups = {PillarTestGroups.FULL_PILLAR_TEST})
     public void normalGetFileTest() throws IOException {
         addDescription("Tests a normal GetFile sequence");
         addStep("Send a getFile request to " + testConfiguration.getPillarUnderTestID(),
@@ -77,7 +77,7 @@ public class GetFileRequestIT extends DefaultPillarOperationTest {
 
         GetFileFinalResponse finalResponse = clientReceiver.waitForMessage(GetFileFinalResponse.class);
         assertNotNull(finalResponse);
-        assertEquals(finalResponse.getCorrelationID(), getRequest.getCollectionID(),
+        assertEquals(finalResponse.getCorrelationID(), getRequest.getCorrelationID(),
                 "Received unexpected 'CorrelationID' element.");
         assertEquals(finalResponse.getCollectionID(), getRequest.getCollectionID(),
                 "Received unexpected 'CollectionID' element.");
@@ -98,35 +98,46 @@ public class GetFileRequestIT extends DefaultPillarOperationTest {
         assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED,
                 "Received unexpected 'ResponseCode' element.");
 
-        File file = new File(DEFAULT_FILE_URL.toExternalForm());
-        FileInputStream fis = new FileInputStream(file);
-        String putFileContent = IOUtils.toString(fis, StandardCharsets.UTF_8);
-        InputStream is = fe.getFile(new URL(testFileURL));
-        String fileContent = IOUtils.toString(is, StandardCharsets.UTF_8);
-
-        assertEquals(fileContent, putFileContent);
+        try (InputStream localFileIS = TestFileHelper.getDefaultFile();
+             InputStream getFileIS = fe.getFile(testFileURL)) {
+            String localFileContent = IOUtils.toString(localFileIS, StandardCharsets.UTF_8);
+            String getFileContent = IOUtils.toString(getFileIS, StandardCharsets.UTF_8);
+            assertEquals(getFileContent, localFileContent,
+                    "Differing content between original file and file from GetFileRequest");
+        }
     }
 
-    /*@Test(groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
-    public void getFileWithFilePartTest() {
+    @Test(groups = {PillarTestGroups.FULL_PILLAR_TEST})
+    public void getFileWithFilePartTest() throws IOException {
         addDescription("Tests that a pillar is able to return a specified FilePart in the final response");
         addStep("Send a getFile request to " + testConfiguration.getPillarUnderTestID() + " with a specified " +
                 "FilePart", "The pillar should send a final response with the FilePart element for the " +
                 "supplied file");
         GetFileRequest getRequest = (GetFileRequest) createRequest();
 
+        final int offsetAndLength = 5;
         FilePart filePart = new FilePart();
-        filePart.setPartOffSet(BigInteger.valueOf(9));
-        filePart.setPartLength(BigInteger.valueOf(7));
+        filePart.setPartOffSet(BigInteger.valueOf(offsetAndLength));
+        filePart.setPartLength(BigInteger.valueOf(offsetAndLength));
         getRequest.setFilePart(filePart);
         messageBus.sendMessage(getRequest);
 
         GetFileFinalResponse finalResponse = clientReceiver.waitForMessage(GetFileFinalResponse.class);
         assertEquals(finalResponse.getFilePart(), getRequest.getFilePart(),
                 "Received unexpected 'FilePart' element.");
+
+        try (InputStream localFileIS = TestFileHelper.getDefaultFile();
+             InputStream getFileIS = fe.getFile(testFileURL)) {
+            byte[] localFilePartContent = new byte[offsetAndLength];
+            localFileIS.skip(offsetAndLength);
+            localFileIS.read(localFilePartContent, 0, offsetAndLength);
+            String getFileContent = IOUtils.toString(getFileIS, StandardCharsets.UTF_8);
+            assertEquals(getFileContent, new String(localFilePartContent),
+                    "Differing content between original file and file from GetFileRequest");
+        }
     }
 
-    @Test(groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
+    @Test(groups = {PillarTestGroups.FULL_PILLAR_TEST})
     public void getMissingFileTest() {
         addDescription("Tests that a pillar gives an error when trying to get a non-existing file");
         addStep("Send a getFile request to " + testConfiguration.getPillarUnderTestID() + " with a " +
@@ -137,13 +148,13 @@ public class GetFileRequestIT extends DefaultPillarOperationTest {
         messageBus.sendMessage(getRequest);
 
         GetFileFinalResponse finalResponse = clientReceiver.waitForMessage(GetFileFinalResponse.class);
-        assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.FAILURE,
+        assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.FILE_NOT_FOUND_FAILURE,
                 "Received unexpected 'ResponseCode' element.");
-    }*/
+    }
 
     @Override
     protected MessageRequest createRequest() {
-        return msgFactory.createGetFileRequest(testFileURL, DEFAULT_FILE_ID);
+        return msgFactory.createGetFileRequest(testFileURL.toExternalForm(), DEFAULT_FILE_ID);
     }
 
     @Override
