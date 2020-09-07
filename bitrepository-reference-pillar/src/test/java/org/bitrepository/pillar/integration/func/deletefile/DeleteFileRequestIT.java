@@ -22,6 +22,7 @@
 package org.bitrepository.pillar.integration.func.deletefile;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.TimeUnit;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
@@ -68,7 +69,8 @@ public class DeleteFileRequestIT extends DefaultPillarOperationTest {
         deleteRequest.setFileID(testSpecificFileID);
         messageBus.sendMessage(deleteRequest);
 
-        DeleteFileProgressResponse progressResponse = clientReceiver.waitForMessage(DeleteFileProgressResponse.class);
+        DeleteFileProgressResponse progressResponse = clientReceiver.waitForMessage(DeleteFileProgressResponse.class, getOperationTimeout(),
+                TimeUnit.SECONDS);
         Assert.assertNotNull(progressResponse);
         Assert.assertEquals(progressResponse.getCorrelationID(), deleteRequest.getCorrelationID());
         Assert.assertEquals(progressResponse.getFrom(), getPillarID());
@@ -76,7 +78,7 @@ public class DeleteFileRequestIT extends DefaultPillarOperationTest {
         Assert.assertEquals(progressResponse.getResponseInfo().getResponseCode(),
                 ResponseCode.OPERATION_ACCEPTED_PROGRESS);
 
-        DeleteFileFinalResponse finalResponse = clientReceiver.waitForMessage(DeleteFileFinalResponse.class);
+        DeleteFileFinalResponse finalResponse = (DeleteFileFinalResponse) receiveResponse();
         Assert.assertNotNull(finalResponse);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
         Assert.assertEquals(finalResponse.getCorrelationID(), deleteRequest.getCorrelationID());
@@ -99,7 +101,8 @@ public class DeleteFileRequestIT extends DefaultPillarOperationTest {
                 TestFileHelper.getDefaultFileChecksum(), requestedChecksumSpec, testSpecificFileID);
         messageBus.sendMessage(deleteRequest);
 
-        DeleteFileProgressResponse progressResponse = clientReceiver.waitForMessage(DeleteFileProgressResponse.class);
+        DeleteFileProgressResponse progressResponse = clientReceiver.waitForMessage(DeleteFileProgressResponse.class, getOperationTimeout(),
+                TimeUnit.SECONDS);
         Assert.assertNotNull(progressResponse);
         Assert.assertEquals(progressResponse.getCorrelationID(), deleteRequest.getCorrelationID());
         Assert.assertEquals(progressResponse.getFrom(), getPillarID());
@@ -107,7 +110,7 @@ public class DeleteFileRequestIT extends DefaultPillarOperationTest {
         Assert.assertEquals(progressResponse.getResponseInfo().getResponseCode(),
                 ResponseCode.OPERATION_ACCEPTED_PROGRESS);
 
-        DeleteFileFinalResponse finalResponse = clientReceiver.waitForMessage(DeleteFileFinalResponse.class);
+        DeleteFileFinalResponse finalResponse = (DeleteFileFinalResponse) receiveResponse();
         Assert.assertNotNull(finalResponse);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
         Assert.assertEquals(finalResponse.getCorrelationID(), deleteRequest.getCorrelationID());
@@ -125,7 +128,8 @@ public class DeleteFileRequestIT extends DefaultPillarOperationTest {
 
     @Override
     protected MessageResponse receiveResponse() {
-        return clientReceiver.waitForMessage(DeleteFileFinalResponse.class);
+        return clientReceiver.waitForMessage(DeleteFileFinalResponse.class, getOperationTimeout(),
+                TimeUnit.SECONDS);
     }
 
     protected void assertNoResponseIsReceived() {

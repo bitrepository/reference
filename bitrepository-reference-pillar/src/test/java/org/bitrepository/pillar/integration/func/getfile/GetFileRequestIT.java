@@ -28,6 +28,7 @@ import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.TimeUnit;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
@@ -76,7 +77,7 @@ public class GetFileRequestIT extends PillarFunctionTest {
         GetFileRequest getRequest = (GetFileRequest) createRequest();
         messageBus.sendMessage(getRequest);
 
-        GetFileFinalResponse finalResponse = clientReceiver.waitForMessage(GetFileFinalResponse.class);
+        GetFileFinalResponse finalResponse = (GetFileFinalResponse) receiveResponse();
         assertNotNull(finalResponse);
         assertEquals(finalResponse.getCorrelationID(), getRequest.getCorrelationID(),
                 "Received unexpected 'CorrelationID' element.");
@@ -123,7 +124,7 @@ public class GetFileRequestIT extends PillarFunctionTest {
         getRequest.setFilePart(filePart);
         messageBus.sendMessage(getRequest);
 
-        GetFileFinalResponse finalResponse = clientReceiver.waitForMessage(GetFileFinalResponse.class);
+        GetFileFinalResponse finalResponse = (GetFileFinalResponse) receiveResponse();
         assertEquals(finalResponse.getFilePart(), getRequest.getFilePart(),
                 "Received unexpected 'FilePart' element.");
 
@@ -148,7 +149,7 @@ public class GetFileRequestIT extends PillarFunctionTest {
         getRequest.setFileID("NonExistingFile");
         messageBus.sendMessage(getRequest);
 
-        GetFileFinalResponse finalResponse = clientReceiver.waitForMessage(GetFileFinalResponse.class);
+        GetFileFinalResponse finalResponse = (GetFileFinalResponse) receiveResponse();
         assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.FILE_NOT_FOUND_FAILURE,
                 "Received unexpected 'ResponseCode' element.");
     }
@@ -184,7 +185,8 @@ public class GetFileRequestIT extends PillarFunctionTest {
     }
 
     protected MessageResponse receiveResponse() {
-        return clientReceiver.waitForMessage(GetFileFinalResponse.class);
+        return clientReceiver.waitForMessage(GetFileFinalResponse.class, getOperationTimeout(),
+                TimeUnit.SECONDS);
     }
 
     protected void assertNoResponseIsReceived() {

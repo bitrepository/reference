@@ -54,6 +54,10 @@ public class PillarIntegrationTestConfiguration {
     public boolean useEmbeddedMessagebus() {
         return properties.getProperty("pillar.integrationtest.useembeddedmessagebus", "false").equals("true");
     }
+    
+    public long getPillarOperationTimeout() {
+        return Long.parseLong(properties.getProperty("pillar.integrationtest.operationtimeout", "10"));
+    }
 
     public String getString(String key) {
         return properties.getProperty(key);

@@ -26,6 +26,7 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.TimeUnit;
 
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
@@ -75,7 +76,7 @@ public class PutFileRequestIT extends DefaultPillarOperationTest {
                 DEFAULT_FILE_SIZE);
         messageBus.sendMessage(putRequest);
 
-        PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
+        PutFileFinalResponse finalResponse = (PutFileFinalResponse) receiveResponse();
         assertNotNull(finalResponse);
         assertEquals(finalResponse.getCorrelationID(), putRequest.getCorrelationID(),
                 "Received unexpected 'CorrelationID' element.");
@@ -113,7 +114,7 @@ public class PutFileRequestIT extends DefaultPillarOperationTest {
         putRequest.setChecksumRequestForNewFile(ChecksumUtils.getDefault(settingsForTestClient));
         messageBus.sendMessage(putRequest);
 
-        PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
+        PutFileFinalResponse finalResponse = (PutFileFinalResponse) receiveResponse();
         assertEquals(TestFileHelper.getDefaultFileChecksum().getChecksumValue(),
                 finalResponse.getChecksumDataForNewFile().getChecksumValue(),
                 "Return MD5 checksum was not equals to checksum for default file.");
@@ -139,7 +140,8 @@ public class PutFileRequestIT extends DefaultPillarOperationTest {
         PutFileRequest putRequest = (PutFileRequest)createRequest();
         messageBus.sendMessage(putRequest);
 
-        PutFileProgressResponse progressResponse = clientReceiver.waitForMessage(PutFileProgressResponse.class);
+        PutFileProgressResponse progressResponse = clientReceiver.waitForMessage(PutFileProgressResponse.class, 
+                getOperationTimeout(), TimeUnit.SECONDS);
         assertNotNull(progressResponse);
         assertEquals(progressResponse.getCorrelationID(), putRequest.getCorrelationID(),
                 "Received unexpected 'CorrelationID' element.");
@@ -170,7 +172,8 @@ public class PutFileRequestIT extends DefaultPillarOperationTest {
 
     @Override
     protected MessageResponse receiveResponse() {
-        return clientReceiver.waitForMessage(PutFileFinalResponse.class);
+        return clientReceiver.waitForMessage(PutFileFinalResponse.class, getOperationTimeout(),
+                TimeUnit.SECONDS);
     }
 
     protected void assertNoResponseIsReceived() {

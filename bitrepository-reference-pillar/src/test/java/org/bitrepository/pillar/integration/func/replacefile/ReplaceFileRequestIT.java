@@ -22,6 +22,7 @@
 package org.bitrepository.pillar.integration.func.replacefile;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.TimeUnit;
 
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
@@ -66,7 +67,8 @@ public class ReplaceFileRequestIT extends DefaultPillarOperationTest {
                 null, null, DEFAULT_DOWNLOAD_FILE_ADDRESS, testSpecificFileID, DEFAULT_FILE_SIZE);
         messageBus.sendMessage(replaceRequest);
 
-        ReplaceFileProgressResponse progressResponse = clientReceiver.waitForMessage(ReplaceFileProgressResponse.class);
+        ReplaceFileProgressResponse progressResponse = clientReceiver.waitForMessage(ReplaceFileProgressResponse.class, 
+                getOperationTimeout(), TimeUnit.SECONDS);
         Assert.assertNotNull(progressResponse);
         Assert.assertEquals(progressResponse.getCorrelationID(), replaceRequest.getCorrelationID());
         Assert.assertEquals(progressResponse.getFrom(), getPillarID());
@@ -74,7 +76,7 @@ public class ReplaceFileRequestIT extends DefaultPillarOperationTest {
         Assert.assertEquals(progressResponse.getResponseInfo().getResponseCode(),
                 ResponseCode.OPERATION_ACCEPTED_PROGRESS);
 
-        ReplaceFileFinalResponse finalResponse = clientReceiver.waitForMessage(ReplaceFileFinalResponse.class);
+        ReplaceFileFinalResponse finalResponse = (ReplaceFileFinalResponse) receiveResponse();
         Assert.assertNotNull(finalResponse);
         Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
         Assert.assertEquals(finalResponse.getCorrelationID(), replaceRequest.getCorrelationID());
@@ -93,7 +95,8 @@ public class ReplaceFileRequestIT extends DefaultPillarOperationTest {
 
     @Override
     protected MessageResponse receiveResponse() {
-        return clientReceiver.waitForMessage(ReplaceFileFinalResponse.class);
+        return clientReceiver.waitForMessage(ReplaceFileFinalResponse.class, getOperationTimeout(),
+                TimeUnit.SECONDS);
     }
 
     protected void assertNoResponseIsReceived() {

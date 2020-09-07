@@ -198,6 +198,10 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     protected String getPillarID() {
         return testConfiguration.getPillarUnderTestID();
     }
+    
+    protected long getOperationTimeout() {
+        return testConfiguration.getPillarOperationTimeout();
+    }
 
     /**
      * Overrides the default settings modification, as this only works if the test can inject the modified settings into
