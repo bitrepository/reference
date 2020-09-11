@@ -10,6 +10,6 @@ import java.util.Set;
 public class ReposerviceRestApplication extends Application {
     @Override
     public Set<Class<?>> getClasses() {
-        return new HashSet<>(Arrays.asList(JacksonJsonProvider.class, Reposervice.class));
+        return new HashSet<>(Arrays.asList(JacksonJsonProvider.class, Reposervice.class, ServiceUrl.class));
     }
 }
