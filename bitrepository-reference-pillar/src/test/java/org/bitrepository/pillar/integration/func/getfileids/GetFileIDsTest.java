@@ -140,6 +140,8 @@ public class GetFileIDsTest extends DefaultPillarOperationTest {
                 FileIDsUtils.getAllFileIDs(), badURL);
         messageBus.sendMessage(getFileIDsRequest);
 
+        addStep("Retrieve the FinalResponse for the GetFileIDs request.",
+                "A FILE_TRANSFER_FAILURE final response is expected.");
         GetFileIDsFinalResponse finalResponse = (GetFileIDsFinalResponse) receiveResponse();
         assertEquals(finalResponse.getResponseInfo().getResponseCode(),
                 ResponseCode.FILE_TRANSFER_FAILURE);
@@ -155,6 +157,8 @@ public class GetFileIDsTest extends DefaultPillarOperationTest {
                 FileIDsUtils.getAllFileIDs(), DEFAULT_UPLOAD_FILE_ADDRESS);
         messageBus.sendMessage(getFileIDsRequest);
 
+        addStep("Retrieve the FinalResponse for the GetFileIDs request.",
+                "A OPERATION_COMPLETE final response is expected containing the result provided address.");
         GetFileIDsFinalResponse finalResponse = (GetFileIDsFinalResponse) receiveResponse();
         assertEquals(finalResponse.getResponseInfo().getResponseCode(),
                 ResponseCode.OPERATION_COMPLETED);
