@@ -115,7 +115,7 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
         AuditTrailQuery lastSequenceNumberQuery = new AuditTrailQuery(getPillarID(),
                 largestSequenceNumber, null, null);
         limitedEventList = getAuditTrails(lastSequenceNumberQuery, null);
-        assertEquals(limitedEventList.get(0).getSequenceNumber().intValue(), largestSequenceNumber,
+        assertEquals(limitedEventList.get(0).getSequenceNumber().longValue(), largestSequenceNumber,
                 "First event in second page different from last element in first page");
     }
     
