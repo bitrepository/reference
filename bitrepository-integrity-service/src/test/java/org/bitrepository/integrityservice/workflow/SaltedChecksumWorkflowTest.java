@@ -28,7 +28,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.times;
 
@@ -60,7 +60,6 @@ import org.mockito.stubbing.Answer;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@SuppressWarnings("rawtypes")
 public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
     
     private static final String PILLAR_1 = "pillar1";
@@ -76,7 +75,7 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
     protected IntegrityModel model;
     protected AuditTrailManager auditManager;
     
-    @BeforeMethod (alwaysRun = true)
+    @BeforeMethod(alwaysRun = true)
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("IntegrityWorkflowTest");
 
@@ -98,7 +97,7 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
     public void testNoFilesInCollection() throws Exception {
         addDescription("Test that the workflow does nothing, when it has no files in the collection.");
         addStep("Prepare for calls to mocks", "");
-        when(model.getNumberOfFilesInCollection(anyString())).thenReturn(new Long(0));
+        when(model.getNumberOfFilesInCollection(anyString())).thenReturn(Long.valueOf(0));
 
         addStep("Run workflow for checking salted checksum.", "Should send alarm about failure");
 
@@ -110,8 +109,8 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         verify(alerter).integrityFailed(anyString(), eq(TEST_COLLECTION));
         verifyNoMoreInteractions(alerter);
         
-        verifyZeroInteractions(collector);
-        verifyZeroInteractions(auditManager);
+        verifyNoInteractions(collector);
+        verifyNoInteractions(auditManager);
         
         verify(model).getNumberOfFilesInCollection(eq(TEST_COLLECTION));
         verifyNoMoreInteractions(model);
@@ -121,10 +120,10 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
     public void testSuccess() throws Exception {
         addDescription("Test that the workflow works when both pillars deliver the same checksum.");
         addStep("Prepare for calls to mocks", "");
-        when(model.getNumberOfFilesInCollection(anyString())).thenReturn(new Long(1));
+        when(model.getNumberOfFilesInCollection(anyString())).thenReturn(Long.valueOf(1));
         when(model.getFileIDAtPosition(eq(TEST_COLLECTION), eq(0L))).thenReturn(TEST_FILE_1);
         
-        doAnswer(new Answer() {
+        doAnswer(new Answer<Void>() {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
                 ResultingChecksums res = createResultingChecksums((String) invocation.getArguments()[3], "checksum");
@@ -142,7 +141,7 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         workflow.initialise(context, TEST_COLLECTION);
         workflow.start();
         
-        verifyZeroInteractions(alerter);
+        verifyNoInteractions(alerter);
         
         verify(collector).getChecksums(eq(TEST_COLLECTION), any(), any(), anyString(), anyString(), any(), any(EventHandler.class));
         verifyNoMoreInteractions(collector);
@@ -159,10 +158,10 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
     public void testOneComponentFailureAndTwoOtherAgreeOnChecksum() throws Exception {
         addDescription("Test that the workflow works when both pillars deliver the same checksum.");
         addStep("Prepare for calls to mocks", "");
-        when(model.getNumberOfFilesInCollection(anyString())).thenReturn(new Long(1));
+        when(model.getNumberOfFilesInCollection(anyString())).thenReturn(Long.valueOf(1));
         when(model.getFileIDAtPosition(eq(TEST_COLLECTION), eq(0L))).thenReturn(TEST_FILE_1);
         
-        doAnswer(new Answer() {
+        doAnswer(new Answer<Void>() {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
                 ResultingChecksums res = createResultingChecksums((String) invocation.getArguments()[3], "checksum");
@@ -202,10 +201,10 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
     public void testOneComponentFailureAndTwoOtherDisagreeOnChecksum() throws Exception {
         addDescription("Test that the workflow works when both pillars deliver the same checksum.");
         addStep("Prepare for calls to mocks", "");
-        when(model.getNumberOfFilesInCollection(anyString())).thenReturn(new Long(1));
+        when(model.getNumberOfFilesInCollection(anyString())).thenReturn(Long.valueOf(1));
         when(model.getFileIDAtPosition(eq(TEST_COLLECTION), eq(0L))).thenReturn(TEST_FILE_1);
         
-        doAnswer(new Answer() {
+        doAnswer(new Answer<Void>() {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
                 ResultingChecksums res1 = createResultingChecksums((String) invocation.getArguments()[3], "checksum");
@@ -246,10 +245,10 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
     public void testInconsistentChecksums() throws Exception {
         addDescription("Test that the workflow discovers and handles inconsistent checksums");
         addStep("Prepare for calls to mocks", "");
-        when(model.getNumberOfFilesInCollection(anyString())).thenReturn(new Long(1));
+        when(model.getNumberOfFilesInCollection(anyString())).thenReturn(Long.valueOf(1));
         when(model.getFileIDAtPosition(eq(TEST_COLLECTION), eq(0L))).thenReturn(TEST_FILE_1);
         
-        doAnswer(new Answer() {
+        doAnswer(new Answer<Void>() {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
                 ResultingChecksums res1 = createResultingChecksums((String) invocation.getArguments()[3], "checksum");
@@ -287,10 +286,10 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
     public void testNoReceivedChecksums() throws Exception {
         addDescription("Test that the workflow handles the case, when no checksums are received");
         addStep("Prepare for calls to mocks", "");
-        when(model.getNumberOfFilesInCollection(anyString())).thenReturn(new Long(1));
+        when(model.getNumberOfFilesInCollection(anyString())).thenReturn(Long.valueOf(1));
         when(model.getFileIDAtPosition(eq(TEST_COLLECTION), eq(0L))).thenReturn(TEST_FILE_1);
         
-        doAnswer(new Answer() {
+        doAnswer(new Answer<Void>() {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
                 eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "", null));

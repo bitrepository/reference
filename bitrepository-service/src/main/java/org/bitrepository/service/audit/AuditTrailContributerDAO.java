@@ -173,7 +173,7 @@ public abstract class AuditTrailContributerDAO implements AuditTrailManager {
                 + AUDITTRAIL_SEQUENCE_NUMBER + " DESC";
 
         try (Connection conn = getConnection();
-             PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql, new Object[0])) {
+             PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql)) {
             try (ResultSet res = ps.executeQuery()) {
                 if(!res.next()) {
                     return 0L;
@@ -253,10 +253,7 @@ public abstract class AuditTrailContributerDAO implements AuditTrailManager {
                     auditResults.reportMoreResultsFound();
                 }
             } finally {
-                if(conn != null) {
-                    conn.setAutoCommit(true);
-                    conn.close();
-                }
+                conn.setAutoCommit(true);
             }
         } catch (Exception e) {
             throw new IllegalStateException("Could not extract the audit trails events.", e);

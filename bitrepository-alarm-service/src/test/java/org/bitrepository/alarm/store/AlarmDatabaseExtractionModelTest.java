@@ -77,7 +77,7 @@ public class AlarmDatabaseExtractionModelTest extends ExtendedTestCase {
         Assert.assertEquals(model.getFileID(), defaultFileID);
 
         addStep("Test the MaxCount", "Should be able to put a new one in and extract it again.");
-        Integer defaultMaxCount = new Integer(192837456);
+        Integer defaultMaxCount = 192837456;
         model.setMaxCount(defaultMaxCount);
         Assert.assertEquals(model.getMaxCount(), defaultMaxCount);
         

@@ -57,7 +57,7 @@ public class CertificateIDTest extends ExtendedTestCase  {
         byte[] decodeSig = Base64.decode(SecurityTestConstants.getSignature().getBytes(StandardCharsets.UTF_8));
         CMSSignedData s = new CMSSignedData(new CMSProcessableByteArray(
                 SecurityTestConstants.getTestData().getBytes(SecurityModuleConstants.defaultEncodingType)), decodeSig);
-        SignerInformation signer = (SignerInformation) s.getSignerInfos().getSigners().iterator().next();
+        SignerInformation signer = s.getSignerInfos().getSigners().iterator().next();
         CertificateID certificateIDfromSignature = new CertificateID(signer.getSID().getIssuer(), signer.getSID().getSerialNumber());
         
         addStep("Assert that the two CertificateID objects are equal", "Assert succeeds");
@@ -82,7 +82,7 @@ public class CertificateIDTest extends ExtendedTestCase  {
         byte[] decodeSig = Base64.decode(SecurityTestConstants.getSignature().getBytes(StandardCharsets.UTF_8));
         CMSSignedData s = new CMSSignedData(new CMSProcessableByteArray(
                 SecurityTestConstants.getTestData().getBytes(SecurityModuleConstants.defaultEncodingType)), decodeSig);
-        SignerInformation signer = (SignerInformation) s.getSignerInfos().getSigners().iterator().next();
+        SignerInformation signer = s.getSignerInfos().getSigners().iterator().next();
         CertificateID certificateIDfromSignature = new CertificateID(signer.getSID().getIssuer(), signer.getSID().getSerialNumber());
         
         addStep("Assert that the two CertificateID objects are equal", "Assert succeeds");

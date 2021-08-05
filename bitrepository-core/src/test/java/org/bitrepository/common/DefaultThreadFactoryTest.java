@@ -30,9 +30,10 @@ public class DefaultThreadFactoryTest {
                 ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
 
         //We mock an appender so we can catch the log messages
+        @SuppressWarnings("unchecked")
         final Appender<ILoggingEvent> mockAppender = mock(Appender.class);
 
-        //Nessesary for the logback framework, all appenders must have a name
+        //Necessary for the logback framework, all appenders must have a name
         when(mockAppender.getName()).thenReturn("MOCK");
         //Add the appender to the root logger
         rootLogger.addAppender(mockAppender);

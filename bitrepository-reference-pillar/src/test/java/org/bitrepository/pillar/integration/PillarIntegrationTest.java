@@ -40,11 +40,11 @@ import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.BasicMessageAuthenticator;
 import org.bitrepository.protocol.security.BasicMessageSigner;
-import org.bitrepository.protocol.security.BasicOperationAuthorizor;
+import org.bitrepository.protocol.security.BasicOperationAuthorizer;
 import org.bitrepository.protocol.security.BasicSecurityManager;
 import org.bitrepository.protocol.security.MessageAuthenticator;
 import org.bitrepository.protocol.security.MessageSigner;
-import org.bitrepository.protocol.security.OperationAuthorizor;
+import org.bitrepository.protocol.security.OperationAuthorizer;
 import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.jaccept.TestEventManager;
@@ -219,7 +219,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
             PermissionStore permissionStore = new PermissionStore();
             MessageAuthenticator authenticator = new BasicMessageAuthenticator(permissionStore);
             MessageSigner signer = new BasicMessageSigner();
-            OperationAuthorizor authorizer = new BasicOperationAuthorizor(permissionStore);
+            OperationAuthorizer authorizer = new BasicOperationAuthorizer(permissionStore);
             org.bitrepository.protocol.security.SecurityManager securityManager =
                     new BasicSecurityManager(settingsForTestClient.getRepositorySettings(),
                             testConfiguration.getPrivateKeyFileLocation(),

@@ -21,11 +21,11 @@
  */
 package org.bitrepository.common;
 
+import org.testng.Assert;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-
-import org.testng.Assert;
 
 public class TestValidationUtils {
     /**
@@ -39,7 +39,7 @@ public class TestValidationUtils {
     public static void validateUtilityClass(Class utilityClass) {
         Constructor[] constructors = utilityClass.getDeclaredConstructors();
         Assert.assertEquals(constructors.length, 1);
-        Assert.assertFalse(constructors[0].isAccessible(), "The constructor should not be accessible.");
+        Assert.assertFalse(constructors[0].canAccess(null), "The constructor should not be accessible.");
         Assert.assertNotEquals((constructors[0].getModifiers() & Modifier.PRIVATE), 0,
                 "The constructor should be private: " + constructors[0]);
         

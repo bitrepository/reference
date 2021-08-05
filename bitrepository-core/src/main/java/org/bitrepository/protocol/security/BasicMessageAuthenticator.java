@@ -56,7 +56,7 @@ public class BasicMessageAuthenticator implements MessageAuthenticator {
     public SignerId authenticateMessage(byte[] messageData, byte[] signatureData) throws MessageAuthenticationException {
         try {
             CMSSignedData s = new CMSSignedData(new CMSProcessableByteArray(messageData), signatureData);
-            SignerInformation signer = (SignerInformation) s.getSignerInfos().getSigners().iterator().next();
+            SignerInformation signer = s.getSignerInfos().getSigners().iterator().next();
             X509Certificate signingCert = permissionStore.getCertificate(signer.getSID());
             SignerInformationVerifier verifier = new JcaSimpleSignerInfoVerifierBuilder().setProvider(
                     SecurityModuleConstants.BC).build(signingCert);
@@ -70,9 +70,7 @@ public class BasicMessageAuthenticator implements MessageAuthenticator {
             return signer.getSID();
         } catch (PermissionStoreException e) {
             throw new MessageAuthenticationException(e.getMessage(), e);
-        } catch (CMSException e) {
-            throw new SecurityException(e.getMessage(), e);
-        } catch (OperatorCreationException e) {
+        } catch (CMSException | OperatorCreationException e) {
             throw new SecurityException(e.getMessage(), e);
         }
     }

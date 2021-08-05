@@ -32,7 +32,7 @@ import org.bouncycastle.cms.SignerId;
 /**
  * Class to check permissions based on the signer of a MessageRequest and the type of request. 
  */
-public class BasicOperationAuthorizor implements OperationAuthorizor {
+public class BasicOperationAuthorizer implements OperationAuthorizer {
 
     /** Mapper from operation type to needed permission */
     private RequestToOperationPermissionMapper requestToPermissionMapper;
@@ -42,7 +42,7 @@ public class BasicOperationAuthorizor implements OperationAuthorizor {
     /**
      * @param permissionStore permissionStore which holds the permissions to check against.
      */
-    public BasicOperationAuthorizor(PermissionStore permissionStore) {
+    public BasicOperationAuthorizer(PermissionStore permissionStore) {
         requestToPermissionMapper = new RequestToOperationPermissionMapper();
         this.permissionStore = permissionStore;
     }

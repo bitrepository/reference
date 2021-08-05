@@ -72,9 +72,9 @@ public class XMLFileSettingsLoader implements SettingsLoader {
     public <T> T loadSettings(Class<T> settingsClass) {
         StringBuilder fileLocationBuilder = new StringBuilder();
         if (pathToSettingsFiles != null && !pathToSettingsFiles.equals("")) {
-            fileLocationBuilder.append(pathToSettingsFiles + DIRECTORY_SEPERATOR);
+            fileLocationBuilder.append(pathToSettingsFiles).append(DIRECTORY_SEPERATOR);
         }
-        fileLocationBuilder.append(settingsClass.getSimpleName() + XML_FILE_EXTENSION);
+        fileLocationBuilder.append(settingsClass.getSimpleName()).append(XML_FILE_EXTENSION);
         String fileLocation = fileLocationBuilder.toString();
         String schemaLocation = settingsClass.getSimpleName() + XSD_FILE_EXTENSION;
         JaxbHelper jaxbHelper = new JaxbHelper(XSD_SCHEMA_DIR, schemaLocation);
@@ -94,7 +94,7 @@ public class XMLFileSettingsLoader implements SettingsLoader {
             log.debug("Loading the settings file '" + fileLocation + "'.");
             try {
                 jaxbHelper.validate(configStreamValidate);
-                return (T) jaxbHelper.loadXml(settingsClass, configStreamLoad);
+                return jaxbHelper.loadXml(settingsClass, configStreamLoad);
             } catch (SAXException e) {
                 throw new RuntimeException("Unable to validate settings from " +
                         Thread.currentThread().getContextClassLoader().getResource(fileLocation), e);

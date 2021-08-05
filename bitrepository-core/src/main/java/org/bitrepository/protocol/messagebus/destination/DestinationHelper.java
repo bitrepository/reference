@@ -59,7 +59,8 @@ public class DestinationHelper {
             return new DefaultReceiverDestinationIDFactory();
         } else {
             try {
-                return (ReceiverDestinationIDFactory)Class.forName(receiverDestinationIDFactoryClass).newInstance();
+                return (ReceiverDestinationIDFactory) Class.forName(receiverDestinationIDFactoryClass)
+                        .getDeclaredConstructor().newInstance();
             } catch (Exception e) {
                 throw new RuntimeException("Unable to instantiate ReceiverDestinationIDFactory " +
                         receiverDestinationIDFactoryClass +

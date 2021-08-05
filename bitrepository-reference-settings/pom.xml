@@ -10,11 +10,12 @@
   <name>Bitrepository Reference Settings</name>
   <description>Settings functionality for the reference code.</description>
   <dependencies>
+    <!--
     <dependency>
       <groupId>org.jvnet.jaxb2_commons</groupId>
       <artifactId>jaxb2-basics-runtime</artifactId>
       <version>0.11.1</version>
-    </dependency>
+    </dependency>-->
   </dependencies>
 
   <build>
@@ -55,7 +56,45 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.jvnet.jaxb2.maven2</groupId>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jaxb2-maven-plugin</artifactId>
+        <version>2.5.0</version>
+        <executions>
+          <execution>
+            <id>generate-classes-from-xsds</id>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <sources>
+            <source>${project.build.directory}/xsd/ReferenceSettings.xsd</source>
+          </sources>
+          <xjbSources>
+            <xjbSource>${project.build.directory}/xsd/bindings-reference-settings.xjb</xjbSource>
+          </xjbSources>
+          <extension>true</extension>
+          <args>
+            <arg>-XtoString</arg>
+            <arg>-Xequals</arg>
+            <arg>-XhashCode</arg>
+            <arg>-Xannotate</arg>
+          </args>
+          <plugins>
+            <plugin>
+              <groupId>org.jvnet.jaxb2_commons</groupId>
+              <artifactId>jaxb2-basics</artifactId>
+              <version>0.12.0</version>
+            </plugin>
+            <plugin>
+              <groupId>org.jvnet.jaxb2_commons</groupId>
+              <artifactId>jaxb2-basics-annotate</artifactId>
+              <version>1.1.0</version>
+            </plugin>
+          </plugins>
+        </configuration>
+        <!-- <groupId>org.jvnet.jaxb2.maven2</groupId>
         <artifactId>maven-jaxb2-plugin</artifactId>
         <executions>
           <execution>
@@ -91,7 +130,7 @@
               </plugins>
             </configuration>
           </execution>
-        </executions>
+        </executions> -->
       </plugin>
     </plugins>
   </build>

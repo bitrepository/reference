@@ -49,7 +49,7 @@ public class IdentifyPillarsForPutFile extends IdentifyingState {
     }
 
     /**
-     * Extends the default behaviour with a idempotent aspects. This assumes that the put to a pillar is successful if
+     * Extends the default behaviour with an idempotent aspect. This assumes that the put to a pillar is successful if
      * the same file already exists.
      *
      * The existence of a different file on the other hand is a fatal problem.

@@ -128,7 +128,7 @@ public class LocalFileExchangeTest {
         URL testFileUrl = testFile.toURI().toURL();
         
         InputStream is = lfe.getFile(testFileUrl);
-        String fileContent = IOUtils.toString(is);
+        String fileContent = IOUtils.toString(is, StandardCharsets.UTF_8);
         Assert.assertEquals(fileContent, testFileContent);
     }
     

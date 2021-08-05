@@ -46,9 +46,9 @@ class DatabaseTestUtils {
 
         /* Set DB name */
         String driverName = "org.apache.derby.jdbc.EmbeddedDriver";
-        Class.forName(driverName).newInstance();
+        Class.forName(driverName).getDeclaredConstructor().newInstance();
             
-        String dburi = "jdbc:derby:" + dbfile;
-        return DriverManager.getConnection(dburi);
+        String dbUri = "jdbc:derby:" + dbfile;
+        return DriverManager.getConnection(dbUri);
     }
 }

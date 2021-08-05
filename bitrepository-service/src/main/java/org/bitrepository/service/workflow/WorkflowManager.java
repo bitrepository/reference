@@ -127,7 +127,7 @@ public abstract class WorkflowManager {
                         }
                         for (String collectionID:collectionsToScheduleWorkflowFor) {
                             Workflow workflow =
-                                    (Workflow)lookupClass(workflowConf.getWorkflowClass()).newInstance();
+                                    (Workflow)lookupClass(workflowConf.getWorkflowClass()).getDeclaredConstructor().newInstance();
                             workflow.initialise(context, collectionID);
                             scheduler.schedule(workflow, schedule.getWorkflowInterval());
                             addWorkflow(collectionID, workflow);
@@ -138,7 +138,7 @@ public abstract class WorkflowManager {
                 // Create a instance of all workflows not explicitly scheduled.
                 for (String collectionID:unscheduledCollections) {
                     Workflow workflow =
-                            (Workflow)Class.forName(workflowConf.getWorkflowClass()).newInstance();
+                            (Workflow)Class.forName(workflowConf.getWorkflowClass()).getDeclaredConstructor().newInstance();
                     workflow.initialise(context, collectionID);
                     addWorkflow(collectionID, workflow);
                 }

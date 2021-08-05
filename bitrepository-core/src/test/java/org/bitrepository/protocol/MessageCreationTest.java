@@ -73,7 +73,8 @@ public class MessageCreationTest extends ExtendedTestCase {
         addDescription("Test to ensure that messages carrying dates must provide offset.");
         String messagePath = ExampleMessageFactory.PATH_TO_EXAMPLES + "BadMessages/" + 
                 "BadDateAlarmMessage" + ExampleMessageFactory.EXAMPLE_FILE_POSTFIX;
-        String message = IOUtils.toString(Thread.currentThread().getContextClassLoader().getResourceAsStream(messagePath));
+        InputStream messageIS = Thread.currentThread().getContextClassLoader().getResourceAsStream(messagePath);
+        String message = IOUtils.toString(messageIS, StandardCharsets.UTF_8);
         JaxbHelper jaxbHelper = new JaxbHelper(ExampleMessageFactory.PATH_TO_SCHEMA, ExampleMessageFactory.SCHEMA_NAME);
         jaxbHelper.validate(new ByteArrayInputStream(message.getBytes(StandardCharsets.UTF_8)));
         AlarmMessage am = jaxbHelper.loadXml(AlarmMessage.class, new ByteArrayInputStream(message.getBytes(StandardCharsets.UTF_8)));
@@ -123,8 +124,7 @@ public class MessageCreationTest extends ExtendedTestCase {
             }
 
             // Dummy implementation - not used!
-            @SuppressWarnings("rawtypes")
-            public Iterator getPrefixes(String val) {
+            public Iterator<String> getPrefixes(String val) {
                 return null;
             }
 

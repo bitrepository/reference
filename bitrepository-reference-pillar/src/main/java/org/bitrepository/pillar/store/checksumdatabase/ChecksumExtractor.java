@@ -231,10 +231,7 @@ public class ChecksumExtractor {
                     results.reportMoreEntriesFound();
                 }
             } finally {
-                if(conn != null) {
-                    conn.setAutoCommit(true);
-                    conn.close();
-                }
+                conn.setAutoCommit(true);
             }
         } catch (SQLException e) {
             throw new IllegalStateException("Cannot extract the file ids with the arguments, minTimestamp = '" 
@@ -299,10 +296,7 @@ public class ChecksumExtractor {
                     results.reportMoreEntriesFound();
                 }
             } finally {
-                if(conn != null) {
-                    conn.setAutoCommit(true);
-                    conn.close();
-                }
+                conn.setAutoCommit(true);
             }
         } catch (SQLException e) {
             throw new IllegalStateException("Cannot extract the checksum entries with the arguments, minTimestamp = '" 
@@ -324,15 +318,14 @@ public class ChecksumExtractor {
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
         ArgumentValidator.checkNotNull(maxTimeStamp, "Long maxTimeStamp");
         List<Object> args = new ArrayList<>();
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT " + CS_FILE_ID + " FROM " + CHECKSUM_TABLE + " WHERE " + CS_COLLECTION_ID + " = ? AND " 
-                + CS_DATE + " <= ? " + " ORDER BY " + CS_DATE + " ASC ");
         args.add(collectionID);
         args.add(maxTimeStamp);
         
         List<String> results = new ArrayList<>();
+        String sql = "SELECT " + CS_FILE_ID + " FROM " + CHECKSUM_TABLE + " WHERE " + CS_COLLECTION_ID + " = ? AND "
+                + CS_DATE + " <= ? " + " ORDER BY " + CS_DATE + " ASC ";
         try (Connection conn = connector.getConnection();
-             PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql.toString(), args.toArray())) {
+             PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql, args.toArray())) {
             conn.setAutoCommit(false);
             ps.setFetchSize(DEFAULT_FETCH_SIZE);
             try (ResultSet res = ps.executeQuery()) {
@@ -342,10 +335,7 @@ public class ChecksumExtractor {
                     }
                 }
             } finally {
-                if(conn != null) {
-                    conn.setAutoCommit(true);
-                    conn.close();
-                }
+                conn.setAutoCommit(true);
             }
         } catch (SQLException e) {
             throw new IllegalStateException("Cannot extract the checksum entries with the arguments, maxTimestamp = '"
