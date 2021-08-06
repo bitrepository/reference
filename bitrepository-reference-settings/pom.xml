@@ -9,14 +9,6 @@
   <artifactId>bitrepository-reference-settings</artifactId>
   <name>Bitrepository Reference Settings</name>
   <description>Settings functionality for the reference code.</description>
-  <dependencies>
-    <!--
-    <dependency>
-      <groupId>org.jvnet.jaxb2_commons</groupId>
-      <artifactId>jaxb2-basics-runtime</artifactId>
-      <version>0.11.1</version>
-    </dependency>-->
-  </dependencies>
 
   <build>
     <sourceDirectory>target/generated-sources/jaxb</sourceDirectory>
@@ -75,62 +67,25 @@
             <xjbSource>${project.build.directory}/xsd/bindings-reference-settings.xjb</xjbSource>
           </xjbSources>
           <extension>true</extension>
-          <args>
-            <arg>-XtoString</arg>
-            <arg>-Xequals</arg>
-            <arg>-XhashCode</arg>
-            <arg>-Xannotate</arg>
-          </args>
-          <plugins>
-            <plugin>
-              <groupId>org.jvnet.jaxb2_commons</groupId>
-              <artifactId>jaxb2-basics</artifactId>
-              <version>0.12.0</version>
-            </plugin>
-            <plugin>
-              <groupId>org.jvnet.jaxb2_commons</groupId>
-              <artifactId>jaxb2-basics-annotate</artifactId>
-              <version>1.1.0</version>
-            </plugin>
-          </plugins>
+          <arguments>
+            <argument>-XtoString</argument>
+            <argument>-Xequals</argument>
+            <argument>-XhashCode</argument>
+            <argument>-Xannotate</argument>
+          </arguments>
         </configuration>
-        <!-- <groupId>org.jvnet.jaxb2.maven2</groupId>
-        <artifactId>maven-jaxb2-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>generate-classes-from-xsds</id>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-            <phase>generate-sources</phase>
-            <configuration>
-              <schemaDirectory>${project.build.directory}/xsd</schemaDirectory>
-              <schemaIncludes>
-                <include>*.xsd</include>
-              </schemaIncludes>
-              <generateDirectory>${project.build.directory}/generated-sources/jaxb</generateDirectory>
-              <extension>true</extension>
-              <args>
-                <arg>-XtoString</arg>
-                <arg>-Xequals</arg>
-                <arg>-XhashCode</arg>
-                <arg>-Xannotate</arg>
-              </args>
-              <plugins>
-                <plugin>
-                  <groupId>org.jvnet.jaxb2_commons</groupId>
-                  <artifactId>jaxb2-basics</artifactId>
-                  <version>0.11.1</version>
-                </plugin>
-                <plugin>
-                  <groupId>org.jvnet.jaxb2_commons</groupId>
-                  <artifactId>jaxb2-basics-annotate</artifactId>
-                  <version>1.1.0</version>
-                </plugin>
-              </plugins>
-            </configuration>
-          </execution>
-        </executions> -->
+        <dependencies>
+          <dependency>
+            <groupId>org.jvnet.jaxb2_commons</groupId>
+            <artifactId>jaxb2-basics</artifactId>
+            <version>0.11.1</version>
+          </dependency>
+          <dependency>
+            <groupId>org.jvnet.jaxb2_commons</groupId>
+            <artifactId>jaxb2-basics-annotate</artifactId>
+            <version>1.1.0</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>
