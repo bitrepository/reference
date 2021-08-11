@@ -48,6 +48,8 @@
         </executions>
       </plugin>
       <plugin>
+        <!-- 3.0.0 supports JAXB3 but isn't on nexus yet - update when it is there to migrate from
+              javax packages to Java 11's jakarta -->
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>jaxb2-maven-plugin</artifactId>
         <version>2.5.0</version>
