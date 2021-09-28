@@ -153,11 +153,11 @@
          var htmlTableBody = "";
          if(j != null) {
            for (var i = 0; i < j.length; i++) {
-            htmlTableBody += "<tr><td>" + j[i].OrigDateTime + 
-                             "</td><td>" + j[i].AlarmRaiser +
-                             "</td><td>" + nameMapper.getName(j[i].CollectionID) +
-                             "</td> <td>" + j[i].AlarmCode + 
-                             "</td> <td>" + nl2br(j[i].AlarmText) +
+            htmlTableBody += "<tr><td>" + j[i].origDateTime +
+                             "</td><td>" + j[i].alarmRaiser +
+                             "</td><td>" + nameMapper.getName(j[i].collectionID) +
+                             "</td> <td>" + j[i].alarmCode +
+                             "</td> <td>" + nl2br(j[i].alarmText) +
                              "</td></tr>";
           }
         }
