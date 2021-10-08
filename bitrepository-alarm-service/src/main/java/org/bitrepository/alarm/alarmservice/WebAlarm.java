@@ -51,7 +51,7 @@ public class WebAlarm {
         
     }
 
-    @XmlElement(name = "OrigDateTime")
+    @XmlElement(name = "origDateTime")
     public String getOrigDateTime() {
         return origDateTime;
     }
@@ -60,7 +60,7 @@ public class WebAlarm {
         this.origDateTime = origDateTime;
     }
     
-    @XmlElement(name = "AlarmCode")
+    @XmlElement(name = "alarmCode")
     public AlarmCode getAlarmCode() {
         return alarmCode;
     }
@@ -69,7 +69,7 @@ public class WebAlarm {
         this.alarmCode = alarmCode;
     }
     
-    @XmlElement(name = "AlarmRaiser")
+    @XmlElement(name = "alarmRaiser")
     public String getAlarmRaiser() {
         return alarmRaiser;
     }
@@ -78,7 +78,7 @@ public class WebAlarm {
         this.alarmRaiser = alarmRaiser;
     }
     
-    @XmlElement(name = "AlarmText")
+    @XmlElement(name = "alarmText")
     public String getAlarmText() {
         return alarmText;
     }
@@ -87,7 +87,7 @@ public class WebAlarm {
         this.alarmText = alarmText;
     }    
     
-    @XmlElement(name = "CollectionID")
+    @XmlElement(name = "collectionID")
     public String getCollectionID() {
         return collectionID;
     }
