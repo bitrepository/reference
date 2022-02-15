@@ -29,10 +29,7 @@
         <!--List of pillars that belongs in the collection. Clients will only expect answers from
         pillars listed here.
       -->
-      <PillarIDs>
-        <PillarID>Pillar1</PillarID>
-        <PillarID>Pillar2</PillarID>
-      </PillarIDs>
+      <PillarIDs><PillarID>Pillar1</PillarID><PillarID>Pillar2</PillarID></PillarIDs>
     </Collection>
     <Collection><ID>SinglePillarCollection</ID>
       <PillarIDs><PillarID>Pillar1</PillarID></PillarIDs>
@@ -40,12 +37,12 @@
   </Collections>
   <ProtocolSettings>
     <!-- 
-      DefaultChecksumType is the checksum that should be used by default in the repository.
+      DefaultChecksumType is the checksum that should be used by default in the collection.
       I.e. MD5 or SHA1 (others are supported on protocol level.)
     -->
     <DefaultChecksumType>MD5</DefaultChecksumType>
     <!--
-      AllowedFileIDPattern defines the allowed fileIDs in the repository. 
+      AllowedFileIDPattern defines the allowed fileIDs in the collection. 
       This is formatted as a Java regular expression 
     -->
     <AllowedFileIDPattern>[a-zA-Z_\.\-0-9]{1,250}</AllowedFileIDPattern>
@@ -71,22 +68,21 @@
     -->
     <RequireChecksumForNewFileRequests>true</RequireChecksumForNewFileRequests>
     <!--
-      CollectionDestination, defines the destination topic for broardcast messages within the repository 
+      CollectionDestination, defines the destination topic for broardcast messages within the collection 
       I.e. for identify* requests. 
     -->
-    <CollectionDestination>topic://dummy-repository-id</CollectionDestination>
+    <CollectionDestination>topic://dummy-collection-id</CollectionDestination>
     <!-- 
       AlarmDestination, defines the destination to where alarms are send. This should be a topic, 
-      so that multiple components interested in receiving alarms won't steal them from each other. 
+      so that multiple components interested in receiving alarms won't steal them from eachother. 
     -->
-    <AlarmDestination>topic://dummy-repository-id.alarms</AlarmDestination>
+    <AlarmDestination>topic://dummy-collection-id.alarms</AlarmDestination>
     <MessageBusConfiguration>
     <!-- Identifier for the message bus configuration -->
       <Name>my messagebus</Name>
       <!--
         The URL for connecting to the messagebus (network). For encrypted communication with 
         the messagebus, use ssl:// as protocol. For unencrypted, use tcp://
-        N.B. Do not mix encrypted and unencrypted messagebus connections!
       -->
       <URL>failover:(ssl://enrcypted-messagebus:61601?keepAlive=true, tcp://unencrypted-messagebus:12345?keepAlive=true)</URL>
     </MessageBusConfiguration>
@@ -149,10 +145,11 @@
   <!-- Specific settings for Status monitoring -->
   <GetStatusSettings>
       <!-- 
-        List of components expected to deliver status information.
-        Besides the components explicitly listed here all pillars in the 
-        repository will be included in the list of expected status contributors. 
+        List of components expected to deliver status information 
+        Only components listed here will be asked for status information. 
       -->
+      <NonPillarContributorIDs>pillar1</NonPillarContributorIDs>
+      <NonPillarContributorIDs>pillar2</NonPillarContributorIDs>
       <NonPillarContributorIDs>alarm-service</NonPillarContributorIDs>
       <NonPillarContributorIDs>integrity-service</NonPillarContributorIDs>
       <NonPillarContributorIDs>audittrail-service</NonPillarContributorIDs>
@@ -218,7 +215,7 @@
   -->
   <PermissionSet>
      <Permission>
-      <Description>Messagebus server certificate</Description>
+      <Description>Messagebus and HTTPS server certificate</Description>
       <Certificate>
         <CertificateData>
           ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrtsuvwxyz0123456789++
@@ -239,79 +236,8 @@
         </CertificateData>
       </Certificate>
       <InfrastructurePermission>MessageBusServer</InfrastructurePermission>
-    </Permission>
-         <Permission>
-      <Description>HTTPS server certificate</Description>
-      <Certificate>
-        <CertificateData>
-          abcdefghijklmnopqrtsuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789++
-          abcdefghijklmnopqrtsuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789++
-          abcdefghijklmnopqrtsuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789++
-          abcdefghijklmnopqrtsuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789++
-          abcdefghijklmnopqrtsuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789++
-          abcdefghijklmnopqrtsuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789++
-          abcdefghijklmnopqrtsuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789++
-          abcdefghijklmnopqrtsuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789++
-          abcdefghijklmnopqrtsuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789++
-          abcdefghijklmnopqrtsuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789++
-          abcdefghijklmnopqrtsuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789++
-          abcdefghijklmnopqrtsuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789++
-          abcdefghijklmnopqrtsuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789++
-          abcdefghijklmnopqrtsuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789++
-          abcdefghijklmnopqrtsuvwxyzABCDEFGHIJKLMNOPQRSTUV
-        </CertificateData>
-      </Certificate>
+      <InfrastructurePermission>FileExchangeClient</InfrastructurePermission>
       <InfrastructurePermission>FileExchangeServer</InfrastructurePermission>
-    </Permission>
-         <Permission>
-      <Description>Pillar1 certificate</Description>
-      <Certificate>
-        <CertificateData>
-          0123456789abcdefghijklmnopqrtsuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ++
-          0123456789abcdefghijklmnopqrtsuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ++
-          0123456789abcdefghijklmnopqrtsuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ++
-          0123456789abcdefghijklmnopqrtsuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ++
-          0123456789abcdefghijklmnopqrtsuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ++
-          0123456789abcdefghijklmnopqrtsuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ++
-          0123456789abcdefghijklmnopqrtsuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ++
-          0123456789abcdefghijklmnopqrtsuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ++
-          0123456789abcdefghijklmnopqrtsuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ++
-          0123456789abcdefghijklmnopqrtsuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ++
-          0123456789abcdefghijklmnopqrtsuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ++
-          0123456789abcdefghijklmnopqrtsuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ++
-          0123456789abcdefghijklmnopqrtsuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ++
-          0123456789abcdefghijklmnopqrtsuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ++
-          0123456789abcdefghijklmnopqrtsuvwxyzABCDEFGHIJKL
-        </CertificateData>
-      </Certificate>
-      <InfrastructurePermission>MessageBusClient</InfrastructurePermission>
-      <InfrastructurePermission>FileExchangeClient</InfrastructurePermission>
-      <InfrastructurePermission>MessageSigner</InfrastructurePermission>
-    </Permission>
-    <Permission>
-      <Description>client1 certificate</Description>
-      <Certificate>
-        <CertificateData>
-          ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrtsuvwxyz++
-          ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrtsuvwxyz++
-          ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrtsuvwxyz++
-          ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrtsuvwxyz++
-          ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrtsuvwxyz++
-          ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrtsuvwxyz++
-          ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrtsuvwxyz++
-          ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrtsuvwxyz++
-          ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrtsuvwxyz++
-          ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrtsuvwxyz++
-          ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrtsuvwxyz++
-          ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrtsuvwxyz++
-          ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrtsuvwxyz++
-          ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrtsuvwxyz++
-          ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijkl
-        </CertificateData>
-      </Certificate>
-      <InfrastructurePermission>MessageBusClient</InfrastructurePermission>
-      <InfrastructurePermission>FileExchangeClient</InfrastructurePermission>
-      <InfrastructurePermission>MessageSigner</InfrastructurePermission>
       <OperationPermission>
         <Operation>All</Operation>
       </OperationPermission>
