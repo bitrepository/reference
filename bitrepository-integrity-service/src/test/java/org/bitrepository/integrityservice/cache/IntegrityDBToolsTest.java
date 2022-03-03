@@ -221,11 +221,11 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         String file3 = TEST_FILE_ID + "-3";
         String file4 = TEST_FILE_ID + "-4";
         String file5 = TEST_FILE_ID + "-5";
-        Long size1 = new Long(100);
-        Long size2 = new Long(200);
-        Long size3 = new Long(300);
-        Long size4 = new Long(400);
-        Long size5 = new Long(500);
+        Long size1 = 100L;
+        Long size2 = 200L;
+        Long size3 = 300L;
+        Long size4 = 400L;
+        Long size5 = 500L;
         String checksum1 = "abcd";
         String checksum2 = "acbd";
         String checksum3 = "aacc";

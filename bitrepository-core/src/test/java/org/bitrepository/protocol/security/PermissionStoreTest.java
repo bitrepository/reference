@@ -57,7 +57,7 @@ public class PermissionStoreTest extends ExtendedTestCase  {
                 Base64.decode(SecurityTestConstants.getSignature().getBytes(SecurityModuleConstants.defaultEncodingType));
         CMSSignedData s = new CMSSignedData(new CMSProcessableByteArray(
                 SecurityTestConstants.getTestData().getBytes(SecurityModuleConstants.defaultEncodingType)), decodeSig);
-        SignerInformation signer = (SignerInformation) s.getSignerInfos().getSigners().iterator().next(); 
+        SignerInformation signer = s.getSignerInfos().getSigners().iterator().next();
         addStep("Lookup certificate based on signerId", "No exceptions");
         X509Certificate certificateFromStore = permissionStore.getCertificate(signer.getSID());        
         ByteArrayInputStream bs = new ByteArrayInputStream(
@@ -75,7 +75,7 @@ public class PermissionStoreTest extends ExtendedTestCase  {
                 Base64.decode(SecurityTestConstants.getSignature().getBytes(SecurityModuleConstants.defaultEncodingType));
         CMSSignedData s = new CMSSignedData(new CMSProcessableByteArray(
                 SecurityTestConstants.getTestData().getBytes(SecurityModuleConstants.defaultEncodingType)), decodeSig);
-        SignerInformation signer = (SignerInformation) s.getSignerInfos().getSigners().iterator().next(); 
+        SignerInformation signer = s.getSignerInfos().getSigners().iterator().next();
         SignerId signerId= signer.getSID();
         BigInteger serial = signerId.getSerialNumber();
         serial.add(new BigInteger("2"));
@@ -107,7 +107,7 @@ public class PermissionStoreTest extends ExtendedTestCase  {
                 Base64.decode(SecurityTestConstants.getSignature().getBytes(SecurityModuleConstants.defaultEncodingType));
         CMSSignedData s = new CMSSignedData(new CMSProcessableByteArray(
                 SecurityTestConstants.getTestData().getBytes(SecurityModuleConstants.defaultEncodingType)), decodeSig);
-        SignerInformation signer = (SignerInformation) s.getSignerInfos().getSigners().iterator().next();
+        SignerInformation signer = s.getSignerInfos().getSigners().iterator().next();
 
         addStep("Lookup fingerprint based on signerId", "The correct finger print should be returned with openssl" +
                 "used to generate reference finger print");

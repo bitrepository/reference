@@ -66,7 +66,7 @@ public class SecurityManagerTest extends ExtendedTestCase  {
     private void setupSecurityManager(Settings settings) {
         permissionStore = new PermissionStore();
         MessageAuthenticator authenticator = new BasicMessageAuthenticator(permissionStore);
-        OperationAuthorizor authorizer = new BasicOperationAuthorizor(permissionStore);
+        OperationAuthorizer authorizer = new BasicOperationAuthorizer(permissionStore);
         MessageSigner messageSigner = new BasicMessageSigner();
         securityManager = new BasicSecurityManager(settings.getRepositorySettings(),
                 SecurityTestConstants.getKeyFile(), 

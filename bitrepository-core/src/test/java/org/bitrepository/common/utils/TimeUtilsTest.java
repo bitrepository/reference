@@ -26,7 +26,10 @@ import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -83,10 +86,16 @@ public class TimeUtilsTest extends ExtendedTestCase {
     }
 
 
+    /*
+     * The test only ensures that the output format is fixed. Which timezone the the date is 
+     * formatted to depends on the default/system timezone. At some time the use of the old java Date 
+     * api should be discontinued and the new Java Time api used instead.
+     */
     @Test(groups = {"regressiontest"})
     public void shortDateTest() {
+    	DateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.ROOT);
         Date date = new Date(1360069129256L);
         String shortDateString = TimeUtils.shortDate(date);
-        Assert.assertEquals(shortDateString, "2013/02/05 13:58");
+        Assert.assertEquals(shortDateString, formatter.format(date)); 
     }
 }

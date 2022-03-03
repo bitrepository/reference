@@ -81,7 +81,7 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
         ChecksumSpecTYPE checksumType = ChecksumUtils.getDefault(settings);
         
         addStep("Setup mock answers", "");
-        doAnswer(new Answer() {
+        doAnswer(new Answer<Void>() {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
                 eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
@@ -108,7 +108,7 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
         ChecksumSpecTYPE checksumType = ChecksumUtils.getDefault(settings);
         
         addStep("Setup mock answers", "");
-        doAnswer(new Answer() {
+        doAnswer(new Answer<Void>() {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
 
@@ -145,7 +145,7 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
         ChecksumSpecTYPE checksumType = ChecksumUtils.getDefault(settings);
         
         addStep("Setup mock answers", "");
-        doAnswer(new Answer() {
+        doAnswer(new Answer<Void>() {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
 

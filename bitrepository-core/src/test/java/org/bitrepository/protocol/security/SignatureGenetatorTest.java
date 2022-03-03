@@ -14,7 +14,7 @@ public class SignatureGenetatorTest {
     public void generateSignature() throws MessageSigningException {
         PermissionStore permissionStore = new PermissionStore();
         MessageAuthenticator authenticator = new BasicMessageAuthenticator(permissionStore);
-        OperationAuthorizor authorizer = new BasicOperationAuthorizor(permissionStore);
+        OperationAuthorizer authorizer = new BasicOperationAuthorizer(permissionStore);
         MessageSigner messageSigner = new BasicMessageSigner();
         Settings settings = TestSettingsProvider.reloadSettings(getClass().getSimpleName());
         settings.getRepositorySettings().getProtocolSettings().setRequireMessageAuthentication(true);

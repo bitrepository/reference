@@ -61,7 +61,6 @@ import org.mockito.stubbing.Answer;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@SuppressWarnings("rawtypes")
 public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
     
     private static final String PILLAR_1 = "pillar1";
@@ -105,7 +104,7 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
         addDescription("Test that the workflow does nothing, when it has no missing files.");
         addStep("Prepare for calls to mocks", "");
         when(model.findFilesWithMissingCopies(anyString(), anyInt(), anyLong(), anyLong()))
-            .thenReturn(createMockIterator(new String[0]));
+            .thenReturn(createMockIterator());
 
         addStep("Run workflow for repairing missing files.", "Should not try to repair anything.");
 
@@ -124,7 +123,7 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
     }
     
     @Test(groups = {"regressiontest", "integritytest"})
-    public void testSuccesRepair() throws Exception {
+    public void testSuccessRepair() throws Exception {
         addDescription("Test that the workflow makes calls to the collector, when a file is missing");
         addStep("Prepare for calls to mocks to handle a repair", "");
         when(model.findFilesWithMissingCopies(eq(TEST_COLLECTION), anyInt(), anyLong(), anyLong()))
@@ -133,7 +132,7 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
         when(model.getFileInfos(eq(TEST_FILE_1), eq(TEST_COLLECTION)))
             .thenReturn(createMockFileInfo(TEST_FILE_1, DEFAULT_CHECKSUM, PILLAR_1));
 
-        doAnswer(new Answer() {
+        doAnswer(new Answer<Void>() {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[3];
                 eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
@@ -142,7 +141,7 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
         }).when(collector).getFile(
                 anyString(), anyString(), any(URL.class), any(EventHandler.class), anyString());
         
-        doAnswer(new Answer() {
+        doAnswer(new Answer<Void>() {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[4];
                 eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
@@ -181,7 +180,7 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
         when(model.getFileInfos(eq(TEST_FILE_1), eq(TEST_COLLECTION)))
             .thenReturn(createMockFileInfo(TEST_FILE_1, DEFAULT_CHECKSUM, PILLAR_1));
 
-        doAnswer(new Answer() {
+        doAnswer(new Answer<Void>() {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[3];
                 eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "failure", null));
@@ -222,7 +221,7 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
             .thenReturn(createMockFileInfo(TEST_FILE_1, DEFAULT_CHECKSUM, PILLAR_1));
 
 
-        doAnswer(new Answer() {
+        doAnswer(new Answer<Void>() {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[3];
                 eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
@@ -231,7 +230,7 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
         }).when(collector).getFile(
                 anyString(), anyString(), any(URL.class), any(EventHandler.class), anyString());
         
-        doAnswer(new Answer() {
+        doAnswer(new Answer<Void>() {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[4];
                 eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "failure", null));
@@ -281,7 +280,7 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
         };
     }
     
-    private List<FileInfo> createMockFileInfo(String fileId, String checksum, String ... pillars) {
+    private List<FileInfo> createMockFileInfo(String fileId, String checksum, String... pillars) {
         List<FileInfo> res = new ArrayList<>();
         for(String pillar : pillars) {
             res.add(new FileInfo(fileId, null, checksum, 0L, null, pillar));

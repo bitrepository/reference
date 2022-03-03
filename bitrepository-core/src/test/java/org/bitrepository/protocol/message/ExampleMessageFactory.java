@@ -56,8 +56,8 @@ public class ExampleMessageFactory {
      */
     private static String loadXMLExample(String messageName) throws Exception {
         String filePath = PATH_TO_EXAMPLES + messageName + EXAMPLE_FILE_POSTFIX;
-        InputStream f = Thread.currentThread().getContextClassLoader().getResourceAsStream(filePath);
-        return IOUtils.toString(f);
+        InputStream fileIS = Thread.currentThread().getContextClassLoader().getResourceAsStream(filePath);
+        return IOUtils.toString(fileIS, StandardCharsets.UTF_8);
     }
    
 }

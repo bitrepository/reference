@@ -52,7 +52,7 @@ public class ComponentIDHelper {
             return new DefaultCommandlineComponentID();
         } else {
             try {
-                return (ComponentIDFactory)Class.forName(clientIDFactoryClass).newInstance();
+                return (ComponentIDFactory)Class.forName(clientIDFactoryClass).getDeclaredConstructor().newInstance();
             } catch (Exception e) {
                 throw new RuntimeException("Unable to instantiate ClientIDFactory " +
                         clientIDFactoryClass +

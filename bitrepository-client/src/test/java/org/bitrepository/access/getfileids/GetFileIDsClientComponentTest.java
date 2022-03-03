@@ -308,8 +308,8 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         Date timestamp3 = new Date();
         Date timestamp2 =  new Date(timestamp3.getTime() - 100);
         Date timestamp1 =  new Date(timestamp3.getTime() - 1000);
-        ContributorQuery query1 = new ContributorQuery(PILLAR1_ID, timestamp1, timestamp2, new Integer(1));
-        ContributorQuery query2 = new ContributorQuery(PILLAR2_ID, timestamp2, timestamp3, new Integer(2));
+        ContributorQuery query1 = new ContributorQuery(PILLAR1_ID, timestamp1, timestamp2, 1);
+        ContributorQuery query2 = new ContributorQuery(PILLAR2_ID, timestamp2, timestamp3, 2);
         client.getFileIDs(collectionID, new ContributorQuery[]{query1, query2}, null, null, testEventHandler);
 
         IdentifyPillarsForGetFileIDsRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(

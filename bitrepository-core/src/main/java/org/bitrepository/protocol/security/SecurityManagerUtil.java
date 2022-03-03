@@ -30,7 +30,7 @@ public class SecurityManagerUtil {
         PermissionStore permissionStore = new PermissionStore();
         MessageAuthenticator authenticator = new BasicMessageAuthenticator(permissionStore);
         MessageSigner signer = new BasicMessageSigner();
-        OperationAuthorizor authorizer = new BasicOperationAuthorizor(permissionStore);
+        OperationAuthorizer authorizer = new BasicOperationAuthorizer(permissionStore);
         return new BasicSecurityManager(settings.getRepositorySettings(), componentCertificate.toString(),
                 authenticator, signer, authorizer, permissionStore, componentID);
     }

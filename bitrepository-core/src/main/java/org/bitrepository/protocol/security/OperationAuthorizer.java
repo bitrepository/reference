@@ -29,7 +29,7 @@ import org.bouncycastle.cms.SignerId;
 /**
  * Class to authorize an operation based on the certificate which has signed the operation request.  
  */
-public interface OperationAuthorizor {
+public interface OperationAuthorizer {
 
     /**
      * Authorize an operation based on its signature
@@ -39,7 +39,7 @@ public interface OperationAuthorizor {
      * @throws OperationAuthorizationException if the authorization fails.  
      * @throws UnregisteredPermissionException if no permissions could be found for the signer
      */
-    abstract void authorizeOperation(String operationType, SignerId signer, String collectionID) 
+    void authorizeOperation(String operationType, SignerId signer, String collectionID)
             throws OperationAuthorizationException, UnregisteredPermissionException;
     
     /**
@@ -49,6 +49,6 @@ public interface OperationAuthorizor {
      * @throws CertificateUseException in case the message has been signed by the wrong user. 
      * 
      */
-    abstract void authorizeCertificateUse(String certificateUser, SignerId signer) throws CertificateUseException;
+    void authorizeCertificateUse(String certificateUser, SignerId signer) throws CertificateUseException;
 
 }

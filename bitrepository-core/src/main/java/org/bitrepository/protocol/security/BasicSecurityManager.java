@@ -98,7 +98,7 @@ public class BasicSecurityManager implements SecurityManager {
     /** Object to sign messages */
     private final MessageSigner signer;
     /** Object to authorize operations */
-    private final OperationAuthorizor authorizer;
+    private final OperationAuthorizer authorizer;
     /** Object storing permissions and certificates */
     private final PermissionStore permissionStore;
     /** int value to keep track of the next keystore alias */
@@ -122,7 +122,7 @@ public class BasicSecurityManager implements SecurityManager {
      * @param componentID the component ID
      */
     public BasicSecurityManager(RepositorySettings repositorySettings, String privateKeyFile, MessageAuthenticator authenticator,
-            MessageSigner signer, OperationAuthorizor authorizer, PermissionStore permissionStore, String componentID) {
+                                MessageSigner signer, OperationAuthorizer authorizer, PermissionStore permissionStore, String componentID) {
         ArgumentValidator.checkNotNull(repositorySettings, "repositorySettings");
         ArgumentValidator.checkNotNull(authenticator, "authenticator");
         ArgumentValidator.checkNotNull(signer, "signer");
@@ -185,51 +185,56 @@ public class BasicSecurityManager implements SecurityManager {
     public void authorizeCertificateUse(String certificateUser, String messageData, String signature) 
             throws CertificateUseException {
         if(repositorySettings.getProtocolSettings().isRequireOperationAuthorization()) {
-            byte[] decodeSig = Base64.decode(signature.getBytes(StandardCharsets.UTF_8));
-            CMSSignedData s;
-            try {
-                s = new CMSSignedData(new CMSProcessableByteArray(messageData.getBytes(StandardCharsets.UTF_8)), decodeSig);
-            } catch (CMSException e) {
-                throw new SecurityException(e.getMessage(), e);
-            }
-    
-            SignerInformation signer = (SignerInformation) s.getSignerInfos().getSigners().iterator().next();
+            CMSSignedData s = makeSignedData(messageData, signature);
+
+            SignerInformation signer = s.getSignerInfos().getSigners().iterator().next();
             authorizer.authorizeCertificateUse(certificateUser, signer.getSID());    
         }
     }
 
-    @Override
-    public String getCertificateFingerprint(SignerId signer) throws UnregisteredPermissionException {
-            return permissionStore.getCertificateFingerprint(signer);
-    }
-
     /**
-     * Method to authorize an operation 
+     * Method to authorize an operation
      * @param operationType the type of operation that is to be authorized.
      * @param messageData the data of the message request.
      * @param signature the signature belonging to the message request.
-     * @throws OperationAuthorizationException in case of failure. 
+     * @throws OperationAuthorizationException in case of failure.
      */
-    public void authorizeOperation(String operationType, String messageData, String signature, String collectionID) 
+    public void authorizeOperation(String operationType, String messageData, String signature, String collectionID)
             throws OperationAuthorizationException {
         if(repositorySettings.getProtocolSettings().isRequireOperationAuthorization()) {
-            byte[] decodeSig = Base64.decode(signature.getBytes(StandardCharsets.UTF_8));
-            CMSSignedData s;
+            CMSSignedData s = makeSignedData(messageData, signature);
+
+            SignerInformation signer = s.getSignerInfos().getSigners().iterator().next();
             try {
-                s = new CMSSignedData(new CMSProcessableByteArray(messageData.getBytes(StandardCharsets.UTF_8)), decodeSig);
-            } catch (CMSException e) {
-                throw new SecurityException(e.getMessage(), e);
-            }
-    
-            SignerInformation signer = (SignerInformation) s.getSignerInfos().getSigners().iterator().next();
-            try {
-                authorizer.authorizeOperation(operationType, signer.getSID(), collectionID);    
+                authorizer.authorizeOperation(operationType, signer.getSID(), collectionID);
             } catch (UnregisteredPermissionException e) {
                 log.info(e.getMessage());
             }
         }
     }
-    
+
+    /**
+     * Encapsulates the data of a message request and a signature into a CMSSignedData object.
+     * @param messageData the data of a message request.
+     * @param signature the signature belonging to the message request.
+     * @return the signed data.
+     */
+    private CMSSignedData makeSignedData(String messageData, String signature) {
+        byte[] decodeSig = Base64.decode(signature.getBytes(StandardCharsets.UTF_8));
+        CMSSignedData signedData;
+        try {
+            signedData = new CMSSignedData(new CMSProcessableByteArray(messageData.getBytes(StandardCharsets.UTF_8)), decodeSig);
+        } catch (CMSException e) {
+            throw new SecurityException(e.getMessage(), e);
+        }
+        return signedData;
+    }
+
+    @Override
+    public String getCertificateFingerprint(SignerId signer) throws UnregisteredPermissionException {
+        return permissionStore.getCertificateFingerprint(signer);
+    }
+
     /**
      * Do initialization work
      * - Creates keystore

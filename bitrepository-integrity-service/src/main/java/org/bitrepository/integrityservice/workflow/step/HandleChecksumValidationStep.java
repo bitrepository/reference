@@ -68,7 +68,7 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
         pillarChecksumErrors = new HashMap<>();
         List<String> pillars = SettingsUtils.getPillarIDsForCollection(reporter.getCollectionID());
         for(String pillar : pillars) {
-            pillarChecksumErrors.put(pillar, new Long(0));
+            pillarChecksumErrors.put(pillar, 0L);
         }
     }
     
