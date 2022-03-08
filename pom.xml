@@ -50,7 +50,7 @@
       <organizationUrl>http://en.statsbiblioteket.dk</organizationUrl>
     </developer>
     <developer>
-      <name>Kim Teglgaard Christensen   </name>
+      <name>Kim Teglgaard Christensen</name>
       <email>ktc@statsbiblioteket.dk</email>
       <organization>The Danish State and University Library</organization>
       <organizationUrl>http://en.statsbiblioteket.dk</organizationUrl>
@@ -126,30 +126,35 @@
     </dependency>
     <!-- Updating org.jvnet jaxb2 dependencies to 0.12.0 causes problems for the jaxb2-maven-plugin
           when trying to use toString, hashCode etc.
-          (sort of described here: https://github.com/highsource/jaxb2-basics/issues/95) -->
+          (sort of described here: https://github.com/highsource/jaxb2-basics/issues/95)
+         The project seems to no longer be maintained..
+    -->
     <dependency>
       <groupId>org.jvnet.jaxb2_commons</groupId>
       <artifactId>jaxb2-basics-runtime</artifactId>
       <version>0.11.1</version>
     </dependency>
-    <!-- javax.xml.bind should be swapped for jakarta.xml.bind once a JAXB-plugin actually
-          supports the new jakarta dependencies without going through weird hoops to get things working. -->
+    <!-- Below jakarta/jaxb dependencies are necessary for jaxb-xml with java 11-->
+    <!-- https://mvnrepository.com/artifact/javax.xml.bind/javax.xml.bind-api -->
     <dependency>
-      <groupId>javax.xml.bind</groupId>
-      <artifactId>jaxb-api</artifactId>
-      <version>2.3.1</version>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+      <version>2.3.3</version>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/jakarta.activation/jakarta.activation-api -->
     <dependency>
-      <groupId>com.sun.xml.bind</groupId>
-      <artifactId>jaxb-impl</artifactId>
-      <version>2.3.1</version>
+      <groupId>jakarta.activation</groupId>
+      <artifactId>jakarta.activation-api</artifactId>
+      <version>1.2.2</version>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/org.glassfish.jaxb/jaxb-runtime -->
     <dependency>
       <groupId>org.glassfish.jaxb</groupId>
       <artifactId>jaxb-runtime</artifactId>
-      <version>3.0.1</version>
+      <version>2.3.6</version>
       <scope>runtime</scope>
     </dependency>
+
     <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
@@ -480,8 +485,8 @@
     <derby.version>10.14.2.0</derby.version>
     <activemq.version>5.15.13</activemq.version>
     <cxf.version>3.3.6</cxf.version>
-    <jackson.version>2.11.0</jackson.version>
-    <javax.ws.rs.version>2.1.1</javax.ws.rs.version>
+    <jackson.version>2.12.5</jackson.version>
+    <jakarta.ws.rs.version>2.1.6</jakarta.ws.rs.version>
     <javaee.web.version>8.0.1</javaee.web.version>
     <javax.servlet.version>4.0.1</javax.servlet.version>
     <slf4j.version>1.7.30</slf4j.version>

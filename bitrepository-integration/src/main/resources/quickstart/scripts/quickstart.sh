@@ -38,7 +38,7 @@ export CATALINA_PID="${quickstartdir}/tomcat/pid.tomcat"
 # Function that starts the quickstart components
 #
 do_start() {
-    export CATALINA_OPTS="-Xms256m -Xmx1028m -XX:PermSize=256m -XX:MaxPermSize=256m"
+    export CATALINA_OPTS="-Xms256m -Xmx1028m"
     ${quickstartdir}/file1pillar/bin/pillar.sh start
     ${quickstartdir}/file2pillar/bin/pillar.sh start
     ${quickstartdir}/checksumpillar/bin/pillar.sh start
