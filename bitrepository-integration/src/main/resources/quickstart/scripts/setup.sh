@@ -138,7 +138,7 @@ echo "Installing tomcat"
 if [ -d "tomcat" ]; then
 	rm -rf tomcat
 fi
-curl http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.18/bin/apache-tomcat-8.0.18.tar.gz > tomcat.tar.gz
+curl https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.59/bin/apache-tomcat-9.0.59.tar.gz > tomcat.tar.gz
 tar xfz tomcat.tar.gz
 mv apache-tomcat-* tomcat
 rm tomcat.tar.gz
