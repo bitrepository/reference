@@ -14,7 +14,7 @@ JAVA_OPTS+=(-Dlogback.configurationFile="$CONFDIR/logback.xml")
 JAVA_OPTS+=(-DBASEDIR="$BASEDIR")
 
 case "$1" in
-    delete)		CMD=DeleteFileCmd		;;
+    delete-file)		CMD=DeleteFileCmd		;;
     get-checksums)	CMD=GetChecksumsCmd	;;
     get-file)		CMD=GetFileCmd		;;
     get-file-ids)	CMD=GetFileIDsCmd		;;
@@ -24,7 +24,7 @@ case "$1" in
 	exec 1>&2
 	echo "usage: $0 CMD PARAMS"
 	echo "  CMD is one of"
-	echo "    delete"
+	echo "    delete-file"
 	echo "    get-checksums"
 	echo "    get-file"
 	echo "    get-file-ids"
