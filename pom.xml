@@ -499,7 +499,7 @@
     <message.xml.version>31-SNAPSHOT</message.xml.version>
     <repository.settings.version>12</repository.settings.version>
     <derby.version>10.14.2.0</derby.version>
-    <activemq.version>5.15.13</activemq.version>
+    <activemq.version>5.16.4</activemq.version>
     <cxf.version>3.3.6</cxf.version>
     <jackson.version>2.12.5</jackson.version>
     <jakarta.ws.rs.version>2.1.6</jakarta.ws.rs.version>
