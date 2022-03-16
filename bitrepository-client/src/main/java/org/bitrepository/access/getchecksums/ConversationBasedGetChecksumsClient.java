@@ -77,9 +77,8 @@ public class ConversationBasedGetChecksumsClient extends AbstractClient implemen
                     SettingsUtils.getPillarIDsForCollection(collectionID));
         }
                 
-        log.info("Requesting the checksums for file '" + "' with the specifications '" + checksumSpec + fileID +
-                "' with query "+ Arrays.asList(contributorQueries) + "." +
-                (addressForResult != null ?  "The result should be uploaded to '" + addressForResult + "'." : ""));
+        log.info("Requesting the checksums for file '{}' with the specifications '{}' with query "+ Arrays.asList(contributorQueries) + "." +
+                (addressForResult != null ?  "The result should be uploaded to '{}'." : ""), fileID, checksumSpec, addressForResult);
 
         GetChecksumsConversationContext context = new GetChecksumsConversationContext(collectionID,
                 contributorQueries, fileID, checksumSpec, addressForResult, settings, messageBus, clientID,
