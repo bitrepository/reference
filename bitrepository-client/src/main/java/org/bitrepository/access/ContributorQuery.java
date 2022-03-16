@@ -81,7 +81,7 @@ public class ContributorQuery {
     public String toString() {
         return getClass().getSimpleName() + "{" +
                 "componentID='" + componentID  +
-                ", minTimestamp=" + minTimestamp +
+                "', minTimestamp=" + minTimestamp +
                 ", maxTimestamp=" + maxTimestamp +
                 ", maxNumberOfResults=" + maxNumberOfResults +
                 '}';
