@@ -67,6 +67,7 @@ import org.bitrepository.protocol.messagebus.logger.GetFileMessageLogger;
 import org.bitrepository.protocol.messagebus.logger.GetStatusMessageLogger;
 import org.bitrepository.protocol.messagebus.logger.MessageLoggerProvider;
 import org.bitrepository.protocol.messagebus.logger.PutFileMessageLogger;
+import org.bitrepository.protocol.messagebus.logger.ReplaceFileMessageLogger;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.referencesettings.MessageThreadPools;
 import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
@@ -475,7 +476,7 @@ public class ActiveMQMessageBus implements MessageBus {
         loggerProvider.registerLogger(OperationType.GET_FILE, new GetFileMessageLogger());
         loggerProvider.registerLogger(OperationType.PUT_FILE, new PutFileMessageLogger());
         loggerProvider.registerLogger(OperationType.DELETE_FILE, new DeleteFileMessageLogger());
-        loggerProvider.registerLogger(OperationType.REPLACE_FILE, new GetStatusMessageLogger());
+        loggerProvider.registerLogger(OperationType.REPLACE_FILE, new ReplaceFileMessageLogger());
         loggerProvider.registerLogger(OperationType.GET_FILE_IDS, new GetFileIDsMessageLogger());
         loggerProvider.registerLogger(OperationType.GET_CHECKSUMS, new GetChecksumsMessageLogger());
         loggerProvider.registerLogger(OperationType.GET_AUDIT_TRAILS, new GetAuditTrailsMessageLogger());
