@@ -81,9 +81,12 @@ public class HttpsFileExchange extends HttpFileExchange {
         }
     }
 
-    @Override
-    protected CloseableHttpClient getHttpClient() {
-        HttpClientBuilder builder = HttpClientBuilder.create();
+    /**
+     * Configures a http client builder with SSL
+     * @param builder the builder to configure
+     * @return a configured builder
+     */
+    protected HttpClientBuilder sslHttpClientBuilder(HttpClientBuilder builder) {
         try {
             Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
                     .register("http", PlainConnectionSocketFactory.getSocketFactory())
@@ -96,17 +99,31 @@ public class HttpsFileExchange extends HttpFileExchange {
                     new ChunkyManagedHttpClientConnectionFactory(HTTP_CHUNK_SIZE),
                     SystemDefaultDnsResolver.INSTANCE);
 
-            SocketConfig socketConfig = SocketConfig.custom()
-                    .setSoKeepAlive(true)
-                    .setSndBufSize(HTTP_BUFFER_SIZE)
-                    .setRcvBufSize(HTTP_BUFFER_SIZE).build();
-            poolingmgr.setDefaultSocketConfig(socketConfig);
-
             builder.setConnectionManager(poolingmgr);
+            return builder;
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException("Could not make Https Client.", e);
         }
+    }
     
+    /**
+     * @return A SSL-enabled HTTP client
+     */
+    @Override
+    protected CloseableHttpClient getHttpClient() {
+        HttpClientBuilder builder = basicHttpClientBuilder();
+        builder = sslHttpClientBuilder(builder);
+        return builder.build();
+    }
+    
+    /**
+     * @return A SSL-enabled HTTP client that will not retry uploads
+     */
+    @Override
+    protected CloseableHttpClient getNonRetryingHttpClient() {
+        HttpClientBuilder builder = basicHttpClientBuilder();
+        builder = sslHttpClientBuilder(builder);
+        builder = nonRetryingHttpClientBuilder(builder);
         return builder.build();
     }
 }

@@ -45,6 +45,7 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.config.SocketConfig;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.ChunkyManagedHttpClientConnectionFactory;
@@ -188,7 +189,8 @@ public class HttpFileExchange implements FileExchange {
         ArgumentValidator.checkNotNull(url, "URL url");
         
 
-        try (CloseableHttpClient httpClient = getHttpClient()) {
+        try (CloseableHttpClient httpClient = getNonRetryingHttpClient()) {
+            //non-retrying client as the stream cannot be retried
             HttpPut httpPut = new HttpPut(url.toExternalForm());
             InputStreamEntity reqEntity = new LargeChunkedInputStreamEntity(in);
             reqEntity.setChunked(true);
@@ -242,18 +244,50 @@ public class HttpFileExchange implements FileExchange {
      * @return The HttpClient for this FileExchange.
      */
     protected CloseableHttpClient getHttpClient() {
+        HttpClientBuilder builder = basicHttpClientBuilder();
+        return builder.build();
+    }
+    
+    /**
+     * Retrieves the HttpClient with the correct setup. The client will NOT retry failed connections.
+     * For HTTPS this should be overridden with SSL context.
+     * @return The HttpClient for this FileExchange.
+     */
+    protected CloseableHttpClient getNonRetryingHttpClient() {
+        HttpClientBuilder builder = basicHttpClientBuilder();
+        builder = nonRetryingHttpClientBuilder(builder);
+        return builder.build();
+    }
+    
+    /**
+     * @return a fresh HttpClientBuilder with the HTTP_CHUNK_SIZE and HTTP_BUFFER_SIZE configured
+     */
+    protected HttpClientBuilder basicHttpClientBuilder(){
+        //protected as the subclass HttpsFileExchange uses this method also
         HttpClientBuilder builder = HttpClients.custom();
         PoolingHttpClientConnectionManager poolingmgr = new PoolingHttpClientConnectionManager(
                 new ChunkyManagedHttpClientConnectionFactory(HTTP_CHUNK_SIZE));
         SocketConfig socketConfig = SocketConfig.custom()
+                .setSoKeepAlive(true)
                 .setSndBufSize(HTTP_BUFFER_SIZE)
                 .setRcvBufSize(HTTP_BUFFER_SIZE)
                 .build();
         poolingmgr.setDefaultSocketConfig(socketConfig);
         builder.setConnectionManager(poolingmgr);
-        return builder.build();
+        return builder;
     }
 
+    /**
+     * Expands the builder with a non-retrying RetryHandler
+     * @param builder the http client builder
+     * @return a http client builder with a non-retrying RetryHandler set
+     */
+    protected HttpClientBuilder nonRetryingHttpClientBuilder(HttpClientBuilder builder){
+        //protected as the subclass HttpsFileExchange uses this method also
+        return builder.setRetryHandler(new DefaultHttpRequestRetryHandler(0, false));
+        
+    }
+    
     @Override
     public void deleteFile(URL url) throws IOException, URISyntaxException {
         try (CloseableHttpClient httpClient = getHttpClient()) {
