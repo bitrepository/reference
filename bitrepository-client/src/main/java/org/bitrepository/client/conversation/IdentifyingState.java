@@ -5,25 +5,22 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
 package org.bitrepository.client.conversation;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.conversation.selector.ComponentSelector;
@@ -31,10 +28,14 @@ import org.bitrepository.client.conversation.selector.SelectedComponentInfo;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
 import org.bitrepository.common.exceptions.UnableToFinishException;
 
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Handles the general identifying state functionality. For common usage this class handles all messages by using
- * the sub classe defined <code>selector</code>.
- *
+ * the subclass defined <code>selector</code>.
+ * <p>
  * This class also has a default implementation for the <code>handleStateTimeout()</code>, <code>getNextState()</code>
  * and <code>getTimeoutValue()</code> operations.
  * <code>getNextState()</code>
@@ -92,7 +93,8 @@ public abstract class IdentifyingState extends GeneralConversationState {
 
     /**
      * Set the concrete selector from the implementing subclass.
-     * @param customSelector The concrete selector 
+     *
+     * @param customSelector The concrete selector
      */
     protected void setSelector(ComponentSelector customSelector) {
         selector = customSelector;
@@ -107,25 +109,26 @@ public abstract class IdentifyingState extends GeneralConversationState {
     /**
      * Implements the default handling of failure responses. May be overridden by operation specific behavior,
      * idempotent behavior f.ex,.
+     *
      * @param msg The failure response to handle
      * @throws UnableToFinishException When unable to finish
      */
     protected void handleFailureResponse(MessageResponse msg) throws UnableToFinishException {
         getContext().getMonitor().contributorFailed(
-                msg.getResponseInfo().getResponseText(), msg.getFrom(), 
+                msg.getResponseInfo().getResponseText(), msg.getFrom(),
                 msg.getResponseInfo().getResponseCode());
     }
 
     private void generateContributorsSelectedEvent(Collection<SelectedComponentInfo> selectedComponentInfo) {
         List<String> selectedComponentIDs = new LinkedList<>();
-        for (SelectedComponentInfo componentInfo:selectedComponentInfo) {
+        for (SelectedComponentInfo componentInfo : selectedComponentInfo) {
             selectedComponentIDs.add(componentInfo.getID());
         }
         getContext().getMonitor().contributorsSelected(selectedComponentIDs);
     }
 
     /**
-     * @return An indication whether the identification state can finish, eg. can continue to the operation phase.
+     * @return An indication whether the identification state can finish, e.g. can continue to the operation phase.
      * The default implementation is to return true if at least one a contributor has identified.
      * has been selected. May be overridden by concrete classes.
      */
@@ -136,7 +139,8 @@ public abstract class IdentifyingState extends GeneralConversationState {
     /**
      * Can be used by some operation to mark the responding pillar as checksum pillar if this is relevant for the
      * operation. The default implementation is to do nothing
-     * @param msg The message to check if is coming from a checksumpillar
+     *
+     * @param msg The message to be checked if it is coming from a checksumPillar
      */
     protected void checkForChecksumPillar(MessageResponse msg) {
 

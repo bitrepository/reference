@@ -28,13 +28,13 @@ import java.net.URL;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.client.BitrepositoryClient;
+import org.bitrepository.client.BitRepositoryClient;
 import org.bitrepository.client.eventhandler.EventHandler;
 
 /**
  * Interface for the put client.
  */
-public interface PutFileClient extends BitrepositoryClient {
+public interface PutFileClient extends BitRepositoryClient {
     /**
      * Places a copy of the file located at the given url on each of the pillars defined for the indicated collection.
      *

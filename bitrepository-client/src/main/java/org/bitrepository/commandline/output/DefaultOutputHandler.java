@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 public class DefaultOutputHandler implements OutputHandler {
     private final Logger log;
     private boolean verbose = false;
-    
+
     /**
      * @param c The class for whom to handle the output.
      */
@@ -39,7 +39,7 @@ public class DefaultOutputHandler implements OutputHandler {
     public DefaultOutputHandler(Class c) {
         log = LoggerFactory.getLogger(c);
     }
-    
+
     @Override
     public void debug(String debug) {
         log.debug(debug);
@@ -47,7 +47,7 @@ public class DefaultOutputHandler implements OutputHandler {
 
     @Override
     public void startupInfo(String s) {
-        if(verbose) {
+        if (verbose) {
             System.err.println(s);
         }
     }
@@ -57,7 +57,7 @@ public class DefaultOutputHandler implements OutputHandler {
         System.err.println(warning);
         log.warn(warning);
     }
-    
+
     @Override
     public void error(String error, Throwable e) {
         System.err.println(error);
@@ -72,7 +72,7 @@ public class DefaultOutputHandler implements OutputHandler {
 
     @Override
     public void completeEvent(String msg, OperationEvent event) {
-        if(verbose) {
+        if (verbose) {
             System.err.println("Final Result: " + event.getEventType());
         }
         log.info(msg);
@@ -88,7 +88,7 @@ public class DefaultOutputHandler implements OutputHandler {
     public void resultHeader(String header) {
         System.out.println(header);
     }
-    
+
     public void setVerbosity(boolean verbose) {
         this.verbose = verbose;
     }

@@ -26,7 +26,7 @@ package org.bitrepository.access.getchecksums;
 
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.client.BitrepositoryClient;
+import org.bitrepository.client.BitRepositoryClient;
 import org.bitrepository.client.eventhandler.EventHandler;
 
 import java.net.URL;
@@ -34,7 +34,7 @@ import java.net.URL;
 /**
  * Used for retrieving checksums for files stored on the collection pillars.
  */
-public interface GetChecksumsClient extends BitrepositoryClient {
+public interface GetChecksumsClient extends BitRepositoryClient {
 
     /**
      * Retrieves the checksums for a set of files.

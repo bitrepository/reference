@@ -57,7 +57,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
     private static FilePart NO_FILE_PART = null;
 
     @Test(groups = {"regressiontest"})
-    public void verifyGetFileClientFromFactory() throws Exception {
+    public void verifyGetFileClientFromFactory() {
         Assert.assertTrue(AccessComponentFactory.getInstance().createGetFileClient(
                 settingsForCUT, securityManager, settingsForTestClient.getComponentID())
                 instanceof ConversationBasedGetFileClient,

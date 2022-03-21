@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -30,7 +30,6 @@ import org.bitrepository.commandline.eventhandler.CompleteEventAwaiter;
 import org.bitrepository.commandline.eventhandler.GetFileEventHandler;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.protocol.http.HttpFileExchange;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -40,9 +39,7 @@ import java.net.URL;
  * Perform the GetFile operation.
  */
 public class GetFileCmd extends CommandLineClient {
-    /** The client for performing the GetFile operation.*/
     private final GetFileClient client;
-    /** The URL for where the file from the GetFile*/
     private URL fileUrl = null;
 
     /**
@@ -63,7 +60,7 @@ public class GetFileCmd extends CommandLineClient {
     /**
      * @param args The command line arguments for defining the operation.
      */
-    protected GetFileCmd(String ... args) {
+    protected GetFileCmd(String... args) {
         super(args);
         client = AccessComponentFactory.getInstance().createGetFileClient(settings, securityManager,
                 getComponentID());
@@ -94,7 +91,7 @@ public class GetFileCmd extends CommandLineClient {
         output.debug("Results of the GetFile operation for the file '"
                 + cmdHandler.getOptionValue(Constants.FILE_ID_ARG) + "'"
                 + ": " + finalEvent);
-        if(finalEvent.getEventType() == OperationEventType.COMPLETE) {
+        if (finalEvent.getEventType() == OperationEventType.COMPLETE) {
             downloadFile();
             output.resultLine(fileArg + " retrieved");
             System.exit(Constants.EXIT_SUCCESS);
@@ -105,6 +102,7 @@ public class GetFileCmd extends CommandLineClient {
 
     /**
      * Initiates the operation and waits for the results.
+     *
      * @return The final event for the results of the operation. Either 'FAILURE' or 'COMPLETE'.
      */
     private OperationEvent performConversation() {
@@ -114,7 +112,7 @@ public class GetFileCmd extends CommandLineClient {
         CompleteEventAwaiter eventHandler = new GetFileEventHandler(settings, output);
         output.debug("Initiating the GetFile conversation.");
 
-        if(cmdHandler.hasOption(Constants.PILLAR_ARG)) {
+        if (cmdHandler.hasOption(Constants.PILLAR_ARG)) {
             String pillarID = cmdHandler.getOptionValue(Constants.PILLAR_ARG);
             client.getFileFromSpecificPillar(getCollectionID(), fileID, null, fileUrl, pillarID, eventHandler, null);
         } else {
@@ -130,9 +128,9 @@ public class GetFileCmd extends CommandLineClient {
     private void downloadFile() {
         output.debug("Downloading the file.");
         File outputFile;
-        if(cmdHandler.hasOption(Constants.LOCATION)) {
+        if (cmdHandler.hasOption(Constants.LOCATION)) {
             File location = new File(cmdHandler.getOptionValue(Constants.LOCATION));
-            if(location.isDirectory()) {
+            if (location.isDirectory()) {
                 outputFile = new File(location, cmdHandler.getOptionValue(Constants.FILE_ID_ARG));
             } else {
                 outputFile = location;
@@ -146,6 +144,7 @@ public class GetFileCmd extends CommandLineClient {
 
     /**
      * Extracts the URL for where the file should be delivered from the GetFile operation.
+     *
      * @param fileID The id of the file.
      * @return The URL where the file should be located.
      */

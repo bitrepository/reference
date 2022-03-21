@@ -172,7 +172,6 @@ public class PutFileCmd extends CommandLineClient {
         return finalEvent;
     }
 
-
     /**
      * Retrieves the Checksum of the file, used by the pillars to validate.
      * This checksum is either taken from the actual file, or from the checksum argument.

@@ -32,7 +32,7 @@ import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.exceptions.NegativeResponseException;
 
 /**
- * Wrappes a <code>PutFileClient</code> to provide a blocking client. The client will block until the PutFileOperation
+ * Wraps a <code>PutFileClient</code> to provide a blocking client. The client will block until the PutFileOperation
  * has finished.
  */
 public class BlockingAuditTrailClient {
@@ -58,6 +58,11 @@ public class BlockingAuditTrailClient {
             throws NegativeResponseException {
         BlockingEventHandler blocker = new BlockingEventHandler(eventHandler);
         client.getAuditTrails(collectionID, componentQueries, fileID, urlForResult, blocker, auditTrailInformation);
-        return getContributorEvents(blocker);
+        OperationEvent finishEvent = blocker.awaitFinished();
+        if(finishEvent.getEventType().equals(OperationEvent.OperationEventType.COMPLETE)) {
+            return blocker.getResults();
+        } else if (finishEvent.getEventType().equals(OperationEvent.OperationEventType.FAILED)) {
+            throw new NegativeResponseException(finishEvent.getInfo(), null);
+        } else throw new RuntimeException("Received unexpected event type" + finishEvent);
     }
 }

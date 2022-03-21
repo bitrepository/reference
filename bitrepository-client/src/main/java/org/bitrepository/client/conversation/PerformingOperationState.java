@@ -113,7 +113,7 @@ public abstract class PerformingOperationState extends GeneralConversationState 
     }
 
     /**
-     * Implements the default handling of failure responses which is is to do nothing
+     * Implements the default handling of failure responses which is to do nothing
      * (besides being registered in the event monitor, which is handled by the parent class).
      *
      * @param msg The failure message to handle

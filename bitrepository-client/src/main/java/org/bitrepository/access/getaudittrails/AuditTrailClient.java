@@ -24,10 +24,10 @@
  */
 package org.bitrepository.access.getaudittrails;
 
-import org.bitrepository.client.BitrepositoryClient;
+import org.bitrepository.client.BitRepositoryClient;
 import org.bitrepository.client.eventhandler.EventHandler;
 
-public interface AuditTrailClient extends BitrepositoryClient {
+public interface AuditTrailClient extends BitRepositoryClient {
     /**
      * @param collectionID          The collection to request auditTrails for.
      * @param componentQueries      Defines which components to retrieve auditTrail from. Also defines a filter which

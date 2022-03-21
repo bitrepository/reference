@@ -1,23 +1,23 @@
 /*
  * #%L
  * Bitrepository Protocol
- * 
+ *
  * $Id$
  * $HeadURL$
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -32,22 +32,23 @@ import org.bitrepository.bitrepositoryelements.ResponseCode;
  */
 @SuppressWarnings("serial")
 public class NegativeResponseException extends Exception {
-    private final ResponseCode errorcode;
+    private final ResponseCode errorCode;
 
     /**
      * Constructor with both message and cause exception
-     * @param message Human readable description of this exception
-     * @param errorcode The errorcode causing the exception.
+     *
+     * @param message   Description of this exception in
+     * @param errorCode The error code causing the exception.
      */
-    public NegativeResponseException(String message, ResponseCode errorcode) {
+    public NegativeResponseException(String message, ResponseCode errorCode) {
         super(message);
-        this.errorcode = errorcode;
+        this.errorCode = errorCode;
     }
 
     /**
-     * @return The errorcode causing the exception.
+     * @return The error code causing the exception.
      */
-    public ResponseCode getErrorcode() {
-        return errorcode;
-    }  
+    public ResponseCode getErrorCode() {
+        return errorCode;
+    }
 }

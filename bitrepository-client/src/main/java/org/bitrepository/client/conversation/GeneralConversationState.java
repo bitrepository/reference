@@ -70,7 +70,7 @@ public abstract class GeneralConversationState implements ConversationState {
      */
     public void start() {
         try {
-            if (!responseStatus.getOutstandComponents().isEmpty()) {
+            if (!responseStatus.getOutstandingComponents().isEmpty()) {
                 if (getTimeoutValue() > 0) {
                     scheduledTimeout = timer.schedule(new TimeoutHandler(), getTimeoutValue(), TimeUnit.MILLISECONDS);
                 }
@@ -176,7 +176,7 @@ public abstract class GeneralConversationState implements ConversationState {
      * @return the list of components where a identify response hasn't been received.
      */
     protected Collection<String> getOutstandingComponents() {
-        return responseStatus.getOutstandComponents();
+        return responseStatus.getOutstandingComponents();
     }
 
     /** Must be implemented by subclasses to log informative timeout information

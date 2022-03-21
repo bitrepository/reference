@@ -39,9 +39,9 @@ import java.util.Collection;
 
 /**
  * Models the behavior of a GetFileIDs conversation during the operation phase. That is, it begins with the
- * sending of <code>GetFileIDsRequest</code> messages and finishes with on the reception of the
- * <code>GetFileIDsFinalResponse</code> messages from the responding pillars.
- * <p>
+ * sending of {@link GetFileIDsRequest} messages and finishes with on the reception of the
+ * {@link GetFileIDsFinalResponse} messages from the responding pillars.
+ * <p/>
  * Note that this is only used by the GetFileIDsConversation in the same package, therefore the visibility is package
  * protected.
  */

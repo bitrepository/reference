@@ -8,12 +8,12 @@
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
@@ -26,14 +26,15 @@ import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.common.settings.Settings;
 
 /**
- * Complete event awaiter for Getfile.
- * Nothing to add. 
+ * Complete event awaiter for GetFile.
+ * Nothing to add.
  */
 public class GetFileEventHandler extends CompleteEventAwaiter {
 
     /**
      * Constructor.
-     * @param settings The {@link Settings} 
+     *
+     * @param settings      The {@link Settings}
      * @param outputHandler The {@link OutputHandler} for handling output
      */
     public GetFileEventHandler(Settings settings, OutputHandler outputHandler) {
@@ -41,5 +42,5 @@ public class GetFileEventHandler extends CompleteEventAwaiter {
     }
 
     @Override
-    public void handleComponentComplete(OperationEvent event) { }
+    public void handleComponentComplete(OperationEvent event) {}
 }

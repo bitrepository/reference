@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -35,7 +35,9 @@ import org.bitrepository.modify.deletefile.DeleteFileClient;
  * Deleting a file from the collection.
  */
 public class DeleteFileCmd extends CommandLineClient {
-    /** The client for performing the DeleteFile operation.*/
+    /**
+     * The client for performing the DeleteFile operation.
+     */
     private final DeleteFileClient client;
 
     /**
@@ -56,7 +58,7 @@ public class DeleteFileCmd extends CommandLineClient {
     /**
      * @param args The command line arguments for defining the operation.
      */
-    protected DeleteFileCmd(String ... args) {
+    protected DeleteFileCmd(String... args) {
         super(args);
         client = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(settings, securityManager,
                 getComponentID());
@@ -88,7 +90,7 @@ public class DeleteFileCmd extends CommandLineClient {
 
     protected void validateArguments() {
         super.validateArguments();
-        if(!cmdHandler.hasOption(Constants.PILLAR_ARG)) {
+        if (!cmdHandler.hasOption(Constants.PILLAR_ARG)) {
             throw new IllegalArgumentException("The pillar argument -p must defined for the delete operation, " +
                     "only single pillar deletes are allowed");
         }
@@ -108,7 +110,7 @@ public class DeleteFileCmd extends CommandLineClient {
         output.completeEvent("Results of the DeleteFile operation for the file '"
                 + cmdHandler.getOptionValue(Constants.FILE_ID_ARG) + "'"
                 + ": ", finalEvent);
-        if(finalEvent.getEventType() == OperationEventType.COMPLETE) {
+        if (finalEvent.getEventType() == OperationEventType.COMPLETE) {
             System.exit(Constants.EXIT_SUCCESS);
         } else {
             System.exit(Constants.EXIT_OPERATION_FAILURE);
@@ -117,6 +119,7 @@ public class DeleteFileCmd extends CommandLineClient {
 
     /**
      * Initiates the operation and waits for the results.
+     *
      * @return The final event for the results of the operation. Either 'FAILURE' or 'COMPLETE'.
      */
     private OperationEvent deleteTheFile() {
