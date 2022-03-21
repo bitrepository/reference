@@ -1,23 +1,23 @@
 /*
  * #%L
  * Bitrepository Access
- * 
+ *
  * $Id$
  * $HeadURL$
  * %%
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -35,34 +35,35 @@ public class AuditTrailQuery extends ContributorQuery {
 
     /**
      * Queries for all Audit Trails with sequence number between minSequenceNumber and maxSequenceNumber.
-     * @param componentID The ID of the component to query.
-     * @param minSequenceNumber Only return audit trail event with sequence number higher than <code>minSequenceNumber</code>.
-     * @param maxSequenceNumber Only return audit trail event with sequence number lower than <code>maxSequenceNumber</code>.
+     *
+     * @param componentID        The ID of the component to query.
+     * @param minSequenceNumber  Only return audit trail event with sequence number higher than <code>minSequenceNumber</code>.
+     * @param maxSequenceNumber  Only return audit trail event with sequence number lower than <code>maxSequenceNumber</code>.
      * @param maxNumberOfResults If set will limit the number of results returned. If the result set is limited, only
-     * the lowest sequence numbers are returned
+     *                           the lowest sequence numbers are returned
      */
     public AuditTrailQuery(String componentID, Long minSequenceNumber, Long maxSequenceNumber,
                            Integer maxNumberOfResults) {
-        super(componentID, null, null, maxNumberOfResults );
+        super(componentID, null, null, maxNumberOfResults);
         if (minSequenceNumber != null && maxSequenceNumber != null && minSequenceNumber > maxSequenceNumber)
             throw new IllegalArgumentException(
-                "minSequenceNumber=" + minSequenceNumber + " can not be greater than " +
-                "maxSequenceNumber=" + maxSequenceNumber);
+                    "minSequenceNumber=" + minSequenceNumber + " can not be greater than " +
+                            "maxSequenceNumber=" + maxSequenceNumber);
         this.minSequenceNumber = minSequenceNumber;
         this.maxSequenceNumber = maxSequenceNumber;
     }
 
     /**
-     * @see AuditTrailQuery#AuditTrailQuery(String, Long, Long, Integer)
      * @return the minimum sequence number
+     * @see AuditTrailQuery#AuditTrailQuery(String, Long, Long, Integer)
      */
     public Long getMinSequenceNumber() {
         return minSequenceNumber;
     }
 
     /**
-     * @see AuditTrailQuery#AuditTrailQuery(String, Long, Long, Integer)
      * @return the maximum sequence number
+     * @see AuditTrailQuery#AuditTrailQuery(String, Long, Long, Integer)
      */
     public Long getMaxSequenceNumber() {
         return maxSequenceNumber;
@@ -71,8 +72,8 @@ public class AuditTrailQuery extends ContributorQuery {
     @Override
     public String toString() {
         return super.toString() +
-            "minSequenceNumber=" + minSequenceNumber +
-            ", maxSequenceNumber=" + maxSequenceNumber +
-            '}';
+                "minSequenceNumber=" + minSequenceNumber +
+                ", maxSequenceNumber=" + maxSequenceNumber +
+                '}';
     }
 }

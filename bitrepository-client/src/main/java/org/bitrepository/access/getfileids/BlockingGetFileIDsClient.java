@@ -64,11 +64,6 @@ public class BlockingGetFileIDsClient {
             throws NegativeResponseException {
         BlockingEventHandler blocker = new BlockingEventHandler(eventHandler);
         client.getFileIDs(collectionID, contributorQueries, fileID, addressForResult, blocker);
-        OperationEvent finishEvent = blocker.awaitFinished();
-        if(finishEvent.getEventType().equals(OperationEvent.OperationEventType.COMPLETE)) {
-            return blocker.getResults();
-        } else if (finishEvent.getEventType().equals(OperationEvent.OperationEventType.FAILED)) {
-            throw new NegativeResponseException(finishEvent.getInfo(), null);
-        } else throw new RuntimeException("Received unexpected event type" + finishEvent);
+        return getContributorEvents(blocker);
     }
 }

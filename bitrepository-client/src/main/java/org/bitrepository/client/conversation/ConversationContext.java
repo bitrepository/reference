@@ -5,30 +5,31 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
 package org.bitrepository.client.conversation;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.CorrelationIDGenerator;
 import org.bitrepository.protocol.OperationType;
 import org.bitrepository.protocol.messagebus.MessageSender;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Encapsulates the shared state for a conversation.
@@ -49,26 +50,20 @@ public class ConversationContext {
     /**
      * Encapsulates the common state maintained in a conversation. Will typically be subclasses to provide
      * operation specific attributes.
-     * @param collectionID The collectionID to use perform the conversation for.
-     * @param operationType Used for logging purposes.
-     * @param settings The settings to use in this conversation context.
-     * @param messageSender The messageSender to use in this conversation context.
-     * @param clientID The clientID to use in this conversation context.
-     * @param fileID Optional fileID to use in this conversation context.
-     * @param contributors The contributors to use in this conversation context.
-     * @param eventHandler The eventHandler to use in this conversation context.
+     *
+     * @param collectionID          The collectionID to use perform the conversation for.
+     * @param operationType         Used for logging purposes.
+     * @param settings              The settings to use in this conversation context.
+     * @param messageSender         The messageSender to use in this conversation context.
+     * @param clientID              The clientID to use in this conversation context.
+     * @param fileID                Optional fileID to use in this conversation context.
+     * @param contributors          The contributors to use in this conversation context.
+     * @param eventHandler          The eventHandler to use in this conversation context.
      * @param auditTrailInformation the audit trail information
      */
-    public ConversationContext(
-            String collectionID,
-            OperationType operationType,
-            Settings settings,
-            MessageSender messageSender,
-            String clientID,
-            String fileID,
-            Collection<String> contributors,
-            EventHandler eventHandler,
-            String auditTrailInformation) {
+    public ConversationContext(String collectionID, OperationType operationType, Settings settings, MessageSender messageSender,
+                               String clientID, String fileID, Collection<String> contributors, EventHandler eventHandler,
+                               String auditTrailInformation) {
         this.collectionID = collectionID;
         this.settings = settings;
         this.messageSender = messageSender;
@@ -130,6 +125,7 @@ public class ConversationContext {
 
     /**
      * Use to register checksum pillars.
+     *
      * @param pillarID The pillarID of the Checksum pillar.
      */
     public void addChecksumPillar(String pillarID) {
@@ -138,16 +134,9 @@ public class ConversationContext {
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName()+"{" +
-               "collectionID='" + collectionID + '\'' +
-               ", conversationID='" + conversationID + '\'' +
-               ", clientID='" + clientID + '\'' +
-               ", fileID='" + fileID + '\'' +
-               ", contributors=" + contributors +
-               ", monitor=" + monitor +
-               ", auditTrailInformation='" + auditTrailInformation + '\'' +
-               ", state=" + state +
-               ", checksumPillars=" + checksumPillars +
-               '}';
+        return this.getClass().getSimpleName() + "{" + "collectionID='" + collectionID + '\'' + ", conversationID='" + conversationID +
+                '\'' + ", clientID='" + clientID + '\'' + ", fileID='" + fileID + '\'' + ", contributors=" + contributors + ", monitor=" +
+                monitor + ", auditTrailInformation='" + auditTrailInformation + '\'' + ", state=" + state + ", checksumPillars=" +
+                checksumPillars + '}';
     }
 }

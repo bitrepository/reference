@@ -33,6 +33,8 @@ import org.bitrepository.commandline.eventhandler.ReplaceFileEventHandler;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.replacefile.ReplaceFileClient;
 
+import static org.bitrepository.commandline.Constants.*;
+
 /**
  * Replace a file from the collection.
  * 
@@ -49,10 +51,10 @@ public class ReplaceFileCmd extends CommandLineClient {
             ReplaceFileCmd client = new ReplaceFileCmd(args);
             client.runCommand();
         } catch (IllegalArgumentException iae) {
-            System.exit(Constants.EXIT_ARGUMENT_FAILURE);
+            System.exit(EXIT_ARGUMENT_FAILURE);
         } catch (Exception e) {
             e.printStackTrace();
-            System.exit(Constants.EXIT_OPERATION_FAILURE);
+            System.exit(EXIT_OPERATION_FAILURE);
         }
     }
 
@@ -74,36 +76,36 @@ public class ReplaceFileCmd extends CommandLineClient {
     protected void createOptionsForCmdArgumentHandler() {
         super.createOptionsForCmdArgumentHandler();
 
-        Option checksumOption = new Option(Constants.CHECKSUM_ARG, Constants.HAS_ARGUMENT,
+        Option checksumOption = new Option(CHECKSUM_ARG, HAS_ARGUMENT,
                 "[OPTIONAL] The checksum of the file to be replaced.");
-        checksumOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
+        checksumOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumOption);
-        Option fileOption = new Option(Constants.FILE_ARG, Constants.HAS_ARGUMENT,
+        Option fileOption = new Option(FILE_ARG, HAS_ARGUMENT,
                 "The path to the new file for the replacement. Required unless using the URL argument.");
-        fileOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
+        fileOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(fileOption);
-        Option urlOption = new Option(Constants.URL_ARG, Constants.HAS_ARGUMENT, 
+        Option urlOption = new Option(URL_ARG, HAS_ARGUMENT,
                 "The URL for the file to be retreived. Is required, unless the actual file is given.");
-        urlOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
+        urlOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(urlOption);
-        Option replaceChecksumOption = new Option(Constants.REPLACE_CHECKSUM_ARG, Constants.HAS_ARGUMENT, 
+        Option replaceChecksumOption = new Option(REPLACE_CHECKSUM_ARG, HAS_ARGUMENT,
                 "The checksum for the file to replace with. Required when using the URL argument.");
-        replaceChecksumOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
+        replaceChecksumOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(replaceChecksumOption);
 
-        Option checksumTypeOption = new Option(Constants.REQUEST_CHECKSUM_TYPE_ARG, Constants.HAS_ARGUMENT,
+        Option checksumTypeOption = new Option(REQUEST_CHECKSUM_TYPE_ARG, HAS_ARGUMENT,
                 "[OPTIONAL] The algorithm of checksum to request in the response from the pillars.");
-        checksumTypeOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
+        checksumTypeOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumTypeOption);
-        Option checksumSaltOption = new Option(Constants.REQUEST_CHECKSUM_SALT_ARG, Constants.HAS_ARGUMENT,
+        Option checksumSaltOption = new Option(REQUEST_CHECKSUM_SALT_ARG, HAS_ARGUMENT,
                 "[OPTIONAL] The salt of checksum to request in the response. Requires the ChecksumType argument.");
-        checksumSaltOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
+        checksumSaltOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumSaltOption);
 
-        Option deleteOption = new Option(Constants.DELETE_FILE_ARG, Constants.NO_ARGUMENT, 
+        Option deleteOption = new Option(DELETE_FILE_ARG, NO_ARGUMENT,
                 "If this argument is present, then the file will be removed from the server, "
                         + "when the operation is complete.");
-        deleteOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
+        deleteOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(deleteOption);
     }
 
@@ -119,27 +121,27 @@ public class ReplaceFileCmd extends CommandLineClient {
     @Override
     protected void validateArguments() {
         super.validateArguments();
-        if(!cmdHandler.hasOption(Constants.PILLAR_ARG)) {
+        if(!cmdHandler.hasOption(PILLAR_ARG)) {
             throw new IllegalArgumentException("The pillar argument (-p) must defined for the Replace operation, " +
                     "only single pillar Replaces are allowed");
         }
-        if (!cmdHandler.hasOption(Constants.CHECKSUM_ARG) &&
+        if (!cmdHandler.hasOption(CHECKSUM_ARG) &&
                 settings.getRepositorySettings().getProtocolSettings().isRequireChecksumForDestructiveRequests()) {
             throw new IllegalArgumentException("Checksum argument (-C) are mandatory for Replace and replace "
                     + "operations as defined in RepositorySettings.");
         }
 
-        if(cmdHandler.hasOption(Constants.FILE_ARG) && cmdHandler.hasOption(Constants.URL_ARG)) {
+        if(cmdHandler.hasOption(FILE_ARG) && cmdHandler.hasOption(URL_ARG)) {
             throw new IllegalArgumentException("Cannot take both a file (-f) and an URL (-u) as argument.");
         }
-        if(!cmdHandler.hasOption(Constants.FILE_ARG) && !cmdHandler.hasOption(Constants.URL_ARG)) {
+        if(!cmdHandler.hasOption(FILE_ARG) && !cmdHandler.hasOption(URL_ARG)) {
             throw new IllegalArgumentException("Requires either the file argument (-f) or the URL argument (-u).");
         }
-        if(cmdHandler.hasOption(Constants.URL_ARG) && !cmdHandler.hasOption(Constants.REPLACE_CHECKSUM_ARG)) {
+        if(cmdHandler.hasOption(URL_ARG) && !cmdHandler.hasOption(REPLACE_CHECKSUM_ARG)) {
             throw new IllegalArgumentException("The URL argument requires also the checksum argument for the file "
                     + "to replace with (-r).");
         }
-        if(cmdHandler.hasOption(Constants.URL_ARG) && !cmdHandler.hasOption(Constants.FILE_ID_ARG)) {
+        if(cmdHandler.hasOption(URL_ARG) && !cmdHandler.hasOption(FILE_ID_ARG)) {
             throw new IllegalArgumentException("The URL argument requires also the argument for the ID of the "
                     + "file (-i).");
         }
@@ -150,12 +152,12 @@ public class ReplaceFileCmd extends CommandLineClient {
         output.debug("Performing the ReplaceFile operation.");
         OperationEvent finalEvent = replaceTheFile();
         output.completeEvent("Results of the ReplaceFile operation for the file '"
-                + cmdHandler.getOptionValue(Constants.FILE_ID_ARG) + "'"
+                + cmdHandler.getOptionValue(FILE_ID_ARG) + "'"
                 + ": ", finalEvent);
         if(finalEvent.getEventType() == OperationEventType.COMPLETE) {
-            System.exit(Constants.EXIT_SUCCESS);
+            System.exit(EXIT_SUCCESS);
         } else {
-            System.exit(Constants.EXIT_OPERATION_FAILURE);
+            System.exit(EXIT_OPERATION_FAILURE);
         }
     }
 
@@ -173,7 +175,7 @@ public class ReplaceFileCmd extends CommandLineClient {
 
         output.debug("Initiating the ReplaceFile conversation.");
         CompleteEventAwaiter eventHandler = new ReplaceFileEventHandler(settings, output);
-        String pillarID = cmdHandler.getOptionValue(Constants.PILLAR_ARG);
+        String pillarID = cmdHandler.getOptionValue(PILLAR_ARG);
 
         if (requestChecksum != null) {
             output.resultHeader("PillarId results");
@@ -185,7 +187,7 @@ public class ReplaceFileCmd extends CommandLineClient {
 
         OperationEvent finalEvent = eventHandler.getFinish(); 
 
-        if(cmdHandler.hasOption(Constants.DELETE_FILE_ARG)) {
+        if(cmdHandler.hasOption(DELETE_FILE_ARG)) {
             deleteFileAfterwards(url);
         }
 
@@ -200,10 +202,10 @@ public class ReplaceFileCmd extends CommandLineClient {
      * @return The checksum validation type.
      */
     protected ChecksumDataForFileTYPE getValidationChecksum() {
-        if(cmdHandler.hasOption(Constants.FILE_ARG)) {
+        if(cmdHandler.hasOption(FILE_ARG)) {
             return getValidationChecksumDataForFile(findTheFile());            
         } else {
-            return getValidationChecksumDataFromArgument(Constants.REPLACE_CHECKSUM_ARG);
+            return getValidationChecksumDataFromArgument(REPLACE_CHECKSUM_ARG);
         }
     }
 }
