@@ -8,12 +8,12 @@
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
@@ -21,19 +21,20 @@
  */
 package org.bitrepository.common;
 
-import java.util.concurrent.ThreadFactory;
-
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.ThreadFactory;
+
 /**
  * Creates thread for executors enforcing the general bit repository guidelines. These include<ul>
- *     <li>Setting thread priority factory configured value.</li>
- *     <li>Setting the thread name to the indicated prefix + a counter indentifying the number of threads created by
- *     this factory.</li>
- *     <li>Adds a error handler logging to the bit repository logger.</li>
- *     <li>Marks the thread as daemon thread.</li>
- *     </ul>
+ * <li>Setting thread priority factory configured value.</li>
+ * <li>Setting the thread name to the indicated prefix + a counter identifying the number of threads created by
+ * this factory.</li>
+ * <li>Adds a error handler logging to the bit repository logger.</li>
+ * <li>Marks the thread as daemon thread.</li>
+ * </ul>
  */
 public class DefaultThreadFactory implements ThreadFactory {
     private final String prefix;
@@ -54,17 +55,14 @@ public class DefaultThreadFactory implements ThreadFactory {
     }
 
     @Override
-    public synchronized Thread newThread(Runnable r) {
-        Thread newThread = new Thread(r, prefix + "-Thread" +counter);
+    public synchronized Thread newThread(@NotNull Runnable runnable) {
+        Thread newThread = new Thread(runnable, prefix + "-Thread" + counter);
         newThread.setPriority(priority);
         newThread.setDaemon(daemonic);
-        newThread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-            @Override
-            public void uncaughtException(Thread thread, Throwable throwable) {
-                String throwingClass = throwable.getStackTrace()[0].getClassName();
-                Logger logger = LoggerFactory.getLogger(throwingClass);
-                logger.error("UncaughtExceptionHandler caught Exception:", throwable);
-            }
+        newThread.setUncaughtExceptionHandler((thread, throwable) -> {
+            String throwingClass = throwable.getStackTrace()[0].getClassName();
+            Logger logger = LoggerFactory.getLogger(throwingClass);
+            logger.error("UncaughtExceptionHandler caught Exception:", throwable);
         });
         counter++;
         return newThread;

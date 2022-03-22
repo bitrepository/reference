@@ -1,23 +1,23 @@
 /*
  * #%L
  * Bitrepository Modifying Client
- * 
+ *
  * $Id$
  * $HeadURL$
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -32,54 +32,48 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
- * Utility class for calendar issues. 
+ * Utility class for calendar issues.
  */
 public final class CalendarUtils {
-    /** The log.*/
     private static final Logger log = LoggerFactory.getLogger(CalendarUtils.class);
     private TimeZone localTimeZone = TimeZone.getDefault();
-    
-    /**
-     * Private constructor to prevent instantiation of utility class.
-     */
-    private CalendarUtils() { }
-    
+
+    private CalendarUtils() {}
+
     /**
      * Get an instance of CalendarUtils with a non-server default timezone
+     *
      * @param timezone The TimeZone to use
-     * @return The CelandarUtils instance for the non-standard timezone 
+     * @return The CelandarUtils instance for the non-standard timezone
      */
     public static CalendarUtils getInstance(TimeZone timezone) {
         CalendarUtils cu = new CalendarUtils();
         cu.setTimeZone(timezone);
         return cu;
     }
-    
+
     private void setTimeZone(TimeZone timezone) {
         log.info("Using timezone: '{}'", timezone);
         this.localTimeZone = timezone;
     }
-    
-    
+
+
     /**
      * Turns a date into a XMLGregorianCalendar.
+     *
      * @param date The date. If the argument is null, then epoch is returned.
      * @return The XMLGregorianCalendar.
      */
     public static XMLGregorianCalendar getXmlGregorianCalendar(Date date) {
-        if(date == null) {
+        if (date == null) {
             log.debug("Cannot convert the date '" + date + "'. Returning epoch instead.");
             date = new Date(0);
         }
-        
+
         GregorianCalendar gc = new GregorianCalendar(TimeZone.getDefault(), Locale.ROOT);
         try {
             gc.setTime(date);
@@ -91,6 +85,7 @@ public final class CalendarUtils {
 
     /**
      * Method for easier retrieving the current date in XML format.
+     *
      * @param gregorianCalendar the calendar
      * @return The current date in XML format
      */
@@ -104,101 +99,107 @@ public final class CalendarUtils {
 
     /**
      * Method for easier retrieving the current date in XML format.
+     *
      * @return The current date in XML format
      */
     public static XMLGregorianCalendar getNow() {
         return getXmlGregorianCalendar(new Date());
     }
-    
+
     /**
      * Method for easier retrieving the date for Epoch (January 1, 1970 00:00:00.000 GMT).
+     *
      * @return Epoch in XMLGregorianCalendar format.
      */
     public static XMLGregorianCalendar getEpoch() {
         return getXmlGregorianCalendar(new Date(0));
     }
-    
+
     /**
      * Method for easier retrieving the Date for a given time since Epoch in millis.
+     *
      * @param millis The amount of milliseconds since Epoch.
      * @return The date in XMLGregorianCalendar format.
      */
     public static XMLGregorianCalendar getFromMillis(long millis) {
         return getXmlGregorianCalendar(new Date(millis));
     }
-    
+
     /**
      * Method for converting a date from the XML calendar type 'XMLGregorianCalendar' to the default java date.
-     * 
+     *
      * @param xmlCal The XML calendar to convert from.
      * @return The date for the XML calendar converted into the default java date class.
      */
     public static Date convertFromXMLGregorianCalendar(XMLGregorianCalendar xmlCal) {
         ArgumentValidator.checkNotNull(xmlCal, "XMLGregorianCalendar xmlCal");
-        
+
         return xmlCal.toGregorianCalendar().getTime();
     }
-    
+
     /**
      * Create a date object representing the start of the day denoted by dateStr
+     *
      * @param dateStr The string representation of the date, in the form '02/26/2015'
      * @return Date A date object representing the start of the day, or null if the input cannot
-     *         be turned into a date. 
+     * be turned into a date.
      */
     public Date makeStartDateObject(String dateStr) {
         Consumer<Calendar> dateAdjuster = (Calendar calendar) -> {};
-        
+
         Calendar cal = makeCalendarObject(dateStr, dateAdjuster);
-        if(cal == null) {
+        if (cal == null) {
             return null;
         } else {
             return cal.getTime();
         }
     }
-    
+
     /**
      * Create a date object representing the end of the day denoted by dateStr
+     *
      * @param dateStr The string representation of the date, in the form '02/26/2015'
      * @return Date A date object representing the end of the day, or null if the input cannot
-     *         be turned into a date. 
+     * be turned into a date.
      */
     public Date makeEndDateObject(String dateStr) {
-        Consumer<Calendar> dateAdjuster = (Calendar calendar)  -> { 
+        Consumer<Calendar> dateAdjuster = (Calendar calendar) -> {
             calendar.add(Calendar.DAY_OF_MONTH, 1);
-            calendar.add(Calendar.MILLISECOND, -1); 
+            calendar.add(Calendar.MILLISECOND, -1);
         };
-        
+
         Calendar cal = makeCalendarObject(dateStr, dateAdjuster);
-        if(cal == null) {
+        if (cal == null) {
             return null;
         } else {
             return cal.getTime();
         }
-    } 
-    
+    }
+
     /**
-     * Parses the input string and returns a calendar representation of the day in UTC. 
-     * @param dateStr The string representation of the date, in the form '2015/02/26' 
-     * @return Calendar A calendar object representing the start of the date in UTC, 
-     *         or null if the input cannot be parsed.
+     * Parses the input string and returns a calendar representation of the day in UTC.
+     *
+     * @param dateStr The string representation of the date, in the form '2015/02/26'
+     * @return Calendar A calendar object representing the start of the date in UTC,
+     * or null if the input cannot be parsed.
      */
     private Calendar makeCalendarObject(String dateStr, Consumer<Calendar> dateAdjust) {
-        if(dateStr == null || dateStr.trim().isEmpty()) {
+        if (dateStr == null || dateStr.trim().isEmpty()) {
             return null;
         } else {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd", Locale.ROOT);
             sdf.setTimeZone(localTimeZone);
             try {
-                Date basedate = sdf.parse(dateStr);
+                Date baseDate = sdf.parse(dateStr);
                 Calendar time = Calendar.getInstance(localTimeZone, Locale.ROOT);
-                time.setTime(basedate);
+                time.setTime(baseDate);
                 dateAdjust.accept(time);
                 return time;
             } catch (ParseException e) {
                 log.warn("Received something that could not be parsed: '{}'", dateStr, e);
                 return null;
-            } 
+            }
         }
     }
-        
+
 }

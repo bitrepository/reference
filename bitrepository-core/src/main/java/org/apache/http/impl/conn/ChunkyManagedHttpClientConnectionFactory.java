@@ -8,12 +8,12 @@
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
@@ -49,14 +49,14 @@ import java.util.concurrent.atomic.AtomicLong;
  * This is a straight copy of ManagedHttpClientConnectionFactory, but it takes a chunksize param. This allows
  * you to control the size of the http chunks.
  */
-public  class ChunkyManagedHttpClientConnectionFactory extends ManagedHttpClientConnectionFactory {
+public class ChunkyManagedHttpClientConnectionFactory extends ManagedHttpClientConnectionFactory {
 
     private static final AtomicLong COUNTER = new AtomicLong();
     private final int chunkSize;
 
     private final Log log = LogFactory.getLog(DefaultManagedHttpClientConnection.class);
-    private final Log headerlog = LogFactory.getLog("org.apache.http.headers");
-    private final Log wirelog = LogFactory.getLog("org.apache.http.wire");
+    private final Log headerLog = LogFactory.getLog("org.apache.http.headers");
+    private final Log wireLog = LogFactory.getLog("org.apache.http.wire");
 
     private final HttpMessageWriterFactory<HttpRequest> requestWriterFactory;
     private final HttpMessageParserFactory<HttpResponse> responseParserFactory;
@@ -67,32 +67,19 @@ public  class ChunkyManagedHttpClientConnectionFactory extends ManagedHttpClient
     public ChunkyManagedHttpClientConnectionFactory(final HttpMessageWriterFactory<HttpRequest> requestWriterFactory,
                                                     final HttpMessageParserFactory<HttpResponse> responseParserFactory,
                                                     final ContentLengthStrategy incomingContentStrategy,
-                                                    final ContentLengthStrategy outgoingContentStrategy,
-                                                    int chunkSize) {
+                                                    final ContentLengthStrategy outgoingContentStrategy, int chunkSize) {
         super();
         this.chunkSize = chunkSize;
-        this.requestWriterFactory = requestWriterFactory != null ? requestWriterFactory :
-                DefaultHttpRequestWriterFactory.INSTANCE;
-        this.responseParserFactory = responseParserFactory != null ? responseParserFactory :
-                DefaultHttpResponseParserFactory.INSTANCE;
-        this.incomingContentStrategy = incomingContentStrategy != null ? incomingContentStrategy :
-                LaxContentLengthStrategy.INSTANCE;
-        this.outgoingContentStrategy = outgoingContentStrategy != null ? outgoingContentStrategy :
-                StrictContentLengthStrategy.INSTANCE;
+        this.requestWriterFactory = requestWriterFactory != null ? requestWriterFactory : DefaultHttpRequestWriterFactory.INSTANCE;
+        this.responseParserFactory = responseParserFactory != null ? responseParserFactory : DefaultHttpResponseParserFactory.INSTANCE;
+        this.incomingContentStrategy = incomingContentStrategy != null ? incomingContentStrategy : LaxContentLengthStrategy.INSTANCE;
+        this.outgoingContentStrategy = outgoingContentStrategy != null ? outgoingContentStrategy : StrictContentLengthStrategy.INSTANCE;
     }
 
 
-    public ChunkyManagedHttpClientConnectionFactory(
-            final HttpMessageWriterFactory<HttpRequest> requestWriterFactory,
-            final HttpMessageParserFactory<HttpResponse> responseParserFactory,
-            int chunkSize) {
-        this(requestWriterFactory, responseParserFactory, null, null,chunkSize);
-    }
-
-    public ChunkyManagedHttpClientConnectionFactory(
-            final HttpMessageParserFactory<HttpResponse> responseParserFactory,
-            int chunkSize) {
-        this(null, responseParserFactory, chunkSize);
+    public ChunkyManagedHttpClientConnectionFactory(final HttpMessageWriterFactory<HttpRequest> requestWriterFactory,
+                                                    final HttpMessageParserFactory<HttpResponse> responseParserFactory, int chunkSize) {
+        this(requestWriterFactory, responseParserFactory, null, null, chunkSize);
     }
 
     public ChunkyManagedHttpClientConnectionFactory(int chunkSize) {
@@ -101,14 +88,15 @@ public  class ChunkyManagedHttpClientConnectionFactory extends ManagedHttpClient
 
     @Override
     public ManagedHttpClientConnection create(HttpRoute route, ConnectionConfig config) {
-        final ConnectionConfig cconfig = config != null ? config : ConnectionConfig.DEFAULT;
+        final ConnectionConfig connectionConfig = config != null ? config : ConnectionConfig.DEFAULT;
         CharsetDecoder chardecoder = null;
         CharsetEncoder charencoder = null;
-        final Charset charset = cconfig.getCharset();
-        final CodingErrorAction malformedInputAction = cconfig.getMalformedInputAction() != null ?
-                cconfig.getMalformedInputAction() : CodingErrorAction.REPORT;
-        final CodingErrorAction unmappableInputAction = cconfig.getUnmappableInputAction() != null ?
-                cconfig.getUnmappableInputAction() : CodingErrorAction.REPORT;
+        final Charset charset = connectionConfig.getCharset();
+        final CodingErrorAction malformedInputAction =
+                connectionConfig.getMalformedInputAction() != null ? connectionConfig.getMalformedInputAction() : CodingErrorAction.REPORT;
+        final CodingErrorAction unmappableInputAction =
+                connectionConfig.getUnmappableInputAction() != null ? connectionConfig.getUnmappableInputAction() :
+                        CodingErrorAction.REPORT;
         if (charset != null) {
             chardecoder = charset.newDecoder();
             chardecoder.onMalformedInput(malformedInputAction);
@@ -117,40 +105,35 @@ public  class ChunkyManagedHttpClientConnectionFactory extends ManagedHttpClient
             charencoder.onMalformedInput(malformedInputAction);
             charencoder.onUnmappableCharacter(unmappableInputAction);
         }
-        final String id = "http-outgoing-" + Long.toString(COUNTER.getAndIncrement());
-        return new ChunkyLoggingManagedHttpClientConnection(
-                id,
-                log,
-                headerlog,
-                wirelog,
-                cconfig.getBufferSize(),
-                cconfig.getFragmentSizeHint(),
-                chardecoder,
-                charencoder,
-                cconfig.getMessageConstraints(),
+        final String id = "http-outgoing-" + COUNTER.getAndIncrement();
+        return new ChunkyLoggingManagedHttpClientConnection(id, log, headerLog, wireLog, connectionConfig.getBufferSize(),
+                connectionConfig.getFragmentSizeHint(), chardecoder, charencoder, connectionConfig.getMessageConstraints(),
                 incomingContentStrategy,
-                outgoingContentStrategy,
-                requestWriterFactory,
-                responseParserFactory,
-                chunkSize);
+                outgoingContentStrategy, requestWriterFactory, responseParserFactory, chunkSize);
     }
 
     static class ChunkyLoggingManagedHttpClientConnection extends LoggingManagedHttpClientConnection {
         private final int chunkSize;
 
 
-        public ChunkyLoggingManagedHttpClientConnection(String id, Log log, Log headerlog, Log wirelog, int buffersize, int fragmentSizeHint, CharsetDecoder chardecoder, CharsetEncoder charencoder, MessageConstraints constraints, ContentLengthStrategy incomingContentStrategy, ContentLengthStrategy outgoingContentStrategy, HttpMessageWriterFactory<HttpRequest> requestWriterFactory, HttpMessageParserFactory<HttpResponse> responseParserFactory, int chunkSize) {
-            super(id, log, headerlog, wirelog, buffersize, fragmentSizeHint, chardecoder, charencoder, constraints, incomingContentStrategy, outgoingContentStrategy, requestWriterFactory, responseParserFactory);
+        public ChunkyLoggingManagedHttpClientConnection(String id, Log log, Log headerLog, Log wireLog, int bufferSize,
+                                                        int fragmentSizeHint, CharsetDecoder charDecoder, CharsetEncoder charEncoder,
+                                                        MessageConstraints constraints, ContentLengthStrategy incomingContentStrategy,
+                                                        ContentLengthStrategy outgoingContentStrategy,
+                                                        HttpMessageWriterFactory<HttpRequest> requestWriterFactory,
+                                                        HttpMessageParserFactory<HttpResponse> responseParserFactory, int chunkSize) {
+            super(id, log, headerLog, wireLog, bufferSize, fragmentSizeHint, charDecoder, charEncoder, constraints, incomingContentStrategy,
+                    outgoingContentStrategy, requestWriterFactory, responseParserFactory);
             this.chunkSize = chunkSize;
         }
 
 
         @Override
-        protected OutputStream createOutputStream(long len, SessionOutputBuffer outbuffer) {
+        protected OutputStream createOutputStream(long len, SessionOutputBuffer outBuffer) {
             if (len == ContentLengthStrategy.CHUNKED) {
-                return new ChunkedOutputStream(chunkSize, outbuffer);
+                return new ChunkedOutputStream(chunkSize, outBuffer);
             }
-            return super.createOutputStream(len, outbuffer);
+            return super.createOutputStream(len, outBuffer);
         }
     }
 }

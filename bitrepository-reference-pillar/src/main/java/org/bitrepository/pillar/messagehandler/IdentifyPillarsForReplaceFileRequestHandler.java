@@ -81,7 +81,7 @@ public class IdentifyPillarsForReplaceFileRequestHandler
             MessageContext requestContext) throws RequestHandlerException {
         IdentifyPillarsForReplaceFileResponse response = createFinalResponse(request);
 
-        response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
+        response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMilliseconds(
             getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
         
         ResponseInfo irInfo = new ResponseInfo();

@@ -47,7 +47,7 @@ public class FileInfoStub implements FileInfo {
     }
 
     @Override
-    public InputStream getInputstream() throws IOException {
+    public InputStream getInputStream() throws IOException {
         return is;
     }
 

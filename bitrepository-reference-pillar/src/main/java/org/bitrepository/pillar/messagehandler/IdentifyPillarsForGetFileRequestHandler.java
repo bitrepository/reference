@@ -83,7 +83,7 @@ public class IdentifyPillarsForGetFileRequestHandler
     protected void sendPositiveResponse(IdentifyPillarsForGetFileRequest request, MessageContext requestContext) {
         IdentifyPillarsForGetFileResponse response = createFinalResponse(request);
 
-        response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
+        response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMilliseconds(
             getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
         
         ResponseInfo irInfo = new ResponseInfo();

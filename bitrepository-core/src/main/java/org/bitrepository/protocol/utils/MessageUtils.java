@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -29,63 +29,64 @@ import org.bitrepository.bitrepositorymessages.MessageResponse;
  * Utility class for validating message responses.
  */
 public class MessageUtils {
-    /** Private constructor to prevent instantiation of this utility class. */
+    /**
+     * Private constructor to prevent instantiation of this utility class.
+     */
     private MessageUtils() {}
 
     /**
      * Validates whether a response message has a positive identification.
+     *
      * @param response The response message to validate.
      * @return Whether it is positive identified.
      */
-    public static boolean isPositiveIdentifyResponse (MessageResponse response) {
+    public static boolean isPositiveIdentifyResponse(MessageResponse response) {
         ResponseCode responseCode = response.getResponseInfo().getResponseCode();
         return responseCode.equals(ResponseCode.IDENTIFICATION_POSITIVE);
     }
 
     /**
      * Validates whether a response message has a positive progress response.
+     *
      * @param response The response message to validate.
      * @return Whether it is positive progress response.
      */
-    public static boolean isPositiveProgressResponse (MessageResponse response) {
+    public static boolean isPositiveProgressResponse(MessageResponse response) {
         ResponseCode responseCode = response.getResponseInfo().getResponseCode();
-        return responseCode.equals(ResponseCode.IDENTIFICATION_POSITIVE) ||
-               responseCode.equals(ResponseCode.OPERATION_ACCEPTED_PROGRESS) ||
-               responseCode.equals(ResponseCode.OPERATION_PROGRESS);
-    }
-    
-    /**
-     * Validates whether a response message has a identification response.
-     * @param response The response message to validate.
-     * @return Whether it is a identification response.
-     */
-    public static boolean isIdentifyResponse (MessageResponse response) {
-        ResponseCode responseCode = response.getResponseInfo().getResponseCode();
-        return responseCode.equals(ResponseCode.IDENTIFICATION_POSITIVE) ||
-               responseCode.equals(ResponseCode.IDENTIFICATION_NEGATIVE);
+        return responseCode.equals(ResponseCode.IDENTIFICATION_POSITIVE) || responseCode.equals(ResponseCode.OPERATION_ACCEPTED_PROGRESS) ||
+                responseCode.equals(ResponseCode.OPERATION_PROGRESS);
     }
 
     /**
-     * Chechs whether the supplied message is a identify request
+     * Validates whether a response message has an identification response.
+     *
+     * @param response The response message to validate.
+     * @return Whether it is a identification response.
+     */
+    public static boolean isIdentifyResponse(MessageResponse response) {
+        ResponseCode responseCode = response.getResponseInfo().getResponseCode();
+        return responseCode.equals(ResponseCode.IDENTIFICATION_POSITIVE) || responseCode.equals(ResponseCode.IDENTIFICATION_NEGATIVE);
+    }
+
+    /**
+     * Chechs whether the supplied message is an identify request
+     *
      * @param message The request message to check.
      * @return Whether it is a identification request.
      */
-    public static boolean isIdentifyRequest (Message message) {
+    public static boolean isIdentifyRequest(Message message) {
         String simpleName = message.getClass().getSimpleName();
         return simpleName.contains("Identify") && simpleName.contains("Request");
     }
 
     /**
-     * @return  whether the supplied message can be considered a end response for a primitive, eg. ends a serie of
-     * identify or operation responses.
      * @param response the supplied message
+     * @return whether the supplied message can be considered a end response for a primitive, emg. ends a series of
+     * identify or operation responses.
      */
     public static boolean isEndMessageForPrimitive(MessageResponse response) {
         ResponseCode responseCode = response.getResponseInfo().getResponseCode();
-        return  !(
-                responseCode.equals(ResponseCode.OPERATION_PROGRESS) ||
-                responseCode.equals(ResponseCode.OPERATION_ACCEPTED_PROGRESS)
-        );
+        return !(responseCode.equals(ResponseCode.OPERATION_PROGRESS) || responseCode.equals(ResponseCode.OPERATION_ACCEPTED_PROGRESS));
     }
 
     /**
@@ -94,13 +95,12 @@ public class MessageUtils {
      * @see #getShortConversationID(String)
      */
     public static String createMessageIdentifier(Message message) {
-        return message.getClass().getSimpleName() + "(" +
-            getShortConversationID(message.getCorrelationID())+ ")";
+        return message.getClass().getSimpleName() + "(" + getShortConversationID(message.getCorrelationID()) + ")";
     }
 
 
     /**
-     * @param fullConversationID The full conversation ID to create a shortend version for.
+     * @param fullConversationID The full conversation ID to create a short-end version for.
      * @return A shorted conversationID. Only the first part up til the first '-' is used
      * (but at least 4 long).
      */

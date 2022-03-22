@@ -78,7 +78,7 @@ public class IdentifyPillarsForDeleteFileRequestHandler
     protected void sendPositiveResponse(IdentifyPillarsForDeleteFileRequest request, MessageContext messageContext) {
         IdentifyPillarsForDeleteFileResponse response = createFinalResponse(request);
 
-        response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
+        response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMilliseconds(
             getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
         
         ResponseInfo irInfo = new ResponseInfo();

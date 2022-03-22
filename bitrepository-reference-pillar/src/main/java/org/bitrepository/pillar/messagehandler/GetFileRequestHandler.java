@@ -123,7 +123,7 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
         try {
             InputStream is;
             if(message.getFilePart() == null) {
-                is = requestedFile.getInputstream();
+                is = requestedFile.getInputStream();
             } else {
                 is = extractFilePart(requestedFile, message.getFilePart());
             }
@@ -152,7 +152,7 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
         InputStream fis  = null;
         try {
             log.debug("Extracting " + size + " bytes with offset " + offset + " from " + fileInfo.getFileID());
-            fis = fileInfo.getInputstream();
+            fis = fileInfo.getInputStream();
             
             fis.read(new byte[offset]);
             fis.read(partOfFile);

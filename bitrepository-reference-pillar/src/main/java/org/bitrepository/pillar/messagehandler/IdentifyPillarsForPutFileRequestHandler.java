@@ -126,7 +126,7 @@ public class IdentifyPillarsForPutFileRequestHandler
         IdentifyPillarsForPutFileResponse response = createFinalResponse(message);
 
         response.setReplyTo(getSettings().getReceiverDestinationID());
-        response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
+        response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMilliseconds(
             getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
         response.setChecksumDataForExistingFile(getPillarModel().getChecksumDataForFile(message.getFileID(),
                 message.getCollectionID(), ChecksumUtils.getDefault(getSettings())));
@@ -149,7 +149,7 @@ public class IdentifyPillarsForPutFileRequestHandler
 
         // Needs to filled in: AuditTrailInformation, PillarChecksumSpec, ReplyTo, TimeToDeliver
         response.setReplyTo(getSettings().getContributorDestinationID());
-        response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
+        response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMilliseconds(
             getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
         
         ResponseInfo irInfo = new ResponseInfo();

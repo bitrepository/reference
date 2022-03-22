@@ -1,48 +1,28 @@
 /*
  * #%L
  * Bitmagasin integrationstest
- * 
+ *
  * $Id$
  * $HeadURL$
  * %%
  * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
 package org.bitrepository.protocol.activemq;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ThreadFactory;
-import javax.jms.Connection;
-import javax.jms.DeliveryMode;
-import javax.jms.Destination;
-import javax.jms.ExceptionListener;
-import javax.jms.JMSException;
-import javax.jms.MessageConsumer;
-import javax.jms.MessageProducer;
-import javax.jms.Session;
-import javax.jms.TextMessage;
-import javax.jms.Topic;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.util.ByteArrayInputStream;
@@ -58,15 +38,7 @@ import org.bitrepository.protocol.OperationType;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.bitrepository.protocol.messagebus.ReceivedMessageHandler;
-import org.bitrepository.protocol.messagebus.logger.AlarmMessageLogger;
-import org.bitrepository.protocol.messagebus.logger.DeleteFileMessageLogger;
-import org.bitrepository.protocol.messagebus.logger.GetAuditTrailsMessageLogger;
-import org.bitrepository.protocol.messagebus.logger.GetChecksumsMessageLogger;
-import org.bitrepository.protocol.messagebus.logger.GetFileIDsMessageLogger;
-import org.bitrepository.protocol.messagebus.logger.GetFileMessageLogger;
-import org.bitrepository.protocol.messagebus.logger.GetStatusMessageLogger;
-import org.bitrepository.protocol.messagebus.logger.MessageLoggerProvider;
-import org.bitrepository.protocol.messagebus.logger.PutFileMessageLogger;
+import org.bitrepository.protocol.messagebus.logger.*;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.referencesettings.MessageThreadPools;
 import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
@@ -75,6 +47,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
+import javax.jms.*;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.concurrent.ThreadFactory;
+
 /**
  * Contains the basic functionality for connection and communicating with the
  * coordination layer over JMS through active MQ.
@@ -82,27 +59,40 @@ import org.xml.sax.SAXException;
 public class ActiveMQMessageBus implements MessageBus {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    /** The key for storing the message type in a string property in the message headers. */
+    /**
+     * The key for storing the message type in a string property in the message headers.
+     */
     public static final String MESSAGE_TYPE_KEY = "org.bitrepository.messages.type";
-    /** The key for storing the BitRepositoryCollectionID in a string property in the message headers. */
+    /**
+     * The key for storing the BitRepositoryCollectionID in a string property in the message headers.
+     */
     public static final String COLLECTION_ID_KEY = "org.bitrepository.messages.collectionid";
-    /** The key for storing the message type in a string property in the message headers. */
+    /**
+     * The key for storing the message type in a string property in the message headers.
+     */
     public static final String MESSAGE_SIGNATURE_KEY = "org.bitrepository.messages.signature";
     public static final String MESSAGE_TO_KEY = "org.bitrepository.messages.to";
-    /** Default transacted. */
+    /**
+     * Default transacted.
+     */
     public static final boolean TRANSACTED = false;
 
-    /** The variable to separate the parts of the consumer key. */
+    /**
+     * The variable to separate the parts of the consumer key.
+     */
     private static final String CONSUMER_KEY_SEPARATOR = "#";
 
-    /** The session for sending messages. Should not be the same as the consumer session, 
+    /**
+     * The session for sending messages. Should not be the same as the consumer session,
      * as sessions are not thread safe. This also means the session should be used in a synchronized manor.
-     * TODO Switch to use a session pool/producer poll to allow multithreaded message sending, see 
+     * TODO Switch to use a session pool/producer poll to allow multithreaded message sending, see
      * https://sbforge.org/jira/browse/BITMAG-357.
      */
     private final Session producerSession;
 
-    /** The session for receiving messages. */
+    /**
+     * The session for receiving messages.
+     */
     private final Session consumerSession;
     private final String clientID;
 
@@ -112,11 +102,14 @@ public class ActiveMQMessageBus implements MessageBus {
      */
     private final Map<String, MessageConsumer> consumers = Collections
             .synchronizedMap(new HashMap<>());
-    /** Map of destinations, mapping from ID to destination. */
+    /**
+     * Map of destinations, mapping from ID to destination.
+     */
     private final Map<String, Destination> destinations = new HashMap<>();
-    /** The configuration for the connection to the activeMQ. */
+    /**
+     * The configuration for the connection to the activeMQ.
+     */
     private final MessageBusConfiguration configuration;
-    private String schemaLocation = "BitRepositoryMessages.xsd";
     private final JaxbHelper jaxbHelper;
     private final Connection connection;
     private final SecurityManager securityManager;
@@ -124,13 +117,20 @@ public class ActiveMQMessageBus implements MessageBus {
     private final Set<String> componentFilter = new HashSet<>();
     private final Set<String> collectionFilter = new HashSet<>();
 
-    /** The single producer used to send all messages. The destination need to be sent on the messages. */
+    /**
+     * The single producer used to send all messages. The destination need to be sent on the messages.
+     */
     private final MessageProducer producer;
-    /** Takes care of handling the further processing by the listeners in separated thread. */
+    /**
+     * Takes care of handling the further processing by the listeners in separated thread.
+     */
     private final ReceivedMessageHandler receivedMessageHandler;
 
-    /** ThreadFactory for any threads the activeMQ messagebus needs to create*/
-    private static final ThreadFactory threadFactory = new DefaultThreadFactory(ActiveMQMessageListener.class.getSimpleName()+"-", Thread.NORM_PRIORITY , false);
+    /**
+     * ThreadFactory for any threads the activeMQ messageBus needs to create
+     */
+    private static final ThreadFactory threadFactory = new DefaultThreadFactory(ActiveMQMessageListener.class.getSimpleName() + "-",
+            Thread.NORM_PRIORITY, false);
 
 
     /**
@@ -138,7 +138,7 @@ public class ActiveMQMessageBus implements MessageBus {
      * MessageBusConnections. This constructor is for the
      * <code>ProtocolComponentFactory</code> eyes only.
      *
-     * @param settings The settings to use.
+     * @param settings        The settings to use.
      * @param securityManager The security manager to use for message authentication.
      */
     public ActiveMQMessageBus(
@@ -148,6 +148,7 @@ public class ActiveMQMessageBus implements MessageBus {
         log.info("Initializing ActiveMQMessageBus:'" + configuration + "'.");
         this.securityManager = securityManager;
         clientID = settings.getComponentID();
+        String schemaLocation = "BitRepositoryMessages.xsd";
         jaxbHelper = new JaxbHelper("xsd/", schemaLocation);
         ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(configuration.getURL());
         registerCustomMessageLoggers();
@@ -175,8 +176,8 @@ public class ActiveMQMessageBus implements MessageBus {
     }
 
     /**
-     * Start to listen for message on the message bus. This is done in a separate thread to avoid blocking, 
-     * so the main thread can continue without having to wait for the messagebus listening to start.
+     * Start to listen for message on the message bus. This is done in a separate thread to avoid blocking,
+     * so the main thread can continue without having to wait for the messageBus listening to start.
      */
     private void startListeningForMessages() {
         Thread connectionStarter = threadFactory.newThread(() -> {
@@ -196,7 +197,7 @@ public class ActiveMQMessageBus implements MessageBus {
 
     @Override
     public synchronized void addListener(String destinationID, final MessageListener listener, boolean durable) {
-        log.debug("Adding " + (durable?"durable ":"") + "listener '{}' to destination: '{}' on message-bus '{}'.",
+        log.debug("Adding " + (durable ? "durable " : "") + "listener '{}' to destination: '{}' on message-bus '{}'.",
                 listener, destinationID, configuration.getName());
         MessageConsumer consumer = getMessageConsumer(destinationID, listener, durable);
         try {
@@ -213,7 +214,7 @@ public class ActiveMQMessageBus implements MessageBus {
                 "on message-bus '" + configuration + "'.");
         MessageConsumer consumer = getMessageConsumer(destinationID, listener, false);
         try {
-            // We need to set the listener to null to have the removeListerer take effect at once. 
+            // We need to set the listener to null to have the removeListener take effect at once.
             // If this isn't done the listener will continue to receive messages. Do we have a memory leak here? 
             consumer.setMessageListener(null);
             consumer.close();
@@ -245,7 +246,7 @@ public class ActiveMQMessageBus implements MessageBus {
 
     /**
      * Send a message using ActiveMQ.
-     *
+     * <p/>
      * Note that the method is synchronized to avoid multithreaded usage of the providerSession.
      *
      * @param destinationID Name of destination to send message to.
@@ -268,8 +269,8 @@ public class ActiveMQMessageBus implements MessageBus {
             log.trace("The following message is sent to the destination '" + destinationID + "'" + " on message-bus '"
                     + configuration.getName() + "': \n{}", xmlContent);
 
-            javax.jms.Message msg = producerSession.createTextMessage(xmlContent);
-            String stringData = ((TextMessage) msg).getText();
+            TextMessage msg = producerSession.createTextMessage(xmlContent);
+            String stringData = msg.getText();
             String messageSignature = securityManager.signMessage(stringData);
             msg.setStringProperty(MESSAGE_SIGNATURE_KEY, messageSignature);
             msg.setStringProperty(MESSAGE_TYPE_KEY, content.getClass().getSimpleName());
@@ -309,7 +310,7 @@ public class ActiveMQMessageBus implements MessageBus {
             try {
                 if (durable) {
                     if (destination instanceof Topic) {
-                        Topic topic = (Topic)destination;
+                        Topic topic = (Topic) destination;
                         consumer = consumerSession.createDurableSubscriber(topic, clientID);
                     } else {
                         throw new IllegalArgumentException("Can not create durable subscriber on " + destinationID +
@@ -341,7 +342,7 @@ public class ActiveMQMessageBus implements MessageBus {
      * Given a destination ID, retrieve the destination object.
      *
      * @param destinationID ID of the destination.
-     * @param session session
+     * @param session       session
      * @return The object representing that destination. Will always return the same destination object for the same destination ID.
      */
     private Destination getDestination(String destinationID, Session session) {
@@ -379,7 +380,9 @@ public class ActiveMQMessageBus implements MessageBus {
         return destination;
     }
 
-    /** Class for handling the message bus exceptions. */
+    /**
+     * Class for handling the message bus exceptions.
+     */
     private class MessageBusExceptionListener implements ExceptionListener {
         @Override
         public void onException(JMSException arg0) {
@@ -389,16 +392,20 @@ public class ActiveMQMessageBus implements MessageBus {
 
     /**
      * Adapter from Active MQ message listener to message listener.
-     *
+     * <p>
      * This adapts from general Active MQ messages to the types.
      */
     private class ActiveMQMessageListener implements javax.jms.MessageListener {
-        /** The Log. */
-        private Logger log = LoggerFactory.getLogger(getClass());
+        /**
+         * The Log.
+         */
+        private final Logger log = LoggerFactory.getLogger(getClass());
 
-        /** The message listener that receives the messages. */
+        /**
+         * The message listener that receives the messages.
+         */
         private final MessageListener messageListener;
-        
+
         /**
          * Initialise the adapter from ActiveMQ message listener .
          *
@@ -410,7 +417,7 @@ public class ActiveMQMessageBus implements MessageBus {
 
         /**
          * When receiving the message, call the appropriate method on the message listener.
-         *
+         * <p>
          * This method acts as a fault barrier for all exceptions from message
          * reception. They are all logged as warnings, but otherwise ignored.
          *
@@ -424,14 +431,14 @@ public class ActiveMQMessageBus implements MessageBus {
                 String recipientID = jmsMessage.getStringProperty(MESSAGE_TO_KEY);
                 type = jmsMessage.getStringProperty(MESSAGE_TYPE_KEY);
                 if (type.startsWith("Identify") && type.endsWith("Request")) {
-                    if(!componentFilter.isEmpty()) {
+                    if (!componentFilter.isEmpty()) {
                         if (recipientID != null && !componentFilter.contains(recipientID)) {
                             log.trace("Ignoring " + type + " message to other component " + recipientID);
                             return;
                         }
                     }
                     String collectionID = jmsMessage.getStringProperty(COLLECTION_ID_KEY);
-                    if(!collectionFilter.isEmpty()) {
+                    if (!collectionFilter.isEmpty()) {
                         if (collectionID != null && !collectionFilter.contains(collectionID)) {
                             log.trace("Ignoring message to unknown collection " + collectionID);
                             return;
@@ -469,7 +476,7 @@ public class ActiveMQMessageBus implements MessageBus {
         }
     }
 
-    // This should be done on a per module basis, but how?
+    // This should be done on a per-module basis, but how?
     private void registerCustomMessageLoggers() {
         MessageLoggerProvider loggerProvider = MessageLoggerProvider.getInstance();
         loggerProvider.registerLogger(OperationType.GET_FILE, new GetFileMessageLogger());
@@ -480,7 +487,7 @@ public class ActiveMQMessageBus implements MessageBus {
         loggerProvider.registerLogger(OperationType.GET_CHECKSUMS, new GetChecksumsMessageLogger());
         loggerProvider.registerLogger(OperationType.GET_AUDIT_TRAILS, new GetAuditTrailsMessageLogger());
         loggerProvider.registerLogger(OperationType.GET_STATUS, new GetStatusMessageLogger());
-        loggerProvider.registerLogger(Arrays.asList("AlarmMessage"), new AlarmMessageLogger());
+        loggerProvider.registerLogger(List.of("AlarmMessage"), new AlarmMessageLogger());
     }
 
     @Override

@@ -29,7 +29,6 @@ import java.math.BigInteger;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositoryelements.TimeMeasureUnit;
 import org.bitrepository.common.TestValidationUtils;
-import org.bitrepository.common.utils.TimeMeasurementUtils;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -100,7 +99,7 @@ public class TimeMeasurementUtilsTest extends ExtendedTestCase {
         Assert.assertEquals(time.getTimeMeasureValue().longValue(), Long.MAX_VALUE);
         Assert.assertEquals(time.getTimeMeasureUnit(), TimeMeasureUnit.HOURS);
         
-        TimeMeasureTYPE time2 = TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
+        TimeMeasureTYPE time2 = TimeMeasurementUtils.getTimeMeasurementFromMilliseconds(
                 BigInteger.valueOf(Long.MAX_VALUE));
         time2.setTimeMeasureUnit(TimeMeasureUnit.HOURS);
         Assert.assertEquals(TimeMeasurementUtils.compare(time, time2), 0);

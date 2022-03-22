@@ -77,7 +77,7 @@ public class IdentifyPillarsForGetFileIDsRequestHandler
     @Override
     protected void sendPositiveResponse(IdentifyPillarsForGetFileIDsRequest request, MessageContext requestContext) {
         IdentifyPillarsForGetFileIDsResponse response = createFinalResponse(request);
-        response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
+        response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMilliseconds(
             getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
         
         ResponseInfo irInfo = new ResponseInfo();
