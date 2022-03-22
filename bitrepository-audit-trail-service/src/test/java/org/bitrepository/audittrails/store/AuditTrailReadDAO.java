@@ -29,7 +29,7 @@ import static org.bitrepository.audittrails.store.AuditDatabaseConstants.COLLECT
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.COLLECTION_KEY;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.COLLECTION_TABLE;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_TABLE;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_FILEID;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_FILE_ID;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_COLLECTION_KEY;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_ID;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_TABLE;
@@ -56,7 +56,7 @@ public class AuditTrailReadDAO {
     }
     
     public List<String> getFileIDs(String collectionID) {
-        String selectSql = "SELECT " + FILE_FILEID + " FROM " + FILE_TABLE
+        String selectSql = "SELECT " + FILE_FILE_ID + " FROM " + FILE_TABLE
                 + " JOIN " + COLLECTION_TABLE 
                 + " ON " + FILE_TABLE + "." + FILE_COLLECTION_KEY + " = " + COLLECTION_TABLE + "." + COLLECTION_KEY
                 + " WHERE " + COLLECTION_ID + " = ?";

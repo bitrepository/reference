@@ -35,7 +35,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDITTRAIL_TABLE;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDIT_TRAIL_TABLE;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.DATABASE_VERSION_ENTRY;
 import static org.testng.Assert.assertEquals;
 
@@ -76,7 +76,7 @@ public class AuditServiceDatabaseMigrationTest extends ExtendedTestCase {
 
         addStep("Validate setup", "audit table has version 2 and database version 2");
         String extractVersionSql = "SELECT version FROM tableversions WHERE tablename = ?";
-        int auditTableVersionBefore = DatabaseUtils.selectIntValue(connector, extractVersionSql, AUDITTRAIL_TABLE);
+        int auditTableVersionBefore = DatabaseUtils.selectIntValue(connector, extractVersionSql, AUDIT_TRAIL_TABLE);
         assertEquals(auditTableVersionBefore, 2, "Table version before migration");
         int dbTableVersionBefore = DatabaseUtils.selectIntValue(connector, extractVersionSql, DATABASE_VERSION_ENTRY);
         assertEquals(dbTableVersionBefore, 2, "Table version before migration");
@@ -84,7 +84,7 @@ public class AuditServiceDatabaseMigrationTest extends ExtendedTestCase {
         addStep("Perform migration", "audit table version 5 and database-version is 6");
         AuditTrailServiceDatabaseMigrator migrator = new AuditTrailServiceDatabaseMigrator(connector);
         migrator.migrate();
-        int auditTableVersionAfter = DatabaseUtils.selectIntValue(connector, extractVersionSql, AUDITTRAIL_TABLE);
+        int auditTableVersionAfter = DatabaseUtils.selectIntValue(connector, extractVersionSql, AUDIT_TRAIL_TABLE);
         assertEquals(auditTableVersionAfter, 5, "Table version after migration");
         int dbTableVersionAfter = DatabaseUtils.selectIntValue(connector, extractVersionSql, DATABASE_VERSION_ENTRY);
         assertEquals(dbTableVersionAfter, 6, "Table version after migration");
