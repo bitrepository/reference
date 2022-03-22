@@ -27,6 +27,9 @@ package org.bitrepository.common;
 import java.util.Collection;
 
 public final class ArgumentValidator {
+    private ArgumentValidator() {
+    }
+
     /**
      * Check if a String argument is null or the empty string.
      *

@@ -42,6 +42,9 @@ public final class TimeUtils {
     public static final long MS_PER_YEAR = DAYS_PER_YEAR * MS_PER_DAY;
     public final static DateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.ROOT);
 
+    private TimeUtils() {
+    }
+
     /**
      * Convert from milliseconds to seconds.
      *
