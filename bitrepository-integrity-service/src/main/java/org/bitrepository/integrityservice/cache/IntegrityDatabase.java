@@ -5,26 +5,21 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
 package org.bitrepository.integrityservice.cache;
-
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
@@ -36,8 +31,13 @@ import org.bitrepository.integrityservice.statistics.StatisticsCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 public class IntegrityDatabase implements IntegrityModel {
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private final IntegrityDAO store;
 
@@ -61,12 +61,12 @@ public class IntegrityDatabase implements IntegrityModel {
     public Collection<FileInfo> getFileInfos(String fileID, String collectionID) {
         return store.getFileInfosForFile(fileID, collectionID);
     }
-    
+
     @Override
     public void resetFileCollectionProgress(String collectionID) {
         store.resetFileCollectionProgress(collectionID);
     }
-    
+
     @Override
     public void resetChecksumCollectionProgress(String collectionID) {
         store.resetChecksumCollectionProgress(collectionID);
@@ -79,21 +79,21 @@ public class IntegrityDatabase implements IntegrityModel {
 
     @Override
     public IntegrityIssueIterator getFilesOnPillar(String pillarID, long firstIndex,
-            long maxResults, String collectionID) {
+                                                   long maxResults, String collectionID) {
         return store.getAllFileIDsOnPillar(collectionID, pillarID, firstIndex, maxResults);
     }
-    
-    @Override 
-    public IntegrityIssueIterator findFilesWithMissingCopies(String collectionID, int expectedCopies, 
-            Long firstIndex, Long maxResults) {
+
+    @Override
+    public IntegrityIssueIterator findFilesWithMissingCopies(String collectionID, int expectedCopies,
+                                                             Long firstIndex, Long maxResults) {
         return store.findFilesWithMissingCopies(collectionID, expectedCopies, firstIndex, maxResults);
     }
-    
+
     @Override
     public void deleteFileIdEntry(String collectionID, String pillarID, String fileID) {
         store.removeFile(collectionID, pillarID, fileID);
     }
-    
+
     @Override
     public IntegrityIssueIterator findFilesWithMissingChecksum(String collectionID, String pillarID, Date cutoffDate) {
         return store.getFilesWithMissingChecksums(collectionID, pillarID, cutoffDate);
@@ -103,7 +103,7 @@ public class IntegrityDatabase implements IntegrityModel {
     public IntegrityIssueIterator findChecksumsOlderThan(Date date, String pillarID, String collectionID) {
         return store.getFilesWithOutdatedChecksums(collectionID, pillarID, date);
     }
-    
+
     @Override
     public IntegrityIssueIterator findOrphanFiles(String collectionID, String pillarID, Date cutoffDate) {
         return store.getOrphanFilesOnPillar(collectionID, pillarID, cutoffDate);
@@ -155,7 +155,7 @@ public class IntegrityDatabase implements IntegrityModel {
     }
 
     @Override
-    public Date getEarlistFileDate(String collectionID, String fileID) {
+    public Date getEarliestFileDate(String collectionID, String fileID) {
         return store.getEarliestFileDate(collectionID, fileID);
     }
 

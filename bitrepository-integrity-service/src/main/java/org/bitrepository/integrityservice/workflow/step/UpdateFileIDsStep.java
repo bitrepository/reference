@@ -22,12 +22,6 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
@@ -44,57 +38,48 @@ import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.*;
+
 /**
  * The step for collecting of all file ids from all pillars.
  */
 public abstract class UpdateFileIDsStep extends AbstractWorkFlowStep {
-    /** The log.*/
-    private Logger log = LoggerFactory.getLogger(getClass());
-    
-    /** The collector for retrieving the file ids.*/
+    private final Logger log = LoggerFactory.getLogger(getClass());
     private final IntegrityInformationCollector collector;
-    /** The model where the integrity data is stored.*/
     protected final IntegrityModel store;
-    /** The integrity alerter.*/
     private final IntegrityAlerter alerter;
-    /** The timeout for waiting for the results of the GetFileIDs operation.*/
     private final Long timeout;
-    /** The maximum number of results for each conversation.*/
     private final Integer maxNumberOfResultsPerConversation;
-    /** The collectionID */
     protected final String collectionID;
-    /** Continue with checks in case of failure, defaults to false */
     private boolean abortInCaseOfFailure = true;
-    /** Contributors for collecting information */
     private final IntegrityContributors integrityContributors;
-        
+
     /**
-     * Constructor.
      * @param collector The client for collecting the checksums.
-     * @param store The storage for the integrity data.
-     * @param alerter The alerter for sending failures.
-     * @param settings The settings to use.
+     * @param store     The storage for the integrity data.
+     * @param alerter   The alerter for sending failures.
+     * @param settings  The settings to use.
      */
-    public UpdateFileIDsStep(IntegrityInformationCollector collector, IntegrityModel store, IntegrityAlerter alerter,
-            Settings settings, String collectionID, IntegrityContributors integrityContributors) {
+    public UpdateFileIDsStep(IntegrityInformationCollector collector, IntegrityModel store, IntegrityAlerter alerter, Settings settings,
+                             String collectionID, IntegrityContributors integrityContributors) {
         this.collector = collector;
         this.store = store;
         this.alerter = alerter;
         this.collectionID = collectionID;
         this.integrityContributors = integrityContributors;
-        this.timeout = settings.getRepositorySettings().getClientSettings().getIdentificationTimeout().longValue()
-                + settings.getRepositorySettings().getClientSettings().getOperationTimeout().longValue();
+        this.timeout = settings.getRepositorySettings().getClientSettings().getIdentificationTimeout().longValue() +
+                settings.getRepositorySettings().getClientSettings().getOperationTimeout().longValue();
         this.maxNumberOfResultsPerConversation = SettingsUtils.getMaxClientPageSize();
-        if(settings.getReferenceSettings().getIntegrityServiceSettings().isSetAbortOnFailedContributor()) {
+        if (settings.getReferenceSettings().getIntegrityServiceSettings().isSetAbortOnFailedContributor()) {
             abortInCaseOfFailure = settings.getReferenceSettings().getIntegrityServiceSettings().isAbortOnFailedContributor();
         }
     }
-    
+
     /**
-     * Method to implement early/pre-performStep action  
+     * Method to implement early/pre-performStep action
      */
     protected void initialStepAction() {}
-    
+
     @Override
     public synchronized void performStep() throws WorkflowAbortedException {
         initialStepAction();
@@ -103,16 +88,14 @@ public abstract class UpdateFileIDsStep extends AbstractWorkFlowStep {
             Set<String> pillarsToCollectFrom = integrityContributors.getActiveContributors();
             log.debug("Collecting fileIDs from: " + pillarsToCollectFrom);
             while (!pillarsToCollectFrom.isEmpty()) {
-                IntegrityCollectorEventHandler eventHandler 
-                    = new IntegrityCollectorEventHandler(store, timeout, integrityContributors);
+                IntegrityCollectorEventHandler eventHandler = new IntegrityCollectorEventHandler(store, timeout, integrityContributors);
                 ContributorQuery[] queries = getQueries(pillarsToCollectFrom);
-                collector.getFileIDs(collectionID, pillarsToCollectFrom,
-                        "IntegrityService: " + getName(), queries, eventHandler);
-                
+                collector.getFileIDs(collectionID, pillarsToCollectFrom, "IntegrityService: " + getName(), queries, eventHandler);
+
                 OperationEvent event = eventHandler.getFinish();
-                if(event.getEventType() == OperationEventType.FAILED) {
+                if (event.getEventType() == OperationEventType.FAILED) {
                     handleFailureEvent(event);
-                 }
+                }
                 log.debug("Collection of file ids had the final event: " + event);
                 pillarsToCollectFrom = integrityContributors.getActiveContributors();
             }
@@ -120,42 +103,42 @@ public abstract class UpdateFileIDsStep extends AbstractWorkFlowStep {
             log.warn("Interrupted while collecting file ids.", e);
         }
     }
-    
+
     /**
-     * Handle a failure event. This includes checking if any contributors have failed (if not just retry), 
-     * checking to see if the workflow should be aborted, and sending alarms if needed.  
+     * Handle a failure event. This includes checking if any contributors have failed (if not just retry),
+     * checking to see if the workflow should be aborted, and sending alarms if needed.
      */
     private void handleFailureEvent(OperationEvent event) throws WorkflowAbortedException {
-        if(integrityContributors.getFailedContributors().isEmpty()) {
+        if (integrityContributors.getFailedContributors().isEmpty()) {
             log.info("Get failure event, but no contributors marked as failed, retrying");
         } else {
             OperationFailedEvent ofe = (OperationFailedEvent) event;
-            if(abortInCaseOfFailure) {
-                alerter.integrityFailed("Integrity check aborted while getting fileIDs due to failed contributors: " 
-                        + integrityContributors.getFailedContributors(), collectionID);
-                throw new WorkflowAbortedException("Aborting workflow due to failure collecting fileIDs. "
-                        + "Cause: " + ofe.toString());
+            if (abortInCaseOfFailure) {
+                alerter.integrityFailed("Integrity check aborted while getting fileIDs due to failed contributors: " +
+                        integrityContributors.getFailedContributors(), collectionID);
+                throw new WorkflowAbortedException("Aborting workflow due to failure collecting fileIDs. " + "Cause: " + ofe.toString());
             } else {
-                log.info("Failure occured collecting fileIDs, continuing collecting fileIDs. Failure {}", ofe.toString());
-                alerter.integrityFailed("Failure while collecting fileIDs, the check will continue "
-                        + "with the information available. The failed contributors were: " 
-                        + integrityContributors.getFailedContributors(), collectionID);
+                log.info("Failure occurred collecting fileIDs, continuing collecting fileIDs. Failure {}", ofe.toString());
+                alerter.integrityFailed("Failure while collecting fileIDs, the check will continue " +
+                                "with the information available. The failed contributors were: " + integrityContributors.getFailedContributors(),
+                        collectionID);
             }
         }
     }
-    
+
     /**
      * Define the queries for the collection of FileIDs for the given pillars.
+     *
      * @param pillars The pillars to collect from.
      * @return The queries for the pillars for collecting the file ids.
      */
     private ContributorQuery[] getQueries(Collection<String> pillars) {
         List<ContributorQuery> res = new ArrayList<>();
-        for(String pillar : pillars) {
+        for (String pillar : pillars) {
             Date latestFileIDEntry = store.getDateForNewestFileEntryForPillar(pillar, collectionID);
             res.add(new ContributorQuery(pillar, latestFileIDEntry, null, maxNumberOfResultsPerConversation));
         }
-        
+
         return res.toArray(new ContributorQuery[pillars.size()]);
     }
 }

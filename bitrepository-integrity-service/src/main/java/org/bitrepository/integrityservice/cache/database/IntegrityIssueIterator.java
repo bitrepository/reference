@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -31,34 +31,34 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * Class to handle iteration over large set of integrity issues, delivering only IDs 
+ * Class to handle iteration over large set of integrity issues, delivering only IDs
  */
 public class IntegrityIssueIterator implements Closeable {
-    
-    /** The log.*/
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
     private ResultSet issueResultSet = null;
     private Connection conn = null;
     private final PreparedStatement ps;
-    
+
     public IntegrityIssueIterator(PreparedStatement ps) {
         this.ps = ps;
     }
-    
+
     /**
-     * Method to explicitly close the ResultSet in the IntegrityIssueIterator 
+     * Method to explicitly close the ResultSet in the IntegrityIssueIterator
      */
     public void close() {
-        if(issueResultSet != null) {
+        if (issueResultSet != null) {
             try {
                 issueResultSet.close();
-            } catch (SQLException ignored) {}
+            } catch (SQLException ignored) {
+            }
         }
-        
-        if(ps != null) {
+
+        if (ps != null) {
             try {
                 ps.close();
-            } catch (SQLException ignored) {}
+            } catch (SQLException ignored) {
+            }
         }
         try {
             if (conn != null && !conn.isClosed()) {
@@ -66,34 +66,36 @@ public class IntegrityIssueIterator implements Closeable {
                 conn.close();
             }
             conn = null;
-        } catch (SQLException ignored) {}
+        } catch (SQLException ignored) {
+        }
     }
-    
+
     /**
      * Method to return the next AuditTrailEvent in the ResultSet
-     * When no more AuditTrailEvents are available, null is returned and the internal ResultSet closed. 
-     * @return The next AuditTrailEvent available in the ResultSet, or null if no more events are available. 
+     * When no more AuditTrailEvents are available, null is returned and the internal ResultSet closed.
+     *
+     * @return The next AuditTrailEvent available in the ResultSet, or null if no more events are available.
      * @throws IllegalStateException In case of a sql error.
-     * @throws RuntimeException in case the close operation failed
+     * @throws RuntimeException      in case the close operation failed
      */
-    public String getNextIntegrityIssue() throws IllegalStateException, RuntimeException{
+    public String getNextIntegrityIssue() throws IllegalStateException, RuntimeException {
         try {
             String issue = null;
-            if(issueResultSet == null) {
+            if (issueResultSet == null) {
                 conn = ps.getConnection();
                 conn.setAutoCommit(false);
                 ps.setFetchSize(100);
                 long tStart = System.currentTimeMillis();
-                log.debug("Executing query to get issues resultset");
+                log.debug("Executing query to get issues resultSet");
                 issueResultSet = ps.executeQuery();
                 log.debug("Finished executing issues query, it took: " + (System.currentTimeMillis() - tStart) + "ms");
             }
-            if(issueResultSet.next()) {
+            if (issueResultSet.next()) {
                 issue = issueResultSet.getString(1);
             } else {
                 close();
             }
-    
+
             return issue;
         } catch (Exception e) {
             close();
