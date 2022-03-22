@@ -31,12 +31,12 @@ fi
 #Make sure we are in the scripts folder
 cd $(dirname $(perl -e "use Cwd 'abs_path';print abs_path('$0');"))
 #Go back to the quickstart "root dir"
-quickstartdir=$(pwd)
+quickstartDir=$(pwd)
 
-#Find the configration directory
+#Find the configurations directory
 cd conf/
-configdir=$(pwd)
-cd $quickstartdir
+configDir=$(pwd)
+cd $quickstartDir
 
 #Make a directory for log files
 if [ ! -d "logs" ]; then 
@@ -57,7 +57,7 @@ fi
 if [ ! -d "file2pillar" ]; then
 	mkdir file2pillar
 fi
-cd $quickstartdir
+cd $quickstartDir
 
 #Setup configuration files, this includes:
 # - Create symlinks for RepositorySettings files in relevant configuration folders
@@ -70,68 +70,68 @@ do
           mkdir "reportdir"
         fi
         ln -sf ../RepositorySettings.xml .
-        sed -i'' -e s%\<\!--foobarpattern--\>%$quickstartdir/% ReferenceSettings.xml > /dev/null
-        sed -i'' -e s%\$\{user.home\}%$quickstartdir% logback.xml
-        cd $quickstartdir
+        sed -i'' -e s%\<\!--foobarpattern--\>%$quickstartDir/% ReferenceSettings.xml > /dev/null
+        sed -i'' -e s%\$\{user.home\}%$quickstartDir% logback.xml
+        cd $quickstartDir
 done
 
-sed -i'' -e s%eventsfile%$quickstartdir/logs/webclient-events% $configdir/webclient/webclient.properties
+sed -i'' -e s%eventsfile%$quickstartDir/logs/webclient-events% $configDir/webclient/webclient.properties
 
 for file in $(find tomcat-services -iname '*.xml')
 do
-	sed -i'' -e s%\${user.home}%$quickstartdir% $file
+	sed -i'' -e s%\${user.home}%$quickstartDir% $file
 done
 
 echo "Installing pillars"
-refpillartarfile=$(ls bitrepository-reference-pillar*.tar.gz)
-if [ ! -z $refpillartarfile ]; then
-	tar xf $refpillartarfile > /dev/null
-	rm $refpillartarfile
+refPillarTarFile=$(ls bitrepository-reference-pillar*.tar.gz)
+if [ ! -z $refPillarTarFile ]; then
+	tar xf $refPillarTarFile > /dev/null
+	rm $refPillarTarFile
 fi
 
-echo "Installing checksumpillar"
-refpillardistdir=$(ls -t | grep bitrepository-reference-pillar-.* | head -1)
+echo "Installing 'checksumpillar'"
+refPillarDistDir=$(ls -t | grep bitrepository-reference-pillar-.* | head -1)
 if [ ! -d "checksumpillar" ]; then 
 	mkdir "checksumpillar"
-	cp -r $refpillardistdir/lib checksumpillar/.
-	cp -r $refpillardistdir/bin checksumpillar/.
+	cp -r $refPillarDistDir/lib checksumpillar/.
+	cp -r $refPillarDistDir/bin checksumpillar/.
 	ln -s ../conf/checksumpillar checksumpillar/conf
 fi
 
-echo "Installing file1pillar"
+echo "Installing 'file1pillar'"
 if [ ! -d "file1pillar" ]; then
 	mkdir "file1pillar" 
-	cp -r $refpillardistdir/lib file1pillar/.
-	cp -r $refpillardistdir/bin file1pillar/.
+	cp -r $refPillarDistDir/lib file1pillar/.
+	cp -r $refPillarDistDir/bin file1pillar/.
 	ln -s ../conf/file1pillar file1pillar/conf
 fi
 
-echo "Installing file2pillar"
+echo "Installing 'file2pillar'"
 if [ ! -d "file2pillar" ]; then
         mkdir "file2pillar"
-        cp -r $refpillardistdir/lib file2pillar/.
-        cp -r $refpillardistdir/bin file2pillar/.
+        cp -r $refPillarDistDir/lib file2pillar/.
+        cp -r $refPillarDistDir/bin file2pillar/.
         ln -s ../conf/file2pillar file2pillar/conf
 fi
 
-rm -r $refpillardistdir
+rm -r $refPillarDistDir
 
-commandlinetarfile=$(ls bitrepository-client*.tar.gz)
-if [ ! -z $commandlinetarfile ]; then
-        tar xf $commandlinetarfile > /dev/null
-        rm $commandlinetarfile
+commandlineTarFile=$(ls bitrepository-client*.tar.gz)
+if [ ! -z $commandlineTarFile ]; then
+        tar xf $commandlineTarFile > /dev/null
+        rm $commandlineTarFile
 fi
 
-commandlinedistdir=$(ls -t | grep bitrepository-client* | head -1)
+commandlineDistDir=$(ls -t | grep bitrepository-client* | head -1)
 if [ ! -d "commandline" ]; then
-    mv $commandlinedistdir "commandline"
+    mv $commandlineDistDir "commandline"
     cd commandline
     rm -rf conf
     ln -s ../conf/commandline conf
     ln -s conf/logback.xml
 fi
 
-cd $quickstartdir
+cd $quickstartDir
 
 #Fetch, unpack, setup Apache Tomcat server
 echo "Installing tomcat"
@@ -150,13 +150,13 @@ if [ ! -d Catalina ]; then
         cd Catalina
         mkdir localhost
 fi
-cd $quickstartdir
+cd $quickstartDir
 
 for app in bitrepository-webclient.xml bitrepository-alarm-service.xml bitrepository-integrity-service.xml bitrepository-audit-trail-service.xml  bitrepository-monitoring-service.xml ; do
-	ln -sf $quickstartdir/tomcat-services/$app $quickstartdir/tomcat/conf/Catalina/localhost/$app
+	ln -sf $quickstartDir/tomcat-services/$app $quickstartDir/tomcat/conf/Catalina/localhost/$app
 done
 
-${quickstartdir}/quickstart.sh start
+${quickstartDir}/quickstart.sh start
 
 echo "Bit repository GUI can now be accessed at http://localhost:8080/bitrepository-webclient"
 

@@ -2,7 +2,7 @@
 
 ###
 # #%L
-# Bitrepository Reference Pillar
+# BitRepository Reference Pillar
 # %%
 # Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
 # %%

@@ -31,38 +31,38 @@ fi
 #Make sure we are in the scripts folder
 cd $(dirname $(perl -e "use Cwd 'abs_path';print abs_path('$0');"))
 #Go back to the quickstart "root dir"
-quickstartdir=$(pwd)
-export CATALINA_PID="${quickstartdir}/tomcat/pid.tomcat"
+quickstartDir=$(pwd)
+export CATALINA_PID="${quickstartDir}/tomcat/pid.tomcat"
 
 #
 # Function that starts the quickstart components
 #
 do_start() {
     export CATALINA_OPTS="-Xms256m -Xmx1028m"
-    ${quickstartdir}/file1pillar/bin/pillar.sh start
-    ${quickstartdir}/file2pillar/bin/pillar.sh start
-    ${quickstartdir}/checksumpillar/bin/pillar.sh start
-    ${quickstartdir}/tomcat/bin/catalina.sh start
+    ${quickstartDir}/file1pillar/bin/pillar.sh start
+    ${quickstartDir}/file2pillar/bin/pillar.sh start
+    ${quickstartDir}/checksumpillar/bin/pillar.sh start
+    ${quickstartDir}/tomcat/bin/catalina.sh start
 }
 
 #
 # Function that stops the quickstart components
 #
 do_stop() {
-    ${quickstartdir}/tomcat/bin/catalina.sh stop -force
-    ${quickstartdir}/file1pillar/bin/pillar.sh stop
-    ${quickstartdir}/file2pillar/bin/pillar.sh stop
-    ${quickstartdir}/checksumpillar/bin/pillar.sh stop
+    ${quickstartDir}/tomcat/bin/catalina.sh stop -force
+    ${quickstartDir}/file1pillar/bin/pillar.sh stop
+    ${quickstartDir}/file2pillar/bin/pillar.sh stop
+    ${quickstartDir}/checksumpillar/bin/pillar.sh stop
 }
 
 #
 # Function that lists the status of the quickstart components
 #
 do_status() {
-    ${quickstartdir}/file1pillar/bin/pillar.sh status
-    ${quickstartdir}/file2pillar/bin/pillar.sh status
-    ${quickstartdir}/checksumpillar/bin/pillar.sh status
-    ${quickstartdir}/tomcat/bin/catalina.sh status
+    ${quickstartDir}/file1pillar/bin/pillar.sh status
+    ${quickstartDir}/file2pillar/bin/pillar.sh status
+    ${quickstartDir}/checksumpillar/bin/pillar.sh status
+    ${quickstartDir}/tomcat/bin/catalina.sh status
 }
 
 case "$1" in
