@@ -69,7 +69,7 @@ public class MonitorAlerterTest extends IntegrationTest {
         
         addStep("Check the status when a negative entry exists.", 
                 "Should send an alarm and make another call for the GetStatusMap");
-        cs.updateReplys();
+        cs.updateReplies();
         store.statuses.put(componentID, cs);
         alerter.checkStatuses();
         Assert.assertEquals(store.getCallsForGetStatusMap(), 3);

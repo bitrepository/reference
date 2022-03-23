@@ -62,7 +62,7 @@ public class ComponentStatusStore implements StatusStore {
     @Override
     public synchronized void updateReplyCounts() {
         for(String ID : statusMap.keySet()) {
-            statusMap.get(ID).updateReplys();
+            statusMap.get(ID).updateReplies();
         }
     }
     

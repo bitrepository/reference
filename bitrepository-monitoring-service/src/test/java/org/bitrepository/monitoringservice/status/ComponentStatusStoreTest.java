@@ -61,7 +61,7 @@ public class ComponentStatusStoreTest extends ExtendedTestCase {
         Assert.assertNotNull(statuses.get(componentId));
         Assert.assertEquals(statuses.get(componentId).getInfo(), newStatus.getInfo());
         Assert.assertEquals(statuses.get(componentId).getNumberOfMissingReplies(), newStatus.getNumberOfMissingReplies());
-        Assert.assertEquals(statuses.get(componentId).getLastReply(), newStatus.getLastReply());
+        Assert.assertEquals(statuses.get(componentId).getLastReplyDate(), newStatus.getLastReplyDate());
         Assert.assertEquals(statuses.get(componentId).getStatus(), newStatus.getStatus());
 
         addStep("Update the replay counts and validate ", "it should increases the 'number of missing replies' by 1");
@@ -71,7 +71,7 @@ public class ComponentStatusStoreTest extends ExtendedTestCase {
         Assert.assertNotNull(statuses.get(componentId));
         Assert.assertEquals(statuses.get(componentId).getInfo(), newStatus.getInfo());
         Assert.assertEquals(statuses.get(componentId).getNumberOfMissingReplies(), 1);
-        Assert.assertEquals(statuses.get(componentId).getLastReply(), newStatus.getLastReply());
+        Assert.assertEquals(statuses.get(componentId).getLastReplyDate(), newStatus.getLastReplyDate());
         Assert.assertEquals(statuses.get(componentId).getStatus(), newStatus.getStatus());
         
         addStep("Test what happens when an invalid component id attempted to be updated.", "Should not affect content.");
@@ -81,7 +81,7 @@ public class ComponentStatusStoreTest extends ExtendedTestCase {
         Assert.assertNotNull(statuses.get(componentId));
         Assert.assertEquals(statuses.get(componentId).getInfo(), newStatus.getInfo());
         Assert.assertEquals(statuses.get(componentId).getNumberOfMissingReplies(), 1);
-        Assert.assertEquals(statuses.get(componentId).getLastReply(), newStatus.getLastReply());
+        Assert.assertEquals(statuses.get(componentId).getLastReplyDate(), newStatus.getLastReplyDate());
         Assert.assertEquals(statuses.get(componentId).getStatus(), newStatus.getStatus());
         
         addStep("Try giving it a positive status", "Should be inserted into the store.");
@@ -92,7 +92,7 @@ public class ComponentStatusStoreTest extends ExtendedTestCase {
         Assert.assertNotNull(statuses.get(componentId));
         Assert.assertEquals(statuses.get(componentId).getInfo(), resStatus.getStatusInfo().getStatusText());
         Assert.assertEquals(statuses.get(componentId).getNumberOfMissingReplies(), 0);
-        Assert.assertEquals(statuses.get(componentId).getLastReply(), resStatus.getStatusTimestamp());
+        Assert.assertEquals(statuses.get(componentId).getLastReplyDate(), resStatus.getStatusTimestamp());
         Assert.assertEquals(statuses.get(componentId).getStatus().value(), resStatus.getStatusInfo().getStatusCode().name());
     }
     
