@@ -26,25 +26,25 @@ import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 
 /**
- * A DatabaseFactory which can return Derby and Postgres AuditTrailContributerDAO's.
+ * A DatabaseFactory which can return Derby and Postgres AuditTrailContributorDAO's.
  *
  * FIXME: Code does not reflect generic type.
  */
-public class AuditTrailContributerDAOFactory extends DatabaseFactory<AuditTrailContributerDAO> {
+public class AuditTrailContributerDAOFactory extends DatabaseFactory<AuditTrailContributorDAO> {
 
-    public AuditTrailContributerDAO getAuditTrailContributorDAO(DatabaseSpecifics ds, String componentID) {
-        AuditTrailContributerDAO dao = getDAOInstance(ds);
+    public AuditTrailContributorDAO getAuditTrailContributorDAO(DatabaseSpecifics ds, String componentID) {
+        AuditTrailContributorDAO dao = getDAOInstance(ds);
         dao.initialize(componentID);
         return dao;
     }
     
     @Override
-    protected AuditTrailContributerDAO getDerbyDAO(DatabaseManager dm) {
+    protected AuditTrailContributorDAO getDerbyDAO(DatabaseManager dm) {
         return new DerbyAuditTrailContributorDAO(dm);
     }
 
     @Override
-    protected AuditTrailContributerDAO getPostgresDAO(DatabaseManager dm) {
+    protected AuditTrailContributorDAO getPostgresDAO(DatabaseManager dm) {
         return new PostgresAuditTrailContributorDAO(dm);
     }
 
