@@ -3,39 +3,27 @@
  * bitrepository-access-client
  * *
  * $Id: GetFileIDsRequestHandler.java 685 2012-01-06 16:35:17Z jolf $
- * $HeadURL: https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk/bitrepository-reference-pillar/src/main/java/org/bitrepository/pillar/messagehandler/GetFileIDsRequestHandler.java $
+ * $HeadURL: https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk/bitrepository-reference-pillar/src/main/java/org
+ * /bitrepository/pillar/messagehandler/GetFileIDsRequestHandler.java $
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
 package org.bitrepository.pillar.messagehandler;
-
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
-
-import javax.xml.bind.JAXBException;
 
 import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositorydata.GetFileIDsResults;
@@ -59,21 +47,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-/**
- * Class for handling requests for the GetFileIDs operation.
- */
+import javax.xml.bind.JAXBException;
+import java.io.*;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+
 public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRequest> {
-    /** The log.*/
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     /**
      * @param context The context for the message handling.
-     * @param model The storage model for the pillar.
+     * @param model   The storage model for the pillar.
      */
     protected GetFileIDsRequestHandler(MessageHandlerContext context, StorageModel model) {
         super(context, model);
     }
-    
+
     @Override
     public Class<GetFileIDsRequest> getRequestClass() {
         return GetFileIDsRequest.class;
@@ -85,7 +75,7 @@ public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRe
     }
 
     @Override
-    protected void validateRequest(GetFileIDsRequest request, MessageContext requestContext) 
+    protected void validateRequest(GetFileIDsRequest request, MessageContext requestContext)
             throws RequestHandlerException {
         validateCollectionID(request);
         validatePillarId(request.getPillarID());
@@ -100,7 +90,7 @@ public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRe
     @Override
     protected void sendProgressResponse(GetFileIDsRequest request, MessageContext requestContext) {
         GetFileIDsProgressResponse response = createProgressResponse(request);
-        
+
         ResponseInfo prInfo = new ResponseInfo();
         prInfo.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
         prInfo.setResponseText("Starting to locate files.");
@@ -110,13 +100,13 @@ public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRe
     }
 
     @Override
-    protected void performOperation(GetFileIDsRequest request, MessageContext requestContext) 
+    protected void performOperation(GetFileIDsRequest request, MessageContext requestContext)
             throws RequestHandlerException {
-        log.debug(MessageUtils.createMessageIdentifier(request) + " Performing GetFileIDs for file(s) " 
+        log.debug(MessageUtils.createMessageIdentifier(request) + " Performing GetFileIDs for file(s) "
                 + request.getFileIDs() + " on collection " + request.getCollectionID());
         ExtractedFileIDsResultSet extractedFileIDs = retrieveFileIDsData(request);
         ResultingFileIDs results = new ResultingFileIDs();
-        if(request.getResultAddress() == null) {
+        if (request.getResultAddress() == null) {
             results.setFileIDsData(extractedFileIDs.getEntries());
         } else {
             uploadResults(request, extractedFileIDs);
@@ -124,30 +114,30 @@ public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRe
         }
         sendFinalResponse(request, results, extractedFileIDs);
     }
-    
+
     /**
      * Retrieves the requested FileIDs. Depending on which operation is requested, it will call the appropriate method.
-     * 
+     *
      * @param message The requested for extracting the file ids.
      * @return The resulting collection of FileIDs found.
      */
     private ExtractedFileIDsResultSet retrieveFileIDsData(GetFileIDsRequest message) {
         Long maxResults = null;
-        if(message.getMaxNumberOfResults() != null) {
+        if (message.getMaxNumberOfResults() != null) {
             maxResults = message.getMaxNumberOfResults().longValue();
         }
-        return getPillarModel().getFileIDsResultSet(message.getFileIDs().getFileID(), message.getMinTimestamp(), 
+        return getPillarModel().getFileIDsResultSet(message.getFileIDs().getFileID(), message.getMinTimestamp(),
                 message.getMaxTimestamp(), maxResults, message.getCollectionID());
     }
-    
+
     /**
      * Uploads the results to the URL in the request.
-     *  
-     * @param request The request.
+     *
+     * @param request          The request.
      * @param extractedFileIDs The extracted file ids.
-     * @throws RequestHandlerException If the file with the resutls could not be created, or could not be uploaded.
+     * @throws RequestHandlerException If the file with the results could not be created, or could not be uploaded.
      */
-    private void uploadResults(GetFileIDsRequest request,  ExtractedFileIDsResultSet extractedFileIDs) 
+    private void uploadResults(GetFileIDsRequest request, ExtractedFileIDsResultSet extractedFileIDs)
             throws RequestHandlerException {
         String resultingAddress = request.getResultAddress();
         try {
@@ -157,33 +147,31 @@ public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRe
             throw new InvalidMessageException(ResponseCode.FILE_TRANSFER_FAILURE, "Could not deliver results.", e);
         }
     }
-    
+
     /**
      * Method for creating a file containing the resulting list of file ids.
-     * 
+     *
      * @param request The GetFileIDsMessage requesting the checksum calculations.
      * @param fileIDs The file ids to be put into the result file.
      * @return A file containing all the checksums in the list.
-     * @throws IOException If a problem occurs during accessing or handling the data.
+     * @throws IOException   If a problem occurs during accessing or handling the data.
      * @throws JAXBException If the resulting structure cannot be serialized or if it is invalid.
      */
     private File makeTemporaryResultFile(GetFileIDsRequest request, FileIDsData fileIDs)
             throws IOException, JAXBException {
         // Create the temporary file.
         File checksumResultFile = File.createTempFile(request.getCorrelationID(), new Date().getTime() + ".id");
-        log.info("Writing the requested fileids to the file '" + checksumResultFile + "'");
+        log.info("Writing the requested fileIDs to the file '" + checksumResultFile + "'");
 
         // Print all the file ids data safely (close the streams!)
-        OutputStream is = null;
-        try {
-            is = new FileOutputStream(checksumResultFile);
+        try (OutputStream is = new FileOutputStream(checksumResultFile)) {
             GetFileIDsResults result = new GetFileIDsResults();
             result.setCollectionID(request.getCollectionID());
             result.setMinVersion(MIN_VERSION);
             result.setVersion(VERSION);
             result.setPillarID(getSettings().getReferenceSettings().getPillarSettings().getPillarID());
             result.setFileIDsData(fileIDs);
-            
+
             JaxbHelper jaxbHelper = new JaxbHelper(XSD_CLASSPATH, XSD_BR_DATA);
             String file = jaxbHelper.serializeToXml(result);
             try {
@@ -196,21 +184,17 @@ public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRe
             }
             is.write(file.getBytes(StandardCharsets.UTF_8));
             is.flush();
-        } finally {
-            if(is != null) {
-                is.close();
-            }
         }
-        
+
         return checksumResultFile;
     }
-    
+
     /**
      * Method for uploading a file to a given URL.
-     * 
+     *
      * @param fileToUpload The File to upload.
-     * @param url The location where the file should be uploaded.
-     * @throws Exception If something goes wrong.
+     * @param url          The location where the file should be uploaded.
+     * @throws IOException If something goes wrong.
      */
     private void uploadFile(File fileToUpload, String url) throws IOException {
         URL uploadUrl = new URL(url);
@@ -220,18 +204,19 @@ public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRe
             context.getFileExchange().putFile(in, uploadUrl);
         }
     }
-    
+
     /**
      * Send a positive final response telling that the operation has successfully finished.
-     * @param request The request to base the final response upon.
-     * @param results The results to be put into the final response.
+     *
+     * @param request          The request to base the final response upon.
+     * @param results          The results to be put into the final response.
      * @param extractedFileIDs The extracted file ids. Contains whether more results can be found.
      */
-    private void sendFinalResponse(GetFileIDsRequest request, ResultingFileIDs results, 
-            ExtractedFileIDsResultSet extractedFileIDs) {
+    private void sendFinalResponse(GetFileIDsRequest request, ResultingFileIDs results,
+                                   ExtractedFileIDsResultSet extractedFileIDs) {
         GetFileIDsFinalResponse response = createFinalResponse(request);
 
-        if(extractedFileIDs.hasMoreEntries()) {
+        if (extractedFileIDs.hasMoreEntries()) {
             response.setPartialResult(true);
         }
 
@@ -242,12 +227,12 @@ public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRe
 
         getContext().getResponseDispatcher().dispatchResponse(response, request);
     }
-    
+
     /**
      * Create a generic final response message for the GetFileIDs conversation.
      * Missing:
      * <br/> - ProgressResponseInfo
-     * 
+     *
      * @param message The GetFileIDsRequest to base the response upon.
      * @return The GetFileIDsFinalResponse.
      */
@@ -259,13 +244,13 @@ public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRe
 
         return res;
     }
-    
+
     /**
      * Create a generic final response message for the GetFileIDs conversation.
      * Missing:
      * <br/> - FinalResponseInfo
      * <br/> - ResultingFileIDs
-     * 
+     *
      * @param message The GetFileIDsRequest to base the response upon.
      * @return The GetFileIDsFinalResponse.
      */

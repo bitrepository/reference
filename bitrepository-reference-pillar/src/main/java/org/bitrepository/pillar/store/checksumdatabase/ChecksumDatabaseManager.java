@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2013 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -28,17 +28,16 @@ import org.bitrepository.service.database.DatabaseMigrator;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 
 /**
- * Class to manage the connection to the Checksum database used in the reference and checksum pillars. 
+ * Class to manage the connection to the Checksum database used in the reference and checksum pillars.
  */
 public class ChecksumDatabaseManager extends DatabaseManager {
-
     private final Settings settings;
     private DatabaseMigrator migrator = null;
-    
+
     public ChecksumDatabaseManager(Settings settings) {
         this.settings = settings;
     }
-    
+
     @Override
     protected DatabaseSpecifics getDatabaseSpecifics() {
         return settings.getReferenceSettings().getPillarSettings().getChecksumDatabase();
@@ -46,7 +45,7 @@ public class ChecksumDatabaseManager extends DatabaseManager {
 
     @Override
     protected synchronized DatabaseMigrator getMigrator() {
-        if(migrator == null) {
+        if (migrator == null) {
             migrator = new ChecksumDBMigrator(connector, settings);
         }
         return migrator;

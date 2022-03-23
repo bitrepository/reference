@@ -1,42 +1,30 @@
 /*
  * #%L
- * Bitmagasin 
- * 
+ * Bitmagasin
+ *
  * $Id$
  * $HeadURL$
  * %%
  * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
 package org.bitrepository.pillar.store;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.Date;
-import java.util.Map;
-import java.util.concurrent.ConcurrentSkipListMap;
-
-import javax.xml.datatype.XMLGregorianCalendar;
-
-import org.bitrepository.bitrepositoryelements.Alarm;
-import org.bitrepository.bitrepositoryelements.AlarmCode;
-import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.*;
 import org.bitrepository.common.filestore.FileInfo;
 import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.common.settings.Settings;
@@ -56,11 +44,18 @@ import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Date;
+import java.util.Map;
+import java.util.concurrent.ConcurrentSkipListMap;
+
 /**
  * The storage model for a pillar with a file store, where it can store its actual files.
  */
 public class FileStorageModel extends StorageModel {
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     /**
      * @param archives        The file archives.
@@ -70,7 +65,7 @@ public class FileStorageModel extends StorageModel {
      * @param fileExchange    The file exchange.
      */
     public FileStorageModel(FileStore archives, ChecksumStore cache, AlarmDispatcher alarmDispatcher,
-            Settings settings, FileExchange fileExchange) {
+                            Settings settings, FileExchange fileExchange) {
         super(archives, cache, alarmDispatcher, settings, fileExchange);
         log.info("Instantiating the FileStorageModel: " + getPillarID());
     }
@@ -79,7 +74,7 @@ public class FileStorageModel extends StorageModel {
     public void verifyFileToCacheConsistencyOfAllDataIfRequired(
             String collectionID) {
         Boolean verify = settings.getReferenceSettings().getPillarSettings().isVerifyDataConsistencyOnMessage();
-        if(verify != null && verify) {
+        if (verify != null && verify) {
             verifyFileToCacheConsistencyOfAllData(collectionID);
         }
     }
@@ -87,7 +82,7 @@ public class FileStorageModel extends StorageModel {
     @Override
     protected void verifyFileToCacheConsistencyIfRequired(String fileID, String collectionID) {
         Boolean verify = settings.getReferenceSettings().getPillarSettings().isVerifyDataConsistencyOnMessage();
-        if(verify != null && verify) {
+        if (verify != null && verify) {
             recalculateChecksum(fileID, collectionID);
         }
     }
@@ -105,23 +100,23 @@ public class FileStorageModel extends StorageModel {
 
     @Override
     public ExtractedFileIDsResultSet getFileIDsResultSet(String fileID, XMLGregorianCalendar minTimestamp,
-            XMLGregorianCalendar maxTimestamp, Long maxResults, String collectionID) {
+                                                         XMLGregorianCalendar maxTimestamp, Long maxResults, String collectionID) {
         Long minTime = null;
-        if(minTimestamp != null) {
+        if (minTimestamp != null) {
             minTime = CalendarUtils.convertFromXMLGregorianCalendar(minTimestamp).getTime();
         }
         Long maxTime = null;
-        if(maxTimestamp != null) {
+        if (maxTimestamp != null) {
             maxTime = CalendarUtils.convertFromXMLGregorianCalendar(maxTimestamp).getTime();
         }
 
-        if(fileID == null) {
+        if (fileID == null) {
             return getFileIds(minTime, maxTime, maxResults, collectionID);
         }
 
         ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
         FileInfo entry = fileArchive.getFileInfo(fileID, collectionID);
-        if((minTime == null || minTime <= entry.getLastModifiedDate()) &&
+        if ((minTime == null || minTime <= entry.getLastModifiedDate()) &&
                 (maxTime == null || maxTime >= entry.getLastModifiedDate())) {
             res.insertFileInfo(entry);
         }
@@ -131,11 +126,11 @@ public class FileStorageModel extends StorageModel {
 
     @Override
     public void verifyEnoughFreeSpaceLeftForFile(Long fileSize,
-            String collectionID) throws RequestHandlerException {
-        long useableSizeLeft = fileArchive.sizeLeftInArchive(collectionID) 
+                                                 String collectionID) throws RequestHandlerException {
+        long useableSizeLeft = fileArchive.sizeLeftInArchive(collectionID)
                 - settings.getReferenceSettings().getPillarSettings().getMinimumSizeLeft();
 
-        if(useableSizeLeft < fileSize) {
+        if (useableSizeLeft < fileSize) {
             throw new IdentifyContributorException(ResponseCode.FAILURE, "Not enough space left in this pillar. "
                     + "Requires '" + fileSize + "' but has only '" + useableSizeLeft + "'");
         }
@@ -147,8 +142,8 @@ public class FileStorageModel extends StorageModel {
         ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
 
         long i = 0;
-        for(String fileID : cache.getAllFileIDs(collectionID)) {
-            if(maxResults != null && i > maxResults) {
+        for (String fileID : cache.getAllFileIDs(collectionID)) {
+            if (maxResults != null && i > maxResults) {
                 break;
             }
             i++;
@@ -163,8 +158,8 @@ public class FileStorageModel extends StorageModel {
     @Override
     public void verifyFileExists(String fileID, String collectionID)
             throws RequestHandlerException {
-        if(!hasFileID(fileID, collectionID)) {
-            log.warn("The file '" + fileID + "' has been requested, but we do not have that file in collection '" 
+        if (!hasFileID(fileID, collectionID)) {
+            log.warn("The file '" + fileID + "' has been requested, but we do not have that file in collection '"
                     + collectionID + "'!");
             throw new InvalidMessageException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.");
         }
@@ -178,7 +173,7 @@ public class FileStorageModel extends StorageModel {
 
     @Override
     public void putFile(String collectionID, String fileID, String fileAddress,
-            ChecksumDataForFileTYPE expectedChecksum) throws RequestHandlerException {
+                        ChecksumDataForFileTYPE expectedChecksum) throws RequestHandlerException {
         transferFileToTmp(fileID, collectionID, fileAddress);
         verifyFileInTmp(fileID, collectionID, expectedChecksum);
         fileArchive.moveToArchive(fileID, collectionID);
@@ -187,7 +182,7 @@ public class FileStorageModel extends StorageModel {
 
     @Override
     public void replaceFile(String fileID, String collectionID, String fileAddress,
-            ChecksumDataForFileTYPE expectedChecksum) throws RequestHandlerException {
+                            ChecksumDataForFileTYPE expectedChecksum) throws RequestHandlerException {
         transferFileToTmp(fileID, collectionID, fileAddress);
         verifyFileInTmp(fileID, collectionID, expectedChecksum);
         fileArchive.replaceFile(fileID, collectionID);
@@ -196,7 +191,8 @@ public class FileStorageModel extends StorageModel {
 
     /**
      * Recalculates the checksum of a given file based on the default checksum specification.
-     * @param fileID The id of the file to recalculate its default checksum for.
+     *
+     * @param fileID       The id of the file to recalculate its default checksum for.
      * @param collectionID The id of the collection of the file.
      */
     protected void recalculateChecksum(String fileID, String collectionID) {
@@ -208,9 +204,10 @@ public class FileStorageModel extends StorageModel {
 
     /**
      * Calculates the checksum of a file within the tmpDir.
-     * @param fileID The id of the file to calculate the checksum for.
+     *
+     * @param fileID       The id of the file to calculate the checksum for.
      * @param collectionID The id of the collection of the file.
-     * @param csType The specification for the type of checksum to calculate.
+     * @param csType       The specification for the type of checksum to calculate.
      * @return The checksum of the given type for the file with the given id.
      */
     private String getChecksumForTempFile(String fileID, String collectionID, ChecksumSpecTYPE csType) {
@@ -220,21 +217,22 @@ public class FileStorageModel extends StorageModel {
 
     /**
      * TODO this should be in the database instead.
-     * @param minTime The minimum date for the timestamp of the extracted file ids entries.
-     * @param maxTime The maximum date for the timestamp of the extracted file ids entries.
+     *
+     * @param minTime            The minimum date for the timestamp of the extracted file ids entries.
+     * @param maxTime            The maximum date for the timestamp of the extracted file ids entries.
      * @param maxNumberOfResults The maximum number of results.
-     * @param collectionID The id of the collection.
+     * @param collectionID       The id of the collection.
      * @return The requested file ids.
      */
-    private ExtractedFileIDsResultSet getFileIds(Long minTime, Long maxTime, Long maxNumberOfResults, 
-            String collectionID) {
+    private ExtractedFileIDsResultSet getFileIds(Long minTime, Long maxTime, Long maxNumberOfResults,
+                                                 String collectionID) {
         ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
 
         // Map between lastModifiedDate and fileInfo.
         ConcurrentSkipListMap<Long, FileInfo> sortedDateFileIDMap = new ConcurrentSkipListMap<>();
-        for(String fileID : fileArchive.getAllFileIds(collectionID)) {
+        for (String fileID : fileArchive.getAllFileIds(collectionID)) {
             FileInfo fi = fileArchive.getFileInfo(fileID, collectionID);
-            if((minTime == null || minTime <= fi.getLastModifiedDate()) &&
+            if ((minTime == null || minTime <= fi.getLastModifiedDate()) &&
                     (maxTime == null || maxTime >= fi.getLastModifiedDate())) {
                 sortedDateFileIDMap.put(fi.getLastModifiedDate(), fi);
             }
@@ -242,13 +240,13 @@ public class FileStorageModel extends StorageModel {
 
         int i = 0;
         Map.Entry<Long, FileInfo> entry;
-        while((entry = sortedDateFileIDMap.pollFirstEntry()) != null && 
+        while ((entry = sortedDateFileIDMap.pollFirstEntry()) != null &&
                 (maxNumberOfResults == null || i < maxNumberOfResults)) {
             res.insertFileInfo(entry.getValue());
             i++;
         }
 
-        if(maxNumberOfResults != null && i >= maxNumberOfResults) {
+        if (maxNumberOfResults != null && i >= maxNumberOfResults) {
             res.reportMoreEntriesFound();
         }
 
@@ -257,18 +255,18 @@ public class FileStorageModel extends StorageModel {
 
     @Override
     public void verifyFileToCacheConsistencyOfAllData(String collectionID) {
-        for(String fileID : cache.getAllFileIDs(collectionID)) {
+        for (String fileID : cache.getAllFileIDs(collectionID)) {
             verifyCacheToArchiveConsistencyForFile(fileID, collectionID);
         }
 
-        for(String fileID : fileArchive.getAllFileIds(collectionID)) {
+        for (String fileID : fileArchive.getAllFileIds(collectionID)) {
             verifyArchiveToCacheConsistencyForFile(fileID, collectionID);
         }
 
         long maxAgeForChecksums = settings.getReferenceSettings().getPillarSettings()
                 .getMaxAgeForChecksums().longValue();
         Date checksumDate = new Date(System.currentTimeMillis() - maxAgeForChecksums);
-        for(String fileID : cache.getFileIDsWithOldChecksums(checksumDate, collectionID)) {
+        for (String fileID : cache.getFileIDsWithOldChecksums(checksumDate, collectionID)) {
             recalculateChecksum(fileID, collectionID);
         }
         // TODO: validate the 'last modified' timestamp ? 
@@ -277,11 +275,12 @@ public class FileStorageModel extends StorageModel {
     /**
      * Ensures that a file id in the cache is also in the archive.
      * Will send an alarm, if the file is missing, then remove it from index.
-     * @param fileID The id of the file.
+     *
+     * @param fileID       The id of the file.
      * @param collectionID The id of the collection of the file.
      */
     private void verifyCacheToArchiveConsistencyForFile(String fileID, String collectionID) {
-        if(!fileArchive.hasFile(fileID, collectionID)) {
+        if (!fileArchive.hasFile(fileID, collectionID)) {
             log.warn("The file '" + fileID + "' in the ChecksumCache is no longer in the archive. "
                     + "Dispatching an alarm, and removing it from the cache.");
             Alarm alarm = new Alarm();
@@ -296,13 +295,14 @@ public class FileStorageModel extends StorageModel {
     }
 
     /**
-     * Ensures that the cache has an non-obsolete checksum for the given file.
-     * Also validates, that the checksum is up to date with the file.
-     * @param fileID The id of the file.
+     * Ensures that the cache has a non-obsolete checksum for the given file.
+     * Also validates, that the checksum is up-to-date with the file.
+     *
+     * @param fileID       The id of the file.
      * @param collectionID The id of the collection of the file.
      */
     private void verifyArchiveToCacheConsistencyForFile(String fileID, String collectionID) {
-        if(!cache.hasFile(fileID, collectionID)) {
+        if (!cache.hasFile(fileID, collectionID)) {
             log.debug("No checksum cached for file '" + fileID + "'. Calculating the checksum.");
             recalculateChecksum(fileID, collectionID);
         }
@@ -310,13 +310,13 @@ public class FileStorageModel extends StorageModel {
 
     /**
      * Downloads the file to temporary area.
-     * 
-     * @param fileID The id of the file.
+     *
+     * @param fileID       The id of the file.
      * @param collectionID The id of the collection.
-     * @param fileAddress The address to download the file from.
+     * @param fileAddress  The address to download the file from.
      * @throws RequestHandlerException If the download fails.
      */
-    private void transferFileToTmp(String fileID, String collectionID, String fileAddress) 
+    private void transferFileToTmp(String fileID, String collectionID, String fileAddress)
             throws RequestHandlerException {
         log.debug("Retrieving the data to be stored from URL: '" + fileAddress + "'");
 
@@ -327,33 +327,33 @@ public class FileStorageModel extends StorageModel {
             String errMsg = "Could not retrieve the file from '" + fileAddress + "'";
             log.error(errMsg, e);
             throw new InvalidMessageException(ResponseCode.FILE_TRANSFER_FAILURE, errMsg, e);
-        }        
+        }
     }
 
     /**
      * Verifies that a file in temporary area has the expected checksum.
-     * 
-     * @param fileID The id of the file.
-     * @param collectionID The id of the collection.
+     *
+     * @param fileID           The id of the file.
+     * @param collectionID     The id of the collection.
      * @param expectedChecksum The expected checksum for the downloaded file.
-     * @throws RequestHandlerException If it does not have the expected checksum. 
+     * @throws RequestHandlerException If it does not have the expected checksum.
      */
-    private void verifyFileInTmp(String fileID, String collectionID, ChecksumDataForFileTYPE expectedChecksum) 
+    private void verifyFileInTmp(String fileID, String collectionID, ChecksumDataForFileTYPE expectedChecksum)
             throws RequestHandlerException {
-        if(expectedChecksum != null) {
-            String calculatedChecksum = getChecksumForTempFile(fileID, collectionID, 
+        if (expectedChecksum != null) {
+            String calculatedChecksum = getChecksumForTempFile(fileID, collectionID,
                     expectedChecksum.getChecksumSpec());
             String expectedChecksumValue = Base16Utils.decodeBase16(expectedChecksum.getChecksumValue());
-            log.debug("Validating newly downloaded file, '" + fileID + "', against expected checksum '" 
+            log.debug("Validating newly downloaded file, '" + fileID + "', against expected checksum '"
                     + expectedChecksumValue + "'.");
-            if(!calculatedChecksum.equals(expectedChecksumValue)) {
-                log.warn("Wrong checksum! Expected: [" + expectedChecksumValue 
+            if (!calculatedChecksum.equals(expectedChecksumValue)) {
+                log.warn("Wrong checksum! Expected: [" + expectedChecksumValue
                         + "], but calculated: [" + calculatedChecksum + "]");
                 throw new IllegalOperationException(ResponseCode.NEW_FILE_CHECKSUM_FAILURE, "The downloaded file does "
                         + "not have the expected checksum", fileID);
             }
         } else {
             log.debug("No checksums for validating the newly downloaded file '" + fileID + "'.");
-        }        
+        }
     }
 }

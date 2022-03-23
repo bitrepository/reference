@@ -8,24 +8,21 @@
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
 package org.bitrepository.pillar.messagehandler;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
@@ -38,32 +35,28 @@ import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.service.contributor.AbstractContributorMediator;
 import org.bitrepository.service.contributor.ContributorContext;
-import org.bitrepository.service.contributor.handler.GetAuditTrailsRequestHandler;
-import org.bitrepository.service.contributor.handler.GetStatusRequestHandler;
-import org.bitrepository.service.contributor.handler.IdentifyContributorsForGetAuditTrailsRequestHandler;
-import org.bitrepository.service.contributor.handler.IdentifyContributorsForGetStatusRequestHandler;
-import org.bitrepository.service.contributor.handler.RequestHandler;
+import org.bitrepository.service.contributor.handler.*;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This is the abstract instance for delegating the conversations for the pillar.
- * It only responds to requests. It does not it self start conversations, though it might send Alarms when something 
+ * It only responds to requests. It does not it self start conversations, though it might send Alarms when something
  * is not right.
  * All other messages than requests are considered garbage.
  */
 public class PillarMediator extends AbstractContributorMediator {
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
     protected final MessageHandlerContext context;
 
     protected final StorageModel pillarModel;
 
     /**
-     * Constructor.
-     * Sets the parameters of this mediator, and adds itself as a listener to the destinations.
-     *
-     * @param messageBus  The messagebus.
+     * @param messageBus  The message-bus.
      * @param context     The context for the message handlers.
      * @param pillarModel The storage model for the pillar.
      */
@@ -73,7 +66,7 @@ public class PillarMediator extends AbstractContributorMediator {
         this.pillarModel = pillarModel;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     protected void handleRequest(MessageRequest request, MessageContext messageContext, RequestHandler handler) {
         try {
@@ -94,37 +87,37 @@ public class PillarMediator extends AbstractContributorMediator {
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.FAILURE);
             responseInfo.setResponseText(e.toString());
-            
+
             dispatchNegativeResponse(request, handler, responseInfo);
             getAlarmDispatcher().handleRuntimeExceptions(e);
         }
     }
-    
+
     @SuppressWarnings("rawtypes")
     @Override
     protected RequestHandler[] createListOfHandlers() {
         List<RequestHandler> handlers = new ArrayList<>();
-        
+
         handlers.add(new IdentifyPillarsForGetFileRequestHandler(context, pillarModel));
         handlers.add(new GetFileRequestHandler(context, pillarModel));
         handlers.add(new IdentifyPillarsForGetFileIDsRequestHandler(context, pillarModel));
         handlers.add(new GetFileIDsRequestHandler(context, pillarModel));
         handlers.add(new IdentifyPillarsForGetChecksumsRequestHandler(context, pillarModel));
         handlers.add(new GetChecksumsRequestHandler(context, pillarModel));
-        
+
         handlers.add(new IdentifyContributorsForGetStatusRequestHandler(getContext()));
         handlers.add(new GetStatusRequestHandler(getContext()));
         handlers.add(new IdentifyContributorsForGetAuditTrailsRequestHandler(getContext()));
         handlers.add(new GetAuditTrailsRequestHandler(getContext(), context.getAuditTrailManager()));
-        
+
         handlers.add(new IdentifyPillarsForPutFileRequestHandler(context, pillarModel));
         handlers.add(new PutFileRequestHandler(context, pillarModel));
         handlers.add(new IdentifyPillarsForDeleteFileRequestHandler(context, pillarModel));
         handlers.add(new DeleteFileRequestHandler(context, pillarModel));
         handlers.add(new IdentifyPillarsForReplaceFileRequestHandler(context, pillarModel));
         handlers.add(new ReplaceFileRequestHandler(context, pillarModel));
-        
-        return handlers.toArray(new RequestHandler[handlers.size()]);
+
+        return handlers.toArray(new RequestHandler[0]);
     }
 
     @Override
@@ -136,7 +129,7 @@ public class PillarMediator extends AbstractContributorMediator {
         return (PillarAlarmDispatcher) context.getAlarmDispatcher();
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private void dispatchNegativeResponse(MessageRequest request, RequestHandler handler, ResponseInfo info) {
         log.info("Cannot perform operation. Sending failed response. Cause: " + info.getResponseText());
         MessageResponse response = handler.generateFailedResponse(request);
