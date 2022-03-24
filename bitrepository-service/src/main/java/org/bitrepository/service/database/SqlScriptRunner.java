@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -27,15 +27,11 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.Reader;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 /**
  * Runs a sql script as a sequence of JDBC statements.
- *
+ * <p>
  * Slightly modified version of the com.ibatis.common.jdbc.SqlScriptRunner class
  * from the iBATIS Apache project. Only removed dependency on Resource class
  * and a constructor
@@ -43,31 +39,25 @@ import java.sql.Statement;
 public class SqlScriptRunner {
     private static final String DEFAULT_DELIMITER = ";";
     private static final Logger log = LoggerFactory.getLogger(SqlScriptRunner.class);
-
-    private Connection connection;
-
-    private boolean stopOnError;
-    private boolean autoCommit;
-
+    private final Connection connection;
+    private final boolean stopOnError;
+    private final boolean autoCommit;
     private String delimiter = DEFAULT_DELIMITER;
     private boolean fullLineDelimiter = false;
 
     /**
-     *
-     * @param connection The connection to use
-     * @param autoCommit Enable autocommit
+     * @param connection  The connection to use
+     * @param autoCommit  Enable autocommit
      * @param stopOnError Stop running the script, if a statement fails.
      */
-    public SqlScriptRunner(Connection connection,
-                           boolean autoCommit,
-                           boolean stopOnError) {
+    public SqlScriptRunner(Connection connection, boolean autoCommit, boolean stopOnError) {
         this.connection = connection;
         this.autoCommit = autoCommit;
         this.stopOnError = stopOnError;
     }
 
     /**
-     * @param delimiter The statement delimiter, eg. ';' for mysql.
+     * @param delimiter         The statement delimiter, eg. ';' for mysql.
      * @param fullLineDelimiter <code>true</code> if the delimiter used to distinguish between lines.
      */
     public void setDelimiter(String delimiter, boolean fullLineDelimiter) {
@@ -110,33 +100,21 @@ public class SqlScriptRunner {
      * @throws IOException  if there is an error reading from the Reader.
      */
     private void runScript(Connection conn, Reader reader) throws IOException, SQLException {
-        StringBuffer command = null;
+        StringBuilder command = null;
         LineNumberReader lineReader = new LineNumberReader(reader);
-        String line = null;
+        String line;
         while ((line = lineReader.readLine()) != null) {
             if (command == null) {
-                command = new StringBuffer();
+                command = new StringBuilder();
             }
             String trimmedLine = line.trim();
-            if (trimmedLine.startsWith("--") ||
-                    trimmedLine.startsWith("//")) {
-                // Ignore comment line
-            } else if (trimmedLine.length() == 0) {
-                // Ignore empty line.
-            } else if (trimmedLine.contains("connect")) {
-                // Ignore connect statement as this is handled in the supplied connection.
-            } else if (!fullLineDelimiter
-                    && trimmedLine.endsWith(getDelimiter())
-                    || fullLineDelimiter
-                    && trimmedLine.equals(getDelimiter())) {
-
-                command.append(trimLineForComment(line).substring(0, line
-                        .lastIndexOf(getDelimiter())));
+            if (!fullLineDelimiter && trimmedLine.endsWith(getDelimiter()) || fullLineDelimiter && trimmedLine.equals(getDelimiter())) {
+                command.append(trimLineForComment(line), 0, line.lastIndexOf(getDelimiter()));
                 command.append(" ");
 
                 Statement statement = conn.createStatement();
 
-                log.debug("Executing statement: " + command.toString());
+                log.debug("Executing statement: " + command);
 
                 boolean hasResults = false;
                 if (stopOnError) {
@@ -161,29 +139,26 @@ public class SqlScriptRunner {
                     int cols = md.getColumnCount();
                     for (int i = 0; i < cols; i++) {
                         String name = md.getColumnLabel(i);
-                        resultSB.append(name + "\t");
+                        resultSB.append(name).append("\t");
                     }
                     resultSB.append("\n");
                     while (rs.next()) {
                         for (int i = 0; i < cols; i++) {
                             String value = rs.getString(i);
-                            resultSB.append(value + "\t");
+                            resultSB.append(value).append("\t");
                         }
                         resultSB.append("\n");
                     }
-                    log.info("Result: " + resultSB.toString());
+                    log.info("Result: " + resultSB);
                 }
 
                 command = null;
                 try {
                     statement.close();
                 } catch (Exception e) {
-                    // Ignore to workaround a bug in Jakarta DBCP
+                    // Ignore to work around a bug in Jakarta DBCP
                 }
                 Thread.yield();
-            } else {
-                command.append(trimLineForComment(line));
-                command.append(" ");
             }
         }
         if (!autoCommit) {

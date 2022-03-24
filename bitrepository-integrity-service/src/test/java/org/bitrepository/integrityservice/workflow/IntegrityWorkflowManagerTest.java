@@ -25,7 +25,7 @@ package org.bitrepository.integrityservice.workflow;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.SettingsUtils;
-import org.bitrepository.service.scheduler.TimerbasedScheduler;
+import org.bitrepository.service.scheduler.TimerBasedScheduler;
 import org.bitrepository.service.workflow.WorkflowManager;
 import org.bitrepository.settings.referencesettings.Collections;
 import org.bitrepository.settings.referencesettings.Schedule;
@@ -48,14 +48,14 @@ import static org.testng.Assert.assertNull;
 public class IntegrityWorkflowManagerTest extends ExtendedTestCase {
     private Settings settings;
     private WorkflowSettings workflowSettings;
-    private TimerbasedScheduler scheduler;
+    private TimerBasedScheduler scheduler;
     private String collection1ID, collection2ID;
     private TestWorkflow workflow1, workflow2;
 
 
     @BeforeMethod(alwaysRun = true)
     public void setup() {
-        scheduler = mock(TimerbasedScheduler.class);
+        scheduler = mock(TimerBasedScheduler.class);
         settings = TestSettingsProvider.reloadSettings(this.getClass().getSimpleName());
         workflowSettings = new WorkflowSettings();
         WorkflowConfiguration workflowConfiguration = new WorkflowConfiguration();

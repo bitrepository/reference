@@ -48,7 +48,7 @@ import org.bitrepository.service.audit.AuditTrailContributerDAOFactory;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.ContributorMediator;
 import org.bitrepository.service.contributor.SimpleContributorMediator;
-import org.bitrepository.service.scheduler.TimerbasedScheduler;
+import org.bitrepository.service.scheduler.TimerBasedScheduler;
 import org.bitrepository.service.workflow.WorkflowManager;
 import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.bitrepository.settings.referencesettings.ServiceType;
@@ -130,7 +130,7 @@ public final class IntegrityServiceManager {
 
         workFlowManager = new IntegrityWorkflowManager(
                 new IntegrityWorkflowContext(settings, collector, model, alarmDispatcher, auditManager),
-                new TimerbasedScheduler());
+                new TimerBasedScheduler());
         contributor = new SimpleContributorMediator(messageBus, settings, auditManager, null);
         contributor.start();
     }

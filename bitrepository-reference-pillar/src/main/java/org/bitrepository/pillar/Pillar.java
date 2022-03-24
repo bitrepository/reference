@@ -30,7 +30,7 @@ import org.bitrepository.pillar.schedulablejobs.RecalculateChecksumJob;
 import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.service.scheduler.JobScheduler;
-import org.bitrepository.service.scheduler.TimerbasedScheduler;
+import org.bitrepository.service.scheduler.TimerBasedScheduler;
 import org.bitrepository.service.workflow.SchedulableJob;
 import org.bitrepository.settings.referencesettings.PillarType;
 import org.slf4j.Logger;
@@ -77,7 +77,7 @@ public class Pillar {
         mediator = new PillarMediator(messageBus, context, pillarModel);
         mediator.start();
 
-        this.scheduler = new TimerbasedScheduler();
+        this.scheduler = new TimerBasedScheduler();
         if (pillarType == PillarType.FILE) {
             initializeWorkflows();
         }

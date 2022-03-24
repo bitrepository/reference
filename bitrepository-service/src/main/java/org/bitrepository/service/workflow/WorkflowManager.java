@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -31,15 +31,10 @@ import org.bitrepository.settings.referencesettings.WorkflowSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * WorkflowManager manages one or more workflows including statistics and monitors state.
- *
  */
 public abstract class WorkflowManager {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -84,7 +79,7 @@ public abstract class WorkflowManager {
         getWorkflow(workflowID);
         if (statistics.containsKey(workflowID)) {
             List<WorkflowStatistic> stats = statistics.get(workflowID);
-            return stats.get(stats.size()-1);
+            return stats.get(stats.size() - 1);
         } else return null;
     }
 
@@ -113,21 +108,21 @@ public abstract class WorkflowManager {
     }
 
     private void loadWorkFlows(WorkflowSettings configuration) {
-        for (WorkflowConfiguration workflowConf:configuration.getWorkflow()) {
+        for (WorkflowConfiguration workflowConf : configuration.getWorkflow()) {
             log.info("Scheduling from configuration: " + workflowConf);
             List<String> unscheduledCollections = new LinkedList<>(SettingsUtils.getAllCollectionsIDs());
             try {
                 if (workflowConf.getSchedules() != null) {
-                    for (Schedule schedule:workflowConf.getSchedules().getSchedule()) {
+                    for (Schedule schedule : workflowConf.getSchedules().getSchedule()) {
                         List<String> collectionsToScheduleWorkflowFor;
                         if (schedule.isSetCollections()) {
                             collectionsToScheduleWorkflowFor = schedule.getCollections().getCollectionID();
                         } else {
                             collectionsToScheduleWorkflowFor = SettingsUtils.getAllCollectionsIDs();
                         }
-                        for (String collectionID:collectionsToScheduleWorkflowFor) {
+                        for (String collectionID : collectionsToScheduleWorkflowFor) {
                             Workflow workflow =
-                                    (Workflow)lookupClass(workflowConf.getWorkflowClass()).getDeclaredConstructor().newInstance();
+                                    (Workflow) lookupClass(workflowConf.getWorkflowClass()).getDeclaredConstructor().newInstance();
                             workflow.initialise(context, collectionID);
                             scheduler.schedule(workflow, schedule.getWorkflowInterval());
                             addWorkflow(collectionID, workflow);
@@ -136,9 +131,9 @@ public abstract class WorkflowManager {
                     }
                 }
                 // Create a instance of all workflows not explicitly scheduled.
-                for (String collectionID:unscheduledCollections) {
+                for (String collectionID : unscheduledCollections) {
                     Workflow workflow =
-                            (Workflow)Class.forName(workflowConf.getWorkflowClass()).getDeclaredConstructor().newInstance();
+                            (Workflow) Class.forName(workflowConf.getWorkflowClass()).getDeclaredConstructor().newInstance();
                     workflow.initialise(context, collectionID);
                     addWorkflow(collectionID, workflow);
                 }
@@ -167,8 +162,9 @@ public abstract class WorkflowManager {
     }
 
     /**
-     * Allows subclasses to define a workflow package where workflow classes defined with a simplename in the settings
+     * Allows subclasses to define a workflow package where workflow classes defined with a simple name in the settings
      * will be prefixed with the namespace defined here.
+     *
      * @return default workflow package string.
      */
     protected abstract String getDefaultWorkflowPackage();
@@ -186,7 +182,8 @@ public abstract class WorkflowManager {
         /**
          * Adds the workflow statistics to the statistics list for this workflow. Will also remove older statistics
          * if the number of statistics exceeds <code>MAX_NUMBER_OF_STATISTICS_FOR_A_WORKFLOW</code>.
-         * @param job The job which finished and to add statistics from 
+         *
+         * @param job The job which finished and to add statistics from
          */
         @Override
         public void jobFinished(SchedulableJob job) {
@@ -196,7 +193,7 @@ public abstract class WorkflowManager {
                 }
 
                 List<WorkflowStatistic> workflowStatistics = statistics.get(job.getJobID());
-                workflowStatistics.add((((Workflow)job).getWorkflowStatistics()));
+                workflowStatistics.add((((Workflow) job).getWorkflowStatistics()));
                 if (workflowStatistics.size() > MAX_NUMBER_OF_STATISTICS_FOR_A_WORKFLOW) {
                     workflowStatistics.remove(0);
                 }

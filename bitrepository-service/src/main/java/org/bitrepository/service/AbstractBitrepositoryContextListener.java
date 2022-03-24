@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -30,48 +30,51 @@ import javax.servlet.ServletContextListener;
 
 /**
  * The Listener has two intentions
- * 1) Acquire necessary information at startup to locate configuration files and create the first instance 
- *      of the basic client, so everything is setup before the first users start using the webservice. 
- * 2) In time shut the service down in a proper manner, so no threads will be orphaned.   
+ * 1) Acquire necessary information at startup to locate configuration files and create the first instance
+ * of the basic client, so everything is set up before the first users start using the webservice.
+ * 2) In time shut the service down in a proper manner, so no threads will be orphaned.
  */
 public abstract class AbstractBitrepositoryContextListener implements ServletContextListener {
-    /** The log.*/
     private final Logger log = LoggerFactory.getLogger(getClass());
-        
+
     /**
      * Return the path to the service's configuration directory.
+     *
      * @return the path to the service's configuration directory
      */
     public abstract String getSettingsParameter();
-    
+
     /**
      * Method to get an instance of the service for the context.
+     *
      * @return an instance of the service for the context
      */
     public abstract LifeCycledService getService();
-    
+
     /**
      * Sets up the configuration.
+     *
      * @param configurationDir the configuration dir
      */
     public abstract void initialize(String configurationDir);
-    
+
     /**
      * Method called at servlet initialization.
+     *
      * @param sce the servlet context event for the initialization
      */
     public void contextInitialized(ServletContextEvent sce) {
         String confDir = sce.getServletContext().getInitParameter(getSettingsParameter());
-        if(confDir == null) {
+        if (confDir == null) {
             throw new RuntimeException("No configuration directory specified!");
         }
         log.debug("Configuration dir = " + confDir);
-        
+
         try {
             new LogbackConfigLoader(confDir + "/logback.xml");
         } catch (Exception e) {
             log.info("Failed to read log configuration file. Falling back to default.");
-        } 
+        }
         try {
             initialize(confDir);
             getService();
@@ -83,11 +86,12 @@ public abstract class AbstractBitrepositoryContextListener implements ServletCon
             throw e;
         }
         log.debug("Servlet context initialized");
-        
+
     }
-    
+
     /**
      * Method called at servlet shutdown.
+     *
      * @param sce the servlet context event for the shutdown
      */
     public void contextDestroyed(ServletContextEvent sce) {

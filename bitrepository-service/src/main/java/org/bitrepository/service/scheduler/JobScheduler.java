@@ -1,23 +1,23 @@
 /*
  * #%L
  * Bitrepository Integrity Client
- * 
+ *
  * $Id$
  * $HeadURL$
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -36,7 +36,8 @@ import java.util.Date;
 public interface JobScheduler {
     /**
      * Adds a job for the scheduler to schedule.
-     * @param job The job to schedule.
+     *
+     * @param job      The job to schedule.
      * @param interval The interval for how often the job should be triggered.
      */
     void schedule(SchedulableJob job, Long interval);
@@ -52,7 +53,8 @@ public interface JobScheduler {
 
     /**
      * Reschedules the job to start now,
-     * @param job the jobn to start
+     *
+     * @param job the job to start
      * @return A string indicating the result of the attempt to start the job.
      */
     String startJob(SchedulableJob job);
@@ -71,6 +73,7 @@ public interface JobScheduler {
 
     /**
      * Enables other objects to listen for job events.
+     *
      * @param listener The callback listener to receive the events.
      */
     void addJobEventListener(JobEventListener listener);
