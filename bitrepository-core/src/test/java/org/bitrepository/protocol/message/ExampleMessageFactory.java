@@ -24,12 +24,12 @@
  */
 package org.bitrepository.protocol.message;
 
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-
 import org.apache.activemq.util.ByteArrayInputStream;
 import org.apache.commons.io.IOUtils;
 import org.bitrepository.common.JaxbHelper;
+
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 /** Used to create message objects based on the example xml found in the message-xml module. */
 public class ExampleMessageFactory {

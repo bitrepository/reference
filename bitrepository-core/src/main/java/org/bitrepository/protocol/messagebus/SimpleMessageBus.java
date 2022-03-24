@@ -25,7 +25,11 @@ import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocol.MessageContext;
 
 import javax.jms.JMSException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class SimpleMessageBus implements MessageBus {
     Map<String, Set<MessageListener>> listeners = new HashMap<>();
@@ -48,7 +52,8 @@ public class SimpleMessageBus implements MessageBus {
     }
 
     @Override
-    public void close() throws JMSException {}
+    public void close() throws JMSException {
+    }
 
     @Override
     public void setComponentFilter(List<String> componentIDs) {

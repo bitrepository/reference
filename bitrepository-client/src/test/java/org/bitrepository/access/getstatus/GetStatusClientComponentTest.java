@@ -22,8 +22,6 @@
 package org.bitrepository.access.getstatus;
 
 import org.bitrepository.access.AccessComponentFactory;
-import org.bitrepository.access.getstatus.ConversationBasedGetStatusClient;
-import org.bitrepository.access.getstatus.GetStatusClient;
 import org.bitrepository.access.getstatus.conversation.StatusCompleteContributorEvent;
 import org.bitrepository.bitrepositoryelements.ResultingStatus;
 import org.bitrepository.bitrepositoryelements.StatusCode;

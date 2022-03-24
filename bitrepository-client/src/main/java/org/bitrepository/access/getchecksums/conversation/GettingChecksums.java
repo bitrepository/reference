@@ -33,12 +33,11 @@ import org.bitrepository.client.conversation.PerformingOperationState;
 import org.bitrepository.client.conversation.selector.SelectedComponentInfo;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.common.utils.FileIDsUtils;
 
 import java.math.BigInteger;
 import java.util.Collection;
 
-import static org.bitrepository.common.utils.FileIDsUtils.*;
+import static org.bitrepository.common.utils.FileIDsUtils.createFileIDs;
 
 /**
  * Models the behavior of a GetChecksums conversation during the operation phase. That is, it begins with the

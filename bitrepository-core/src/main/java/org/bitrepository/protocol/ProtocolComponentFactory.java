@@ -48,7 +48,8 @@ public final class ProtocolComponentFactory {
     /**
      * The singleton constructor.
      */
-    private ProtocolComponentFactory() {}
+    private ProtocolComponentFactory() {
+    }
 
     /**
      * @see #getFileExchange(Settings)

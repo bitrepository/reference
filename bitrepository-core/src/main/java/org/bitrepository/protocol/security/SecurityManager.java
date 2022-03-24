@@ -21,7 +21,11 @@
  */
 package org.bitrepository.protocol.security;
 
-import org.bitrepository.protocol.security.exception.*;
+import org.bitrepository.protocol.security.exception.CertificateUseException;
+import org.bitrepository.protocol.security.exception.MessageAuthenticationException;
+import org.bitrepository.protocol.security.exception.MessageSigningException;
+import org.bitrepository.protocol.security.exception.OperationAuthorizationException;
+import org.bitrepository.protocol.security.exception.UnregisteredPermissionException;
 import org.bouncycastle.cms.SignerId;
 
 public interface SecurityManager {

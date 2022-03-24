@@ -32,7 +32,8 @@ public class MessageUtils {
     /**
      * Private constructor to prevent instantiation of this utility class.
      */
-    private MessageUtils() {}
+    private MessageUtils() {
+    }
 
     /**
      * Validates whether a response message has a positive identification.

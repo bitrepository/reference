@@ -22,14 +22,14 @@
 
 package org.bitrepository.pillar.common;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.bitrepository.pillar.integration.func.Assert;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.bitrepository.settings.repositorysettings.PillarIDs;
 import org.testng.annotations.Test;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class SettingsHelperTest {
     @Test( groups = {"regressiontest"})

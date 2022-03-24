@@ -29,7 +29,8 @@ public class StatisticsPillarSize {
     private Long dataSize;
     private String humanSize;
 
-    public StatisticsPillarSize() {}
+    public StatisticsPillarSize() {
+    }
 
     public String getPillarID() {
         return pillarID;

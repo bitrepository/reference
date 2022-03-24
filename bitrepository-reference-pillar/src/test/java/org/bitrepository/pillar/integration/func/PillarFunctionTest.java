@@ -21,14 +21,14 @@
  */
 package org.bitrepository.pillar.integration.func;
 
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collection;
-
 import org.bitrepository.pillar.integration.PillarIntegrationTest;
 import org.bitrepository.pillar.messagefactories.PutFileMessageFactory;
 import org.bitrepository.protocol.bus.MessageReceiver;
 import org.testng.annotations.BeforeMethod;
+
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * The parent class for pillar acceptance tests. The tests can be run in a multi pillar collection has the tests will

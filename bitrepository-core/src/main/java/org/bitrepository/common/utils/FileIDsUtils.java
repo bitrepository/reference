@@ -30,7 +30,8 @@ import org.bitrepository.common.ArgumentValidator;
 public class FileIDsUtils {
     private static final String ALL_FILE_IDS = "true";
 
-    private FileIDsUtils() {}
+    private FileIDsUtils() {
+    }
 
     /**
      * @return The FileIDs for all file ids.

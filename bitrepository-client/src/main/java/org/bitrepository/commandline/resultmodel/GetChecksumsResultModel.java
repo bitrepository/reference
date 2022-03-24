@@ -26,7 +26,14 @@ import org.bitrepository.bitrepositoryelements.ResultingChecksums;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Model for keeping results from a GetFileIDs call. The model is intended to act as a buffer for

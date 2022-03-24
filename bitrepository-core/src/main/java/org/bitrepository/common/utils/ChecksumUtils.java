@@ -49,7 +49,8 @@ import java.util.Arrays;
 public final class ChecksumUtils {
     private static final int BYTE_ARRAY_SIZE_FOR_DIGEST = 4096;
 
-    private ChecksumUtils() {}
+    private ChecksumUtils() {
+    }
 
     /**
      * Computes the checksum for a file based on the given checksum algorithm, where the computation is salted.

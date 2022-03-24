@@ -40,7 +40,8 @@ public class TimeMeasurementUtils {
     /**
      * Private constructor. To prevent instantiation of this utility class.
      */
-    private TimeMeasurementUtils() {}
+    private TimeMeasurementUtils() {
+    }
 
     /**
      * Generates a TimeMeasureTYPE object based on a milliseconds value.

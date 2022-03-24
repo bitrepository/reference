@@ -21,13 +21,13 @@
  */
 package org.bitrepository.common;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 
 public class ArgumentValidatorTest extends ExtendedTestCase {
     @Test(groups = { "regressiontest" })

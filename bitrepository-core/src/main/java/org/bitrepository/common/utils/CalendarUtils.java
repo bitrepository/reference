@@ -32,7 +32,11 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
+import java.util.TimeZone;
 import java.util.function.Consumer;
 
 /**
@@ -42,7 +46,8 @@ public final class CalendarUtils {
     private static final Logger log = LoggerFactory.getLogger(CalendarUtils.class);
     private TimeZone localTimeZone = TimeZone.getDefault();
 
-    private CalendarUtils() {}
+    private CalendarUtils() {
+    }
 
     /**
      * Get an instance of CalendarUtils with a non-server default timezone
@@ -145,7 +150,8 @@ public final class CalendarUtils {
      * be turned into a date.
      */
     public Date makeStartDateObject(String dateStr) {
-        Consumer<Calendar> dateAdjuster = (Calendar calendar) -> {};
+        Consumer<Calendar> dateAdjuster = (Calendar calendar) -> {
+        };
 
         Calendar cal = makeCalendarObject(dateStr, dateAdjuster);
         if (cal == null) {

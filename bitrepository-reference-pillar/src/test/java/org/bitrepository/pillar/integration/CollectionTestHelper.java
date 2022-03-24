@@ -21,8 +21,6 @@ package org.bitrepository.pillar.integration;
  * #L%
  */
 
-import java.util.Collection;
-
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.common.settings.Settings;
@@ -30,9 +28,10 @@ import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.deletefile.DeleteFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.fileexchange.HttpServerConfiguration;
-import org.bitrepository.protocol.fileexchange.HttpServerConnector;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
+
+import java.util.Collection;
 
 @SuppressWarnings("unused")
 public class CollectionTestHelper {

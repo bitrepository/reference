@@ -30,7 +30,8 @@ public class StatisticsCollectionSize {
     private Long dataSize;
     private String humanSize;
 
-    public StatisticsCollectionSize() {}
+    public StatisticsCollectionSize() {
+    }
 
     public String getCollectionID() {
         return collectionID;

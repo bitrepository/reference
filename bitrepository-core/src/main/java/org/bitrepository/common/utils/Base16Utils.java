@@ -27,7 +27,8 @@ import org.bitrepository.common.ArgumentValidator;
  * Utility class for handling encoding and decoding of base16 bytes.
  */
 public class Base16Utils {
-    private Base16Utils() {}
+    private Base16Utils() {
+    }
 
     /**
      * Decodes a base16 encoded byte set into a human-readable string.

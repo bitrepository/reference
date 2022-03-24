@@ -4,7 +4,8 @@ import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 
 public final class MessageDataTypeValidator {
-    private MessageDataTypeValidator() {}
+    private MessageDataTypeValidator() {
+    }
 
     /**
      * Check if a ChecksumDataForFileTYPE has the mandatory elements present.

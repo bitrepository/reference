@@ -21,13 +21,13 @@
  */
 package org.bitrepository.integrityservice.cache;
 
-import javax.xml.datatype.DatatypeConstants;
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.bitrepository.common.utils.CalendarUtils;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import javax.xml.datatype.DatatypeConstants;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 public class FileInfoTest extends ExtendedTestCase {
     

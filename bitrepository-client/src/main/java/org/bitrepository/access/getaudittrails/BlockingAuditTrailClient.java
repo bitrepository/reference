@@ -24,12 +24,13 @@
  */
 package org.bitrepository.access.getaudittrails;
 
-import java.util.List;
 import org.bitrepository.client.eventhandler.BlockingEventHandler;
 import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.exceptions.NegativeResponseException;
+
+import java.util.List;
 
 /**
  * Wraps a <code>PutFileClient</code> to provide a blocking client. The client will block until the PutFileOperation

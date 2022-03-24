@@ -21,7 +21,11 @@
  */
 package org.bitrepository.service.contributor.handler;
 
-import org.bitrepository.bitrepositoryelements.*;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
+import org.bitrepository.bitrepositoryelements.ResultingStatus;
+import org.bitrepository.bitrepositoryelements.StatusCode;
+import org.bitrepository.bitrepositoryelements.StatusInfo;
 import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;

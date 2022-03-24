@@ -28,7 +28,8 @@ import org.bitrepository.bitrepositoryelements.ResponseInfo;
  * Utility class for making default responses.
  */
 public class ResponseInfoUtils {
-    private ResponseInfoUtils() {}
+    private ResponseInfoUtils() {
+    }
 
     /**
      * The default message for identifying a contributor.

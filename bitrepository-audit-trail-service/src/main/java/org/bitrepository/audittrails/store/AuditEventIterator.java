@@ -33,7 +33,16 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.*;
+import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_ACTOR_NAME;
+import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_AUDIT_TRAIL;
+import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_CONTRIBUTOR_ID;
+import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_FILE_ID;
+import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_FINGERPRINT;
+import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_INFORMATION;
+import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_OPERATION;
+import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_OPERATION_DATE;
+import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_OPERATION_ID;
+import static org.bitrepository.audittrails.store.AuditDatabaseExtractor.POSITION_SEQUENCE_NUMBER;
 
 
 /**

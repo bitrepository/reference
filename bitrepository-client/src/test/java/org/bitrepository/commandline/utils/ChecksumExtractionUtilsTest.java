@@ -21,11 +21,6 @@
  */
 package org.bitrepository.commandline.utils;
 
-import static org.mockito.Mockito.mock;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotEquals;
-import static org.testng.Assert.assertTrue;
-
 import org.apache.commons.cli.Option;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.client.DefaultFixtureClientTest;
@@ -33,6 +28,11 @@ import org.bitrepository.commandline.Constants;
 import org.bitrepository.commandline.output.OutputHandler;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import static org.mockito.Mockito.mock;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotEquals;
+import static org.testng.Assert.assertTrue;
 
 public class ChecksumExtractionUtilsTest extends DefaultFixtureClientTest {
     CommandLineArgumentsHandler cmdHandler;

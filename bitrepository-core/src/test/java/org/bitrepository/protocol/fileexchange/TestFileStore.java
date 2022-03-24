@@ -24,6 +24,12 @@
  */
 package org.bitrepository.protocol.fileexchange;
 
+import org.apache.commons.io.FileUtils;
+import org.bitrepository.common.filestore.DefaultFileInfo;
+import org.bitrepository.common.filestore.FileInfo;
+import org.bitrepository.common.filestore.FileStore;
+import org.bitrepository.protocol.message.ClientTestMessageFactory;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -32,12 +38,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import org.apache.commons.io.FileUtils;
-import org.bitrepository.common.filestore.DefaultFileInfo;
-import org.bitrepository.common.filestore.FileInfo;
-import org.bitrepository.common.filestore.FileStore;
-import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
 /** 
  * Models the storing and retrieval of files as needed in test modeling pillar behavior.

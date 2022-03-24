@@ -21,9 +21,6 @@
  */
 package org.bitrepository.access.getaudittrails;
 
-import java.math.BigInteger;
-import java.util.concurrent.TimeUnit;
-
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
@@ -48,6 +45,8 @@ import org.bitrepository.settings.repositorysettings.Collection;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.math.BigInteger;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;

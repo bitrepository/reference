@@ -42,7 +42,8 @@ public class MessageVersionValidator {
     /**
      * Private constructor
      */
-    private MessageVersionValidator() {}
+    private MessageVersionValidator() {
+    }
 
     public static void validateMessageVersion(Message message) throws InvalidMessageVersionException {
         if (message.getMinVersion().compareTo(protocolVersion.getVersion()) > 0) {

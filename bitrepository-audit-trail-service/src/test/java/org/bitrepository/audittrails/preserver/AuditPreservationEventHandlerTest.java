@@ -21,20 +21,20 @@
  */
 package org.bitrepository.audittrails.preserver;
 
+import org.bitrepository.audittrails.store.AuditTrailStore;
+import org.bitrepository.client.eventhandler.CompleteEvent;
+import org.jaccept.structure.ExtendedTestCase;
+import org.testng.annotations.Test;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import org.bitrepository.audittrails.store.AuditTrailStore;
-import org.bitrepository.client.eventhandler.CompleteEvent;
-import org.jaccept.structure.ExtendedTestCase;
-import org.testng.annotations.Test;
 
 public class AuditPreservationEventHandlerTest extends ExtendedTestCase {
     String PILLARID = "pillarID";

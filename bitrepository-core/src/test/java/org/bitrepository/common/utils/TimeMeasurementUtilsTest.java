@@ -24,14 +24,14 @@
  */
 package org.bitrepository.common.utils;
 
-import java.math.BigInteger;
-
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositoryelements.TimeMeasureUnit;
 import org.bitrepository.common.TestValidationUtils;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.math.BigInteger;
 
 /**
  * Tests the <code>TimeMeasureComparator</code> class.

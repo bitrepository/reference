@@ -30,7 +30,8 @@ public class StatisticsDataSize {
     private Long dataSize;
     private Long fileCount;
 
-    public StatisticsDataSize() {}
+    public StatisticsDataSize() {
+    }
 
     public Long getDateMillis() {
         return dateMillis;

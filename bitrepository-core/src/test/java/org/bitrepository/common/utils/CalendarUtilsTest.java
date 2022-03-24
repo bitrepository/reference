@@ -21,17 +21,16 @@
  */
 package org.bitrepository.common.utils;
 
+import org.jaccept.structure.ExtendedTestCase;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
-
-import javax.xml.datatype.XMLGregorianCalendar;
-
-import org.jaccept.structure.ExtendedTestCase;
-import org.testng.Assert;
-import org.testng.annotations.Test;
 
 public class CalendarUtilsTest extends ExtendedTestCase {
     long DATE_IN_MILLIS = 123456789L;

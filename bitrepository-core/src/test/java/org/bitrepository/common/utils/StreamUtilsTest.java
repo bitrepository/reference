@@ -21,14 +21,14 @@
  */
 package org.bitrepository.common.utils;
 
-import java.io.ByteArrayOutputStream;
-import java.nio.charset.StandardCharsets;
-
 import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.common.TestValidationUtils;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 
 public class StreamUtilsTest extends ExtendedTestCase {
     String DATA = "The data for the streams.";

@@ -27,7 +27,11 @@ import org.bitrepository.service.database.DatabaseUtils;
 
 import java.util.Date;
 
-import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.*;
+import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CHECKSUM_TABLE;
+import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_CHECKSUM;
+import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_COLLECTION_ID;
+import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_DATE;
+import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_FILE_ID;
 
 /**
  * Ingests data to the checksum database. And also deals with the deletion of entries.

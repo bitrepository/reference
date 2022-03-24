@@ -24,7 +24,11 @@ package org.bitrepository.protocol.security;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.bitrepository.protocol.security.exception.PermissionStoreException;
 import org.bitrepository.protocol.security.exception.UnregisteredPermissionException;
-import org.bitrepository.settings.repositorysettings.*;
+import org.bitrepository.settings.repositorysettings.InfrastructurePermission;
+import org.bitrepository.settings.repositorysettings.Operation;
+import org.bitrepository.settings.repositorysettings.OperationPermission;
+import org.bitrepository.settings.repositorysettings.Permission;
+import org.bitrepository.settings.repositorysettings.PermissionSet;
 import org.bouncycastle.cms.SignerId;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
@@ -39,7 +43,11 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Class to hold the concept of permissions used in the Bitrepository.

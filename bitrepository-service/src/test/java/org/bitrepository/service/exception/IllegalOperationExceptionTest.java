@@ -21,14 +21,14 @@
  */
 package org.bitrepository.service.exception;
 
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.jaccept.structure.ExtendedTestCase;
+import org.testng.annotations.Test;
+
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
-
-import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.jaccept.structure.ExtendedTestCase;
-import org.testng.annotations.Test;
 
 /**
  * Test that IllegalOperationException behaves as expected.

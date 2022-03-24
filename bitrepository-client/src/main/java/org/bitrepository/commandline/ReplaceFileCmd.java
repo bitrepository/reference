@@ -33,7 +33,21 @@ import org.bitrepository.modify.replacefile.ReplaceFileClient;
 
 import java.net.URL;
 
-import static org.bitrepository.commandline.Constants.*;
+import static org.bitrepository.commandline.Constants.ARGUMENT_IS_NOT_REQUIRED;
+import static org.bitrepository.commandline.Constants.CHECKSUM_ARG;
+import static org.bitrepository.commandline.Constants.DELETE_FILE_ARG;
+import static org.bitrepository.commandline.Constants.EXIT_ARGUMENT_FAILURE;
+import static org.bitrepository.commandline.Constants.EXIT_OPERATION_FAILURE;
+import static org.bitrepository.commandline.Constants.EXIT_SUCCESS;
+import static org.bitrepository.commandline.Constants.FILE_ARG;
+import static org.bitrepository.commandline.Constants.FILE_ID_ARG;
+import static org.bitrepository.commandline.Constants.HAS_ARGUMENT;
+import static org.bitrepository.commandline.Constants.NO_ARGUMENT;
+import static org.bitrepository.commandline.Constants.PILLAR_ARG;
+import static org.bitrepository.commandline.Constants.REPLACE_CHECKSUM_ARG;
+import static org.bitrepository.commandline.Constants.REQUEST_CHECKSUM_SALT_ARG;
+import static org.bitrepository.commandline.Constants.REQUEST_CHECKSUM_TYPE_ARG;
+import static org.bitrepository.commandline.Constants.URL_ARG;
 
 public class ReplaceFileCmd extends CommandLineClient {
     private final ReplaceFileClient client;

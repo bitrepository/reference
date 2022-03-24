@@ -28,7 +28,11 @@ import org.bitrepository.common.ArgumentValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.Objects;
 import java.util.zip.ZipEntry;
@@ -42,7 +46,8 @@ public final class FileUtils {
     private static final Logger log = LoggerFactory.getLogger(FileUtils.class);
     private static final int BYTE_ARRAY_SIZE = 4096;
 
-    private FileUtils() {}
+    private FileUtils() {
+    }
 
     /**
      * Function to retrieve a directory on a given path. If the directory does not already exist, then it is

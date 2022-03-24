@@ -22,7 +22,11 @@ package org.bitrepository.protocol.messagebus.logger;
  * #L%
  */
 
-import org.bitrepository.bitrepositorymessages.*;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
+import org.bitrepository.bitrepositorymessages.Message;
+import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.PutFileRequest;
 
 /**
  * Custom logger adding PutFile message specific parameters.

@@ -21,10 +21,6 @@
  */
 package org.bitrepository.monitoringservice.status;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.bitrepository.bitrepositoryelements.ResultingStatus;
 import org.bitrepository.bitrepositoryelements.StatusCode;
 import org.bitrepository.bitrepositoryelements.StatusInfo;
@@ -35,6 +31,10 @@ import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class ComponentStatusStoreTest extends ExtendedTestCase {
     Settings settings;

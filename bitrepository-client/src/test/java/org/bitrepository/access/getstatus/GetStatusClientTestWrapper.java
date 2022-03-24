@@ -21,7 +21,6 @@
  */
 package org.bitrepository.access.getstatus;
 
-import org.bitrepository.access.getstatus.GetStatusClient;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.jaccept.TestEventManager;
 

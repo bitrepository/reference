@@ -21,12 +21,12 @@
  */
 package org.bitrepository.monitoringservice;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.bitrepository.bitrepositoryelements.ResultingStatus;
 import org.bitrepository.monitoringservice.status.ComponentStatus;
 import org.bitrepository.monitoringservice.status.StatusStore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MockStatusStore implements StatusStore {
 

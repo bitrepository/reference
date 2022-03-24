@@ -32,7 +32,30 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.*;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.ACTOR_KEY;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.ACTOR_NAME;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.ACTOR_TABLE;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDIT_TRAIL_ACTOR_KEY;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDIT_TRAIL_AUDIT;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDIT_TRAIL_CONTRIBUTOR_KEY;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDIT_TRAIL_FILE_KEY;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDIT_TRAIL_FINGERPRINT;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDIT_TRAIL_INFORMATION;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDIT_TRAIL_OPERATION;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDIT_TRAIL_OPERATION_DATE;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDIT_TRAIL_OPERATION_ID;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDIT_TRAIL_SEQUENCE_NUMBER;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDIT_TRAIL_TABLE;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.COLLECTION_ID;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.COLLECTION_KEY;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.COLLECTION_TABLE;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_ID;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_KEY;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_TABLE;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_COLLECTION_KEY;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_FILE_ID;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_KEY;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_TABLE;
 
 /**
  * Extractor for the audit trail events from the AuditTrailServiceDatabase.

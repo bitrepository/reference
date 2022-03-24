@@ -51,7 +51,8 @@ public final class MessageBusManager {
     /**
      * Do not instantiate
      */
-    private MessageBusManager() {}
+    private MessageBusManager() {
+    }
 
     /**
      * @param settings        the message bus settings

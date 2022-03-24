@@ -24,8 +24,6 @@
  */
 package org.bitrepository.modify.replacefile;
 
-import java.math.BigInteger;
-
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
@@ -34,6 +32,8 @@ import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.protocol.message.ClientTestMessageFactory;
+
+import java.math.BigInteger;
 
 /**
  * Messages creation factory for the ReplaceFile tests.

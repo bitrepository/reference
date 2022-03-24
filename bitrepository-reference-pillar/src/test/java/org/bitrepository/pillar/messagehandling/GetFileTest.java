@@ -24,13 +24,6 @@
  */
 package org.bitrepository.pillar.messagehandling;
 
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
-import static org.testng.Assert.assertEquals;
-
-import java.io.ByteArrayInputStream;
-
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
@@ -48,6 +41,13 @@ import org.bitrepository.service.exception.RequestHandlerException;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.testng.annotations.Test;
+
+import java.io.ByteArrayInputStream;
+
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.testng.Assert.assertEquals;
 
 /**
  * Tests the PutFile functionality on the ReferencePillar.

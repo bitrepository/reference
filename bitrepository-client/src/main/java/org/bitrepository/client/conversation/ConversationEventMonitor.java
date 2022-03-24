@@ -27,7 +27,16 @@ package org.bitrepository.client.conversation;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
-import org.bitrepository.client.eventhandler.*;
+import org.bitrepository.client.eventhandler.AbstractOperationEvent;
+import org.bitrepository.client.eventhandler.CompleteEvent;
+import org.bitrepository.client.eventhandler.ContributorCompleteEvent;
+import org.bitrepository.client.eventhandler.ContributorEvent;
+import org.bitrepository.client.eventhandler.ContributorFailedEvent;
+import org.bitrepository.client.eventhandler.DefaultEvent;
+import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.client.eventhandler.IdentificationCompleteEvent;
+import org.bitrepository.client.eventhandler.OperationEvent;
+import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.protocol.OperationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +45,12 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.bitrepository.client.eventhandler.OperationEvent.OperationEventType.*;
+import static org.bitrepository.client.eventhandler.OperationEvent.OperationEventType.COMPONENT_IDENTIFIED;
+import static org.bitrepository.client.eventhandler.OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT;
+import static org.bitrepository.client.eventhandler.OperationEvent.OperationEventType.IDENTIFY_TIMEOUT;
+import static org.bitrepository.client.eventhandler.OperationEvent.OperationEventType.PROGRESS;
+import static org.bitrepository.client.eventhandler.OperationEvent.OperationEventType.REQUEST_SENT;
+import static org.bitrepository.client.eventhandler.OperationEvent.OperationEventType.WARNING;
 
 
 /**

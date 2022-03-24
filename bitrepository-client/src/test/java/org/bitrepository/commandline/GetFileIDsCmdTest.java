@@ -21,11 +21,11 @@
  */
 package org.bitrepository.commandline;
 
-import java.util.Date;
-
 import org.bitrepository.client.DefaultFixtureClientTest;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.util.Date;
 
 public class GetFileIDsCmdTest extends DefaultFixtureClientTest {
     private static final String SETTINGS_DIR = "settings/xml/bitrepository-devel";

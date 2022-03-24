@@ -24,7 +24,11 @@ package org.bitrepository.commandline.outputformatter;
 import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.commandline.resultmodel.ChecksumResult;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Class to deliver GetChecksums client output in a format showing the distribution of the checksum between the pillars.

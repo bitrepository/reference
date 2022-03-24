@@ -22,10 +22,10 @@
 
 package org.bitrepository.integrityservice.reports;
 
-import java.io.File;
-
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.annotations.Test;
+
+import java.io.File;
 
 import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertFalse;

@@ -21,14 +21,6 @@
  */
 package org.bitrepository.protocol.security;
 
-import java.io.ByteArrayInputStream;
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.security.Security;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
-
-import javax.security.auth.x500.X500Principal;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
@@ -37,6 +29,14 @@ import org.bouncycastle.util.encoders.Base64;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import javax.security.auth.x500.X500Principal;
+import java.io.ByteArrayInputStream;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.Security;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 
 public class CertificateIDTest extends ExtendedTestCase  {
         

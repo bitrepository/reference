@@ -38,7 +38,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.bitrepository.alarm.store.AlarmDatabaseConstants.*;
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_CODE;
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_COLLECTION_ID;
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_COMPONENT_GUID;
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_DATE;
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_FILE_ID;
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_TABLE;
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_TEXT;
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.COMPONENT_GUID;
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.COMPONENT_ID;
+import static org.bitrepository.alarm.store.AlarmDatabaseConstants.COMPONENT_TABLE;
 
 /**
  * Extractor for the alarms from the AlarmServiceDatabase.

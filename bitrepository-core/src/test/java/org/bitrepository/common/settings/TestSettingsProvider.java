@@ -25,9 +25,10 @@
 package org.bitrepository.common.settings;
 
 
+import org.bitrepository.common.ArgumentValidator;
+
 import java.util.HashMap;
 import java.util.Map;
-import org.bitrepository.common.ArgumentValidator;
 
 /**
  * Helper class for easy access to the settings located in the <code>settings/xml</code> dir.

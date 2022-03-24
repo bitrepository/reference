@@ -24,13 +24,7 @@
  */
 package org.bitrepository.access.getfile;
 
-import java.math.BigInteger;
-import java.net.URL;
-import java.util.concurrent.TimeUnit;
-
 import org.bitrepository.access.AccessComponentFactory;
-import org.bitrepository.access.getfile.ConversationBasedGetFileClient;
-import org.bitrepository.access.getfile.GetFileClient;
 import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
@@ -46,6 +40,9 @@ import org.bitrepository.client.eventhandler.IdentificationCompleteEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.math.BigInteger;
+import java.net.URL;
 
 import static org.testng.Assert.assertEquals;
 

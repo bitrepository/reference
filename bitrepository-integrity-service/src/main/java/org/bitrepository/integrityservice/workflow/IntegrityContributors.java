@@ -21,7 +21,12 @@
  */
 package org.bitrepository.integrityservice.workflow;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Class to carry and store active, failed and finished contributors for keeping track of who to collect from.

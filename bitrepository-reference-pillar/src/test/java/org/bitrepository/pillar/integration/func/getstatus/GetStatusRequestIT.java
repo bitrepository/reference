@@ -22,8 +22,6 @@
 
 package org.bitrepository.pillar.integration.func.getstatus;
 
-import java.lang.reflect.Method;
-
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
@@ -37,6 +35,8 @@ import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.lang.reflect.Method;
 
 public class GetStatusRequestIT extends PillarFunctionTest {
     protected GetStatusMessageFactory msgFactory;

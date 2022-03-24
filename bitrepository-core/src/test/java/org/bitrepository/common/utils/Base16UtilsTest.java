@@ -22,7 +22,6 @@
 package org.bitrepository.common.utils;
 
 import org.bitrepository.common.TestValidationUtils;
-import org.bitrepository.common.utils.Base16Utils;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;

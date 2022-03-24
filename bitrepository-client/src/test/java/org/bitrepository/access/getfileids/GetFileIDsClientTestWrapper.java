@@ -24,13 +24,12 @@
  */
 package org.bitrepository.access.getfileids;
 
-import java.net.URL;
-import java.util.Arrays;
-
 import org.bitrepository.access.ContributorQuery;
-import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.jaccept.TestEventManager;
+
+import java.net.URL;
+import java.util.Arrays;
 
 /**
  * Wraps the <code>GetFileIDsClient</code> adding test event logging and functionality.

@@ -21,13 +21,11 @@
  */
 package org.bitrepository.integrityservice.workflow;
 
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
 import java.util.Arrays;
 import java.util.Set;
-
-import javax.validation.constraints.AssertTrue;
-
-import org.testng.annotations.Test;
-import org.testng.Assert;
 
 
 public class IntegrityContributorsTest {

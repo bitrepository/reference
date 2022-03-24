@@ -21,8 +21,6 @@
  */
 package org.bitrepository.pillar;
 
-import static org.mockito.Mockito.mock;
-
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
@@ -36,7 +34,8 @@ import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
-import org.mockito.Mock;
+
+import static org.mockito.Mockito.mock;
 
 public abstract class MockedPillarTest extends DefaultFixturePillarTest {
     protected PillarMediator mediator;

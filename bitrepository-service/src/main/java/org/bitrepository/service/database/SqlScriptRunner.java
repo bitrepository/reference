@@ -27,7 +27,11 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.Reader;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Runs a sql script as a sequence of JDBC statements.

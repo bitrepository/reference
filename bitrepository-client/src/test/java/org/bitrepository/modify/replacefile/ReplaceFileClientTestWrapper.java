@@ -24,12 +24,12 @@
  */
 package org.bitrepository.modify.replacefile;
 
-import java.net.URL;
-
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.jaccept.TestEventManager;
+
+import java.net.URL;
 
 /**
  * Wrapper class for a PutFileClient.

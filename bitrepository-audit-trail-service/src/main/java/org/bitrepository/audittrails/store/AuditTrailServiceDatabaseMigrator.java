@@ -29,7 +29,11 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.*;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.ACTOR_TABLE;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDIT_TRAIL_TABLE;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_TABLE;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.DATABASE_VERSION_ENTRY;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_TABLE;
 
 /**
  * Migration class for the AuditTrailDatabase of the AuditTrailService.

@@ -37,7 +37,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.*;
+import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CHECKSUM_TABLE;
+import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_CHECKSUM;
+import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_COLLECTION_ID;
+import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_DATE;
+import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_FILE_ID;
 
 /**
  * Extracts data from the checksum database.

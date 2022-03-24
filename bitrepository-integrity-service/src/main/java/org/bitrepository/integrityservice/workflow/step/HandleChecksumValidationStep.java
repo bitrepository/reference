@@ -33,7 +33,11 @@ import org.bitrepository.service.exception.StepFailedException;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**

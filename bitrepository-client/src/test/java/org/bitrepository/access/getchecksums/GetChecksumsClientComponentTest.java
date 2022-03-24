@@ -39,16 +39,8 @@
  */
 package org.bitrepository.access.getchecksums;
 
-import java.math.BigInteger;
-import java.net.URL;
-import java.util.Collection;
-import java.util.Date;
-import java.util.LinkedList;
-
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.ContributorQuery;
-import org.bitrepository.access.getchecksums.ConversationBasedGetChecksumsClient;
-import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -68,6 +60,12 @@ import org.bitrepository.protocol.bus.MessageReceiver;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.math.BigInteger;
+import java.net.URL;
+import java.util.Collection;
+import java.util.Date;
+import java.util.LinkedList;
 
 import static org.testng.Assert.assertEquals;
 

@@ -32,7 +32,9 @@ import java.io.OutputStream;
  * Utility class for handling standard stream issues.
  */
 public final class StreamUtils {
-    private StreamUtils() {}
+    private StreamUtils() {
+    }
+
     private static final int IO_BUFFER_SIZE = 32 * 1024;
 
     /**

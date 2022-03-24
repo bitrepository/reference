@@ -21,9 +21,6 @@
  */
 package org.bitrepository.integrityservice;
 
-import java.math.BigInteger;
-import java.util.List;
-
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
@@ -39,6 +36,9 @@ import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
+
+import java.math.BigInteger;
+import java.util.List;
 
 public abstract class IntegrityDatabaseTestCase extends ExtendedTestCase {
     protected Settings settings;

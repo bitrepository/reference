@@ -43,7 +43,8 @@ public class MessageLoggerProvider implements MessageLogger {
     private final Map<String, MessageLogger> messageToLoggerMap = new HashMap<>();
     private final MessageLogger defaultLogger = new DefaultMessagingLogger();
 
-    private MessageLoggerProvider() {}
+    private MessageLoggerProvider() {
+    }
 
     public static MessageLoggerProvider getInstance() {
         return instance;

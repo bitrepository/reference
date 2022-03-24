@@ -21,11 +21,11 @@
  */
 package org.bitrepository.integrityservice.checking;
 
-import java.math.BigInteger;
-
 import org.bitrepository.settings.referencesettings.ObsoleteChecksumSettings;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.annotations.Test;
+
+import java.math.BigInteger;
 
 import static org.testng.Assert.assertEquals;
 

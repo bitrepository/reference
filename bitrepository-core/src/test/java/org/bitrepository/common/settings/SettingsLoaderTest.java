@@ -24,12 +24,12 @@
  */
 package org.bitrepository.common.settings;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class SettingsLoaderTest extends ExtendedTestCase {
     private static final String PATH_TO_SETTINGS = "settings/xml/bitrepository-devel";

@@ -31,7 +31,11 @@ import org.bitrepository.settings.referencesettings.CollectionDirs;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The CollectionArchiveManager manages the archives of the different collections for the Pillar.

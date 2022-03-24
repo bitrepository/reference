@@ -39,7 +39,23 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.bitrepository.service.audit.AuditDatabaseConstants.*;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.ACTOR_GUID;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.ACTOR_NAME;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.ACTOR_TABLE;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDIT_TRAIL_ACTOR_GUID;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDIT_TRAIL_AUDIT;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDIT_TRAIL_FILE_GUID;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDIT_TRAIL_FINGERPRINT;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDIT_TRAIL_INFORMATION;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDIT_TRAIL_OPERATION;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDIT_TRAIL_OPERATIONID;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDIT_TRAIL_OPERATION_DATE;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDIT_TRAIL_SEQUENCE_NUMBER;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDIT_TRAIL_TABLE;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_COLLECTION_ID;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_FILE_ID;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_GUID;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_TABLE;
 
 /**
  * Access interface for communication with the audit trail database.

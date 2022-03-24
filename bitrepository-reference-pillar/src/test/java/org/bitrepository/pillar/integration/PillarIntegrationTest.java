@@ -55,11 +55,10 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeClass;
 
+import javax.jms.JMSException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-
-import javax.jms.JMSException;
 
 /**
  * Super class for all tests which should test functionality on a single pillar.
