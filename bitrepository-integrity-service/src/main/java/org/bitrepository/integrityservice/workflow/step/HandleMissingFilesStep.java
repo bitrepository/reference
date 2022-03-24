@@ -42,7 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A workflow step for finding missing checksums.
+ * A workflow step for finding missing files.
  * Uses the IntegrityChecker to perform the actual check.
  */
 public class HandleMissingFilesStep extends AbstractWorkFlowStep {
@@ -82,7 +82,7 @@ public class HandleMissingFilesStep extends AbstractWorkFlowStep {
             missingFilesMap.put(pillar, 0L);
         }
         Date missingAfterDate = new Date(System.currentTimeMillis() - gracePeriod);
-        log.info("Looking for missing files, files needs to be older than {} to be considered missing.", 
+        log.info("Looking for missing files, files need to be older than {} to be considered missing.",
                 missingAfterDate);
         
         try(IntegrityIssueIterator issueIterator = store.findFilesWithMissingCopies(reporter.getCollectionID(), 
@@ -90,7 +90,7 @@ public class HandleMissingFilesStep extends AbstractWorkFlowStep {
             
             String missingFile;
             while((missingFile = issueIterator.getNextIntegrityIssue()) != null) {
-                Date earliestDate = store.getEarlistFileDate(reporter.getCollectionID(), missingFile);
+                Date earliestDate = store.getEarliestFileDate(reporter.getCollectionID(), missingFile);
                 if(earliestDate.before(missingAfterDate)) {
                     try {
                         Set<String> pillarsWithFile = getPillarsWithFile(missingFile, reporter.getCollectionID());
