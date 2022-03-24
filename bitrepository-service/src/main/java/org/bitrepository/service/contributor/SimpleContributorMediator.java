@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -46,19 +46,18 @@ import java.util.List;
 /**
  * Simple implementation of a contributor mediator.
  * It supports the handling of the GetStatus and GetAuditTrail operations.
- * 
- * If the optional AuditTrailManager is given as argument, then this mediator will also be able to handle the 
- * GetAuditTrails identification and operation. 
+ * <p>
+ * If the optional AuditTrailManager is given as argument, then this mediator will also be able to handle the
+ * GetAuditTrails identification and operation.
  */
 public class SimpleContributorMediator extends AbstractContributorMediator {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final ContributorContext context;
-    private AuditTrailManager auditManager;
-    
+    private final AuditTrailManager auditManager;
+
     /**
-     * Constructor.
-     * @param messageBus The messagebus for the mediator.
-     * @param settings the settings for the mediator.
+     * @param messageBus   The message-bus for the mediator.
+     * @param settings     the settings for the mediator.
      * @param auditManager [OPTIONAL] The manager of audit trails. Only if the contributor has audit trails.
      * @param fileExchange the file exchange
      */
@@ -66,9 +65,9 @@ public class SimpleContributorMediator extends AbstractContributorMediator {
             MessageBus messageBus, Settings settings, AuditTrailManager auditManager, FileExchange fileExchange) {
         super(messageBus);
         context = new ContributorContext(
-            new ResponseDispatcher(settings, messageBus),
-            new AlarmDispatcher(settings, messageBus),
-            settings, fileExchange);
+                new ResponseDispatcher(settings, messageBus),
+                new AlarmDispatcher(settings, messageBus),
+                settings, fileExchange);
         this.auditManager = auditManager;
     }
 
@@ -76,24 +75,24 @@ public class SimpleContributorMediator extends AbstractContributorMediator {
     @Override
     protected RequestHandler[] createListOfHandlers() {
         List<RequestHandler> handlers = new ArrayList<>();
-        
+
         handlers.add(new IdentifyContributorsForGetStatusRequestHandler(getContext()));
         handlers.add(new GetStatusRequestHandler(getContext()));
-        
-        if(auditManager != null) {
+
+        if (auditManager != null) {
             handlers.add(new IdentifyContributorsForGetAuditTrailsRequestHandler(getContext()));
             handlers.add(new GetAuditTrailsRequestHandler(getContext(), auditManager));
         }
-        
-        return handlers.toArray(new RequestHandler[handlers.size()]);
+
+        return handlers.toArray(new RequestHandler[0]);
     }
-    
+
     @Override
     protected ContributorContext getContext() {
         return context;
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     protected void handleRequest(MessageRequest request, MessageContext messageContext, RequestHandler handler) {
         try {
@@ -108,7 +107,7 @@ public class SimpleContributorMediator extends AbstractContributorMediator {
             ResponseInfo responseInfo = new ResponseInfo();
             responseInfo.setResponseCode(ResponseCode.FAILURE);
             responseInfo.setResponseText(e.toString());
-            
+
             MessageResponse response = handler.generateFailedResponse(request);
             response.setResponseInfo(responseInfo);
             context.getResponseDispatcher().dispatchResponse(response, request);

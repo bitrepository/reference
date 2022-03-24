@@ -48,8 +48,8 @@ public class PuttingFile extends PerformingOperationState {
     private final PutFileConversationContext context;
     private final Map<String, Integer> componentRequestCount = new HashMap<>();
 
-    /*
-     * @param context The conversation context.
+    /**
+     * @param context      The conversation context.
      * @param contributors The list of components the fileIDs should be collected from.
      */
     public PuttingFile(PutFileConversationContext context, Collection<SelectedComponentInfo> contributors) {

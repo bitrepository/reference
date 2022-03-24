@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -31,11 +31,7 @@ import org.bitrepository.commandline.outputformatter.GetChecksumsInfoFormatter;
 import org.bitrepository.commandline.outputformatter.GetChecksumsOutputFormatter;
 import org.bitrepository.common.utils.SettingsUtils;
 
-/**
- * Perform the GetChecksums operation.
- */
 public class GetChecksumsCmd extends CommandLineClient {
-    /** The client for performing the GetChecksums operation.*/
     private final PagingGetChecksumsClient pagingClient;
 
     /**
@@ -56,13 +52,13 @@ public class GetChecksumsCmd extends CommandLineClient {
     /**
      * @param args The command line arguments for defining the operation.
      */
-    protected GetChecksumsCmd(String ... args) {
+    protected GetChecksumsCmd(String... args) {
         super(args);
-        GetChecksumsClient client = AccessComponentFactory.getInstance().createGetChecksumsClient(settings, 
+        GetChecksumsClient client = AccessComponentFactory.getInstance().createGetChecksumsClient(settings,
                 securityManager, getComponentID());
         GetChecksumsOutputFormatter outputFormatter = retrieveOutputFormatter();
         int pageSize = SettingsUtils.getMaxClientPageSize();
-        pagingClient = new PagingGetChecksumsClient(client, getTimeout(), pageSize, outputFormatter, output); 
+        pagingClient = new PagingGetChecksumsClient(client, getTimeout(), pageSize, outputFormatter, output);
     }
 
     @Override
@@ -76,13 +72,13 @@ public class GetChecksumsCmd extends CommandLineClient {
     protected void createOptionsForCmdArgumentHandler() {
         super.createOptionsForCmdArgumentHandler();
 
-        Option checksumTypeOption = new Option(Constants.REQUEST_CHECKSUM_TYPE_ARG, Constants.HAS_ARGUMENT, 
+        Option checksumTypeOption = new Option(Constants.REQUEST_CHECKSUM_TYPE_ARG, Constants.HAS_ARGUMENT,
                 "[OPTIONAL] The algorithm of checksum to request in the response from the pillars. "
                         + "If no such argument is given, then the default from settings is retrieved.");
         checksumTypeOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumTypeOption);
 
-        Option checksumSaltOption = new Option(Constants.REQUEST_CHECKSUM_SALT_ARG, Constants.HAS_ARGUMENT, 
+        Option checksumSaltOption = new Option(Constants.REQUEST_CHECKSUM_SALT_ARG, Constants.HAS_ARGUMENT,
                 "[OPTIONAL] The salt of checksum to request in the response. Requires the ChecksumType argument.");
         checksumSaltOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumSaltOption);
@@ -95,9 +91,9 @@ public class GetChecksumsCmd extends CommandLineClient {
     protected void performOperation() {
         ChecksumSpecTYPE spec = getRequestChecksumSpecOrDefault();
         output.startupInfo("Performing the GetChecksums operation.");
-        Boolean success = pagingClient.getChecksums(getCollectionID(), getFileIDs(), 
+        boolean success = pagingClient.getChecksums(getCollectionID(), getFileIDs(),
                 getPillarIDs(), spec);
-        if(success) {
+        if (success) {
             System.exit(Constants.EXIT_SUCCESS);
         } else {
             System.exit(Constants.EXIT_OPERATION_FAILURE);
@@ -105,11 +101,12 @@ public class GetChecksumsCmd extends CommandLineClient {
     }
 
     /**
-     * Retrieves the given output formatter depending on whether or not it requests a given file or all files.
+     * Retrieves the given output formatter depending on whether it requests a given file or all files.
+     *
      * @return The output formatter.
      */
     private GetChecksumsOutputFormatter retrieveOutputFormatter() {
-        if(cmdHandler.hasOption(Constants.FILE_ID_ARG)) {
+        if (cmdHandler.hasOption(Constants.FILE_ID_ARG)) {
             return new GetChecksumDistributionFormatter(output);
         } else {
             return new GetChecksumsInfoFormatter(output);

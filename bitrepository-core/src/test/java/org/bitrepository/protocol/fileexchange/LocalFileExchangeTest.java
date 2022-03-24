@@ -1,5 +1,14 @@
 package org.bitrepository.protocol.fileexchange;
 
+import org.apache.commons.codec.CharEncoding;
+import org.apache.commons.io.IOUtils;
+import org.bitrepository.protocol.FileExchange;
+import org.bitrepository.protocol.LocalFileExchange;
+import org.fusesource.hawtbuf.ByteArrayInputStream;
+import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -13,15 +22,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-
-import org.apache.commons.codec.CharEncoding;
-import org.apache.commons.io.IOUtils;
-import org.bitrepository.protocol.FileExchange;
-import org.bitrepository.protocol.LocalFileExchange;
-import org.fusesource.hawtbuf.ByteArrayInputStream;
-import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
 
 public class LocalFileExchangeTest {
 

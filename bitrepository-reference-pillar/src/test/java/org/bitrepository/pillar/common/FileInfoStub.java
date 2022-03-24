@@ -21,10 +21,10 @@
  */
 package org.bitrepository.pillar.common;
 
+import org.bitrepository.common.filestore.FileInfo;
+
 import java.io.IOException;
 import java.io.InputStream;
-
-import org.bitrepository.common.filestore.FileInfo;
 
 
 public class FileInfoStub implements FileInfo {
@@ -47,7 +47,7 @@ public class FileInfoStub implements FileInfo {
     }
 
     @Override
-    public InputStream getInputstream() throws IOException {
+    public InputStream getInputStream() throws IOException {
         return is;
     }
 

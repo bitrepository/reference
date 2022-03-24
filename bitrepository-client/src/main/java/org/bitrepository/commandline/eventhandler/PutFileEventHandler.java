@@ -8,12 +8,12 @@
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
@@ -28,38 +28,41 @@ import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.modify.putfile.conversation.PutFileCompletePillarEvent;
 
 /**
- * Complete event awaiter for Getfile.
+ * Complete event awaiter for GetFile.
  * Prints out checksum results, if any.
  */
 public class PutFileEventHandler extends CompleteEventAwaiter {
 
     private final Boolean printOutput;
-    
+
     /**
      * Constructor.
-     * @param settings The {@link Settings}
+     *
+     * @param settings      The {@link Settings}
      * @param outputHandler The {@link OutputHandler} for handling output
-     * @param printOutput Setting for determining if output should be printet
+     * @param printOutput   Setting for determining if output should be printed.
      */
     public PutFileEventHandler(Settings settings, OutputHandler outputHandler, boolean printOutput) {
         super(settings, outputHandler);
         this.printOutput = printOutput;
-        
-        if(printOutput) {
+
+        if (printOutput) {
             output.resultHeader("PillarId \t Checksum");
         }
     }
 
     @Override
     public void handleComponentComplete(OperationEvent event) {
-        if(!(event instanceof PutFileCompletePillarEvent)) {
+        if (!(event instanceof PutFileCompletePillarEvent)) {
             output.warn("PutFileEventHandler received a component complete, which is not a "
                     + PutFileCompletePillarEvent.class.getName());
         }
-        
+
+        assert event instanceof PutFileCompletePillarEvent;
         PutFileCompletePillarEvent pillarEvent = (PutFileCompletePillarEvent) event;
-        if(printOutput && pillarEvent.getChecksums() != null) {
-            output.resultLine(pillarEvent.getContributorID() + " \t " + Base16Utils.decodeBase16(pillarEvent.getChecksums().getChecksumValue()));
+        if (printOutput && pillarEvent.getChecksums() != null) {
+            output.resultLine(
+                    pillarEvent.getContributorID() + " \t " + Base16Utils.decodeBase16(pillarEvent.getChecksums().getChecksumValue()));
         }
     }
 

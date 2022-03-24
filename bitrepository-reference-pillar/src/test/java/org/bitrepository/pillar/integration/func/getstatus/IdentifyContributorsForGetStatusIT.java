@@ -22,10 +22,6 @@
 
 package org.bitrepository.pillar.integration.func.getstatus;
 
-import static org.testng.Assert.assertEquals;
-
-import java.lang.reflect.Method;
-
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
@@ -34,6 +30,10 @@ import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.bitrepository.pillar.messagefactories.GetStatusMessageFactory;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.lang.reflect.Method;
+
+import static org.testng.Assert.assertEquals;
 
 public class IdentifyContributorsForGetStatusIT extends PillarFunctionTest {
     protected GetStatusMessageFactory msgFactory;

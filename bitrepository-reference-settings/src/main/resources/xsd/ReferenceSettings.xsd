@@ -23,7 +23,7 @@
 <xs:schema targetNamespace="http://bitrepository.org/settings/ReferenceSettings.xsd"
            attributeFormDefault="unqualified" elementFormDefault="qualified"
            xmlns="http://bitrepository.org/settings/ReferenceSettings.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+>
 
   <xs:element name="ReferenceSettings">
     <xs:annotation>

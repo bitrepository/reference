@@ -24,19 +24,11 @@
  */
 package org.bitrepository.protocol.fileexchange;
 
+import org.jaccept.TestEventManager;
+
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import org.apache.commons.io.FileUtils;
-import org.bitrepository.protocol.CoordinationLayerException;
-import org.jaccept.TestEventManager;
-import org.testng.Assert;
 
 /**
  * Test helper class for uploading and downloading files from a http server. 

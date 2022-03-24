@@ -21,22 +21,21 @@
  */
 package org.bitrepository.pillar.integration.func.getfileids;
 
-import static org.bitrepository.pillar.integration.func.Assert.assertEmpty;
-import static org.bitrepository.pillar.integration.func.Assert.assertEquals;
-import static org.bitrepository.pillar.integration.func.Assert.assertTrue;
-import static org.testng.Assert.assertFalse;
-
-import java.util.GregorianCalendar;
-import java.util.List;
-
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.testng.annotations.Test;
+
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.util.GregorianCalendar;
+import java.util.List;
+
+import static org.bitrepository.pillar.integration.func.Assert.assertEmpty;
+import static org.bitrepository.pillar.integration.func.Assert.assertEquals;
+import static org.bitrepository.pillar.integration.func.Assert.assertTrue;
+import static org.testng.Assert.assertFalse;
 
 public class GetFileIDsQueryTest extends PillarFunctionTest {
 

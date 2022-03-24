@@ -24,12 +24,11 @@
  */
 package org.bitrepository.access.getfile;
 
-import java.net.URL;
-
-import org.bitrepository.access.getfile.GetFileClient;
 import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.jaccept.TestEventManager;
+
+import java.net.URL;
 
 /**
  * Wraps the <code>GetFileClient</code> adding test event logging and functionality for handling blocking calls.

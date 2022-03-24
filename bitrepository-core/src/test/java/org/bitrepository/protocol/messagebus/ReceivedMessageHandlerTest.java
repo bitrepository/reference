@@ -21,9 +21,6 @@
  */
 package org.bitrepository.protocol.messagebus;
 
-import java.math.BigInteger;
-import java.util.Arrays;
-
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
@@ -33,6 +30,9 @@ import org.bitrepository.settings.referencesettings.MessageThreadPool;
 import org.bitrepository.settings.referencesettings.MessageThreadPools;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.annotations.Test;
+
+import java.math.BigInteger;
+import java.util.Arrays;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.timeout;

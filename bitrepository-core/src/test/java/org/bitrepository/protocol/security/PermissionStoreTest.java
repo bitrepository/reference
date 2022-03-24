@@ -21,12 +21,6 @@
  */
 package org.bitrepository.protocol.security;
 
-import java.io.ByteArrayInputStream;
-import java.math.BigInteger;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
-import java.util.Locale;
-
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerId;
@@ -35,6 +29,12 @@ import org.bouncycastle.util.encoders.Base64;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.io.ByteArrayInputStream;
+import java.math.BigInteger;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+import java.util.Locale;
 
 import static org.testng.Assert.assertEquals;
 

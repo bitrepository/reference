@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -40,18 +40,13 @@ import java.util.Map;
  */
 @SuppressWarnings("rawtypes")
 public abstract class AbstractContributorMediator implements ContributorMediator {
-    /** The log.*/
-    private Logger log = LoggerFactory.getLogger(getClass());
-    /** The map of request handlers. Mapping between request name and message handler for the given request.*/
+    private final Logger log = LoggerFactory.getLogger(getClass());
     private final Map<String, RequestHandler> handlerMap = new HashMap<>();
-    /** The message bus.*/
     private final MessageBus messageBus;
-    /** The intermediate message handler for retrieving the messages from the messagebus. */
     private final GeneralRequestHandler messageHandler;
 
     /**
-     * Constructor.
-     * @param messageBus The messagebus for this mediator.
+     * @param messageBus The message-bus for this mediator.
      */
     public AbstractContributorMediator(MessageBus messageBus) {
         this.messageBus = messageBus;
@@ -71,7 +66,7 @@ public abstract class AbstractContributorMediator implements ContributorMediator
     }
 
     /**
-     * @return The set of <code>RequestHandler</code>s used for this contributor.
+     * @return The a <code>RequestHandler</code> array used for this contributor.
      */
     protected abstract RequestHandler[] createListOfHandlers();
 
@@ -79,13 +74,14 @@ public abstract class AbstractContributorMediator implements ContributorMediator
      * @return The concrete context used for this contributor.
      */
     protected abstract ContributorContext getContext();
-    
+
     /**
-     * Make the inheriting class create the environment for safely handling the request. 
+     * Make the inheriting class create the environment for safely handling the request.
      * E.g. creating the specific fault barrier.
-     * @param request The request to handle.
+     *
+     * @param request        The request to handle.
      * @param messageContext the message context
-     * @param handler The handler for the request.
+     * @param handler        The handler for the request.
      */
     protected abstract void handleRequest(MessageRequest request, MessageContext messageContext, RequestHandler handler);
 
@@ -103,17 +99,17 @@ public abstract class AbstractContributorMediator implements ContributorMediator
                     if (MessageUtils.isIdentifyRequest(message)) {
                         log.trace("Received unhandled identity request: \n{}", message);
                     } else
-                    log.warn("Unable to handle messages of this type: \n{}", message);
+                        log.warn("Unable to handle messages of this type: \n{}", message);
                 }
             } else {
                 log.trace("Can only handle message requests, but received: \n{}", message);
             }
         }
     }
-    
+
     /**
-    * Closes the mediator by removing all the message handler.
-    */
+     * Closes the mediator by removing all the message handler.
+     */
     @Override
     public void close() {
         messageBus.removeListener(getContext().getSettings().getCollectionDestination(), messageHandler);

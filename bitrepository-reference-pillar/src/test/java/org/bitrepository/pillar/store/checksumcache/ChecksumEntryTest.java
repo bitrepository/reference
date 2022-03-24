@@ -21,12 +21,12 @@ package org.bitrepository.pillar.store.checksumcache;
  * #L%
  */
 
-import java.util.Date;
-
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumEntry;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.Date;
 
 public class ChecksumEntryTest extends ExtendedTestCase {
     private static final String CE_FILE = "file";

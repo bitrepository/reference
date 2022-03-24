@@ -21,13 +21,6 @@
  */
 package org.bitrepository;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.Properties;
-
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
@@ -35,6 +28,13 @@ import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.webservice.ServiceUrl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.Properties;
 
 public class BasicClientFactory {
     private static final Logger log = LoggerFactory.getLogger(BasicClientFactory.class);

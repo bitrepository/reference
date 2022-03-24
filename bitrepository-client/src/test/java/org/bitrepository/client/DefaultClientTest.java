@@ -21,17 +21,15 @@ package org.bitrepository.client;
  * #L%
  */
 
-import java.math.BigInteger;
-import java.util.concurrent.TimeUnit;
-
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.protocol.bus.MessageReceiver;
-import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.math.BigInteger;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;

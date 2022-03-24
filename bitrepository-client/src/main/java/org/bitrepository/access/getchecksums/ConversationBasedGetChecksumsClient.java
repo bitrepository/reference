@@ -1,23 +1,23 @@
 /*
  * #%L
  * bitrepository-access-client
- * 
+ *
  * $Id$
  * $HeadURL$
  * %%
  * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -45,19 +45,18 @@ import java.util.Arrays;
 
 /**
  * The default <code>GetChecksumsClient</code>.
- *
- * This class is just a thin wrapper which creates a conversion each time a operation is started. The conversations 
- * takes over the rest of the operation handling.
+ * <p>
+ * This class is just a thin wrapper which creates a conversion each time an operation is started.
  */
 public class ConversationBasedGetChecksumsClient extends AbstractClient implements GetChecksumsClient {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     /**
-     * @see AbstractClient
-     * @param messageBus The MessageBus for communication
+     * @param messageBus           The MessageBus for communication
      * @param conversationMediator The ConversationMediator to keep track of conversations
-     * @param settings The Settings
-     * @param clientID The ID of the client
+     * @param settings             The Settings
+     * @param clientID             The ID of the client
+     * @see AbstractClient
      */
     public ConversationBasedGetChecksumsClient(MessageBus messageBus, ConversationMediator conversationMediator,
                                                Settings settings, String clientID) {
@@ -67,8 +66,8 @@ public class ConversationBasedGetChecksumsClient extends AbstractClient implemen
 
     @Override
     public void getChecksums(String collectionID, ContributorQuery[] contributorQueries, String fileID,
-            ChecksumSpecTYPE checksumSpec, URL addressForResult, EventHandler eventHandler,
-            String auditTrailInformation) {
+                             ChecksumSpecTYPE checksumSpec, URL addressForResult, EventHandler eventHandler,
+                             String auditTrailInformation) {
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "collectionID");
         MessageDataTypeValidator.validate(checksumSpec, "checksumSpec");
         validateFileID(fileID);
@@ -76,9 +75,9 @@ public class ConversationBasedGetChecksumsClient extends AbstractClient implemen
             contributorQueries = ContributorQueryUtils.createFullContributorQuery(
                     SettingsUtils.getPillarIDsForCollection(collectionID));
         }
-                
+
         log.info("Requesting the checksums for file '{}' with the specifications '{}' with query {}." +
-                (addressForResult != null ?  " The result should be uploaded to '{}'." : ""),
+                        (addressForResult != null ? " The result should be uploaded to '{}'." : ""),
                 fileID, checksumSpec, Arrays.asList(contributorQueries), addressForResult);
 
         GetChecksumsConversationContext context = new GetChecksumsConversationContext(collectionID,

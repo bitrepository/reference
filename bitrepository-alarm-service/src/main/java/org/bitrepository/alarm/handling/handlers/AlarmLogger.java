@@ -8,16 +8,16 @@
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -33,22 +33,26 @@ import org.slf4j.LoggerFactory;
  * Very simple AlarmHandler, which just logs the alarms received.
  */
 public class AlarmLogger implements AlarmHandler {
-    
-    /** The logger to log the Alarms.*/
-    private Logger log = LoggerFactory.getLogger(this.getClass());
-    
-    /** Constructor. Nothing to initialize. */
-    public AlarmLogger() { 
-        log.debug("Instantiating the alarmhandler '" + this.getClass().getCanonicalName() + "'");
+
+    /**
+     * The logger to log the Alarms.
+     */
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
+
+    /**
+     * Constructor. Nothing to initialize.
+     */
+    public AlarmLogger() {
+        log.debug("Instantiating the AlarmHandler '" + this.getClass().getCanonicalName() + "'");
     }
-    
+
     @Override
     public void handleAlarm(AlarmMessage msg) {
         log.info("ALARM: " + msg.toString());
     }
-    
+
     @Override
     public void close() {
-        log.debug("Closing the alarmhandler '" + this.getClass().getCanonicalName() + "'");
+        log.debug("Closing the AlarmHandler '" + this.getClass().getCanonicalName() + "'");
     }
 }

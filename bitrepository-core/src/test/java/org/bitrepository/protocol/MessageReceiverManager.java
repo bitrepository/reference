@@ -21,10 +21,11 @@
  */
 package org.bitrepository.protocol;
 
-import java.util.LinkedList;
-import java.util.List;
 import org.bitrepository.protocol.bus.MessageReceiver;
 import org.bitrepository.protocol.messagebus.MessageBus;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Takes care of the receiver bookkeeping in connect with test setup and testdown.

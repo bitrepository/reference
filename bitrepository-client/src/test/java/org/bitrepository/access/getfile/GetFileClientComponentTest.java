@@ -24,13 +24,7 @@
  */
 package org.bitrepository.access.getfile;
 
-import java.math.BigInteger;
-import java.net.URL;
-import java.util.concurrent.TimeUnit;
-
 import org.bitrepository.access.AccessComponentFactory;
-import org.bitrepository.access.getfile.ConversationBasedGetFileClient;
-import org.bitrepository.access.getfile.GetFileClient;
 import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
@@ -47,6 +41,9 @@ import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.math.BigInteger;
+import java.net.URL;
+
 import static org.testng.Assert.assertEquals;
 
 /**
@@ -57,7 +54,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
     private static FilePart NO_FILE_PART = null;
 
     @Test(groups = {"regressiontest"})
-    public void verifyGetFileClientFromFactory() throws Exception {
+    public void verifyGetFileClientFromFactory() {
         Assert.assertTrue(AccessComponentFactory.getInstance().createGetFileClient(
                 settingsForCUT, securityManager, settingsForTestClient.getComponentID())
                 instanceof ConversationBasedGetFileClient,

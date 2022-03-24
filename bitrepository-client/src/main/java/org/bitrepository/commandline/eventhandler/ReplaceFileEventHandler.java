@@ -8,12 +8,12 @@
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
@@ -35,7 +35,8 @@ public class ReplaceFileEventHandler extends CompleteEventAwaiter {
 
     /**
      * Constructor.
-     * @param settings The settings.
+     *
+     * @param settings      The settings.
      * @param outputHandler The output handler.
      */
     public ReplaceFileEventHandler(Settings settings, OutputHandler outputHandler) {
@@ -44,25 +45,26 @@ public class ReplaceFileEventHandler extends CompleteEventAwaiter {
 
     @Override
     public void handleComponentComplete(OperationEvent event) {
-        if(!(event instanceof ReplaceFileCompletePillarEvent)) {
-            output.warn("ReplaceFileEventHandler received a component complete, which is not a "
-                    + ReplaceFileCompletePillarEvent.class.getName());
+        if (!(event instanceof ReplaceFileCompletePillarEvent)) {
+            output.warn("ReplaceFileEventHandler received a component complete, which is not a " +
+                    ReplaceFileCompletePillarEvent.class.getName());
         }
-        
+
+        assert event instanceof ReplaceFileCompletePillarEvent;
         ReplaceFileCompletePillarEvent pillarEvent = (ReplaceFileCompletePillarEvent) event;
         StringBuilder componentText = new StringBuilder();
-        if(pillarEvent.getChecksumForReplacedFile() != null) {
-            componentText.append("Checksum for replaced file: " 
-                    + Base16Utils.decodeBase16(pillarEvent.getChecksumForReplacedFile().getChecksumValue()) + "\t");
+        if (pillarEvent.getChecksumForReplacedFile() != null) {
+            componentText.append("Checksum for replaced file: ")
+                    .append(Base16Utils.decodeBase16(pillarEvent.getChecksumForReplacedFile().getChecksumValue())).append("\t");
         }
-        
-        if(pillarEvent.getChecksumForNewFile() != null) {
-            componentText.append("Checksum for new file: " 
-                    + Base16Utils.decodeBase16(pillarEvent.getChecksumForNewFile().getChecksumValue()) + "\t");
+
+        if (pillarEvent.getChecksumForNewFile() != null) {
+            componentText.append("Checksum for new file: ")
+                    .append(Base16Utils.decodeBase16(pillarEvent.getChecksumForNewFile().getChecksumValue())).append("\t");
         }
-        
-        if(componentText.length() != 0) {
-            output.resultLine(pillarEvent.getContributorID() + " : \t" + componentText.toString());
+
+        if (componentText.length() != 0) {
+            output.resultLine(pillarEvent.getContributorID() + " : \t" + componentText);
         }
     }
 }

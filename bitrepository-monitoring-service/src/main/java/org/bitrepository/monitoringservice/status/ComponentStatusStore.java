@@ -21,14 +21,14 @@
  */
 package org.bitrepository.monitoringservice.status;
 
+import org.bitrepository.bitrepositoryelements.ResultingStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
-import org.bitrepository.bitrepositoryelements.ResultingStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Storage for the status of the different components.
@@ -62,7 +62,7 @@ public class ComponentStatusStore implements StatusStore {
     @Override
     public synchronized void updateReplyCounts() {
         for(String ID : statusMap.keySet()) {
-            statusMap.get(ID).updateReplys();
+            statusMap.get(ID).updateReplies();
         }
     }
     

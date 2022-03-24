@@ -33,14 +33,9 @@ import org.bitrepository.modify.putfile.PutFileClient;
 
 import java.net.URL;
 
-/**
- * Putting a file to the collection.
- */
-public class PutFileCmd extends CommandLineClient {
+import static org.bitrepository.commandline.Constants.ARGUMENT_IS_NOT_REQUIRED;
 
-    /**
-     * The client for performing the PutFile operation.
-     */
+public class PutFileCmd extends CommandLineClient {
     private final PutFileClient client;
 
     /**
@@ -59,14 +54,14 @@ public class PutFileCmd extends CommandLineClient {
     }
 
     /**
-     * @param args The arguments:
-     *             k = Location of file with private security key.
-     *             s = Location of folder with setting files.
-     *             c = ID of the Collection
-     *             f = The actual file to put (Either this or the URL).
-     *             u = The URL for the file (Either this or the actual file, though this requires both file id and checksum).
-     *             i = The id of the file to put.
-     *             C = The checksum of the file.
+     * @param args Valid arguments are: <p/>
+     *             k = Location of file with private security key. <br/>
+     *             s = Location of folder with setting files. <br/>
+     *             c = ID of the Collection. <br/>
+     *             f = The actual file to put (Either this or the URL). <br/>
+     *             u = The URL for the file (Either this or the actual file, though this requires both file id and checksum). <br/>
+     *             i = The id of the file to put. <br/>
+     *             C = The checksum of the file. <br/>
      */
     protected PutFileCmd(String... args) {
         super(args);
@@ -79,7 +74,7 @@ public class PutFileCmd extends CommandLineClient {
     }
 
     /**
-     * Perform the PutFile operation.
+     * Performs the PutFile operation.
      */
     @Override
     public void performOperation() {
@@ -98,38 +93,38 @@ public class PutFileCmd extends CommandLineClient {
         super.createOptionsForCmdArgumentHandler();
 
         Option fileOption = new Option(Constants.FILE_ARG, Constants.HAS_ARGUMENT,
-                "The path to the file, which needs to be  uploaded. Is required, unless a URL is given.");
-        fileOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
+                "The path to the file to be uploaded. Is required, unless a URL is given.");
+        fileOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(fileOption);
 
         Option urlOption = new Option(Constants.URL_ARG, Constants.HAS_ARGUMENT,
-                "The URL for the file to be put. Is required, unless the actual file is given.");
-        urlOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
+                "The URL for the file to be uploaded. Is required, unless a local file is given.");
+        urlOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(urlOption);
 
         Option checksumOption = new Option(Constants.CHECKSUM_ARG, Constants.HAS_ARGUMENT,
-                "The checksum for the file to be retrieved. Required if using an URL.");
-        checksumOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
+                "The checksum for the file to be retrieved. Is required if using a URL.");
+        checksumOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumOption);
 
         Option checksumTypeOption = new Option(Constants.REQUEST_CHECKSUM_TYPE_ARG, Constants.HAS_ARGUMENT,
-                "[OPTIONAL] The algorithm of checksum to request in the response from the pillars.");
-        checksumTypeOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
+                "[OPTIONAL] Used to request a specific checksum algorithm in the response from the pillars.");
+        checksumTypeOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumTypeOption);
         Option checksumSaltOption = new Option(Constants.REQUEST_CHECKSUM_SALT_ARG, Constants.HAS_ARGUMENT,
-                "[OPTIONAL] The salt of checksum to request in the response. Requires the ChecksumType argument.");
-        checksumSaltOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
+                "[OPTIONAL] Used to request a salted checksum in the response. Requires the ChecksumType argument.");
+        checksumSaltOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumSaltOption);
 
         Option deleteOption = new Option(Constants.DELETE_FILE_ARG, Constants.NO_ARGUMENT,
-                "If this argument is present, then the file will be removed from the server, " + "when the operation is complete.");
-        deleteOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
+                "If this argument is present, then the file will be removed from the server, when the chosen operation is complete.");
+        deleteOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(deleteOption);
     }
 
     /**
-     * Run the default validation, and validates that only file or URL is given.
-     * Also, if it is an URL is given, then it must also be given the checksum and the file id.
+     * Run the default validation, and validates that either only file or URL is given.
+     * Also, if it is a URL that is given, then it must also be given the checksum and the file id.
      */
     @Override
     protected void validateArguments() {
@@ -145,7 +140,7 @@ public class PutFileCmd extends CommandLineClient {
             throw new IllegalArgumentException("The URL argument requires also the checksum argument (-c).");
         }
         if (cmdHandler.hasOption(Constants.URL_ARG) && !cmdHandler.hasOption(Constants.FILE_ID_ARG)) {
-            throw new IllegalArgumentException("The URL argument requires also the argument for the ID of the " + "file (-i).");
+            throw new IllegalArgumentException("The URL argument requires also the argument for the ID of the file (-i).");
         }
     }
 
@@ -177,13 +172,13 @@ public class PutFileCmd extends CommandLineClient {
         return finalEvent;
     }
 
-
     /**
-     * Retrieves the Checksum for the pillars to validate, either taken from the actual file,
-     * or from the checksum argument.
-     * It will be in the default checksum spec type from settings.
+     * Retrieves the Checksum of the file, used by the pillars to validate.
+     * This checksum is either taken from the actual file, or from the checksum argument.
+     * <p/>
+     * The checksum will be of the default checksum spec-type, which is defined in the settings.
      *
-     * @return The checksum validation type.
+     * @return The spec-type of the checksum as {@link ChecksumDataForFileTYPE}.
      */
     protected ChecksumDataForFileTYPE getValidationChecksum() {
         if (cmdHandler.hasOption(Constants.FILE_ARG)) {
@@ -194,7 +189,7 @@ public class PutFileCmd extends CommandLineClient {
     }
 
     /**
-     * @return The filename for the file to upload.
+     * @return The filename (FileID) for the file to upload.
      */
     private String getFileIDForMessage() {
         if (cmdHandler.hasOption(Constants.URL_ARG)) {

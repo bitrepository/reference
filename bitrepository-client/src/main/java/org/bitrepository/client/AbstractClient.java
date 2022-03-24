@@ -1,23 +1,23 @@
 /*
  * #%L
  * Bitrepository Protocol
- * 
+ *
  * $Id$
  * $HeadURL$
  * %%
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -38,24 +38,35 @@ import org.bitrepository.protocol.messagebus.MessageBus;
 /**
  * Implements the generic functionality for a reference client
  */
-public class AbstractClient implements BitrepositoryClient {
-    /** The settings for this instance.*/
+public class AbstractClient implements BitRepositoryClient {
+    /**
+     * The settings for this instance.
+     */
     protected final Settings settings;
-    /** The messagebus for communication.*/
+    /**
+     * The messageBus for communication.
+     */
     protected final MessageBus messageBus;
-    /** The mediator which should manage the conversations. */
+    /**
+     * The mediator which should manage the conversations.
+     */
     protected final String clientID;
-    /** The mediator which should manage the conversations. */
+    /**
+     * The mediator which should manage the conversations.
+     */
     private final ConversationMediator conversationMediator;
-    /** The FileIDValidator.*/
+    /**
+     * The FileIDValidator.
+     */
     private final FileIDValidator validator;
-    
+
     /**
      * Constructor.
-     * @param settings The settings.
+     *
+     * @param settings             The settings.
      * @param conversationMediator The mediator.
-     * @param messageBus The messagebus.
-     * @param clientID The id of the client.
+     * @param messageBus           The messageBus.
+     * @param clientID             The id of the client.
      */
     public AbstractClient(Settings settings, ConversationMediator conversationMediator, MessageBus messageBus, String clientID) {
         ArgumentValidator.checkNotNull(clientID, "clientID");
@@ -66,18 +77,20 @@ public class AbstractClient implements BitrepositoryClient {
         validator = new FileIDValidator(settings);
         SettingsUtils.initialize(settings);
     }
-    
+
     /**
      * Validates the id of a file.
+     *
      * @param fileID The file id to validate.
      */
     protected void validateFileID(String fileID) {
         validator.checkFileID(fileID);
     }
-    
+
     /**
      * Starts the conversation.
-     * @param context The context for the new conversion.
+     *
+     * @param context    The context for the new conversion.
      * @param startState The starting state
      */
     protected void startConversation(ConversationContext context, GeneralConversationState startState) {

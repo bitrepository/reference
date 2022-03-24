@@ -8,12 +8,12 @@
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
@@ -21,13 +21,13 @@
  */
 package org.bitrepository.alarm.alarmservice;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.TimeUtils;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Class to format alarms for web display
@@ -41,52 +41,52 @@ public class WebAlarm {
     private String collectionID;
 
     public WebAlarm() {}
-    
+
     public WebAlarm(Alarm alarm) {
         collectionID = alarm.getCollectionID() == null ? "" : alarm.getCollectionID();
         origDateTime = TimeUtils.shortDate(CalendarUtils.convertFromXMLGregorianCalendar(alarm.getOrigDateTime()));
         alarmRaiser = alarm.getAlarmRaiser();
         alarmCode = alarm.getAlarmCode();
         alarmText = alarm.getAlarmText();
-        
+
     }
 
     @XmlElement(name = "origDateTime")
     public String getOrigDateTime() {
         return origDateTime;
     }
-    
+
     public void setOrigDateTime(String origDateTime) {
         this.origDateTime = origDateTime;
     }
-    
+
     @XmlElement(name = "alarmCode")
     public AlarmCode getAlarmCode() {
         return alarmCode;
     }
-    
+
     public void setAlarmCode(AlarmCode alarmCode) {
         this.alarmCode = alarmCode;
     }
-    
+
     @XmlElement(name = "alarmRaiser")
     public String getAlarmRaiser() {
         return alarmRaiser;
     }
-    
+
     public void setAlarmRaiser(String alarmRaiser) {
         this.alarmRaiser = alarmRaiser;
     }
-    
+
     @XmlElement(name = "alarmText")
     public String getAlarmText() {
         return alarmText;
     }
-    
+
     public void setAlarmText(String alarmText) {
         this.alarmText = alarmText;
-    }    
-    
+    }
+
     @XmlElement(name = "collectionID")
     public String getCollectionID() {
         return collectionID;
@@ -94,5 +94,5 @@ public class WebAlarm {
 
     public void setCollectionID(String collectionID) {
         this.collectionID = collectionID;
-    }    
+    }
 }

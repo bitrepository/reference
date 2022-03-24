@@ -24,7 +24,7 @@
 //import org.bitrepository.common.settings.Settings;
 //import org.bitrepository.common.settings.TestSettingsProvider;
 //import org.bitrepository.integrityservice.mocks.MockWorkflow;
-//import org.bitrepository.integrityservice.scheduler.TimerbasedScheduler;
+//import org.bitrepository.integrityservice.scheduler.TimerBasedScheduler;
 //import org.bitrepository.integrityservice.scheduler.workflow.Workflow;
 //import org.jaccept.structure.ExtendedTestCase;
 //import org.testng.Assert;
@@ -48,7 +48,7 @@
 //    public void testSchedulerContainingWorkflows() {
 //        addDescription("Test that schedulers call all workflow at the given intervals.");
 //        addStep("Setup a scheduler and validate initial state", "No errors and no workflows");
-//        TimerbasedScheduler scheduler = new TimerbasedScheduler(settings);
+//        TimerBasedScheduler scheduler = new TimerBasedScheduler(settings);
 //        Assert.assertEquals(scheduler.getJobs().size(), 0, "Should not be any workflows in the scheduler.");
 //        
 //        addStep("Make a new workflow, add it to the scheduler and extract it afterwards.", 
@@ -76,7 +76,7 @@
 //        addStep("Setup the variables and such.", "Should not be able to fail here.");
 //        String taskName = "MockWorkFlow";
 //        settings.getReferenceSettings().getIntegrityServiceSettings().setSchedulerInterval(INTERVAL);
-//        TimerbasedScheduler scheduler = new TimerbasedScheduler(settings);
+//        TimerBasedScheduler scheduler = new TimerBasedScheduler(settings);
 //        
 //        addStep("Create a workflow", "Should not have been called yet been called.");
 //        MockWorkflow workflow = new MockWorkflow(INTERVAL + INTERVAL_DELAY, taskName);

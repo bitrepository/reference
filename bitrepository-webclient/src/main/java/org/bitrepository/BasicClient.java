@@ -21,14 +21,14 @@
  */
 package org.bitrepository;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.bitrepository.settings.repositorysettings.RepositorySettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class BasicClient {
     private Settings settings;

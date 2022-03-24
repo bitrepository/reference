@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -29,31 +29,29 @@ import org.bitrepository.bitrepositoryelements.ResponseCode;
  */
 @SuppressWarnings("serial")
 public class IllegalOperationException extends RequestHandlerException {
-    private String fileID;
-    
+    private final String fileID;
+
     /**
-     * Constructor.
-     * @param rCode The response code.
-     * @param rText The text for the response info.
+     * @param rCode  The response code.
+     * @param rText  The text for the response info.
      * @param fileID The id of the file regarding the illegal operation. Use null, if no file.
      */
     public IllegalOperationException(ResponseCode rCode, String rText, String fileID) {
         super(rCode, rText);
         this.fileID = fileID;
     }
-    
+
     /**
-     * Constructor.
-     * @param rCode The response code.
-     * @param rText The text for the response info.
+     * @param rCode  The response code.
+     * @param rText  The text for the response info.
      * @param fileID The id of the file regarding the illegal operation. Use null, if no file.
-     * @param e The exception to wrap into the StackTrace.
+     * @param e      The exception to wrap into the StackTrace.
      */
     public IllegalOperationException(ResponseCode rCode, String rText, String fileID, Exception e) {
         super(rCode, rText, e);
         this.fileID = fileID;
     }
-    
+
     /**
      * @return fileID field.
      */

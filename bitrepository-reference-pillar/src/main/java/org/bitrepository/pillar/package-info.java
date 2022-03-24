@@ -24,7 +24,7 @@
  */
 /**
  * <p>
- * This package implementes a reference pillar.
+ * This package implements a reference pillar.
  * </p><p>
  * The class @see org.bitrepository.pillar.PillarAPI provides the basic interface for the reference pillar towards
  * the @see org.bitrepository.pillar.PillarMessageListener.
@@ -41,7 +41,7 @@
  * The actual implementation of the reference pillar is in the 
  *  org.bitrepository.pillar.referencepillar.ReferencePillar class.
  * </p><p>
- * Automatical creation of the response message for the reference pillar is done in the
+ * Automatic creation of the response message for the reference pillar is done in the
  *  org.bitrepository.pillar.ReferencePillarMessageFactory class.
  * </p><p>
  * The @see org.bitrepository.pillar.checksumpillar.ChecksumPillar is the implementation of the checksum pillar.

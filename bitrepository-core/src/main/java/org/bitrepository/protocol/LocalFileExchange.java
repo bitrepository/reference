@@ -8,18 +8,21 @@
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
 package org.bitrepository.protocol;
+
+import org.bitrepository.common.utils.FileUtils;
+import org.bitrepository.common.utils.StreamUtils;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -31,11 +34,8 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import org.bitrepository.common.utils.FileUtils;
-import org.bitrepository.common.utils.StreamUtils;
-
 /**
- * File exchange used for exchanging files on a local filesystem 
+ * File exchange used for exchanging files on a local filesystem
  */
 public class LocalFileExchange implements FileExchange {
     private final File storageDir;
@@ -51,6 +51,7 @@ public class LocalFileExchange implements FileExchange {
 
     /**
      * Put the file into bitrepository and return the url of the ingested file
+     *
      * @param dataFile File to get ingested
      * @return URL encoded url test#file is returned as test%23file
      */
@@ -69,28 +70,28 @@ public class LocalFileExchange implements FileExchange {
     public InputStream getFile(URL url) throws IOException {
         return url.openStream();
     }
-    
+
     @Override
     public void getFile(OutputStream out, URL url) throws IOException {
-        try(InputStream fis = url.openStream()) {
-            StreamUtils.copyInputStreamToOutputStream(fis, out);    
+        try (InputStream fis = url.openStream()) {
+            StreamUtils.copyInputStreamToOutputStream(fis, out);
         }
     }
 
     @Override
     public void getFile(File outputFile, String fileAddress) {
-        URL url; 
+        URL url;
         try {
             url = new URL(fileAddress);
         } catch (MalformedURLException e) {
             throw new IllegalStateException("Cannot create the URL.", e);
         }
-        
-        try(OutputStream out = new BufferedOutputStream(new FileOutputStream(outputFile))) {
+
+        try (OutputStream out = new BufferedOutputStream(new FileOutputStream(outputFile))) {
             getFile(out, url);
         } catch (IOException e) {
             throw new CoordinationLayerException("Could not download data "
-                    + "from '" + fileAddress + "' (url: '" + url + "') to the file '" 
+                    + "from '" + fileAddress + "' (url: '" + url + "') to the file '"
                     + outputFile.getAbsolutePath() + "'.", e);
         }
     }
@@ -103,7 +104,7 @@ public class LocalFileExchange implements FileExchange {
             url = dest.toURI().toURL();
         } catch (MalformedURLException e) {
             throw new IllegalStateException("Cannot create the URL.", e);
-        } 
+        }
         return url;
     }
 

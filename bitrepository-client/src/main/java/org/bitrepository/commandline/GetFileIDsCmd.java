@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -32,7 +32,6 @@ import org.bitrepository.common.utils.SettingsUtils;
  * Perform the GetFileIDs operation.
  */
 public class GetFileIDsCmd extends CommandLineClient {
-    /** The client for performing the actual operation.*/
     private final PagingGetFileIDsClient pagingClient;
 
     /**
@@ -53,17 +52,17 @@ public class GetFileIDsCmd extends CommandLineClient {
     /**
      * @param args The command line arguments for defining the operation.
      */
-    protected GetFileIDsCmd(String ... args) {
+    protected GetFileIDsCmd(String... args) {
         super(args);
         output.debug("Instantiation GetFileIDClient.");
-        GetFileIDsClient client = AccessComponentFactory.getInstance().createGetFileIDsClient(settings, 
+        GetFileIDsClient client = AccessComponentFactory.getInstance().createGetFileIDsClient(settings,
                 securityManager, getComponentID());
         output.debug("Instantiation GetFileID outputFormatter.");
         GetFileIDsOutputFormatter outputFormatter = new GetFileIDsInfoFormatter(output);
 
         output.debug("Instantiation GetFileID paging client.");
         int pageSize = SettingsUtils.getMaxClientPageSize();
-        pagingClient = new PagingGetFileIDsClient(client, getTimeout(), pageSize, outputFormatter, output); 
+        pagingClient = new PagingGetFileIDsClient(client, getTimeout(), pageSize, outputFormatter, output);
     }
 
     @Override
@@ -76,8 +75,8 @@ public class GetFileIDsCmd extends CommandLineClient {
      */
     public void performOperation() {
         output.startupInfo("Performing the GetFileIDs operation.");
-        Boolean success = pagingClient.getFileIDs(getCollectionID(), getFileIDs(), getPillarIDs());
-        if(success) {
+        boolean success = pagingClient.getFileIDs(getCollectionID(), getFileIDs(), getPillarIDs());
+        if (success) {
             System.exit(Constants.EXIT_SUCCESS);
         } else {
             System.exit(Constants.EXIT_OPERATION_FAILURE);

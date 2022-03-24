@@ -24,10 +24,17 @@
  */
 package org.bitrepository.protocol;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Iterator;
+import org.apache.activemq.util.ByteArrayInputStream;
+import org.apache.commons.io.IOUtils;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
+import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
+import org.bitrepository.common.JaxbHelper;
+import org.bitrepository.protocol.message.ExampleMessageFactory;
+import org.jaccept.structure.ExtendedTestCase;
+import org.testng.annotations.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.NamespaceContext;
@@ -36,18 +43,10 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
-
-import org.apache.activemq.util.ByteArrayInputStream;
-import org.apache.commons.io.IOUtils;
-import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
-import org.bitrepository.bitrepositorymessages.AlarmMessage;
-import org.bitrepository.common.JaxbHelper;
-import org.bitrepository.protocol.message.ExampleMessageFactory;
-import org.jaccept.structure.ExtendedTestCase;
-import org.testng.annotations.Test;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Iterator;
 
 /**
  * Test whether we are able to create message objects from xml. The input XML is the example code defined in the

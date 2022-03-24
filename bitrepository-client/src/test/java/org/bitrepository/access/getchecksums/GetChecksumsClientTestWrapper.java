@@ -24,14 +24,13 @@
  */
 package org.bitrepository.access.getchecksums;
 
-import java.net.URL;
-import java.util.Arrays;
-
 import org.bitrepository.access.ContributorQuery;
-import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.jaccept.TestEventManager;
+
+import java.net.URL;
+import java.util.Arrays;
 
 /**
  * Wraps the <code>GetFileClient</code> adding test event logging and functionality for handling blocking calls.

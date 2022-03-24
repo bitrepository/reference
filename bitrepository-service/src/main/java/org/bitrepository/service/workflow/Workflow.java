@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -27,20 +27,15 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Abstract interface for running a SchedulableJob based on WorkflowSteps.
+ *
  * @see SchedulableJob {@link SchedulableJob}
- * @see WorkflowStep {@link WorkflowStep} 
+ * @see WorkflowStep {@link WorkflowStep}
  */
 public abstract class Workflow implements SchedulableJob {
-    /** The jobID. */
     protected JobID jobID;
-    /** The log.*/
-    private Logger log = LoggerFactory.getLogger(getClass());
-
-    /** The current step running.*/
+    private final Logger log = LoggerFactory.getLogger(getClass());
     private WorkflowStep currentStep = null;
-    /** The current state of the workflow. */
     private WorkflowState currentState = WorkflowState.NOT_RUNNING;
-    /** Statistics for the workflow.*/
     private WorkflowStatistic statistics;
 
     @Override
@@ -51,10 +46,11 @@ public abstract class Workflow implements SchedulableJob {
 
     /**
      * Initiates the given step and sets it to the current running step.
+     *
      * @param step The step to start.
      */
     protected void performStep(WorkflowStep step) {
-        if(currentState != WorkflowState.ABORTED) {
+        if (currentState != WorkflowState.ABORTED) {
             this.currentState = WorkflowState.RUNNING;
             this.currentStep = step;
             log.info("Starting step: '" + step.getName() + "'");
@@ -63,7 +59,7 @@ public abstract class Workflow implements SchedulableJob {
                 step.performStep();
             } catch (WorkflowAbortedException e) {
                 this.currentState = WorkflowState.ABORTED;
-                log.warn("Failure occured, aborting workflow", e);
+                log.warn("Failure occurred, aborting workflow", e);
             } catch (Exception e) {
                 log.error("Failure in step: '" + step.getName() + "'.", e);
                 throw new RuntimeException("Failed to run step " + step.getName(), e);
@@ -73,7 +69,7 @@ public abstract class Workflow implements SchedulableJob {
             }
         }
     }
-    
+
     /**
      * For telling that the workflow has finished its task.
      */
@@ -83,15 +79,16 @@ public abstract class Workflow implements SchedulableJob {
         this.currentStep = null;
         log.info(statistics.getFullStatistics());
     }
-    
+
     /**
      * Get the final state of the workflow.
+     *
      * @return ABORTED if current state is ABORTED, SUCCEEDED otherwise.
      */
     private WorkflowState getFinishedWorkflowStatus() {
         return (currentState == WorkflowState.ABORTED ? WorkflowState.ABORTED : WorkflowState.SUCCEEDED);
     }
-    
+
     @Override
     public WorkflowState currentState() {
         return currentState;
@@ -104,7 +101,7 @@ public abstract class Workflow implements SchedulableJob {
 
     @Override
     public String getHumanReadableState() {
-        if(currentStep == null) {
+        if (currentStep == null) {
             return currentState.name();
         } else {
             return currentStep.getName();
@@ -115,7 +112,7 @@ public abstract class Workflow implements SchedulableJob {
      * @return The statistics for this workflow.
      */
     public synchronized WorkflowStatistic getWorkflowStatistics() {
-        if(statistics == null) {
+        if (statistics == null) {
             statistics = new WorkflowStatistic(getClass().getSimpleName());
         }
         return statistics;
@@ -131,9 +128,7 @@ public abstract class Workflow implements SchedulableJob {
         if (this == o) return true;
         Workflow that = (Workflow) o;
 
-        if (!jobID.equals(that.jobID)) return false;
-
-        return true;
+        return jobID.equals(that.jobID);
     }
 
     @Override

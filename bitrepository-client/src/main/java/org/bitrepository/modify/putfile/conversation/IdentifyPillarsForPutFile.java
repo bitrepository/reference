@@ -1,23 +1,23 @@
 /*
  * #%L
  * Bitrepository Access
- * 
+ *
  * $Id$
  * $HeadURL$
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -51,41 +51,39 @@ public class IdentifyPillarsForPutFile extends IdentifyingState {
     /**
      * Extends the default behaviour with an idempotent aspect. This assumes that the put to a pillar is successful if
      * the same file already exists.
-     *
+     * <p>
      * The existence of a different file on the other hand is a fatal problem.
      */
     @Override
     protected void handleFailureResponse(MessageResponse msg) throws UnableToFinishException {
         IdentifyPillarsForPutFileResponse response = (IdentifyPillarsForPutFileResponse) msg;
         ResponseCode responseCode = response.getResponseInfo().getResponseCode();
-        switch (responseCode) {
-            case DUPLICATE_FILE_FAILURE:
-                if(response.isSetChecksumDataForExistingFile()) {
-                    if(ChecksumUtils.areEqual(
-                            response.getChecksumDataForExistingFile(),context.getChecksumForValidationAtPillar())) {
-                        PutFileCompletePillarEvent event = new PutFileCompletePillarEvent(
-                                response.getPillarID(), response.getCollectionID(), response.getChecksumDataForExistingFile());
-                        event.setInfo("File already existed on " + response.getPillarID());
-                        getContext().getMonitor().contributorComplete(event);
-                    } else {
-                        getContext().getMonitor().contributorFailed(
-                                "Received negative response from component " + response.getFrom() +
-                                        ":  " + response.getResponseInfo() + " (existing file checksum does not match)",
-                                response.getFrom(), response.getResponseInfo().getResponseCode());
-                        throw new UnableToFinishException("Can not put file " + context.getFileID() +
-                                ", as an different file already exists on pillar " + response.getPillarID());
-                    }
+        if (responseCode == ResponseCode.DUPLICATE_FILE_FAILURE) {
+            if (response.isSetChecksumDataForExistingFile()) {
+                if (ChecksumUtils.areEqual(
+                        response.getChecksumDataForExistingFile(), context.getChecksumForValidationAtPillar())) {
+                    PutFileCompletePillarEvent event = new PutFileCompletePillarEvent(
+                            response.getPillarID(), response.getCollectionID(), response.getChecksumDataForExistingFile());
+                    event.setInfo("File already existed on " + response.getPillarID());
+                    getContext().getMonitor().contributorComplete(event);
                 } else {
                     getContext().getMonitor().contributorFailed(
-                            "Received negative response from component " + response.getFrom() + ":  " +
-                                    response.getResponseInfo(), response.getFrom(), 
-                                    response.getResponseInfo().getResponseCode());
+                            "Received negative response from component " + response.getFrom() +
+                                    ":  " + response.getResponseInfo() + " (existing file checksum does not match)",
+                            response.getFrom(), response.getResponseInfo().getResponseCode());
                     throw new UnableToFinishException("Can not put file " + context.getFileID() +
-                            ", as an file already exists on pillar " + response.getPillarID());
+                            ", as an different file already exists on pillar " + response.getPillarID());
                 }
-                break;
-            default:
-                super.handleFailureResponse(msg);
+            } else {
+                getContext().getMonitor().contributorFailed(
+                        "Received negative response from component " + response.getFrom() + ":  " +
+                                response.getResponseInfo(), response.getFrom(),
+                        response.getResponseInfo().getResponseCode());
+                throw new UnableToFinishException("Can not put file " + context.getFileID() +
+                        ", as an file already exists on pillar " + response.getPillarID());
+            }
+        } else {
+            super.handleFailureResponse(msg);
         }
     }
 
@@ -116,9 +114,9 @@ public class IdentifyPillarsForPutFile extends IdentifyingState {
     }
 
     /**
-     * Extends the default behaviour with the possiblity of putting to a subset of pillars, if the
+     * Extends the default behaviour with the possibility of putting to a subset of pillars, if the
      * isSetPartialPutsAllow settings is true.
-     * */
+     */
     @Override
     protected boolean canFinish() {
         return (isPartialPutsAllowed() && getSelector().getSelectedComponents().size() > 0 ||

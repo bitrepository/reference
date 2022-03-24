@@ -21,11 +21,6 @@
  */
 package org.bitrepository.service.audit;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
@@ -38,6 +33,11 @@ import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 /** Run audit trail contributor database test using Derby.  Generates jaccept reports. */
 
@@ -74,7 +74,7 @@ public class AuditTrailContributorDatabaseTest extends ExtendedTestCase {
         addDescription("Testing the basic functions of the audit trail database interface.");
         addStep("Setup varibles and the database connection.", "No errors.");
         DatabaseManager dm = new AuditDatabaseManager(databaseSpecifics);
-        AuditTrailContributerDAO daba = new DerbyAuditTrailContributorDAO(dm);
+        AuditTrailContributorDAO daba = new DerbyAuditTrailContributorDAO(dm);
         daba.initialize(settings.getComponentID());
 
         addStep("Populate the database.", "Should be inserted into database.");
@@ -131,7 +131,7 @@ public class AuditTrailContributorDatabaseTest extends ExtendedTestCase {
         addDescription("Test the order of extraction");
         addStep("Setup variables and database connection", "No errors");
         DatabaseManager dm = new AuditDatabaseManager(databaseSpecifics);
-        AuditTrailContributerDAO daba = new DerbyAuditTrailContributorDAO(dm);
+        AuditTrailContributorDAO daba = new DerbyAuditTrailContributorDAO(dm);
         daba.initialize(settings.getComponentID());
 
         addStep("Populate the database.", "Should be inserted into database.");
@@ -167,7 +167,7 @@ public class AuditTrailContributorDatabaseTest extends ExtendedTestCase {
     public void contributorDatabaseCorrectTimestampTest() throws ParseException {
         addDescription("Testing the correct ingest and extraction of audittrail dates");
         DatabaseManager dm = new AuditDatabaseManager(databaseSpecifics);
-        AuditTrailContributerDAO daba = new DerbyAuditTrailContributorDAO(dm);
+        AuditTrailContributorDAO daba = new DerbyAuditTrailContributorDAO(dm);
         daba.initialize(settings.getComponentID());
         
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.ROOT);
@@ -212,7 +212,7 @@ public class AuditTrailContributorDatabaseTest extends ExtendedTestCase {
         }
 
         DatabaseManager dm = new AuditDatabaseManager(databaseSpecifics);
-        AuditTrailContributerDAO daba = new DerbyAuditTrailContributorDAO(dm);
+        AuditTrailContributorDAO daba = new DerbyAuditTrailContributorDAO(dm);
         daba.initialize(settings.getComponentID());
         
         addStep("Test with all data.", "No failures");

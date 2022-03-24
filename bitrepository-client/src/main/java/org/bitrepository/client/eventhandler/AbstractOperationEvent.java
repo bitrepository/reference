@@ -1,23 +1,23 @@
 /*
  * #%L
  * Bitrepository Protocol
- * 
+ *
  * $Id$
  * $HeadURL$
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -37,15 +37,15 @@ public abstract class AbstractOperationEvent implements OperationEvent {
     private String conversationID;
     private String collectionID;
 
-    @Override 
+    @Override
     public String getCollectionID() {
         return collectionID;
     }
-    
+
     public void setCollectionID(String collectionID) {
         this.collectionID = collectionID;
     }
-    
+
     @Override
     public String getInfo() {
         return info;
@@ -60,6 +60,7 @@ public abstract class AbstractOperationEvent implements OperationEvent {
     public OperationType getOperationType() {
         return operationType;
     }
+
     @Override
     public String getFileID() {
         return fileID;
@@ -70,29 +71,33 @@ public abstract class AbstractOperationEvent implements OperationEvent {
         return conversationID;
     }
 
-    /** @see #getEventType 
+    /**
      * @param type The {@link OperationEventType}  to set as the event type
+     * @see #getEventType
      */
     public void setEventType(OperationEventType type) {
         this.type = type;
     }
 
-    /** @see #getOperationType 
-     * @param operationType The {@link OperationType} to set as the operation type 
+    /**
+     * @param operationType The {@link OperationType} to set as the operation type
+     * @see #getOperationType
      */
     public void setOperationType(OperationType operationType) {
         this.operationType = operationType;
     }
 
-    /** @see #getFileID 
-     * @param fileID The ID of the file 
+    /**
+     * @param fileID The ID of the file
+     * @see #getFileID
      */
     public void setFileID(String fileID) {
         this.fileID = fileID;
     }
 
-    /** @see #getInfo 
-     * @param info The content of the info field 
+    /**
+     * @param info The content of the info field
+     * @see #getInfo
      */
     public void setInfo(String info) {
         this.info = info;
@@ -108,21 +113,21 @@ public abstract class AbstractOperationEvent implements OperationEvent {
     @Override
     public final String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(getConversationID() + ": ");
+        sb.append(getConversationID()).append(": ");
         sb.append(operationType);
         if (fileID != null) {
-            sb.append(" for file " + fileID);
+            sb.append(" for file ").append(fileID);
         }
-        sb.append(": " + getEventType() + ": ");
+        sb.append(": ").append(getEventType()).append(": ");
         if (additionalInfo() != null) {
             sb.append(additionalInfo());
         }
         if (getInfo() != null) {
-            sb.append(", " + getInfo());
+            sb.append(", ").append(getInfo());
         }
         return sb.toString();
     }
-    
+
     /**
      * @return The additional information in a string form. The string returned will be appended to the toString value.
      */

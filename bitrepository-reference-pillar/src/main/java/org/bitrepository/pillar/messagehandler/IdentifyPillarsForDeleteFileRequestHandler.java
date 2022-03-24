@@ -1,23 +1,23 @@
 /*
  * #%L
  * Bitrepository Reference Pillar
- * 
+ *
  * $Id$
  * $HeadURL$
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -42,14 +42,13 @@ import org.slf4j.LoggerFactory;
 /**
  * Class for handling the identification of this pillar for the purpose of performing the DeleteFile operation.
  */
-public class IdentifyPillarsForDeleteFileRequestHandler 
+public class IdentifyPillarsForDeleteFileRequestHandler
         extends IdentifyRequestHandler<IdentifyPillarsForDeleteFileRequest> {
-    /** The log.*/
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     /**
      * @param context The context for the message handling.
-     * @param model The storage model for the pillar.
+     * @param model   The storage model for the pillar.
      */
     protected IdentifyPillarsForDeleteFileRequestHandler(MessageHandlerContext context, StorageModel model) {
         super(context, model);
@@ -64,10 +63,10 @@ public class IdentifyPillarsForDeleteFileRequestHandler
     public MessageResponse generateFailedResponse(IdentifyPillarsForDeleteFileRequest message) {
         return createFinalResponse(message);
     }
-        
+
 
     @Override
-    protected void validateRequest(IdentifyPillarsForDeleteFileRequest request, MessageContext messageContext) 
+    protected void validateRequest(IdentifyPillarsForDeleteFileRequest request, MessageContext messageContext)
             throws RequestHandlerException {
         validateCollectionID(request);
         validateFileIDFormat(request.getFileID());
@@ -78,9 +77,9 @@ public class IdentifyPillarsForDeleteFileRequestHandler
     protected void sendPositiveResponse(IdentifyPillarsForDeleteFileRequest request, MessageContext messageContext) {
         IdentifyPillarsForDeleteFileResponse response = createFinalResponse(request);
 
-        response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMiliseconds(
-            getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
-        
+        response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMilliseconds(
+                getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
+
         ResponseInfo irInfo = new ResponseInfo();
         irInfo.setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);
         irInfo.setResponseText(RESPONSE_FOR_POSITIVE_IDENTIFICATION);
@@ -89,27 +88,28 @@ public class IdentifyPillarsForDeleteFileRequestHandler
         dispatchResponse(response, request);
         log.debug(MessageUtils.createMessageIdentifier(request) + " Identified for performing a DeleteFile operation.");
     }
-    
+
     /**
-     * Validates that the requested files are present in the archive. 
-     * Otherwise an {@link IdentifyContributorException} with the appropriate errorcode is thrown.
-     * @param message The message containing the id of the file. If no file id is given, then a warning is logged, 
-     * but the operation is accepted.
+     * Validates that the requested files are present in the archive.
+     * Otherwise, an {@link IdentifyContributorException} with the appropriate error-code is thrown.
+     *
+     * @param message The message containing the id of the file. If no file id is given, then a warning is logged,
+     *                but the operation is accepted.
      */
-    private void checkThatRequestedFileIsAvailable(IdentifyPillarsForDeleteFileRequest message) 
+    private void checkThatRequestedFileIsAvailable(IdentifyPillarsForDeleteFileRequest message)
             throws RequestHandlerException {
-        if(!getPillarModel().hasFileID(message.getFileID(), message.getCollectionID())) {
+        if (!getPillarModel().hasFileID(message.getFileID(), message.getCollectionID())) {
             throw new IdentifyContributorException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.");
         }
     }
 
     /**
-     * Creates a IdentifyPillarsForDeleteFileResponse based on a 
+     * Creates a IdentifyPillarsForDeleteFileResponse based on a
      * IdentifyPillarsForDeleteFileRequest. The following fields are not inserted:
      * <br/> - TimeToDeliver
      * <br/> - ResponseInfo
      * <br/> - PillarChecksumSpec
-     * 
+     *
      * @param msg The IdentifyPillarsForDeleteFileRequest to base the response on.
      * @return The response to the request.
      */

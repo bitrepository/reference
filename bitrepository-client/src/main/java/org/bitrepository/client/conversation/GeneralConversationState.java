@@ -24,12 +24,6 @@
  */
 package org.bitrepository.client.conversation;
 
-import java.util.Collection;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
@@ -40,6 +34,12 @@ import org.bitrepository.common.exceptions.UnableToFinishException;
 import org.bitrepository.protocol.ProtocolVersionLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Collection;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Implements the generic conversation state functionality,
@@ -70,7 +70,7 @@ public abstract class GeneralConversationState implements ConversationState {
      */
     public void start() {
         try {
-            if (!responseStatus.getOutstandComponents().isEmpty()) {
+            if (!responseStatus.getOutstandingComponents().isEmpty()) {
                 if (getTimeoutValue() > 0) {
                     scheduledTimeout = timer.schedule(new TimeoutHandler(), getTimeoutValue(), TimeUnit.MILLISECONDS);
                 }
@@ -176,7 +176,7 @@ public abstract class GeneralConversationState implements ConversationState {
      * @return the list of components where a identify response hasn't been received.
      */
     protected Collection<String> getOutstandingComponents() {
-        return responseStatus.getOutstandComponents();
+        return responseStatus.getOutstandingComponents();
     }
 
     /** Must be implemented by subclasses to log informative timeout information

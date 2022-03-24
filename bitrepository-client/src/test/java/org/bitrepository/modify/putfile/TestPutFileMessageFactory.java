@@ -39,14 +39,14 @@
  */
 package org.bitrepository.modify.putfile;
 
-import java.math.BigInteger;
-
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.protocol.message.ClientTestMessageFactory;
+
+import java.math.BigInteger;
 
 /**
  * Messages creation factory for the PutFile tests.

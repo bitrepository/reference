@@ -21,9 +21,6 @@
  */
 package org.bitrepository.monitoringservice.alarm;
 
-import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
 import org.bitrepository.bitrepositoryelements.ResultingStatus;
 import org.bitrepository.bitrepositoryelements.StatusCode;
 import org.bitrepository.bitrepositoryelements.StatusInfo;
@@ -36,6 +33,10 @@ import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MonitorAlerterTest extends IntegrationTest {
     
@@ -69,7 +70,7 @@ public class MonitorAlerterTest extends IntegrationTest {
         
         addStep("Check the status when a negative entry exists.", 
                 "Should send an alarm and make another call for the GetStatusMap");
-        cs.updateReplys();
+        cs.updateReplies();
         store.statuses.put(componentID, cs);
         alerter.checkStatuses();
         Assert.assertEquals(store.getCallsForGetStatusMap(), 3);

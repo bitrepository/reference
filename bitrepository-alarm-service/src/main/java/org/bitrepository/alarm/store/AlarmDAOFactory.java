@@ -8,12 +8,12 @@
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
@@ -29,15 +29,15 @@ import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
  * Factory class for obtaining the appropriate DAO for the specific database backend.
  */
 public class AlarmDAOFactory extends DatabaseFactory<AlarmServiceDAO> {
-    
+
     /**
      * Obtain an instance of AlarmServiceDAO appropriate for the specific database backend.
+     *
      * @param ds the specific database backend
      * @return an instance of AlarmServiceDAO appropriate for the specific database backend.
      */
     public AlarmServiceDAO getAlarmServiceDAOInstance(DatabaseSpecifics ds) {
-        AlarmServiceDAO dao = getDAOInstance(ds);
-        return dao;
+        return getDAOInstance(ds);
     }
 
     @Override
@@ -54,5 +54,5 @@ public class AlarmDAOFactory extends DatabaseFactory<AlarmServiceDAO> {
     protected DatabaseManager getDatabaseManager(DatabaseSpecifics ds) {
         return new AlarmDatabaseManager(ds);
     }
-    
+
 }
