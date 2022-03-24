@@ -50,7 +50,9 @@ public class SqlScriptRunner {
      * @param autoCommit  Enable autocommit
      * @param stopOnError Stop running the script, if a statement fails.
      */
-    public SqlScriptRunner(Connection connection, boolean autoCommit, boolean stopOnError) {
+    public SqlScriptRunner(Connection connection,
+                           boolean autoCommit,
+                           boolean stopOnError) {
         this.connection = connection;
         this.autoCommit = autoCommit;
         this.stopOnError = stopOnError;
@@ -108,63 +110,82 @@ public class SqlScriptRunner {
                 command = new StringBuilder();
             }
             String trimmedLine = line.trim();
-            if (!fullLineDelimiter && trimmedLine.endsWith(getDelimiter()) || fullLineDelimiter && trimmedLine.equals(getDelimiter())) {
-                command.append(trimLineForComment(line), 0, line.lastIndexOf(getDelimiter()));
-                command.append(" ");
+            if (proceedWithLine(trimmedLine)) {
+                if (!fullLineDelimiter
+                        && trimmedLine.endsWith(getDelimiter())
+                        || fullLineDelimiter
+                        && trimmedLine.equals(getDelimiter())) {
 
-                Statement statement = conn.createStatement();
+                    command.append(trimLineForComment(line), 0, line
+                            .lastIndexOf(getDelimiter()));
+                    command.append(" ");
 
-                log.debug("Executing statement: " + command);
+                    Statement statement = conn.createStatement();
 
-                boolean hasResults = false;
-                if (stopOnError) {
-                    hasResults = statement.execute(command.toString());
-                } else {
-                    try {
-                        statement.execute(command.toString());
-                    } catch (SQLException e) {
-                        e.fillInStackTrace();
-                        log.error("Error executing: " + command, e);
+                    log.debug("Executing statement: " + command);
+
+                    boolean hasResults = false;
+                    if (stopOnError) {
+                        hasResults = statement.execute(command.toString());
+                    } else {
+                        try {
+                            statement.execute(command.toString());
+                        } catch (SQLException e) {
+                            e.fillInStackTrace();
+                            log.error("Error executing: " + command, e);
+                        }
                     }
-                }
 
-                if (autoCommit && !conn.getAutoCommit()) {
-                    conn.commit();
-                }
-
-                ResultSet rs = statement.getResultSet();
-                StringBuilder resultSB = new StringBuilder();
-                if (hasResults && rs != null) {
-                    ResultSetMetaData md = rs.getMetaData();
-                    int cols = md.getColumnCount();
-                    for (int i = 0; i < cols; i++) {
-                        String name = md.getColumnLabel(i);
-                        resultSB.append(name).append("\t");
+                    if (autoCommit && !conn.getAutoCommit()) {
+                        conn.commit();
                     }
-                    resultSB.append("\n");
-                    while (rs.next()) {
+
+                    ResultSet rs = statement.getResultSet();
+                    StringBuilder resultSB = new StringBuilder();
+                    if (hasResults && rs != null) {
+                        ResultSetMetaData md = rs.getMetaData();
+                        int cols = md.getColumnCount();
                         for (int i = 0; i < cols; i++) {
-                            String value = rs.getString(i);
-                            resultSB.append(value).append("\t");
+                            String name = md.getColumnLabel(i);
+                            resultSB.append(name).append("\t");
                         }
                         resultSB.append("\n");
+                        while (rs.next()) {
+                            for (int i = 0; i < cols; i++) {
+                                String value = rs.getString(i);
+                                resultSB.append(value).append("\t");
+                            }
+                            resultSB.append("\n");
+                        }
+                        log.info("Result: " + resultSB);
                     }
-                    log.info("Result: " + resultSB);
-                }
 
-                command = null;
-                try {
-                    statement.close();
-                } catch (Exception e) {
-                    // Ignore to work around a bug in Jakarta DBCP
+                    command = null;
+                    try {
+                        statement.close();
+                    } catch (Exception e) {
+                        // Ignore to work around a bug in Jakarta DBCP
+                    }
+                    Thread.yield();
+                } else {
+                    command.append(trimLineForComment(line));
+                    command.append(" ");
                 }
-                Thread.yield();
             }
         }
         if (!autoCommit) {
             conn.commit();
         }
 
+    }
+
+    private boolean proceedWithLine(String trimmedLine) {
+        if (trimmedLine.startsWith("--") ||
+                trimmedLine.startsWith("//")) {
+            return false;
+        } else if (trimmedLine.length() == 0) {
+            return false;
+        } else return !trimmedLine.contains("connect");
     }
 
     private String trimLineForComment(String line) {

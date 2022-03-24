@@ -31,12 +31,12 @@ package org.bitrepository.service.workflow;
  */
 public interface SchedulableJob {
     /**
-     * Start the Job.
+     * Start the SchedulableJob.
      */
     void start();
 
     /**
-     * @return The current state of the Job.
+     * @return The current state of the SchedulableJob.
      */
     WorkflowState currentState();
 
@@ -46,7 +46,7 @@ public interface SchedulableJob {
     void setCurrentState(WorkflowState newState);
 
     /**
-     * @return A human readable text telling the current state of the SchedulableJob.
+     * @return A human-readable text telling the current state of the SchedulableJob.
      */
     String getHumanReadableState();
 

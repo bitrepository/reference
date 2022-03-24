@@ -35,10 +35,23 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Utility class for operating on databases.
+ */
 public class DatabaseUtils {
+    /**
+     * The log.
+     */
     private static final Logger log = LoggerFactory.getLogger(DatabaseUtils.class);
+
+    /**
+     * The name of the embedded derby driver.
+     */
     public static final String DERBY_EMBEDDED_DRIVER = "org.apache.derby.jdbc.EmbeddedDriver";
 
+    /**
+     * Private constructor to prevent instantiation of this utility class.
+     */
     private DatabaseUtils() {}
 
     /**
@@ -413,10 +426,15 @@ public class DatabaseUtils {
     }
 
     /**
-     * @param e     The throwable exception for the execution that failed.
+     * Method for throwing an exception for a failure for executing a statement. // FIXME:  CURRENT JAVADOC IS
+     * OUTDATED.
+     *
+     * @param e     The exception for the execution to fail.
      * @param query The SQL query for the statement, which caused the failure.
      * @param args  The arguments for the statement, which caused the failure.
-     * @return An {@link IllegalStateException} saying that the given query could not be executed with the given arguments.
+     * @return IllegalStateException with humanly readable versions of the parameters as the message.  FIXME:  This is
+     * out of sync with the javadoc.
+     * @throws IllegalStateException Always, since it is intended for this method to report the failure.
      */
     private static IllegalStateException failedExecutionOfStatement(Throwable e, String query, Object... args) {
         return new IllegalStateException("Could not execute the query '" + query + "' with the arguments '"

@@ -42,6 +42,8 @@ public class WorkflowStatistic {
     private static final String LINEFEED = "\n";
 
     /**
+     * Creates a fresh <code>WorkflowStatistic</code> instance.
+     *
      * @param name The name of this instance to be used as title for the statistics.
      */
     public WorkflowStatistic(String name) {

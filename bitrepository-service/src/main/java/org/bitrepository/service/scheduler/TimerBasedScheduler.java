@@ -48,7 +48,7 @@ public class TimerBasedScheduler implements JobScheduler {
     private final List<JobEventListener> jobListeners = new LinkedList<>();
 
     /**
-     * Set up a timer task for running the workflows at requested interval.
+     * Sets up a timer task for running the workflows at requested interval.
      */
     public TimerBasedScheduler() {
         timer = new Timer(TIMER_NAME, TIMER_IS_DAEMON);
@@ -120,7 +120,7 @@ public class TimerBasedScheduler implements JobScheduler {
     /**
      * Schedules a task.
      * If the interval for the task is > 0, then it should be scheduled to run at fixed interval,
-     * but it if has a non-positive interval, then it should only be scheduled for one run.
+     * but if it has a non-positive interval, then it should only be scheduled for one run.
      *
      * @param task The task to schedule.
      */

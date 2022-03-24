@@ -284,7 +284,7 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
      * a message it received.
      * Otherwise counts the amount of received messages.
      */
-    private static class NotificationMessageListener implements MessageListener {
+    private class NotificationMessageListener implements MessageListener {
         /** The message bus.*/
         private final MessageBus bus;
         /** The amount of messages received.*/

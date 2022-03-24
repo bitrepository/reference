@@ -39,7 +39,7 @@ import java.sql.SQLException;
  * Databases that are not automatically migrated will result in an exception.
  */
 public abstract class DatabaseManager {
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
     private static final String derbyDriver = "org.apache.derby.jdbc.EmbeddedDriver";
     private static final String postgresDriver = "org.postgresql.Driver";
     protected DBConnector connector = null;

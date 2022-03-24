@@ -34,7 +34,7 @@ import java.util.Map;
  * <p>
  * It is asserted, that the database has the following table for the versions:
  * <p>
- * create table 'tableversions' (
+ * create table tableversions (
  * tablename varchar(100) not null, -- Name of table
  * version int not null             -- version of table
  * );
@@ -48,17 +48,19 @@ public abstract class DatabaseMigrator extends DatabaseMaintainer {
     /**
      * The name of the "table versions" table.
      */
-    protected static final String TABLEVERSIONS_TABLE = "tableversions";
+    protected static final String TABLE_VERSIONS_TABLE = "tableversions";
     /**
      * The 'tablename' column in the table.
      */
-    protected static final String TV_TABLENAME = "tablename";
+    protected static final String TV_TABLE_NAME = "tablename";
     /**
      * The 'version' column in the table.
      */
     protected static final String TV_VERSION = "version";
 
     /**
+     * Constructor.
+     *
      * @param connector The connector for the database.
      */
     protected DatabaseMigrator(DBConnector connector) {
@@ -74,7 +76,7 @@ public abstract class DatabaseMigrator extends DatabaseMaintainer {
         Map<String, Integer> resultMap = new HashMap<>();
 
         // Extract the table name as first column and version as second column.
-        String sql = "SELECT " + TV_TABLENAME + " , " + TV_VERSION + " FROM " + TABLEVERSIONS_TABLE;
+        String sql = "SELECT " + TV_TABLE_NAME + " , " + TV_VERSION + " FROM " + TABLE_VERSIONS_TABLE;
         int tableNameColumn = 1;
         int versionColumn = 2;
 
@@ -101,7 +103,7 @@ public abstract class DatabaseMigrator extends DatabaseMaintainer {
      * @param args       The arguments for performing this update.
      */
     protected void updateTable(String tableName, Integer newVersion, String updateSql, Object... args) {
-        String migrateSql = "UPDATE " + TABLEVERSIONS_TABLE + " SET " + TV_VERSION + " = ? WHERE " + TV_TABLENAME
+        String migrateSql = "UPDATE " + TABLE_VERSIONS_TABLE + " SET " + TV_VERSION + " = ? WHERE " + TV_TABLE_NAME
                 + " = ?";
 
         DatabaseUtils.executeStatement(connector, updateSql, args);
@@ -112,7 +114,7 @@ public abstract class DatabaseMigrator extends DatabaseMaintainer {
      * Method for running a specific migrate script on the embedded database.
      * Will throw an exception if the migration is tried to be performed on another type of database.
      *
-     * @param migrateScriptName The name of the 'migrate' script to run.
+     * @param migrateScriptName The name of the migrated script to run.
      */
     protected void migrateDerbyDatabase(String migrateScriptName) {
         if (connector.getDatabaseDriverClass().equals(DatabaseUtils.DERBY_EMBEDDED_DRIVER)) {

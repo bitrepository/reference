@@ -32,12 +32,17 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
 
+/**
+ * The connector to a database.
+ */
 public class DBConnector {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final DatabaseSpecifics databaseSpecifics;
     private final ComboPooledDataSource connectionPool;
 
     /**
+     * Constructor.
+     *
      * @param databaseSpecifics The specifics for the configuration of the database.
      */
     public DBConnector(DatabaseSpecifics databaseSpecifics) {

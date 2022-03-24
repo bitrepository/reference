@@ -43,10 +43,11 @@ public class DatabaseMaintainer {
      * @throws SQLException           if a connection to the database could not be established or if it failed to close the connection
      * @throws ClassNotFoundException if the database driver is not on the classpath
      * @throws IOException            if the script can not be read
+     * @throws FileNotFoundException  if the script is not on the classpath
      * @throws RuntimeException       if the script can not be run
      */
     protected static void runScript(DatabaseSpecifics databaseSpecifics, String scriptName) throws SQLException,
-            ClassNotFoundException, IOException {
+            ClassNotFoundException, FileNotFoundException, IOException {
         Connection connection = getDBConnection(databaseSpecifics);
         runScript(connection, scriptName);
         connection.close();
@@ -112,6 +113,7 @@ public class DatabaseMaintainer {
      */
     protected static Connection getDBConnection(DatabaseSpecifics databaseSpecifics) throws SQLException, ClassNotFoundException {
         Class.forName(databaseSpecifics.getDriverClass());
-        return DriverManager.getConnection(databaseSpecifics.getDatabaseURL());
+        Connection connection = DriverManager.getConnection(databaseSpecifics.getDatabaseURL());
+        return connection;
     }
 }
