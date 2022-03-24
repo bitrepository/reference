@@ -42,7 +42,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * A workflow step for finding missing checksums.
+ * A workflow step for finding missing files.
  * Uses the IntegrityChecker to perform the actual check.
  */
 public class HandleMissingFilesStep extends AbstractWorkFlowStep {
@@ -78,7 +78,7 @@ public class HandleMissingFilesStep extends AbstractWorkFlowStep {
             missingFilesMap.put(pillar, 0L);
         }
         Date missingAfterDate = new Date(System.currentTimeMillis() - gracePeriod);
-        log.info("Looking for missing files, files needs to be older than {} to be considered missing.", missingAfterDate);
+        log.info("Looking for missing files, files need to be older than {} to be considered missing.", missingAfterDate);
 
         try (IntegrityIssueIterator issueIterator = store.findFilesWithMissingCopies(reporter.getCollectionID(), pillars.size(), 0L,
                 Long.MAX_VALUE)) {
