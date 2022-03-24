@@ -40,27 +40,12 @@ import java.util.Map;
  * );
  */
 public abstract class DatabaseMigrator extends DatabaseMaintainer {
-    /**
-     * The connection to the database.
-     */
     protected final DBConnector connector;
-
-    /**
-     * The name of the "table versions" table.
-     */
     protected static final String TABLE_VERSIONS_TABLE = "tableversions";
-    /**
-     * The 'tablename' column in the table.
-     */
     protected static final String TV_TABLE_NAME = "tablename";
-    /**
-     * The 'version' column in the table.
-     */
     protected static final String TV_VERSION = "version";
 
     /**
-     * Constructor.
-     *
      * @param connector The connector for the database.
      */
     protected DatabaseMigrator(DBConnector connector) {

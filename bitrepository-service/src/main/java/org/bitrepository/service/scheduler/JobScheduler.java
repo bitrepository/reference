@@ -54,7 +54,7 @@ public interface JobScheduler {
     /**
      * Reschedules the job to start now,
      *
-     * @param job the jobn to start
+     * @param job the job to start
      * @return A string indicating the result of the attempt to start the job.
      */
     String startJob(SchedulableJob job);
