@@ -146,7 +146,7 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
             log.debug("Extracting " + size + " bytes with offset " + offset + " from " + fileInfo.getFileID());
             fis = fileInfo.getInputStream();
 
-            int bytesRead = fis.read(partOfFile, offset, size);
+            int bytesRead = fis.read(partOfFile, offset, size - offset);
             if (bytesRead == size) {
                 log.debug("Bytes extracted successfully.");
             }
