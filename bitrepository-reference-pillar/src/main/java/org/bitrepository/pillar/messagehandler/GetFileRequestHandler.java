@@ -138,7 +138,7 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
      * @throws IOException If anything goes wrong.
      */
     private InputStream extractFilePart(FileInfo fileInfo, FilePart filePart) throws IOException {
-        int offset = filePart.getPartOffSet().intValue() + 1;
+        int offset = filePart.getPartOffSet().intValue();
         int size = filePart.getPartLength().intValue();
         byte[] partOfFile = new byte[size];
         InputStream fis = null;
