@@ -25,7 +25,6 @@ package org.bitrepository.pillar;
  * Launches a given pillar.
  */
 public final class PillarRunner {
-    private static final Object lock = new Object();
 
     private PillarRunner() {}
 
@@ -36,7 +35,7 @@ public final class PillarRunner {
      */
     public static void launchPillar(Pillar pillar) {
         try {
-            synchronized (lock) {
+            synchronized (pillar) {
                 pillar.wait();
             }
         } catch (Exception e) {
