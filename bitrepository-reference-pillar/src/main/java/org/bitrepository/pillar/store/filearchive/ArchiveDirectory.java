@@ -77,7 +77,6 @@ public class ArchiveDirectory {
      * The directory where the files where the file-id contains a directory-path are stored.
      */
     private final File folderDir;
-    private final Object lock = new Object();
 
     /**
      * Constructor. Initialises the file directory.
@@ -297,7 +296,7 @@ public class ArchiveDirectory {
         if (!isFolderFile(fileID)) {
             return;
         }
-        synchronized (lock) {
+        synchronized (rootDir) {
             File origFile = new File(rootDir, fileID);
             FileUtils.cleanupEmptyDirectories(origFile.getParentFile(), rootDir);
         }
