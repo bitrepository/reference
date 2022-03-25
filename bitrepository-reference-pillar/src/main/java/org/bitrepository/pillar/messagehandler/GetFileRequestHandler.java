@@ -138,7 +138,7 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
      * @throws IOException If anything goes wrong.
      */
     private InputStream extractFilePart(FileInfo fileInfo, FilePart filePart) throws IOException {
-        int offset = filePart.getPartOffSet().intValue();
+        int offset = filePart.getPartOffSet().intValue() + 1;
         int size = filePart.getPartLength().intValue();
         byte[] partOfFile = new byte[size];
         InputStream fis = null;
@@ -146,9 +146,10 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
             log.debug("Extracting " + size + " bytes with offset " + offset + " from " + fileInfo.getFileID());
             fis = fileInfo.getInputStream();
 
-            int bytesRead = fis.read(partOfFile, offset, size - offset);
+            long skipped = fis.skip(offset);
+            int bytesRead = fis.read(partOfFile);
             if (bytesRead == size) {
-                log.debug("Bytes extracted successfully.");
+                log.debug("Skipped {} bytes and extracted {} bytes successfully.", skipped, bytesRead);
             }
         } finally {
             if (fis != null) {
