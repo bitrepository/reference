@@ -1,4 +1,16 @@
-reference
+Reference
 =========
 
-The code for the Bit Repository reference platform
+The code for the Bit Repository reference platform.
+
+This project includes implementations of the following components
+* Commandline Client
+* Reference Pillar
+* WebClient
+* Alarm Service
+* Audit Trail Service
+* Monitoring Service
+* Integrity Service
+
+### Protocol version
+The newest release of the [Message-XML](https://github.com/bitrepository/message-xml/releases) protocol is used in this project.
