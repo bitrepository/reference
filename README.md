@@ -1,6 +1,5 @@
-Bit Repository - Reference Code
+<img src="https://sbforge.org/download/attachments/2326650/bitreplogoNY.png?version=1&modificationDate=1377984293249&api=v2" width="50" height="35">  BitRepository - Reference Code 
 =========
-
 
 The code for the Bit Repository reference platform.
 
