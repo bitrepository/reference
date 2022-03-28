@@ -8,10 +8,13 @@ This project includes implementations of the following components
 * Commandline Client
 * Reference Pillar
 * WebClient
+* Services
   * Alarm Service
   * Audit Trail Service
   * Monitoring Service
   * Integrity Service
+
+For more information about the reference code, visit [Reference System](https://sbforge.org/display/BITMAG/Reference+system).
 
 For more information about the Bit Repository project, its protocol, architecture, and components, visit [BitRepository.org](https://sbforge.org/display/BITMAG).
 
