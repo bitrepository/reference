@@ -12,5 +12,8 @@ This project includes implementations of the following components
   * Monitoring Service
   * Integrity Service
 
+### Releases
+The newest [Releases and Changelogs](https://github.com/bitrepository/reference/releases).
+
 ### Protocol version
 The newest release of the [Message-XML](https://github.com/bitrepository/message-xml/releases) protocol is used in this project.
