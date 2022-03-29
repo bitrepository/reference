@@ -38,8 +38,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Simple workflow for validating files with random salted checksum.
@@ -146,7 +146,7 @@ public class SaltedChecksumWorkflow extends Workflow {
         if (numberOfFiles <= 0L) {
             throw new IllegalStateException("No files in collection '" + collectionID + "'.");
         }
-        long randomFileIndex = (new Random()).nextLong() % numberOfFiles;
+        long randomFileIndex = ThreadLocalRandom.current().nextLong(numberOfFiles);
         return context.getStore().getFileIDAtPosition(collectionID, randomFileIndex);
     }
 
