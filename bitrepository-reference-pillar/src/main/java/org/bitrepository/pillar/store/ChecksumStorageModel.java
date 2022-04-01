@@ -24,8 +24,10 @@
  */
 package org.bitrepository.pillar.store;
 
+import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.FileInfosDataItem;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.common.filestore.FileInfo;
 import org.bitrepository.common.settings.Settings;
@@ -121,6 +123,17 @@ public class ChecksumStorageModel extends StorageModel {
             throws RequestHandlerException {
         throw new InvalidMessageException(ResponseCode.REQUEST_NOT_SUPPORTED,
                 "This is a checksum pillar and it does " + "not have the actual file. Only it's checksum.");
+    }
+
+    @Override
+    public FileInfosDataItem getFileInfosDataItemFromChecksumDataItem(ChecksumDataForChecksumSpecTYPE cs, String collectionID) {
+        FileInfosDataItem res = new FileInfosDataItem();
+        res.setCalculationTimestamp(cs.getCalculationTimestamp());
+        res.setChecksumValue(cs.getChecksumValue());
+        res.setFileID(cs.getFileID());
+        res.setLastModificationTime(cs.getCalculationTimestamp());
+
+        return res;
     }
 
     @Override

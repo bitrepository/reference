@@ -108,6 +108,8 @@ public class PillarMediator extends AbstractContributorMediator {
         handlers.add(new GetFileIDsRequestHandler(context, pillarModel));
         handlers.add(new IdentifyPillarsForGetChecksumsRequestHandler(context, pillarModel));
         handlers.add(new GetChecksumsRequestHandler(context, pillarModel));
+        handlers.add(new IdentifyPillarsForGetFileInfosRequestHandler(context, pillarModel));
+        handlers.add(new GetFileInfosRequestHandler(context, pillarModel));
 
         handlers.add(new IdentifyContributorsForGetStatusRequestHandler(getContext()));
         handlers.add(new GetStatusRequestHandler(getContext()));

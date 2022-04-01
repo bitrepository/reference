@@ -24,8 +24,10 @@
  */
 package org.bitrepository.pillar.store;
 
+import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.FileInfosDataItem;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.common.filestore.FileInfo;
 import org.bitrepository.common.filestore.FileStore;
@@ -421,6 +423,15 @@ public abstract class StorageModel {
      */
     protected abstract ExtractedChecksumResultSet getNonDefaultChecksumResultSet(Long maxResults, String collectionID,
                                                                                  ChecksumSpecTYPE csSpec) throws RequestHandlerException;
+
+    /**
+     * Retrieves the FileInfosDataItem for a given Checksum data entry.
+     *
+     * @param cs           The checksum result to convert into a FileInfosDataItem.
+     * @param collectionID The ID of the collection of the file ID.
+     * @return The FileInfosDataItem.
+     */
+    public abstract FileInfosDataItem getFileInfosDataItemFromChecksumDataItem(ChecksumDataForChecksumSpecTYPE cs, String collectionID);
 
     /**
      * Throws an exception unless the actual file exists and is available.

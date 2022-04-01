@@ -56,7 +56,7 @@ public interface IntegrityInformationCollector {
                     EventHandler eventHandler);
 
     /**
-     * Request the specified checksums for from the given pillars.
+     * Request the specified checksums from the given pillars.
      *
      * @param collectionID          The ID of the collection to collect checksums from
      * @param pillarIDs             The collection of ids of the pillars to request for the checksums.
@@ -69,6 +69,22 @@ public interface IntegrityInformationCollector {
      * @param eventHandler          The EventHandler for the results of the checksum collection.
      */
     void getChecksums(String collectionID, Collection<String> pillarIDs, ChecksumSpecTYPE checksumType, String fileID,
+                      String auditTrailInformation, ContributorQuery[] queries, EventHandler eventHandler);
+
+    /**
+     * Request the specified file-info from the given pillars.
+     *
+     * @param collectionID          The ID of the collection to collect checksums from
+     * @param pillarIDs             The collection of ids of the pillars to request for the checksums.
+     * @param checksumType          The checksum algorithm (and salt) used for the calculation.
+     *                              May be null, in which case the collection default is used.
+     * @param fileID                The ID of the file to retrieve the checksum.
+     *                              May be null, in which case the checksum of all files is collected.
+     * @param auditTrailInformation The audit trail information for the conversation.
+     * @param queries               The limiting contributor queries for the collection of file ids.
+     * @param eventHandler          The EventHandler for the results of the checksum collection.
+     */
+    void getFileInfos(String collectionID, Collection<String> pillarIDs, ChecksumSpecTYPE checksumType, String fileID,
                       String auditTrailInformation, ContributorQuery[] queries, EventHandler eventHandler);
 
     /**

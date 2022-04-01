@@ -24,8 +24,10 @@ package org.bitrepository.integrityservice.workflow;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.integrityservice.workflow.step.FullUpdateChecksumsStep;
 import org.bitrepository.integrityservice.workflow.step.FullUpdateFileIDsStep;
+import org.bitrepository.integrityservice.workflow.step.FullUpdateFileInfosStep;
 import org.bitrepository.integrityservice.workflow.step.UpdateChecksumsStep;
 import org.bitrepository.integrityservice.workflow.step.UpdateFileIDsStep;
+import org.bitrepository.integrityservice.workflow.step.UpdateFileInfosStep;
 
 import java.util.Date;
 
@@ -57,6 +59,12 @@ public class CompleteIntegrityCheck extends IntegrityCheckWorkflow {
                 ChecksumUtils.getDefault(context.getSettings()), context.getSettings(), collectionID, integrityContributors);
     }
 
+    @Override
+    protected UpdateFileInfosStep getUpdateFileInfosStep() {
+        return new FullUpdateFileInfosStep(
+                context.getCollector(), context.getStore(), context.getAlerter(),
+                ChecksumUtils.getDefault(context.getSettings()), context.getSettings(), collectionID, integrityContributors);
+    }
 
     @Override
     protected boolean cleanDeletedFiles() {

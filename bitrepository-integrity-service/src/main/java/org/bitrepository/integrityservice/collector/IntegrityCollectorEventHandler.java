@@ -23,6 +23,7 @@ package org.bitrepository.integrityservice.collector;
 
 import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
 import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEvent;
+import org.bitrepository.access.getfileinfos.conversation.FileInfosCompletePillarEvent;
 import org.bitrepository.client.eventhandler.ContributorFailedEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
@@ -114,6 +115,16 @@ public class IntegrityCollectorEventHandler implements EventHandler {
                 integrityContributors.succeedContributor(fileIDEvent.getContributorID());
             } else {
                 integrityContributors.finishContributor(fileIDEvent.getContributorID());
+            }
+        } else if (event instanceof FileInfosCompletePillarEvent) {
+            FileInfosCompletePillarEvent fileInfoEvent = (FileInfosCompletePillarEvent) event;
+            log.trace("Receiving GetFileIDs result: {}", fileInfoEvent.getFileInfos().getFileInfosDataItem().toString());
+            store.addFileInfos(fileInfoEvent.getFileInfos().getFileInfosDataItem(), fileInfoEvent.getContributorID(),
+                    fileInfoEvent.getCollectionID());
+            if (fileInfoEvent.isPartialResult()) {
+                integrityContributors.succeedContributor(fileInfoEvent.getContributorID());
+            } else {
+                integrityContributors.finishContributor(fileInfoEvent.getContributorID());
             }
         } else {
             log.warn("Unexpected component complete event: " + event.toString());

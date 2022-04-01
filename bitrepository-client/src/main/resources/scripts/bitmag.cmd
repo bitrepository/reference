@@ -15,6 +15,7 @@ if /I x%1%==xdelete-file        set CMD=DeleteFileCmd
 if /I x%1%==xget-checksums set CMD=GetChecksumsCmd
 if /I x%1%==xget-file      set CMD=GetFileCmd
 if /I x%1%==xget-file-ids  set CMD=GetFileIDsCmd
+if /I x%1%==xget-file-infos  set CMD=GetFileInfosCmd
 if /I x%1%==xput-file      set CMD=PutFileCmd -d
 if /I x%1%==xreplace-file  set CMD=ReplaceFileCmd
 
@@ -25,6 +26,7 @@ echo.     delete-file
 echo.     get-checksums
 echo.     get-file
 echo.     get-file-ids
+echo.     get-file-infos
 echo.     put-file
 echo.     replace-file
 goto :eof

@@ -208,4 +208,27 @@ public final class CalendarUtils {
         }
     }
 
+    /**
+     * Method for checking whether a given date is between two other dates.
+     * If a date is null, then it is not tested and automatically passes.
+     * If both dates are null, then true is returned.
+     *
+     * @param date    The date to test.
+     * @param minDate The lower bound for the timestamp test. If null, then no lower bound.
+     * @param maxDate The upper bound for the timestamp test. If null, then no upper bound.
+     * @return Whether the date is within the scope or not.
+     */
+    public static Boolean isDateBetween(Long date, XMLGregorianCalendar minDate, XMLGregorianCalendar maxDate) {
+        ArgumentValidator.checkNotNull(date, "Long date");
+
+        if (minDate != null) {
+            if (convertFromXMLGregorianCalendar(minDate).getTime() > date) {
+                return false;
+            }
+        }
+        if (maxDate != null) {
+            return convertFromXMLGregorianCalendar(maxDate).getTime() >= date;
+        }
+        return true;
+    }
 }

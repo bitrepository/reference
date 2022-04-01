@@ -18,6 +18,7 @@ case "$1" in
     get-checksums)	CMD=GetChecksumsCmd	;;
     get-file)		CMD=GetFileCmd		;;
     get-file-ids)	CMD=GetFileIDsCmd		;;
+    get-file-infos)	CMD=GetFileInfosCmd		;;
     put-file)		CMD=PutFileCmd		;;
     replace-file)	CMD=ReplaceFileCmd		;;
     *)
@@ -27,6 +28,7 @@ case "$1" in
 	echo "    delete-file"
 	echo "    get-checksums"
 	echo "    get-file"
+	echo "    get-file-infos"
 	echo "    get-file-ids"
 	echo "    put-file"
 	echo "    replace-file"
