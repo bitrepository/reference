@@ -52,11 +52,11 @@ public class MessageVersionValidator {
                     "The requested minimum version is too large, components version: " + protocolVersion.getVersion());
         }
         if (message.getVersion() != null && message.getVersion().compareTo(protocolVersion.getMinVersion()) < 0) {
-            log.info("The Request version is SMALLER than this components minimum version = " +
+            log.info("The Request version " + message.getVersion() + " is SMALLER than this components minimum version = " +
                     protocolVersion.getMinVersion());
             throw new InvalidMessageVersionException(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE,
-                    "The requested version is smaller than the components minimum version, pillar minVersion: " +
-                            protocolVersion.getMinVersion());
+                    "The requested version " + message.getVersion() +
+                            " is smaller than the components minimum version, pillar minVersion:" + " " + protocolVersion.getMinVersion());
         }
     }
 

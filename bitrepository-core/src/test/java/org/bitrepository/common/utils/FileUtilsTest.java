@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -31,6 +31,7 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 public class FileUtilsTest extends ExtendedTestCase {
     String DIR = "test-directory";
@@ -42,19 +43,20 @@ public class FileUtilsTest extends ExtendedTestCase {
     @BeforeMethod(alwaysRun = true)
     public void setupTest() throws Exception {
         File dir = new File(DIR);
-        if(dir.exists()) {
+        if (dir.exists()) {
             FileUtils.delete(dir);
         }
     }
+
     @AfterMethod(alwaysRun = true)
     public void teardownTest() throws Exception {
         File dir = new File(DIR);
-        if(dir.exists()) {
+        if (dir.exists()) {
             FileUtils.delete(dir);
         }
     }
-    
-    @Test(groups = { "regressiontest" })
+
+    @Test(groups = {"regressiontest"})
     public void utilityTester() throws Exception {
         addDescription("Test that the utility class is a proper utility class.");
         TestValidationUtils.validateUtilityClass(FileUtils.class);
@@ -71,7 +73,7 @@ public class FileUtilsTest extends ExtendedTestCase {
         Assert.assertTrue(madeDir.isDirectory());
         Assert.assertTrue(dir.isDirectory());
         Assert.assertEquals(dir.getAbsolutePath(), madeDir.getAbsolutePath());
-        
+
         addStep("Test error scenarios, when the directory path is a file", "Should throw exception");
         File testFile = new File(dir, TEST_FILE_NAME);
         Assert.assertTrue(testFile.createNewFile());
@@ -83,7 +85,7 @@ public class FileUtilsTest extends ExtendedTestCase {
             // expected
         }
     }
-    
+
     @Test(groups = {"regressiontest"})
     public void createSubDirectoryTester() throws Exception {
         addDescription("Test the ability to create sub directories.");
@@ -96,7 +98,7 @@ public class FileUtilsTest extends ExtendedTestCase {
         Assert.assertTrue(madeSubdir.isDirectory());
         Assert.assertTrue(subdir.isDirectory());
         Assert.assertEquals(subdir.getAbsolutePath(), madeSubdir.getAbsolutePath());
-        
+
         addStep("Test that it fails if the 'directory' is actually a file", "Throws exception");
         File testFile = new File(dir, TEST_FILE_NAME);
         Assert.assertTrue(testFile.createNewFile());
@@ -107,7 +109,7 @@ public class FileUtilsTest extends ExtendedTestCase {
         } catch (IllegalArgumentException e) {
             // expected
         }
-        
+
         addStep("Test that it fails, if the parent directory does not allow writing", "Throws exception");
         FileUtils.delete(subdir);
         try {
@@ -120,7 +122,7 @@ public class FileUtilsTest extends ExtendedTestCase {
             dir.setWritable(true);
         }
     }
-    
+
     @Test(groups = {"regressiontest"})
     public void createDeleteDirectoryTester() throws Exception {
         addDescription("Test the ability to delete directories.");
@@ -132,13 +134,13 @@ public class FileUtilsTest extends ExtendedTestCase {
         File testFile = new File(dir, TEST_FILE_NAME);
         Assert.assertTrue(testFile.createNewFile());
         Assert.assertTrue(testFile.exists());
-        
+
         FileUtils.delete(dir);
         Assert.assertFalse(dir.exists());
         Assert.assertFalse(subdir.exists());
         Assert.assertFalse(testFile.exists());
     }
-    
+
     @Test(groups = {"regressiontest"})
     public void deprecateFileTester() throws Exception {
         addDescription("Test the deprecation of a file.");
@@ -148,14 +150,14 @@ public class FileUtilsTest extends ExtendedTestCase {
         Assert.assertFalse(testFile.exists());
         Assert.assertTrue(testFile.createNewFile());
         Assert.assertTrue(testFile.exists());
-        
+
         addStep("Deprecate the file", "Should be move to '*.old'");
         FileUtils.deprecateFile(testFile);
         Assert.assertFalse(testFile.exists());
         File deprecatedFile = new File(dir, TEST_FILE_NAME + ".old");
         Assert.assertTrue(deprecatedFile.exists());
     }
-    
+
     @Test(groups = {"regressiontest"})
     public void moveFileTester() throws Exception {
         addDescription("Test the moving of a file.");
@@ -167,13 +169,13 @@ public class FileUtilsTest extends ExtendedTestCase {
         Assert.assertFalse(movedFile.exists());
         Assert.assertTrue(testFile.createNewFile());
         Assert.assertTrue(testFile.exists());
-        
+
         addStep("Move the file", "The 'moved' should exist, whereas the other should not.");
         FileUtils.moveFile(testFile, movedFile);
         Assert.assertFalse(testFile.exists());
         Assert.assertTrue(movedFile.exists());
     }
-    
+
     @Test(groups = {"regressiontest"})
     public void writeInputstreamTester() throws Exception {
         addDescription("Test writing an inputstream to a file.");
@@ -194,7 +196,8 @@ public class FileUtilsTest extends ExtendedTestCase {
         addDescription("Test unzipping a file.");
         addStep("Setup", "");
         File dir = FileUtils.retrieveDirectory(DIR);
-        File zipFile = new File("src/test/resources/test-files/test.jar");
+        File zipFile = new File(
+                Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("test-files/test.jar")).toURI());
         Assert.assertTrue(zipFile.isFile(), zipFile.getAbsolutePath());
         Assert.assertEquals(dir.listFiles().length, 0);
 
@@ -202,38 +205,38 @@ public class FileUtilsTest extends ExtendedTestCase {
         FileUtils.unzip(zipFile, dir);
         Assert.assertEquals(dir.listFiles().length, 2);
     }
-    
+
     @Test(groups = {"regressiontest"})
     public void cleanupEmptyDirectoriesTester() throws Exception {
         addDescription("Test the cleanup of empty directories.");
         File dir = FileUtils.retrieveDirectory(DIR);
         File subDir = FileUtils.retrieveSubDirectory(dir, SUB_DIR);
         File subSubDir = FileUtils.retrieveSubDirectory(subDir, SUB_DIR);
-        
+
         addStep("Cleanup non-empty folder", "Should not do anything");
         Assert.assertTrue(subSubDir.isDirectory());
         FileUtils.cleanupEmptyDirectories(subDir, dir);
         Assert.assertTrue(subSubDir.isDirectory());
         Assert.assertTrue(subDir.isDirectory());
         Assert.assertTrue(dir.isDirectory());
-        
+
         addStep("Cleanup when dir and root are the same", "Should do nothing");
         Assert.assertTrue(subSubDir.isDirectory());
         FileUtils.cleanupEmptyDirectories(subSubDir, subSubDir);
         Assert.assertTrue(subSubDir.isDirectory());
-        
+
         addStep("Test succes case, when the directory is empty", "Removes sub-dir");
         Assert.assertTrue(subSubDir.isDirectory());
         FileUtils.cleanupEmptyDirectories(subSubDir, dir);
         Assert.assertFalse(subSubDir.isDirectory());
         Assert.assertFalse(subDir.isDirectory());
         Assert.assertTrue(dir.isDirectory());
-        
+
         addStep("Test with a file.", "Should do nothing.");
         File file = new File(dir, TEST_FILE_NAME);
         Assert.assertTrue(file.createNewFile());
         FileUtils.cleanupEmptyDirectories(file, dir);
         Assert.assertTrue(file.exists());
     }
-    
+
 }

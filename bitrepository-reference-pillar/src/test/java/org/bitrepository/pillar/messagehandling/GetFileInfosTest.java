@@ -44,6 +44,8 @@ import org.bitrepository.pillar.messagefactories.GetFileInfosMessageFactory;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumEntry;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;
 import org.bitrepository.service.exception.InvalidMessageException;
+import org.bitrepository.service.exception.RequestHandlerException;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.Date;
@@ -54,6 +56,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.reset;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 
@@ -69,6 +72,12 @@ public class GetFileInfosTest extends MockedPillarTest {
 
         msgFactory = new GetFileInfosMessageFactory(collectionID, settingsForTestClient, getPillarID(), pillarDestinationId);
     }
+
+    @BeforeMethod(alwaysRun = true)
+    public void before() {
+        reset(model);
+    }
+
 
     @SuppressWarnings("rawtypes")
     @Test(groups = {"regressiontest", "pillartest"})
@@ -184,10 +193,11 @@ public class GetFileInfosTest extends MockedPillarTest {
 
     @SuppressWarnings("rawtypes")
     @Test(groups = {"regressiontest", "pillartest"})
-    public void goodCaseOperationSingleFile() throws Exception {
+    public void goodCaseOperationSingleFile() throws RequestHandlerException {
         addDescription("Tests the GetFileInfos operation on the pillar for the successful scenario when requesting one specific file.");
         addStep("Set up constants and variables.", "Should not fail here!");
         final String FILE_ID = DEFAULT_FILE_ID + testMethodName;
+
         FileIDs fileids = FileIDsUtils.getSpecificFileIDs(FILE_ID);
         addStep("Setup for having the file and delivering result-set", "No failure here");
         doAnswer(invocation -> true).when(model).hasFileID(eq(FILE_ID), anyString());
@@ -196,7 +206,8 @@ public class GetFileInfosTest extends MockedPillarTest {
             ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
             res.insertChecksumEntry(new ChecksumEntry(FILE_ID, DEFAULT_MD5_CHECKSUM, new Date()));
             return res;
-        }).when(model).getSingleChecksumResultSet(eq(FILE_ID), eq(collectionID), isNull(), isNull(), any(ChecksumSpecTYPE.class));
+        }).when(model).getSingleChecksumResultSet(eq(FILE_ID), anyString(), isNull(), isNull(), any(ChecksumSpecTYPE.class));
+
         doAnswer(invocation -> {
             ChecksumDataForChecksumSpecTYPE cs1 = (ChecksumDataForChecksumSpecTYPE) invocation.getArguments()[0];
             FileInfosDataItem res = new FileInfosDataItem();

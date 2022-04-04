@@ -29,14 +29,16 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.net.URISyntaxException;
 
 public class ConfigLoaderTest extends ExtendedTestCase {
     
     String GOOD_FILE_PATH = "logback-test.xml";
     
     @BeforeMethod (alwaysRun = true)
-    public void setup() {
-        FileUtils.copyFile(new File("src/test/resources/logback-test.xml"), new File(GOOD_FILE_PATH));
+    public void setup() throws URISyntaxException {
+        File logbackFile = new File(Thread.currentThread().getContextClassLoader().getResource("logback-test.xml").toURI());
+        FileUtils.copyFile(logbackFile, new File(GOOD_FILE_PATH));
     }
     
     @AfterMethod (alwaysRun = true)

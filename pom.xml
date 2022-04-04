@@ -256,6 +256,7 @@
         <configuration>
           <groups>regressiontest</groups>
           <runOrder>random</runOrder>
+          <forkCount>0</forkCount>
         </configuration>
       </plugin>
       <plugin>

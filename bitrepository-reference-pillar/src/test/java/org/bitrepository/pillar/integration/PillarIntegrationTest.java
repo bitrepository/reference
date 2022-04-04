@@ -101,7 +101,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
         testConfiguration =
                 new PillarIntegrationTestConfiguration(PATH_TO_TESTPROPS_DIR + "/" + TEST_CONFIGURATION_FILE_NAME);
         super.initializeSuite(testContext);
-        //MessageBusManager.injectCustomMessageBus(MessageBusManager.DEFAULT_MESSAGE_BUS, messageBus);
+//        MessageBusManager.injectCustomMessageBus(MessageBusManager.DEFAULT_MESSAGE_BUS, messageBus);
         setupRealMessageBus();
         startEmbeddedPillar(testContext);
         reloadMessageBus();

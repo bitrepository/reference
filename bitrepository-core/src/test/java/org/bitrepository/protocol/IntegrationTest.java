@@ -55,7 +55,7 @@ import javax.jms.JMSException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
+import java.util.List;
 
 /**
  * Contains the generic parts for integration testing.
@@ -143,8 +143,8 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         DEFAULT_AUDITINFORMATION = testMethodName;
         receiverManager = new MessageReceiverManager(messageBus);
         registerMessageReceivers();
-        messageBus.setCollectionFilter(Arrays.asList(new String[]{}));
-        messageBus.setComponentFilter(Arrays.asList(new String[]{}));
+        messageBus.setCollectionFilter(List.of());
+        messageBus.setComponentFilter(List.of());
         receiverManager.startListeners();
         initializeCUT();
     }
@@ -155,7 +155,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
 
     @AfterMethod(alwaysRun = true)
     public final void afterMethod(ITestResult testResult) {
-        if ( receiverManager != null ) {
+        if (receiverManager != null ) {
             receiverManager.stopListeners();
         }
         if (testResult.isSuccess()) {
@@ -199,8 +199,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
 
     /** Can be overloaded by tests needing to load custom settings */
     protected Settings loadSettings(String componentID) {
-        Settings settings = TestSettingsProvider.reloadSettings(componentID);
-        return settings;
+        return TestSettingsProvider.reloadSettings(componentID);
     }
 
     private void makeUserSpecificSettings(Settings settings) {

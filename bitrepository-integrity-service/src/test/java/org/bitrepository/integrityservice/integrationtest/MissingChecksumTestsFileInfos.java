@@ -65,6 +65,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -310,7 +311,7 @@ public class MissingChecksumTestsFileInfos extends ExtendedTestCase {
             FileInfosDataItem item = new FileInfosDataItem();
             item.setLastModificationTime(CalendarUtils.getNow());
             item.setCalculationTimestamp(CalendarUtils.getNow());
-            item.setChecksumValue(Base16Utils.encodeBase16(checksum));
+            item.setChecksumValue(Optional.ofNullable(checksum).map(Base16Utils::encodeBase16).orElse(null));
             item.setFileSize(BigInteger.valueOf(0L));
             item.setFileID(fileID);
             res.add(item);

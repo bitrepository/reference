@@ -43,7 +43,7 @@ public class HttpFileExchangeTest extends ExtendedTestCase {
         mySettings.getReferenceSettings().getFileExchangeSettings().setPort(BigInteger.valueOf(8000));
         mySettings.getReferenceSettings().getFileExchangeSettings().setPath("dav");
         HttpFileExchange fe = new HttpFileExchange(mySettings);
-        String serverPathPrefix = mySettings.getReferenceSettings().getFileExchangeSettings().getPath() + "/";
+        String serverPathPrefix = "/" + mySettings.getReferenceSettings().getFileExchangeSettings().getPath() + "/";
         
         addStep("Check plain filename (a filename that does not see any changes due to urlencoding", "The filename " +
                 "should be unmodified");

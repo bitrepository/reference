@@ -195,7 +195,7 @@ public class HttpFileExchange implements FileExchange {
         FileExchangeSettings feSettings = settings.getReferenceSettings().getFileExchangeSettings();
         String urlEncodedFilename = URLEncoder.encode(filename, StandardCharsets.UTF_8);
 
-        return new URL(feSettings.getProtocolType().value(), feSettings.getServerName(), feSettings.getPort().intValue(),
+        return new URL(feSettings.getProtocolType().value(), feSettings.getServerName(), feSettings.getPort().intValue(), "/" +
                 feSettings.getPath() + "/" + urlEncodedFilename);
     }
 
