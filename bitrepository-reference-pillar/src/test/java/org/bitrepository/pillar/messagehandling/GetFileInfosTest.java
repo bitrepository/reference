@@ -46,9 +46,9 @@ import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSe
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.testng.annotations.Test;
 
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.Date;
 
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -64,10 +64,10 @@ public class GetFileInfosTest extends MockedPillarTest {
     private GetFileInfosMessageFactory msgFactory;
 
     @Override
-    public void initializeCUT() {
+    protected void initializeCUT() {
         super.initializeCUT();
-        msgFactory = new GetFileInfosMessageFactory(collectionID, settingsForTestClient, getPillarID(),
-                pillarDestinationId);
+
+        msgFactory = new GetFileInfosMessageFactory(collectionID, settingsForTestClient, getPillarID(), pillarDestinationId);
     }
 
     @SuppressWarnings("rawtypes")
@@ -78,22 +78,18 @@ public class GetFileInfosTest extends MockedPillarTest {
         String FILE_ID = DEFAULT_FILE_ID + testMethodName;
         FileIDs fileids = FileIDsUtils.getSpecificFileIDs(FILE_ID);
 
-        addStep("Setup for having the file and delivering pillar id",
-                "Should return true, when requesting file-id existence.");
+        addStep("Setup for having the file and delivering pillar id", "Should return true, when requesting file-id existence.");
         doAnswer(invocation -> true).when(model).hasFileID(eq(FILE_ID), anyString());
         doAnswer(invocation -> settingsForCUT.getComponentID()).when(model).getPillarID();
 
-        addStep("Create and send the identify request message.",
-                "Should be received and handled by the pillar.");
+        addStep("Create and send the identify request message.", "Should be received and handled by the pillar.");
         IdentifyPillarsForGetFileInfosRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileInfosRequest(csSpec, fileids);
         messageBus.sendMessage(identifyRequest);
 
-        addStep("Retrieve and validate the response getPillarID() the pillar.",
-                "The pillar should make a response.");
+        addStep("Retrieve and validate the response getPillarID() the pillar.", "The pillar should make a response.");
         IdentifyPillarsForGetFileInfosResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetFileInfosResponse.class);
-        assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.IDENTIFICATION_POSITIVE);
+        assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), ResponseCode.IDENTIFICATION_POSITIVE);
         assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
         assertEquals(receivedIdentifyResponse.getFileIDs(), fileids);
 
@@ -110,21 +106,17 @@ public class GetFileInfosTest extends MockedPillarTest {
         addStep("Set up constants and variables.", "Should not fail here!");
         FileIDs fileids = FileIDsUtils.getAllFileIDs();
 
-        addStep("Setup for having the file and delivering pillar id",
-                "Should return true, when requesting file-id existence.");
+        addStep("Setup for having the file and delivering pillar id", "Should return true, when requesting file-id existence.");
         doAnswer(invocation -> settingsForCUT.getComponentID()).when(model).getPillarID();
 
-        addStep("Create and send the identify request message.",
-                "Should be received and handled by the pillar.");
+        addStep("Create and send the identify request message.", "Should be received and handled by the pillar.");
         IdentifyPillarsForGetFileInfosRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileInfosRequest(csSpec, fileids);
         messageBus.sendMessage(identifyRequest);
 
-        addStep("Retrieve and validate the response getPillarID() the pillar.",
-                "The pillar should make a response.");
+        addStep("Retrieve and validate the response getPillarID() the pillar.", "The pillar should make a response.");
         IdentifyPillarsForGetFileInfosResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetFileInfosResponse.class);
-        assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.IDENTIFICATION_POSITIVE);
+        assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), ResponseCode.IDENTIFICATION_POSITIVE);
         assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
         assertEquals(receivedIdentifyResponse.getFileIDs(), fileids);
 
@@ -141,22 +133,18 @@ public class GetFileInfosTest extends MockedPillarTest {
         String FILE_ID = DEFAULT_FILE_ID + testMethodName;
         FileIDs fileids = FileIDsUtils.getSpecificFileIDs(FILE_ID);
 
-        addStep("Setup for delivering pillar id and not having the file ",
-                "Should return false, when requesting file-id existence.");
+        addStep("Setup for delivering pillar id and not having the file ", "Should return false, when requesting file-id existence.");
         doAnswer(invocation -> false).when(model).hasFileID(eq(FILE_ID), anyString());
         doAnswer(invocation -> settingsForCUT.getComponentID()).when(model).getPillarID();
 
-        addStep("Create and send the identify request message.",
-                "Should be received and handled by the pillar.");
+        addStep("Create and send the identify request message.", "Should be received and handled by the pillar.");
         IdentifyPillarsForGetFileInfosRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileInfosRequest(csSpec, fileids);
         messageBus.sendMessage(identifyRequest);
 
-        addStep("Retrieve and validate the response getPillarID() the pillar.",
-                "The pillar should make a response.");
+        addStep("Retrieve and validate the response getPillarID() the pillar.", "The pillar should make a response.");
         IdentifyPillarsForGetFileInfosResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetFileInfosResponse.class);
-        assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.FILE_NOT_FOUND_FAILURE);
+        assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), ResponseCode.FILE_NOT_FOUND_FAILURE);
         assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
         assertEquals(receivedIdentifyResponse.getFileIDs(), fileids);
 
@@ -167,31 +155,26 @@ public class GetFileInfosTest extends MockedPillarTest {
     @SuppressWarnings("rawtypes")
     @Test(groups = {"regressiontest", "pillartest"})
     public void badCsSpecIdentification() throws Exception {
-        addDescription(
-                "Tests the identification for a GetFileInfos operation on the pillar for the failure scenario, when the checksum " +
-                        "specification is not supported.");
+        addDescription("Tests the identification for a GetFileInfos operation on the pillar for the failure scenario, when the checksum " +
+                "specification is not supported.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = DEFAULT_FILE_ID + testMethodName;
         FileIDs fileids = FileIDsUtils.getSpecificFileIDs(FILE_ID);
 
-        addStep("Setup for delivering pillar id and not having the file ",
-                "Should return false, when requesting file-id existence.");
+        addStep("Setup for delivering pillar id and not having the file ", "Should return false, when requesting file-id existence.");
         doAnswer(invocation -> true).when(model).hasFileID(eq(FILE_ID), anyString());
         doAnswer(invocation -> settingsForCUT.getComponentID()).when(model).getPillarID();
-        doThrow(new InvalidMessageException(ResponseCode.REQUEST_NOT_SUPPORTED, "Test failure")).when(model).
-                verifyChecksumAlgorithm(eq(csSpec));
+        doThrow(new InvalidMessageException(ResponseCode.REQUEST_NOT_SUPPORTED, "Test failure")).when(model)
+                .verifyChecksumAlgorithm(eq(csSpec));
 
-        addStep("Create and send the identify request message.",
-                "Should be received and handled by the pillar.");
+        addStep("Create and send the identify request message.", "Should be received and handled by the pillar.");
         IdentifyPillarsForGetFileInfosRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileInfosRequest(csSpec, fileids);
         messageBus.sendMessage(identifyRequest);
 
-        addStep("Retrieve and validate the response getPillarID() the pillar.",
-                "The pillar should make a response.");
+        addStep("Retrieve and validate the response getPillarID() the pillar.", "The pillar should make a response.");
         IdentifyPillarsForGetFileInfosResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetFileInfosResponse.class);
-        assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.REQUEST_NOT_SUPPORTED);
+        assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(), ResponseCode.REQUEST_NOT_SUPPORTED);
         assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
         assertEquals(receivedIdentifyResponse.getFileIDs(), fileids);
 
@@ -206,18 +189,14 @@ public class GetFileInfosTest extends MockedPillarTest {
         addStep("Set up constants and variables.", "Should not fail here!");
         final String FILE_ID = DEFAULT_FILE_ID + testMethodName;
         FileIDs fileids = FileIDsUtils.getSpecificFileIDs(FILE_ID);
-        ChecksumEntry cs = new ChecksumEntry(FILE_ID, DEFAULT_MD5_CHECKSUM, new Date());
         addStep("Setup for having the file and delivering result-set", "No failure here");
         doAnswer(invocation -> true).when(model).hasFileID(eq(FILE_ID), anyString());
         doAnswer(invocation -> settingsForCUT.getComponentID()).when(model).getPillarID();
         doAnswer(invocation -> {
             ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
-            res.insertChecksumEntry(cs);
+            res.insertChecksumEntry(new ChecksumEntry(FILE_ID, DEFAULT_MD5_CHECKSUM, new Date()));
             return res;
-
-        }).when(model)
-                .getSingleChecksumResultSet(eq(FILE_ID), anyString(), any(XMLGregorianCalendar.class), any(XMLGregorianCalendar.class),
-                        any(ChecksumSpecTYPE.class));
+        }).when(model).getSingleChecksumResultSet(eq(FILE_ID), eq(collectionID), isNull(), isNull(), any(ChecksumSpecTYPE.class));
         doAnswer(invocation -> {
             ChecksumDataForChecksumSpecTYPE cs1 = (ChecksumDataForChecksumSpecTYPE) invocation.getArguments()[0];
             FileInfosDataItem res = new FileInfosDataItem();
@@ -230,8 +209,7 @@ public class GetFileInfosTest extends MockedPillarTest {
 
         }).when(model).getFileInfosDataItemFromChecksumDataItem(any(ChecksumDataForChecksumSpecTYPE.class), eq(collectionID));
 
-        addStep("Create and send the actual GetFileInfos message to the pillar.",
-                "Should be received and handled by the pillar.");
+        addStep("Create and send the actual GetFileInfos message to the pillar.", "Should be received and handled by the pillar.");
         GetFileInfosRequest getFileInfosRequest = msgFactory.createGetFileInfosRequest(csSpec, fileids, null);
         messageBus.sendMessage(getFileInfosRequest);
 
@@ -268,16 +246,13 @@ public class GetFileInfosTest extends MockedPillarTest {
             ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
             res.insertChecksumEntry(new ChecksumEntry(FILE_ID, DEFAULT_MD5_CHECKSUM, new Date()));
             return res;
-        }).when(model)
-                .getSingleChecksumResultSet(eq(FILE_ID), anyString(), any(XMLGregorianCalendar.class), any(XMLGregorianCalendar.class),
-                        any(ChecksumSpecTYPE.class));
+        }).when(model).getSingleChecksumResultSet(eq(FILE_ID), anyString(), isNull(), isNull(), any(ChecksumSpecTYPE.class));
         doAnswer(invocation -> new FileInfoStub(FILE_ID, System.currentTimeMillis(), 1L, null)).when(model)
                 .getFileInfoForActualFile(eq(FILE_ID), anyString());
 
-        addStep("Create and send the actual GetFileInfos message to the pillar.",
-                "Should be received and handled by the pillar.");
-        GetFileInfosRequest getFileInfosRequest = msgFactory.createGetFileInfosRequest(csSpec, fileids, null, 100L,
-                null, null, null, CalendarUtils.getFromMillis(System.currentTimeMillis() + 123456789));
+        addStep("Create and send the actual GetFileInfos message to the pillar.", "Should be received and handled by the pillar.");
+        GetFileInfosRequest getFileInfosRequest = msgFactory.createGetFileInfosRequest(csSpec, fileids, null, 100L, null, null, null,
+                CalendarUtils.getFromMillis(System.currentTimeMillis() + 123456789));
         messageBus.sendMessage(getFileInfosRequest);
 
         addStep("Retrieve the ProgressResponse for the GetFileInfos request",
@@ -308,20 +283,18 @@ public class GetFileInfosTest extends MockedPillarTest {
         addStep("Setup for having the file and delivering result-set", "No failure here");
         doAnswer(invocation -> true).when(model).hasFileID(eq(FILE_ID), anyString());
         doAnswer(invocation -> settingsForCUT.getComponentID()).when(model).getPillarID();
+
         doAnswer(invocation -> {
             ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
             res.insertChecksumEntry(new ChecksumEntry(FILE_ID, DEFAULT_MD5_CHECKSUM, new Date()));
             return res;
-        }).when(model)
-                .getSingleChecksumResultSet(eq(FILE_ID), anyString(), any(XMLGregorianCalendar.class), any(XMLGregorianCalendar.class),
-                        any(ChecksumSpecTYPE.class));
+        }).when(model).getSingleChecksumResultSet(eq(FILE_ID), anyString(), isNull(), isNull(), any(ChecksumSpecTYPE.class));
+
         doAnswer(invocation -> new FileInfoStub(FILE_ID, System.currentTimeMillis(), 1L, null)).when(model)
                 .getFileInfoForActualFile(eq(FILE_ID), anyString());
-
-        addStep("Create and send the actual GetFileInfos message to the pillar.",
-                "Should be received and handled by the pillar.");
-        GetFileInfosRequest getFileInfosRequest = msgFactory.createGetFileInfosRequest(csSpec, fileids, null, 100L,
-                null, null, CalendarUtils.getFromMillis(System.currentTimeMillis() - 123456789), null);
+        addStep("Create and send the actual GetFileInfos message to the pillar.", "Should be received and handled by the pillar.");
+        GetFileInfosRequest getFileInfosRequest = msgFactory.createGetFileInfosRequest(csSpec, fileids, null, 100L, null, null,
+                CalendarUtils.getFromMillis(System.currentTimeMillis() - 123456789), null);
         messageBus.sendMessage(getFileInfosRequest);
 
         addStep("Retrieve the ProgressResponse for the GetFileInfos request",
@@ -353,10 +326,9 @@ public class GetFileInfosTest extends MockedPillarTest {
         doAnswer(invocation -> false).when(model).hasFileID(eq(FILE_ID), anyString());
         doAnswer(invocation -> settingsForCUT.getComponentID()).when(model).getPillarID();
 
-        addStep("Create and send the actual GetFileInfos message to the pillar.",
-                "Should be received and handled by the pillar.");
-        GetFileInfosRequest getFileInfosRequest = msgFactory.createGetFileInfosRequest(csSpec, fileids, null, 100L,
-                null, null, CalendarUtils.getFromMillis(System.currentTimeMillis() - 123456789), null);
+        addStep("Create and send the actual GetFileInfos message to the pillar.", "Should be received and handled by the pillar.");
+        GetFileInfosRequest getFileInfosRequest = msgFactory.createGetFileInfosRequest(csSpec, fileids, null, 100L, null, null,
+                CalendarUtils.getFromMillis(System.currentTimeMillis() - 123456789), null);
         messageBus.sendMessage(getFileInfosRequest);
 
         addStep("Retrieve the FinalResponse for the GetFileInfos request",

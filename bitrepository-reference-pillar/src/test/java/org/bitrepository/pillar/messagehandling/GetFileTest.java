@@ -31,12 +31,10 @@ import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
-import org.bitrepository.common.filestore.FileInfo;
 import org.bitrepository.pillar.MockedPillarTest;
 import org.bitrepository.pillar.common.FileInfoStub;
 import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
 import org.bitrepository.service.exception.IdentifyContributorException;
-import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -180,12 +178,7 @@ public class GetFileTest extends MockedPillarTest {
 
         addStep("Setup for having the file and delevering a mock file.", 
                 "Should make it possible to perform the whole operation without any exceptions.");
-        doAnswer(new Answer() {
-            public FileInfo answer(InvocationOnMock invocation) throws InvalidMessageException {
-                FileInfo res = new FileInfoStub(FILE_ID, 0L, 0L, new ByteArrayInputStream(new byte[0]));
-                return res;
-            }
-        }).when(model).getFileInfoForActualFile(eq(FILE_ID), anyString());
+        doAnswer(invocation -> new FileInfoStub(FILE_ID, 0L, 0L, new ByteArrayInputStream(new byte[0]))).when(model).getFileInfoForActualFile(eq(FILE_ID), anyString());
         doAnswer(new Answer() {
             public String answer(InvocationOnMock invocation) {
                 return settingsForCUT.getComponentID();

@@ -38,7 +38,6 @@ import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.store.StorageModel;
-import org.bitrepository.pillar.store.checksumdatabase.ChecksumEntry;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.utils.MessageUtils;
@@ -91,24 +90,15 @@ public class GetFileInfosRequestHandler extends PerformRequestHandler<GetFileInf
     protected void performOperation(GetFileInfosRequest request, MessageContext requestContext) throws RequestHandlerException {
         log.debug(MessageUtils.createMessageIdentifier(request) + " Performing GetFileInfos for file(s) " + request.getFileIDs() +
                 " on collection " + request.getCollectionID());
-        //ExtractedChecksumResultSet extractedChecksums = extractChecksumPart(request);
-        ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
-        if (request.getFileIDs().isSetFileID()) {
-            ChecksumEntry entry = getPillarModel().getChecksumEntryForFile(request.getFileIDs().getFileID(), request.getCollectionID(),
-                    request.getChecksumRequestForExistingFile());
-            res.insertChecksumEntry(entry);
-        }
+        ExtractedChecksumResultSet extractedChecksums = extractChecksumPart(request);
 
         ResultingFileInfos fileInfosResults;
         if (request.getResultAddress() == null) {
-            //fileInfosResults = compileResultsForMessage(extractedChecksums, request);
-            fileInfosResults = compileResultsForMessage(res, request);
+            fileInfosResults = compileResultsForMessage(extractedChecksums, request);
         } else {
-            //fileInfosResults = createAndUploadResults(request, extractedChecksums);
-            fileInfosResults = createAndUploadResults(request, res);
+            fileInfosResults = createAndUploadResults(request, extractedChecksums);
         }
-        //sendFinalResponse(request, fileInfosResults, extractedChecksums.hasMoreEntries());
-        sendFinalResponse(request, fileInfosResults, res.hasMoreEntries());
+        sendFinalResponse(request, fileInfosResults, extractedChecksums.hasMoreEntries());
     }
 
     @Override
