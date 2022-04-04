@@ -80,8 +80,7 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
     }
 
     @Override
-    protected void validateRequest(GetChecksumsRequest request, MessageContext requestContext)
-            throws RequestHandlerException {
+    protected void validateRequest(GetChecksumsRequest request, MessageContext requestContext) throws RequestHandlerException {
         validateCollectionID(request);
         validatePillarId(request.getPillarID());
         getPillarModel().verifyChecksumAlgorithm(request.getChecksumRequestForExistingFile());
@@ -106,10 +105,9 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
     }
 
     @Override
-    protected void performOperation(GetChecksumsRequest request, MessageContext requestContext)
-            throws RequestHandlerException {
-        log.debug(MessageUtils.createMessageIdentifier(request) + " Performing GetChecksums for file(s) "
-                + request.getFileIDs() + " on collection " + request.getCollectionID());
+    protected void performOperation(GetChecksumsRequest request, MessageContext requestContext) throws RequestHandlerException {
+        log.debug(MessageUtils.createMessageIdentifier(request) + " Performing GetChecksums for file(s) " + request.getFileIDs() +
+                " on collection " + request.getCollectionID());
         ExtractedChecksumResultSet extractedChecksums = extractChecksumResults(request);
         ResultingChecksums checksumResults;
         if (request.getResultAddress() == null) {
@@ -127,21 +125,19 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
      * @return The extracted results for the requested checksum.
      * @throws RequestHandlerException If the requested checksum specification is not supported.
      */
-    private ExtractedChecksumResultSet extractChecksumResults(GetChecksumsRequest request)
-            throws RequestHandlerException {
+    private ExtractedChecksumResultSet extractChecksumResults(GetChecksumsRequest request) throws RequestHandlerException {
         log.debug("Starting to extracting the checksum of the requested files.");
 
         if (request.getFileIDs().isSetFileID()) {
-            return getPillarModel().getSingleChecksumResultSet(request.getFileIDs().getFileID(),
-                    request.getCollectionID(), request.getMinTimestamp(), request.getMaxTimestamp(),
-                    request.getChecksumRequestForExistingFile());
+            return getPillarModel().getSingleChecksumResultSet(request.getFileIDs().getFileID(), request.getCollectionID(),
+                    request.getMinTimestamp(), request.getMaxTimestamp(), request.getChecksumRequestForExistingFile());
         } else {
             Long maxResults = null;
             if (request.getMaxNumberOfResults() != null) {
                 maxResults = request.getMaxNumberOfResults().longValue();
             }
-            return getPillarModel().getChecksumResultSet(request.getMinTimestamp(), request.getMaxTimestamp(),
-                    maxResults, request.getCollectionID(), request.getChecksumRequestForExistingFile());
+            return getPillarModel().getChecksumResultSet(request.getMinTimestamp(), request.getMaxTimestamp(), maxResults,
+                    request.getCollectionID(), request.getChecksumRequestForExistingFile());
         }
     }
 
@@ -153,8 +149,8 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
      * @param checksumResultSet List containing the requested checksums.
      * @return The ResultingChecksums containing the URL.
      */
-    private ResultingChecksums createAndUploadResults(GetChecksumsRequest request,
-                                                      ExtractedChecksumResultSet checksumResultSet) throws RequestHandlerException {
+    private ResultingChecksums createAndUploadResults(GetChecksumsRequest request, ExtractedChecksumResultSet checksumResultSet)
+            throws RequestHandlerException {
         ResultingChecksums res = new ResultingChecksums();
 
         String url = request.getResultAddress();
@@ -162,8 +158,8 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
             File fileToUpload = makeTemporaryChecksumFile(request, checksumResultSet);
             uploadFile(fileToUpload, url);
         } catch (Exception e) {
-            throw new InvalidMessageException(ResponseCode.FILE_TRANSFER_FAILURE, "Could not handle the creation "
-                    + "and upload of the results due to: " + e.getMessage(), e);
+            throw new InvalidMessageException(ResponseCode.FILE_TRANSFER_FAILURE,
+                    "Could not handle the creation " + "and upload of the results due to: " + e.getMessage(), e);
         }
 
         res.setResultAddress(url);
@@ -196,8 +192,8 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
      * @throws JAXBException If the resulting structure cannot be serialized.
      * @throws SAXException  If the results does not validate against the XSD.
      */
-    private File makeTemporaryChecksumFile(GetChecksumsRequest request,
-                                           ExtractedChecksumResultSet checksumResultSet) throws IOException, JAXBException, SAXException {
+    private File makeTemporaryChecksumFile(GetChecksumsRequest request, ExtractedChecksumResultSet checksumResultSet)
+            throws IOException, JAXBException, SAXException {
         // Create the temporary file.
         File checksumResultFile = File.createTempFile(request.getCorrelationID(), new Date().getTime() + ".cs");
         log.debug("Writing the list of checksums to the file '" + checksumResultFile + "'");
@@ -248,8 +244,7 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
      * @param results        The results of the checksum calculations.
      * @param hasMoreEntries Whether more results can be found.
      */
-    private void sendFinalResponse(GetChecksumsRequest request, ResultingChecksums results,
-                                   boolean hasMoreEntries) {
+    private void sendFinalResponse(GetChecksumsRequest request, ResultingChecksums results, boolean hasMoreEntries) {
         GetChecksumsFinalResponse response = createFinalResponse(request);
 
         ResponseInfo fri = new ResponseInfo();

@@ -44,8 +44,6 @@ import org.bitrepository.pillar.messagefactories.GetFileInfosMessageFactory;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumEntry;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;
 import org.bitrepository.service.exception.InvalidMessageException;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.testng.annotations.Test;
 
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -82,16 +80,8 @@ public class GetFileInfosTest extends MockedPillarTest {
 
         addStep("Setup for having the file and delivering pillar id",
                 "Should return true, when requesting file-id existence.");
-        doAnswer(new Answer() {
-            public Boolean answer(InvocationOnMock invocation) {
-                return true;
-            }
-        }).when(model).hasFileID(eq(FILE_ID), anyString());
-        doAnswer(new Answer() {
-            public String answer(InvocationOnMock invocation) {
-                return settingsForCUT.getComponentID();
-            }
-        }).when(model).getPillarID();
+        doAnswer(invocation -> true).when(model).hasFileID(eq(FILE_ID), anyString());
+        doAnswer(invocation -> settingsForCUT.getComponentID()).when(model).getPillarID();
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
