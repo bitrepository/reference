@@ -28,6 +28,6 @@
     </packages>
   </test>
   <listeners>
-    <listener class-name="org.jaccept.TestNGListerner" />
+    <listener class-name="org.jaccept.TestNGListener" />
   </listeners>
 </suite>

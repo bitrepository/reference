@@ -5,6 +5,7 @@ import org.apache.commons.io.IOUtils;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.LocalFileExchange;
 import org.fusesource.hawtbuf.ByteArrayInputStream;
+import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -23,7 +24,7 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class LocalFileExchangeTest {
+public class LocalFileExchangeTest extends ExtendedTestCase  {
 
     final static String BASE_FILE_EXCHANGE_DIR = "target/fileexchange/";
     
@@ -35,8 +36,8 @@ public class LocalFileExchangeTest {
             // fine it was there before..
         }
     }
-    
-    @Test
+
+    @Test(groups = {"regressiontest"})
     public void getUrlTest() throws MalformedURLException {
         String testFile = "getUrlTestfile";
         

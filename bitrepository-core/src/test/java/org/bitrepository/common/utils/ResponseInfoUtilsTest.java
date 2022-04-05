@@ -23,18 +23,11 @@ package org.bitrepository.common.utils;
 
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
-import org.bitrepository.common.TestValidationUtils;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class ResponseInfoUtilsTest extends ExtendedTestCase {
-    @Test(groups = { "regressiontest" })
-    public void utilityTester() throws Exception {
-        addDescription("Test that the utility class is a proper utility class.");
-        TestValidationUtils.validateUtilityClass(ResponseInfoUtils.class);
-    }
-
     @Test(groups = {"regressiontest"})
     public void responseInfoTester() throws Exception {
         addDescription("Test the response info.");

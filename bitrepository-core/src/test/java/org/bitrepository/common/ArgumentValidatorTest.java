@@ -31,12 +31,6 @@ import java.util.HashSet;
 
 public class ArgumentValidatorTest extends ExtendedTestCase {
     @Test(groups = { "regressiontest" })
-    public void utilityTester() throws Exception {
-        addDescription("Test that the utility class is a proper utility class.");
-        TestValidationUtils.validateUtilityClass(ArgumentValidator.class);
-    }
-    
-    @Test(groups = { "regressiontest" })
     public void testArgumentValidatorObject() throws Exception {
         addDescription("Test the argument validator for arguments not null");
         addStep("Test not null", "Should only throw an exception when a null is given.");

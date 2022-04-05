@@ -22,19 +22,12 @@
 package org.bitrepository.common.utils;
 
 import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.common.TestValidationUtils;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class FileIDUtilsTest extends ExtendedTestCase {
     String FILE_ID = "Test-File-Id";
-    
-    @Test(groups = { "regressiontest" })
-    public void utilityTester() throws Exception {
-        addDescription("Test that the utility class is a proper utility class.");
-        TestValidationUtils.validateUtilityClass(FileIDsUtils.class);
-    }
     
     @Test( groups = {"regressiontest"})
     public void fileIDsTest() throws Exception {

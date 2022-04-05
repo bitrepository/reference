@@ -104,7 +104,7 @@ public class PillarFileManager {
 
     public void addFilesToPillar(String collectionID, int numberOfFilesToAdd, String testName) {
         String[] newFileIDs = TestFileHelper.createFileIDs(numberOfFilesToAdd, testName);
-        for (String newFileID:newFileIDs) {
+        for (String newFileID : newFileIDs) {
             try {
                 // ToDo: This would be more precise if the client allowed put to a single pillar.
                 clientProvider.getPutClient().putFile(collectionID, httpServerConfiguration.getURL(TestFileHelper.DEFAULT_FILE_ID),

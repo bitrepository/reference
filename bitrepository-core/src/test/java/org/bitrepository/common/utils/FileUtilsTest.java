@@ -22,7 +22,6 @@
 package org.bitrepository.common.utils;
 
 import org.apache.activemq.util.ByteArrayInputStream;
-import org.bitrepository.common.TestValidationUtils;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
@@ -52,12 +51,6 @@ public class FileUtilsTest extends ExtendedTestCase {
         if(dir.exists()) {
             FileUtils.delete(dir);
         }
-    }
-    
-    @Test(groups = { "regressiontest" })
-    public void utilityTester() throws Exception {
-        addDescription("Test that the utility class is a proper utility class.");
-        TestValidationUtils.validateUtilityClass(FileUtils.class);
     }
 
     @Test(groups = {"regressiontest"})

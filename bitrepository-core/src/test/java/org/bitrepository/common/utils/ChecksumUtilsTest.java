@@ -26,7 +26,6 @@ package org.bitrepository.common.utils;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
-import org.bitrepository.common.TestValidationUtils;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.jaccept.structure.ExtendedTestCase;
@@ -40,12 +39,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 
 public class ChecksumUtilsTest extends ExtendedTestCase {
-    @Test(groups = { "regressiontest" })
-    public void utilityTester() throws Exception {
-        addDescription("Test that the utility class is a proper utility class.");
-        TestValidationUtils.validateUtilityClass(ChecksumUtils.class);
-    }
-
     @Test(groups = { "regressiontest" })
     public void calculateHmacChecksums() throws Exception {
         addDescription("Tests whether the utility class for calculating checksums with HMAC is able to "

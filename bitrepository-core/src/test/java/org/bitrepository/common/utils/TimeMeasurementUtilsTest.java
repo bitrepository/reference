@@ -26,7 +26,6 @@ package org.bitrepository.common.utils;
 
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositoryelements.TimeMeasureUnit;
-import org.bitrepository.common.TestValidationUtils;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -37,12 +36,6 @@ import java.math.BigInteger;
  * Tests the <code>TimeMeasureComparator</code> class.
  */
 public class TimeMeasurementUtilsTest extends ExtendedTestCase {
-    @Test(groups = { "regressiontest" })
-    public void utilityTester() throws Exception {
-        addDescription("Test that the utility class is a proper utility class.");
-        TestValidationUtils.validateUtilityClass(TimeMeasurementUtils.class);
-    }
-
     @Test (groups = { "regressiontest" })
     public void testCompareMilliSeconds() {
         addDescription("Test the comparison between TimeMeasure units.");

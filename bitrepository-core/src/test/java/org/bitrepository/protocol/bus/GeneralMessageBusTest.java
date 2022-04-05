@@ -25,7 +25,6 @@
 package org.bitrepository.protocol.bus;
 
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
-import org.bitrepository.common.TestValidationUtils;
 import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
@@ -52,12 +51,6 @@ public class GeneralMessageBusTest extends IntegrationTest {
     public void tearDown() {
         messageBus.setComponentFilter(Arrays.asList(new String[]{}));
         messageBus.setCollectionFilter(Arrays.asList(new String[]{}));
-    }
-
-    @Test(groups = { "regressiontest" })
-    public void utilityTester() throws Exception {
-        addDescription("Test that the utility class is a proper utility class.");
-        TestValidationUtils.validateUtilityClass(MessageBusManager.class);
     }
 
     @Test(groups = { "regressiontest" })

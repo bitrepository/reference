@@ -51,7 +51,7 @@
       </roles>
     </developer>
     <developer>
-      <name>Kim Teglgaard Christensen</name>
+      <name>Kim Agerbo Christensen</name>
       <id>ktc</id>
       <roles>
         <role>Former Employee</role>
@@ -494,7 +494,7 @@
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
     <!-- Enable forbiddenapis plugin, do disable set to none -->
-    <api.check.phase>none</api.check.phase> <!-- forbidden-apis dislikes TestValidationUtils #validateUtilityClass -->
+    <api.check.phase>process-classes</api.check.phase> <!-- forbidden-apis dislikes TestValidationUtils #validateUtilityClass -->
     <message.xml.version>31</message.xml.version>
     <repository.settings.version>13</repository.settings.version>
     <derby.version>10.14.2.0</derby.version>

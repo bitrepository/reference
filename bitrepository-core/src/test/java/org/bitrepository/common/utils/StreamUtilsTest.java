@@ -22,7 +22,6 @@
 package org.bitrepository.common.utils;
 
 import org.apache.activemq.util.ByteArrayInputStream;
-import org.bitrepository.common.TestValidationUtils;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -32,12 +31,6 @@ import java.nio.charset.StandardCharsets;
 
 public class StreamUtilsTest extends ExtendedTestCase {
     String DATA = "The data for the streams.";
-    
-    @Test(groups = { "regressiontest" })
-    public void utilityTester() throws Exception {
-        addDescription("Test that the utility class is a proper utility class.");
-        TestValidationUtils.validateUtilityClass(StreamUtils.class);
-    }
 
     @Test(groups = {"regressiontest"})
     public void streamTester() throws Exception {
@@ -64,7 +57,7 @@ public class StreamUtilsTest extends ExtendedTestCase {
         addStep("Test copying the input stream to the output stream.", "Should contain the same data.");
         StreamUtils.copyInputStreamToOutputStream(in, out);
         
-        Assert.assertEquals(new String(out.toByteArray(), StandardCharsets.UTF_8), DATA);
+        Assert.assertEquals(out.toString(StandardCharsets.UTF_8), DATA);
     }
 
 }

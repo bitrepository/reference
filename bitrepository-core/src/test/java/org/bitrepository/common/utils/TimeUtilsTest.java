@@ -21,7 +21,6 @@
  */
 package org.bitrepository.common.utils;
 
-import org.bitrepository.common.TestValidationUtils;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -35,12 +34,6 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 public class TimeUtilsTest extends ExtendedTestCase {
-    @Test(groups = { "regressiontest" })
-    public void utilityTester() throws Exception {
-        addDescription("Test that the utility class is a proper utility class.");
-        TestValidationUtils.validateUtilityClass(TimeUtils.class);
-    }
-
     @Test(groups = {"regressiontest"})
     public void timeTester() throws Exception {
         addDescription("Tests the TimeUtils. Pi days = 271433605 milliseconds");
