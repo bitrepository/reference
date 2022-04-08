@@ -36,23 +36,20 @@ import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.integrityservice.workflow.IntegrityContributors;
-import org.mockito.Matchers;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
-import java.util.Collection;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
  * Performs the validation of the integrity for the checksums.
@@ -63,7 +60,6 @@ public class GetChecksumForFileStepTestFileInfos extends WorkflowstepTest {
     public static final String TEST_PILLAR_3 = "test-pillar-3";
 
     public static final String FILE_1 = "test-file-1";
-    public static final String FILE_2 = "test-file-2";
     String TEST_COLLECTION;
 
     @BeforeMethod(alwaysRun = true)
@@ -87,7 +83,7 @@ public class GetChecksumForFileStepTestFileInfos extends WorkflowstepTest {
             EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
             eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
             return null;
-        }).when(collector).getFileInfos(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
+        }).when(collector).getFileInfos(eq(TEST_COLLECTION), anyCollection(), any(ChecksumSpecTYPE.class), anyString(),
                 anyString(), any(ContributorQuery[].class), any(EventHandler.class));
 
         GetChecksumForFileStep step = new GetChecksumForFileStep(collector, alerter, checksumType, FILE_1, settings, TEST_COLLECTION,
@@ -97,7 +93,7 @@ public class GetChecksumForFileStepTestFileInfos extends WorkflowstepTest {
         step.performStep();
 
         Assert.assertTrue(step.getResults().isEmpty());
-        verifyZeroInteractions(alerter);
+        verifyNoInteractions(alerter);
         verify(collector).getFileInfos(anyString(), any(), eq(checksumType), eq(FILE_1), anyString(), any(), any(EventHandler.class));
         verifyNoMoreInteractions(collector);
     }
@@ -120,7 +116,7 @@ public class GetChecksumForFileStepTestFileInfos extends WorkflowstepTest {
                     (ChecksumSpecTYPE) invocation.getArguments()[2], false));
             eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
             return null;
-        }).when(collector).getFileInfos(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
+        }).when(collector).getFileInfos(eq(TEST_COLLECTION), anyCollection(), any(ChecksumSpecTYPE.class), anyString(),
                 anyString(), any(ContributorQuery[].class), any(EventHandler.class));
 
         GetChecksumForFileStep step = new GetChecksumForFileStep(collector, alerter, checksumType, FILE_1, settings, TEST_COLLECTION,
@@ -135,7 +131,7 @@ public class GetChecksumForFileStepTestFileInfos extends WorkflowstepTest {
         Assert.assertTrue(step.getResults().containsKey(TEST_PILLAR_2));
         Assert.assertTrue(step.getResults().containsKey(TEST_PILLAR_3));
 
-        verifyZeroInteractions(alerter);
+        verifyNoMoreInteractions(alerter);
         verify(collector).getFileInfos(anyString(), any(), eq(checksumType), eq(FILE_1), anyString(), any(), any(EventHandler.class));
         verifyNoMoreInteractions(collector);
     }
@@ -161,7 +157,7 @@ public class GetChecksumForFileStepTestFileInfos extends WorkflowstepTest {
             eventHandler.handleEvent(e3);
             eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "COMPONENT FAILED", Arrays.asList(e1, e2, e3)));
             return null;
-        }).when(collector).getFileInfos(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
+        }).when(collector).getFileInfos(eq(TEST_COLLECTION), anyCollection(), any(ChecksumSpecTYPE.class), anyString(),
                 anyString(), any(ContributorQuery[].class), any(EventHandler.class));
 
         GetChecksumForFileStep step = new GetChecksumForFileStep(collector, alerter, checksumType, FILE_1, settings, TEST_COLLECTION,

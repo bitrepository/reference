@@ -51,32 +51,27 @@ import org.bitrepository.integrityservice.workflow.step.UpdateFileInfosStep;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.service.exception.WorkflowAbortedException;
 import org.jaccept.structure.ExtendedTestCase;
-import org.mockito.Matchers;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
 
 @SuppressWarnings("rawtypes")
 public class MissingChecksumTestsFileInfos extends ExtendedTestCase {
@@ -86,7 +81,6 @@ public class MissingChecksumTestsFileInfos extends ExtendedTestCase {
 
     private static final String DEFAULT_CHECKSUM = "0123456789";
     private static final String TEST_FILE_1 = "test-file-1";
-    private static final String TEST_FILE_2 = "test-file-2";
     private String TEST_COLLECTION;
 
     protected Settings settings;
@@ -133,17 +127,13 @@ public class MissingChecksumTestsFileInfos extends ExtendedTestCase {
         populateDatabase(model, TEST_FILE_1);
 
         addStep("Run missing checksum step.", "The file should be marked as missing at all pillars.");
-        doAnswer(new Answer() {
-            public String answer(InvocationOnMock invocation) {
-                return TEST_COLLECTION;
-            }
-        }).when(reporter).getCollectionID();
+        doAnswer(invocation -> TEST_COLLECTION).when(reporter).getCollectionID();
 
         StatisticsCollector cs = new StatisticsCollector(TEST_COLLECTION);
         HandleMissingChecksumsStep missingChecksumStep = new HandleMissingChecksumsStep(model, reporter, cs, new Date(0));
         missingChecksumStep.performStep();
         for (String pillar : SettingsUtils.getPillarIDsForCollection(TEST_COLLECTION)) {
-            assertTrue(cs.getPillarCollectionStat(pillar).getMissingChecksums() == 1);
+            assertEquals((long) cs.getPillarCollectionStat(pillar).getMissingChecksums(), 1);
         }
     }
 
@@ -156,17 +146,15 @@ public class MissingChecksumTestsFileInfos extends ExtendedTestCase {
 
         addStep("Add checksum results for only one pillar.", "");
         final ResultingFileInfos resultingFileInfos = createResultingFileInfos(DEFAULT_CHECKSUM, TEST_FILE_1);
-        doAnswer(new Answer() {
-            public Void answer(InvocationOnMock invocation) {
-                EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
-                eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(PILLAR_1, PILLAR_2)));
-                eventHandler.handleEvent(new FileInfosCompletePillarEvent(PILLAR_1, TEST_COLLECTION,
-                        resultingFileInfos, createChecksumSpecTYPE(), false));
-                eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
-                return null;
-            }
+        doAnswer(invocation -> {
+            EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
+            eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(PILLAR_1, PILLAR_2)));
+            eventHandler.handleEvent(new FileInfosCompletePillarEvent(PILLAR_1, TEST_COLLECTION,
+                    resultingFileInfos, createChecksumSpecTYPE(), false));
+            eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
+            return null;
         }).when(collector).getFileInfos(
-                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(), anyString(),
+                eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class), anyString(), anyString(),
                 any(ContributorQuery[].class), any(EventHandler.class));
 
         when(integrityContributors.getActiveContributors())
@@ -175,7 +163,7 @@ public class MissingChecksumTestsFileInfos extends ExtendedTestCase {
         UpdateFileInfosStep step = new FullUpdateFileInfosStep(collector, model, alerter, createChecksumSpecTYPE(),
                 settings, TEST_COLLECTION, integrityContributors);
         step.performStep();
-        verify(collector).getFileInfos(eq(TEST_COLLECTION), Matchers.<Collection<String>>any(),
+        verify(collector).getFileInfos(eq(TEST_COLLECTION), any(),
                 any(ChecksumSpecTYPE.class), anyString(), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         verifyNoMoreInteractions(alerter);
 
@@ -214,7 +202,7 @@ public class MissingChecksumTestsFileInfos extends ExtendedTestCase {
             eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
             return null;
         }).when(collector).getFileInfos(
-                eq(TEST_COLLECTION), Matchers.any(), any(ChecksumSpecTYPE.class), anyString(),
+                eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class), anyString(),
                 anyString(), any(ContributorQuery[].class), any(EventHandler.class));
 
         when(integrityContributors.getActiveContributors())
@@ -223,7 +211,7 @@ public class MissingChecksumTestsFileInfos extends ExtendedTestCase {
         UpdateFileInfosStep step1 = new FullUpdateFileInfosStep(collector, model, alerter, createChecksumSpecTYPE(),
                 settings, TEST_COLLECTION, integrityContributors);
         step1.performStep();
-        verify(collector).getFileInfos(eq(TEST_COLLECTION), Matchers.any(),
+        verify(collector).getFileInfos(eq(TEST_COLLECTION), any(),
                 any(ChecksumSpecTYPE.class), anyString(), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         verifyNoMoreInteractions(alerter);
 
@@ -247,7 +235,7 @@ public class MissingChecksumTestsFileInfos extends ExtendedTestCase {
             eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
             return null;
         }).when(collector).getFileInfos(
-                eq(TEST_COLLECTION), Matchers.any(), any(ChecksumSpecTYPE.class), anyString(),
+                eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class), anyString(),
                 anyString(), any(ContributorQuery[].class), any(EventHandler.class));
 
         when(integrityContributors.getActiveContributors())

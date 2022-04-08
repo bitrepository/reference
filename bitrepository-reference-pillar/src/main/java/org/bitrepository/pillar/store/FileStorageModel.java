@@ -170,7 +170,6 @@ public class FileStorageModel extends StorageModel {
         res.setFileSize(BigInteger.valueOf(fileData.getSize()));
 
         return res;
-
     }
 
     @Override

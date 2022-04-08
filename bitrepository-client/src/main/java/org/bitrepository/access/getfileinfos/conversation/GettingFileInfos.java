@@ -24,9 +24,6 @@
  */
 package org.bitrepository.access.getfileinfos.conversation;
 
-import java.math.BigInteger;
-import java.util.Collection;
-
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.bitrepositorymessages.GetFileInfosFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileInfosRequest;
@@ -38,19 +35,22 @@ import org.bitrepository.client.exceptions.UnexpectedResponseException;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.FileIDsUtils;
 
+import java.math.BigInteger;
+import java.util.Collection;
+
 /**
- * Models the behavior of a GetFileInfos conversation during the operation phase. That is, it begins with the 
- * sending of <code>GetFileInfosRequest</code> messages and finishes with on the reception of the 
+ * Models the behavior of a GetFileInfos conversation during the operation phase. That is, it begins with the
+ * sending of <code>GetFileInfosRequest</code> messages and finishes with on the reception of the
  * <code>GetFileInfosFinalResponse</code> messages from the responding pillars.
- *
- * Note that this is only used by the GetFileInfosConversation in the same package, therefore the visibility is package 
+ * <p>
+ * Note that this is only used by the GetFileInfosConversation in the same package, therefore the visibility is package
  * protected.
  */
 public class GettingFileInfos extends PerformingOperationState {
     private final GetFileInfosConversationContext context;
 
-    /*
-     * @param context The conversation context.
+    /**
+     * @param context      The conversation context.
      * @param contributors The list of components the checksums should be collected from.
      */
     public GettingFileInfos(GetFileInfosConversationContext context, Collection<SelectedComponentInfo> contributors) {
@@ -62,7 +62,7 @@ public class GettingFileInfos extends PerformingOperationState {
     protected void generateContributorCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
         if (msg instanceof GetFileInfosFinalResponse) {
             GetFileInfosFinalResponse response = (GetFileInfosFinalResponse) msg;
-            boolean isPartialResult = response.isPartialResult() == null ? false : response.isPartialResult();
+            boolean isPartialResult = response.isPartialResult() != null && response.isPartialResult();
             getContext().getMonitor().contributorComplete(new FileInfosCompletePillarEvent(
                     response.getFrom(), response.getCollectionID(), response.getResultingFileInfos(),
                     response.getChecksumRequestForExistingFile(), isPartialResult
@@ -76,13 +76,13 @@ public class GettingFileInfos extends PerformingOperationState {
     @Override
     protected void sendRequest() {
         context.getMonitor().requestSent("Sending GetFileInfosRequest's", activeContributors.keySet().toString());
-        for(ContributorQuery query : context.getContributorQueries()) {
+        for (ContributorQuery query : context.getContributorQueries()) {
             if (activeContributors.containsKey(query.getComponentID())) {
                 GetFileInfosRequest msg = new GetFileInfosRequest();
                 initializeMessage(msg);
                 msg.setChecksumRequestForExistingFile(context.getChecksumSpec());
                 msg.setFileIDs(FileIDsUtils.createFileIDs(context.getFileID()));
-                if(context.getUrlForResult() != null) {
+                if (context.getUrlForResult() != null) {
                     msg.setResultAddress(context.getUrlForResult().toExternalForm() + "-" + query.getComponentID());
                 }
                 msg.setPillarID(query.getComponentID());
@@ -93,7 +93,8 @@ public class GettingFileInfos extends PerformingOperationState {
                 }
                 if (query.getMaxTimestamp() != null) {
                     msg.setMaxChecksumTimestamp(CalendarUtils.getXmlGregorianCalendar(query.getMaxTimestamp()));
-                } if (query.getMaxNumberOfResults() != null) {
+                }
+                if (query.getMaxNumberOfResults() != null) {
                     msg.setMaxNumberOfResults(BigInteger.valueOf(query.getMaxNumberOfResults()));
                 }
                 context.getMessageSender().sendMessage(msg);

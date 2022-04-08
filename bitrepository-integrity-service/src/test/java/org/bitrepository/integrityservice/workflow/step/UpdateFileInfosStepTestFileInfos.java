@@ -38,22 +38,20 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.service.exception.WorkflowAbortedException;
-import org.mockito.Matchers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -74,7 +72,7 @@ public class UpdateFileInfosStepTestFileInfos extends WorkflowstepTest {
             eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
             return null;
         }).when(collector).getFileInfos(
-                eq(TEST_COLLECTION), Matchers.any(), any(ChecksumSpecTYPE.class), anyString(),
+                eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class), anyString(),
                 anyString(), any(ContributorQuery[].class), any(EventHandler.class));
 
         when(integrityContributors.getActiveContributors())
@@ -83,7 +81,7 @@ public class UpdateFileInfosStepTestFileInfos extends WorkflowstepTest {
         UpdateFileInfosStep step = new IncrementalUpdateFileInfosStep(collector, model, alerter, createChecksumSpecTYPE(),
                 settings, TEST_COLLECTION, integrityContributors);
         step.performStep();
-        verify(collector).getFileInfos(eq(TEST_COLLECTION), Matchers.any(), any(ChecksumSpecTYPE.class),
+        verify(collector).getFileInfos(eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class),
                 anyString(), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         verifyNoMoreInteractions(alerter);
     }
@@ -98,7 +96,7 @@ public class UpdateFileInfosStepTestFileInfos extends WorkflowstepTest {
             eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "Problem encountered", null));
             return null;
         }).when(collector).getFileInfos(
-                eq(TEST_COLLECTION), Matchers.any(), any(ChecksumSpecTYPE.class), anyString(),
+                eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class), anyString(),
                 anyString(), any(ContributorQuery[].class), any(EventHandler.class));
 
         when(integrityContributors.getActiveContributors())
@@ -115,7 +113,7 @@ public class UpdateFileInfosStepTestFileInfos extends WorkflowstepTest {
         } catch (WorkflowAbortedException e) {
             // nothing to do here
         }
-        verify(collector).getFileInfos(eq(TEST_COLLECTION), Matchers.any(), any(ChecksumSpecTYPE.class), anyString(),
+        verify(collector).getFileInfos(eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class), anyString(),
                 anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         verify(integrityContributors).failContributor(eq(TEST_PILLAR_1));
         verify(alerter).integrityFailed(anyString(), eq(TEST_COLLECTION));
@@ -144,7 +142,7 @@ public class UpdateFileInfosStepTestFileInfos extends WorkflowstepTest {
                 return null;
             }
         }).when(collector).getFileInfos(
-                eq(TEST_COLLECTION), Matchers.any(), any(ChecksumSpecTYPE.class), anyString(),
+                eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class), anyString(),
                 anyString(), any(ContributorQuery[].class), any(EventHandler.class));
 
         when(integrityContributors.getActiveContributors())
@@ -156,7 +154,7 @@ public class UpdateFileInfosStepTestFileInfos extends WorkflowstepTest {
         UpdateFileInfosStep step = new IncrementalUpdateFileInfosStep(collector, model, alerter, createChecksumSpecTYPE(),
                 settings, TEST_COLLECTION, integrityContributors);
         step.performStep();
-        verify(collector, times(2)).getFileInfos(eq(TEST_COLLECTION), Matchers.any(),
+        verify(collector, times(2)).getFileInfos(eq(TEST_COLLECTION), any(),
                 any(ChecksumSpecTYPE.class), anyString(), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         verify(model).addFileInfos(resultingFileInfos.getFileInfosDataItem(), TEST_PILLAR_1, TEST_COLLECTION);
         verifyNoMoreInteractions(alerter);
@@ -175,7 +173,7 @@ public class UpdateFileInfosStepTestFileInfos extends WorkflowstepTest {
             eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "Problem encountered", null));
             return null;
         }).when(collector).getFileInfos(
-                eq(TEST_COLLECTION), Matchers.any(), any(ChecksumSpecTYPE.class), anyString(),
+                eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class), anyString(),
                 anyString(), any(ContributorQuery[].class), any(EventHandler.class));
 
         when(integrityContributors.getActiveContributors())
@@ -189,7 +187,7 @@ public class UpdateFileInfosStepTestFileInfos extends WorkflowstepTest {
         step.performStep();
 
         verify(integrityContributors).failContributor(eq(TEST_PILLAR_1));
-        verify(collector).getFileInfos(eq(TEST_COLLECTION), Matchers.any(), any(ChecksumSpecTYPE.class), anyString(),
+        verify(collector).getFileInfos(eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class), anyString(),
                 anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         verify(alerter).integrityFailed(anyString(), eq(TEST_COLLECTION));
     }
@@ -206,7 +204,7 @@ public class UpdateFileInfosStepTestFileInfos extends WorkflowstepTest {
             eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
             return null;
         }).when(collector).getFileInfos(
-                eq(TEST_COLLECTION), Matchers.any(), any(ChecksumSpecTYPE.class), anyString(),
+                eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class), anyString(),
                 anyString(), any(ContributorQuery[].class), any(EventHandler.class));
 
         when(integrityContributors.getActiveContributors())
@@ -217,7 +215,7 @@ public class UpdateFileInfosStepTestFileInfos extends WorkflowstepTest {
         UpdateFileInfosStep step = new IncrementalUpdateFileInfosStep(collector, model, alerter, createChecksumSpecTYPE(),
                 settings, TEST_COLLECTION, integrityContributors);
         step.performStep();
-        verify(collector).getFileInfos(eq(TEST_COLLECTION), Matchers.any(),
+        verify(collector).getFileInfos(eq(TEST_COLLECTION), any(),
                 any(ChecksumSpecTYPE.class), anyString(), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         verify(model).addFileInfos(resultingFileInfos.getFileInfosDataItem(), TEST_PILLAR_1, TEST_COLLECTION);
         verifyNoMoreInteractions(alerter);
@@ -235,7 +233,7 @@ public class UpdateFileInfosStepTestFileInfos extends WorkflowstepTest {
             eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
             return null;
         }).when(collector).getFileInfos(
-                eq(TEST_COLLECTION), Matchers.any(), any(ChecksumSpecTYPE.class), anyString(),
+                eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class), anyString(),
                 anyString(), any(ContributorQuery[].class), any(EventHandler.class));
 
         when(integrityContributors.getActiveContributors())
@@ -244,7 +242,7 @@ public class UpdateFileInfosStepTestFileInfos extends WorkflowstepTest {
         UpdateFileInfosStep step = new FullUpdateFileInfosStep(collector, model, alerter, createChecksumSpecTYPE(),
                 settings, TEST_COLLECTION, integrityContributors);
         step.performStep();
-        verify(collector).getFileInfos(eq(TEST_COLLECTION), Matchers.any(),
+        verify(collector).getFileInfos(eq(TEST_COLLECTION), any(),
                 any(ChecksumSpecTYPE.class), anyString(), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         verify(model).resetFileInfoCollectionProgress(TEST_COLLECTION);
         verify(model).addFileInfos(resultingFileInfos.getFileInfosDataItem(), TEST_PILLAR_1, TEST_COLLECTION);
@@ -273,12 +271,12 @@ public class UpdateFileInfosStepTestFileInfos extends WorkflowstepTest {
             }
         };
         doAnswer(callbackAnswer).when(collector).getFileInfos(
-                eq(TEST_COLLECTION), Matchers.<Collection<String>>any(), any(ChecksumSpecTYPE.class), anyString(),
+                eq(TEST_COLLECTION), anyCollection(), any(ChecksumSpecTYPE.class), anyString(),
                 anyString(), any(ContributorQuery[].class), any(EventHandler.class));
 
         when(integrityContributors.getActiveContributors())
-                .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1)))
-                .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1)))
+                .thenReturn(new HashSet<>(List.of(TEST_PILLAR_1)))
+                .thenReturn(new HashSet<>(List.of(TEST_PILLAR_1)))
                 .thenReturn(new HashSet<>());
 
         UpdateFileInfosStep step = new IncrementalUpdateFileInfosStep(collector, model, alerter, createChecksumSpecTYPE(),
@@ -286,7 +284,7 @@ public class UpdateFileInfosStepTestFileInfos extends WorkflowstepTest {
 
         step.performStep();
         verify(model, times(2)).addFileInfos(resultingFileInfos.getFileInfosDataItem(), TEST_PILLAR_1, TEST_COLLECTION);
-        verify(collector, times(2)).getFileInfos(eq(TEST_COLLECTION), Matchers.any(),
+        verify(collector, times(2)).getFileInfos(eq(TEST_COLLECTION), any(),
                 any(ChecksumSpecTYPE.class), anyString(), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
     }
 
@@ -299,7 +297,7 @@ public class UpdateFileInfosStepTestFileInfos extends WorkflowstepTest {
             eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
             return null;
         }).when(collector).getFileInfos(
-                eq(TEST_COLLECTION), Matchers.any(), any(ChecksumSpecTYPE.class), anyString(),
+                eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class), anyString(),
                 anyString(), any(ContributorQuery[].class), any(EventHandler.class));
 
         when(model.getDateForNewestChecksumEntryForPillar(anyString(), anyString())).thenReturn(new Date(0));
@@ -314,7 +312,7 @@ public class UpdateFileInfosStepTestFileInfos extends WorkflowstepTest {
                 makeFullQueries(settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()
                 );
 
-        verify(collector).getFileInfos(eq(TEST_COLLECTION), Matchers.any(), any(ChecksumSpecTYPE.class),
+        verify(collector).getFileInfos(eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class),
                 anyString(), anyString(), eq(expectedContributorQueries), any(EventHandler.class));
         verifyNoMoreInteractions(alerter);
     }
@@ -330,7 +328,7 @@ public class UpdateFileInfosStepTestFileInfos extends WorkflowstepTest {
                 return null;
             }
         }).when(collector).getFileInfos(
-                eq(TEST_COLLECTION), Matchers.any(), any(ChecksumSpecTYPE.class), anyString(),
+                eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class), anyString(),
                 anyString(), any(ContributorQuery[].class), any(EventHandler.class));
 
         when(integrityContributors.getActiveContributors())
@@ -343,7 +341,7 @@ public class UpdateFileInfosStepTestFileInfos extends WorkflowstepTest {
         ContributorQuery[] expectedContributorQueries =
                 makeQueries(settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID(), model);
 
-        verify(collector).getFileInfos(eq(TEST_COLLECTION), Matchers.any(), any(ChecksumSpecTYPE.class),
+        verify(collector).getFileInfos(eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class),
                 anyString(), anyString(), eq(expectedContributorQueries), any(EventHandler.class));
         verifyNoMoreInteractions(alerter);
     }
@@ -376,7 +374,7 @@ public class UpdateFileInfosStepTestFileInfos extends WorkflowstepTest {
     }
 
     private List<FileInfosDataItem> createFileInfoData(String checksum, String... fileids) {
-        List<FileInfosDataItem> res = new ArrayList<FileInfosDataItem>();
+        List<FileInfosDataItem> res = new ArrayList<>();
         for (String fileID : fileids) {
             FileInfosDataItem item = new FileInfosDataItem();
             item.setLastModificationTime(CalendarUtils.getNow());

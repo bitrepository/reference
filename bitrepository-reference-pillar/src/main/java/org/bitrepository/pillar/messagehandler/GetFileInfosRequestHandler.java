@@ -78,6 +78,7 @@ public class GetFileInfosRequestHandler extends PerformRequestHandler<GetFileInf
         validateCollectionID(request);
         validatePillarId(request.getPillarID());
         getPillarModel().verifyChecksumAlgorithm(request.getChecksumRequestForExistingFile());
+
         if (request.getFileIDs() != null && request.getFileIDs().getFileID() != null) {
             validateFileIDFormat(request.getFileIDs().getFileID());
             verifyFileIDExistence(request.getFileIDs(), request.getCollectionID());
@@ -201,7 +202,7 @@ public class GetFileInfosRequestHandler extends PerformRequestHandler<GetFileInf
      * @throws SAXException  If the results does not validate against the XSD.
      */
     private File makeTemporaryFileInfosFile(GetFileInfosRequest request, ExtractedChecksumResultSet checksumResultSet)
-            throws IOException, JAXBException, SAXException, RequestHandlerException {
+            throws IOException, JAXBException, SAXException {
         // Create the temporary file.
         File fileInfosResultFile = File.createTempFile(request.getCorrelationID(), new Date().getTime() + ".fi");
         log.debug("Writing the list of file infos to the file '" + fileInfosResultFile + "'");

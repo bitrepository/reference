@@ -50,22 +50,21 @@ import org.testng.annotations.Test;
 
 import java.util.Arrays;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.nullable;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 @SuppressWarnings("rawtypes")
 @Ignore
 public class SaltedChecksumWorkflowTestFileInfos extends ExtendedTestCase {
-
     private static final String PILLAR_1 = "pillar1";
     private static final String PILLAR_2 = "pillar2";
     private static final String PILLAR_3 = "pillar3";
@@ -113,8 +112,8 @@ public class SaltedChecksumWorkflowTestFileInfos extends ExtendedTestCase {
         verify(alerter).integrityFailed(anyString(), eq(TEST_COLLECTION));
         verifyNoMoreInteractions(alerter);
 
-        verifyZeroInteractions(collector);
-        verifyZeroInteractions(auditManager);
+        verifyNoInteractions(collector);
+        verifyNoInteractions(auditManager);
 
         verify(model).getNumberOfFilesInCollection(eq(TEST_COLLECTION));
         verifyNoMoreInteractions(model);
@@ -149,7 +148,7 @@ public class SaltedChecksumWorkflowTestFileInfos extends ExtendedTestCase {
         workflow.initialise(context, TEST_COLLECTION);
         workflow.start();
 
-        verifyZeroInteractions(alerter);
+        verifyNoInteractions(alerter);
 
         verify(collector).getFileInfos(eq(TEST_COLLECTION), any(), any(), anyString(), anyString(), any(), any(EventHandler.class));
         verifyNoMoreInteractions(collector);
