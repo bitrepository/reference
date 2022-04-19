@@ -45,19 +45,19 @@ import java.util.Arrays;
 
 /**
  * The default <code>GetFileInfosClient</code>.
- *
- * This class is just a thin wrapper which creates a conversion each time a operation is started. The conversations 
+ * <p/>
+ * This class is just a thin wrapper which creates a conversion each time a operation is started. The conversation
  * takes over the rest of the operation handling.
  */
 public class ConversationBasedGetFileInfosClient extends AbstractClient implements GetFileInfosClient {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     /**
-     * @see AbstractClient
-     * @param messageBus The MessageBus for communication
+     * @param messageBus           The MessageBus for communication
      * @param conversationMediator The ConversationMediator to keep track of conversations
-     * @param settings The Settings
-     * @param clientID The ID of the client
+     * @param settings             The Settings
+     * @param clientID             The ID of the client
+     * @see AbstractClient
      */
     public ConversationBasedGetFileInfosClient(MessageBus messageBus, ConversationMediator conversationMediator,
                                                Settings settings, String clientID) {
@@ -78,8 +78,8 @@ public class ConversationBasedGetFileInfosClient extends AbstractClient implemen
         }
 
         log.info("Requesting the FileInfos for file '" + "' with the specifications '" + checksumSpec + fileID +
-                "' with query "+ Arrays.asList(contributorQueries) + "." +
-                (addressForResult != null ?  "The result should be uploaded to '" + addressForResult + "'." : ""));
+                "' with query " + Arrays.asList(contributorQueries) + "." +
+                (addressForResult != null ? "The result should be uploaded to '" + addressForResult + "'." : ""));
 
         GetFileInfosConversationContext context = new GetFileInfosConversationContext(collectionID,
                 contributorQueries, fileID, checksumSpec, addressForResult, settings, messageBus, clientID,

@@ -36,7 +36,7 @@ import java.net.URL;
 import java.util.List;
 
 /**
- * Wrappes a <code>PutFileClient</code> to provide a blocking client. The client will block until the PutFileOperation
+ * Wraps a <code>PutFileClient</code> to provide a blocking client. The client will block until the PutFileOperation
  * has finished.
  */
 public class BlockingGetFileInfosClient {

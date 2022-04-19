@@ -38,15 +38,14 @@ public interface GetFileInfosClient extends BitRepositoryClient {
 
     /**
      * Retrieves the file-infos for a set of files.
-     * <p>
-     * If the number of fileIDs in a collection is large (10.000's) the fileIDs should  be retrieved in chunks by
+     * <p/>
+     * If the number of fileIDs in a collection is large (10.000's) the fileIDs should be retrieved in chunks by
      * using the <code>ContributorQuery</code> functionality.
-     * <p>
+     * <p/>
      * Since every pillar cannot upload their file-infos to the same URL, it is extended with the pillarID for the given
      * pillar, e.g.: 'http://upload.url/mypath' + '-pillarID'.
      * <p>
-     * The results are returned through as a FileInfosCompletePillarCompete event as the results are returned by the
-     * pillars.
+     * The results are returned as a FileInfosCompletePillarCompete event by the pillars.
      *
      * @param collectionID          Identifies the collection to request file-infos for.
      * @param contributorQueries    Defines which fileIDs to retrieve. If null all fileIDs from all contributors are

@@ -43,32 +43,25 @@ public class GetFileInfosConversationContext extends ConversationContext {
     /**
      * Extends the {@link ConversationContext} constructor with
      * {@link org.bitrepository.access.getfileinfos.GetFileInfosClient} specific parameters.
-     * @param collectionID The ID of the collection
-     * @param contributorQueries See {@link org.bitrepository.access.getfileinfos.GetFileInfosClient} for details.
-     * @param fileID The ID of the file to get checksums for
-     * @param checksumSpec See {@link org.bitrepository.access.getfileinfos.GetFileInfosClient} for details.
-     * @param urlForResult See {@link org.bitrepository.access.getfileinfos.GetFileInfosClient} for details.
-     * @param settings The settings
-     * @param messageSender The MessageSender to send messages with
-     * @param clientID The ID of the client
-     * @param contributors The contributors for the conversation
-     * @param eventHandler The EventHandler to handle incoming events
+     *
+     * @param collectionID          The ID of the collection
+     * @param contributorQueries    See {@link org.bitrepository.access.getfileinfos.GetFileInfosClient} for details.
+     * @param fileID                The ID of the file to get checksums for
+     * @param checksumSpec          See {@link org.bitrepository.access.getfileinfos.GetFileInfosClient} for details.
+     * @param urlForResult          See {@link org.bitrepository.access.getfileinfos.GetFileInfosClient} for details.
+     * @param settings              The settings
+     * @param messageSender         The MessageSender to send messages with
+     * @param clientID              The ID of the client
+     * @param contributors          The contributors for the conversation
+     * @param eventHandler          The EventHandler to handle incoming events
      * @param auditTrailInformation The audit trail information for the contributors
      */
-    public GetFileInfosConversationContext(
-            String collectionID,
-            ContributorQuery[] contributorQueries,
-            String fileID,
-            ChecksumSpecTYPE checksumSpec,
-            URL urlForResult,
-            Settings settings,
-            MessageSender messageSender,
-            String clientID,
-            Collection<String> contributors,
-            EventHandler eventHandler,
-            String auditTrailInformation) {
-        super(collectionID, OperationType.GET_FILE_INFOS, settings, messageSender, clientID, fileID, contributors,
-                eventHandler, auditTrailInformation);
+    public GetFileInfosConversationContext(String collectionID, ContributorQuery[] contributorQueries, String fileID,
+                                           ChecksumSpecTYPE checksumSpec, URL urlForResult, Settings settings, MessageSender messageSender,
+                                           String clientID, Collection<String> contributors, EventHandler eventHandler,
+                                           String auditTrailInformation) {
+        super(collectionID, OperationType.GET_FILE_INFOS, settings, messageSender, clientID, fileID, contributors, eventHandler,
+                auditTrailInformation);
         this.contributorQueries = contributorQueries;
         this.urlForResult = urlForResult;
         this.checksumSpec = checksumSpec;

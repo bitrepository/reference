@@ -31,11 +31,12 @@ import org.bitrepository.client.conversation.IdentifyingState;
 import org.bitrepository.common.utils.FileIDsUtils;
 
 /**
- * Models the behavior of a GetFileInfos conversation during the identification phase. That is, it begins with the 
- * sending of <code>IdentifyPillarsForGetFileInfosRequest</code> messages and finishes with on the reception of the 
+ * Models the behavior of a GetFileInfos conversation during the identification phase.<br/>
+ * That is, it begins with the
+ * sending of <code>IdentifyPillarsForGetFileInfosRequest</code> messages and finishes with on the reception of the
  * <code>IdentifyPillarsForGetFileInfosResponse</code> messages from the responding pillars.
- *
- * Note that this is only used by the GetFileInfosConversation in the same package, therefore the visibility is package 
+ * <p/>
+ * Note that this is only used by the GetFileInfosConversation in the same package, therefore the visibility is package
  * protected.
  * This is the initial state for the whole GetFileInfos communication.
  */

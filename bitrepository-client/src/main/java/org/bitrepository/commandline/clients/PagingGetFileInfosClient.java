@@ -35,13 +35,11 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Wrapper class for GetChecksumClient to handle paging through large result sets 
+ * Wrapper class for GetChecksumClient to handle paging through large result sets
  */
 public class PagingGetFileInfosClient {
-
     private final GetFileInfosClient client;
     private GetFileInfosResultModel model;
-    private GetFileInfosEventHandler eventHandler;
     private final GetFileInfosOutputFormatter outputFormatter;
     private final OutputHandler outputHandler;
     private final long timeout;
@@ -61,12 +59,12 @@ public class PagingGetFileInfosClient {
         List<String> pillarsToGetFrom = pillarIDs;
         outputFormatter.formatHeader();
 
-        while(!pillarsToGetFrom.isEmpty()) {
-            eventHandler = new GetFileInfosEventHandler(model, timeout, outputHandler);
+        while (!pillarsToGetFrom.isEmpty()) {
+            GetFileInfosEventHandler eventHandler = new GetFileInfosEventHandler(model, timeout, outputHandler);
             ContributorQuery[] queries = makeQuery(pillarsToGetFrom);
             client.getFileInfos(collectionID, queries, fileID, checksumSpec, null, eventHandler, null);
             OperationEvent event = eventHandler.getFinish();
-            if(event.getEventType().equals(OperationEvent.OperationEventType.FAILED)) {
+            if (event.getEventType().equals(OperationEvent.OperationEventType.FAILED)) {
                 outputFormatter.formatResult(model.getUncompletedResults());
                 return false;
             }
@@ -80,7 +78,7 @@ public class PagingGetFileInfosClient {
 
     private ContributorQuery[] makeQuery(List<String> pillars) {
         List<ContributorQuery> res = new ArrayList<>();
-        for(String pillar : pillars) {
+        for (String pillar : pillars) {
             Date latestResult = model.getLatestContribution(pillar);
             res.add(new ContributorQuery(pillar, latestResult, null, pageSize));
         }

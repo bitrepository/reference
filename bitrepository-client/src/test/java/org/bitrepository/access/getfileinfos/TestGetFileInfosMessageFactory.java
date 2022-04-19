@@ -57,14 +57,12 @@ public class TestGetFileInfosMessageFactory extends ClientTestMessageFactory {
     }
 
     public IdentifyPillarsForGetFileInfosResponse createIdentifyPillarsForGetFileInfosResponse(
-            IdentifyPillarsForGetFileInfosRequest receivedIdentifyRequestMessage,
-            String pillarID, String pillarDestinationId) {
+            IdentifyPillarsForGetFileInfosRequest receivedIdentifyRequestMessage, String pillarID, String pillarDestinationId) {
         IdentifyPillarsForGetFileInfosResponse identifyPillarsForGetFileInfosResponse = new IdentifyPillarsForGetFileInfosResponse();
         initializeMessageDetails(identifyPillarsForGetFileInfosResponse);
         identifyPillarsForGetFileInfosResponse.setDestination(receivedIdentifyRequestMessage.getReplyTo());
         identifyPillarsForGetFileInfosResponse.setCorrelationID(receivedIdentifyRequestMessage.getCorrelationID());
-        identifyPillarsForGetFileInfosResponse.setCollectionID(
-                receivedIdentifyRequestMessage.getCollectionID());
+        identifyPillarsForGetFileInfosResponse.setCollectionID(receivedIdentifyRequestMessage.getCollectionID());
         identifyPillarsForGetFileInfosResponse.setReplyTo(pillarDestinationId);
         identifyPillarsForGetFileInfosResponse.setPillarID(pillarID);
         identifyPillarsForGetFileInfosResponse.setFileIDs(receivedIdentifyRequestMessage.getFileIDs());
@@ -75,13 +73,13 @@ public class TestGetFileInfosMessageFactory extends ClientTestMessageFactory {
     }
 
     /**
-     * @param receivedGetFileInfosRequest
+     * @param receivedGetChecksumsRequest
      * @param pillarID
      * @param pillarDestinationId
      * @return
      */
-    public GetFileInfosFinalResponse createGetFileInfosFinalResponse(
-            GetFileInfosRequest receivedGetChecksumsRequest, String pillarID, String pillarDestinationId) {
+    public GetFileInfosFinalResponse createGetFileInfosFinalResponse(GetFileInfosRequest receivedGetChecksumsRequest, String pillarID,
+                                                                     String pillarDestinationId) {
         GetFileInfosFinalResponse getFileInfosFinalResponse = new GetFileInfosFinalResponse();
         initializeMessageDetails(getFileInfosFinalResponse);
         getFileInfosFinalResponse.setDestination(receivedGetChecksumsRequest.getReplyTo());
