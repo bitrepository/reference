@@ -31,15 +31,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Class to deliver GetChecksums client output in a format showing the distribution of the checksum between the pillars.
- * Output format 'style' is 'info' i.e.
- * Tab separated columns with the columns:
- * Count FileID Checksum Pillars
- * <p>
- * If all pillars agree, then the 'pillars' will just say 'All'.
+ * Class to deliver GetChecksums client output in a format showing the distribution of the checksum between the pillars.<p/>
+ * Outputs the following tab-separated columns:
+ * <pre>    <code>Count FileID Checksum Pillars</code></pre>
+ * If all pillars agree, then the pillar column will equal the string 'All'.
  */
 public class GetChecksumDistributionFormatter implements GetChecksumsOutputFormatter {
-
     private final OutputHandler outputHandler;
     final static String header = "Count: \tChecksum: \tPillars: \tFileID: ";
 
@@ -55,11 +52,12 @@ public class GetChecksumDistributionFormatter implements GetChecksumsOutputForma
     @Override
     public void formatResult(Collection<ChecksumResult> results) {
         for (ChecksumResult result : results) {
-            if (result.isDirty()) {
+            if (result.inConflict()) {
                 printInconsistency(result);
             } else {
-                outputHandler.resultLine(result.getContributors().size() + " \t"
-                        + result.getChecksum(result.getContributors().get(0)) + " \tAll \t" + result.getID());
+                outputHandler.resultLine(
+                        result.getContributors().size() + " \t" + result.getChecksum(result.getContributors().get(0)) + " \tAll \t" +
+                                result.getID());
             }
         }
     }
@@ -71,8 +69,8 @@ public class GetChecksumDistributionFormatter implements GetChecksumsOutputForma
      */
     private void printInconsistency(ChecksumResult result) {
         for (Map.Entry<String, List<String>> checksumsDistribution : retrieveChecksumDistribution(result).entrySet()) {
-            outputHandler.resultLine(checksumsDistribution.getValue().size() + " \t"
-                    + checksumsDistribution.getKey() + " \t" + checksumsDistribution.getValue() + " \t" + result.getID());
+            outputHandler.resultLine(checksumsDistribution.getValue().size() + " \t" + checksumsDistribution.getKey() + " \t" +
+                    checksumsDistribution.getValue() + " \t" + result.getID());
         }
     }
 

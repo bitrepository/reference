@@ -27,47 +27,36 @@ import java.util.List;
 import java.util.Map;
 
 public class ChecksumResult {
-
-    /**
-     * FileID
-     */
     private final String id;
-    /**
-     * Mapping from pillar/contributorID to returned checksum
-     */
-    private final Map<String, String> pillarChecksumMap;
-    /**
-     * Indication if there's checksum disagreement
-     */
-    private boolean dirty;
+    private final Map<String, String> pillarChecksumMap = new HashMap<>();
+    private boolean conflict = false;
 
     public ChecksumResult(String id, String contributor, String checksum) {
-        pillarChecksumMap = new HashMap<>();
         this.id = id;
-        dirty = false;
+
         pillarChecksumMap.put(contributor, checksum);
     }
 
     /**
-     * Add a contributor with its checksum to the result
+     * Adds a contributor to the list of contributors.
      *
      * @param contributor the ID of the contributor
      * @param checksum    the checksum that the contributor delivered
      */
     public void addContributor(String contributor, String checksum) {
-        if (!dirty && !pillarChecksumMap.containsValue(checksum)) {
-            dirty = true;
+        if (!conflict && !pillarChecksumMap.containsValue(checksum)) {
+            conflict = true;
         }
         pillarChecksumMap.put(contributor, checksum);
     }
 
     /**
-     * Is the result 'dirty', i.e. is there checksum disagreement among the answered contributors.
+     * Is the result in 'conflict', i.e. is there checksum disagreement among the answered contributors.
      *
      * @return false if all contributors have agreed on the checksum.
      */
-    public boolean isDirty() {
-        return dirty;
+    public boolean inConflict() {
+        return conflict;
     }
 
     /**

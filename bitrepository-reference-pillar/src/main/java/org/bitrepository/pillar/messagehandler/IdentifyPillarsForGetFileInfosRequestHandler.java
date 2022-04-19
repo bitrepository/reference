@@ -43,12 +43,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Class for handling the identification of this pillar for the purpose of performing the GetChecksums operation.
  */
-public class IdentifyPillarsForGetFileInfosRequestHandler
-        extends IdentifyRequestHandler<IdentifyPillarsForGetFileInfosRequest> {
-    /**
-     * The log.
-     */
-    private Logger log = LoggerFactory.getLogger(getClass());
+public class IdentifyPillarsForGetFileInfosRequestHandler extends IdentifyRequestHandler<IdentifyPillarsForGetFileInfosRequest> {
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     /**
      * @param context The context for the message handling.
@@ -82,8 +78,7 @@ public class IdentifyPillarsForGetFileInfosRequestHandler
         response.setResponseInfo(irInfo);
 
         dispatchResponse(response, request);
-        log.debug(MessageUtils.createMessageIdentifier(request)
-                + " Identified for performing a GetChecksums operation.");
+        log.debug(MessageUtils.createMessageIdentifier(request) + " Identified for performing a GetChecksums operation.");
     }
 
     @Override
@@ -97,14 +92,13 @@ public class IdentifyPillarsForGetFileInfosRequestHandler
     }
 
     /**
-     * Validates that all the requested files in the filelist are present.
-     * Otherwise an {@link IdentifyContributorException} with the appropriate errorcode is thrown.
+     * Validates that all the requested files in the file-list are present, otherwise an {@link IdentifyContributorException} with the
+     * appropriate error code is thrown.
      *
-     * @param message The message containing the list files. An empty filelist is expected
+     * @param message The message containing the list files. An empty file-list is expected
      *                when "AllFiles" or the parameter option is used.
      */
-    private void checkThatAllRequestedFilesAreAvailable(IdentifyPillarsForGetFileInfosRequest message)
-            throws RequestHandlerException {
+    private void checkThatAllRequestedFilesAreAvailable(IdentifyPillarsForGetFileInfosRequest message) throws RequestHandlerException {
         FileIDs fileids = message.getFileIDs();
 
         if (fileids.getFileID() != null && !getPillarModel().hasFileID(fileids.getFileID(), message.getCollectionID())) {

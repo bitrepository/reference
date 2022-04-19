@@ -28,24 +28,13 @@ import java.util.List;
 import java.util.Map;
 
 public class FileInfoResult {
-
-    /**
-     * FileID
-     */
     private final String id;
-    /**
-     * Mapping from pillar/contributorid to returned checksum
-     */
-    private final Map<String, FileInfo> pillarFileInfoMap;
-    /**
-     * Indication if there's checksum disagreement
-     */
-    private boolean dirty;
+    private final Map<String, FileInfo> pillarFileInfoMap = new HashMap<>();
+    private boolean conflict = false;
 
     public FileInfoResult(String id, String contributor, String checksum, BigInteger fileSize) {
-        pillarFileInfoMap = new HashMap<>();
         this.id = id;
-        dirty = false;
+
         FileInfo fi = new FileInfo(checksum, fileSize);
         pillarFileInfoMap.put(contributor, fi);
     }
@@ -58,19 +47,19 @@ public class FileInfoResult {
      */
     public void addContributor(String contributor, String checksum, BigInteger fileSize) {
         FileInfo fi = new FileInfo(checksum, fileSize);
-        if (!dirty && !pillarFileInfoMap.containsValue(fi)) {
-            dirty = true;
+        if (!conflict && !pillarFileInfoMap.containsValue(fi)) {
+            conflict = true;
         }
         pillarFileInfoMap.put(contributor, fi);
     }
 
     /**
-     * Is the result 'dirty', i.e. is there checksum disagreement among the answered contributors.
+     * Is the result in 'conflict', i.e. is there checksum disagreement among the answered contributors.
      *
      * @return false if all contributors have agreed on the checksum.
      */
-    public boolean isDirty() {
-        return dirty;
+    public boolean inConflict() {
+        return conflict;
     }
 
     /**
@@ -150,20 +139,14 @@ public class FileInfoResult {
 
         @Override
         public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
+            if (this == obj) return true;
+            if (obj == null) return false;
+            if (getClass() != obj.getClass()) return false;
             FileInfo other = (FileInfo) obj;
-            if (!getEnclosingInstance().equals(other.getEnclosingInstance()))
-                return false;
+            if (!getEnclosingInstance().equals(other.getEnclosingInstance())) return false;
             if (checksum == null) {
-                if (other.checksum != null)
-                    return false;
-            } else if (!checksum.equals(other.checksum))
-                return false;
+                if (other.checksum != null) return false;
+            } else if (!checksum.equals(other.checksum)) return false;
             if (size == null) {
                 return other.size == null;
             } else return size.equals(other.size);

@@ -29,18 +29,8 @@ import java.util.List;
  * Class for temporary storage of FileIDs result information
  */
 public class FileIDsResult {
-
-    /**
-     * FileID
-     */
     private final String id;
-    /**
-     * Size of the file
-     */
     private BigInteger size;
-    /**
-     * List of contributors reported to have the file.
-     */
     private final List<String> contributors;
 
     public FileIDsResult(String id, BigInteger size, String contributor) {

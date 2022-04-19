@@ -208,7 +208,7 @@ public class GetFileInfosTest extends MockedPillarTest {
         addDescription("Tests the GetFileInfos operation on the pillar for the successful scenario when requesting one specific file.");
         addStep("Set up constants and variables.", "Should not fail here!");
         final String FILE_ID = DEFAULT_FILE_ID;
-        FileIDs fileids = FileIDsUtils.getSpecificFileIDs(FILE_ID);
+        FileIDs fileIDs = FileIDsUtils.getSpecificFileIDs(FILE_ID);
 
         addStep("Setup for having the file", "No failure here");
         doAnswer(invocation -> true).when(storageModel).verifyChecksumAlgorithm(any(ChecksumSpecTYPE.class));
@@ -223,8 +223,7 @@ public class GetFileInfosTest extends MockedPillarTest {
             if (invocation.getArgument(2).equals(defaultChecksumSpec)) {
                 return new ChecksumEntry(fileID, DEFAULT_MD5_CHECKSUM, new Date());
             } else {
-                String checksum = ChecksumUtils.generateChecksum(new FileInfoStub(fileID, null, 1L, null),
-                        defaultChecksumSpec);
+                String checksum = ChecksumUtils.generateChecksum(new FileInfoStub(fileID, null, 1L, null), defaultChecksumSpec);
                 return new ChecksumEntry(fileID, checksum, new Date());
             }
         }).when(storageModel).getChecksumEntryForFile(eq(FILE_ID), nullable(String.class), nullable(ChecksumSpecTYPE.class));
@@ -232,8 +231,7 @@ public class GetFileInfosTest extends MockedPillarTest {
         doAnswer(invocation -> {
             ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
             res.insertChecksumEntry(
-                    storageModel.getChecksumEntryForFile(invocation.getArgument(0), invocation.getArgument(1),
-                            invocation.getArgument(4)));
+                    storageModel.getChecksumEntryForFile(invocation.getArgument(0), invocation.getArgument(1), invocation.getArgument(4)));
             return res;
         }).when(storageModel).getSingleChecksumResultSet(eq(FILE_ID), anyString(), nullable(XMLGregorianCalendar.class),
                 nullable(XMLGregorianCalendar.class), nullable(ChecksumSpecTYPE.class));
@@ -251,13 +249,13 @@ public class GetFileInfosTest extends MockedPillarTest {
         }).when(storageModel).getFileInfosDataItemFromChecksumDataItem(any(ChecksumDataForChecksumSpecTYPE.class), anyString());
 
         addStep("Create and send the actual GetFileInfos message to the pillar.", "Should be received and handled by the pillar.");
-        GetFileInfosRequest getFileInfosRequest = msgFactory.createGetFileInfosRequest(csSpec, fileids, null);
+        GetFileInfosRequest getFileInfosRequest = msgFactory.createGetFileInfosRequest(csSpec, fileIDs, null);
         messageBus.sendMessage(getFileInfosRequest);
 
         addStep("Retrieve the ProgressResponse for the GetFileInfos request",
                 "The GetFileInfos progress response should be sent by the pillar.");
         GetFileInfosProgressResponse progressResponse = clientReceiver.waitForMessage(GetFileInfosProgressResponse.class);
-        assertEquals(progressResponse.getFileIDs(), fileids);
+        assertEquals(progressResponse.getFileIDs(), fileIDs);
         assertEquals(progressResponse.getPillarID(), getPillarID());
         assertNull(progressResponse.getResultAddress());
 

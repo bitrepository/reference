@@ -28,9 +28,8 @@ import java.util.Collection;
 
 /**
  * Class to format GetChecksums client output.
- * Output format 'style' is 'info' i.e.
- * Tab separated columns with the columns:
- * Count Checksum FileID
+ * Output format 'style' is 'info' i.e. tab separated columns:
+ * <pre>    Count Checksum FileID</pre>
  */
 public class GetChecksumsInfoFormatter implements GetChecksumsOutputFormatter {
 
@@ -52,7 +51,7 @@ public class GetChecksumsInfoFormatter implements GetChecksumsOutputFormatter {
         String checksum;
         for (ChecksumResult result : results) {
             firstContributor = result.getContributors().get(0);
-            if (result.isDirty()) {
+            if (result.inConflict()) {
                 checksum = "disagreed";
             } else {
                 checksum = result.getChecksum(firstContributor);

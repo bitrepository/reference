@@ -41,7 +41,6 @@ import java.util.Set;
  * remaining data is still being fetched - this should serve to keep memory use down.
  */
 public class GetFileInfosResultModel {
-
     private List<FileInfoResult> completeResults;
     private Set<String> lastCompletedIDs;
     private final Map<String, FileInfoResult> incompleteResults;
@@ -101,9 +100,8 @@ public class GetFileInfosResultModel {
      */
     public Collection<FileInfoResult> getCompletedResults() {
         List<FileInfoResult> completed = completeResults;
-        completeResults = null;
         completeResults = new ArrayList<>();
-        lastCompletedIDs = new HashSet<String>();
+        lastCompletedIDs = new HashSet<>();
         for (FileInfoResult result : completed) {
             lastCompletedIDs.add(result.getID());
         }

@@ -50,11 +50,11 @@ public class GetFileInfosInfoFormatter implements GetFileInfosOutputFormatter {
     public void formatResult(Collection<FileInfoResult> results) {
         String firstContributor;
         String checksum;
-        String firstSize; // TODO: Do something sane like with the checksum disagreement. 
+        String firstSize;
         for (FileInfoResult result : results) {
             firstContributor = result.getContributors().get(0);
             firstSize = result.getFileSize(firstContributor).toString();
-            if (result.isDirty()) {
+            if (result.inConflict()) {
                 checksum = "disagreed";
             } else {
                 checksum = result.getChecksum(firstContributor);

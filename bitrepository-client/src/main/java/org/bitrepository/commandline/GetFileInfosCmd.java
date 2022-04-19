@@ -34,7 +34,6 @@ import org.bitrepository.common.utils.SettingsUtils;
  * Perform the GetChecksums operation.
  */
 public class GetFileInfosCmd extends CommandLineClient {
-    /** The client for performing the GetFileInfos operation.*/
     private final PagingGetFileInfosClient pagingClient;
 
     /**
@@ -57,9 +56,14 @@ public class GetFileInfosCmd extends CommandLineClient {
      */
     protected GetFileInfosCmd(String ... args) {
         super(args);
+        output.debug("Instantiation GetFileInfosClient.");
         GetFileInfosClient client = AccessComponentFactory.getInstance().createGetFileInfosClient(settings,
                 securityManager, getComponentID());
+
+        output.debug("Instantiation GetFileInfos outputFormatter.");
         GetFileInfosOutputFormatter outputFormatter = retrieveOutputFormatter();
+
+        output.debug("Instantiation GetFileInfos paging client.");
         int pageSize = SettingsUtils.getMaxClientPageSize();
         pagingClient = new PagingGetFileInfosClient(client, getTimeout(), pageSize, outputFormatter, output);
     }
@@ -94,7 +98,7 @@ public class GetFileInfosCmd extends CommandLineClient {
     protected void performOperation() {
         ChecksumSpecTYPE spec = getRequestChecksumSpecOrDefault();
         output.startupInfo("Performing the GetChecksums operation.");
-        Boolean success = pagingClient.getFileInfos(getCollectionID(), getFileIDs(),
+        boolean success = pagingClient.getFileInfos(getCollectionID(), getFileIDs(),
                 getPillarIDs(), spec);
         if(success) {
             System.exit(Constants.EXIT_SUCCESS);
@@ -104,16 +108,10 @@ public class GetFileInfosCmd extends CommandLineClient {
     }
 
     /**
-     * Retrieves the given output formatter depending on whether or not it requests a given file or all files.
+     * Retrieves the given output formatter depending on whether it requests a given file or all files.
      * @return The output formatter.
      */
     private GetFileInfosOutputFormatter retrieveOutputFormatter() {
         return new GetFileInfosInfoFormatter(output);
-        /*if(cmdHandler.hasOption(Constants.FILE_ID_ARG)) {
-            return new GetFileInfosDistributionFormatter(output);
-        } else {
-            return new GetFileInfosInfoFormatter(output);
-        }*/
     }
-
 }

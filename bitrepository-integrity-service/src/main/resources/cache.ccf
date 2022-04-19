@@ -3,6 +3,6 @@ jcs.default.cacheattributes=org.apache.jcs.engine.CompositeCacheAttributes
 jcs.default.cacheattributes.MaxObjects=1000
 jcs.default.cacheattributes.MemoryCacheName=org.apache.jcs.engine.memory.lru.LRUMemoryCache
 jcs.default.elementattributes.IsEternal=false
-# Update the cache value every minute. Note this is only relevant if the cache isn't directly marked dirty through
+# Update the cache value every minute. Note this is only relevant if the cache isn't directly marked as having a conflict through
 # DAO updates.
 jcs.default.elementattributes.MaxLifeSeconds=60

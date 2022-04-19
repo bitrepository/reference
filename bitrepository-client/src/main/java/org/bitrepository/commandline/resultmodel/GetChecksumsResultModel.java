@@ -41,7 +41,6 @@ import java.util.Set;
  * remaining data is still being fetched - this should serve to keep memory use down.
  */
 public class GetChecksumsResultModel {
-
     private List<ChecksumResult> completeResults;
     private Set<String> lastCompletedIDs;
     private final Map<String, ChecksumResult> incompleteResults;
@@ -101,7 +100,6 @@ public class GetChecksumsResultModel {
      */
     public Collection<ChecksumResult> getCompletedResults() {
         List<ChecksumResult> completed = completeResults;
-        completeResults = null;
         completeResults = new ArrayList<>();
         lastCompletedIDs = new HashSet<>();
         for (ChecksumResult result : completed) {
