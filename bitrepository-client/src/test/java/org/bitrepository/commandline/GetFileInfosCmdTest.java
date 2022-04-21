@@ -46,7 +46,8 @@ public class GetFileInfosCmdTest extends DefaultFixtureClientTest {
     @Test(groups = {"regressiontest"})
     public void defaultSuccessScenarioGetFileInfosNoFileIDTest() {
         addDescription("Tests simplest arguments for running the CmdLineClient");
-        String[] args = new String[]{"-s" + SETTINGS_DIR,
+        String[] args = new String[]{
+                "-s" + SETTINGS_DIR,
                 "-k" + KEY_FILE,
                 "-c" + DEFAULT_COLLECTION_ID};
         GetFileInfosCmd getFileInfosCmd = new GetFileInfosCmd(args);
@@ -56,9 +57,28 @@ public class GetFileInfosCmdTest extends DefaultFixtureClientTest {
     }
 
     @Test(groups = {"regressiontest"})
+    public void missingSettingsGetFileInfosArgumentTest() {
+        addDescription("Tests the scenario, where the settings arguments is missing.");
+        String[] args = new String[]{
+                "-k" + KEY_FILE,
+                "-i" + DEFAULT_FILE_ID};
+        assertThrows(IllegalArgumentException.class, () -> new GetFileInfosCmd(args));
+    }
+
+    @Test(groups = {"regressiontest"})
+    public void missingKeyFileGetFileInfosArgumentTest() {
+        addDescription("Tests the scenario, where the key-file arguments is missing.");
+        String[] args = new String[]{
+                "-s" + SETTINGS_DIR,
+                "-i" + DEFAULT_FILE_ID};
+        assertThrows(IllegalArgumentException.class, () -> new GetFileInfosCmd(args));
+    }
+
+    @Test(groups = {"regressiontest"})
     public void missingCollectionGetFileInfosArgumentTest() {
         addDescription("Tests the scenario, where the collection arguments is missing.");
-        String[] args = new String[]{"-s" + SETTINGS_DIR,
+        String[] args = new String[]{
+                "-s" + SETTINGS_DIR,
                 "-k" + KEY_FILE,
                 "-i" + DEFAULT_FILE_ID};
         assertThrows(IllegalArgumentException.class, () -> new GetFileInfosCmd(args));
@@ -67,7 +87,8 @@ public class GetFileInfosCmdTest extends DefaultFixtureClientTest {
     @Test(groups = {"regressiontest"})
     public void specificPillarGetFileInfosArgumentTest() {
         addDescription("Test argument for a specific pillar");
-        String[] args = new String[]{"-s" + SETTINGS_DIR,
+        String[] args = new String[]{
+                "-s" + SETTINGS_DIR,
                 "-k" + KEY_FILE,
                 "-c" + DEFAULT_COLLECTION_ID,
                 "-p" + PILLAR1_ID,
@@ -82,7 +103,8 @@ public class GetFileInfosCmdTest extends DefaultFixtureClientTest {
     @Test(groups = {"regressiontest"})
     public void unknownPillarGetFileInfosArgumentTest() {
         addDescription("Testing against a non-existing pillar id -> Should fail");
-        String[] args = new String[]{"-s" + SETTINGS_DIR,
+        String[] args = new String[]{
+                "-s" + SETTINGS_DIR,
                 "-k" + KEY_FILE,
                 "-c" + DEFAULT_COLLECTION_ID,
                 "-p" + "Random" + (new Date()).getTime() + "pillar",
@@ -93,7 +115,8 @@ public class GetFileInfosCmdTest extends DefaultFixtureClientTest {
     @Test(groups = {"regressiontest"})
     public void getFileInfosArgumentTest() {
         addDescription("Tests the argument for a specific file.");
-        String[] args = new String[]{"-s" + SETTINGS_DIR,
+        String[] args = new String[]{
+                "-s" + SETTINGS_DIR,
                 "-k" + KEY_FILE,
                 "-c" + DEFAULT_COLLECTION_ID,
                 "-i" + DEFAULT_FILE_ID};
@@ -106,7 +129,8 @@ public class GetFileInfosCmdTest extends DefaultFixtureClientTest {
     @Test(groups = {"regressiontest"})
     public void checksumArgumentNonSaltAlgorithmWithoutSaltGetFileInfosTest() {
         addDescription("Test MD5 checksum without salt -> no failure");
-        String[] args = new String[]{"-s" + SETTINGS_DIR,
+        String[] args = new String[]{
+                "-s" + SETTINGS_DIR,
                 "-k" + KEY_FILE,
                 "-c" + DEFAULT_COLLECTION_ID,
                 "-i" + DEFAULT_FILE_ID,
@@ -120,7 +144,8 @@ public class GetFileInfosCmdTest extends DefaultFixtureClientTest {
     @Test(groups = {"regressiontest"})
     public void checksumArgumentSaltAlgorithmWithSaltGetFileInfosTest() {
         addDescription("Test HMAC_SHA256 checksum with salt -> No failure");
-        String[] args = new String[]{"-s" + SETTINGS_DIR,
+        String[] args = new String[]{
+                "-s" + SETTINGS_DIR,
                 "-k" + KEY_FILE,
                 "-c" + DEFAULT_COLLECTION_ID,
                 "-i" + DEFAULT_FILE_ID,
