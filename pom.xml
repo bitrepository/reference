@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.sbforge</groupId>
     <artifactId>sbforge-parent</artifactId>
-    <version>22</version>
+    <version>23</version>
   </parent>
 
   <name>Bitrepository</name>
@@ -97,7 +97,7 @@
     <license>
       <name>LGPL v2.1</name>
       <distribution>repo</distribution>
-      <url>http://www.gnu.org/licenses/lgpl-2.1.txt</url>
+      <url>https://www.gnu.org/licenses/lgpl-2.1.txt</url>
     </license>
   </licenses>
 
@@ -233,6 +233,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>license-maven-plugin</artifactId>
+        <version>2.0.0</version>
         <configuration>
           <verbose>true</verbose>
           <generateBundle>true</generateBundle>
@@ -289,7 +290,9 @@
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
+        <version>3.3.2</version>
         <configuration>
           <!--
             Exclude JCL and LOG4J since all logging should go through SLF4J.
@@ -323,6 +326,7 @@
         </executions>
       </plugin>
     </plugins>
+
     <pluginManagement>
       <plugins>
         <plugin>
@@ -335,16 +339,9 @@
           <version>3.8.1</version>
         </plugin>
         <plugin>
-          <artifactId>maven-source-plugin</artifactId>
-          <version>3.2.1</version>
-        </plugin>
-        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>3.2.0</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-release-plugin</artifactId>
-          <version>3.0.0-M1</version>
         </plugin>
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
@@ -360,7 +357,7 @@
         </plugin>
         <plugin>
           <artifactId>maven-war-plugin</artifactId>
-          <version>3.3.0</version>
+          <version>3.3.2</version>
         </plugin>
         <plugin>
           <artifactId>maven-assembly-plugin</artifactId>
@@ -409,12 +406,15 @@
     </pluginManagement>
   </build>
 
+  <!-- Ignore reporting plugins being marked as 'not found'
+      (see https://intellij-support.jetbrains.com/hc/en-us/community/posts/360007555120/comments/360002482120)
+      Seems some can be found because they are defined in pluginManagement -->
   <reporting>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>3.1.0</version>
+        <version>3.3.0</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
