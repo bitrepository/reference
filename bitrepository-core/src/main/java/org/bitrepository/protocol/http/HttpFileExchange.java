@@ -170,7 +170,6 @@ public class HttpFileExchange implements FileExchange {
         ArgumentValidator.checkNotNull(in, "InputStream in");
         ArgumentValidator.checkNotNull(url, "URL url");
 
-
         try (CloseableHttpClient httpClient = getHttpClient()) {
             HttpPut httpPut = new HttpPut(url.toExternalForm());
             InputStreamEntity reqEntity = new LargeChunkedInputStreamEntity(in);

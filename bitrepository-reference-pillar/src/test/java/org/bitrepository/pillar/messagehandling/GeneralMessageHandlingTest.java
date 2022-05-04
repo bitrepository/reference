@@ -28,6 +28,7 @@ package org.bitrepository.pillar.messagehandling;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.pillar.MockedPillarTest;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.messagehandler.PillarMessageHandler;
@@ -38,8 +39,11 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class GeneralMessageHandlingTest extends MockedPillarTest {
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 
+public class GeneralMessageHandlingTest extends MockedPillarTest {
     MockRequestHandler requestHandler;
 
     @BeforeMethod(alwaysRun = true)
@@ -60,6 +64,29 @@ public class GeneralMessageHandlingTest extends MockedPillarTest {
         } catch (IllegalArgumentException e) {
             // expected
         }
+
+        addStep("Testing verification of FileID existence with null value.", "Should be okay with FileID being null");
+        FileIDs nullFileIDs = new FileIDs();
+        nullFileIDs.setFileID(null);
+        requestHandler.verifyFileIDExistence(nullFileIDs, collectionID);
+
+        addStep("Testing verification of a non-existing FileID.", "Should throw an exception as the FileID doesn't exist.");
+        try {
+            FileIDs wrongIDs = new FileIDs();
+            wrongIDs.setFileID("NonExistingFileID");
+            requestHandler.verifyFileIDExistence(wrongIDs, collectionID);
+            Assert.fail("Should throw a RequestHandlerException.");
+        } catch (RequestHandlerException e) {
+            // expected
+        }
+
+        addStep("Testing verification of FileID existence with correct values.", "Should be okay as pillar is mocked.");
+        String FILE_ID = DEFAULT_FILE_ID + testMethodName;
+        FileIDs fileids = FileIDsUtils.getSpecificFileIDs(FILE_ID);
+        doAnswer(invocation -> true).when(model).hasFileID(eq(FILE_ID), anyString());
+        doAnswer(invocation -> settingsForCUT.getComponentID()).when(model).getPillarID();
+
+        requestHandler.verifyFileIDExistence(fileids, collectionID);
     }
 
     @Test(groups = {"regressiontest", "pillartest"})
@@ -119,15 +146,14 @@ public class GeneralMessageHandlingTest extends MockedPillarTest {
         addDescription(
                 "Test the validation of file id formats of the PillarMessageHandler super-class on a file id which has more characters " +
                         "than required");
-        String fileId = "";
+        StringBuilder fileId = new StringBuilder();
         for (int i = 0; i < 300; i++) {
-            fileId += Integer.toString(i);
+            fileId.append(i);
         }
-        requestHandler.validateFileIDFormat(fileId);
+        requestHandler.validateFileIDFormat(fileId.toString());
     }
 
-    private class MockRequestHandler extends PillarMessageHandler<MessageRequest> {
-
+    private static class MockRequestHandler extends PillarMessageHandler<MessageRequest> {
         protected MockRequestHandler(MessageHandlerContext context, StorageModel model) {
             super(context, model);
         }
@@ -146,10 +172,11 @@ public class GeneralMessageHandlingTest extends MockedPillarTest {
         }
 
         @Override
-        public void verifyFileIDExistence(FileIDs fileIDs, String collectionID) {
+        public void verifyFileIDExistence(FileIDs fileIDs, String collectionID) throws RequestHandlerException {
+            super.verifyFileIDExistence(fileIDs, collectionID);
         }
 
-        public void validatePillarID(String pillarID) throws RequestHandlerException {
+        public void validatePillarID(String pillarID) {
             super.validatePillarId(pillarID);
         }
 

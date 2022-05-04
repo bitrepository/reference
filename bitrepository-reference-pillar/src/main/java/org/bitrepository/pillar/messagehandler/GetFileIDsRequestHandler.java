@@ -170,7 +170,7 @@ public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRe
         log.info("Writing the requested fileIDs to the file '" + checksumResultFile + "'");
 
         // Print all the file ids data safely (close the streams!)
-        try (OutputStream is = new FileOutputStream(checksumResultFile)) {
+        try (OutputStream outputstream = new FileOutputStream(checksumResultFile)) {
             GetFileIDsResults result = new GetFileIDsResults();
             result.setCollectionID(request.getCollectionID());
             result.setMinVersion(MIN_VERSION);
@@ -179,20 +179,32 @@ public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRe
             result.setFileIDsData(fileIDs);
 
             JaxbHelper jaxbHelper = new JaxbHelper(XSD_CLASSPATH, XSD_BR_DATA);
-            String file = jaxbHelper.serializeToXml(result);
-            try {
-                jaxbHelper.validate(new ByteArrayInputStream(file.getBytes(StandardCharsets.UTF_8)));
-            } catch (SAXException e) {
-                String errMsg = "The resulting XML for the GetFileIDsRequest does not validate. \n"
-                        + file;
-                log.error(errMsg, e);
-                throw new JAXBException(errMsg, e);
-            }
-            is.write(file.getBytes(StandardCharsets.UTF_8));
-            is.flush();
+            String data = jaxbHelper.serializeToXml(result);
+            validateXML(jaxbHelper, data);
+            outputstream.write(data.getBytes(StandardCharsets.UTF_8));
+            outputstream.flush();
         }
 
         return checksumResultFile;
+    }
+
+    /**
+     * Used to validate the XML serialized from a {@link GetFileIDsResults} Object.
+     *
+     * @param jaxbHelper The JaxbHelper instance containing the .xsd constraints.
+     * @param data       The serialized data from the JaxbHelper as a {@link String} object.
+     * @throws IOException   Throws an IOException if the bytes of the data cannot be read.
+     * @throws JAXBException Throws a JAXBException if the XML could not be validated.
+     */
+    protected void validateXML(JaxbHelper jaxbHelper, String data) throws IOException, JAXBException {
+        try {
+            jaxbHelper.validate(new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8)));
+        } catch (SAXException e) {
+            String errMsg = "The resulting XML for the GetFileIDsRequest does not validate. \n"
+                    + data;
+            log.error(errMsg, e);
+            throw new JAXBException(errMsg, e);
+        }
     }
 
     /**

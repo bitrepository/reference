@@ -179,11 +179,7 @@ public class GetFileTest extends MockedPillarTest {
         addStep("Setup for having the file and delevering a mock file.", 
                 "Should make it possible to perform the whole operation without any exceptions.");
         doAnswer(invocation -> new FileInfoStub(FILE_ID, 0L, 0L, new ByteArrayInputStream(new byte[0]))).when(model).getFileInfoForActualFile(eq(FILE_ID), anyString());
-        doAnswer(new Answer() {
-            public String answer(InvocationOnMock invocation) {
-                return settingsForCUT.getComponentID();
-            }
-        }).when(model).getPillarID();
+        doAnswer(invocation -> settingsForCUT.getComponentID()).when(model).getPillarID();
 
         addStep("Create and send the actual GetFile message to the pillar.",
                 "Should be received and handled by the pillar.");
