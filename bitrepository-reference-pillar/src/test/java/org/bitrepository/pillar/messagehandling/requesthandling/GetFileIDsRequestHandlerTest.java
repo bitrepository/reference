@@ -1,4 +1,4 @@
-package org.bitrepository.pillar.messagehandling;
+package org.bitrepository.pillar.messagehandling.requesthandling;
 
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
