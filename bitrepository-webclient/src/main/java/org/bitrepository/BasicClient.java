@@ -49,6 +49,11 @@ public class BasicClient {
         return collections;
     }
 
+    public String getHostnames() {
+        log.debug("Fetching PillarHostnames");
+        return settings.getReferenceSettings().getPillarSettings().getPillarHostname();
+    }
+
     public void shutdown() {
         // Currently, there's nothing to do here
     }
