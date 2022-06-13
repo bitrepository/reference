@@ -226,13 +226,6 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="PillarHostname" type="xs:string">
-          <xs:annotation>
-            <xs:documentation xml:lang="en">
-              The hostname for this pillar.
-            </xs:documentation>
-          </xs:annotation>
-        </xs:element>
         <xs:element ref="PillarType">
           <xs:annotation>
             <xs:documentation xml:lang="en">

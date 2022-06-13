@@ -51,7 +51,7 @@ public class BasicClient {
 
     public String getHostnames() {
         log.debug("Fetching PillarHostnames");
-        return settings.getReferenceSettings().getPillarSettings().getPillarHostname();
+        return "";
     }
 
     public void shutdown() {

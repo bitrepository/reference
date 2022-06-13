@@ -34,7 +34,6 @@
   </ClientSettings>
   <PillarSettings>
     <PillarID>Pillar1</PillarID>
-    <PillarHostname>test@test.dk</PillarHostname>
     <PillarType>FILE</PillarType>
     <CollectionDirs>
       <FileDirs>target/test/referencepillar/file-archive</FileDirs>

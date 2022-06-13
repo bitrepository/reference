@@ -77,11 +77,6 @@
       ID of the pillar 
     -->
     <PillarID>test-pillar</PillarID>
-
-    <!--
-     Hostname of the pillar
-     -->
-    <PillarHostname>test@test.dk</PillarHostname>
     
     <!--
       The type of pillar. Must be either 'FILE' or 'CHECKSUM' for a FilePillar or ChecksumPillar respectively.
