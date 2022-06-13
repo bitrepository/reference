@@ -131,16 +131,16 @@ public class PutFileCmd extends CommandLineClient {
         super.validateArguments();
 
         if (cmdHandler.hasOption(Constants.FILE_ARG) && cmdHandler.hasOption(Constants.URL_ARG)) {
-            throw new IllegalArgumentException("Cannot take both a file (-f) and an URL (-u) as argument.");
+            throw new IllegalArgumentException("Cannot take both a file (-f) and a URL (-u) as argument.");
         }
         if (!(cmdHandler.hasOption(Constants.FILE_ARG) || cmdHandler.hasOption(Constants.URL_ARG))) {
-            throw new IllegalArgumentException("Requires either the file argument (-f) or the URL argument (-u).");
+            throw new IllegalArgumentException("Providing either file argument (-f) or URL argument (-u) is required.");
         }
         if (cmdHandler.hasOption(Constants.URL_ARG) && !cmdHandler.hasOption(Constants.CHECKSUM_ARG)) {
-            throw new IllegalArgumentException("The URL argument requires also the checksum argument (-c).");
+            throw new IllegalArgumentException("Using URL argument (-u) requires the checksum argument (-C).");
         }
         if (cmdHandler.hasOption(Constants.URL_ARG) && !cmdHandler.hasOption(Constants.FILE_ID_ARG)) {
-            throw new IllegalArgumentException("The URL argument requires also the argument for the ID of the file (-i).");
+            throw new IllegalArgumentException("Using URL argument (-u) requires the file ID argument (-i).");
         }
     }
 
