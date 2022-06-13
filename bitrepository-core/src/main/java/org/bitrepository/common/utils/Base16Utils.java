@@ -23,6 +23,8 @@ package org.bitrepository.common.utils;
 
 import org.bitrepository.common.ArgumentValidator;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * Utility class for handling encoding and decoding of base16 bytes.
  */

@@ -101,11 +101,12 @@ public class ReplaceFileCmd extends CommandLineClient {
         cmdHandler.addOption(replaceChecksumOption);
 
         Option checksumTypeOption = new Option(REQUEST_CHECKSUM_TYPE_ARG, HAS_ARGUMENT,
-                "[OPTIONAL] The algorithm of checksum to request in the response from the pillars.");
+                Constants.REQUEST_CHECKSUM_TYPE_DESC);
         checksumTypeOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumTypeOption);
+
         Option checksumSaltOption = new Option(REQUEST_CHECKSUM_SALT_ARG, HAS_ARGUMENT,
-                "[OPTIONAL] The salt of checksum to request in the response. Requires the ChecksumType argument.");
+                Constants.REQUEST_CHECKSUM_SALT_DESC);
         checksumSaltOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumSaltOption);
 

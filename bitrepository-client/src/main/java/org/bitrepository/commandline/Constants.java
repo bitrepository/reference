@@ -94,8 +94,21 @@ public class Constants {
      */
     public static final String LOCATION = "l";
 
+    public static final String REQUEST_CHECKSUM_TYPE_DESC =
+            "[OPTIONAL] Request the use of a specific checksum algorithm in the response from the pillars. " +
+                    "E.g. '-" + REQUEST_CHECKSUM_TYPE_ARG + " SHA1'.";
+
+    public static final String REQUEST_CHECKSUM_SALT_DESC =
+            "[OPTIONAL] A salt for the requested checksum specified by the checksum type argument " +
+                    "[-" + REQUEST_CHECKSUM_TYPE_ARG + " REQUIRED]. Must be string of even length. " +
+                    "E.g. '-" + REQUEST_CHECKSUM_TYPE_ARG + " HMAC_SHA1 -" + REQUEST_CHECKSUM_SALT_ARG + " abcd'";
+
     public static final int EXIT_SUCCESS = 0;
     public static final int EXIT_ARGUMENT_FAILURE = 1;
     public static final int EXIT_OPERATION_FAILURE = -1;
 
+    public static void main(String[] args) {
+        System.out.println(REQUEST_CHECKSUM_TYPE_DESC);
+        System.out.println(REQUEST_CHECKSUM_SALT_DESC);
+    }
 }
