@@ -51,6 +51,7 @@
       <DatabaseURL>jdbc:derby:target/test/referencepillar/checksumdb</DatabaseURL>
     </ChecksumDatabase>
   </PillarSettings>
+  <PillarIntegrityDetails></PillarIntegrityDetails>
   <DeleteFileSettings></DeleteFileSettings>
   <GetAuditTrailSettings></GetAuditTrailSettings>
   <GetChecksumsSettings></GetChecksumsSettings>

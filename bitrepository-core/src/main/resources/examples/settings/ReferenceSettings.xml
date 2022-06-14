@@ -197,6 +197,8 @@
     <FileStoreClass>org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager</FileStoreClass>
   </PillarSettings>
 
+  <PillarIntegrityDetails></PillarIntegrityDetails>
+
   <!-- 
     Settings for the DeleteFileClient
     Currently this section is empty
