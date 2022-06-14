@@ -21,8 +21,6 @@
  */
 package org.bitrepository.integrityservice.cache;
 
-import org.bitrepository.settings.referencesettings.PillarType;
-
 import java.util.Date;
 
 /**
@@ -32,7 +30,7 @@ public class PillarCollectionStat {
     private final String pillarID;
     private final String collectionID;
     private final String pillarHostname;
-    private final PillarType pillarType;
+    private final String pillarType;
     private Long fileCount = 0L;
     private Long dataSize = 0L;
     private Long missingFiles = 0L;
@@ -42,14 +40,14 @@ public class PillarCollectionStat {
     private Date statsTime;
     private Date updateTime;
 
-    public PillarCollectionStat(String pillarID, String collectionID, String pillarHostname, PillarType pillarType) {
+    public PillarCollectionStat(String pillarID, String collectionID, String pillarHostname, String pillarType) {
         this.pillarID = pillarID;
         this.collectionID = collectionID;
         this.pillarHostname = pillarHostname;
         this.pillarType = pillarType;
     }
 
-    public PillarCollectionStat(String pillarID, String collectionID, String pillarHostname, PillarType pillarType, Long fileCount,
+    public PillarCollectionStat(String pillarID, String collectionID, String pillarHostname, String pillarType, Long fileCount,
                                 Long dataSize, Long missingFiles, Long checksumErrors, Long missingChecksums, Long obsoleteChecksum,
                                 Date statsTime, Date updateTime) {
         this.pillarID = pillarID;

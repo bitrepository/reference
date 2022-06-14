@@ -517,10 +517,11 @@ public abstract class IntegrityDAO {
                     Long obsoleteChecksums = dbResult.getLong("obsolete_checksums_count");
                     Date statsTime = null;
                     Date updateTime = null;
-
-                    PillarCollectionStat p = new PillarCollectionStat(pillarID, collectionID, SettingsUtils.getHostname(pillarID),
-                            SettingsUtils.getPillarType(pillarID), fileCount, dataSize, missingFiles, checksumErrors, missingChecksums,
-                            obsoleteChecksums, statsTime, updateTime);
+                    String pillarHostname = Objects.requireNonNullElse(SettingsUtils.getHostname(pillarID), "N/A");
+                    String pillarType = Objects.requireNonNullElse(Objects.requireNonNull(SettingsUtils.getPillarType(pillarID)).value(),
+                            "Unknown");
+                    PillarCollectionStat p = new PillarCollectionStat(pillarID, collectionID, pillarHostname, pillarType, fileCount,
+                            dataSize, missingFiles, checksumErrors, missingChecksums, obsoleteChecksums, statsTime, updateTime);
                     stats.add(p);
                 }
             }

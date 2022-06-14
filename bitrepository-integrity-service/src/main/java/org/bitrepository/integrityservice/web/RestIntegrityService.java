@@ -66,6 +66,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Path("/IntegrityService")
 public class RestIntegrityService {
@@ -244,8 +245,11 @@ public class RestIntegrityService {
         }
         for (String pillar : pillars) {
             if (!stats.containsKey(pillar)) {
-                PillarCollectionStat emptyStat = new PillarCollectionStat(pillar, collectionID, SettingsUtils.getHostname(pillar),
-                        SettingsUtils.getPillarType(pillar), 0L, 0L, 0L, 0L, 0L, 0L, new Date(0), new Date(0));
+                String pillarHostname = Objects.requireNonNullElse(SettingsUtils.getHostname(pillar), "N/A");
+                String pillarType = (SettingsUtils.getPillarType(pillar) != null) ?
+                        Objects.requireNonNull(SettingsUtils.getPillarType(pillar)).value() : "Unknown";
+                PillarCollectionStat emptyStat = new PillarCollectionStat(pillar, collectionID, pillarHostname, pillarType,
+                        0L, 0L, 0L, 0L, 0L, 0L, new Date(0), new Date(0));
                 stats.put(pillar, emptyStat);
             }
         }

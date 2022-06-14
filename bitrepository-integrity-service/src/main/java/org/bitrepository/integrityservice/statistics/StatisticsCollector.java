@@ -28,6 +28,7 @@ import org.bitrepository.integrityservice.cache.PillarCollectionStat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class StatisticsCollector {
 
@@ -39,8 +40,9 @@ public class StatisticsCollector {
         pillarCollectionStats = new HashMap<>();
         List<String> pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
         for (String pillar : pillars) {
-            PillarCollectionStat ps = new PillarCollectionStat(pillar, collectionID, SettingsUtils.getHostname(pillar),
-                    SettingsUtils.getPillarType(pillar));
+            String pillarHostname = Objects.requireNonNullElse(SettingsUtils.getHostname(pillar), "N/A");
+            String pillarType = (SettingsUtils.getPillarType(pillar) != null) ? Objects.requireNonNull(SettingsUtils.getPillarType(pillar)).value() : "Unknown";
+            PillarCollectionStat ps = new PillarCollectionStat(pillar, collectionID, pillarHostname, pillarType);
             pillarCollectionStats.put(pillar, ps);
         }
     }
