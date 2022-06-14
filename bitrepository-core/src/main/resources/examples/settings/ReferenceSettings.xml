@@ -197,7 +197,13 @@
     <FileStoreClass>org.bitrepository.pillar.referencepillar.archive.CollectionArchiveManager</FileStoreClass>
   </PillarSettings>
 
-  <PillarIntegrityDetails></PillarIntegrityDetails>
+  <PillarIntegrityDetails>
+    <PillarDetails>
+      <PillarID>Pillar1</PillarID>
+      <PillarHostname>test@kb.dk</PillarHostname>
+      <PillarType>FILE</PillarType>
+    </PillarDetails>
+  </PillarIntegrityDetails>
 
   <!-- 
     Settings for the DeleteFileClient
