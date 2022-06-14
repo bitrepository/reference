@@ -84,6 +84,11 @@ public class ReplaceFileCmd extends CommandLineClient {
     protected void createOptionsForCmdArgumentHandler() {
         super.createOptionsForCmdArgumentHandler();
 
+        Option pillarOption = new Option(Constants.PILLAR_ARG, Constants.HAS_ARGUMENT, "[OPTIONAL] The id of the " +
+                "pillar where the operation should be performed. If undefined the operation is performed on all pillars.");
+        pillarOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
+        cmdHandler.addOption(pillarOption);
+
         Option checksumOption = new Option(CHECKSUM_ARG, HAS_ARGUMENT, "[OPTIONAL] The checksum of the file to be replaced.");
         checksumOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumOption);

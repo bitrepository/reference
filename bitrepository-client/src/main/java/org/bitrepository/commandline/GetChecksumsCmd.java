@@ -72,6 +72,11 @@ public class GetChecksumsCmd extends CommandLineClient {
     protected void createOptionsForCmdArgumentHandler() {
         super.createOptionsForCmdArgumentHandler();
 
+        Option pillarOption = new Option(Constants.PILLAR_ARG, Constants.HAS_ARGUMENT, "[OPTIONAL] The id of the " +
+                "pillar where the operation should be performed. If undefined the operation is performed on all pillars.");
+        pillarOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
+        cmdHandler.addOption(pillarOption);
+
         Option checksumTypeOption = new Option(Constants.REQUEST_CHECKSUM_TYPE_ARG, Constants.HAS_ARGUMENT,
                 "[OPTIONAL] The algorithm of checksum to request in the response from the pillars. "
                         + "If no such argument is given, then the default from settings is retrieved.");

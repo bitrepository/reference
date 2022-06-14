@@ -74,6 +74,12 @@ public class GetFileCmd extends CommandLineClient {
     @Override
     protected void createOptionsForCmdArgumentHandler() {
         super.createOptionsForCmdArgumentHandler();
+
+        Option pillarOption = new Option(Constants.PILLAR_ARG, Constants.HAS_ARGUMENT, "[OPTIONAL] The id of the " +
+                "pillar where the operation should be performed. If undefined the operation is performed on all pillars.");
+        pillarOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
+        cmdHandler.addOption(pillarOption);
+
         Option checksumOption = new Option(Constants.LOCATION, Constants.HAS_ARGUMENT,
                 "[OPTIONAL] The location where the file should be placed (either total path or directory). "
                         + "If no argument, then the file is placed in the directory where the script is located.");

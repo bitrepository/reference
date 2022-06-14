@@ -21,6 +21,7 @@
  */
 package org.bitrepository.commandline;
 
+import org.apache.commons.cli.Option;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getfileids.GetFileIDsClient;
 import org.bitrepository.commandline.clients.PagingGetFileIDsClient;
@@ -63,6 +64,16 @@ public class GetFileIDsCmd extends CommandLineClient {
         output.debug("Instantiation GetFileID paging client.");
         int pageSize = SettingsUtils.getMaxClientPageSize();
         pagingClient = new PagingGetFileIDsClient(client, getTimeout(), pageSize, outputFormatter, output);
+    }
+
+    @Override
+    protected void createOptionsForCmdArgumentHandler() {
+        super.createOptionsForCmdArgumentHandler();
+
+        Option pillarOption = new Option(Constants.PILLAR_ARG, Constants.HAS_ARGUMENT, "[OPTIONAL] The id of the " +
+                "pillar where the operation should be performed. If undefined the operation is performed on all pillars.");
+        pillarOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
+        cmdHandler.addOption(pillarOption);
     }
 
     @Override
