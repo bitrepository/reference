@@ -54,8 +54,6 @@ import org.bitrepository.integrityservice.workflow.step.UpdateChecksumsStep;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.service.exception.WorkflowAbortedException;
 import org.jaccept.structure.ExtendedTestCase;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -78,9 +76,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 
-@SuppressWarnings("rawtypes")
 public class MissingChecksumTests extends ExtendedTestCase {
-    
     private static final String PILLAR_1 = "pillar1";
     private static final String PILLAR_2 = "pillar2";
     
@@ -132,11 +128,7 @@ public class MissingChecksumTests extends ExtendedTestCase {
         populateDatabase(model, TEST_FILE_1);
 
         addStep("Run missing checksum step.", "The file should be marked as missing at all pillars.");
-        doAnswer(new Answer() {
-            public String answer(InvocationOnMock invocation) {
-                return TEST_COLLECTION;
-            }
-        }).when(reporter).getCollectionID();
+        doAnswer(invocation -> TEST_COLLECTION).when(reporter).getCollectionID();
         
         StatisticsCollector cs = new StatisticsCollector(TEST_COLLECTION);
         HandleMissingChecksumsStep missingChecksumStep = new HandleMissingChecksumsStep(model, reporter, cs, new Date(0)); 
