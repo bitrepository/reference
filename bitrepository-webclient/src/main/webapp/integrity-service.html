@@ -79,6 +79,7 @@
             <tr>
               <th>Pillar ID</th>
               <th>Hostname</th>
+              <th>Pillar Type</th>
               <th>Total number of files</th>
               <th>Number of missing files</th>
               <th>Number of missing checksums</th>
@@ -136,12 +137,11 @@
 
     function makeWorkflowRow(workflowID, nextRun, lastRun, executionInterval, currentState, lastRunState) {
       let html = "";
-      html += "<tr><td><a class=\"btn btn-link\" id=\"" + workflowID + "-details\">" + workflowID + "</a></td>";
-      html += "<td><div id=\"" + workflowID + "-nextRun\" style=\"padding:5px\">" + nextRun + "</div></td>";
-      html += "<td><a class=\"btn btn-link\" id=\"" + workflowID + "-lastRun\">" + lastRun
-               + "</a> <span id=\"" + workflowID + "-lastRunState\">(" + lastRunState + ")</span></td>";
-      html += "<td><div id=\"" + workflowID + "-executionInterval\" style=\"padding:5px\">" + executionInterval + "</div></td>";
-      html += "<td><div id=\"" + workflowID + "-currentState\" style=\"padding:5px\">" + currentState + "</div></td></tr>";
+      html += `<tr><td><a class="btn btn-link" id="${workflowID}-details">${workflowID}</a></td>`;
+      html += `<td><div id="${workflowID}-nextRun" style="padding:5px">${nextRun}</div></td>`;
+      html += `<td><a class="btn btn-link" id="${workflowID}-lastRun">${lastRun}</a> <span id="${workflowID}-lastRunState">(${lastRunState})</span></td>`;
+      html += `<td><div id="${workflowID}-executionInterval" style="padding:5px">${executionInterval}</div></td>`;
+      html += `<td><div id="${workflowID}-currentState" style="padding:5px">${currentState}</div></td></tr>`;
       return html;
     }
 
@@ -224,7 +224,11 @@
     function getCellContext(id, type) {
       const context = {};
       context.url = integrityServiceUrl + "/integrity/IntegrityService/";
-        if(type==="Hostname") {
+        if(type==="PillarType") {
+            context.element = id + "-pillarType";
+            context.title = type + " of " + id;
+            context.member = "pillarType";
+        } else if(type==="Hostname") {
           context.element = id + "-hostname";
           context.title = type + " of " + id;
           context.member = "hostname";
@@ -263,6 +267,7 @@
       html += `<tr id="${id}-row">`;
       html += `<td><div style="padding:5px">${id}</div></td>`;
       html += `<td id="${id}-hostname"></td>`;
+      html += `<td id="${id}-pillarType"></td>`;
       html += `<td id="${id}-totalFileCount"></td>`;
       html += `<td id="${id}-missingFiles"></td>`;
       html += `<td id="${id}-missingChecksums"></td>`;
@@ -286,6 +291,7 @@
 
     function updateCells(pillarID) {
         updateCell(pillarID, "Hostname", pillars[pillarID].hostname);
+        updateCell(pillarID, "PillarType", pillars[pillarID].pillarType);
         updateCell(pillarID, "Total files", pillars[pillarID].totalFileCount);
         updateCell(pillarID, "Missing files", pillars[pillarID].missingFilesCount);
         updateCell(pillarID, "Missing checksums", pillars[pillarID].missingChecksumsCount);
@@ -301,7 +307,7 @@
           if(pillars[j[i].pillarID] == null) {
         	  $("#integrity-status-table-body").append(makePillarRow(j[i].pillarID));
           }
-          pillars[j[i].pillarID] = {hostname : j[i].hostname, totalFileCount : j[i].totalFileCount,
+          pillars[j[i].pillarID] = {hostname : j[i].hostname, pillarType : j[i].pillarType, totalFileCount : j[i].totalFileCount,
                   missingFilesCount : j[i].missingFilesCount,
                   missingChecksumsCount : j[i].missingChecksumsCount,
                   obsoleteChecksumsCount : j[i].obsoleteChecksumsCount,

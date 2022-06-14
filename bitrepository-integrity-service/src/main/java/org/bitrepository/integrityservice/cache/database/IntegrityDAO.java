@@ -519,7 +519,8 @@ public abstract class IntegrityDAO {
                     Date updateTime = null;
 
                     PillarCollectionStat p = new PillarCollectionStat(pillarID, collectionID, SettingsUtils.getHostname(pillarID),
-                            fileCount, dataSize, missingFiles, checksumErrors, missingChecksums, obsoleteChecksums, statsTime, updateTime);
+                            SettingsUtils.getPillarType(pillarID), fileCount, dataSize, missingFiles, checksumErrors, missingChecksums,
+                            obsoleteChecksums, statsTime, updateTime);
                     stats.add(p);
                 }
             }

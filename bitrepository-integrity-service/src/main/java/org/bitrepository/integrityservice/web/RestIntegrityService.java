@@ -244,8 +244,8 @@ public class RestIntegrityService {
         }
         for (String pillar : pillars) {
             if (!stats.containsKey(pillar)) {
-                PillarCollectionStat emptyStat = new PillarCollectionStat(pillar, collectionID, SettingsUtils.getHostname(pillar), 0L, 0L,
-                        0L, 0L, 0L, 0L, new Date(0), new Date(0));
+                PillarCollectionStat emptyStat = new PillarCollectionStat(pillar, collectionID, SettingsUtils.getHostname(pillar),
+                        SettingsUtils.getPillarType(pillar), 0L, 0L, 0L, 0L, 0L, 0L, new Date(0), new Date(0));
                 stats.put(pillar, emptyStat);
             }
         }
