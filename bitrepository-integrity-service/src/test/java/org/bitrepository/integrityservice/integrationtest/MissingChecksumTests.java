@@ -77,7 +77,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
 
 @SuppressWarnings("rawtypes")
 public class MissingChecksumTests extends ExtendedTestCase {
@@ -87,7 +86,6 @@ public class MissingChecksumTests extends ExtendedTestCase {
     
     private static final String DEFAULT_CHECKSUM = "0123456789";
     private static final String TEST_FILE_1 = "test-file-1";
-    private static final String TEST_FILE_2 = "test-file-2";
     private String TEST_COLLECTION;
 
     protected Settings settings;
@@ -144,7 +142,7 @@ public class MissingChecksumTests extends ExtendedTestCase {
         HandleMissingChecksumsStep missingChecksumStep = new HandleMissingChecksumsStep(model, reporter, cs, new Date(0)); 
         missingChecksumStep.performStep();
         for(String pillar : SettingsUtils.getPillarIDsForCollection(TEST_COLLECTION)) {
-            assertTrue(cs.getPillarCollectionStat(pillar).getMissingChecksums() == 1);
+            assertEquals((long) cs.getPillarCollectionStat(pillar).getMissingChecksums(), 1);
         }
     }
 
@@ -157,15 +155,13 @@ public class MissingChecksumTests extends ExtendedTestCase {
         
         addStep("Add checksum results for only one pillar.", "");
         final ResultingChecksums resultingChecksums = createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1);
-        doAnswer(new Answer() {
-            public Void answer(InvocationOnMock invocation) {
-                EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
-                eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(PILLAR_1, PILLAR_2)));
-                eventHandler.handleEvent(new ChecksumsCompletePillarEvent(PILLAR_1, TEST_COLLECTION,
-                        resultingChecksums, createChecksumSpecTYPE(), false));
-                eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
-                return null;
-            }
+        doAnswer(invocation -> {
+            EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
+            eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(PILLAR_1, PILLAR_2)));
+            eventHandler.handleEvent(new ChecksumsCompletePillarEvent(PILLAR_1, TEST_COLLECTION,
+                    resultingChecksums, createChecksumSpecTYPE(), false));
+            eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
+            return null;
         }).when(collector).getChecksums(
                 eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class), any(), anyString(),
                 any(ContributorQuery[].class), any(EventHandler.class));
@@ -205,17 +201,15 @@ public class MissingChecksumTests extends ExtendedTestCase {
         
         addStep("Add checksum results for both pillar.", "");
         final ResultingChecksums resultingChecksums = createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1);
-        doAnswer(new Answer() {
-            public Void answer(InvocationOnMock invocation) {
-                EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
-                eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(PILLAR_1, PILLAR_2)));
-                eventHandler.handleEvent(new ChecksumsCompletePillarEvent(PILLAR_1, TEST_COLLECTION,
-                        resultingChecksums, createChecksumSpecTYPE(), false));
-                eventHandler.handleEvent(new ChecksumsCompletePillarEvent(PILLAR_2, TEST_COLLECTION,
-                        resultingChecksums, createChecksumSpecTYPE(), false));
-                eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
-                return null;
-            }
+        doAnswer(invocation -> {
+            EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
+            eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(PILLAR_1, PILLAR_2)));
+            eventHandler.handleEvent(new ChecksumsCompletePillarEvent(PILLAR_1, TEST_COLLECTION,
+                    resultingChecksums, createChecksumSpecTYPE(), false));
+            eventHandler.handleEvent(new ChecksumsCompletePillarEvent(PILLAR_2, TEST_COLLECTION,
+                    resultingChecksums, createChecksumSpecTYPE(), false));
+            eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
+            return null;
         }).when(collector).getChecksums(
                 eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class), any(),
                 anyString(), any(ContributorQuery[].class), any(EventHandler.class));
@@ -242,15 +236,13 @@ public class MissingChecksumTests extends ExtendedTestCase {
         }
         
         addStep("Add checksum results for only the second pillar.", "");
-        doAnswer(new Answer() {
-            public Void answer(InvocationOnMock invocation) {
-                EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
-                eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(PILLAR_1, PILLAR_2)));
-                eventHandler.handleEvent(new ChecksumsCompletePillarEvent(PILLAR_2, TEST_COLLECTION,
-                        resultingChecksums, createChecksumSpecTYPE(), false));
-                eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
-                return null;
-            }
+        doAnswer(invocation -> {
+            EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
+            eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(PILLAR_1, PILLAR_2)));
+            eventHandler.handleEvent(new ChecksumsCompletePillarEvent(PILLAR_2, TEST_COLLECTION,
+                    resultingChecksums, createChecksumSpecTYPE(), false));
+            eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
+            return null;
         }).when(collector).getChecksums(
                 eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class), any(),
                 anyString(), any(ContributorQuery[].class), any(EventHandler.class));
@@ -294,15 +286,15 @@ public class MissingChecksumTests extends ExtendedTestCase {
         model.addFileIDs(data, PILLAR_2, collectionID);
     }
     
-    private ResultingChecksums createResultingChecksums(String checksum, String ... fileids) {
+    private ResultingChecksums createResultingChecksums(String checksum, String ... fileIDs) {
         ResultingChecksums res = new ResultingChecksums();
-        res.getChecksumDataItems().addAll(createChecksumData(checksum, fileids));
+        res.getChecksumDataItems().addAll(createChecksumData(checksum, fileIDs));
         return res;
     }
     
-    private List<ChecksumDataForChecksumSpecTYPE> createChecksumData(String checksum, String ... fileids) {
+    private List<ChecksumDataForChecksumSpecTYPE> createChecksumData(String checksum, String ... fileIDs) {
         List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<>();
-        for(String fileID : fileids) {
+        for(String fileID : fileIDs) {
             ChecksumDataForChecksumSpecTYPE csData = new ChecksumDataForChecksumSpecTYPE();
             csData.setCalculationTimestamp(CalendarUtils.getNow());
             csData.setChecksumValue(Base16Utils.encodeBase16(checksum));
