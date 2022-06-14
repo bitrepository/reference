@@ -29,6 +29,7 @@ import java.util.Date;
 public class PillarCollectionStat {
     private final String pillarID;
     private final String collectionID;
+    private final String pillarHostname;
     private Long fileCount = 0L;
     private Long dataSize = 0L;
     private Long missingFiles = 0L;
@@ -38,15 +39,18 @@ public class PillarCollectionStat {
     private Date statsTime;
     private Date updateTime;
 
-    public PillarCollectionStat(String pillarID, String collectionID) {
+    public PillarCollectionStat(String pillarID, String collectionID, String pillarHostname) {
         this.pillarID = pillarID;
         this.collectionID = collectionID;
+        this.pillarHostname = pillarHostname;
     }
 
-    public PillarCollectionStat(String pillarID, String collectionID, Long fileCount, Long dataSize, Long missingFiles,
+    public PillarCollectionStat(String pillarID, String collectionID, String pillarHostname, Long fileCount, Long dataSize,
+                                Long missingFiles,
                                 Long checksumErrors, Long missingChecksums, Long obsoleteChecksum, Date statsTime, Date updateTime) {
         this.pillarID = pillarID;
         this.collectionID = collectionID;
+        this.pillarHostname = pillarHostname;
         this.fileCount = fileCount;
         this.dataSize = dataSize;
         this.missingFiles = missingFiles;
@@ -64,6 +68,8 @@ public class PillarCollectionStat {
     public String getCollectionID() {
         return collectionID;
     }
+
+    public String getPillarHostname() { return pillarHostname; }
 
     public Long getFileCount() {
         return fileCount;

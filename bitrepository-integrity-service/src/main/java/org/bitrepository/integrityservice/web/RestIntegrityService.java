@@ -244,9 +244,8 @@ public class RestIntegrityService {
         }
         for (String pillar : pillars) {
             if (!stats.containsKey(pillar)) {
-                PillarCollectionStat emptyStat = new PillarCollectionStat(pillar, collectionID, 0L, 0L, 0L, 0L, 0L, 0L, new Date(0),
-                        new Date(0));
-                ;
+                PillarCollectionStat emptyStat = new PillarCollectionStat(pillar, collectionID, SettingsUtils.getHostname(pillar), 0L, 0L,
+                        0L, 0L, 0L, 0L, new Date(0), new Date(0));
                 stats.put(pillar, emptyStat);
             }
         }
@@ -410,6 +409,7 @@ public class RestIntegrityService {
     private void writeIntegrityStatusObject(PillarCollectionStat stat, JsonGenerator jg) throws IOException {
         jg.writeStartObject();
         jg.writeObjectField("pillarID", stat.getPillarID());
+        jg.writeObjectField("hostname", stat.getPillarHostname());
         jg.writeObjectField("totalFileCount", stat.getFileCount());
         jg.writeObjectField("missingFilesCount", stat.getMissingFiles());
         jg.writeObjectField("checksumErrorCount", stat.getChecksumErrors());

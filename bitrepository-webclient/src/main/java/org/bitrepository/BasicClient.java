@@ -22,7 +22,6 @@
 package org.bitrepository;
 
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.settings.referencesettings.PillarType;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.bitrepository.settings.repositorysettings.RepositorySettings;
 import org.slf4j.Logger;
@@ -30,8 +29,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.bitrepository.settings.referencesettings.PillarIntegrityDetails.PillarDetails;
 
 public class BasicClient {
     private final Settings settings;
@@ -50,28 +47,6 @@ public class BasicClient {
             collections.add(collection.getID());
         }
         return collections;
-    }
-
-    public String getHostname(String pillarID) {
-        log.debug("Fetching PillarHostnames");
-        List<PillarDetails> details = settings.getReferenceSettings().getPillarIntegrityDetails().getPillarDetails();
-        for (PillarDetails d: details) {
-            if (d.getPillarID().equals(pillarID)) {
-                return d.getPillarHostname();
-            }
-        }
-        return null;
-    }
-
-    public PillarType getPillarType(String pillarID) {
-        log.debug("Fetching PillarHostnames");
-        List<PillarDetails> details = settings.getReferenceSettings().getPillarIntegrityDetails().getPillarDetails();
-        for (PillarDetails d: details) {
-            if (d.getPillarID().equals(pillarID)) {
-                return d.getPillarType();
-            }
-        }
-        return null;
     }
 
     public void shutdown() {

@@ -39,7 +39,7 @@ public class StatisticsCollector {
         pillarCollectionStats = new HashMap<>();
         List<String> pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
         for (String pillar : pillars) {
-            PillarCollectionStat ps = new PillarCollectionStat(pillar, collectionID);
+            PillarCollectionStat ps = new PillarCollectionStat(pillar, collectionID, SettingsUtils.getHostname(pillar));
             pillarCollectionStats.put(pillar, ps);
         }
     }
