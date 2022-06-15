@@ -72,32 +72,6 @@ public class PutFileCmdTest extends DefaultFixtureClientTest {
         new PutFileCmd(args);
     }
 
-    @Test(groups = { "regressiontest" })
-    public void specificPillarArgumentTest() throws Exception {
-        addDescription("Test argument for a specific pillar");
-        String[] args = new String[]{"-s" + SETTINGS_DIR, 
-                "-k" + KEY_FILE,
-                "-u" + DEFAULT_UPLOAD_FILE_ADDRESS, 
-                "-C" + DEFAULT_CHECKSUM,
-                "-c" + DEFAULT_COLLECTION_ID,
-                "-p" + PILLAR1_ID,
-                "-i" + DEFAULT_FILE_ID};
-        new PutFileCmd(args);
-    }
-
-    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
-    public void unknownPillarArgumentTest() throws Exception {
-        addDescription("Testing against a non-existing pillar id -> Should fail");
-        String[] args = new String[]{"-s" + SETTINGS_DIR, 
-                "-k" + KEY_FILE,
-                "-u" + DEFAULT_UPLOAD_FILE_ADDRESS, 
-                "-C" + DEFAULT_CHECKSUM,
-                "-c" + DEFAULT_COLLECTION_ID,
-                "-p" + "Random" + (new Date()).getTime() + "pillar",
-                "-i" + DEFAULT_FILE_ID};
-        new PutFileCmd(args);
-    }
-
     @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
     public void missingFileOrURLArgumentTest() throws Exception {
         addDescription("Tests the scenario, where no arguments for file or url is given.");

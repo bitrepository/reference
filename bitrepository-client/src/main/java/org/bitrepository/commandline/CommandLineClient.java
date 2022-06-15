@@ -145,11 +145,6 @@ public abstract class CommandLineClient {
         Option fileIDOption = new Option(Constants.FILE_ID_ARG, Constants.HAS_ARGUMENT, "The id for the file to perform the operation on.");
         fileIDOption.setRequired(isFileIDArgumentRequired());
         cmdHandler.addOption(fileIDOption);
-
-        Option pillarOption = new Option(Constants.PILLAR_ARG, Constants.HAS_ARGUMENT, "[OPTIONAL] The id of the " +
-                "pillar where the operation should be performed. If undefined the operation is performed on all pillars.");
-        pillarOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
-        cmdHandler.addOption(pillarOption);
     }
 
     /**

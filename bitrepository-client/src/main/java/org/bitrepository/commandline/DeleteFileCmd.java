@@ -73,6 +73,10 @@ public class DeleteFileCmd extends CommandLineClient {
     protected void createOptionsForCmdArgumentHandler() {
         super.createOptionsForCmdArgumentHandler();
 
+        Option pillarOption = new Option(Constants.PILLAR_ARG, Constants.HAS_ARGUMENT, Constants.PILLAR_DESC);
+        pillarOption.setRequired(Constants.ARGUMENT_IS_REQUIRED);
+        cmdHandler.addOption(pillarOption);
+
         Option checksumOption = new Option(Constants.CHECKSUM_ARG, Constants.HAS_ARGUMENT,
                 "[OPTIONAL] The checksum of the file to be deleted.");
         checksumOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
