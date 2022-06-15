@@ -78,14 +78,15 @@ public class DeleteFileCmd extends CommandLineClient {
         cmdHandler.addOption(pillarOption);
 
         Option checksumOption = new Option(Constants.CHECKSUM_ARG, Constants.HAS_ARGUMENT,
-                "[OPTIONAL] The checksum of the file to be deleted.");
-        checksumOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
+                "The checksum of the file to be deleted.");
+        checksumOption.setRequired(Constants.ARGUMENT_IS_REQUIRED);
         cmdHandler.addOption(checksumOption);
 
         Option checksumTypeOption = new Option(Constants.REQUEST_CHECKSUM_TYPE_ARG, Constants.HAS_ARGUMENT,
                 "[OPTIONAL] The algorithm of checksum to request in the response from the pillars.");
         checksumTypeOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumTypeOption);
+
         Option checksumSaltOption = new Option(Constants.REQUEST_CHECKSUM_SALT_ARG, Constants.HAS_ARGUMENT,
                 "[OPTIONAL] The salt of checksum to request in the response. Requires the ChecksumType argument.");
         checksumSaltOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
