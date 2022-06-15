@@ -72,7 +72,13 @@ public class PillarCollectionStat {
         return collectionID;
     }
 
-    public String getPillarHostname() {return pillarHostname;}
+    public String getPillarHostname() {
+        return pillarHostname;
+    }
+
+    public String getPillarType() {
+        return pillarType;
+    }
 
     public Long getFileCount() {
         return fileCount;

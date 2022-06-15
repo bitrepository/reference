@@ -25,11 +25,28 @@
   <GeneralSettings>
     <ReceiverDestinationIDFactoryClass>org.bitrepository.protocol.messagebus.destination.DefaultReceiverDestinationIDFactory</ReceiverDestinationIDFactoryClass>
   </GeneralSettings>
-
   <ClientSettings>
     <MediatorCleanupInterval>1000</MediatorCleanupInterval>
     <ConversationTimeout>3600000</ConversationTimeout>
   </ClientSettings>
+
+  <PillarIntegrityDetails>
+    <PillarDetails>
+      <PillarID>checksum-pillar</PillarID>
+      <PillarHostname>test1@kb.dk</PillarHostname>
+      <PillarType>CHECKSUM</PillarType>
+    </PillarDetails>
+    <PillarDetails>
+      <PillarID>file1-pillar</PillarID>
+      <PillarHostname>test2@kb.dk</PillarHostname>
+      <PillarType>FILE</PillarType>
+    </PillarDetails>
+    <PillarDetails>
+      <PillarID>file2-pillar</PillarID>
+      <PillarHostname>test3@kb.dk</PillarHostname>
+      <PillarType>FILE</PillarType>
+    </PillarDetails>
+  </PillarIntegrityDetails>
 
   <IntegrityServiceSettings>
     <ID>integrity-service</ID>

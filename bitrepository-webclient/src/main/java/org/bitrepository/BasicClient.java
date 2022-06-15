@@ -38,10 +38,10 @@ public class BasicClient {
         log.debug("---- Basic client instantiating ----");
         this.settings = settings;
         log.debug("---- Basic client instantiated ----");
-
     }
 
     public List<String> getCollectionIDs() {
+        log.trace("Fetching collectionIDs");
         List<String> collections = new ArrayList<>();
         for (Collection collection : settings.getRepositorySettings().getCollections().getCollection()) {
             collections.add(collection.getID());
@@ -54,6 +54,7 @@ public class BasicClient {
     }
 
     public String getSettingsSummary() {
+        log.trace("Fetching Settings Summary");
         StringBuilder sb = new StringBuilder();
         RepositorySettings repositorySettings = settings.getRepositorySettings();
         sb.append("Collections:<br>");
@@ -72,6 +73,7 @@ public class BasicClient {
     }
 
     public Settings getSettings() {
+        log.trace("Fetching Settings");
         return settings;
     }
 }

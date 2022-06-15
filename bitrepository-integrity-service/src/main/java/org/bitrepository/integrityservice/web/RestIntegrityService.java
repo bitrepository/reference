@@ -256,6 +256,7 @@ public class RestIntegrityService {
         jg.writeStartArray();
         for (PillarCollectionStat stat : stats.values()) {
             writeIntegrityStatusObject(stat, jg);
+            log.debug("IntegrityStatus: Wrote hostname: " + stat.getPillarHostname() + " to pillar" + stat.getPillarID());
         }
         jg.writeEndArray();
         jg.flush();
@@ -413,7 +414,8 @@ public class RestIntegrityService {
     private void writeIntegrityStatusObject(PillarCollectionStat stat, JsonGenerator jg) throws IOException {
         jg.writeStartObject();
         jg.writeObjectField("pillarID", stat.getPillarID());
-        jg.writeObjectField("hostname", stat.getPillarHostname());
+        jg.writeObjectField("pillarHostname", stat.getPillarHostname());
+        jg.writeObjectField("pillarType", stat.getPillarType());
         jg.writeObjectField("totalFileCount", stat.getFileCount());
         jg.writeObjectField("missingFilesCount", stat.getMissingFiles());
         jg.writeObjectField("checksumErrorCount", stat.getChecksumErrors());

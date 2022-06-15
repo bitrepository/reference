@@ -518,8 +518,8 @@ public abstract class IntegrityDAO {
                     Date statsTime = null;
                     Date updateTime = null;
                     String pillarHostname = Objects.requireNonNullElse(SettingsUtils.getHostname(pillarID), "N/A");
-                    String pillarType = Objects.requireNonNullElse(Objects.requireNonNull(SettingsUtils.getPillarType(pillarID)).value(),
-                            "Unknown");
+                    String pillarType = (SettingsUtils.getPillarType(pillarID) != null) ?
+                            Objects.requireNonNull(SettingsUtils.getPillarType(pillarID)).value() : "Unknown";
                     PillarCollectionStat p = new PillarCollectionStat(pillarID, collectionID, pillarHostname, pillarType, fileCount,
                             dataSize, missingFiles, checksumErrors, missingChecksums, obsoleteChecksums, statsTime, updateTime);
                     stats.add(p);

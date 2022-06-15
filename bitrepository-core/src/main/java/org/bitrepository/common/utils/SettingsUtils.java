@@ -107,10 +107,12 @@ public class SettingsUtils {
      * @return Returns the hostname for the given pillar ID.
      */
     public static String getHostname(String pillarID) {
-        List<PillarIntegrityDetails.PillarDetails> details = settings.getReferenceSettings().getPillarIntegrityDetails().getPillarDetails();
-        for (PillarIntegrityDetails.PillarDetails d : details) {
-            if (d.getPillarID().equals(pillarID)) {
-                return d.getPillarHostname();
+        PillarIntegrityDetails details = settings.getReferenceSettings().getPillarIntegrityDetails();
+        if (details != null) {
+            for (PillarIntegrityDetails.PillarDetails d : details.getPillarDetails()) {
+                if (d.getPillarID().equals(pillarID)) {
+                    return d.getPillarHostname();
+                }
             }
         }
         return null;
@@ -123,10 +125,12 @@ public class SettingsUtils {
      * @return Returns the {@link PillarType} for the given pillar ID.
      */
     public static PillarType getPillarType(String pillarID) {
-        List<PillarIntegrityDetails.PillarDetails> details = settings.getReferenceSettings().getPillarIntegrityDetails().getPillarDetails();
-        for (PillarIntegrityDetails.PillarDetails d : details) {
-            if (d.getPillarID().equals(pillarID)) {
-                return d.getPillarType();
+        PillarIntegrityDetails details = settings.getReferenceSettings().getPillarIntegrityDetails();
+        if (details != null) {
+            for (PillarIntegrityDetails.PillarDetails d : details.getPillarDetails()) {
+                if (d.getPillarID().equals(pillarID)) {
+                    return d.getPillarType();
+                }
             }
         }
         return null;
