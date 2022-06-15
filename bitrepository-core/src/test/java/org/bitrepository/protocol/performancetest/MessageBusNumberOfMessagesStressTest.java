@@ -58,9 +58,8 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
     }
 
     /**
-     * Tests the amount of messages send over a message bus, which is not placed locally.
-     * Requires to send at least five per second.
-     * @throws Exception 
+     * Tests the amount of messages sent over a message bus, which is not placed locally.
+     * Require sending at least five messages per second.
      */
     @Test( groups = {"StressTest"} )
     public void SendManyMessagesDistributed() throws Exception {
@@ -74,7 +73,7 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
         ResendMessageListener listener = null;
 
         try {
-            addStep("Initialise the messagelistener", "Should be allowed.");
+            addStep("Initialise the message-listener", "Should be allowed.");
             listener = new ResendMessageListener(settings);
 
             addStep("Start sending at '" + new Date() + "'", "Should just be waiting.");
@@ -105,7 +104,6 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
     /**
      * Tests the amount of messages send through a local messagebus. 
      * It should be at least 20 per second. 
-     * @throws Exception
      */
     @Test( groups = {"StressTest"} )
     public void SendManyMessagesLocally() throws Exception {
@@ -128,7 +126,7 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
             addStep("Starting the broker.", "Should be allowed");
             broker.start();
 
-            addStep("Initialise the messagelistener", "Should be allowed.");
+            addStep("Initialise the message-listener", "Should be allowed.");
             listener = new ResendMessageListener(settings);
 
             addStep("Start sending at '" + new Date() + "'", "Should just be waiting.");
@@ -151,12 +149,8 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
         } finally {
             if(listener != null) {
                 listener.stop();
-                listener = null;
             }
-            if(broker != null) {
-                broker.stop();
-                broker = null;
-            }
+            broker.stop();
         }
     }
 
@@ -165,11 +159,9 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
      * It does not reply, it send to the same destination, thus receiving it again.
      * It keeps track of the amount of messages received.
      */
-    private class ResendMessageListener implements MessageListener {
+    private static class ResendMessageListener implements MessageListener {
         /** The message bus.*/
         private final MessageBus bus;
-        /** The mocked SecurityManager */
-        private SecurityManager securityManager = new DummySecurityManager();
         /** The amount of messages received.*/
         private int count;
 
@@ -178,6 +170,8 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
          * @param conf The configurations for declaring the message bus.
          */
         public ResendMessageListener(Settings conf) {
+            /* The mocked SecurityManager */
+            SecurityManager securityManager = new DummySecurityManager();
             this.bus = new ActiveMQMessageBus(conf, securityManager);
             this.count = 0;
 
@@ -185,7 +179,7 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
         }
 
         /**
-         * Method for stopping interaction with the messagelistener.
+         * Method for stopping interaction with the message-listener.
          */
         public void stop() {
             bus.removeListener(QUEUE, this);

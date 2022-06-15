@@ -1,23 +1,23 @@
 /*
  * #%L
  * Bitmagasin integrationstest
- * 
+ *
  * $Id$
  * $HeadURL$
  * %%
  * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -49,38 +49,32 @@ import org.testng.annotations.Test;
 import java.util.Date;
 
 /**
- * Stress testing of the messagebus. 
- * 
+ * Stress testing of the messagebus.
+ * <p>
  * The size is regulated by the 'BUFFER_TEXT' and the 'NUMBER_OF_REPEATS_OF_BUFFER_TEXT'.
- * Currently the buffer text is 100 bytes, and it is repeated 100 times, thus generating a message of size 10 kB. 
+ * Currently, the buffer text is 100 bytes, and it is repeated 100 times, thus generating a message of size 10 kB.
  */
 public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
-    /** The time to wait when sending a message before it definitely should 
-     * have been consumed by a listener.*/
-    static final int TIME_FOR_MESSAGE_TRANSFER_WAIT = 500;
-    /** The name of the queue to send the messages.*/
+    /**
+     * The name of the queue to send the messages.
+     */
     private static String QUEUE = "TEST-QUEUE";
-    /** The timeframe for the test.*/
+    /**
+     * The timeframe for the test.
+     */
     private final long TIME_FRAME = 60000L;
-
-    /** The text to repeat to make the message large.*/
-    private final String BUFFER_TEXT = "098765432109876543210987654321"
-        + "0987654321098765432109876543210987654321098765432109876543210987654321"; // 100 bytes
-    /** The number of repeats by the buffer text in the message.*/
-    private final int NUMBER_OF_REPEATS_OF_BUFFER_TEXT = 100;
-
     private Settings settings;
 
     @BeforeMethod
     public void initializeSettings() {
         settings = TestSettingsProvider.getSettings(getClass().getSimpleName());
     }
+
     /**
      * Tests the amount of messages send over a message bus, which is not placed locally.
      * Requires to send at least five per second.
-     * @throws Exception 
      */
-//    @Test( groups = {"StressTest"} )
+    /* @Test( groups = {"StressTest"} ) */
     public void SendLargeMessagesDistributed() throws Exception {
         addDescription("Tests how many messages can be handled within a given timeframe.");
         addStep("Define constants", "This should not be possible to fail.");
@@ -91,8 +85,8 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
         ResendMessageListener listener = null;
 
         try {
-            addStep("Initialise the messagelistener", "Should be allowed.");
-            listener = new ResendMessageListener(conf);
+            addStep("Initialise the message-listener", "Should be allowed.");
+            listener = new ResendMessageListener();
 
             AlarmMessage message = getTestMessage();
 
@@ -102,27 +96,26 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
                 try {
                     wait(TIME_FRAME);
                 } catch (InterruptedException e) {
-//                    e.printStackTrace();
+                    /* e.printStackTrace(); */
                 }
             }
 
             addStep("Validating messages have been sent.", "Should be OK");
             int count = listener.getCount();
             Assert.assertTrue(count > 0, "Some message should have been sent.");
-            System.out.println("Sent '" + count + "' messages in '" + TIME_FRAME/1000 + "' seconds.");
+            System.out.println("Sent '" + count + "' messages in '" + TIME_FRAME / 1000 + "' seconds.");
         } finally {
-            if(listener != null) {
+            if (listener != null) {
                 listener.stop();
-                listener = null;
             }
         }
     }
 
     /**
-     * Tests the amount of messages send through a local messagebus. 
+     * Tests the amount of messages send through a local messagebus.
      * It should be at least 20 per second.
      */
-    @Test( groups = {"StressTest"} )
+    @Test(groups = {"StressTest"})
     public void SendLargeMessagesLocally() throws Exception {
         addDescription("Tests how many messages can be handled within a given timeframe.");
         addStep("Define constants", "This should not be possible to fail.");
@@ -140,8 +133,8 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
             addStep("Starting the broker.", "Should be allowed");
             broker.start();
 
-            addStep("Initialise the messagelistener", "Should be allowed.");
-            listener = new ResendMessageListener(conf);
+            addStep("Initialise the message-listener", "Should be allowed.");
+            listener = new ResendMessageListener();
 
             AlarmMessage message = getTestMessage();
 
@@ -151,34 +144,30 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
                 try {
                     wait(TIME_FRAME);
                 } catch (InterruptedException e) {
-//                    e.printStackTrace();
+                    /* e.printStackTrace(); */
                 }
             }
 
-            //            addStep("Stopped sending at '" + new Date() + "'", "Should have send more than '" + messagePerSec 
-            //            		+ "' messages per sec.");
             addStep("Validating the number of messages sent.", "Should be OK");
             int count = listener.getCount();
-            //            Assert.assertTrue(count > (messagePerSec * timeFrame/1000), "There where send '" + count 
-            //            		+ "' messages in '" + timeFrame/1000 + "' seconds, but it is required to handle at least '" 
-            //            		+ messagePerSec + "' per second!");
-            System.out.println("Sent '" + count + "' messages in '" + TIME_FRAME/1000 + "' seconds.");
+            System.out.println("Sent '" + count + "' messages in '" + TIME_FRAME / 1000 + "' seconds.");
         } finally {
-            if(listener != null) {
+            if (listener != null) {
                 listener.stop();
-                listener = null;
             }
-            if(broker != null) {
-                broker.stop();
-                broker = null;
-            }
+            broker.stop();
         }
     }
 
     private AlarmMessage getTestMessage() throws Exception {
         addStep("Creating the payload of the message.", "should be OK.");
         StringBuilder payload = new StringBuilder();
-        for(int i = 0; i < NUMBER_OF_REPEATS_OF_BUFFER_TEXT; i++) {
+        /* The number of repeats by the buffer text in the message.*/
+        int NUMBER_OF_REPEATS_OF_BUFFER_TEXT = 100;
+        for (int i = 0; i < NUMBER_OF_REPEATS_OF_BUFFER_TEXT; i++) {
+            /* The text to repeat to make the message large (100 bytes).*/
+            String BUFFER_TEXT = "098765432109876543210987654321"
+                    + "0987654321098765432109876543210987654321098765432109876543210987654321";
             payload.append(BUFFER_TEXT);
         }
 
@@ -194,23 +183,23 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
     }
 
     /**
-     * Messagelistener which only resends the messages it receive.
-     * It does not reply, it send to the same destination, thus receiving it again.
+     * Message-listener which only resends the messages it receives.
+     * It does not reply, it sent to the same destination, thus receiving it again.
      * It keeps track of the amount of messages received.
      */
     private class ResendMessageListener implements MessageListener {
-        /** The message bus.*/
+        /**
+         * The message bus.
+         */
         private final MessageBus bus;
-        /** The mocked SecurityManager */
-        private SecurityManager securityManager = new DummySecurityManager();
-        /** The amount of messages received.*/
+        /**
+         * The amount of messages received.
+         */
         private int count;
 
-        /**
-         * Constructor.
-         * @param conf The configurations for declaring the messagebus.
-         */
-        public ResendMessageListener(MessageBusConfiguration conf) {
+        public ResendMessageListener() {
+            /* The mocked SecurityManager */
+            SecurityManager securityManager = new DummySecurityManager();
             this.bus = new ActiveMQMessageBus(settings, securityManager);
             this.count = 0;
 
@@ -226,6 +215,7 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
 
         /**
          * Retrieval of the amount of messages caught by the listener.
+         *
          * @return The number of message received by this.
          */
         public int getCount() {
@@ -234,9 +224,8 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
 
         /**
          * Starts sending messages.
-         * @throws Exception If a problem with creating the message occurs.
          */
-        public void startSending(AlarmMessage message) throws Exception {
+        public void startSending(AlarmMessage message) {
             message.setDestination(QUEUE);
             bus.sendMessage(message);
         }

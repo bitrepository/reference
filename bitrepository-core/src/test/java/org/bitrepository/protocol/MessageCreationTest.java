@@ -1,23 +1,23 @@
 /*
  * #%L
  * Bitrepository Protocol
- * 
+ *
  * $Id$
  * $HeadURL$
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -53,26 +53,26 @@ import java.util.Iterator;
  * message-xml, thereby also testing whether this is valid. *
  */
 public class MessageCreationTest extends ExtendedTestCase {
-
     @Test(groups = {"regressiontest"})
     public void messageCreationTest() throws Exception {
         addDescription("Tests if we are able to create message objects from xml. The input XML is the example code " +
-        "defined in the message-xml, thereby also testing whether this is valid.");
+                "defined in the message-xml, thereby also testing whether this is valid.");
         String[] messageNames = getMessageNames();
         for (String messageName : messageNames) {
-            addStep("Creating " + messageName + " message" , 
-            "The test is able to instantiate message based on the example in the message-xml modules");
+            addStep("Creating " + messageName + " message",
+                    "The test is able to instantiate message based on the example in the message-xml modules");
             ExampleMessageFactory.createMessage(
                     Class.forName(GetChecksumsFinalResponse.class.getPackage().getName() + "." + messageName));
         }
     }
-    
+
     @Test(groups = {"regressiontest"}, expectedExceptions = SAXException.class)
     public void badDateMessageTest() throws IOException, SAXException, JAXBException {
         addDescription("Test to ensure that messages carrying dates must provide offset.");
-        String messagePath = ExampleMessageFactory.PATH_TO_EXAMPLES + "BadMessages/" + 
+        String messagePath = ExampleMessageFactory.PATH_TO_EXAMPLES + "BadMessages/" +
                 "BadDateAlarmMessage" + ExampleMessageFactory.EXAMPLE_FILE_POSTFIX;
         InputStream messageIS = Thread.currentThread().getContextClassLoader().getResourceAsStream(messagePath);
+        assert messageIS != null;
         String message = IOUtils.toString(messageIS, StandardCharsets.UTF_8);
         JaxbHelper jaxbHelper = new JaxbHelper(ExampleMessageFactory.PATH_TO_SCHEMA, ExampleMessageFactory.SCHEMA_NAME);
         jaxbHelper.validate(new ByteArrayInputStream(message.getBytes(StandardCharsets.UTF_8)));
@@ -100,24 +100,31 @@ public class MessageCreationTest extends ExtendedTestCase {
         String[] messageNames = new String[nodes.getLength()];
         for (int i = 0; i < nodes.getLength(); i++) {
             messageNames[i] = nodes.item(i).getAttributes().getNamedItem("name")
-            .getNodeValue();
+                    .getNodeValue();
         }
         return messageNames;
     }
 
-    /** Needed by XPath to handle the namespaces. */
+    /**
+     * Needed by XPath to handle the namespaces.
+     */
     private NamespaceContext getNamespaceContext() {
         NamespaceContext ctx = new NamespaceContext() {
             public String getNamespaceURI(String prefix) {
                 String uri;
-                if (prefix.equals("xs")) {
-                    uri = "http://www.w3.org/2001/XMLSchema";
-                } else if (prefix.equals("xsi")) {
-                    uri = "http://www.w3.org/2001/XMLSchema-instance";
-                } else if (prefix.equals("bre")) {
-                    uri = "http://bitrepository.org/BitRepositoryElements.xsd";
-                } else {
-                    uri = null;
+                switch (prefix) {
+                    case "xs":
+                        uri = "http://www.w3.org/2001/XMLSchema";
+                        break;
+                    case "xsi":
+                        uri = "http://www.w3.org/2001/XMLSchema-instance";
+                        break;
+                    case "bre":
+                        uri = "http://bitrepository.org/BitRepositoryElements.xsd";
+                        break;
+                    default:
+                        uri = null;
+                        break;
                 }
                 return uri;
             }
@@ -127,7 +134,7 @@ public class MessageCreationTest extends ExtendedTestCase {
                 return null;
             }
 
-            // Dummy implemenation - not used!
+            // Dummy implementation - not used!
             public String getPrefix(String uri) {
                 return null;
             }
