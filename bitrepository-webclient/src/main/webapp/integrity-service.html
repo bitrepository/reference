@@ -38,7 +38,7 @@
             <span id="integrityLegend">
               Integrity information
             </span>
-            <span class="pull-right"> 
+            <span class="pull-right">
               Change collection: <select class="input" id="collectionChooser"></select>
             </span>
           </span>
@@ -78,7 +78,7 @@
         <thead>
         <tr>
           <th>Pillar ID</th>
-          <th>Hostname</th>
+          <th>Pillar Hostname</th>
           <th>Pillar Type</th>
           <th>Total number of files</th>
           <th>Number of missing files</th>
@@ -115,33 +115,34 @@
 <script src="numeral.min.js"></script>
 
 <script>
-    let pillars = {};
-    let workflows = {};
-    let pager;
-    let update_page;
-    let nameMapper;
-    let integrityServiceUrl;
+    var pillars = {};
+    var workflows = {};
+    var pager;
+    var update_page;
+    var nameMapper;
+    var integrityServiceUrl;
 
     function formatInt(number) {
         return numeral(number).format('0,0');
     }
 
     function loadWorkflows() {
-        let url = `${integrityServiceUrl}/integrity/IntegrityService/getWorkflowList/?collectionID=${getCollectionID()}`;
-        $.getJSON(url, {}, function (j) {
-            for (let i = 0; i < j.length; i++) {
-                $("#workflowSelector").append(`<option value="${j[i]}">${j[i]}</option>`);
+        var url = integrityServiceUrl + '/integrity/IntegrityService/getWorkflowList/?collectionID=' + getCollectionID();
+        $.getJSON(url, {}, function(j) {
+            for (var i = 0; i < j.length; i++) {
+                $("#workflowSelector").append('<option value="' + j[i] + '">' + j[i] + '</option>');
             }
         });
     }
 
     function makeWorkflowRow(workflowID, nextRun, lastRun, executionInterval, currentState, lastRunState) {
-        let html = "";
-        html += `<tr><td><a class="btn btn-link" id="${workflowID}-details">${workflowID}</a></td>`;
-        html += `<td><div id="${workflowID}-nextRun" style="padding:5px">${nextRun}</div></td>`;
-        html += `<td><a class="btn btn-link" id="${workflowID}-lastRun">${lastRun}</a> <span id="${workflowID}-lastRunState">(${lastRunState})</span></td>`;
-        html += `<td><div id="${workflowID}-executionInterval" style="padding:5px">${executionInterval}</div></td>`;
-        html += `<td><div id="${workflowID}-currentState" style="padding:5px">${currentState}</div></td></tr>`;
+        var html = "";
+        html += "<tr><td><a class=\"btn btn-link\" id=\"" + workflowID + "-details\">" + workflowID + "</a></td>";
+        html += "<td><div id=\"" + workflowID + "-nextRun\" style=\"padding:5px\">" + nextRun + "</div></td>";
+        html += "<td><a class=\"btn btn-link\" id=\"" + workflowID + "-lastRun\">" + lastRun
+            + "</a> <span id=\"" + workflowID + "-lastRunState\">(" + lastRunState + ")</span></td>";
+        html += "<td><div id=\"" + workflowID + "-executionInterval\" style=\"padding:5px\">" + executionInterval + "</div></td>";
+        html += "<td><div id=\"" + workflowID + "-currentState\" style=\"padding:5px\">" + currentState + "</div></td></tr>";
         return html;
     }
 
@@ -154,43 +155,42 @@
     }
 
     function getStoredWorkflowInfo(id, type) {
-        return function () {
-            return nl2br(workflows[id][type]);
+        var myID = id;
+        var myType = type;
+        return function() {
+            return nl2br(workflows[myID][myType]);
         }
     }
 
     function attachWorkflowInfoButton(id, type) {
-        let element;
-        let title;
-        if (type === "workflowDescription") {
+        var element;
+        var title;
+        if(type == "workflowDescription") {
             element = "#" + id + "-details";
             title = "Workflow description";
-        } else if (type === "lastRunDetails") {
+        } else if(type == "lastRunDetails") {
             element = "#" + id + "-lastRun";
             title = "Last run details";
         }
-        if (element != null) {
-            $(element).popover({
-                placement: "right",
-                title: title,
-                html: true,
-                content: getStoredWorkflowInfo(id, type)
-            });
+        if(element != null) {
+            $(element).popover({placement : "right",
+                title : title,
+                html : true,
+                content : getStoredWorkflowInfo(id, type)});
         }
     }
 
     function getWorkflowStatuses() {
-        let url = integrityServiceUrl + '/integrity/IntegrityService/getWorkflowSetup/?collectionID=' + getCollectionID();
-        $.getJSON(url, {}, function (j) {
-            for (let i = 0; i < j.length; i++) {
-                if (workflows[j[i].workflowID] == null) {
+        var url = integrityServiceUrl + '/integrity/IntegrityService/getWorkflowSetup/?collectionID=' + getCollectionID();
+        $.getJSON(url, {}, function(j) {
+            var htmlTableBody;
+            for (var i = 0; i < j.length; i++) {
+                if(workflows[j[i].workflowID] == null) {
                     $("#workflow-status-table-body").append(
                         makeWorkflowRow(j[i].workflowID, j[i].nextRun, j[i].lastRun, j[i].executionInterval,
                             j[i].currentState, j[i].lastRunFinishState));
-                    workflows[j[i].workflowID] = {
-                        workflowDescription: j[i].workflowDescription,
-                        lastRunDetails: j[i].lastRunDetails
-                    };
+                    workflows[j[i].workflowID] = {workflowDescription : j[i].workflowDescription,
+                        lastRunDetails : j[i].lastRunDetails};
                     attachWorkflowInfoButton(j[i].workflowID, "workflowDescription");
                     attachWorkflowInfoButton(j[i].workflowID, "lastRunDetails");
                 } else {
@@ -204,19 +204,19 @@
     }
 
     function getPagingLimit(id, member) {
-        let myID = id;
-        let myMember = member;
-        return function () {
+        var myID = id;
+        var myMember = member;
+        return function() {
             return pillars[myID][myMember];
         }
     }
 
     function showModalPager(id, member, title, url) {
-        let myTitle = title;
-        let myUrl = url;
-        let myID = id;
-        let myMember = member;
-        return function () {
+        var myTitle = title;
+        var myUrl = url;
+        var myID = id;
+        var myMember = member;
+        return function() {
             pager = new Pager(getPagingLimit(myID, myMember), 20, myUrl, "#modalPager", "#modalPagerBody");
             $("#modalPagerLabel").html(myTitle);
             $("#modalPagerBody").html("<p>Loading</p>");
@@ -225,104 +225,38 @@
         }
     }
 
-    function getIntegrityStatus() {
-        let url = `${integrityServiceUrl}/integrity/IntegrityService/getIntegrityStatus/?collectionID=${getCollectionID()}`;
-
-        $.getJSON(url, {}, function (j) {
-            for (let i = 0; i < j.length; i++) {
-                let pillarID = j[i].pillarID;
-                if (pillars[pillarID] == null) {
-                    $("#integrity-status-table-body").append(makePillarRow(pillarID));
-                }
-                pillars[pillarID] = {
-                    pillarHostname: j[i].pillarHostname,
-                    pillarType: j[i].pillarType,
-                    totalFileCount: j[i].totalFileCount,
-                    missingFilesCount: j[i].missingFilesCount,
-                    missingChecksumsCount: j[i].missingChecksumsCount,
-                    obsoleteChecksumsCount: j[i].obsoleteChecksumsCount,
-                    checksumErrorCount: j[i].checksumErrorCount
-                };
-                updateCells(pillarID);
-            }
-        });
-    }
-
-    function makePillarRow(pillarID) {
-        let html = "";
-        html += `<tr id="${pillarID}-row">`;
-        html += `<td><div style="padding:5px">${pillarID}</div></td>`;
-        html += `<td id="${pillarID}-pillarHostname"></td>`;
-        html += `<td id="${pillarID}-pillarType"></td>`;
-        html += `<td id="${pillarID}-totalFileCount"></td>`;
-        html += `<td id="${pillarID}-missingFiles"></td>`;
-        html += `<td id="${pillarID}-missingChecksums"></td>`;
-        html += `<td id="${pillarID}-obsoleteChecksums"></td>`;
-        html += `<td id="${pillarID}-checksumErrors"></td></tr>`;
-        return html;
-    }
-
-    function updateCells(pillarID) {
-        updateCell(pillarID, "Hostname", pillars[pillarID].pillarHostname);
-        updateCell(pillarID, "Pillar Type", pillars[pillarID].pillarType);
-        updateCell(pillarID, "Total files", pillars[pillarID].totalFileCount);
-        updateCell(pillarID, "Missing files", pillars[pillarID].missingFilesCount);
-        updateCell(pillarID, "Missing checksums", pillars[pillarID].missingChecksumsCount);
-        updateCell(pillarID, "Obsolete checksums", pillars[pillarID].obsoleteChecksumsCount);
-        updateCell(pillarID, "Inconsistent checksums", pillars[pillarID].checksumErrorCount);
-    }
-
-    function updateCell(cellID, type, cellValue) {
-        let context = getCellContext(cellID, type);
-
-        if (typeof cellValue === "string") {
-            let html = `<button class="btn btn-link" disabled>${cellValue}</button>`;
-            $("#" + context.element).html(html);
-        } else {
-            if (cellValue === 0) {
-                let html = `<button class="btn btn-link" disabled>${formatInt(cellValue)}</button>`;
-                $("#" + context.element).html(html);
-            } else {
-                let innerElement = context.element + "-a";
-                let html = `<a class="btn btn-link" id="${innerElement}">${formatInt(cellValue)}</a>`;
-                $("#" + context.element).html(html);
-                $("#" + innerElement).click(showModalPager(cellID, context.member, context.title, context.url));
-            }
-        }
-    }
-
     function getCellContext(id, type) {
-        let context = {};
+        var context = {};
         context.url = integrityServiceUrl + "/integrity/IntegrityService/";
-        if (type === "Hostname") {
+        if(type == "Pillar Hostname") {
             context.element = id + "-pillarHostname";
-            context.title = type + " of " + id;
+            context.title = type + " on " + id;
             context.member = "pillarHostname";
-        } else if (type === "Pillar Type") {
+        } else if(type == "Pillar Type") {
             context.element = id + "-pillarType";
-            context.title = type + " of " + id;
+            context.title = type + " on " + id;
             context.member = "pillarType";
-        } else if (type === "Total files") {
+        } else if(type == "Total files") {
             context.element = id + "-totalFileCount";
             context.title = type + " on " + id;
             context.member = "totalFileCount";
             context.url += "getAllFileIDs/";
-        } else if (type === "Missing files") {
+        } else if(type == "Missing files") {
             context.element = id + "-missingFiles";
             context.title = type + " on " + id;
             context.member = "missingFilesCount";
             context.url += "getMissingFileIDs/";
-        } else if (type === "Missing checksums") {
+        } else if(type == "Missing checksums") {
             context.element = id + "-missingChecksums";
             context.title = type + " on " + id;
             context.member = "missingChecksumsCount";
             context.url += "getMissingChecksumsFileIDs/";
-        } else if (type === "Obsolete checksums") {
+        } else if(type == "Obsolete checksums") {
             context.element = id + "-obsoleteChecksums";
             context.title = type + " on " + id;
             context.member = "obsoleteChecksumsCount";
             context.url += "getObsoleteChecksumsFileIDs/";
-        } else if (type === "Inconsistent checksums") {
+        } else if(type == "Inconsistent checksums") {
             context.element = id + "-checksumErrors";
             context.title = type + " on " + id;
             context.member = "checksumErrorCount";
@@ -332,18 +266,85 @@
         return context;
     }
 
+    function makePillarRow(id) {
+        var html = "";
+        html += "<tr id=\"" + id + "-row\">";
+        html += "<td><div style=\"padding:5px\">" + id + "</div></td>";
+        html += "<td id=\"" + id + "-pillarHostname\"></td>";
+        html += "<td id=\"" + id + "-pillarType\"></td>";
+        html += "<td id=\"" + id + "-totalFileCount\"></td>";
+        html += "<td id=\"" + id + "-missingFiles\"></td>";
+        html += "<td id=\"" + id + "-missingChecksums\"></td>";
+        html += "<td id=\"" + id + "-obsoleteChecksums\"></td>";
+        html += "<td id=\"" + id + "-checksumErrors\"></td></tr>";
+        return html;
+    }
+
+    function updateCells(pillarID) {
+        updateStringCell(pillarID, "Pillar Hostname", pillars[pillarID].pillarHostname);
+        updateStringCell(pillarID, "Pillar Type", pillars[pillarID].pillarType);
+        updateIntCell(pillarID, "Total files", pillars[pillarID].totalFileCount);
+        updateIntCell(pillarID, "Missing files", pillars[pillarID].missingFilesCount);
+        updateIntCell(pillarID, "Missing checksums", pillars[pillarID].missingChecksumsCount);
+        updateIntCell(pillarID, "Obsolete checksums", pillars[pillarID].obsoleteChecksumsCount);
+        updateIntCell(pillarID, "Inconsistent checksums", pillars[pillarID].checksumErrorCount);
+    }
+
+    function updateStringCell(id, type, cellValue) {
+        var context = getCellContext(id, type);
+        var html = "<p>" + cellValue + "</p>";
+        $("#" + context.element).html(html);
+    }
+
+    function updateIntCell(id, type, cellValue) {
+        var context = getCellContext(id, type);
+        if(cellValue == 0) {
+            var html = "<button class=\"btn btn-link\" disabled>" + formatInt(cellValue) + "</button>";
+            $("#" + context.element).html(html);
+        } else {
+            var innerElement = context.element + "-a";
+            var html = "<a class=\"btn btn-link\" id=\"" + innerElement + "\">" + formatInt(cellValue) + "</a>";
+            $("#" + context.element).html(html);
+            $("#" + innerElement).click(showModalPager(id, context.member, context.title, context.url));
+        }
+    }
+
+    function getIntegrityStatus() {
+        var url = integrityServiceUrl + "/integrity/IntegrityService/getIntegrityStatus/?collectionID="
+            + getCollectionID();
+        $.getJSON(url, {}, function(j){
+            var htmlTable;
+            for (var i = 0; i < j.length; i++) {
+                if(pillars[j[i].pillarID] == null) {
+                    $("#integrity-status-table-body").append(makePillarRow(j[i].pillarID));
+                }
+                pillars[j[i].pillarID] = {
+                    pillarHostname : j[i].pillarHostname,
+                    pillarType : j[i].pillarType,
+                    totalFileCount : j[i].totalFileCount,
+                    missingFilesCount : j[i].missingFilesCount,
+                    missingChecksumsCount : j[i].missingChecksumsCount,
+                    obsoleteChecksumsCount : j[i].obsoleteChecksumsCount,
+                    checksumErrorCount : j[i].checksumErrorCount};
+                updateCells(j[i].pillarID);
+            }
+        });
+    }
+
     function startWorkflow() {
-        let ID = $("#workflowSelector option:selected").val();
-        let url = integrityServiceUrl + '/integrity/IntegrityService/startWorkflow/';
-        $('#formStatus').load(url, {workflowID: ID, collectionID: getCollectionID()}).show().fadeOut({duration: 5000});
+        var ID = $("#workflowSelector option:selected").val();
+        var url = integrityServiceUrl + '/integrity/IntegrityService/startWorkflow/';
+        $('#formStatus').load(url, {workflowID: ID,
+            collectionID: getCollectionID() }).show().fadeOut({duration: 5000});
+
     }
 
     function getCollectionInformation() {
-        let url = integrityServiceUrl + "/integrity/IntegrityService/getCollectionInformation/?collectionID=" + getCollectionID();
-        $.getJSON(url, {}, function (j) {
-            let infoHtml = `<span><b> Latest ingest: ${j.lastIngest} &nbsp; &nbsp; `;
-            infoHtml += ` Size: ${j.collectionSize} &nbsp; &nbsp; `;
-            infoHtml += ` Number of files: ${formatInt(j.numberOfFiles)}</b></span>`;
+        var url = integrityServiceUrl + "/integrity/IntegrityService/getCollectionInformation/?collectionID=" + getCollectionID();
+        $.getJSON(url, {}, function(j) {
+            var infoHtml = "<span><b> Latest ingest: " + j.lastIngest + " &nbsp; &nbsp; ";
+            infoHtml += " Size: " + j.collectionSize + " &nbsp; &nbsp; ";
+            infoHtml += " Number of files: " + formatInt(j.numberOfFiles) + "</b></span>";
 
             $("#collectionInfoDiv").html(infoHtml);
         });
@@ -365,15 +366,15 @@
     }
 
     function initializePage() {
-        $.get('repo/urlservice/integrityService/', {}, function (url) {
+        $.get('repo/urlservice/integrityService/', {}, function(url) {
             integrityServiceUrl = url;
-        }, 'html').done(function () {
-            $.getJSON('repo/reposervice/getCollections/', {}, function (collections) {
+        }, 'html').done(function() {
+            $.getJSON('repo/reposervice/getCollections/', {}, function(collections) {
                 nameMapper = new CollectionNameMapper(collections);
-                let collectionIDs = nameMapper.getCollectionIDs();
-                collectionIDs.forEach(c => {
-                    $("#collectionChooser").append(`<option value="${collectionIDs[c]}">${nameMapper.getName(collectionIDs[c])}</option>`);
-                });
+                var colls = nameMapper.getCollectionIDs();
+                for(i in colls) {
+                    $("#collectionChooser").append('<option value="' + colls[i] + '">' + nameMapper.getName(colls[i]) + '</option>');
+                }
                 collectionChanged();
             });
         });
@@ -382,36 +383,30 @@
     function collectionChanged() {
         clearContent();
         $("#integrityLegend").html("Integrity information for collection " + nameMapper.getName(getCollectionID()));
-        let reportUrl = integrityServiceUrl + "/integrity/IntegrityService/getLatestIntegrityReport/";
+        reportUrl =  integrityServiceUrl + "/integrity/IntegrityService/getLatestIntegrityReport/";
         reportUrl += "?collectionID=" + getCollectionID();
         reportUrl += "&workflowID=" + "CompleteIntegrityCheck";
-        $("#integrityReportGetter").html(`<a class="btn btn-link" href="${reportUrl}" target="_blank">Get latest integrity report</a>`);
+        $("#integrityReportGetter").html("<a class=\"btn btn-link\" href=\"" + reportUrl + "\" target=\"_blank\">Get latest integrity report</a>");
         clearInterval(update_page);
         loadWorkflows();
         getCollectionInformation();
         getWorkflowStatuses();
         getIntegrityStatus();
-        update_page = setInterval(function () {
+        update_page = setInterval(function() {
             getWorkflowStatuses();
             getIntegrityStatus();
             getCollectionInformation();
         }, 2500);
     }
 
-    $(document).ready(function () {
+    $(document).ready(function(){
         // Load page content
         makeMenu("integrity-service.html", "#pageMenu");
         initializePage();
 
         // Setup event / click handling
-        $("#workflowStarter").click(function (event) {
-            event.preventDefault();
-            startWorkflow();
-        });
-        $("#collectionChooser").change(function (event) {
-            event.preventDefault();
-            collectionChanged();
-        });
+        $("#workflowStarter").click(function(event) { event.preventDefault(); startWorkflow(); });
+        $("#collectionChooser").change(function(event) {event.preventDefault(); collectionChanged();});
     });
 
 </script>
