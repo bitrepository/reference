@@ -75,12 +75,12 @@ public class GetFileCmd extends CommandLineClient {
     protected void createOptionsForCmdArgumentHandler() {
         super.createOptionsForCmdArgumentHandler();
 
-        Option pillarOption = new Option(Constants.PILLAR_ARG, Constants.HAS_ARGUMENT, "[OPTIONAL] The id of the " +
-                "pillar where the operation should be performed. If undefined the operation is performed on all pillars.");
+        Option pillarOption = new Option(Constants.PILLAR_ARG, Constants.HAS_ARGUMENT,
+                "[OPTIONAL] " + Constants.PILLAR_DESC);
         pillarOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(pillarOption);
 
-        Option checksumOption = new Option(Constants.LOCATION, Constants.HAS_ARGUMENT,
+        Option checksumOption = new Option(Constants.LOCATION_ARG, Constants.HAS_ARGUMENT,
                 "[OPTIONAL] The location where the file should be placed (either total path or directory). "
                         + "If no argument, then the file is placed in the directory where the script is located.");
         checksumOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
@@ -134,8 +134,8 @@ public class GetFileCmd extends CommandLineClient {
     private void downloadFile() {
         output.debug("Downloading the file.");
         File outputFile;
-        if (cmdHandler.hasOption(Constants.LOCATION)) {
-            File location = new File(cmdHandler.getOptionValue(Constants.LOCATION));
+        if (cmdHandler.hasOption(Constants.LOCATION_ARG)) {
+            File location = new File(cmdHandler.getOptionValue(Constants.LOCATION_ARG));
             if (location.isDirectory()) {
                 outputFile = new File(location, cmdHandler.getOptionValue(Constants.FILE_ID_ARG));
             } else {

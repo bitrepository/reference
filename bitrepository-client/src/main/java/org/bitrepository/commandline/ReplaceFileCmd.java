@@ -34,6 +34,7 @@ import org.bitrepository.modify.replacefile.ReplaceFileClient;
 import java.net.URL;
 
 import static org.bitrepository.commandline.Constants.ARGUMENT_IS_NOT_REQUIRED;
+import static org.bitrepository.commandline.Constants.ARGUMENT_IS_REQUIRED;
 import static org.bitrepository.commandline.Constants.CHECKSUM_ARG;
 import static org.bitrepository.commandline.Constants.DELETE_FILE_ARG;
 import static org.bitrepository.commandline.Constants.EXIT_ARGUMENT_FAILURE;
@@ -84,22 +85,26 @@ public class ReplaceFileCmd extends CommandLineClient {
     protected void createOptionsForCmdArgumentHandler() {
         super.createOptionsForCmdArgumentHandler();
 
-        Option pillarOption = new Option(Constants.PILLAR_ARG, Constants.HAS_ARGUMENT, "[OPTIONAL] The id of the " +
-                "pillar where the operation should be performed. If undefined the operation is performed on all pillars.");
-        pillarOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
+        Option pillarOption = new Option(Constants.PILLAR_ARG, Constants.HAS_ARGUMENT, Constants.PILLAR_DESC);
+        pillarOption.setRequired(Constants.ARGUMENT_IS_REQUIRED);
         cmdHandler.addOption(pillarOption);
 
-        Option checksumOption = new Option(CHECKSUM_ARG, HAS_ARGUMENT, "[OPTIONAL] The checksum of the file to be replaced.");
+        Option checksumOption = new Option(CHECKSUM_ARG, HAS_ARGUMENT,
+                "The checksum of the file to be replaced.");
+        // Setting can allow -C to be non-required, so set it as so.
         checksumOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumOption);
+
         Option fileOption = new Option(FILE_ARG, HAS_ARGUMENT,
                 "The path to the new file for the replacement. Required unless using the URL argument.");
         fileOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(fileOption);
+
         Option urlOption = new Option(URL_ARG, HAS_ARGUMENT,
                 "The URL for the file to be retrieved. Is required, unless the actual file is given.");
         urlOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(urlOption);
+
         Option replaceChecksumOption = new Option(REPLACE_CHECKSUM_ARG, HAS_ARGUMENT,
                 "The checksum for the file to replace with. Required when using the URL argument.");
         replaceChecksumOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
@@ -109,8 +114,10 @@ public class ReplaceFileCmd extends CommandLineClient {
                 "[OPTIONAL] The algorithm of checksum to request in the response from the pillars.");
         checksumTypeOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumTypeOption);
+
         Option checksumSaltOption = new Option(REQUEST_CHECKSUM_SALT_ARG, HAS_ARGUMENT,
-                "[OPTIONAL] The salt of checksum to request in the response. Requires the ChecksumType argument.");
+                "[OPTIONAL] The salt of checksum to request in the response. " +
+                        "Requires the ChecksumType argument.");
         checksumSaltOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumSaltOption);
 

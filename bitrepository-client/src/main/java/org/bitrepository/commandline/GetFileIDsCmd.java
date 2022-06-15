@@ -70,8 +70,8 @@ public class GetFileIDsCmd extends CommandLineClient {
     protected void createOptionsForCmdArgumentHandler() {
         super.createOptionsForCmdArgumentHandler();
 
-        Option pillarOption = new Option(Constants.PILLAR_ARG, Constants.HAS_ARGUMENT, "[OPTIONAL] The id of the " +
-                "pillar where the operation should be performed. If undefined the operation is performed on all pillars.");
+        Option pillarOption = new Option(Constants.PILLAR_ARG, Constants.HAS_ARGUMENT,
+                "[OPTIONAL] " + Constants.PILLAR_DESC);
         pillarOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(pillarOption);
     }
