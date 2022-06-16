@@ -39,16 +39,17 @@ public class WebAlarm {
     private String alarmRaiser;
     private String alarmText;
     private String collectionID;
+    private String fileID;
 
     public WebAlarm() {}
 
     public WebAlarm(Alarm alarm) {
         collectionID = alarm.getCollectionID() == null ? "" : alarm.getCollectionID();
+        fileID = alarm.getFileID() == null ? "" : alarm.getFileID();
         origDateTime = TimeUtils.shortDate(CalendarUtils.convertFromXMLGregorianCalendar(alarm.getOrigDateTime()));
         alarmRaiser = alarm.getAlarmRaiser();
         alarmCode = alarm.getAlarmCode();
         alarmText = alarm.getAlarmText();
-
     }
 
     @XmlElement(name = "origDateTime")
@@ -94,5 +95,14 @@ public class WebAlarm {
 
     public void setCollectionID(String collectionID) {
         this.collectionID = collectionID;
+    }
+
+    @XmlElement(name = "fileID")
+    public String getFileID() {
+        return fileID;
+    }
+
+    public void setFileID(String fileID) {
+        this.fileID = fileID;
     }
 }
