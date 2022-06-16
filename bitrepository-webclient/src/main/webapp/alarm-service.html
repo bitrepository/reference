@@ -104,6 +104,7 @@
                 <th>Date</th>
                 <th>Component</th>
                 <th>Collection</th>
+                <th>FileID</th>
                 <th>Alarm code</th>
                 <th>Description</th>
               </tr>
@@ -122,9 +123,8 @@
   <script src="CollectionNameMapper.js"></script>
 
   <script>
-
     var nameMapper;
-    var auto_getalarms;
+    var auto_get_alarms;
     var alarmServiceUrl;
 
     function clearElement(element) {
@@ -153,12 +153,15 @@
          var htmlTableBody = "";
          if(j != null) {
            for (var i = 0; i < j.length; i++) {
-            htmlTableBody += "<tr><td>" + j[i].origDateTime +
-                             "</td><td>" + j[i].alarmRaiser +
-                             "</td><td>" + nameMapper.getName(j[i].collectionID) +
-                             "</td> <td>" + j[i].alarmCode +
-                             "</td> <td>" + nl2br(j[i].alarmText) +
-                             "</td></tr>";
+            htmlTableBody +=
+              `<tr>
+                <td>${j[i].origDateTime}</td>
+                <td>${j[i].alarmRaiser}</td>
+                <td>${nameMapper.getName(j[i].collectionID)}</td>
+                <td>${j[i].fileID}</td>
+                <td>${j[i].alarmCode}</td>
+                <td>${nl2br(j[i].alarmText)}</td>
+              </tr>`;
           }
         }
         $("#alarms-table-body").html(htmlTableBody);
@@ -176,7 +179,7 @@
             $("#collectionIDFilter").append('<option value="' + colls[i] + '">' + nameMapper.getName(colls[i]) + '</option>');
           }
           updateAlarms();
-          auto_getalarms = setInterval(function() {updateAlarms();}, 2500);
+          auto_get_alarms = setInterval(function() {updateAlarms();}, 2500);
         });  
       });
     }
