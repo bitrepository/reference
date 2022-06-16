@@ -92,7 +92,11 @@ public class Constants {
     /**
      * The argument for the location of the results.
      */
-    public static final String LOCATION = "l";
+    public static final String LOCATION_ARG = "l";
+
+    public static final String PILLAR_DESC =
+            "The id of the pillar where the operation should be performed. " +
+                    "If undefined the operation is performed on all pillars.";
 
     public static final String REQUEST_CHECKSUM_TYPE_DESC =
             "[OPTIONAL] Request the use of a specific checksum algorithm in the response from the pillars. " +
