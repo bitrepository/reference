@@ -66,23 +66,13 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     public static EmbeddedHttpServer server;
     public static HttpServerConfiguration httpServerConfiguration;
     public static MessageBus messageBus;
-
     private MessageReceiverManager receiverManager;
     protected static String alarmDestinationID;
     protected static MessageReceiver alarmReceiver;
-
     protected static SecurityManager securityManager;
-
-    /**
-     * Settings for the Component-Under-Test
-     */
     protected static Settings settingsForCUT;
-    /**
-     * Settings for the Test components
-     */
     protected static Settings settingsForTestClient;
     protected static String collectionID;
-
     protected String NON_DEFAULT_FILE_ID;
     protected static String DEFAULT_FILE_ID;
     protected static URL DEFAULT_FILE_URL;
@@ -98,8 +88,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         settingsForTestClient = loadSettings("TestSuiteInitialiser");
         makeUserSpecificSettings(settingsForCUT);
         makeUserSpecificSettings(settingsForTestClient);
-        httpServerConfiguration = new HttpServerConfiguration(
-                settingsForTestClient.getReferenceSettings().getFileExchangeSettings());
+        httpServerConfiguration = new HttpServerConfiguration(settingsForTestClient.getReferenceSettings().getFileExchangeSettings());
         collectionID = settingsForTestClient.getCollections().get(0).getID();
 
         securityManager = createSecurityManager();
@@ -154,9 +143,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         initializeCUT();
     }
 
-    /**
-     * To be overridden by concrete tests wishing to do stuff. Remember to call super if this is overridden.
-     */
+
     protected void initializeCUT() {}
 
     @AfterMethod(alwaysRun = true)
@@ -171,7 +158,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     }
 
     /**
-     * May be used by by concrete tests for general verification when the test method has finished. Will only be run
+     * May be used by specific tests for general verification when the test method has finished. Will only be run
      * if the test has passed (so far).
      */
     protected void afterMethodVerification() {
@@ -186,7 +173,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     }
 
     /**
-     * May be overridden by concrete tests wishing to do stuff. Remember to call super if this is overridden.
+     * May be overridden by specific tests wishing to do stuff. Remember to call super if this is overridden.
      */
     protected void shutdownCUT() {}
 
@@ -204,18 +191,15 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         makeUserSpecificSettings(settingsForTestClient);
     }
 
-    /**
-     * Can be overloaded by tests needing to load custom settings
-     */
+
     protected Settings loadSettings(String componentID) {
         return TestSettingsProvider.reloadSettings(componentID);
     }
 
     private void makeUserSpecificSettings(Settings settings) {
-        settings.getRepositorySettings().getProtocolSettings().setCollectionDestination(
-                settings.getCollectionDestination() + getTopicPostfix());
-        settings.getRepositorySettings().getProtocolSettings().setAlarmDestination(
-                settings.getAlarmDestination() + getTopicPostfix());
+        settings.getRepositorySettings().getProtocolSettings()
+                .setCollectionDestination(settings.getCollectionDestination() + getTopicPostfix());
+        settings.getRepositorySettings().getProtocolSettings().setAlarmDestination(settings.getAlarmDestination() + getTopicPostfix());
     }
 
     @BeforeTest(alwaysRun = true)
