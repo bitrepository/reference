@@ -34,7 +34,6 @@ import org.bitrepository.modify.replacefile.ReplaceFileClient;
 import java.net.URL;
 
 import static org.bitrepository.commandline.Constants.ARGUMENT_IS_NOT_REQUIRED;
-import static org.bitrepository.commandline.Constants.ARGUMENT_IS_REQUIRED;
 import static org.bitrepository.commandline.Constants.CHECKSUM_ARG;
 import static org.bitrepository.commandline.Constants.DELETE_FILE_ARG;
 import static org.bitrepository.commandline.Constants.EXIT_ARGUMENT_FAILURE;

@@ -112,7 +112,7 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
 
-                ResultingChecksums res = createResultingChecksums((String) invocation.getArguments()[3], "checksum");
+                ResultingChecksums res = createResultingChecksums((String) invocation.getArguments()[3], "abcdef");
                 eventHandler.handleEvent(new ChecksumsCompletePillarEvent(TEST_PILLAR_1, TEST_COLLECTION, res, (ChecksumSpecTYPE) invocation.getArguments()[2], false));
                 eventHandler.handleEvent(new ChecksumsCompletePillarEvent(TEST_PILLAR_2, TEST_COLLECTION, res, (ChecksumSpecTYPE) invocation.getArguments()[2], false));
                 eventHandler.handleEvent(new ChecksumsCompletePillarEvent(TEST_PILLAR_3, TEST_COLLECTION, res, (ChecksumSpecTYPE) invocation.getArguments()[2], false));
@@ -149,7 +149,7 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
 
-                ResultingChecksums res = createResultingChecksums((String) invocation.getArguments()[3], "checksum");
+                ResultingChecksums res = createResultingChecksums((String) invocation.getArguments()[3], "abcdef");
                 ContributorEvent e1 = new ChecksumsCompletePillarEvent(TEST_PILLAR_1, TEST_COLLECTION, res, (ChecksumSpecTYPE) invocation.getArguments()[2], false);
                 ContributorEvent e2 = new ChecksumsCompletePillarEvent(TEST_PILLAR_2, TEST_COLLECTION, res, (ChecksumSpecTYPE) invocation.getArguments()[2], false);
                 ContributorEvent e3 = new ContributorFailedEvent(TEST_PILLAR_3, TEST_COLLECTION, ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
