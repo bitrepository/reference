@@ -21,9 +21,7 @@
  */
 package org.bitrepository.common.utils;
 
-import org.bitrepository.common.ArgumentValidator;
-
-import java.nio.charset.StandardCharsets;
+import javax.xml.bind.DatatypeConverter;
 
 /**
  * Utility class for handling encoding and decoding of base16 bytes.
@@ -42,16 +40,7 @@ public class Base16Utils {
         if (data == null) {
             return null;
         }
-
-        StringBuilder sb = new StringBuilder(data.length * 2);
-        for (byte datum : data) {
-            int v = datum & 0xff;
-            if (v < 16) {
-                sb.append('0');
-            }
-            sb.append(Integer.toHexString(v));
-        }
-        return sb.toString();
+        return DatatypeConverter.printHexBinary(data);
     }
 
     /**
@@ -61,16 +50,7 @@ public class Base16Utils {
      * @return The string encoded to base16.
      */
     public static byte[] encodeBase16(String hexString) {
-        ArgumentValidator.checkNotNullOrEmpty(hexString, "String hexString");
-        ArgumentValidator.checkTrue((hexString.length() % 2) == 0, "String hexString, '" + hexString
-                + "', must be an even number of characters.");
-
-        int len = hexString.length();
-        byte[] data = new byte[len / 2];
-        for (int i = 0; i < len; i += 2) {
-            data[i / 2] = (byte) ((Character.digit(hexString.charAt(i), 16) << 4)
-                    + Character.digit(hexString.charAt(i + 1), 16));
-        }
-        return data;
+        // TODO Java 17 has HexFormat.of().parseHex(s) - consider using instead
+        return DatatypeConverter.parseHexBinary(hexString);
     }
 }
