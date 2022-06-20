@@ -61,7 +61,7 @@ CREATE INDEX fileindex ON file ( fileid, collectionid );
 --*************************************************************************--
 CREATE TABLE actor (
     actor_guid SERIAL PRIMARY KEY,  -- The guid for the actor.
-    actor_name VARCHAR(255)         -- The name of the actor.
+    actor_name VARCHAR(255) UNIQUE  -- The name of the actor.
 );
 
 CREATE INDEX actorindex ON actor ( actor_name );
