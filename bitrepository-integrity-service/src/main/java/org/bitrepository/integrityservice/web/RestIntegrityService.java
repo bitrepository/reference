@@ -41,6 +41,7 @@ import org.bitrepository.service.workflow.JobID;
 import org.bitrepository.service.workflow.Workflow;
 import org.bitrepository.service.workflow.WorkflowManager;
 import org.bitrepository.service.workflow.WorkflowStatistic;
+import org.bitrepository.settings.referencesettings.PillarType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -246,8 +247,8 @@ public class RestIntegrityService {
         for (String pillar : pillars) {
             if (!stats.containsKey(pillar)) {
                 String pillarHostname = Objects.requireNonNullElse(SettingsUtils.getHostname(pillar), "N/A");
-                String pillarType = (SettingsUtils.getPillarType(pillar) != null) ?
-                        Objects.requireNonNull(SettingsUtils.getPillarType(pillar)).value() : "Unknown";
+                PillarType pillarTypeObject = SettingsUtils.getPillarType(pillar);
+                String pillarType = pillarTypeObject != null ? pillarTypeObject.value() : null;
                 PillarCollectionStat emptyStat = new PillarCollectionStat(pillar, collectionID, pillarHostname, pillarType,
                         0L, 0L, 0L, 0L, 0L, 0L, new Date(0), new Date(0));
                 stats.put(pillar, emptyStat);

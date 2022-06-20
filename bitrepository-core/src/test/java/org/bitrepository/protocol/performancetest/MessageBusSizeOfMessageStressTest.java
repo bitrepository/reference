@@ -55,13 +55,7 @@ import java.util.Date;
  * Currently, the buffer text is 100 bytes, and it is repeated 100 times, thus generating a message of size 10 kB.
  */
 public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
-    /**
-     * The name of the queue to send the messages.
-     */
     private static String QUEUE = "TEST-QUEUE";
-    /**
-     * The timeframe for the test.
-     */
     private final long TIME_FRAME = 60000L;
     private Settings settings;
 
@@ -71,8 +65,8 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
     }
 
     /**
-     * Tests the amount of messages send over a message bus, which is not placed locally.
-     * Requires to send at least five per second.
+     * Tests the amount of messages sent over a message bus, which is not placed locally.
+     * Requires sending at least five per second.
      */
     /* @Test( groups = {"StressTest"} ) */
     public void SendLargeMessagesDistributed() throws Exception {
@@ -112,7 +106,7 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
     }
 
     /**
-     * Tests the amount of messages send through a local messagebus.
+     * Tests the amount of messages sent through a local messagebus.
      * It should be at least 20 per second.
      */
     @Test(groups = {"StressTest"})
@@ -184,21 +178,15 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
 
     /**
      * Message-listener which only resends the messages it receives.
-     * It does not reply, it sent to the same destination, thus receiving it again.
+     * It does not reply, it sends to the same destination, thus receiving it again.
      * It keeps track of the amount of messages received.
      */
     private class ResendMessageListener implements MessageListener {
-        /**
-         * The message bus.
-         */
         private final MessageBus bus;
-        /**
-         * The amount of messages received.
-         */
         private int count;
 
         public ResendMessageListener() {
-            /* The mocked SecurityManager */
+            /* Mocked SecurityManager */
             SecurityManager securityManager = new DummySecurityManager();
             this.bus = new ActiveMQMessageBus(settings, securityManager);
             this.count = 0;
@@ -207,7 +195,7 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
         }
 
         /**
-         * Method for stopping interaction with the messagelistener.
+         * Method for stopping interaction with the message-listener.
          */
         public void stop() {
             bus.removeListener(QUEUE, this);

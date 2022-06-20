@@ -28,7 +28,6 @@ import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class SettingsLoaderTest extends ExtendedTestCase {
@@ -41,7 +40,7 @@ public class SettingsLoaderTest extends ExtendedTestCase {
                 new SettingsProvider(new XMLFileSettingsLoader(PATH_TO_SETTINGS), getClass().getSimpleName());
 
         Settings settings = settingsLoader.getSettings();
-        List<String> expectedPillarIDs = Arrays.asList("Pillar1", "Pillar2");
+        List<String> expectedPillarIDs = List.of("Pillar1", "Pillar2");
         Assert.assertEquals(
                 settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID(),
                 expectedPillarIDs);

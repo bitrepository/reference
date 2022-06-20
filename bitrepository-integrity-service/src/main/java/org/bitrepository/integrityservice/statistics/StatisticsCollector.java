@@ -24,6 +24,7 @@ package org.bitrepository.integrityservice.statistics;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.cache.CollectionStat;
 import org.bitrepository.integrityservice.cache.PillarCollectionStat;
+import org.bitrepository.settings.referencesettings.PillarType;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +32,6 @@ import java.util.Map;
 import java.util.Objects;
 
 public class StatisticsCollector {
-
     final CollectionStat collectionStat;
     final Map<String, PillarCollectionStat> pillarCollectionStats;
 
@@ -41,7 +41,8 @@ public class StatisticsCollector {
         List<String> pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
         for (String pillar : pillars) {
             String pillarHostname = Objects.requireNonNullElse(SettingsUtils.getHostname(pillar), "N/A");
-            String pillarType = (SettingsUtils.getPillarType(pillar) != null) ? Objects.requireNonNull(SettingsUtils.getPillarType(pillar)).value() : "Unknown";
+            PillarType pillarTypeObject = SettingsUtils.getPillarType(pillar);
+            String pillarType = (pillarTypeObject != null) ? pillarTypeObject.value() : "Unknown";
             PillarCollectionStat ps = new PillarCollectionStat(pillar, collectionID, pillarHostname, pillarType);
             pillarCollectionStats.put(pillar, ps);
         }
