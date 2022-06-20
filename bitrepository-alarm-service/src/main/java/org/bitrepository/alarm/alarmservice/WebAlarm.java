@@ -41,8 +41,6 @@ public class WebAlarm {
     private String collectionID;
     private String fileID;
 
-    public WebAlarm() {}
-
     public WebAlarm(Alarm alarm) {
         collectionID = alarm.getCollectionID() == null ? "" : alarm.getCollectionID();
         fileID = alarm.getFileID() == null ? "" : alarm.getFileID();
