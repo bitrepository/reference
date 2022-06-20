@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -48,12 +48,12 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-public class SecurityManagerTest extends ExtendedTestCase  {
+public class SecurityManagerTest extends ExtendedTestCase {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private org.bitrepository.protocol.security.SecurityManager securityManager;
     private PermissionStore permissionStore;
     private Settings settings;
-    
+
     @BeforeMethod(alwaysRun = true)
     public void setUp() throws Exception {
         settings = TestSettingsProvider.reloadSettings(getClass().getSimpleName());
@@ -62,67 +62,66 @@ public class SecurityManagerTest extends ExtendedTestCase  {
         settings.getRepositorySettings().setPermissionSet(SecurityTestConstants.getDefaultPermissions());
         setupSecurityManager(settings);
     }
-    
+
     private void setupSecurityManager(Settings settings) {
         permissionStore = new PermissionStore();
         MessageAuthenticator authenticator = new BasicMessageAuthenticator(permissionStore);
         OperationAuthorizer authorizer = new BasicOperationAuthorizer(permissionStore);
         MessageSigner messageSigner = new BasicMessageSigner();
         securityManager = new BasicSecurityManager(settings.getRepositorySettings(),
-                SecurityTestConstants.getKeyFile(), 
-                authenticator, 
-                messageSigner, 
-                authorizer, 
+                SecurityTestConstants.getKeyFile(),
+                authenticator,
+                messageSigner,
+                authorizer,
                 permissionStore,
                 SecurityTestConstants.getComponentID());
     }
-    
+
     @Test(groups = {"regressiontest"})
     public void operationAuthorizationBehaviourTest() throws Exception {
         addDescription("Tests that a signature only allows the correct requests.");
-        
-        List<Collection> collections = settings.getRepositorySettings().getCollections().getCollection(); 
-        Assert.assertEquals(collections.size(), 2, 
+
+        List<Collection> collections = settings.getRepositorySettings().getCollections().getCollection();
+        Assert.assertEquals(collections.size(), 2,
                 "There should be two collections present to test the collection limited authorization");
         settings.getRepositorySettings().setPermissionSet(getCollectionLimitedPermissionSet());
         setupSecurityManager(settings);
-        
+
         String collectionID1 = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
         String collectionID2 = settings.getRepositorySettings().getCollections().getCollection().get(1).getID();
-        
+
         addStep("Check that PUT_FILE is allowed for both collections.", "PUT_FILE is allowed.");
         try {
-            securityManager.authorizeOperation(PutFileRequest.class.getSimpleName(), 
+            securityManager.authorizeOperation(PutFileRequest.class.getSimpleName(),
                     SecurityTestConstants.getTestData(), SecurityTestConstants.getSignature(), collectionID1);
         } catch (OperationAuthorizationException e) {
             Assert.fail(e.getMessage());
         }
         try {
-            securityManager.authorizeOperation(PutFileRequest.class.getSimpleName(), 
+            securityManager.authorizeOperation(PutFileRequest.class.getSimpleName(),
                     SecurityTestConstants.getTestData(), SecurityTestConstants.getSignature(), collectionID2);
         } catch (OperationAuthorizationException e) {
             Assert.fail(e.getMessage());
         }
-        
-        addStep("Check that GET_FILE is only allowed for the first collection.", 
+
+        addStep("Check that GET_FILE is only allowed for the first collection.",
                 "GET_FILE is allowed for first collection, and disallowed for the second collection (exception thrown).");
-        
-        
+
+
         try {
-            securityManager.authorizeOperation(GetFileRequest.class.getSimpleName(), 
+            securityManager.authorizeOperation(GetFileRequest.class.getSimpleName(),
                     SecurityTestConstants.getTestData(), SecurityTestConstants.getSignature(), collectionID1);
         } catch (OperationAuthorizationException e) {
             Assert.fail(e.getMessage());
         }
-               
+
         try {
-            securityManager.authorizeOperation(GetFileRequest.class.getSimpleName(), 
+            securityManager.authorizeOperation(GetFileRequest.class.getSimpleName(),
                     SecurityTestConstants.getTestData(), SecurityTestConstants.getSignature(), collectionID2);
             Assert.fail("SecurityManager did not throw the expected OperationAuthorizationException");
-        } catch (OperationAuthorizationException e) {
-            
-        }  
-    }        
+        } catch (OperationAuthorizationException ignored) {
+        }
+    }
 
     @Test(groups = {"regressiontest"})
     public void certificateAuthorizationBehaviourTest() throws Exception {
@@ -132,7 +131,7 @@ public class SecurityManagerTest extends ExtendedTestCase  {
         permissionStore.loadPermissions(getSigningCertPermission(), SecurityTestConstants.getComponentID());
 
         try {
-            securityManager.authorizeCertificateUse(SecurityTestConstants.getAllowedCertificateUser(), 
+            securityManager.authorizeCertificateUse(SecurityTestConstants.getAllowedCertificateUser(),
                     SecurityTestConstants.getTestData(), SecurityTestConstants.getSignature());
         } catch (CertificateUseException e) {
             Assert.fail(e.getMessage());
@@ -140,19 +139,18 @@ public class SecurityManagerTest extends ExtendedTestCase  {
         Assert.assertNotNull(getSigningCertPermission().getPermission().get(0).getCertificate().getAllowedCertificateUsers());
         addStep("Check that an unregistered component is not allowed.", "The unregistered component is not allowed.");
         try {
-            securityManager.authorizeCertificateUse(SecurityTestConstants.getDisallowedCertificateUser(), 
+            securityManager.authorizeCertificateUse(SecurityTestConstants.getDisallowedCertificateUser(),
                     SecurityTestConstants.getTestData(), SecurityTestConstants.getSignature());
             Assert.fail("SecurityManager did not throw the expected CertificateUseException");
-        } catch (CertificateUseException e) {
-            
-        }  
-    }        
+        } catch (CertificateUseException ignored) {
+        }
+    }
 
-    
+
     @Test(groups = {"regressiontest"})
     public void positiveSigningAuthenticationRoundtripTest() throws Exception {
-        addDescription("Tests that a roundtrip of signing a request and afterwards authenticating is succedes.");
-        addStep("Sign a chunck of data.", "Data is signed succesfully");
+        addDescription("Tests that a roundtrip of signing a request and afterwards authenticating is succeeds.");
+        addStep("Sign a chunk of data.", "Data is signed successfully");
         String signature = null;
         try {
             signature = securityManager.signMessage(SecurityTestConstants.getTestData());
@@ -160,22 +158,23 @@ public class SecurityManagerTest extends ExtendedTestCase  {
             Assert.fail("Failed signing test data!", e);
         }
         permissionStore.loadPermissions(getSigningCertPermission(), SecurityTestConstants.getComponentID());
-        
-        String signatureString = new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)), StandardCharsets.UTF_8);
+
+        String signatureString = new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)),
+                StandardCharsets.UTF_8);
         log.info("Signature for testdata is: " + signatureString);
-        
+
         addStep("Check signature matches the data ", "Signature and data matches");
         try {
             securityManager.authenticateMessage(SecurityTestConstants.getTestData(), signature);
         } catch (MessageAuthenticationException e) {
-           Assert.fail("Failed authenticating test data!", e);
-        }  
+            Assert.fail("Failed authenticating test data!", e);
+        }
     }
-        
+
     @Test(groups = {"regressiontest"})
     public void negativeSigningAuthenticationRoundtripUnkonwnCertificateTest() throws Exception {
         addDescription("Tests that a roundtrip of signing a request and afterwards authenticating it fails due to " +
-        		"a unknown certificate.");
+                "a unknown certificate.");
         addStep("Sign a chunck of data.", "Data is signed succesfully");
         String signature = null;
         try {
@@ -183,24 +182,25 @@ public class SecurityManagerTest extends ExtendedTestCase  {
         } catch (MessageSigningException e) {
             Assert.fail("Failed signing test data!", e);
         }
-        String signatureString = new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)), StandardCharsets.UTF_8);
+        String signatureString = new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)),
+                StandardCharsets.UTF_8);
         log.info("Signature for testdata is: " + signatureString);
-        
+
         addStep("Check signature matches the data", "Signature cant be matched as certificate is unknown.");
         try {
             securityManager.authenticateMessage(SecurityTestConstants.getTestData(), signature);//signatureString);
             Assert.fail("Authentication did not fail as expected");
         } catch (MessageAuthenticationException e) {
             log.info(e.getMessage());
-        }  
-    }   
-    
+        }
+    }
+
     @Test(groups = {"regressiontest"})
     public void negativeSigningAuthenticationRoundtripBadDataTest() throws Exception {
         addDescription("Tests that a roundtrip of signing a request and afterwards authenticating it fails " +
-        		"due to bad data");
-        addDescription("Tests that a roundtrip of signing a request and afterwards authenticating is succedes.");
-        addStep("Sign a chunck of data.", "Data is signed succesfully");
+                "due to bad data");
+        addDescription("Tests that a roundtrip of signing a request and afterwards authenticating is succeeds.");
+        addStep("Sign a chunk of data.", "Data is signed successfully");
         String signature = null;
         try {
             signature = securityManager.signMessage(SecurityTestConstants.getTestData());
@@ -208,10 +208,11 @@ public class SecurityManagerTest extends ExtendedTestCase  {
             Assert.fail("Failed signing test data!", e);
         }
         permissionStore.loadPermissions(getSigningCertPermission(), SecurityTestConstants.getComponentID());
-        
-        String signatureString = new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)), StandardCharsets.UTF_8);
+
+        String signatureString = new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)),
+                StandardCharsets.UTF_8);
         log.info("Signature for testdata is: " + signatureString);
-        
+
         addStep("Check signature matches the data ", "Signature and data matches does not match");
         String corruptData = SecurityTestConstants.getTestData() + "foobar";
         try {
@@ -219,48 +220,48 @@ public class SecurityManagerTest extends ExtendedTestCase  {
             Assert.fail("Authentication did not fail as expected!");
         } catch (MessageAuthenticationException e) {
             log.info(e.getMessage());
-        }  
+        }
     }
 
     private PermissionSet getCollectionLimitedPermissionSet() throws UnsupportedEncodingException {
         PermissionSet permissions = new PermissionSet();
         Permission signingCertPerm = new Permission();
-        
+
         Certificate signingCert = new Certificate();
         signingCert.setCertificateData(SecurityTestConstants.getPositiveCertificate()
                 .getBytes(SecurityModuleConstants.defaultEncodingType));
-        
+
         signingCertPerm.setCertificate(signingCert);
         OperationPermission opPerm1 = new OperationPermission();
         opPerm1.setOperation(Operation.PUT_FILE);
         signingCertPerm.getOperationPermission().add(opPerm1);
-        
+
         OperationPermission opPerm2 = new OperationPermission();
         opPerm2.setOperation(Operation.GET_FILE);
         opPerm2.getCollections().add(settings.getCollections().get(0).getID());
-        signingCertPerm.getOperationPermission().add(opPerm2);   
-        
-        permissions.getPermission().add(signingCertPerm); 
+        signingCertPerm.getOperationPermission().add(opPerm2);
+
+        permissions.getPermission().add(signingCertPerm);
         return permissions;
     }
 
-    
+
     private PermissionSet getSigningCertPermission() throws UnsupportedEncodingException {
         PermissionSet permissions = new PermissionSet();
         ComponentIDs allowedUsers = new ComponentIDs();
         allowedUsers.getIDs().add(SecurityTestConstants.getAllowedCertificateUser());
         Permission signingCertPerm = new Permission();
-        
+
         Certificate signingCert = new Certificate();
         signingCert.setCertificateData(SecurityTestConstants.getSigningCertificate()
                 .getBytes(SecurityModuleConstants.defaultEncodingType));
         signingCert.setAllowedCertificateUsers(allowedUsers);
-        
+
         signingCertPerm.setCertificate(signingCert);
         OperationPermission opPerm = new OperationPermission();
         opPerm.setOperation(Operation.ALL);
-        signingCertPerm.getOperationPermission().add(opPerm);   
-        permissions.getPermission().add(signingCertPerm); 
+        signingCertPerm.getOperationPermission().add(opPerm);
+        permissions.getPermission().add(signingCertPerm);
         return permissions;
     }
 }

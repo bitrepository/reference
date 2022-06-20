@@ -5,3 +5,5 @@
 /activemq-data
 /test-output
 /bin
+statistic-*
+
