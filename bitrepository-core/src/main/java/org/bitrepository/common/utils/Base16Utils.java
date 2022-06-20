@@ -21,10 +21,9 @@
  */
 package org.bitrepository.common.utils;
 
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.bitrepository.common.ArgumentValidator;
-
-import javax.xml.bind.DatatypeConverter;
-import java.util.Locale;
 
 /**
  * Utility class for handling encoding and decoding of base16 bytes.
@@ -43,11 +42,11 @@ public class Base16Utils {
         if (data == null) {
             return null;
         }
-        return DatatypeConverter.printHexBinary(data).toLowerCase(Locale.ROOT);
+        return Hex.encodeHexString(data);
     }
 
     /**
-     * Encoding a hex string to base16.
+     * Encodes a hex string to a set of base16 bytes.
      *
      * @param hexString The string to encode to base16.
      * @return The string encoded to base16.
@@ -55,6 +54,10 @@ public class Base16Utils {
     public static byte[] encodeBase16(String hexString) {
         ArgumentValidator.checkNotNullOrEmpty(hexString, "String hexString");
         // TODO Java 17 has HexFormat.of().parseHex(s) - consider using instead
-        return DatatypeConverter.parseHexBinary(hexString);
+        try {
+            return Hex.decodeHex(hexString);
+        } catch (DecoderException e) {
+            throw new IllegalArgumentException("Bad hex-string '" + hexString + "': " + e.getMessage());
+        }
     }
 }
