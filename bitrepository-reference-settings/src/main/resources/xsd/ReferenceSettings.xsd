@@ -21,7 +21,7 @@
   #L%
   -->
 <xs:schema targetNamespace="http://bitrepository.org/settings/ReferenceSettings.xsd"
-           attributeFormDefault="unqualified" elementFormDefault="qualified"
+           elementFormDefault="qualified"
            xmlns="http://bitrepository.org/settings/ReferenceSettings.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema"
 >
 
@@ -36,7 +36,6 @@
         <xs:element ref="GeneralSettings" minOccurs="0"/>
         <xs:element ref="ClientSettings" minOccurs="0"/>
         <xs:element ref="PillarSettings" minOccurs="0"/>
-        <xs:element ref="PillarIntegrityDetails" minOccurs="0" />
         <xs:element ref="DeleteFileSettings" minOccurs="0"/>
         <xs:element ref="GetAuditTrailSettings" minOccurs="0"/>
         <xs:element ref="GetChecksumsSettings" minOccurs="0"/>
@@ -339,7 +338,7 @@
             <xs:sequence>
               <xs:element name="PillarID" type="xs:string"/>
               <xs:element name="PillarHostname" type="xs:string"/>
-              <xs:element ref="PillarType" />
+              <xs:element ref="PillarType"/>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
@@ -783,11 +782,18 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="IntegrityReportsDir" type="xs:string" minOccurs="1" maxOccurs="1">
+        <xs:element name="IntegrityReportsDir" type="xs:string">
           <xs:annotation xml:lang="en">
             <xs:documentation>
               The directory where to write and store integrity reports. Directory must exists, and be read- and writable
               E.g. /home/webservices/var/integrity-reports/
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element ref="PillarIntegrityDetails" minOccurs="0">
+          <xs:annotation xml:lang="en">
+            <xs:documentation>
+              The Integrity details of all the pillars. This includes the Pillar hostnames and Pillar types.
             </xs:documentation>
           </xs:annotation>
         </xs:element>

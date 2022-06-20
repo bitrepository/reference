@@ -51,7 +51,6 @@
       <DatabaseURL>jdbc:derby:target/test/referencepillar/checksumdb</DatabaseURL>
     </ChecksumDatabase>
   </PillarSettings>
-  <PillarIntegrityDetails></PillarIntegrityDetails>
   <DeleteFileSettings></DeleteFileSettings>
   <GetAuditTrailSettings></GetAuditTrailSettings>
   <GetChecksumsSettings></GetChecksumsSettings>
@@ -98,6 +97,7 @@
       <DatabaseURL>jdbc:derby:target/test/integrityservice/auditcontributerdb</DatabaseURL>
     </AuditTrailContributerDatabase>
     <IntegrityReportsDir>target/</IntegrityReportsDir>
+    <PillarIntegrityDetails></PillarIntegrityDetails>
   </IntegrityServiceSettings>
   <MonitoringServiceSettings>
     <ID>monitoring-service</ID>

@@ -107,7 +107,7 @@ public class SettingsUtils {
      * @return Returns the hostname for the given pillar ID.
      */
     public static String getHostname(String pillarID) {
-        PillarIntegrityDetails details = settings.getReferenceSettings().getPillarIntegrityDetails();
+        PillarIntegrityDetails details = settings.getReferenceSettings().getIntegrityServiceSettings().getPillarIntegrityDetails();
         if (details != null) {
             for (PillarIntegrityDetails.PillarDetails d : details.getPillarDetails()) {
                 if (d.getPillarID().equals(pillarID)) {
@@ -125,7 +125,7 @@ public class SettingsUtils {
      * @return Returns the {@link PillarType} for the given pillar ID.
      */
     public static PillarType getPillarType(String pillarID) {
-        PillarIntegrityDetails details = settings.getReferenceSettings().getPillarIntegrityDetails();
+        PillarIntegrityDetails details = settings.getReferenceSettings().getIntegrityServiceSettings().getPillarIntegrityDetails();
         if (details != null) {
             for (PillarIntegrityDetails.PillarDetails d : details.getPillarDetails()) {
                 if (d.getPillarID().equals(pillarID)) {
