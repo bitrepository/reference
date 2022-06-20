@@ -1,23 +1,23 @@
 /*
  * #%L
  * Bitmagasin integrationstest
- * 
+ *
  * $Id$
  * $HeadURL$
  * %%
  * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -46,22 +46,18 @@ import org.testng.annotations.Test;
 import java.util.Date;
 
 /**
- * Stress testing of the messagebus. 
+ * Stress testing of the messagebus.
  */
 public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
-    /** The time to wait when sending a message before it definitely should 
+    /** The time to wait when sending a message before it definitely should
      * have been consumed by a listener.*/
     static final int TIME_FOR_MESSAGE_TRANSFER_WAIT = 500;
     /** The name of the queue to send the messages.*/
     private static String QUEUE = "TEST-QUEUE";
     /** The number of messages to send.*/
-    private static int NUMBER_OF_MESSAGES = 1000;
-    /** The number of threads to send the messages. */
-    private static int NUMBER_OF_SENDERS = 10;
-
+    private static final int NUMBER_OF_MESSAGES = 1000;
     /** The date for start sending the messages.*/
     private static Date startSending;
-
     private Settings settings;
 
     @BeforeMethod
@@ -69,12 +65,11 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
         settings = TestSettingsProvider.getSettings(getClass().getSimpleName());
     }
     /**
-     * Tests the amount of messages send over a message bus, which is not placed locally.
-     * Requires to send at least five per second.
-     * @throws Exception 
+     * Tests the amount of messages sent over a message bus, which is not placed locally.
+     * Require sending at least five per second.
      */
-    //	@Test( groups = {"StressTest"} )
-    public void SendManyMessagesDistributed() throws Exception {
+    /* @Test( groups = {"StressTest"} ) */
+    public void SendManyMessagesDistributed() {
         addDescription("Tests how fast a given number of messages can be handled.");
         addStep("Define constants", "This should not be possible to fail.");
         QUEUE += "-" + (new Date()).getTime();
@@ -85,27 +80,26 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
         CountMessagesListener listener = null;
 
         try {
-            addStep("Initialise the messagelistener", "Should be allowed.");
-            listener = new CountMessagesListener(conf, securityManager);
+            addStep("Initialise the message-listener", "Should be allowed.");
+            listener = new CountMessagesListener(securityManager);
 
             startSending = new Date();
             addStep("Start sending at '" + startSending + "'", "Should just be waiting.");
             sendAllTheMessages(conf, securityManager);
 
-            addStep("Sleept untill the listerner has received all the messages.", "Should be sleeping.");
+            addStep("Sleep until the listeners have received all the messages.", "Should be sleeping.");
             while(!listener.isFinished()) {
                 synchronized (this) {
                     try {
                         wait(TIME_FOR_MESSAGE_TRANSFER_WAIT);
                     } catch (InterruptedException e) {
-                        // expected
-//                        e.printStackTrace();
+                        /* e.printStackTrace(); */
                     }
                 }
             }
 
             Date endDate = listener.getStopSending();
-            addStep("Validating the count. Started at '" + startSending + "' and ended at '" 
+            addStep("Validating the count. Started at '" + startSending + "' and ended at '"
                     + endDate + "'", "Should not be wrong.");
 
             int count = listener.getCount();
@@ -114,15 +108,13 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
         } finally {
             if(listener != null) {
                 listener.stop();
-                listener = null;
             }
         }
     }
 
     /**
-     * Tests the amount of messages send through a local messagebus. 
-     * It should be at least 20 per second. 
-     * @throws Exception
+     * Tests the amount of messages sent through a local messagebus.
+     * It should be at least 20 per second.
      */
     @Test( groups = {"StressTest"} )
     public void SendManyMessagesLocally() throws Exception {
@@ -143,14 +135,14 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
             addStep("Starting the broker.", "Should be allowed");
             broker.start();
 
-            addStep("Initialise the messagelistener", "Should be allowed.");
-            listener = new CountMessagesListener(conf, securityManager);
+            addStep("Initialise the message-listener", "Should be allowed.");
+            listener = new CountMessagesListener(securityManager);
 
             startSending = new Date();
             addStep("Start sending at '" + startSending + "'", "Should just be waiting.");
             sendAllTheMessages(conf, securityManager);
 
-            addStep("Sleep untill the listerner has received all the messages.", "Should be sleeping.");
+            addStep("Sleep until the listeners has received all the messages.", "Should be sleeping.");
             long startTime = new Date().getTime();
             long oneMinuteInMillis = 60000;
             while(!listener.isFinished() && (new Date().getTime() - startTime) < oneMinuteInMillis) {
@@ -163,7 +155,7 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
                 }
             }
 
-            addStep("Validating the count. Started at '" + startSending + "' and ended at '" 
+            addStep("Validating the count. Started at '" + startSending + "' and ended at '"
                     + listener.getStopSending() + "'", "Should not be wrong.");
             int count = listener.getCount();
             long timeFrame = (listener.getStopSending().getTime() - startSending.getTime())/1000;
@@ -171,21 +163,18 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
         } finally {
             if(listener != null) {
                 listener.stop();
-                listener = null;
             }
-            if(broker != null) {
-                broker.stop();
-                broker = null;
-            }
+            broker.stop();
         }
     }
 
     /**
      * Sends the wanted amount of messages.
      * @param conf The configuration for the messagebus, where the messages should be sent.
-     * @throws Exception
      */
-    private void sendAllTheMessages(MessageBusConfiguration conf, SecurityManager securityManager) throws Exception {
+    private void sendAllTheMessages(MessageBusConfiguration conf, SecurityManager securityManager) {
+        /* The number of threads to send the messages. */
+        int NUMBER_OF_SENDERS = 10;
         for(int i = 0; i < NUMBER_OF_SENDERS; i++) {
             Thread t = new MessageSenderThread(conf, securityManager, NUMBER_OF_MESSAGES / NUMBER_OF_SENDERS, "#" + i);
             t.start();
@@ -220,25 +209,19 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
     }
 
     /**
-     * Messagelistener which only resends the messages it receive.
-     * It does not reply, it send to the same destination, thus receiving it again.
+     * Message-listener which only resends the messages it receives.
+     * It does not reply, it sent to the same destination, thus receiving it again.
      * It keeps track of the amount of messages received.
      */
     private class CountMessagesListener implements MessageListener {
-        /** The message bus.*/
         private final MessageBus bus;
-        /** The amount of messages received.*/
         private int count;
 
         private boolean awaitingMore = true;
 
         private Date stopSending;
 
-        /**
-         * Constructor.
-         * @param conf The configurations for declaring the messagebus.
-         */
-        public CountMessagesListener(MessageBusConfiguration conf, SecurityManager securityManager) {
+        public CountMessagesListener(SecurityManager securityManager) {
             this.bus = new ActiveMQMessageBus(settings, securityManager);
             this.count = 0;
 
@@ -246,7 +229,7 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
         }
 
         /**
-         * Method for stopping interaction with the messagelistener.
+         * Method for stopping interaction with the message-listener.
          */
         public void stop() {
             bus.removeListener(QUEUE, this);
@@ -267,7 +250,6 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
                 stopSending = new Date();
                 awaitingMore = false;
             }
-
         }
 
         public Date getStopSending() {

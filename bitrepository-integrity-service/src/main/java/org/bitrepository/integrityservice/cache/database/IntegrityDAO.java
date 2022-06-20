@@ -25,6 +25,7 @@ import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.cache.CollectionStat;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.PillarCollectionMetric;
@@ -45,6 +46,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -345,11 +347,7 @@ public abstract class IntegrityDAO {
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
         ArgumentValidator.checkNotNullOrEmpty(pillarID, "String pillarID");
         long first;
-        if (firstIndex == null) {
-            first = 0;
-        } else {
-            first = firstIndex;
-        }
+        first = Objects.requireNonNullElse(firstIndex, 0L);
         String getAllFileIDsSql = getAllFileIDsSql();
         return makeIntegrityIssueIterator(getAllFileIDsSql, collectionID, pillarID, first, maxResults);
     }
@@ -448,11 +446,11 @@ public abstract class IntegrityDAO {
              PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, selectSql, collectionID);
              ResultSet dbResult = ps.executeQuery()) {
             while (dbResult.next()) {
-                String pillarid = dbResult.getString("pillarID");
+                String pillarID = dbResult.getString("pillarID");
                 Long fileCount = dbResult.getLong("filecount");
                 Long fileSize = dbResult.getLong("sizesum");
                 PillarCollectionMetric metric = new PillarCollectionMetric(fileSize, fileCount);
-                metrics.put(pillarid, metric);
+                metrics.put(pillarID, metric);
             }
         } catch (SQLException e) {
             throw new IllegalStateException(
@@ -519,10 +517,11 @@ public abstract class IntegrityDAO {
                     Long obsoleteChecksums = dbResult.getLong("obsolete_checksums_count");
                     Date statsTime = null;
                     Date updateTime = null;
-
-
-                    PillarCollectionStat p = new PillarCollectionStat(pillarID, collectionID, fileCount, dataSize, missingFiles,
-                            checksumErrors, missingChecksums, obsoleteChecksums, statsTime, updateTime);
+                    String pillarHostname = Objects.requireNonNullElse(SettingsUtils.getHostname(pillarID), "N/A");
+                    String pillarType = (SettingsUtils.getPillarType(pillarID) != null) ?
+                            Objects.requireNonNull(SettingsUtils.getPillarType(pillarID)).value() : "Unknown";
+                    PillarCollectionStat p = new PillarCollectionStat(pillarID, collectionID, pillarHostname, pillarType, fileCount,
+                            dataSize, missingFiles, checksumErrors, missingChecksums, obsoleteChecksums, statsTime, updateTime);
                     stats.add(p);
                 }
             }

@@ -97,6 +97,7 @@
       <DatabaseURL>jdbc:derby:target/test/integrityservice/auditcontributerdb</DatabaseURL>
     </AuditTrailContributerDatabase>
     <IntegrityReportsDir>target/</IntegrityReportsDir>
+    <PillarIntegrityDetails></PillarIntegrityDetails>
   </IntegrityServiceSettings>
   <MonitoringServiceSettings>
     <ID>monitoring-service</ID>

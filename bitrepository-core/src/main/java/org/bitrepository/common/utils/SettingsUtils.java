@@ -22,6 +22,8 @@
 package org.bitrepository.common.utils;
 
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.settings.referencesettings.PillarIntegrityDetails;
+import org.bitrepository.settings.referencesettings.PillarType;
 import org.bitrepository.settings.repositorysettings.Collection;
 
 import java.math.BigInteger;
@@ -96,6 +98,42 @@ public class SettingsUtils {
         }
 
         return name;
+    }
+
+    /**
+     * Get the hostname for the given pillarID from the ReferenceSettings.
+     *
+     * @param pillarID The pillarID for which the hostname is wanted.
+     * @return Returns the hostname for the given pillar ID.
+     */
+    public static String getHostname(String pillarID) {
+        PillarIntegrityDetails details = settings.getReferenceSettings().getIntegrityServiceSettings().getPillarIntegrityDetails();
+        if (details != null) {
+            for (PillarIntegrityDetails.PillarDetails d : details.getPillarDetails()) {
+                if (d.getPillarID().equals(pillarID)) {
+                    return d.getPillarHostname();
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get the {@link PillarType} for the given Pillar ID.
+     *
+     * @param pillarID The pillar ID for which the {@link PillarType} is wanted.
+     * @return Returns the {@link PillarType} for the given pillar ID.
+     */
+    public static PillarType getPillarType(String pillarID) {
+        PillarIntegrityDetails details = settings.getReferenceSettings().getIntegrityServiceSettings().getPillarIntegrityDetails();
+        if (details != null) {
+            for (PillarIntegrityDetails.PillarDetails d : details.getPillarDetails()) {
+                if (d.getPillarID().equals(pillarID)) {
+                    return d.getPillarType();
+                }
+            }
+        }
+        return null;
     }
 
     /**

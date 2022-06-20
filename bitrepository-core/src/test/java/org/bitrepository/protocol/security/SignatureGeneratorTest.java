@@ -5,8 +5,7 @@ import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.protocol.security.exception.MessageSigningException;
 import org.testng.annotations.Test;
 
-public class SignatureGenetatorTest {
-
+public class SignatureGeneratorTest {
     /*
      * Test to generate new signature for SecurityTestConstants 
      */

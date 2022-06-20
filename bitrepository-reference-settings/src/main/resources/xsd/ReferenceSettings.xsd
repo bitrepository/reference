@@ -21,7 +21,7 @@
   #L%
   -->
 <xs:schema targetNamespace="http://bitrepository.org/settings/ReferenceSettings.xsd"
-           attributeFormDefault="unqualified" elementFormDefault="qualified"
+           elementFormDefault="qualified"
            xmlns="http://bitrepository.org/settings/ReferenceSettings.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema"
 >
 
@@ -33,21 +33,21 @@
     </xs:annotation>
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="GeneralSettings" minOccurs="0" />
-        <xs:element ref="ClientSettings" minOccurs="0" />
-        <xs:element ref="PillarSettings" minOccurs="0" />
-        <xs:element ref="DeleteFileSettings" minOccurs="0" />
-        <xs:element ref="GetAuditTrailSettings" minOccurs="0" />
-        <xs:element ref="GetChecksumsSettings" minOccurs="0" />
-        <xs:element ref="GetFileSettings" minOccurs="0" />
-        <xs:element ref="GetFileIDsSettings" minOccurs="0" />
-        <xs:element ref="GetStatusSettings" minOccurs="0" />
-        <xs:element ref="PutFileSettings" minOccurs="0" />
-        <xs:element ref="ReplaceFileSettings" minOccurs="0" />
-        <xs:element ref="AlarmServiceSettings" minOccurs="0" />
-        <xs:element ref="AuditTrailServiceSettings" minOccurs="0" />
-        <xs:element ref="IntegrityServiceSettings" minOccurs="0" />
-        <xs:element ref="MonitoringServiceSettings" minOccurs="0" />
+        <xs:element ref="GeneralSettings" minOccurs="0"/>
+        <xs:element ref="ClientSettings" minOccurs="0"/>
+        <xs:element ref="PillarSettings" minOccurs="0"/>
+        <xs:element ref="DeleteFileSettings" minOccurs="0"/>
+        <xs:element ref="GetAuditTrailSettings" minOccurs="0"/>
+        <xs:element ref="GetChecksumsSettings" minOccurs="0"/>
+        <xs:element ref="GetFileSettings" minOccurs="0"/>
+        <xs:element ref="GetFileIDsSettings" minOccurs="0"/>
+        <xs:element ref="GetStatusSettings" minOccurs="0"/>
+        <xs:element ref="PutFileSettings" minOccurs="0"/>
+        <xs:element ref="ReplaceFileSettings" minOccurs="0"/>
+        <xs:element ref="AlarmServiceSettings" minOccurs="0"/>
+        <xs:element ref="AuditTrailServiceSettings" minOccurs="0"/>
+        <xs:element ref="IntegrityServiceSettings" minOccurs="0"/>
+        <xs:element ref="MonitoringServiceSettings" minOccurs="0"/>
         <xs:element ref="FileExchangeSettings" minOccurs="0"/>
       </xs:sequence>
     </xs:complexType>
@@ -59,7 +59,7 @@
         <xs:documentation>General settings for a client</xs:documentation>
       </xs:annotation>
       <xs:sequence>
-        <xs:element name="ReceiverDestinationIDFactoryClass" minOccurs="0" type="xs:string" />
+        <xs:element name="ReceiverDestinationIDFactoryClass" minOccurs="0" type="xs:string"/>
         <xs:element ref="MessageThreadPools" minOccurs="0">
           <xs:annotation>
           </xs:annotation>
@@ -72,7 +72,7 @@
     <xs:complexType>
       <xs:annotation>
         <xs:documentation xml:lang="en">
-          Defines the the thread pools to handle message.
+          Defines the thread pools to handle message.
           A received message is check against the different message thread pools in the
           following order:
           1. Is there defined pools specific to collection for the received message.
@@ -83,7 +83,7 @@
         </xs:documentation>
       </xs:annotation>
       <xs:sequence>
-        <xs:element ref="MessageThreadPool" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="MessageThreadPool" minOccurs="0" maxOccurs="unbounded"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -92,16 +92,18 @@
     <xs:complexType>
       <xs:annotation>
         <xs:documentation>Defines a thread pool to handle a set of message types. The pool can be restricted to only
-        be used on specific collections, message categories and specific messages</xs:documentation>
+          be used on specific collections, message categories and specific messages
+        </xs:documentation>
       </xs:annotation>
       <xs:sequence>
-        <xs:element name="PoolSize" type="xs:positiveInteger" minOccurs="0" >
+        <xs:element name="PoolSize" type="xs:positiveInteger" minOccurs="0">
           <xs:annotation>
             <xs:documentation>The number of threads to use for processing. If undefined the pool thread limit is
-              unbound, but threads will be reused.</xs:documentation>
+              unbound, but threads will be reused.
+            </xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="Collection" type="xs:string" minOccurs="0" maxOccurs="unbounded" >
+        <xs:element name="Collection" type="xs:string" minOccurs="0" maxOccurs="unbounded">
           <xs:annotation>
             <xs:documentation>
               The collections filter to use the pool for. If undefined all collections are process via this pool.
@@ -116,7 +118,7 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="MessageName" type="xs:string" minOccurs="0" maxOccurs="unbounded" >
+        <xs:element name="MessageName" type="xs:string" minOccurs="0" maxOccurs="unbounded">
           <xs:annotation>
             <xs:documentation>
               The specific messages to use the pool for. Overrides the MessageCategory setting.
@@ -192,7 +194,7 @@
             <xs:documentation>
               Class for overriding the standard generated ComponentID
             </xs:documentation>
-          </xs:annotation> 
+          </xs:annotation>
         </xs:element>
         <xs:element name="MaxPageSize" type="xs:nonNegativeInteger" minOccurs="0">
           <xs:annotation>
@@ -200,7 +202,7 @@
               The maximum number of results that the client wants per page.
               If MaxPageSize is not set, the clients default to 10000 results per page.
               This setting is not automatically used when using the reference client libraries. The user
-              of the client is however free to utilize the setting. 
+              of the client is however free to utilize the setting.
               The setting applies to: Integrity service, Audittrail service and reference commandline client
             </xs:documentation>
           </xs:annotation>
@@ -310,14 +312,35 @@
         <xs:element name="VerifyDataConsistencyOnMessage" type="xs:boolean" minOccurs="0">
           <xs:annotation>
             <xs:documentation>
-              Whether or not verify the consistency between files and the data in the checksum database, when handling 
+              Whether or not verify the consistency between files and the data in the checksum database, when handling
               messages for operations involving the given files.
-              The consistency is already being checked by the scheduled job, so it setting is only for further 
+              The consistency is already being checked by the scheduled job, so it setting is only for further
               verifying the consistency when handling messages.
-              Default value is false. 
+              Default value is false.
               This setting is only releavent for the FilePillar (since ChecksumPillars do not have the actual files).
             </xs:documentation>
           </xs:annotation>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="PillarIntegrityDetails">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">
+        The details of all the pillars used by integrity service to map pillar IDs to hostnames and pillar types.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="PillarDetails" maxOccurs="unbounded" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="PillarID" type="xs:string"/>
+              <xs:element name="PillarHostname" type="xs:string"/>
+              <xs:element ref="PillarType"/>
+            </xs:sequence>
+          </xs:complexType>
         </xs:element>
       </xs:sequence>
     </xs:complexType>
@@ -390,7 +413,7 @@
     <xs:simpleType>
       <xs:annotation>
         <xs:documentation xml:lang="en">
-          Decides which type of pillar it is. 
+          Decides which type of pillar it is.
         </xs:documentation>
       </xs:annotation>
       <xs:restriction base="xs:string">
@@ -405,9 +428,9 @@
         <xs:enumeration value="FILE">
           <xs:annotation>
             <xs:documentation xml:lang="en">
-              The FilePillar is a full ReferencePillar, both containing the checksum database and archives with 
+              The FilePillar is a full ReferencePillar, both containing the checksum database and archives with
               the actual files.
-              The directories defined in settings will automatically be instantiated (if possible). 
+              The directories defined in settings will automatically be instantiated (if possible).
             </xs:documentation>
           </xs:annotation>
         </xs:enumeration>
@@ -548,10 +571,10 @@
 
   <xs:simpleType name="ServiceType">
     <xs:restriction base="xs:string">
-      <xs:enumeration value="AlarmService" />
-      <xs:enumeration value="AuditTrailService" />
-      <xs:enumeration value="IntegrityService" />
-      <xs:enumeration value="MonitoringService" />
+      <xs:enumeration value="AlarmService"/>
+      <xs:enumeration value="AuditTrailService"/>
+      <xs:enumeration value="IntegrityService"/>
+      <xs:enumeration value="MonitoringService"/>
     </xs:restriction>
   </xs:simpleType>
 
@@ -563,7 +586,7 @@
         </xs:documentation>
       </xs:annotation>
       <xs:sequence>
-        <xs:element name="ID" type="xs:string" />
+        <xs:element name="ID" type="xs:string"/>
         <xs:element name="CollectionInterval" type="xs:long">
           <xs:annotation>
             <xs:documentation>
@@ -590,7 +613,7 @@
         </xs:documentation>
       </xs:annotation>
       <xs:sequence>
-        <xs:element name="ID" type="xs:string" />
+        <xs:element name="ID" type="xs:string"/>
         <xs:element ref="MailingConfiguration" minOccurs="0"/>
         <xs:element name="AlarmServiceDatabase" type="DatabaseSpecifics">
           <xs:annotation>
@@ -611,7 +634,7 @@
         </xs:documentation>
       </xs:annotation>
       <xs:sequence>
-        <xs:element name="ID" type="xs:string" />
+        <xs:element name="ID" type="xs:string"/>
         <xs:element name="SendAlarmOnMissingContributer" type="xs:boolean" minOccurs="0">
           <xs:annotation>
             <xs:documentation>
@@ -694,7 +717,7 @@
         </xs:documentation>
       </xs:annotation>
       <xs:sequence>
-        <xs:element name="ID" type="xs:string" />
+        <xs:element name="ID" type="xs:string"/>
         <xs:element name="Workflows" type="WorkflowSettings" minOccurs="0">
           <xs:annotation>
             <xs:documentation xml:lang="en">
@@ -714,9 +737,9 @@
         <xs:element name="AbortOnFailedContributor" type="xs:boolean" minOccurs="0">
           <xs:annotation>
             <xs:documentation xml:lang="en">
-              Control how the integrity service should behave in case of a contributor failing to deliver 
+              Control how the integrity service should behave in case of a contributor failing to deliver
               FileIDs or Checksum data.
-              If set to true, stop the integrity check and send an alarm, if false, continue the check on 
+              If set to true, stop the integrity check and send an alarm, if false, continue the check on
               a incomplete set of data, and alert by sending an alarm.
               The service defaults to true.
             </xs:documentation>
@@ -759,11 +782,18 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="IntegrityReportsDir" type="xs:string" minOccurs="1" maxOccurs="1">
+        <xs:element name="IntegrityReportsDir" type="xs:string">
           <xs:annotation xml:lang="en">
             <xs:documentation>
               The directory where to write and store integrity reports. Directory must exists, and be read- and writable
               E.g. /home/webservices/var/integrity-reports/
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element ref="PillarIntegrityDetails" minOccurs="0">
+          <xs:annotation xml:lang="en">
+            <xs:documentation>
+              The Integrity details of all the pillars. This includes the Pillar hostnames and Pillar types.
             </xs:documentation>
           </xs:annotation>
         </xs:element>
@@ -776,7 +806,7 @@
       <xs:documentation>List of Collections present in the repository.</xs:documentation>
     </xs:annotation>
     <xs:sequence>
-      <xs:element name="Workflow" type ="WorkflowConfiguration" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="Workflow" type="WorkflowConfiguration" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -785,10 +815,11 @@
       <xs:documentation>Defines a specific workflow.</xs:documentation>
     </xs:annotation>
     <xs:sequence>
-      <xs:element name="WorkflowClass" type="xs:string" minOccurs="0" >
+      <xs:element name="WorkflowClass" type="xs:string" minOccurs="0">
         <xs:annotation>
           <xs:documentation>The class for the workflow to run.
-            The class most implement the workflow interface</xs:documentation>
+            The class most implement the workflow interface
+          </xs:documentation>
         </xs:annotation>
       </xs:element>
       <xs:element ref="Schedules" minOccurs="0">
@@ -807,7 +838,7 @@
         <xs:documentation>List of Collections present in the repository.</xs:documentation>
       </xs:annotation>
       <xs:sequence>
-        <xs:element ref="Schedule" minOccurs="1" maxOccurs="unbounded" />
+        <xs:element ref="Schedule" minOccurs="1" maxOccurs="unbounded"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -821,7 +852,7 @@
         <xs:element name="WorkflowInterval" type="xs:long">
           <xs:annotation>
             <xs:documentation>
-              The time in milliseconds between the workflow is run. 
+              The time in milliseconds between the workflow is run.
               If it is a non-positive number, then the workflow will not be scheduled, but it will be possible to run manually from the UI.
               Also workflows with a positive interval will be run at start-up, whereas workflows with a non-positive interval will not.
             </xs:documentation>
@@ -845,7 +876,7 @@
         <xs:documentation>Defines a set of collections.</xs:documentation>
       </xs:annotation>
       <xs:sequence>
-        <xs:element name="CollectionID" type="xs:string" maxOccurs="unbounded" />
+        <xs:element name="CollectionID" type="xs:string" maxOccurs="unbounded"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -888,7 +919,7 @@
         <xs:annotation>
           <xs:documentation xml:lang="en">
             The max checksum age for the pillar.
-            If set to 0, then the pillar is ignored for obsolete checksums check, e.g. for ChecksumPillars 
+            If set to 0, then the pillar is ignored for obsolete checksums check, e.g. for ChecksumPillars
             who cannot recalculate the checksum.
           </xs:documentation>
         </xs:annotation>
@@ -1003,7 +1034,7 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="Port" type="xs:positiveInteger"  minOccurs="0">
+        <xs:element name="Port" type="xs:positiveInteger" minOccurs="0">
           <xs:annotation>
             <xs:documentation>
               The port used by the protocol.
