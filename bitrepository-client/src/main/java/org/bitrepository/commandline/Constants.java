@@ -104,15 +104,10 @@ public class Constants {
 
     public static final String REQUEST_CHECKSUM_SALT_DESC =
             "[OPTIONAL] A salt for the requested checksum specified by the checksum type argument " +
-                    "[-" + REQUEST_CHECKSUM_TYPE_ARG + " REQUIRED]. Must be string of even length. " +
-                    "E.g. '-" + REQUEST_CHECKSUM_TYPE_ARG + " HMAC_SHA1 -" + REQUEST_CHECKSUM_SALT_ARG + " abcd'";
+                    "[-" + REQUEST_CHECKSUM_TYPE_ARG + " REQUIRED]. Must be hexadecimal string of even length. " +
+                    "E.g. '-" + REQUEST_CHECKSUM_TYPE_ARG + " HMAC_SHA1 -" + REQUEST_CHECKSUM_SALT_ARG + " 0123abcd'";
 
     public static final int EXIT_SUCCESS = 0;
     public static final int EXIT_ARGUMENT_FAILURE = 1;
     public static final int EXIT_OPERATION_FAILURE = -1;
-
-    public static void main(String[] args) {
-        System.out.println(REQUEST_CHECKSUM_TYPE_DESC);
-        System.out.println(REQUEST_CHECKSUM_SALT_DESC);
-    }
 }
