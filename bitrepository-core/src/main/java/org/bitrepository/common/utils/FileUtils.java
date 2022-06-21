@@ -33,6 +33,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.Objects;
 import java.util.zip.ZipEntry;
@@ -307,7 +310,7 @@ public final class FileUtils {
      * @param outputFile The file where the compressed content will be placed.
      * @throws IOException If any error occurs while writing the stream to a file
      */
-    public static void zipFile(File inputFile, File outputFile) throws IOException {
+    /*public static void zipFile(File inputFile, File outputFile) throws IOException {
         ArgumentValidator.checkNotNull(inputFile, "File zipFile");
         ArgumentValidator.checkNotNull(outputFile, "File toDir");
         ArgumentValidator.checkTrue(inputFile.canRead(), "can't read '" + inputFile + "'");
@@ -325,6 +328,19 @@ public final class FileUtils {
                 outStream.write(buffer, 0, bytesRead);
             }
             outStream.flush();
+        }
+    }*/
+
+    public static void zipFile(Path inputFile, Path outputZipFile) throws IOException {
+        ArgumentValidator.checkNotNull(inputFile, "Path inputFile");
+        ArgumentValidator.checkNotNull(outputZipFile, "Path outputZipFile");
+        ArgumentValidator.checkTrue(Files.isWritable(inputFile), "Can't read '" + inputFile + "'");
+
+        try (ZipOutputStream zs = new ZipOutputStream(Files.newOutputStream(outputZipFile))) { // TODO series of stream wrappers?
+            ZipEntry zipEntry = new ZipEntry(inputFile.toString());
+            zs.putNextEntry(zipEntry);
+            Files.copy(inputFile, zs);
+            zs.closeEntry();
         }
     }
 

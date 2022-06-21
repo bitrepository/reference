@@ -30,12 +30,14 @@ import org.bitrepository.settings.referencesettings.AuditTrailPreservation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,15 +56,11 @@ public class AuditPacker {
     /**
      * The directory where the temporary files are stored.
      */
-    private final File directory;
+    private final Path directory;
     /**
      * Map between the contributor id and the reached preservation sequence number.
      */
     private final Map<String, Long> seqReached = new HashMap<>();
-    /**
-     * Whether the output stream should be appended to the file.
-     */
-    private static final boolean APPEND = true;
 
     /**
      * Constructor.
@@ -74,7 +72,7 @@ public class AuditPacker {
     public AuditPacker(AuditTrailStore store, AuditTrailPreservation settings, String collectionID) {
         this.store = store;
         this.collectionID = collectionID;
-        this.directory = FileUtils.retrieveDirectory(settings.getAuditTrailPreservationTemporaryDirectory());
+        this.directory = FileUtils.retrieveDirectory(settings.getAuditTrailPreservationTemporaryDirectory()).toPath();
         this.contributors.addAll(SettingsUtils.getAuditContributorsForCollection(collectionID));
 
         initialiseReachedSequenceNumbers();
@@ -106,22 +104,20 @@ public class AuditPacker {
      *
      * @return A compressed file with all the audit trails.
      */
-    public synchronized File createNewPackage() {
-        File container = new File(directory, collectionID + "-audit-trails-" + System.currentTimeMillis());
+    public synchronized Path createNewPackage() {
+        Path container = directory.resolve(collectionID + "-audit-trails-" + System.currentTimeMillis());
         try {
-            if (container.createNewFile()) {
-                packContributors(container);
-                return createCompressedFile(container);
-            }
+            Files.createFile(container);
+            packContributors(container);
+            return createCompressedFile(container);
         } catch (IOException e) {
             throw new IllegalStateException("Cannot package the newest audit trails.", e);
         } finally {
             // cleaning up.
-            if (container.exists()) {
-                FileUtils.delete(container);
+            if (Files.exists(container)) {
+                FileUtils.delete(container.toFile()); // TODO fix with nio Path
             }
         }
-        return null;
     }
 
     /**
@@ -130,17 +126,12 @@ public class AuditPacker {
      * @param container The file where the audit trails should be written.
      * @throws IOException If writing to the file somehow fails.
      */
-    private void packContributors(File container) throws IOException {
-        PrintWriter writer = null;
-        try {
-            writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream(container, APPEND), StandardCharsets.UTF_8));
+    private void packContributors(Path container) throws IOException {
+        try (OutputStream os = Files.newOutputStream(container, StandardOpenOption.APPEND);
+             OutputStreamWriter osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
+             PrintWriter writer = new PrintWriter(osw)) {
             for (String contributor : contributors) {
                 packContributor(contributor, writer);
-            }
-        } finally {
-            if (writer != null) {
-                writer.flush();
-                writer.close();
             }
         }
     }
@@ -189,8 +180,9 @@ public class AuditPacker {
      * @return The compressed file.
      * @throws IOException If anything goes wrong.
      */
-    private File createCompressedFile(File fileToCompress) throws IOException {
-        File zippedFile = new File(directory, fileToCompress.getName() + ".zip");
+    private Path createCompressedFile(Path fileToCompress) throws IOException {
+        Path zippedFile = directory.resolve(fileToCompress.getFileName() + ".zip");
+        //FileUtils.zipFile(fileToCompress, zippedFile);
         FileUtils.zipFile(fileToCompress, zippedFile);
         return zippedFile;
     }

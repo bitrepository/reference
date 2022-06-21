@@ -131,7 +131,7 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
      */
     private synchronized void performAuditTrailPreservation(String collectionID) {
         try {
-            File auditPackage = auditPackers.get(collectionID).createNewPackage();
+            File auditPackage = auditPackers.get(collectionID).createNewPackage().toFile();
             URL url = uploadFile(auditPackage);
             log.info("Uploaded the file '" + auditPackage + "' to '" + url.toExternalForm() + "'");
 
