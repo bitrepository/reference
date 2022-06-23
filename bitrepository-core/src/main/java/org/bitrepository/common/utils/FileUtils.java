@@ -33,9 +33,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.Objects;
 import java.util.zip.ZipEntry;
@@ -258,6 +258,7 @@ public final class FileUtils {
     }
 
     /**
+     * TODO remove? - only used in migration tests
      * Unzip a zipFile into a directory.  This will create subdirectories
      * as needed.
      *
@@ -306,38 +307,19 @@ public final class FileUtils {
     /**
      * Zips a file.
      *
-     * @param inputFile  The file to zip.
-     * @param outputFile The file where the compressed content will be placed.
+     * @param inputFile The file to zip.
+     * @param outputZipFile The file where the compressed content will be placed.
      * @throws IOException If any error occurs while writing the stream to a file
      */
-    /*public static void zipFile(File inputFile, File outputFile) throws IOException {
-        ArgumentValidator.checkNotNull(inputFile, "File zipFile");
-        ArgumentValidator.checkNotNull(outputFile, "File toDir");
-        ArgumentValidator.checkTrue(inputFile.canRead(), "can't read '" + inputFile + "'");
-
-        byte[] buffer = new byte[BYTE_ARRAY_SIZE];
-        int bytesRead;
-
-        try (InputStream inputStream = new FileInputStream(inputFile);
-             ZipOutputStream outStream = new ZipOutputStream(new FileOutputStream(outputFile))) {
-
-            ZipEntry entry = new ZipEntry(inputFile.getPath());
-            outStream.putNextEntry(entry);
-
-            while ((bytesRead = inputStream.read(buffer)) > 0) {
-                outStream.write(buffer, 0, bytesRead);
-            }
-            outStream.flush();
-        }
-    }*/
-
     public static void zipFile(Path inputFile, Path outputZipFile) throws IOException {
         ArgumentValidator.checkNotNull(inputFile, "Path inputFile");
         ArgumentValidator.checkNotNull(outputZipFile, "Path outputZipFile");
-        ArgumentValidator.checkTrue(Files.isWritable(inputFile), "Can't read '" + inputFile + "'");
+        ArgumentValidator.checkTrue(Files.isReadable(inputFile), "Can't read '" + inputFile + "'");
 
-        try (ZipOutputStream zs = new ZipOutputStream(Files.newOutputStream(outputZipFile))) { // TODO series of stream wrappers?
-            ZipEntry zipEntry = new ZipEntry(inputFile.toString());
+        try (OutputStream os = Files.newOutputStream(outputZipFile);
+             ZipOutputStream zs = new ZipOutputStream(os)) {
+
+            ZipEntry zipEntry = new ZipEntry(inputFile.getFileName().toString());
             zs.putNextEntry(zipEntry);
             Files.copy(inputFile, zs);
             zs.closeEntry();

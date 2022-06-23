@@ -104,19 +104,16 @@ public class AuditPacker {
      *
      * @return A compressed file with all the audit trails.
      */
-    public synchronized Path createNewPackage() {
-        Path container = directory.resolve(collectionID + "-audit-trails-" + System.currentTimeMillis());
+    public synchronized Path createNewPackage() throws IOException {
+        Path auditTrailsFile = directory.resolve(collectionID + "-audit-trails-" + System.currentTimeMillis());
         try {
-            Files.createFile(container);
-            packContributors(container);
-            return createCompressedFile(container);
+            Files.createFile(auditTrailsFile);
+            packContributors(auditTrailsFile);
+            return createCompressedFile(auditTrailsFile);
         } catch (IOException e) {
             throw new IllegalStateException("Cannot package the newest audit trails.", e);
         } finally {
-            // cleaning up.
-            if (Files.exists(container)) {
-                FileUtils.delete(container.toFile()); // TODO fix with nio Path
-            }
+            Files.deleteIfExists(auditTrailsFile);
         }
     }
 
@@ -130,6 +127,7 @@ public class AuditPacker {
         try (OutputStream os = Files.newOutputStream(container, StandardOpenOption.APPEND);
              OutputStreamWriter osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
              PrintWriter writer = new PrintWriter(osw)) {
+
             for (String contributor : contributors) {
                 packContributor(contributor, writer);
             }
@@ -182,7 +180,6 @@ public class AuditPacker {
      */
     private Path createCompressedFile(Path fileToCompress) throws IOException {
         Path zippedFile = directory.resolve(fileToCompress.getFileName() + ".zip");
-        //FileUtils.zipFile(fileToCompress, zippedFile);
         FileUtils.zipFile(fileToCompress, zippedFile);
         return zippedFile;
     }

@@ -60,12 +60,12 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final AuditTrailStore store;
     private final BlockingPutFileClient client;
-    private Timer timer;
-    private AuditPreservationTimerTask auditTask = null;
     private final Map<String, AuditPacker> auditPackers = new HashMap<>();
     private final AuditTrailPreservation preservationSettings;
     private final Settings settings;
     private final FileExchange exchange;
+    private Timer timer;
+    private AuditPreservationTimerTask auditTask = null;
 
     /**
      * @param settings The preservationSettings for the audit trail service.
@@ -131,16 +131,18 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
      */
     private synchronized void performAuditTrailPreservation(String collectionID) {
         try {
-            File auditPackage = auditPackers.get(collectionID).createNewPackage().toFile();
+            AuditPacker collectionAuditPacker = auditPackers.get(collectionID);
+            File auditPackage = collectionAuditPacker.createNewPackage().toFile();
             URL url = uploadFile(auditPackage);
             log.info("Uploaded the file '" + auditPackage + "' to '" + url.toExternalForm() + "'");
 
             ChecksumDataForFileTYPE checksumData = getValidationChecksumDataForFile(auditPackage);
 
-            EventHandler eventHandler = new AuditPreservationEventHandler(auditPackers.get(collectionID).getSequenceNumbersReached(), store,
-                    collectionID);
-            client.putFile(preservationSettings.getAuditTrailPreservationCollection(), url, auditPackage.getName(), auditPackage.length(),
-                    checksumData, null, eventHandler, "Preservation of audit trails from the AuditTrail service.");
+            EventHandler eventHandler = new AuditPreservationEventHandler(
+                    collectionAuditPacker.getSequenceNumbersReached(), store, collectionID);
+            client.putFile(preservationSettings.getAuditTrailPreservationCollection(), url, auditPackage.getName(),
+                    auditPackage.length(), checksumData, null, eventHandler,
+                    "Preservation of audit trails from the AuditTrail service.");
 
             log.debug("Cleanup of the uploaded audit trail package.");
             FileUtils.delete(auditPackage);
