@@ -42,6 +42,7 @@ public class Base16Utils {
         if (data == null) {
             return null;
         }
+        // TODO Java 17 has HexFormat.of().formatHex(bytes) - consider using instead
         return Hex.encodeHexString(data);
     }
 

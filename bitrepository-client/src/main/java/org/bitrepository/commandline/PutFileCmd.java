@@ -117,8 +117,7 @@ public class PutFileCmd extends CommandLineClient {
         checksumSaltOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumSaltOption);
 
-        Option deleteOption = new Option(Constants.DELETE_FILE_ARG, Constants.NO_ARGUMENT,
-                "If this argument is present the file will be removed from the server, when the chosen operation is complete.");
+        Option deleteOption = new Option(Constants.DELETE_FILE_ARG, Constants.NO_ARGUMENT, Constants.DELETE_FILE_DESC);
         deleteOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(deleteOption);
     }

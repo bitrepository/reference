@@ -107,6 +107,9 @@ public class Constants {
                     "[-" + REQUEST_CHECKSUM_TYPE_ARG + " REQUIRED]. Must be hexadecimal string of even length. " +
                     "E.g. '-" + REQUEST_CHECKSUM_TYPE_ARG + " HMAC_SHA1 -" + REQUEST_CHECKSUM_SALT_ARG + " 0123abcd'";
 
+    public static final String DELETE_FILE_DESC = "If this flag is present the file will be removed from " +
+            "the file exchange when the chosen operation is complete.";
+
     public static final int EXIT_SUCCESS = 0;
     public static final int EXIT_ARGUMENT_FAILURE = 1;
     public static final int EXIT_OPERATION_FAILURE = -1;

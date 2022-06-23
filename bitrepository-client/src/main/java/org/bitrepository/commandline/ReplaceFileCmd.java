@@ -119,8 +119,7 @@ public class ReplaceFileCmd extends CommandLineClient {
         checksumSaltOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumSaltOption);
 
-        Option deleteOption = new Option(DELETE_FILE_ARG, NO_ARGUMENT,
-                "If this argument is present, then the file will be removed from the server, when the operation is complete.");
+        Option deleteOption = new Option(DELETE_FILE_ARG, NO_ARGUMENT, Constants.DELETE_FILE_DESC);
         deleteOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(deleteOption);
     }
