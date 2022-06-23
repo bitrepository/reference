@@ -78,13 +78,13 @@ public class GetChecksumsCmd extends CommandLineClient {
         cmdHandler.addOption(pillarOption);
 
         Option checksumTypeOption = new Option(Constants.REQUEST_CHECKSUM_TYPE_ARG, Constants.HAS_ARGUMENT,
-                "[OPTIONAL] The algorithm of checksum to request in the response from the pillars. "
-                        + "If no such argument is given, then the default from settings is retrieved.");
+                Constants.REQUEST_CHECKSUM_TYPE_DESC
+                        + " If no such argument is given, then the default from settings is retrieved.");
         checksumTypeOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumTypeOption);
 
         Option checksumSaltOption = new Option(Constants.REQUEST_CHECKSUM_SALT_ARG, Constants.HAS_ARGUMENT,
-                "[OPTIONAL] The salt of checksum to request in the response. Requires the ChecksumType argument.");
+                Constants.REQUEST_CHECKSUM_SALT_DESC);
         checksumSaltOption.setRequired(Constants.ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumSaltOption);
     }

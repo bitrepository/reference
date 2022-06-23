@@ -126,7 +126,7 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         doAnswer(new Answer<Void>() {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
-                ResultingChecksums res = createResultingChecksums((String) invocation.getArguments()[3], "checksum");
+                ResultingChecksums res = createResultingChecksums((String) invocation.getArguments()[3], "abcdef");
                 eventHandler.handleEvent(new ChecksumsCompletePillarEvent(PILLAR_1, TEST_COLLECTION, res, (ChecksumSpecTYPE) invocation.getArguments()[2], false));
                 eventHandler.handleEvent(new ChecksumsCompletePillarEvent(PILLAR_2, TEST_COLLECTION, res, (ChecksumSpecTYPE) invocation.getArguments()[2], false));
                 eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
@@ -164,7 +164,7 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         doAnswer(new Answer<Void>() {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
-                ResultingChecksums res = createResultingChecksums((String) invocation.getArguments()[3], "checksum");
+                ResultingChecksums res = createResultingChecksums((String) invocation.getArguments()[3], "abcdef");
                 ContributorEvent e1 = new ChecksumsCompletePillarEvent(PILLAR_1, TEST_COLLECTION, res, (ChecksumSpecTYPE) invocation.getArguments()[2], false);
                 ContributorEvent e2 = new ChecksumsCompletePillarEvent(PILLAR_2, TEST_COLLECTION, res, (ChecksumSpecTYPE) invocation.getArguments()[2], false);
                 ContributorEvent e3 = new ContributorFailedEvent(PILLAR_3, TEST_COLLECTION, ResponseCode.FAILURE);
@@ -207,8 +207,8 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         doAnswer(new Answer<Void>() {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
-                ResultingChecksums res1 = createResultingChecksums((String) invocation.getArguments()[3], "checksum");
-                ResultingChecksums res2 = createResultingChecksums((String) invocation.getArguments()[3], "muskcehc");
+                ResultingChecksums res1 = createResultingChecksums((String) invocation.getArguments()[3], "abcdef");
+                ResultingChecksums res2 = createResultingChecksums((String) invocation.getArguments()[3], "fedcba");
                 ContributorEvent e1 = new ChecksumsCompletePillarEvent(PILLAR_1, TEST_COLLECTION, res1, (ChecksumSpecTYPE) invocation.getArguments()[2], false);
                 ContributorEvent e2 = new ChecksumsCompletePillarEvent(PILLAR_2, TEST_COLLECTION, res2, (ChecksumSpecTYPE) invocation.getArguments()[2], false);
                 ContributorEvent e3 = new ContributorFailedEvent(PILLAR_3, TEST_COLLECTION, ResponseCode.FAILURE);
@@ -251,8 +251,8 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         doAnswer(new Answer<Void>() {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
-                ResultingChecksums res1 = createResultingChecksums((String) invocation.getArguments()[3], "checksum");
-                ResultingChecksums res2 = createResultingChecksums((String) invocation.getArguments()[3], "muskcehc");
+                ResultingChecksums res1 = createResultingChecksums((String) invocation.getArguments()[3], "abcdef");
+                ResultingChecksums res2 = createResultingChecksums((String) invocation.getArguments()[3], "fedcba");
                 eventHandler.handleEvent(new ChecksumsCompletePillarEvent(PILLAR_1, TEST_COLLECTION, res1, (ChecksumSpecTYPE) invocation.getArguments()[2], false));
                 eventHandler.handleEvent(new ChecksumsCompletePillarEvent(PILLAR_2, TEST_COLLECTION, res2, (ChecksumSpecTYPE) invocation.getArguments()[2], false));
                 eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
