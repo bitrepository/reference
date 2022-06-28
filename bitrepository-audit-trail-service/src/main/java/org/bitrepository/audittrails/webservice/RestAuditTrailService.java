@@ -55,7 +55,6 @@ import java.util.List;
 import java.util.TimeZone;
 
 @Path("/AuditTrailService")
-
 public class RestAuditTrailService {
     /**
      * The log.
@@ -73,27 +72,16 @@ public class RestAuditTrailService {
     @Consumes("application/x-www-form-urlencoded")
     @Produces("application/json")
     public StreamingOutput queryAuditTrailEvents(
-            @FormParam("fromDate")
-                    String fromDate,
-            @FormParam("toDate")
-                    String toDate,
-            @FormParam("fileID")
-                    String fileID,
-            @FormParam("reportingComponent")
-                    String reportingComponent,
-            @FormParam("actor")
-                    String actor,
-            @FormParam("action")
-                    String action,
-            @FormParam("collectionID")
-                    String collectionID,
-            @FormParam("fingerprint")
-                    String fingerprint,
-            @FormParam("operationID")
-                    String operationID,
-            @DefaultValue("1000")
-            @FormParam("maxAudittrails")
-                    Integer maxResults) {
+            @FormParam("fromDate") String fromDate,
+            @FormParam("toDate") String toDate,
+            @FormParam("fileID") String fileID,
+            @FormParam("reportingComponent") String reportingComponent,
+            @FormParam("actor") String actor,
+            @FormParam("action") String action,
+            @FormParam("collectionID") String collectionID,
+            @FormParam("fingerprint") String fingerprint,
+            @FormParam("operationID") String operationID,
+            @DefaultValue("1000") @FormParam("maxAuditTrails") Integer maxResults) {
         Date from = calendarUtils.makeStartDateObject(fromDate);
         Date to = calendarUtils.makeEndDateObject(toDate);
 
@@ -175,7 +163,6 @@ public class RestAuditTrailService {
         jg.writeObjectField("operationID", contentOrEmptyString(event.getOperationID()));
         jg.writeEndObject();
         jg.flush();
-
     }
 
     @GET
