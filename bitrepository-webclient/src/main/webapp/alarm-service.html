@@ -29,6 +29,9 @@
       .complete {
           display: none;
       }
+      .description {
+          width: 50%;
+      }
   </style>
 </head>
 <body>
@@ -168,7 +171,7 @@
                           <td>${j[i].alarmRaiser}</td>
                           <td>${nameMapper.getName(j[i].collectionID)}</td>
                           <td>${j[i].alarmCode}</td>
-                          <td><p class="teaser">${nl2br(j[i].alarmText)}</p></td>
+                          <td class="description"><p class="teaser">${nl2br(j[i].alarmText)}</p></td>
                         </tr>`;
                     }
                 }

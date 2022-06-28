@@ -1982,6 +1982,7 @@ legend + .control-group {
 }
 
 table {
+    table-layout: fixed;
     max-width: 100%;
     background-color: transparent;
     border-collapse: collapse;
