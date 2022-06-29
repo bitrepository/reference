@@ -347,8 +347,8 @@
 
     }
 
-    function getCollectionInformation() {
-        var url = integrityServiceUrl + "/integrity/IntegrityService/getCollectionInformation/?collectionID=" + getCollectionID();
+    function getCollectionInformation(collectionID) {
+        var url = integrityServiceUrl + "/integrity/IntegrityService/getCollectionInformation/?collectionID=" + collectionID;
         $.getJSON(url, {}, function (j) {
             var infoHtml = "<span><b> Latest ingest: " + j.lastIngest + " &nbsp; &nbsp; ";
             infoHtml += " Size: " + j.collectionSize + " &nbsp; &nbsp; ";
@@ -379,32 +379,41 @@
         }, 'html').done(function () {
             $.getJSON('repo/reposervice/getCollections/', {}, function (collections) {
                 nameMapper = new CollectionNameMapper(collections);
-                var colls = nameMapper.getCollectionIDs();
-                for (i in colls) {
-                    $("#collectionChooser").append('<option value="' + colls[i] + '">' + nameMapper.getName(colls[i]) + '</option>');
+                let cols = nameMapper.getCollectionIDs();
+                for (let i in cols) {
+                    $("#collectionChooser").append('<option value="' + cols[i] + '">' + nameMapper.getName(cols[i]) + '</option>');
                 }
-                collectionChanged();
+                let collectionID = new URLSearchParams(window.location.search).get("collectionID");
+                if (collectionID !== null && cols.includes(collectionID)) {
+                    setCollection(collectionID);
+                } else {
+                    collectionChanged(getCollectionID());
+                }
             });
         });
     }
 
-    function collectionChanged() {
+    function collectionChanged(collectionID) {
         clearContent();
-        $("#integrityLegend").html("Integrity information for collection " + nameMapper.getName(getCollectionID()));
+        $("#integrityLegend").html("Integrity information for collection " + nameMapper.getName(collectionID));
         reportUrl = integrityServiceUrl + "/integrity/IntegrityService/getLatestIntegrityReport/";
-        reportUrl += "?collectionID=" + getCollectionID();
+        reportUrl += "?collectionID=" + collectionID;
         reportUrl += "&workflowID=" + "CompleteIntegrityCheck";
         $("#integrityReportGetter").html("<a class=\"btn btn-link\" href=\"" + reportUrl + "\" target=\"_blank\">Get latest integrity report</a>");
         clearInterval(update_page);
         loadWorkflows();
-        getCollectionInformation();
+        getCollectionInformation(collectionID);
         getWorkflowStatuses();
         getIntegrityStatus();
         update_page = setInterval(function () {
             getWorkflowStatuses();
             getIntegrityStatus();
-            getCollectionInformation();
+            getCollectionInformation(collectionID);
         }, 2500);
+    }
+
+    function setCollection(collectionID) {
+        $("#collectionChooser").val(collectionID).change();
     }
 
     $(document).ready(function () {
@@ -419,7 +428,7 @@
         });
         $("#collectionChooser").change(function (event) {
             event.preventDefault();
-            collectionChanged();
+            collectionChanged(getCollectionID());
         });
 
         closePopoverOnClick();
