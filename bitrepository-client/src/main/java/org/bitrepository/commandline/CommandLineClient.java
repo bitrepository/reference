@@ -24,6 +24,7 @@ package org.bitrepository.commandline;
 
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.codec.DecoderException;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.commandline.output.DefaultOutputHandler;
@@ -48,16 +49,17 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Defines the common functionality for command-line-clients.
  */
 public abstract class CommandLineClient {
     private final String componentID;
-    protected final OutputHandler output = new DefaultOutputHandler(getClass());
-    protected final Settings settings;
-    protected final SecurityManager securityManager;
-    protected final CommandLineArgumentsHandler cmdHandler;
+    protected OutputHandler output = new DefaultOutputHandler(getClass());
+    protected Settings settings;
+    protected SecurityManager securityManager;
+    protected CommandLineArgumentsHandler cmdHandler;
     private final FileIDValidator fileIDValidator;
 
     /**
@@ -132,7 +134,7 @@ public abstract class CommandLineClient {
     protected abstract boolean isFileIDArgumentRequired();
 
     /**
-     * Creates the options for the command line argument handler. May be override.
+     * Creates the options for the command line argument handler. May be overridden.
      */
     protected void createOptionsForCmdArgumentHandler() {
         cmdHandler.createDefaultOptions();
@@ -159,15 +161,17 @@ public abstract class CommandLineClient {
             String collectionArgument = cmdHandler.getOptionValue(Constants.COLLECTION_ID_ARG);
             if (!collections.contains(collectionArgument)) {
                 throw new IllegalArgumentException(
-                        collectionArgument + " is not a valid collection." + "\nThe following collections are defined: " + collections);
+                        String.format(Locale.ROOT, "'%s' is not a valid collection.\nValid collections are:\n%s",
+                                collectionArgument, collections));
             }
         }
         if (cmdHandler.hasOption(Constants.PILLAR_ARG)) {
             String pillarArgument = cmdHandler.getOptionValue(Constants.PILLAR_ARG);
             List<String> pillarsInCollection = SettingsUtils.getPillarIDsForCollection(getCollectionID());
             if (!pillarsInCollection.contains(pillarArgument)) {
-                throw new IllegalArgumentException(pillarArgument + " is not a valid pillar for collection " + getCollectionID() +
-                        "\nThe collection contains the following pillars: " + pillarsInCollection);
+                throw new IllegalArgumentException(String.format(Locale.ROOT,
+                        "'%s' is not a valid pillar for collection '%s'\nAvailable pillars for the collection are:\n%s", pillarArgument,
+                        getCollectionID(), pillarsInCollection));
             }
         }
     }
@@ -240,17 +244,16 @@ public abstract class CommandLineClient {
      */
     private ChecksumSpecTYPE getRequestChecksumSpec() {
         ChecksumSpecTYPE res = new ChecksumSpecTYPE();
-        res.setChecksumType(ChecksumExtractionUtils.extractChecksumType(cmdHandler, settings, output));
-
-        if (cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_SALT_ARG)) {
-            res.setChecksumSalt(Base16Utils.encodeBase16(cmdHandler.getOptionValue(Constants.REQUEST_CHECKSUM_SALT_ARG)));
-        }
-
         try {
+            res.setChecksumType(ChecksumExtractionUtils.extractChecksumType(cmdHandler, settings, output));
+
+            if (cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_SALT_ARG)) {
+                res.setChecksumSalt(Base16Utils.encodeBase16(cmdHandler.getOptionValue(Constants.REQUEST_CHECKSUM_SALT_ARG)));
+            }
             ChecksumUtils.verifyAlgorithm(res);
-        } catch (NoSuchAlgorithmException e) {
-            output.error("Invalid checksum algorithm: " + e.getMessage());
-            throw new IllegalStateException("Invalid checksumSpec for '" + res + "'", e);
+        } catch (NoSuchAlgorithmException | DecoderException | IllegalStateException e) {
+            output.error(e.getMessage());
+            System.exit(1);
         }
 
         return res;
@@ -288,8 +291,13 @@ public abstract class CommandLineClient {
 
         ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
         res.setCalculationTimestamp(CalendarUtils.getNow());
+        try {
+            res.setChecksumValue(Base16Utils.encodeBase16(cmdHandler.getOptionValue(Constants.CHECKSUM_ARG)));
+        } catch (DecoderException e) {
+            output.error(e.getMessage());
+            System.exit(1);
+        }
         res.setChecksumSpec(ChecksumUtils.getDefault(settings));
-        res.setChecksumValue(Base16Utils.encodeBase16(cmdHandler.getOptionValue(Constants.CHECKSUM_ARG)));
 
         return res;
     }
@@ -351,12 +359,18 @@ public abstract class CommandLineClient {
      */
     protected ChecksumDataForFileTYPE getValidationChecksumDataForFile(File file) {
         ChecksumSpecTYPE csSpec = ChecksumUtils.getDefault(settings);
+
         String checksum = ChecksumUtils.generateChecksum(file, csSpec);
 
         ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
         res.setCalculationTimestamp(CalendarUtils.getNow());
         res.setChecksumSpec(csSpec);
-        res.setChecksumValue(Base16Utils.encodeBase16(checksum));
+        try {
+            res.setChecksumValue(Base16Utils.encodeBase16(checksum));
+        } catch (DecoderException e) {
+            output.error(e.getMessage());
+            System.exit(1);
+        }
 
         return res;
     }
@@ -378,7 +392,12 @@ public abstract class CommandLineClient {
         ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
         res.setCalculationTimestamp(CalendarUtils.getNow());
         res.setChecksumSpec(csSpec);
-        res.setChecksumValue(Base16Utils.encodeBase16(cmdHandler.getOptionValue(arg)));
+        try {
+            res.setChecksumValue(Base16Utils.encodeBase16(cmdHandler.getOptionValue(arg)));
+        } catch (DecoderException e) {
+            System.exit(1);
+        }
+
 
         return res;
     }

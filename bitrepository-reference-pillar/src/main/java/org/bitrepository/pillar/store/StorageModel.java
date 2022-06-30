@@ -24,6 +24,7 @@
  */
 package org.bitrepository.pillar.store;
 
+import org.apache.commons.codec.DecoderException;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -172,7 +173,12 @@ public abstract class StorageModel {
         ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
         res.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(entry.getCalculationDate()));
         res.setChecksumSpec(csType);
-        res.setChecksumValue(Base16Utils.encodeBase16(entry.getChecksum()));
+        try {
+            res.setChecksumValue(Base16Utils.encodeBase16(entry.getChecksum()));
+        } catch (DecoderException e) {
+            log.error(e.getMessage());
+        }
+
         return res;
     }
 

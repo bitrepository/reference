@@ -21,6 +21,7 @@
  */
 package org.bitrepository.audittrails.preserver;
 
+import org.apache.commons.codec.DecoderException;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -161,7 +162,11 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
         ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
         res.setCalculationTimestamp(CalendarUtils.getNow());
         res.setChecksumSpec(csSpec);
-        res.setChecksumValue(Base16Utils.encodeBase16(checksum));
+        try {
+            res.setChecksumValue(Base16Utils.encodeBase16(checksum));
+        } catch (DecoderException e) {
+            log.error(e.getMessage());
+        }
 
         return res;
     }

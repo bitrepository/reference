@@ -21,6 +21,7 @@
  */
 package org.bitrepository.pillar.integration.func.deletefile;
 
+import org.apache.commons.codec.DecoderException;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -95,8 +96,12 @@ public class DeleteFileRequestIT extends DefaultPillarOperationTest {
         
         ChecksumSpecTYPE requestedChecksumSpec = new ChecksumSpecTYPE();
         requestedChecksumSpec.setChecksumType(ChecksumType.HMAC_MD5);
-        requestedChecksumSpec.setChecksumSalt(Base16Utils.encodeBase16("abab"));
-        
+        try {
+            requestedChecksumSpec.setChecksumSalt(Base16Utils.encodeBase16("abab"));
+        } catch (DecoderException e) {
+            System.err.println(e.getMessage());
+        }
+
         DeleteFileRequest deleteRequest = msgFactory.createDeleteFileRequest(
                 TestFileHelper.getDefaultFileChecksum(), requestedChecksumSpec, testSpecificFileID);
         messageBus.sendMessage(deleteRequest);

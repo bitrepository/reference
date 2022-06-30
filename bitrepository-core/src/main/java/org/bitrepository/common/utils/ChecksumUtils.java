@@ -267,13 +267,13 @@ public final class ChecksumUtils {
      */
     public static ChecksumSpecTYPE getDefault(Settings settings) {
         ChecksumSpecTYPE res = new ChecksumSpecTYPE();
-        res.setChecksumType(ChecksumType.valueOf(
-                settings.getRepositorySettings().getProtocolSettings().getDefaultChecksumType()));
+        res.setChecksumType(ChecksumType.valueOf(settings.getRepositorySettings().getProtocolSettings().getDefaultChecksumType()));
 
         try {
             verifyAlgorithm(res);
         } catch (NoSuchAlgorithmException e) {
-            throw new IllegalArgumentException("The settings contains an invalid default checksum specification.", e);
+            System.err.println("The default settings file contains an invalid checksum spec.");
+            System.exit(1);
         }
 
         return res;

@@ -21,9 +21,12 @@
  */
 package org.bitrepository.pillar.store.checksumdatabase;
 
+import org.apache.commons.codec.DecoderException;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +37,7 @@ import java.util.List;
 public class ExtractedChecksumResultSet {
     protected final List<ChecksumDataForChecksumSpecTYPE> entries;
     protected boolean moreEntriesReported;
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     public ExtractedChecksumResultSet() {
         entries = new ArrayList<>();
@@ -57,7 +61,12 @@ public class ExtractedChecksumResultSet {
     public void insertChecksumEntry(ChecksumEntry entry) {
         ChecksumDataForChecksumSpecTYPE res = new ChecksumDataForChecksumSpecTYPE();
         res.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(entry.getCalculationDate()));
-        res.setChecksumValue(Base16Utils.encodeBase16(entry.getChecksum()));
+        try {
+            res.setChecksumValue(Base16Utils.encodeBase16(entry.getChecksum()));
+        } catch (DecoderException e) {
+            log.error(e.getMessage());
+        }
+
         res.setFileID(entry.getFileId());
         entries.add(res);
     }
