@@ -82,9 +82,9 @@ public class JSONStreamingTools {
      *
      * @param source   The source file
      * @param offset   The number of lines to skip
-     * @param maxlines The maximum number of lines to output
+     * @param maxLines The maximum number of lines to output
      */
-    public static StreamingOutput StreamFileParts(File source, int offset, int maxlines) {
+    public static StreamingOutput StreamFileParts(File source, int offset, int maxLines) {
         final File input = source;
         return output -> {
             JsonFactory jf = new JsonFactory();
@@ -99,7 +99,7 @@ public class JSONStreamingTools {
                         continue;
                     }
                     jg.writeString(line);
-                    if (linesRead - offset >= maxlines) {
+                    if (linesRead - offset >= maxLines) {
                         break;
                     }
                 }

@@ -1,0 +1,27 @@
+.modal-body {
+    position: relative;
+    height: inherit;
+    max-height: inherit;
+    padding: 15px;
+    overflow-y: auto;
+}
+
+.modal-new {
+    position: fixed;
+    z-index: 1050;
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 6px;
+    outline: 0;
+    box-shadow: 0 3px 7px rgb(0 0 0 / 30%);
+    -webkit-box-shadow: 0 3px 7px rgb(0 0 0 / 30%);
+    -moz-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+    background-clip: padding-box;
+    -webkit-background-clip: padding-box;
+    -moz-background-clip: padding;
+    left: 50%;
+    top: 10%;
+    transform: translate(-50%, 0);
+    width: 70%;
+    height: 80%;
+}

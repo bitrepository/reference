@@ -163,6 +163,32 @@ public class RestIntegrityService {
         return streamPartFromLatestReport(ReportPart.MISSING_CHECKSUM, collectionID, pillarID, firstID, pageSize);
     }
 
+    @GET
+    @Path("/getAllMissingFilesInformation/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public HashMap<String, List<String>> getAllMissingFilesInformation(
+            @QueryParam("collectionID")
+                    String collectionID) {
+
+        List<String> pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
+        HashMap<String, List<String>> output = new HashMap<>();
+        for (String pillar : pillars) {
+            //List<String> streamingOutput = streamPartFromLatestReportNoError(ReportPart.MISSING_FILE, collectionID, pillar, 0,
+            //        Integer.MAX_VALUE);
+            //output.put(pillar, streamingOutput);
+
+            // FOR TESTING TODO: Remove
+            if (pillar.equals("file1-pillar")) {
+                output.put(pillar, List.of("test-file2"));
+            } else {
+                output.put(pillar, List.of("test-file1", "test-file2"));
+            }
+        }
+
+
+        return output;
+    }
+
     /**
      * Method to get the list of obsolete checksums per pillar in a given collection.
      *
@@ -249,8 +275,8 @@ public class RestIntegrityService {
                 String pillarHostname = Objects.requireNonNullElse(SettingsUtils.getHostname(pillar), "N/A");
                 PillarType pillarTypeObject = SettingsUtils.getPillarType(pillar);
                 String pillarType = pillarTypeObject != null ? pillarTypeObject.value() : null;
-                PillarCollectionStat emptyStat = new PillarCollectionStat(pillar, collectionID, pillarHostname, pillarType,
-                        0L, 0L, 0L, 0L, 0L, 0L, new Date(0), new Date(0));
+                PillarCollectionStat emptyStat = new PillarCollectionStat(pillar, collectionID, pillarHostname, pillarType, 0L, 0L, 0L, 0L,
+                        0L, 0L, new Date(0), new Date(0));
                 stats.put(pillar, emptyStat);
             }
         }
@@ -409,6 +435,17 @@ public class RestIntegrityService {
             throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
                     .entity("No integrity '" + part.getHumanString() + "' report part for collection: " + collectionID + " and pillar: " +
                             pillarID + " found!").type(MediaType.TEXT_PLAIN).build());
+        }
+    }
+
+    private List<String> streamPartFromLatestReportNoError(ReportPart part, String collectionID, String pillarID, int firstID,
+                                                           int maxLines) {
+        try {
+            IntegrityReportReader reader = integrityReportProvider.getLatestIntegrityReportReader(collectionID);
+            File reportPart = reader.getReportPart(part.getPartName(), pillarID);
+            return List.of(JSONStreamingTools.StreamFileParts(reportPart, firstID, maxLines).toString());
+        } catch (FileNotFoundException e) {
+            return List.of();
         }
     }
 
