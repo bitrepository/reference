@@ -36,6 +36,15 @@ function NewPager(url, pagerElement, contentElement) {
             });
         }
 
+        function enableCopyToClipboard() {
+            $(".file-id").each(function () {
+                $(this).on("click", function () {
+                    let text = $(this).text();
+                    navigator.clipboard.writeText(text).then();
+                });
+            });
+        }
+
         $.getJSON(self.url, {}, function (j) {
             let html = `<div style="padding : 15px">`;
 
@@ -73,11 +82,11 @@ function NewPager(url, pagerElement, contentElement) {
             html += header + `<tbody id="files-table">`
 
             // Populate the remaining rows of the table.
-            // TODO: Remove upperbound and introduce autoload on scroll.
+            // TODO: Introduce autoload on scroll? Or is it okay to have a table with enormous size?
             for (let i = 0; i < files.length; i++) {
                 html += `<tr style="border-top: 1px solid #9996">`;
                 html += `<td style="border-right: 1px solid #9996;">${i + 1}</td>`;
-                html += `<td style="padding-left: 5px;" id="file-id">${files[i]}</td>`;
+                html += `<td style="padding-left: 5px;"><a href="javascript:void(0);" class="file-id">${files[i]}</a></td>`;
                 for (let k = 0; k < pillars.length; k++) {
                     if (j[pillars[k]].includes(files[i])) {
                         html += `<td style="text-align: center; background-color: #bde9ba;">&#x2713;</td>`;
@@ -95,6 +104,7 @@ function NewPager(url, pagerElement, contentElement) {
             // Assign html and activate searchbar filtering.
             $(contentElement).html(html);
             activateSearchbar();
+            enableCopyToClipboard();
         }).fail(function () {
             let html = "<div class=\"alert alert-error\">"
             html += "Failed to load page";

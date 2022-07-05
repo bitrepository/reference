@@ -39,3 +39,9 @@
 .search-bar {
     width: 33%;
 }
+
+.file-id {
+    color: #000 !important;
+    cursor: copy !important;
+    text-decoration: none !important;
+}
