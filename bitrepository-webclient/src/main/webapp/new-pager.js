@@ -23,8 +23,6 @@
 
 function NewPager(url, pagerElement, contentElement) {
     this.url = url;
-    this.pagerElement = pagerElement;
-    this.contentElement = contentElement;
 
     this.getPage = function () {
         let self = this;
@@ -53,7 +51,7 @@ function NewPager(url, pagerElement, contentElement) {
                 }
             }
             pillars.sort();
-            files.sort();
+            files.sort(sortFn);
 
             // Create table
             html += `<table style="width: 100%">`;
@@ -64,7 +62,8 @@ function NewPager(url, pagerElement, contentElement) {
             // Populate the header of the table.
             let header = `<thead>`;
             header += `<tr style="padding: 5px; border-bottom: 1pt solid black;">`;
-            header += `<th style="text-align: left; width: 35%">File ID</th>`;
+            header += `<th style="text-align: left;">#</th>`;
+            header += `<th style="text-align: left; padding-left: 5px; width: 35%">File ID</th>`;
 
             for (let i = 0; i < pillars.length; i++) {
                 header += `<th>${pillars[i].toUpperCase()}</th>`;
@@ -77,7 +76,8 @@ function NewPager(url, pagerElement, contentElement) {
             // TODO: Remove upperbound and introduce autoload on scroll.
             for (let i = 0; i < files.length; i++) {
                 html += `<tr style="border-top: 1px solid #9996">`;
-                html += `<td>${files[i]}</td>`;
+                html += `<td style="border-right: 1px solid #9996;">${i + 1}</td>`;
+                html += `<td style="padding-left: 5px;" id="file-id">${files[i]}</td>`;
                 for (let k = 0; k < pillars.length; k++) {
                     if (j[pillars[k]].includes(files[i])) {
                         html += `<td style="text-align: center; background-color: #bde9ba;">&#x2713;</td>`;
@@ -102,4 +102,16 @@ function NewPager(url, pagerElement, contentElement) {
             $(contentElement).html(html);
         });
     };
+
+    function sortFn(a, b) {
+        let regA = a.replace(/[^a-zA-Z]/g, "");
+        let regB = b.replace(/[^a-zA-Z]/g, "");
+        if (regA === regB) {
+            let numA = parseInt(a.replace(/[^0-9]/g, ""), 10);
+            let numB = parseInt(b.replace(/[^0-9]/g, ""), 10);
+            return numA === numB ? 0 : numA > numB ? 1 : -1;
+        } else {
+            return regA > regB ? 1 : -1;
+        }
+    }
 }

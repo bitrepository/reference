@@ -179,9 +179,17 @@ public class RestIntegrityService {
 
             // FOR TESTING TODO: Remove
             if (pillar.equals("file1-pillar")) {
-                output.put(pillar, List.of("test-file2"));
+                List<String> items1 = new ArrayList<>();
+                for (int i = 2; i < 89; i++) {
+                    items1.add("test-file" + i);
+                }
+                output.put(pillar, items1);
             } else {
-                output.put(pillar, List.of("test-file1", "test-file2"));
+                List<String> items2 = new ArrayList<>();
+                for (int i = 0; i < 100; i++) {
+                    items2.add("test-file" + i);
+                }
+                output.put(pillar, items2);
             }
         }
 
