@@ -28,9 +28,18 @@ function NewPager(url, pagerElement, contentElement) {
 
     this.getPage = function () {
         let self = this;
+
+        function activateSearchbar() {
+            $(".search-bar").on("keyup", function () {
+                let filter = $(this).val().toUpperCase();
+                $("#files-table tr").filter(function () {
+                    $(this).toggle($(this).text().toUpperCase().indexOf(filter) > -1);
+                });
+            });
+        }
+
         $.getJSON(self.url, {}, function (j) {
             let html = `<div style="padding : 15px">`;
-            html += `<table style="width: 100%"><tbody>`
 
             // Initialize pillar and files information
             let pillars = [];
@@ -40,40 +49,52 @@ function NewPager(url, pagerElement, contentElement) {
                 for (let i = 0; i < j[key].length; i++) {
                     if (!files.includes(j[key][i])) {
                         files.push(j[key][i]);
-                        console.log(j[key][i]);
                     }
                 }
             }
             pillars.sort();
             files.sort();
 
+            // Create table
+            html += `<table style="width: 100%">`;
+
+            // Create search bar
+            html += `<input type="text" class="search-bar" placeholder="Search for file..">`;
+
             // Populate the header of the table.
-            let th = `<tr style="padding: 5px; border-bottom: 1pt solid black;">`
-            th += `<th style="text-align: left;">File ID</th>`;
+            let header = `<thead>`;
+            header += `<tr style="padding: 5px; border-bottom: 1pt solid black;">`;
+            header += `<th style="text-align: left; width: 35%">File ID</th>`;
 
             for (let i = 0; i < pillars.length; i++) {
-                th += `<th>${pillars[i].toUpperCase()}</th>`;
+                header += `<th>${pillars[i].toUpperCase()}</th>`;
             }
-            th += '</tr>';
-            html += th;
+            header += `</tr>`;
+            header += `</thead>`;
+            html += header + `<tbody id="files-table">`
 
             // Populate the remaining rows of the table.
             // TODO: Remove upperbound and introduce autoload on scroll.
             for (let i = 0; i < files.length; i++) {
-                html += `<tr>`
-                html += `<td>${files[i]}</td>`
+                html += `<tr style="border-top: 1px solid #9996">`;
+                html += `<td>${files[i]}</td>`;
                 for (let k = 0; k < pillars.length; k++) {
                     if (j[pillars[k]].includes(files[i])) {
-                        html += `<td style="text-align: center; background-color: #bde9ba;">&#x2713;</td>`
+                        html += `<td style="text-align: center; background-color: #bde9ba;">&#x2713;</td>`;
                     } else {
-                        html += `<td style="text-align: center; background-color: #db7070;">x</td>`
+                        html += `<td style="text-align: center; background-color: #db7070b0;">x</td>`;
                     }
                 }
-                html += `</tr>`
+                html += `</tr>`;
             }
 
-            html += "</tbody></table></div>";
+            html += '</tbody>';
+            html += '</table>';
+            html += '</div>';
+
+            // Assign html and activate searchbar filtering.
             $(contentElement).html(html);
+            activateSearchbar();
         }).fail(function () {
             let html = "<div class=\"alert alert-error\">"
             html += "Failed to load page";
@@ -82,4 +103,3 @@ function NewPager(url, pagerElement, contentElement) {
         });
     };
 }
-

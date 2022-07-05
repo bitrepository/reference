@@ -75,17 +75,17 @@
               <span class="pull-right" id="integrityReportGetter"></span>
             </span>
       </legend>
-      <table class="table table-bordered table-striped">
+      <table id="integrity-status-table" class="table table-bordered table-striped">
         <thead>
-        <tr>
+        <tr style="text-align: center">
           <th>Pillar ID</th>
           <th>Pillar Hostname</th>
           <th>Pillar Type</th>
           <th>Total number of files</th>
-          <th>Number of missing files</th>
-          <th>Number of missing checksums</th>
-          <th>Number of obsolete checksums</th>
-          <th>Number of inconsistent checksums</th>
+          <th id="all-missingFiles">Number of missing files</th>
+          <th id="all-missingChecksums">Number of missing checksums</th>
+          <th id="all-obsoleteChecksums">Number of obsolete checksums</th>
+          <th id="all-checksumErrors">Number of inconsistent checksums</th>
         </tr>
         </thead>
         <tbody id="integrity-status-table-body"></tbody>
@@ -95,7 +95,7 @@
 </div>
 
 <div id="modalPagerDialog" class="modal-new hide fade" tabindex="-1" role="dialog" aria-labelledby="modalPagerLabel" aria-hidden="true">
-  <div class="modal-header">
+  <div class="modal-header" style="text-align: center">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
     <h3 id="modalPagerLabel">Modal header</h3>
   </div>
@@ -284,43 +284,25 @@
         return context;
     }
 
-    function getCellContextForAllPillars(type) {
+    function getHeaderContext(type) {
         let context = {};
-        const id = "all";
         context.url = integrityServiceUrl + "/integrity/IntegrityService/";
-        if (type === "Pillar Hostname") {
-            context.element = id + "-pillarHostname";
-            context.title = type + " on " + id;
-            context.member = "pillarHostname";
-        } else if (type === "Pillar Type") {
-            context.element = id + "-pillarType";
-            context.title = type + " on " + id;
-            context.member = "pillarType";
-        } else if (type === "Total files") {
-            context.element = id + "-totalFileCount";
-            context.title = type + " on " + id;
-            context.member = "totalFileCount";
-            context.url += "getAllFileIDs/";
-        } else if (type === "Missing files") {
-            context.element = id + "-missingFiles";
-            context.title = type + " on " + id;
-            context.member = "missingFilesCount";
+        if (type === "Number of missing files") {
+            context.element = "all-missingFiles";
+            context.title = type + " on all pillars";
             context.url += "getAllMissingFilesInformation/";
-        } else if (type === "Missing checksums") {
-            context.element = id + "-missingChecksums";
-            context.title = type + " on " + id;
-            context.member = "missingChecksumsCount";
-            context.url += "getMissingChecksumsFileIDs/";
-        } else if (type === "Obsolete checksums") {
-            context.element = id + "-obsoleteChecksums";
-            context.title = type + " on " + id;
-            context.member = "obsoleteChecksumsCount";
-            context.url += "getObsoleteChecksumsFileIDs/";
-        } else if (type === "Inconsistent checksums") {
-            context.element = id + "-checksumErrors";
-            context.title = type + " on " + id;
-            context.member = "checksumErrorCount";
-            context.url += "getChecksumErrorFileIDs/";
+        } else if (type === "Number of missing checksums") {
+            context.element = "all-missingChecksums";
+            context.title = type + " on all pillars";
+            //context.url += "getMissingChecksumsFileIDs/";
+        } else if (type === "Number of obsolete checksums") {
+            context.element = "all-obsoleteChecksums";
+            context.title = type + " on all pillars";
+            //context.url += "getObsoleteChecksumsFileIDs/";
+        } else if (type === "Number of inconsistent checksums") {
+            context.element = "all-checksumErrors";
+            context.title = type + " on all pillars";
+            //context.url += "getChecksumErrorFileIDs/";
         }
         context.url += "?collectionID=" + getCollectionID();
         return context;
@@ -340,18 +322,11 @@
         return html;
     }
 
-    function makeAllPillarsRow() {
-        let html = "";
-        html += `<tr id="all-row">`;
-        html += `<td><div style="padding:5px">All Pillars</div></td>`;
-        html += `<td id="all-pillarHostname"></td>`;
-        html += `<td id="all-pillarType"></td>`;
-        html += `<td id="all-totalFileCount"></td>`;
-        html += `<td id="all-missingFiles"></td>`;
-        html += `<td id="all-missingChecksums"></td>`;
-        html += `<td id="all-obsoleteChecksums"></td>`;
-        html += `<td id="all-checksumErrors"></td></tr>`;
-        return html;
+    function setHeader(type) {
+        let context = getHeaderContext(type);
+        let html = `<a style="text-decoration: none; cursor: pointer;" id="${context.element}-a">${type}</a>`;
+        $("#" + context.element).html(html);
+        $("#" + context.element + "-a").click(showNewModalPager(context.title, context.url));
     }
 
     function updateCells(pillarID) {
@@ -364,25 +339,15 @@
         updateIntCell(pillarID, "Inconsistent checksums", pillars[pillarID].checksumErrorCount);
     }
 
-    function updateCellsForAllRow() {
-        // TODO: Introduce dynamic cellValues.
-        updateStringCellAll("Pillar Hostname", "All");
-        updateStringCellAll("Pillar Type", "All");
-        updateIntCellAll("Total files", 0);
-        updateIntCellAll("Missing files", 1);
-        updateIntCellAll("Missing checksums", 0);
-        updateIntCellAll("Obsolete checksums", 0);
-        updateIntCellAll("Inconsistent checksums", 0);
+    function updateHeader() {
+        setHeader("Number of missing files");
+        setHeader("Number of missing checksums");
+        setHeader("Number of obsolete checksums");
+        setHeader("Number of inconsistent checksums");
     }
 
     function updateStringCell(id, type, cellValue) {
         var context = getCellContext(id, type);
-        var html = "<p>" + cellValue + "</p>";
-        $("#" + context.element).html(html);
-    }
-
-    function updateStringCellAll(type, cellValue) {
-        var context = getCellContextForAllPillars(type);
         var html = "<p>" + cellValue + "</p>";
         $("#" + context.element).html(html);
     }
@@ -400,31 +365,15 @@
         }
     }
 
-    function updateIntCellAll(type, cellValue) {
-        var context = getCellContextForAllPillars(type);
-        if (cellValue == 0) {
-            var html = "<button class=\"btn btn-link\" disabled>" + formatInt(cellValue) + "</button>";
-            $("#" + context.element).html(html);
-        } else {
-            var innerElement = context.element + "-a";
-            var html = "<a class=\"btn btn-link\" id=\"" + innerElement + "\">" + formatInt(cellValue) + "</a>";
-            $("#" + context.element).html(html);
-            $("#" + innerElement).click(showNewModalPager(context.title, context.url));
-        }
-    }
-
     function getIntegrityStatus() {
         var url = integrityServiceUrl + "/integrity/IntegrityService/getIntegrityStatus/?collectionID="
             + getCollectionID();
         $.getJSON(url, {}, function (j) {
             var htmlTable;
 
-            for (var i = 0; i < j.length; i++) {
+            for (let i = 0; i < j.length; i++) {
                 if (pillars[j[i].pillarID] == null) {
                     let tableBody = $("#integrity-status-table-body");
-                    if (i === 0) {
-                        tableBody.append(makeAllPillarsRow());
-                    }
                     tableBody.append(makePillarRow(j[i].pillarID));
                 }
                 pillars[j[i].pillarID] = {
@@ -436,8 +385,8 @@
                     obsoleteChecksumsCount: j[i].obsoleteChecksumsCount,
                     checksumErrorCount: j[i].checksumErrorCount
                 };
-                updateCellsForAllRow();
                 updateCells(j[i].pillarID);
+                updateHeader();
             }
         });
     }
