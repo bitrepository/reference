@@ -53,7 +53,7 @@ function NewPager(url, pagerElement, contentElement) {
             // Populate the header of the table.
             let header = `<thead class="modal-table-head">`;
             header += `<tr style="padding: 5px; border-bottom: 1pt solid black;">`;
-            header += `<th style="text-align: left;">#</th>`;
+            header += `<th style="text-align: left; border-left: 1px solid white;">#</th>`;
             header += `<th style="text-align: left; padding-left: 5px; width: 35%">File ID</th>`;
 
             for (let i = 0; i < pillars.length; i++) {
@@ -79,9 +79,10 @@ function NewPager(url, pagerElement, contentElement) {
                 html += `</tr>`;
             }
 
-            html += '</tbody>';
-            html += '</table>';
-            html += '</div>';
+            html += `</tbody>`;
+            html += `</table>`;
+            html += `<p class="no-result-p" style="text-align:center; margin-top: 15px; display: none;">No results found</p>`;
+            html += `</div>`;
 
             // Assign html and activate searchbar filtering.
             $(contentElement).html(html);
@@ -101,6 +102,7 @@ function NewPager(url, pagerElement, contentElement) {
             $("#files-table tr").filter(function () {
                 $(this).toggle($(this).text().toUpperCase().indexOf(filter) > -1);
             });
+            noSearchResult();
         });
     }
 
@@ -111,6 +113,18 @@ function NewPager(url, pagerElement, contentElement) {
                 navigator.clipboard.writeText(text).then();
             });
         });
+    }
+
+    function noSearchResult() {
+        let noResultText = $(".no-result-p");
+        let hasResult = false;
+        $("#files-table tr").each(function () {
+            if (!$(this).is(":hidden")) {
+                hasResult = true;
+                return false;
+            }
+        });
+        hasResult ? noResultText.hide() : noResultText.show();
     }
 
     function sortFn(a, b) {
