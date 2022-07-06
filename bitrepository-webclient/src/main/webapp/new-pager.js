@@ -27,24 +27,6 @@ function NewPager(url, pagerElement, contentElement) {
     this.getPage = function () {
         let self = this;
 
-        function activateSearchbar() {
-            $(".search-bar").on("keyup", function () {
-                let filter = $(this).val().toUpperCase();
-                $("#files-table tr").filter(function () {
-                    $(this).toggle($(this).text().toUpperCase().indexOf(filter) > -1);
-                });
-            });
-        }
-
-        function enableCopyToClipboard() {
-            $(".file-id").each(function () {
-                $(this).on("click", function () {
-                    let text = $(this).text();
-                    navigator.clipboard.writeText(text).then();
-                });
-            });
-        }
-
         $.getJSON(self.url, {}, function (j) {
             let html = `<div style="padding : 15px">`;
 
@@ -62,14 +44,14 @@ function NewPager(url, pagerElement, contentElement) {
             pillars.sort();
             files.sort(sortFn);
 
-            // Create table
-            html += `<table style="width: 100%">`;
-
             // Create search bar
-            html += `<input type="text" class="search-bar" placeholder="Search for file..">`;
+            html += `<div class="fixed-div"><input type="text" class="search-bar" placeholder="Search for file.."></div>`;
+
+            // Create table
+            html += `<table class="modal-table" style="width: 100%; border-collapse: separate;">`;
 
             // Populate the header of the table.
-            let header = `<thead>`;
+            let header = `<thead class="modal-table-head">`;
             header += `<tr style="padding: 5px; border-bottom: 1pt solid black;">`;
             header += `<th style="text-align: left;">#</th>`;
             header += `<th style="text-align: left; padding-left: 5px; width: 35%">File ID</th>`;
@@ -112,6 +94,24 @@ function NewPager(url, pagerElement, contentElement) {
             $(contentElement).html(html);
         });
     };
+
+    function activateSearchbar() {
+        $(".search-bar").on("keyup", function () {
+            let filter = $(this).val().toUpperCase();
+            $("#files-table tr").filter(function () {
+                $(this).toggle($(this).text().toUpperCase().indexOf(filter) > -1);
+            });
+        });
+    }
+
+    function enableCopyToClipboard() {
+        $(".file-id").each(function () {
+            $(this).on("click", function () {
+                let text = $(this).text();
+                navigator.clipboard.writeText(text).then();
+            });
+        });
+    }
 
     function sortFn(a, b) {
         let regA = a.replace(/[^a-zA-Z]/g, "");

@@ -180,13 +180,13 @@ public class RestIntegrityService {
             // FOR TESTING TODO: Remove
             if (pillar.equals("file1-pillar")) {
                 List<String> items1 = new ArrayList<>();
-                for (int i = 2; i < 89; i++) {
+                for (int i = 2; i < 899 ; i++) {
                     items1.add("test-file" + i);
                 }
                 output.put(pillar, items1);
             } else {
                 List<String> items2 = new ArrayList<>();
-                for (int i = 0; i < 100; i++) {
+                for (int i = 0; i < 1000; i++) {
                     items2.add("test-file" + i);
                 }
                 output.put(pillar, items2);

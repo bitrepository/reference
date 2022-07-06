@@ -2,13 +2,30 @@
     font-weight: bold;
 }
 
+.modal-table tr th {
+    border-bottom: 1px solid black;
+}
+
+.modal-table td {
+    border-bottom: 1px solid #9996;
+}
+
 .table thead th {
     vertical-align: bottom;
     padding: 15px;
 }
 
+.modal-table-head {
+    padding: 5px;
+    position: sticky;
+    top: 2%;
+    height: 35px;
+    background-color: #fff;
+}
+
 .modal-body {
     position: relative;
+    margin-top: 20px;
     height: inherit;
     max-height: 88%;
     padding: 15px;
@@ -36,8 +53,17 @@
     /*height: 86%;*/
 }
 
+.fixed-div {
+    position: fixed;
+    width: 95%;
+    height: 6%;
+    background-color: #fff;
+    top: 6%;
+}
+
 .search-bar {
     width: 33%;
+    margin: 10px;
 }
 
 .file-id {
