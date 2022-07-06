@@ -75,6 +75,7 @@ public class RestIntegrityService {
     private final IntegrityModel model;
     private final WorkflowManager workflowManager;
     private final IntegrityReportProvider integrityReportProvider;
+    private List<String> pillars;
 
     public RestIntegrityService() {
         this.model = IntegrityServiceManager.getIntegrityModel();
@@ -169,18 +170,17 @@ public class RestIntegrityService {
     public HashMap<String, List<String>> getAllMissingFilesInformation(
             @QueryParam("collectionID")
                     String collectionID) {
-
-        List<String> pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
+        pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
         HashMap<String, List<String>> output = new HashMap<>();
         for (String pillar : pillars) {
-            //List<String> streamingOutput = streamPartFromLatestReportNoError(ReportPart.MISSING_FILE, collectionID, pillar, 0,
-            //        Integer.MAX_VALUE);
-            //output.put(pillar, streamingOutput);
+            List<String> streamingOutput = streamPartFromLatestReportNoError(ReportPart.MISSING_FILE, collectionID, pillar, 0,
+                    Integer.MAX_VALUE);
+            output.put(pillar, streamingOutput);
 
             // FOR TESTING TODO: Remove
             if (pillar.equals("file1-pillar")) {
                 List<String> items1 = new ArrayList<>();
-                for (int i = 2; i < 899 ; i++) {
+                for (int i = 2; i < 899; i++) {
                     items1.add("test-file" + i);
                 }
                 output.put(pillar, items1);
@@ -193,6 +193,101 @@ public class RestIntegrityService {
             }
         }
 
+        return output;
+    }
+
+    @GET
+    @Path("/getAllMissingChecksumsInformation/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public HashMap<String, List<String>> getAllMissingChecksumsInformation(
+            @QueryParam("collectionID")
+                    String collectionID) {
+        pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
+        HashMap<String, List<String>> output = new HashMap<>();
+        for (String pillar : pillars) {
+            List<String> streamingOutput = streamPartFromLatestReportNoError(ReportPart.MISSING_CHECKSUM, collectionID, pillar, 0,
+                    Integer.MAX_VALUE);
+            output.put(pillar, streamingOutput);
+
+            // FOR TESTING TODO: Remove
+            if (pillar.equals("file1-pillar")) {
+                List<String> items1 = new ArrayList<>();
+                for (int i = 2; i < 200; i++) {
+                    items1.add("missing-checksum-test-file" + i + ".zip");
+                }
+                output.put(pillar, items1);
+            } else {
+                List<String> items2 = new ArrayList<>();
+                for (int i = 0; i < 206; i++) {
+                    items2.add("missing-checksum-test-file" + i + ".zip");
+                }
+                output.put(pillar, items2);
+            }
+        }
+
+        return output;
+    }
+
+    @GET
+    @Path("/getAllObsoleteChecksumsInformation/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public HashMap<String, List<String>> getAllObsoleteChecksumsInformation(
+            @QueryParam("collectionID")
+                    String collectionID) {
+        pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
+        HashMap<String, List<String>> output = new HashMap<>();
+        for (String pillar : pillars) {
+            List<String> streamingOutput = streamPartFromLatestReportNoError(ReportPart.OBSOLETE_CHECKSUM, collectionID, pillar, 0,
+                    Integer.MAX_VALUE);
+            output.put(pillar, streamingOutput);
+
+            // FOR TESTING TODO: Remove
+            if (pillar.equals("file1-pillar")) {
+                List<String> items1 = new ArrayList<>();
+                for (int i = 2; i < 200; i++) {
+                    items1.add("obsolete-checksum-test-file" + i + ".rar");
+                }
+                output.put(pillar, items1);
+            } else {
+                List<String> items2 = new ArrayList<>();
+                for (int i = 0; i < 206; i++) {
+                    items2.add("obsolete-checksum-test-file" + i + ".rar");
+                }
+                output.put(pillar, items2);
+            }
+        }
+
+        return output;
+    }
+
+    @GET
+    @Path("/getAllInconsistentChecksumsInformation/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public HashMap<String, List<String>> getAllInconsistentChecksumsInformation(
+            @QueryParam("collectionID")
+                    String collectionID) {
+        pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
+        HashMap<String, List<String>> output = new HashMap<>();
+        for (String pillar : pillars) {
+            List<String> streamingOutput = streamPartFromLatestReportNoError(ReportPart.CHECKSUM_ISSUE, collectionID, pillar, 0,
+                    Integer.MAX_VALUE);
+            output.put(pillar, streamingOutput);
+
+            // FOR TESTING TODO: Remove
+            if (pillar.equals("file1-pillar")) {
+                List<String> items1 = new ArrayList<>();
+                for (int i = 2; i < 200; i++) {
+                    items1.add("inconsistent-checksum-test-file" + i + ".txt");
+                }
+                output.put(pillar, items1);
+            } else {
+                List<String> items2 = new ArrayList<>();
+                for (int i = 0; i < 206; i++) {
+                    items2.add("inconsistent-checksum-test-file" + i + ".txt");
+                }
+                output.put(pillar, items2);
+            }
+        }
 
         return output;
     }

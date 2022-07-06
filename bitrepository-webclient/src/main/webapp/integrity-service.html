@@ -295,15 +295,15 @@
         } else if (type === "Number of missing checksums") {
             context.element = "all-missingChecksums";
             context.title = type + " on all pillars";
-            //context.url += "getMissingChecksumsFileIDs/";
+            context.url += "getAllMissingChecksumsInformation/";
         } else if (type === "Number of obsolete checksums") {
             context.element = "all-obsoleteChecksums";
             context.title = type + " on all pillars";
-            //context.url += "getObsoleteChecksumsFileIDs/";
+            context.url += "getAllObsoleteChecksumsInformation/";
         } else if (type === "Number of inconsistent checksums") {
             context.element = "all-checksumErrors";
             context.title = type + " on all pillars";
-            //context.url += "getChecksumErrorFileIDs/";
+            context.url += "getAllInconsistentChecksumsInformation/";
         }
         context.url += "?collectionID=" + getCollectionID();
         return context;
