@@ -111,7 +111,6 @@
 <script src="jquery/jquery-1.9.0.min.js"></script>
 <script src="bootstrap/js/bootstrap.min.js"></script>
 <script src="menu.js"></script>
-<script src="pager.js"></script>
 <script src="new-pager.js"></script>
 <script src="utils.js"></script>
 <script src="CollectionNameMapper.js"></script>
@@ -158,16 +157,14 @@
     }
 
     function getStoredWorkflowInfo(id, type) {
-        var myID = id;
-        var myType = type;
         return function () {
-            return nl2br(workflows[myID][myType]);
+            return nl2br(workflows[id][type]);
         }
     }
 
     function attachWorkflowInfoButton(id, type) {
-        var element;
-        var title;
+        let element;
+        let title;
         if (type == "workflowDescription") {
             element = "#" + id + "-details";
             title = "Workflow description";
@@ -186,9 +183,8 @@
     }
 
     function getWorkflowStatuses() {
-        var url = integrityServiceUrl + '/integrity/IntegrityService/getWorkflowSetup/?collectionID=' + getCollectionID();
+        let url = integrityServiceUrl + '/integrity/IntegrityService/getWorkflowSetup/?collectionID=' + getCollectionID();
         $.getJSON(url, {}, function (j) {
-            var htmlTableBody;
             for (var i = 0; i < j.length; i++) {
                 if (workflows[j[i].workflowID] == null) {
                     $("#workflow-status-table-body").append(
@@ -210,29 +206,7 @@
         });
     }
 
-    function getPagingLimit(id, member) {
-        var myID = id;
-        var myMember = member;
-        return function () {
-            return pillars[myID][myMember];
-        }
-    }
-
-    function showModalPager(id, member, title, url) {
-        var myTitle = title;
-        var myUrl = url;
-        var myID = id;
-        var myMember = member;
-        return function () {
-            pager = new Pager(getPagingLimit(myID, myMember), 20, myUrl, "#modalPager", "#modalPagerBody");
-            $("#modalPagerLabel").html(myTitle);
-            $("#modalPagerBody").html("<p>Loading</p>");
-            pager.getPage(1)();
-            $("#modalPagerDialog").modal('show');
-        }
-    }
-
-    function showNewModalPager(title, url, pillarID = undefined) {
+    function showModalPager(title, url, pillarID = undefined) {
         return function () {
             pager = new NewPager(pillarID, url, "#modalPager", "#modalPagerBody");
             $("#modalPagerLabel").html(title);
@@ -242,7 +216,7 @@
         }
     }
 
-    function getCellContext(id, type) {
+    function getBodyContext(id, type) {
         let context = {};
         context.url = integrityServiceUrl + "/integrity/IntegrityService/";
         if (type === "Pillar Hostname") {
@@ -325,10 +299,10 @@
         let context = getHeaderContext(type);
         let html = `<a style="text-decoration: none; cursor: pointer;" id="${context.element}-a">${type}</a>`;
         $("#" + context.element).html(html);
-        $("#" + context.element + "-a").click(showNewModalPager(context.title, context.url));
+        $("#" + context.element + "-a").click(showModalPager(context.title, context.url));
     }
 
-    function updateCells(pillarID) {
+    function updateTableBody(pillarID) {
         updateStringCell(pillarID, "Pillar Hostname", pillars[pillarID].pillarHostname);
         updateStringCell(pillarID, "Pillar Type", pillars[pillarID].pillarType);
         updateIntCell(pillarID, "Total files", pillars[pillarID].totalFileCount);
@@ -338,7 +312,7 @@
         updateIntCell(pillarID, "Inconsistent checksums", pillars[pillarID].checksumErrorCount);
     }
 
-    function updateHeader() {
+    function updateTableHeader() {
         setHeader("Number of missing files");
         setHeader("Number of missing checksums");
         setHeader("Number of obsolete checksums");
@@ -346,39 +320,28 @@
     }
 
     function updateStringCell(id, type, cellValue) {
-        let context = getCellContext(id, type);
+        let context = getBodyContext(id, type);
         let html = "<p>" + cellValue + "</p>";
         $("#" + context.element).html(html);
     }
 
-    // function updateIntCell(id, type, cellValue) {
-    //     let context = getCellContext(id, type);
-    //     if (cellValue === 0) {
-    //         let html = `<button class="btn btn-link" disabled>${formatInt(cellValue)}</button>`;
-    //         $("#" + context.element).html(html);
-    //     } else {
-    //         let innerElement = context.element + "-a";
-    //         let html = `<a class="btn btn-link" id="${innerElement}">${formatInt(cellValue)}</a>`;
-    //         $("#" + context.element).html(html);
-    //         $("#" + innerElement).click(showNewModalPager(context.title, context.url, id));
-    //     }
-    // }
-    // FOR TESTING TODO: remove and use above
     function updateIntCell(pillarID, type, cellValue) {
-        let context = getCellContext(pillarID, type);
-        let innerElement = context.element + "-a";
-        let html = `<a class="btn btn-link" id="${innerElement}">${formatInt(cellValue)}</a>`;
-        $("#" + context.element).html(html);
-        $("#" + innerElement).click(showNewModalPager(context.title, context.url, pillarID));
-
+        let context = getBodyContext(pillarID, type);
+        if (cellValue === 0) {
+            let html = `<button class="btn btn-link" disabled>${formatInt(cellValue)}</button>`;
+            $("#" + context.element).html(html);
+        } else {
+            let innerElement = context.element + "-a";
+            let html = `<a class="btn btn-link" id="${innerElement}">${formatInt(cellValue)}</a>`;
+            $("#" + context.element).html(html);
+            $("#" + innerElement).click(showModalPager(context.title, context.url, pillarID));
+        }
     }
 
     function getIntegrityStatus() {
         let url = integrityServiceUrl + "/integrity/IntegrityService/getIntegrityStatus/?collectionID="
             + getCollectionID();
         $.getJSON(url, {}, function (j) {
-            let htmlTable;
-
             for (let i = 0; i < j.length; i++) {
                 if (pillars[j[i].pillarID] == null) {
                     let tableBody = $("#integrity-status-table-body");
@@ -393,15 +356,15 @@
                     obsoleteChecksumsCount: j[i].obsoleteChecksumsCount,
                     checksumErrorCount: j[i].checksumErrorCount
                 };
-                updateCells(j[i].pillarID);
-                updateHeader();
+                updateTableBody(j[i].pillarID);
+                updateTableHeader();
             }
         });
     }
 
     function startWorkflow() {
-        var ID = $("#workflowSelector option:selected").val();
-        var url = integrityServiceUrl + '/integrity/IntegrityService/startWorkflow/';
+        let ID = $("#workflowSelector option:selected").val();
+        let url = integrityServiceUrl + '/integrity/IntegrityService/startWorkflow/';
         $('#formStatus').load(url, {
             workflowID: ID,
             collectionID: getCollectionID()
@@ -410,7 +373,7 @@
     }
 
     function getCollectionInformation() {
-        var url = integrityServiceUrl + "/integrity/IntegrityService/getCollectionInformation/?collectionID=" + getCollectionID();
+        let url = integrityServiceUrl + "/integrity/IntegrityService/getCollectionInformation/?collectionID=" + getCollectionID();
         $.getJSON(url, {}, function (j) {
             var infoHtml = "<span><b> Latest ingest: " + j.lastIngest + " &nbsp; &nbsp; ";
             infoHtml += " Size: " + j.collectionSize + " &nbsp; &nbsp; ";
