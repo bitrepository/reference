@@ -53,7 +53,7 @@ public class IntegrityReportWriter {
     public IntegrityReportWriter(File reportDir) {
         this.reportDir = reportDir;
         missingFilesWriter = new IntegrityReportPartWriter(ReportPart.MISSING_FILE, reportDir);
-        checksumIssuesWriter = new IntegrityReportPartWriter(ReportPart.CHECKSUM_ISSUE, reportDir);
+        checksumIssuesWriter = new IntegrityReportPartWriter(ReportPart.CHECKSUM_ERROR, reportDir);
         missingChecksumsWriter = new IntegrityReportPartWriter(ReportPart.MISSING_CHECKSUM, reportDir);
         obsoleteChecksumsWriter = new IntegrityReportPartWriter(ReportPart.OBSOLETE_CHECKSUM, reportDir);
         deletedFilesWriter2 = new IntegrityReportPartWriter(ReportPart.DELETED_FILE, reportDir);

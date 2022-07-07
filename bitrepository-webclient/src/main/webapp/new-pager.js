@@ -21,13 +21,12 @@
  */
 
 
-function NewPager(url, pagerElement, contentElement) {
+function NewPager(pillarID, url, pagerElement, contentElement) {
+    this.pillarID = pillarID;
     this.url = url;
 
     this.getPage = function () {
-        let self = this;
-
-        $.getJSON(self.url, {}, function (j) {
+        $.getJSON(this.url, {}, function (j) {
             let html = `<div style="padding : 15px">`;
 
             // Initialize pillar and files information
@@ -57,27 +56,19 @@ function NewPager(url, pagerElement, contentElement) {
             header += `<th style="text-align: left; padding-left: 5px; width: 35%">File ID</th>`;
 
             for (let i = 0; i < pillars.length; i++) {
-                header += `<th>${pillars[i].toUpperCase()}</th>`;
+                if (typeof pillarID !== 'undefined' && pillars[i] === pillarID) {
+                    header += `<th style="background-color: #ecf275;">${pillars[i].toUpperCase()}</th>`;
+                } else {
+                    header += `<th>${pillars[i].toUpperCase()}</th>`;
+                }
             }
+
             header += `</tr>`;
             header += `</thead>`;
             html += header + `<tbody id="files-table">`
 
-            // Populate the remaining rows of the table.
-            // TODO: Introduce autoload on scroll? Or is it okay to have a table with enormous size?
-            for (let i = 0; i < files.length; i++) {
-                html += `<tr style="border-top: 1px solid #9996">`;
-                html += `<td style="border-right: 1px solid #9996;">${i + 1}</td>`;
-                html += `<td style="padding-left: 5px;"><a href="javascript:void(0);" class="file-id">${files[i]}</a></td>`;
-                for (let k = 0; k < pillars.length; k++) {
-                    if (j[pillars[k]].includes(files[i])) {
-                        html += `<td style="text-align: center; background-color: #bde9ba;">&#x2713;</td>`;
-                    } else {
-                        html += `<td style="text-align: center; background-color: #db7070b0;">x</td>`;
-                    }
-                }
-                html += `</tr>`;
-            }
+            // Populate the file status rows of the table. TODO: Needs autoload on scroll? Or is it okay to have a large table?
+            html += getTableBody(pillars, files, j);
 
             html += `</tbody>`;
             html += `</table>`;
@@ -95,6 +86,35 @@ function NewPager(url, pagerElement, contentElement) {
             $(contentElement).html(html);
         });
     };
+
+    function getTableBody(pillars, files, j) {
+        let html = ``;
+
+        // When a single pillar modal is opened, the pillarID will be used to show only the missing files.
+        if (typeof pillarID !== "undefined") {
+            for (let idx = (files.length - 1); 0 <= idx; idx--) {
+                if (j[pillarID].includes(files[idx])) {
+                    files.splice(idx, 1);
+                }
+            }
+        }
+
+        for (let i = 0; i < files.length; i++) {
+            html += `<tr style="border-top: 1px solid #9996">`;
+            html += `<td style="border-right: 1px solid #9996;">${i + 1}</td>`;
+            html += `<td style="padding-left: 5px;"><a href="javascript:void(0);" class="file-id">${files[i]}</a></td>`;
+            for (let k = 0; k < pillars.length; k++) {
+                if (j[pillars[k]].includes(files[i])) {
+                    html += `<td style="text-align: center; background-color: #bde9ba;">&#x2713;</td>`;
+                } else {
+                    html += `<td style="text-align: center; background-color: #db7070b0;">x</td>`;
+                }
+            }
+            html += `</tr>`;
+        }
+        return html;
+    }
+
 
     function activateSearchbar() {
         $(".search-bar").on("keyup", function () {
