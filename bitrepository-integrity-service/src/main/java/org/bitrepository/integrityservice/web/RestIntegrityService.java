@@ -129,24 +129,8 @@ public class RestIntegrityService {
         pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
         HashMap<String, List<String>> output = new HashMap<>();
         for (String pillar : pillars) {
-            List<String> streamingOutput = streamPartFromLatestReportNoError(ReportPart.MISSING_FILE, collectionID, pillar, 0,
-                    Integer.MAX_VALUE);
+            List<String> streamingOutput = streamPartFromLatestReport(ReportPart.MISSING_FILE, collectionID, pillar);
             output.put(pillar, streamingOutput);
-
-            // FOR TESTING TODO: Remove
-            if (pillar.equals("file1-pillar")) {
-                List<String> items1 = new ArrayList<>();
-                for (int i = 1; i < 70; i++) {
-                    items1.add("test-single-pillar-file" + i);
-                }
-                output.put(pillar, items1);
-            } else {
-                List<String> items2 = new ArrayList<>();
-                for (int i = 0; i < 100; i++) {
-                    items2.add("test-single-pillar-file" + i);
-                }
-                output.put(pillar, items2);
-            }
         }
 
         return output;
@@ -168,8 +152,7 @@ public class RestIntegrityService {
                     String collectionID,
             @QueryParam("pillarID")
                     String pillarID) {
-        List<String> streamingOutput = streamPartFromLatestReportNoError(ReportPart.MISSING_CHECKSUM, collectionID, pillarID, 0,
-                Integer.MAX_VALUE);
+        List<String> streamingOutput = streamPartFromLatestReport(ReportPart.MISSING_CHECKSUM, collectionID, pillarID);
         return new HashMap<>() {{
             put(pillarID, streamingOutput);
         }};
@@ -190,8 +173,7 @@ public class RestIntegrityService {
                     String collectionID,
             @QueryParam("pillarID")
                     String pillarID) {
-        List<String> streamingOutput = streamPartFromLatestReportNoError(ReportPart.OBSOLETE_CHECKSUM, collectionID, pillarID, 0,
-                Integer.MAX_VALUE);
+        List<String> streamingOutput = streamPartFromLatestReport(ReportPart.OBSOLETE_CHECKSUM, collectionID, pillarID);
         return new HashMap<>() {{
             put(pillarID, streamingOutput);
         }};
@@ -212,8 +194,7 @@ public class RestIntegrityService {
                     String collectionID,
             @QueryParam("pillarID")
                     String pillarID) {
-        List<String> streamingOutput = streamPartFromLatestReportNoError(ReportPart.CHECKSUM_ERROR, collectionID, pillarID, 0,
-                Integer.MAX_VALUE);
+        List<String> streamingOutput = streamPartFromLatestReport(ReportPart.CHECKSUM_ERROR, collectionID, pillarID);
         return new HashMap<>() {{
             put(pillarID, streamingOutput);
         }};
@@ -234,24 +215,8 @@ public class RestIntegrityService {
         pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
         HashMap<String, List<String>> output = new HashMap<>();
         for (String pillar : pillars) {
-            List<String> streamingOutput = streamPartFromLatestReportNoError(ReportPart.MISSING_FILE, collectionID, pillar, 0,
-                    Integer.MAX_VALUE);
+            List<String> streamingOutput = streamPartFromLatestReport(ReportPart.MISSING_FILE, collectionID, pillar);
             output.put(pillar, streamingOutput);
-
-            // FOR TESTING TODO: Remove
-            if (pillar.equals("file1-pillar")) {
-                List<String> items1 = new ArrayList<>();
-                for (int i = 2; i < 899; i++) {
-                    items1.add("test-file" + i);
-                }
-                output.put(pillar, items1);
-            } else {
-                List<String> items2 = new ArrayList<>();
-                for (int i = 0; i < 1000; i++) {
-                    items2.add("test-file" + i);
-                }
-                output.put(pillar, items2);
-            }
         }
 
         return output;
@@ -272,24 +237,8 @@ public class RestIntegrityService {
         pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
         HashMap<String, List<String>> output = new HashMap<>();
         for (String pillar : pillars) {
-            List<String> streamingOutput = streamPartFromLatestReportNoError(ReportPart.MISSING_CHECKSUM, collectionID, pillar, 0,
-                    Integer.MAX_VALUE);
+            List<String> streamingOutput = streamPartFromLatestReport(ReportPart.MISSING_CHECKSUM, collectionID, pillar);
             output.put(pillar, streamingOutput);
-
-            // FOR TESTING TODO: Remove
-            if (pillar.equals("file1-pillar")) {
-                List<String> items1 = new ArrayList<>();
-                for (int i = 2; i < 200; i++) {
-                    items1.add("missing-checksum-test-file" + i + ".zip");
-                }
-                output.put(pillar, items1);
-            } else {
-                List<String> items2 = new ArrayList<>();
-                for (int i = 0; i < 206; i++) {
-                    items2.add("missing-checksum-test-file" + i + ".zip");
-                }
-                output.put(pillar, items2);
-            }
         }
 
         return output;
@@ -310,24 +259,8 @@ public class RestIntegrityService {
         pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
         HashMap<String, List<String>> output = new HashMap<>();
         for (String pillar : pillars) {
-            List<String> streamingOutput = streamPartFromLatestReportNoError(ReportPart.OBSOLETE_CHECKSUM, collectionID, pillar, 0,
-                    Integer.MAX_VALUE);
+            List<String> streamingOutput = streamPartFromLatestReport(ReportPart.OBSOLETE_CHECKSUM, collectionID, pillar);
             output.put(pillar, streamingOutput);
-
-            // FOR TESTING TODO: Remove
-            if (pillar.equals("file1-pillar")) {
-                List<String> items1 = new ArrayList<>();
-                for (int i = 2; i < 200; i++) {
-                    items1.add("obsolete-checksum-test-file" + i + ".rar");
-                }
-                output.put(pillar, items1);
-            } else {
-                List<String> items2 = new ArrayList<>();
-                for (int i = 0; i < 206; i++) {
-                    items2.add("obsolete-checksum-test-file" + i + ".rar");
-                }
-                output.put(pillar, items2);
-            }
         }
 
         return output;
@@ -348,24 +281,8 @@ public class RestIntegrityService {
         pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
         HashMap<String, List<String>> output = new HashMap<>();
         for (String pillar : pillars) {
-            List<String> streamingOutput = streamPartFromLatestReportNoError(ReportPart.CHECKSUM_ERROR, collectionID, pillar, 0,
-                    Integer.MAX_VALUE);
+            List<String> streamingOutput = streamPartFromLatestReport(ReportPart.CHECKSUM_ERROR, collectionID, pillar);
             output.put(pillar, streamingOutput);
-
-            // FOR TESTING TODO: Remove
-            if (pillar.equals("file1-pillar")) {
-                List<String> items1 = new ArrayList<>();
-                for (int i = 2; i < 200; i++) {
-                    items1.add("inconsistent-checksum-test-file" + i + ".txt");
-                }
-                output.put(pillar, items1);
-            } else {
-                List<String> items2 = new ArrayList<>();
-                for (int i = 0; i < 206; i++) {
-                    items2.add("inconsistent-checksum-test-file" + i + ".txt");
-                }
-                output.put(pillar, items2);
-            }
         }
 
         return output;
@@ -543,30 +460,19 @@ public class RestIntegrityService {
      * @param part         The part to stream issues from
      * @param collectionID The ID of the collection
      * @param pillarID     The ID of the pillar
-     * @param firstID      Index of the first result
-     * @param maxLines     The maximum number of lines to stream
      */
-    private StreamingOutput streamPartFromLatestReport(ReportPart part, String collectionID, String pillarID, int firstID, int maxLines) {
+    private List<String> streamPartFromLatestReport(ReportPart part, String collectionID, String pillarID) {
+        List<String> output;
         try {
             IntegrityReportReader reader = integrityReportProvider.getLatestIntegrityReportReader(collectionID);
             File reportPart = reader.getReportPart(part.getPartName(), pillarID);
-            return JSONStreamingTools.StreamFileParts(reportPart, firstID, maxLines);
+            output = List.of(JSONStreamingTools.StreamFileParts(reportPart, 0, Integer.MAX_VALUE).toString());
         } catch (FileNotFoundException e) {
             throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
                     .entity("No integrity '" + part.getHumanString() + "' report part for collection: " + collectionID + " and pillar: " +
                             pillarID + " found!").type(MediaType.TEXT_PLAIN).build());
         }
-    }
-
-    private List<String> streamPartFromLatestReportNoError(ReportPart part, String collectionID, String pillarID, int firstID,
-                                                           int maxLines) {
-        try {
-            IntegrityReportReader reader = integrityReportProvider.getLatestIntegrityReportReader(collectionID);
-            File reportPart = reader.getReportPart(part.getPartName(), pillarID);
-            return List.of(JSONStreamingTools.StreamFileParts(reportPart, firstID, maxLines).toString());
-        } catch (FileNotFoundException e) {
-            return List.of();
-        }
+        return output;
     }
 
     private void writeIntegrityStatusObject(PillarCollectionStat stat, JsonGenerator jg) throws IOException {

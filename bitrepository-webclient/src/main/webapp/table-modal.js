@@ -21,11 +21,11 @@
  */
 
 
-function NewPager(pillarID, url, pagerElement, contentElement) {
+function TableModal(pillarID, url, contentElement) {
     this.pillarID = pillarID;
     this.url = url;
 
-    this.getPage = function () {
+    this.getModal = function () {
         $.getJSON(this.url, {}, function (j) {
             let html = `<div style="padding : 15px">`;
 

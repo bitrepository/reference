@@ -32,7 +32,7 @@
     overflow-y: auto;
 }
 
-.modal-new {
+.modal-dialog {
     position: fixed;
     z-index: 1050;
     background-color: #fff;
