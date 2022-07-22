@@ -51,7 +51,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final Map<String, Conversation> conversations;
     private final Settings settings;
-    private static final Boolean TIMER_IS_DAEMON = true;
+    private static final boolean TIMER_IS_DAEMON = true;
     private static final String NAME_OF_TIMER = "Collection based conversation timer";
     /**
      * The timer used to schedule cleaning of conversations.
@@ -136,10 +136,10 @@ public class CollectionBasedConversationMediator implements ConversationMediator
     }
 
     /**
-     * Will clean out obsolete conversations in each run. An obsolete conversation is a conversation which satisfies on
-     * of the following criterias: <ol>
+     * Will clean out obsolete conversations in each run. An obsolete conversation is a conversation which satisfies ony
+     * of the following criteria: <ol>
      * <li> Returns true for the <code>hasEnded()</code> method.
-     * <li> Is older than the conversationTImeout limit allows.
+     * <li> Is older than the conversationTimeout limit allows.
      * </ol>
      * <p>
      * A copy of the current conversations is created before running through the conversations to avoid having to lock

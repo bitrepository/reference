@@ -71,7 +71,7 @@ public class IntegrityEventCompleteAwaiter implements EventHandler {
 
     /**
      * Retrieves the final event when the operation finishes. The final event is awaited for 'timeout' amount
-     * of milliseconds. If no final events has occurred, then an InterruptedException is thrown.
+     * of milliseconds. If no final events has occurred, null is returned.
      *
      * @return The final event.
      */
