@@ -46,6 +46,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Instant;
+<<<<<<< HEAD
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -54,6 +55,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+=======
+import java.util.*;
+>>>>>>> ac4d1581c (BITMAG-1142 Checksum age in GUI: underway)
 
 /**
  * Common parts of the implementation of the access to the integrity db.
@@ -515,12 +519,18 @@ public abstract class IntegrityDAO {
 
         String latestPillarStatsSql = "SELECT pillarID, file_count, file_size, missing_files_count," +
                 "   checksum_errors_count, missing_checksums_count, obsolete_checksums_count," +
+<<<<<<< HEAD
                 "   oldest_checksum_timestamp" +
                 " FROM pillarstats" +
                 " WHERE stat_key = (" +
                 "   SELECT MAX(stat_key)" +
                 "   FROM stats" +
                 "   WHERE collectionID = ?)";
+=======
+                "   1000000000000 as oldest_checksum_timestamp" + // TODO extend table with new col
+                " FROM pillarstats" +
+                " WHERE stat_key = (" + " SELECT MAX(stat_key) FROM stats" + " WHERE collectionID = ?)";
+>>>>>>> ac4d1581c (BITMAG-1142 Checksum age in GUI: underway)
 
         try (Connection conn = dbConnector.getConnection();
              PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, latestPillarStatsSql, collectionID)) {
@@ -538,12 +548,27 @@ public abstract class IntegrityDAO {
                     String pillarHostname = Objects.requireNonNullElse(SettingsUtils.getPillarName(pillarID), "N/A");
                     String pillarType = (SettingsUtils.getPillarType(pillarID) != null) ?
                             Objects.requireNonNull(SettingsUtils.getPillarType(pillarID)).value() : "Unknown";
+<<<<<<< HEAD
                     String maxAgeForChecksums = getMaxAgeForChecksums(pillarID);
                     Instant oldestChecksumTimestamp = getOldestChecksumTimestamp(dbResult);
                     PillarCollectionStat p = new PillarCollectionStat(pillarID, collectionID,
                             pillarName, pillarType, fileCount, dataSize,
                             missingFiles, checksumErrors, missingChecksums, obsoleteChecksums,
                             maxAgeForChecksums, oldestChecksumTimestamp, statsTime, updateTime);
+=======
+                    long oldestChecksumTimestamp = dbResult.getLong("oldest_checksum_timestamp");
+                    String ageOfOldestChecksum;
+                    if (dbResult.wasNull()) {
+                        ageOfOldestChecksum = "N/A";
+                    } else {
+                        ageOfOldestChecksum = TimeUtils.millisecondsToHuman(
+                                System.currentTimeMillis() - oldestChecksumTimestamp);
+                    }
+                    PillarCollectionStat p = new PillarCollectionStat(pillarID, collectionID,
+                            pillarHostname, pillarType, fileCount, dataSize,
+                            missingFiles, checksumErrors, missingChecksums, obsoleteChecksums,
+                            "TODO", ageOfOldestChecksum, statsTime, updateTime);
+>>>>>>> ac4d1581c (BITMAG-1142 Checksum age in GUI: underway)
                     stats.add(p);
                 }
             }

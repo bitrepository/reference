@@ -124,6 +124,26 @@ public class SettingsUtils {
     }
 
     /**
+     * Get the configured max age for checksums for the given pillarID from the ReferenceSettings.
+     *
+     * @param pillarID The pillarID for which the hostname is wanted.
+     * @return human-readable maximum age for checksums for the given pillar ID.
+     */
+    public static String getMaxAgeForChecksums(String pillarID) {
+        // TODO how to use pillarID??
+        BigInteger maxAge = settings.getReferenceSettings().getPillarSettings().getMaxAgeForChecksums();
+        if (maxAge == null) {
+            return null;
+        }
+        try {
+            return TimeUtils.millisecondsToHuman(maxAge.longValueExact());
+        }
+        catch (ArithmeticException) {
+            return "Extremely long";
+        }
+    }
+
+    /**
      * Get the {@link PillarType} for the given Pillar ID.
      *
      * @param pillarID The pillar ID for which the {@link PillarType} is wanted.
