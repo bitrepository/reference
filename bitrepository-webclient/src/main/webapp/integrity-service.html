@@ -85,6 +85,8 @@
           <th>Number of missing checksums</th>
           <th>Number of obsolete checksums</th>
           <th>Number of inconsistent checksums</th>
+          <th>Configured max age of checksums</th>
+          <th>Age of oldest checksum</th>
         </tr>
         </thead>
         <tbody id="integrity-status-table-body"></tbody>
@@ -257,27 +259,38 @@
             context.member = "obsoleteChecksumsCount";
             context.url += "getObsoleteChecksumsFileIDs/";
         } else if(type == "Inconsistent checksums") {
-            context.element = id + "-checksumErrors";
-            context.title = type + " on " + id;
-            context.member = "checksumErrorCount";
-            context.url += "getChecksumErrorFileIDs/";
+          context.element = id + "-checksumErrors";
+          context.title = type + " on " + id;
+          context.member = "checksumErrorCount";
+          context.url += "getChecksumErrorFileIDs/";
+        } else if(type == "Checksum age limit") {
+          context.element = id + "-maxAgeForChecksums";
+          context.title = type + " on " + id;
+          context.member = "maxAgeForChecksums";
+        } else if(type == "Oldest checksum age") {
+          context.element = id + "-ageOfOldestChecksum";
+          context.title = type + " on " + id;
+          context.member = "ageOfOldestChecksum";
         }
         context.url += "?pillarID=" + id + "&collectionID=" + getCollectionID();
         return context;
     }
 
     function makePillarRow(id) {
-        var html = "";
-        html += "<tr id=\"" + id + "-row\">";
-        html += "<td><div style=\"padding:5px\">" + id + "</div></td>";
-        html += "<td id=\"" + id + "-pillarHostname\"></td>";
-        html += "<td id=\"" + id + "-pillarType\"></td>";
-        html += "<td id=\"" + id + "-totalFileCount\"></td>";
-        html += "<td id=\"" + id + "-missingFiles\"></td>";
-        html += "<td id=\"" + id + "-missingChecksums\"></td>";
-        html += "<td id=\"" + id + "-obsoleteChecksums\"></td>";
-        html += "<td id=\"" + id + "-checksumErrors\"></td></tr>";
-        return html;
+      var html = "";
+      html += "<tr id=\"" + id + "-row\">";
+      html += "<td><div style=\"padding:5px\">" + id + "</div></td>";
+      html += "<td id=\"" + id + "-pillarHostname\"></td>";
+      html += "<td id=\"" + id + "-pillarType\"></td>";
+      html += "<td id=\"" + id + "-totalFileCount\"></td>";
+      html += "<td id=\"" + id + "-missingFiles\"></td>";
+      html += "<td id=\"" + id + "-missingChecksums\"></td>";
+      html += "<td id=\"" + id + "-obsoleteChecksums\"></td>";
+      html += "<td id=\"" + id + "-checksumErrors\"></td>";
+      html += "<td id=\"" + id + "-maxAgeForChecksums\"></td>";
+      html += "<td id=\"" + id + "-ageOfOldestChecksum\"></td>";
+      html += "</tr>";
+      return html;
     }
 
     function updateCells(pillarID) {
@@ -288,6 +301,8 @@
         updateIntCell(pillarID, "Missing checksums", pillars[pillarID].missingChecksumsCount);
         updateIntCell(pillarID, "Obsolete checksums", pillars[pillarID].obsoleteChecksumsCount);
         updateIntCell(pillarID, "Inconsistent checksums", pillars[pillarID].checksumErrorCount);
+        updateStringCell(pillarID, "Checksum age limit", pillars[pillarID].maxAgeForChecksums);
+        updateStringCell(pillarID, "Oldest checksum age", pillars[pillarID].ageOfOldestChecksum);
     }
 
     function updateStringCell(id, type, cellValue) {
@@ -325,7 +340,9 @@
                     missingFilesCount : j[i].missingFilesCount,
                     missingChecksumsCount : j[i].missingChecksumsCount,
                     obsoleteChecksumsCount : j[i].obsoleteChecksumsCount,
-                    checksumErrorCount : j[i].checksumErrorCount};
+                    checksumErrorCount : j[i].checksumErrorCount,
+                    maxAgeForChecksums : j[i].maxAgeForChecksums,
+                    ageOfOldestChecksum : j[i].ageOfOldestChecksum};
                 updateCells(j[i].pillarID);
             }
         });

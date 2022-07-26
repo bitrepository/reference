@@ -26,6 +26,7 @@ import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.SettingsUtils;
+import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.integrityservice.cache.CollectionStat;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.PillarCollectionMetric;
@@ -40,14 +41,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.time.Instant;
+import java.util.*;
 
 /**
  * Common parts of the implementation of the access to the integrity db.
@@ -439,7 +434,10 @@ public abstract class IntegrityDAO {
     public Map<String, PillarCollectionMetric> getPillarCollectionMetrics(String collectionID) {
         Map<String, PillarCollectionMetric> metrics = new HashMap<>();
         String selectSql =
-                "SELECT pillarID, COUNT(fileID) as filecount, SUM(filesize) as sizesum FROM fileinfo" + " WHERE collectionID = ?" +
+                "SELECT pillarID, COUNT(fileID) as filecount, SUM(filesize) as sizesum," +
+                        "   MIN(checksum_timestamp) as oldest_checksum_timestamp" +
+                        " FROM fileinfo" +
+                        " WHERE collectionID = ?" +
                         " GROUP BY pillarID";
 
         try (Connection conn = dbConnector.getConnection();
@@ -447,9 +445,13 @@ public abstract class IntegrityDAO {
              ResultSet dbResult = ps.executeQuery()) {
             while (dbResult.next()) {
                 String pillarID = dbResult.getString("pillarID");
-                Long fileCount = dbResult.getLong("filecount");
-                Long fileSize = dbResult.getLong("sizesum");
-                PillarCollectionMetric metric = new PillarCollectionMetric(fileSize, fileCount);
+                long fileCount = dbResult.getLong("filecount");
+                // In case SUM(filesize) returned null, dbResult.getLong() will return 0, which is the sum we want
+                long fileSize = dbResult.getLong("sizesum");
+                long oldestChecksumTimestampMillis = dbResult.getLong("oldest_checksum_timestamp");
+                Instant oldestChecksumTimestamp =
+                        dbResult.wasNull() ? null : Instant.ofEpochMilli(oldestChecksumTimestampMillis);
+                PillarCollectionMetric metric = new PillarCollectionMetric(fileSize, fileCount, oldestChecksumTimestamp);
                 metrics.put(pillarID, metric);
             }
         } catch (SQLException e) {
@@ -501,8 +503,10 @@ public abstract class IntegrityDAO {
         List<PillarCollectionStat> stats = new ArrayList<>();
 
         String latestPillarStatsSql = "SELECT pillarID, file_count, file_size, missing_files_count," +
-                " checksum_errors_count, missing_checksums_count, obsolete_checksums_count" + " FROM pillarstats" + " WHERE stat_key = (" +
-                " SELECT MAX(stat_key) FROM stats" + " WHERE collectionID = ?)";
+                "   checksum_errors_count, missing_checksums_count, obsolete_checksums_count," +
+                "   1000000000000 as oldest_checksum_timestamp" + // TODO extend table with new col
+                " FROM pillarstats" +
+                " WHERE stat_key = (" + " SELECT MAX(stat_key) FROM stats" + " WHERE collectionID = ?)";
 
         try (Connection conn = dbConnector.getConnection();
              PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, latestPillarStatsSql, collectionID)) {
@@ -520,8 +524,18 @@ public abstract class IntegrityDAO {
                     String pillarHostname = Objects.requireNonNullElse(SettingsUtils.getHostname(pillarID), "N/A");
                     String pillarType = (SettingsUtils.getPillarType(pillarID) != null) ?
                             Objects.requireNonNull(SettingsUtils.getPillarType(pillarID)).value() : "Unknown";
-                    PillarCollectionStat p = new PillarCollectionStat(pillarID, collectionID, pillarHostname, pillarType, fileCount,
-                            dataSize, missingFiles, checksumErrors, missingChecksums, obsoleteChecksums, statsTime, updateTime);
+                    long oldestChecksumTimestamp = dbResult.getLong("oldest_checksum_timestamp");
+                    String ageOfOldestChecksum;
+                    if (dbResult.wasNull()) {
+                        ageOfOldestChecksum = "N/A";
+                    } else {
+                        ageOfOldestChecksum = TimeUtils.millisecondsToHuman(
+                                System.currentTimeMillis() - oldestChecksumTimestamp);
+                    }
+                    PillarCollectionStat p = new PillarCollectionStat(pillarID, collectionID,
+                            pillarHostname, pillarType, fileCount, dataSize,
+                            missingFiles, checksumErrors, missingChecksums, obsoleteChecksums,
+                            "TODO", ageOfOldestChecksum, statsTime, updateTime);
                     stats.add(p);
                 }
             }

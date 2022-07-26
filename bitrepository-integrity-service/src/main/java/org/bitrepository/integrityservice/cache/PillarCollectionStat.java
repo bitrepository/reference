@@ -37,6 +37,9 @@ public class PillarCollectionStat {
     private Long obsoleteChecksums = 0L;
     private Long missingChecksums = 0L;
     private Long checksumErrors = 0L;
+    private String maxAgeForChecksums;
+    /** Human-readable age of the oldest checksum, for example " 3m 46s 299 ms" */
+    private String ageOfOldestChecksum;
     private Date statsTime;
     private Date updateTime;
 
@@ -47,9 +50,10 @@ public class PillarCollectionStat {
         this.pillarType = pillarType;
     }
 
-    public PillarCollectionStat(String pillarID, String collectionID, String pillarHostname, String pillarType, Long fileCount,
-                                Long dataSize, Long missingFiles, Long checksumErrors, Long missingChecksums, Long obsoleteChecksum,
-                                Date statsTime, Date updateTime) {
+    public PillarCollectionStat(String pillarID, String collectionID, String pillarHostname, String pillarType,
+                                Long fileCount, Long dataSize,
+                                Long missingFiles, Long checksumErrors, Long missingChecksums, Long obsoleteChecksum,
+                                String maxAgeForChecksums, String ageOfOldestChecksum, Date statsTime, Date updateTime) {
         this.pillarID = pillarID;
         this.collectionID = collectionID;
         this.pillarHostname = pillarHostname;
@@ -62,6 +66,8 @@ public class PillarCollectionStat {
         this.obsoleteChecksums = obsoleteChecksum;
         this.statsTime = statsTime;
         this.updateTime = updateTime;
+        this.maxAgeForChecksums = maxAgeForChecksums;
+        this.ageOfOldestChecksum = ageOfOldestChecksum;
     }
 
     public String getPillarID() {
@@ -144,4 +150,11 @@ public class PillarCollectionStat {
         this.missingChecksums = missingChecksums;
     }
 
+    public String getAgeOfOldestChecksum() {
+        return ageOfOldestChecksum;
+    }
+
+    public String getMaxAgeForChecksums() {
+        return maxAgeForChecksums;
+    }
 }
