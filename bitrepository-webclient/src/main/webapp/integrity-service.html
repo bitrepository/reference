@@ -82,10 +82,19 @@
           <th>Pillar Name</th>
           <th>Pillar Type</th>
           <th>Total number of files</th>
+<<<<<<< HEAD
           <th id="all-missingFiles">Number of missing files</th>
           <th id="all-missingChecksums">Number of missing checksums</th>
           <th id="all-obsoleteChecksums">Number of obsolete checksums</th>
           <th id="all-checksumErrors">Number of inconsistent checksums</th>
+=======
+          <th>Number of missing files</th>
+          <th>Number of missing checksums</th>
+          <th>Number of obsolete checksums</th>
+          <th>Number of inconsistent checksums</th>
+          <th>Configured max age of checksums</th>
+          <th>Age of oldest checksum</th>
+>>>>>>> 10b99c1d8 (BITMAG-1142 Checksum age in GUI: underway)
         </tr>
         </thead>
         <tbody id="integrity-status-table-body"></tbody>
@@ -273,6 +282,16 @@
             context.title = type + " on " + id.toUpperCase();
             context.propertyName = "checksumErrorCount";
             context.url += "getChecksumErrorFileIDs";
+        } else if(type == "Checksum age limit") {
+          context.element = id + "-maxAgeForChecksums";
+          context.title = type + " on " + id.toUpperCase();
+          context.propertyName = "maxAgeForChecksums";
+            context.url += "getMaxAgeForChecksums";
+        } else if(type == "Oldest checksum age") {
+          context.element = id + "-ageOfOldestChecksum";
+          context.title = type + " on " + id.toUpperCase();
+          context.propertyName = "ageOfOldestChecksum";
+            context.url += "getAgeOfOldestChecksum";
         }
         context.url += "?pillarID=" + id + "&collectionID=" + getCollectionID();
         return context;
@@ -306,8 +325,11 @@
         html += "<td id=\"" + id + "-missingFiles\"></td>";
         html += "<td id=\"" + id + "-missingChecksums\"></td>";
         html += "<td id=\"" + id + "-obsoleteChecksums\"></td>";
-        html += "<td id=\"" + id + "-checksumErrors\"></td></tr>";
-        return html;
+      html += "<td id=\"" + id + "-checksumErrors\"></td>";
+      html += "<td id=\"" + id + "-maxAgeForChecksums\"></td>";
+      html += "<td id=\"" + id + "-ageOfOldestChecksum\"></td>";
+      html += "</tr>";
+      return html;
     }
 
     function updateTableHeader() {
@@ -315,6 +337,8 @@
         setHeader("Number of missing checksums");
         setHeader("Number of obsolete checksums");
         setHeader("Number of inconsistent checksums");
+        setHeader("Configured max age of checksums");
+        setHeader("Age of oldest checksum");
     }
 
     function setHeader(type) {
