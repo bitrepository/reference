@@ -133,7 +133,7 @@ public class SettingsUtils {
         try {
             return TimeUtils.millisecondsToHuman(maxAge.longValueExact());
         }
-        catch (ArithmeticException) {
+        catch (ArithmeticException ae) {
             return "Extremely long";
         }
     }
