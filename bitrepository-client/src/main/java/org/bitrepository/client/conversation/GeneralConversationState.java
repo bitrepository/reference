@@ -31,10 +31,13 @@ import org.bitrepository.client.conversation.selector.ContributorResponseStatus;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
 import org.bitrepository.common.DefaultThreadFactory;
 import org.bitrepository.common.exceptions.UnableToFinishException;
+import org.bitrepository.common.utils.CountAndTimeUnit;
+import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.protocol.ProtocolVersionLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
 import java.util.Collection;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -71,8 +74,9 @@ public abstract class GeneralConversationState implements ConversationState {
     public void start() {
         try {
             if (!responseStatus.getOutstandingComponents().isEmpty()) {
-                if (getTimeoutValue() > 0) {
-                    scheduledTimeout = timer.schedule(new TimeoutHandler(), getTimeoutValue(), TimeUnit.MILLISECONDS);
+                if (getTimeoutValue().compareTo(Duration.ZERO) > 0) { // From Java 18 use: getTimeoutValue().isPositive()
+                    CountAndTimeUnit delay = TimeUtils.durationToCountAndTimeUnit(getTimeoutValue());
+                    scheduledTimeout = timer.schedule(new TimeoutHandler(), delay.getCount(), delay.getUnit());
                 }
                 sendRequest();
             } else {
@@ -217,9 +221,9 @@ public abstract class GeneralConversationState implements ConversationState {
 
     /**
      * Gives access to the concrete timeout for the state.
-     * @return the number of milliseconds before timeout
+     * @return the duration before timeout
      */
-    protected abstract long getTimeoutValue();
+    protected abstract Duration getTimeoutValue();
 
     /**
      * @return The informative naming of the process this state is performing. Used for logging. Examples are 'Delete files',

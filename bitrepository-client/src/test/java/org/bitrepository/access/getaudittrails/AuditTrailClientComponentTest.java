@@ -46,6 +46,8 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
 import java.math.BigInteger;
 
 import static org.testng.Assert.assertEquals;
@@ -56,9 +58,10 @@ import static org.testng.Assert.assertNotNull;
  */
 public class AuditTrailClientComponentTest extends DefaultClientTest {
     private GetAuditTrailsMessageFactory testMessageFactory;
+    private DatatypeFactory datatypeFactory;
 
     @BeforeMethod(alwaysRun=true)
-    public void beforeMethodSetup() throws Exception {
+    public void beforeMethodSetup() throws DatatypeConfigurationException {
         testMessageFactory = new GetAuditTrailsMessageFactory(settingsForTestClient.getComponentID());
         
         Collection c = settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0);
@@ -71,10 +74,12 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         settingsForCUT.getRepositorySettings().getCollections().getCollection().add(c);
         
         settingsForCUT.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().clear();
+
+        datatypeFactory = DatatypeFactory.newInstance();
     }
 
     @Test(groups = {"regressiontest"})
-    public void verifyAuditTrailClientFromFactory() throws Exception {
+    public void verifyAuditTrailClientFromFactory() {
         Assert.assertTrue(AccessComponentFactory.getInstance().createAuditTrailClient(
                 settingsForCUT, securityManager, settingsForTestClient.getComponentID())
                 instanceof ConversationBasedAuditTrailClient,
@@ -84,7 +89,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
 
     @Test(groups = {"regressiontest"})
     public void getAllAuditTrailsTest() throws InterruptedException {
-        addDescription("Tests the simplest case of getting all audit trail event for all contributers.");
+        addDescription("Tests the simplest case of getting all audit trail event for all contributors.");
         
         addStep("Create a AuditTrailClient.", "");
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
@@ -92,7 +97,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
 
         addStep("Retrieve all audit trails from the collection by calling with a null componentQueries array",
                 "This should be interpreted as a request for all audit trails from all the collection settings " +
-        "defined contributers.");
+        "defined contributors.");
         client.getAuditTrails(collectionID, null, DEFAULT_FILE_ID, null, testEventHandler, null);
         assertEquals(testEventHandler.waitForEvent().getEventType(),
                 OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
@@ -232,7 +237,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
     @Test(groups = {"regressiontest"})
     public void negativeGetAuditTrailsResponseTest() throws InterruptedException {
         addDescription("Verify that the GetAuditTrail client works correct when receiving a negative " +
-        "GetAuditTrails response from one contributers.");
+        "GetAuditTrails response from one contributors.");
 
         addStep("Create a AuditTrailClient.", "");
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
@@ -240,7 +245,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
 
         addStep("Retrieve all audit trails from the collection by calling with a null componentQueries array",
                 "This should be interpreted as a request for all audit trails from all the collection settings " +
-        "defined contributers.");
+        "defined contributors.");
         client.getAuditTrails(collectionID, null, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
             collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
@@ -314,7 +319,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
 
         addStep("Retrieve all audit trails from the collection by calling with a null componentQueries array",
                 "This should be interpreted as a request for all audit trails from all the collection settings " +
-        "defined contributers.");
+        "defined contributors.");
         client.getAuditTrails(collectionID, null, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
             collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
@@ -376,11 +381,11 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
     @Test(groups = {"regressiontest"})
     public void incompleteSetOfFinalResponsesTest() throws Exception {
         addDescription("Verify that the GetAuditTrail client works correct without receiving responses from all " +
-        "contributers.");
+        "contributors.");
         addStep("Configure 500 ms second timeout for the operation itself. " +
-                "The default 2 contributers collection is used", "");
+                "The default 2 contributors collection is used", "");
 
-        settingsForCUT.getRepositorySettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(500));
+        settingsForCUT.getRepositorySettings().getClientSettings().setOperationTimeoutDuration(datatypeFactory.newDuration(500));
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         AuditTrailClient client = createAuditTrailClient();
 
@@ -421,7 +426,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         addDescription("Tests the the AuditTrailClient handles lack of Final Responses gracefully  ");
         addStep("Set a 100 ms timeout for the operation.", "");
 
-        settingsForCUT.getRepositorySettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(100));
+        settingsForCUT.getRepositorySettings().getClientSettings().setOperationTimeoutDuration(datatypeFactory.newDuration(100));
         AuditTrailClient client = createAuditTrailClient();
 
         addStep("Make the client ask for all audit trails.",

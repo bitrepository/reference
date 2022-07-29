@@ -25,12 +25,14 @@ import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.CountAndTimeUnit;
+import org.bitrepository.common.utils.TimeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 /**
  * EventHandler for awaiting an operation to be complete.
@@ -41,7 +43,7 @@ public class IntegrityEventCompleteAwaiter implements EventHandler {
     /**
      * The amount of milliseconds before the results are required.
      */
-    private final Long timeout;
+    private final Duration timeout;
 
     /**
      * The queue used to store the received operation events.
@@ -54,8 +56,7 @@ public class IntegrityEventCompleteAwaiter implements EventHandler {
      * @param settings The settings.
      */
     public IntegrityEventCompleteAwaiter(Settings settings) {
-        this.timeout = settings.getRepositorySettings().getClientSettings().getIdentificationTimeout().longValue()
-                + settings.getRepositorySettings().getClientSettings().getOperationTimeout().longValue();
+        this.timeout = settings.getIdentificationTimeout().plus(settings.getOperationTimeout());
     }
 
     @Override
@@ -77,7 +78,8 @@ public class IntegrityEventCompleteAwaiter implements EventHandler {
      */
     public OperationEvent getFinish() {
         try {
-            return finalEventQueue.poll(timeout, TimeUnit.MILLISECONDS);
+            CountAndTimeUnit pollTimeout = TimeUtils.durationToCountAndTimeUnit(timeout);
+            return finalEventQueue.poll(pollTimeout.getCount(), pollTimeout.getUnit());
         } catch (InterruptedException e) {
             throw new IllegalStateException("Interrupted while waiting for the final response.", e);
         }

@@ -30,6 +30,11 @@ import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
 import org.bitrepository.settings.repositorysettings.Permission;
 import org.bitrepository.settings.repositorysettings.RepositorySettings;
 
+import javax.xml.datatype.DatatypeConstants;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 /**
@@ -39,6 +44,8 @@ import java.util.List;
  * <code>Settings</code> objects.
  */
 public class Settings {
+    public static final BigInteger MILLIS_PER_SECOND = BigInteger.valueOf(Duration.ofSeconds(1).toMillis());
+
     protected final String componentID;
     protected final String receiverDestinationID;
     protected final ReferenceSettings referenceSettings;
@@ -97,13 +104,77 @@ public class Settings {
     }
 
     /**
-     * Wraps the {@link org.bitrepository.settings.repositorysettings.ClientSettings#getIdentificationTimeout()} method.
+     * Wraps the {@link org.bitrepository.settings.repositorysettings.ClientSettings#getIdentificationTimeout()}
+     * and {@link ClientSettings#getIdentificationTimeoutDuration()} ()} methods, preferring to use the latter.
      *
      * @return the timeout
-     * @see org.bitrepository.settings.repositorysettings.ClientSettings#getIdentificationTimeout()
+     * @see ClientSettings#getIdentificationTimeoutDuration()
      */
-    public long getIdentificationTimeout() {
-        return getRepositorySettings().getClientSettings().getIdentificationTimeout().longValue();
+    public Duration getIdentificationTimeout() {
+        // TODO Ole V. Once the old IdentificationTimeout settings in milliseconds is done away with,
+        // TODO the following code gets simpler
+        javax.xml.datatype.Duration xmlDuration =
+                getRepositorySettings().getClientSettings().getIdentificationTimeoutDuration();
+        BigInteger identificationTimeoutMillis =
+                getRepositorySettings().getClientSettings().getIdentificationTimeout();
+        return getDurationFromXmlDurationOrMillis(xmlDuration, identificationTimeoutMillis);
+    }
+
+    public Duration getOperationTimeout() {
+        javax.xml.datatype.Duration xmlDuration =
+                getRepositorySettings().getClientSettings().getOperationTimeoutDuration();
+        BigInteger operationTimeoutMillis =
+                getRepositorySettings().getClientSettings().getOperationTimeout();
+        return getDurationFromXmlDurationOrMillis(xmlDuration, operationTimeoutMillis);
+    }
+
+    static Duration getDurationFromXmlDurationOrMillis(
+            javax.xml.datatype.Duration xmlDuration, BigInteger millis) {
+        // Prefer the XML Duration
+        if (xmlDuration != null) {
+            validateNonNegative(xmlDuration);
+            return xmlDurationToDuration(xmlDuration);
+        }
+        BigInteger[] secondsAndMillis = millis.divideAndRemainder(MILLIS_PER_SECOND);
+        return Duration.ofSeconds(secondsAndMillis[0].longValueExact())
+                .plusMillis(secondsAndMillis[1].intValueExact());
+    }
+
+    public static void validateNonNegative(javax.xml.datatype.Duration xmlDuration) {
+        if (xmlDuration.getSign() < 0) {
+            throw new IllegalArgumentException("Unexpected negative duration: " + xmlDuration);
+        }
+    }
+
+    /**
+     * Converts a javax.xml.datatype.Duration to a java.time.Duration using estimated values for days, months and years.
+     */
+    public static Duration xmlDurationToDuration(javax.xml.datatype.Duration xmlDuration) {
+        return unitsToDuration(xmlDuration.getField(DatatypeConstants.YEARS), ChronoUnit.YEARS)
+                .plus(unitsToDuration(xmlDuration.getField(DatatypeConstants.MONTHS), ChronoUnit.MONTHS))
+                .plus(unitsToDuration(xmlDuration.getField(DatatypeConstants.DAYS), ChronoUnit.DAYS))
+                .plus(unitsToDuration(xmlDuration.getField(DatatypeConstants.HOURS), ChronoUnit.HOURS))
+                .plus(unitsToDuration(xmlDuration.getField(DatatypeConstants.MINUTES), ChronoUnit.MINUTES))
+                .plus(secondsToDuration(xmlDuration.getField(DatatypeConstants.SECONDS)));
+    }
+
+    /** @param count a BigInteger or null */
+    private static Duration unitsToDuration(Number count, ChronoUnit unit) {
+        if (count == null) {
+            return Duration.ZERO;
+        }
+        return unit.getDuration().multipliedBy(((BigInteger) count).longValueExact());
+    }
+
+    /** @param secondsValue a BigDecimal denoting the number of seconds with fraction or null */
+    private static Duration secondsToDuration(Number secondsValue) {
+        if (secondsValue == null) {
+            return Duration.ZERO;
+        }
+        BigDecimal secondsBigDecimal = (BigDecimal) secondsValue;
+        long wholeSeconds = secondsBigDecimal.toBigInteger().longValueExact();
+        int nanos = secondsBigDecimal.subtract(BigDecimal.valueOf(wholeSeconds)).scaleByPowerOfTen(9).intValueExact();
+        return Duration.ofSeconds(wholeSeconds, nanos);
     }
 
     /**

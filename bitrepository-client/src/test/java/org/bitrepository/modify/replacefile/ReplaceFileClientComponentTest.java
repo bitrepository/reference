@@ -45,7 +45,8 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.math.BigInteger;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
@@ -54,13 +55,15 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
     private ChecksumDataForFileTYPE DEFAULT_OLD_CHECKSUM_DATA;
     private ChecksumDataForFileTYPE DEFAULT_NEW_CHECKSUM_DATA;
     private TestReplaceFileMessageFactory messageFactory;
+    private DatatypeFactory datatypeFactory;
 
     @BeforeMethod(alwaysRun = true)
-    public void initialise() throws Exception {
+    public void initialise() throws DatatypeConfigurationException {
         messageFactory = new TestReplaceFileMessageFactory(settingsForTestClient.getComponentID());
         DEFAULT_CHECKSUM_SPEC = ChecksumUtils.getDefault(settingsForCUT);
         DEFAULT_OLD_CHECKSUM_DATA = createChecksumData("123checksum321");
         DEFAULT_NEW_CHECKSUM_DATA = createChecksumData("123checksum321");
+        datatypeFactory = DatatypeFactory.newInstance();
     }
 
     @Test(groups = {"regressiontest"})
@@ -156,7 +159,8 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
                 "Should be OK.");
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
-        settingsForCUT.getRepositorySettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(100L));
+        settingsForCUT.getRepositorySettings().getClientSettings()
+                .setIdentificationTimeoutDuration(datatypeFactory.newDuration(100));
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         ReplaceFileClient replaceClient = createReplaceFileClient();
         ChecksumSpecTYPE checksumRequest = new ChecksumSpecTYPE();
@@ -187,7 +191,8 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
                 "Should be OK.");
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
-        settingsForCUT.getRepositorySettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(100L));
+        settingsForCUT.getRepositorySettings().getClientSettings()
+                .setOperationTimeoutDuration(datatypeFactory.newDuration(100));
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         ReplaceFileClient replaceClient = createReplaceFileClient();
 
