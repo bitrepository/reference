@@ -141,13 +141,7 @@ public class RestAuditTrailService {
     @Path("/preservationSchedule")
     @Produces(MediaType.APPLICATION_JSON)
     public PreservationInfo getPreservationSchedule() {
-        PreservationInfo info = new PreservationInfo();
-        info.setCollectionID("books");
-        info.setLastStart("123");
-        info.setLastDuration("1");
-        info.setNextStart("321");
-        info.setPreservedAuditCount(1000);
-        return info;
+        return service.getPreservationInfo();
     }
 
     private void writeAuditResult(AuditTrailEvent event, JsonGenerator jg) throws IOException {

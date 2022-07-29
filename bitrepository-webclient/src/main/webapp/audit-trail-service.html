@@ -20,7 +20,7 @@
   #L%
   -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <title>Bitrepository audit-trail service</title>
   <!-- Bootstrap -->
@@ -68,6 +68,32 @@
                   </tr>
                   </thead>
                   <tbody id="collection-schedule-table-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion" id="preservation-schedule-accordion">
+          <div class="accordion-group">
+            <div class="accordion-heading">
+              <a class="accordion-toggle" data-toggle="collapse" data-parent="#preservation-schedule-accordion" href="#collapsePreservation">
+                Show preservation schedule <i class="icon-chevron-down"></i>
+              </a>
+            </div>
+            <div id="collapsePreservation" class="accordion-body collapse">
+              <div class="accordion-inner" id="preservation-schedule-table">
+                <table class="table table-bordered">
+                  <thead>
+                  <tr>
+                    <th>Collection ID</th>
+                    <th>Last start</th>
+                    <th>Last duration</th>
+                    <th>Last preserved number of audits</th>
+                    <th>Next start</th>
+                  </tr>
+                  </thead>
+                  <tbody id="preservation-schedule-table-body"></tbody>
                 </table>
               </div>
             </div>
@@ -177,15 +203,17 @@
 
 
 <script>
+  const COLLECTION_TABLE_SELECTOR = '#collection-schedule-table-body';
+  const PRESERVATION_TABLE_SELECTOR = '#preservation-schedule-table-body';
   var collectionScheduleUpdater;
-  var audittrailServiceUrl;
+  var auditTrailServiceUrl;
 
   function clearElement(element) {
     $(element).val("");
   }
 
   function startAuditTrailsCollection() {
-    var url = audittrailServiceUrl + '/audittrails/AuditTrailService/collectAuditTrails/';
+    var url = auditTrailServiceUrl + '/audittrails/AuditTrailService/collectAuditTrails/';
     $.post(url, {}, function(d) {
       console.log(d);
     });
@@ -205,7 +233,7 @@
 
     $("#auditTrailsTableDiv").html("Loading audit trails...");
 
-    var url = audittrailServiceUrl + '/audittrails/AuditTrailService/queryAuditTrailEvents/';
+    var url = auditTrailServiceUrl + '/audittrails/AuditTrailService/queryAuditTrailEvents/';
     $.post(url,
             {fromDate: fromDateStr,
               toDate: toDateStr,
@@ -260,7 +288,7 @@
   }
 
   function getContributorIDs() {
-    var url = audittrailServiceUrl + '/audittrails/AuditTrailService/contributors';
+    var url = auditTrailServiceUrl + '/audittrails/AuditTrailService/contributors';
     $.getJSON(url, {}, function(ids){
       $("#componentFilter").append('<option value=""> ALL </option>');
       for(var i = 0; i < ids.length; i++) {
@@ -269,7 +297,7 @@
     });
   }
 
-  function updateScheduleRow(schedule) {
+  function updateCollectionScheduleRow(schedule) {
     $("#" + schedule.collectionID + "-schedule-laststart").html(schedule.lastStart);
     $("#" + schedule.collectionID + "-schedule-lastduration").html(schedule.lastDuration);
     $("#" + schedule.collectionID + "-schedule-lastaudits").html(schedule.collectedAudits);
@@ -277,15 +305,15 @@
   }
 
   function updateCollectionSchedule() {
-    var url = audittrailServiceUrl + '/audittrails/AuditTrailService/collectionSchedule/';
+    var url = auditTrailServiceUrl + '/audittrails/AuditTrailService/collectionSchedule/';
     $.getJSON(url, {}, function(schedules) {
       for(var i = 0; i < schedules.length; i++) {
-        updateScheduleRow(schedules[i]);
+        updateCollectionScheduleRow(schedules[i]);
       }
     });
   }
 
-  function addScheduleRow(schedule) {
+  function addCollectionScheduleRow(schedule) {
     var html = "<tr>";
     html += "<td>" + schedule.collectionID + "</td>";
     html += "<td id='" + schedule.collectionID + "-schedule-laststart'>" + schedule.lastStart + "</td>";
@@ -293,28 +321,51 @@
     html += "<td id='" + schedule.collectionID + "-schedule-lastaudits'>" + schedule.collectedAudits + "</td>";
     html += "<td id='" + schedule.collectionID + "-schedule-nextstart'>" + schedule.nextStart + "</td>";
     html += "</tr>";
-    $("#collection-schedule-table-body").append(html);
+    $(COLLECTION_TABLE_SELECTOR).append(html);
   }
 
   function loadCollectionSchedule() {
-    var url = audittrailServiceUrl + '/audittrails/AuditTrailService/collectionSchedule/';
+    var url = auditTrailServiceUrl + '/audittrails/AuditTrailService/collectionSchedule/';
     $.getJSON(url, {}, function(schedules) {
       for(var i = 0; i < schedules.length; i++) {
-        addScheduleRow(schedules[i]);
+        addCollectionScheduleRow(schedules[i]);
       }
     }).done(function() {
       collectionScheduleUpdater = setInterval(function() {updateCollectionSchedule(); }, 5000);
     });
   }
 
+  function loadPreservationSchedule() {
+    var url = auditTrailServiceUrl + '/audittrails/AuditTrailService/preservationSchedule/';
+    /*$.getJSON(url, {}, function(preservationInfo) {
+      addPreservationScheduleRow(preservationInfo);
+    }).done(function() {
+      setInterval(function() {updateCollectionSchedule(); }, 5000);
+    });*/
+    let json = $.parseJSON("{\"collectionID\": \"books\",\"lastStart\": \"123\",\"lastDuration\": \"1\",\"nextStart\": \"321\", \"preservedAuditCount\": 1000}")
+    addPreservationScheduleRow(json)
+  }
+
+  function addPreservationScheduleRow(preservationInfo) {
+    var html = "<tr>";
+    html += "<td>" + preservationInfo.collectionID + "</td>";
+    html += "<td id='" + preservationInfo.collectionID + "-preservation-laststart'>" + preservationInfo.lastStart + "</td>";
+    html += "<td id='" + preservationInfo.collectionID + "-preservation-lastduration'>" + preservationInfo.lastDuration + "</td>";
+    html += "<td id='" + preservationInfo.collectionID + "-preservation-lastaudits'>" + preservationInfo.preservedAuditCount + "</td>";
+    html += "<td id='" + preservationInfo.collectionID + "-preservation-nextstart'>" + preservationInfo.nextStart + "</td>";
+    html += "</tr>";
+    $(PRESERVATION_TABLE_SELECTOR).append(html);
+  }
+
   function initPage() {
     $.get('repo/urlservice/auditTrailService', {}, function(url) {
-      audittrailServiceUrl = url;
+      auditTrailServiceUrl = url;
       $("#collectAuditTrails").click(function(event) { event.preventDefault(); startAuditTrailsCollection(); });
       $("#collectAuditTrails").removeAttr("disabled");
       $("#queryAuditTrails").click(function(event) {event.preventDefault(); getAuditTrails()});
       $("#queryAuditTrails").removeAttr("disabled");
       loadCollectionSchedule();
+      //loadPreservationSchedule();
       getContributorIDs();
     }, 'html');
   }
@@ -322,6 +373,7 @@
   $(document).ready(function(){
     makeMenu("audit-trail-service.html", "#pageMenu");
     initPage();
+    loadPreservationSchedule(); // TODO Remove
     getCollectionIDs();
     $("#fromDate").datepicker({format: "yyyy/mm/dd"});
     $("#toDate").datepicker({format: "yyyy/mm/dd"});

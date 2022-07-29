@@ -164,10 +164,14 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         FileExchange fileExchange = mock(FileExchange.class);
 
         LocalAuditTrailPreserver preserver = new LocalAuditTrailPreserver(settings, store, client, fileExchange);
-        
+
+        verify(store).addCollection(collectionID);
+        verify(store).addContributor(PILLARID);
         verify(store).getPreservationSequenceNumber(PILLARID, collectionID);
+        verify(store).hasPreservationKey(PILLARID, collectionID);
+        verify(store).setPreservationSequenceNumber(PILLARID, collectionID, 0);
         verifyNoMoreInteractions(store);
-        
+
         addStep("Call the preservation of audit trails now.", 
                 "Should make calls to the store, upload the file and call the client");
 
@@ -184,7 +188,7 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         // getPreservationSequenceNumber should be called twice, first to 'initialize' auditpacker, and second to
         // run the preserver/packer...
         verify(store, times(2)).getPreservationSequenceNumber(PILLARID, collectionID);
-        verify(store).getAuditTrailsByIterator(null, collectionID, PILLARID, 0L,
+        verify(store).getAuditTrailsByIterator(null, collectionID, PILLARID, 1L,
                 null, null, null, null, null, null, null);
 
         assertEquals(client.getCallsToPutFile(), 1);

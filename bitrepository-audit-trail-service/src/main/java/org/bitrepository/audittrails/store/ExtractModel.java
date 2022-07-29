@@ -30,15 +30,15 @@ import java.util.Date;
  */
 class ExtractModel {
     /**
-     * @see #getFileId().
+     * @see #getFileID().
      */
     private String fileID;
     /**
-     * @see #getCollectionId().
+     * @see #getCollectionID().
      */
     private String collectionID;
     /**
-     * @see #getContributorId().
+     * @see #getContributorID().
      */
     private String contributorId;
     /**
@@ -80,42 +80,42 @@ class ExtractModel {
     /**
      * @return The fileID;
      */
-    public String getFileId() {
+    public String getFileID() {
         return fileID;
     }
 
     /**
      * @param fileID The new file id.
      */
-    public void setFileId(String fileID) {
+    public void setFileID(String fileID) {
         this.fileID = fileID;
     }
 
     /**
      * @return The collectionID;
      */
-    public String getCollectionId() {
+    public String getCollectionID() {
         return collectionID;
     }
 
     /**
      * @param collectionID The new collection id.
      */
-    public void setCollectionId(String collectionID) {
+    public void setCollectionID(String collectionID) {
         this.collectionID = collectionID;
     }
 
     /**
      * @return The contributorId;
      */
-    public String getContributorId() {
+    public String getContributorID() {
         return contributorId;
     }
 
     /**
      * @param contributorId The new id of the contributor.
      */
-    public void setContributorId(String contributorId) {
+    public void setContributorID(String contributorId) {
         this.contributorId = contributorId;
     }
 
