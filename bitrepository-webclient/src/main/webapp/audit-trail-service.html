@@ -74,7 +74,8 @@
           </div>
         </div>
 
-        <div class="accordion" id="preservation-schedule-accordion">
+        <!-- By default we do not show the preservation-accordion - if preservation is enabled it will show -->
+        <div class="accordion" id="preservation-schedule-accordion" style="display: none;">
           <div class="accordion-group">
             <div class="accordion-heading">
               <a class="accordion-toggle" data-toggle="collapse" data-parent="#preservation-schedule-accordion" href="#collapsePreservation">
@@ -337,43 +338,55 @@
 
   function loadPreservationSchedule() {
     var url = auditTrailServiceUrl + '/audittrails/AuditTrailService/preservationSchedule/';
-    /*$.getJSON(url, {}, function(preservationInfo) {
+    $.getJSON(url, {}, function(preservationInfo) {
       addPreservationScheduleRow(preservationInfo);
     }).done(function() {
-      setInterval(function() {updateCollectionSchedule(); }, 5000);
-    });*/
-    let json = $.parseJSON("{\"collectionID\": \"books\",\"lastStart\": \"123\",\"lastDuration\": \"1\",\"nextStart\": \"321\", \"preservedAuditCount\": 1000}")
-    addPreservationScheduleRow(json)
+      $("#preservation-schedule-accordion").show();
+      setInterval(function() {updatePreservationSchedule(); }, 10000);
+    }).fail(function() {
+      console.log("Preservation is disabled. Not showing preservation schedule.")
+    });
   }
 
   function addPreservationScheduleRow(preservationInfo) {
     var html = "<tr>";
     html += "<td>" + preservationInfo.collectionID + "</td>";
-    html += "<td id='" + preservationInfo.collectionID + "-preservation-laststart'>" + preservationInfo.lastStart + "</td>";
-    html += "<td id='" + preservationInfo.collectionID + "-preservation-lastduration'>" + preservationInfo.lastDuration + "</td>";
-    html += "<td id='" + preservationInfo.collectionID + "-preservation-lastaudits'>" + preservationInfo.preservedAuditCount + "</td>";
-    html += "<td id='" + preservationInfo.collectionID + "-preservation-nextstart'>" + preservationInfo.nextStart + "</td>";
+    html += "<td id='preservation-schedule-laststart'>" + preservationInfo.lastStart + "</td>";
+    html += "<td id='preservation-schedule-lastduration'>" + preservationInfo.lastDuration + "</td>";
+    html += "<td id='preservation-schedule-lastcount'>" + preservationInfo.preservedAuditCount + "</td>";
+    html += "<td id='preservation-schedule-nextstart'>" + preservationInfo.nextStart + "</td>";
     html += "</tr>";
     $(PRESERVATION_TABLE_SELECTOR).append(html);
+  }
+
+  function updatePreservationSchedule() {
+    var url = auditTrailServiceUrl + '/audittrails/AuditTrailService/preservationSchedule/';
+    $.getJSON(url, {}, function(preservationInfo) {
+      $("#preservation-schedule-laststart").html(preservationInfo.lastStart);
+      $("#preservation-schedule-lastduration").html(preservationInfo.lastDuration);
+      $("#preservation-schedule-lastcount").html(preservationInfo.preservedAuditCount);
+      $("#preservation-schedule-nextstart").html(preservationInfo.nextStart);
+    });
   }
 
   function initPage() {
     $.get('repo/urlservice/auditTrailService', {}, function(url) {
       auditTrailServiceUrl = url;
-      $("#collectAuditTrails").click(function(event) { event.preventDefault(); startAuditTrailsCollection(); });
-      $("#collectAuditTrails").removeAttr("disabled");
-      $("#queryAuditTrails").click(function(event) {event.preventDefault(); getAuditTrails()});
-      $("#queryAuditTrails").removeAttr("disabled");
+      let collectAuditTrailsButton = $("#collectAuditTrails");
+      let queryAuditTrailsButton = $("#queryAuditTrails");
+      collectAuditTrailsButton.click(function(event) { event.preventDefault(); startAuditTrailsCollection(); });
+      collectAuditTrailsButton.removeAttr("disabled");
+      queryAuditTrailsButton.click(function(event) {event.preventDefault(); getAuditTrails()});
+      queryAuditTrailsButton.removeAttr("disabled");
       loadCollectionSchedule();
-      //loadPreservationSchedule();
+      loadPreservationSchedule();
       getContributorIDs();
     }, 'html');
   }
 
-  $(document).ready(function(){
+  $(document).ready(function() {
     makeMenu("audit-trail-service.html", "#pageMenu");
     initPage();
-    loadPreservationSchedule(); // TODO Remove
     getCollectionIDs();
     $("#fromDate").datepicker({format: "yyyy/mm/dd"});
     $("#toDate").datepicker({format: "yyyy/mm/dd"});

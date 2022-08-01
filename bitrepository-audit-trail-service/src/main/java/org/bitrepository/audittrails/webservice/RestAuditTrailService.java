@@ -56,9 +56,6 @@ import java.util.TimeZone;
 
 @Path("/AuditTrailService")
 public class RestAuditTrailService {
-    /**
-     * The log.
-     */
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final AuditTrailService service;
     private final CalendarUtils calendarUtils = CalendarUtils.getInstance(TimeZone.getDefault());
@@ -141,7 +138,14 @@ public class RestAuditTrailService {
     @Path("/preservationSchedule")
     @Produces(MediaType.APPLICATION_JSON)
     public PreservationInfo getPreservationSchedule() {
-        return service.getPreservationInfo();
+        PreservationInfo preservationInfo = service.getPreservationInfo();
+        if (preservationInfo != null) {
+            return preservationInfo;
+        } else {
+            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
+                    .entity("404: Preservation must be enabled in settings to use this endpoint")
+                    .type(MediaType.TEXT_PLAIN).build());
+        }
     }
 
     private void writeAuditResult(AuditTrailEvent event, JsonGenerator jg) throws IOException {

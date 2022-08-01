@@ -21,7 +21,7 @@
  */
 package org.bitrepository.audittrails.preserver;
 
-import org.bitrepository.audittrails.collector.CollectionSchedule;
+import org.bitrepository.common.TimerTaskSchedule;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.audittrails.webservice.PreservationInfo;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
@@ -64,7 +64,7 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
     private final AuditTrailStore store;
     private final BlockingPutFileClient client;
     private Timer timer;
-    private AuditPreservationTimerTask auditTask = null;
+    private AuditPreservationTimerTask preservationTask = null;
     private final Map<String, AuditPacker> auditPackers = new HashMap<>();
     private final AuditTrailPreservation preservationSettings;
     private final Settings settings;
@@ -118,8 +118,8 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
         log.info("Instantiating the preservation of audit trails every {}",
                 TimeUtils.millisecondsToHuman(preservationInterval));
         timer = new Timer(true);
-        auditTask = new AuditPreservationTimerTask(preservationInterval);
-        timer.scheduleAtFixedRate(auditTask, timerCheckInterval, timerCheckInterval);
+        preservationTask = new AuditPreservationTimerTask(preservationInterval);
+        timer.scheduleAtFixedRate(preservationTask, timerCheckInterval, timerCheckInterval);
     }
 
     @Override
@@ -212,25 +212,23 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
         PreservationInfo info = new PreservationInfo();
         info.setCollectionID(preservationSettings.getAuditTrailPreservationCollection());
 
-        Date lastStart = auditTask.getLastPreservationStart();
-        Date lastFinish = auditTask.getLastPreservationFinish();
-        Date nextStart = auditTask.getNextScheduledRun();
-        long lastDurationMS = lastFinish.getTime() - lastStart.getTime();
+        Date lastStart = preservationTask.getLastPreservationStart();
+        Date lastFinish = preservationTask.getLastPreservationFinish();
+        Date nextStart = preservationTask.getNextScheduledRun();
 
-        /*if (lastStart != null) {
+        // Need to handle the case where preservation has not started/finished yet.
+        if (lastStart != null) {
             info.setLastStart(TimeUtils.shortDate(lastStart));
             if (lastFinish != null) {
-                long duration = lastFinish.getTime() - lastStart.getTime();
-                info.setLastDuration(TimeUtils.millisecondsToHuman(duration));
+                long lastDurationMS = lastFinish.getTime() - lastStart.getTime();
+                info.setLastDuration(TimeUtils.millisecondsToHuman(lastDurationMS));
             } else {
-                info.setLastDuration("Collection has not finished yet");
+                info.setLastDuration("Preservation has not finished yet");
             }
         } else {
-            info.setLastStart("Audit trail collection have not started");
+            info.setLastStart("Audit trail preservation has not started yet");
             info.setLastDuration("Not available");
-        }*/
-        info.setLastStart(TimeUtils.shortDate(lastStart));
-        info.setLastDuration(TimeUtils.millisecondsToHuman(lastDurationMS));
+        }
         info.setNextStart(TimeUtils.shortDate(nextStart));
         info.setPreservedAuditCount(preservedAuditCount);
         return info;
@@ -241,13 +239,13 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
      */
     private class AuditPreservationTimerTask extends TimerTask {
         private final Logger log = LoggerFactory.getLogger(getClass());
-        private final CollectionSchedule schedule; // TODO refactor
+        private final TimerTaskSchedule schedule;
 
         /**
          * @param interval The interval between running this timer task.
          */
         private AuditPreservationTimerTask(long interval) {
-            this.schedule = new CollectionSchedule(interval, 0);
+            this.schedule = new TimerTaskSchedule(interval, 0);
         }
 
         public Date getNextScheduledRun() {

@@ -154,7 +154,6 @@ public class AuditTrailService implements LifeCycledService {
         PreservationInfo info = null;
         if (preserver != null) {
             info = preserver.getPreservationInfo();
-            // TODO figure out how to indicate not-enabled in settings
         }
         return info;
     }

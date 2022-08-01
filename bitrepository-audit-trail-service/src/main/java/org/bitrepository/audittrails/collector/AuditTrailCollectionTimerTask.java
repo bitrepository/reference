@@ -21,6 +21,7 @@
  */
 package org.bitrepository.audittrails.collector;
 
+import org.bitrepository.common.TimerTaskSchedule;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +33,7 @@ public class AuditTrailCollectionTimerTask extends TimerTask {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private final IncrementalCollector collector;
-    private final CollectionSchedule schedule;
+    private final TimerTaskSchedule schedule;
 
     /**
      * @param collector   The collector doing the actual work.
@@ -40,7 +41,7 @@ public class AuditTrailCollectionTimerTask extends TimerTask {
      * @param gracePeriod The period that should pass before the first scheduled collection
      */
     public AuditTrailCollectionTimerTask(IncrementalCollector collector, long interval, int gracePeriod) {
-        this.schedule = new CollectionSchedule(interval, gracePeriod);
+        this.schedule = new TimerTaskSchedule(interval, gracePeriod);
         this.collector = collector;
         log.info("Scheduled next collection of audit trails for {}", schedule.getNextRun());
     }
