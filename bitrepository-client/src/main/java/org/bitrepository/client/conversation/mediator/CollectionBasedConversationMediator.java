@@ -30,6 +30,7 @@ import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.common.DefaultThreadFactory;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.XmlUtils;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
@@ -37,6 +38,7 @@ import org.bitrepository.protocol.security.SecurityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.datatype.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,8 +68,9 @@ public class CollectionBasedConversationMediator implements ConversationMediator
     @Override
     public void start() {
         messagebus.addListener(settings.getReceiverDestinationID(), this);
-        cleanTimer.scheduleAtFixedRate(new ConversationCleaner(), 0,
-                settings.getReferenceSettings().getClientSettings().getMediatorCleanupInterval().longValue());
+        Duration cleanupInterval = settings.getReferenceSettings().getClientSettings().getMediatorCleanupInterval();
+        cleanTimer.scheduleAtFixedRate(new ConversationCleaner(),
+                0, XmlUtils.xmlDurationToMilliseconds(cleanupInterval));
     }
 
     @Override

@@ -163,13 +163,20 @@
         <xs:documentation>General settings for a client</xs:documentation>
       </xs:annotation>
       <xs:sequence>
-        <xs:element name="MediatorCleanupInterval" type="xs:nonNegativeInteger">
+        <xs:element name="MediatorCleanupInterval">
           <xs:annotation>
             <xs:documentation xml:lang="en">
-              The amount of milliseconds between the cleanups in the
-              ConversationMediator.
+              The duration between the cleanups in the ConversationMediator.
+              Non-negative XML schema durations consisting of hours, minutes and/or seconds are accepted.
+              The seconds may have up to 9 decimals of fraction.
+              For example PT2H (2 hours), PT3M (3 minutes), PT1H22M22.5S (1 hour 22 minutes 22.5 seconds).
             </xs:documentation>
           </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:duration">
+              <xs:pattern value="PT(\d+H)?(\d+M)?(\d+(\.\d{1,9})?S)?" />
+            </xs:restriction>
+          </xs:simpleType>
         </xs:element>
         <xs:element name="ConversationTimeout" type="xs:nonNegativeInteger">
           <xs:annotation>

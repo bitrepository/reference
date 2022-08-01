@@ -28,7 +28,7 @@
     <ReceiverDestinationIDFactoryClass>org.bitrepository.protocol.messagebus.destination.UserSpecificReceiverDestinationIDFactory</ReceiverDestinationIDFactoryClass>
   </GeneralSettings>
   <ClientSettings>
-    <MediatorCleanupInterval>1000</MediatorCleanupInterval>
+    <MediatorCleanupInterval>PT1S</MediatorCleanupInterval>
     <ConversationTimeout>3600000</ConversationTimeout>
     <OperationRetryCount>2</OperationRetryCount>
   </ClientSettings>

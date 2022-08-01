@@ -11,7 +11,7 @@
 
 <ReferenceSettings xmlns="http://bitrepository.org/settings/ReferenceSettings.xsd">
   <ClientSettings>
-    <MediatorCleanupInterval>1000</MediatorCleanupInterval>
+    <MediatorCleanupInterval>PT1S</MediatorCleanupInterval>
     <ConversationTimeout>3600000</ConversationTimeout>
   </ClientSettings>
   <FileExchangeSettings>

@@ -38,7 +38,7 @@
       The interval at which conversations are cleaned up. 
       Unit in milliseconds.       
     -->
-    <MediatorCleanupInterval>1000</MediatorCleanupInterval>
+    <MediatorCleanupInterval>PT1S</MediatorCleanupInterval>
 
     <!-- 
       The maximum amount of time a whole conversation may take. 

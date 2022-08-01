@@ -30,7 +30,7 @@
     <ReceiverDestinationIDFactoryClass>org.bitrepository.protocol.messagebus.destination.UserSpecificReceiverDestinationIDFactory</ReceiverDestinationIDFactoryClass>
   </GeneralSettings>
   <ClientSettings>
-    <MediatorCleanupInterval>10000</MediatorCleanupInterval>
+    <MediatorCleanupInterval>PT10S</MediatorCleanupInterval>
     <ConversationTimeout>3600000</ConversationTimeout>
   </ClientSettings>
   <PillarSettings>
