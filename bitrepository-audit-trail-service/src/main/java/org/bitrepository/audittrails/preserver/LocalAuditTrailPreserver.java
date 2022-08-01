@@ -157,20 +157,25 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
         try {
             AuditPacker auditPacker = auditPackers.get(collectionID);
             File auditPackage = auditPacker.createNewPackage();
-            URL url = uploadFile(auditPackage);
-            log.info("Uploaded the file '{}' to '{}'", auditPackage, url.toExternalForm());
 
-            ChecksumDataForFileTYPE checksumData = getValidationChecksumDataForFile(auditPackage);
+            if (auditPacker.getPackedAuditCount() > 0) {
+                URL url = uploadFile(auditPackage);
+                log.info("Uploaded the file '{}' to '{}'", auditPackage, url.toExternalForm());
 
-            EventHandler eventHandler = new AuditPreservationEventHandler(auditPacker.getSequenceNumbersReached(),
-                    store, collectionID);
-            client.putFile(preservationSettings.getAuditTrailPreservationCollection(), url, auditPackage.getName(),
-                    auditPackage.length(), checksumData, null, eventHandler,
-                    "Preservation of audit trails from the AuditTrail service.");
+                ChecksumDataForFileTYPE checksumData = getValidationChecksumDataForFile(auditPackage);
 
-            preservedAuditCount += auditPacker.getPackedAuditCount();
+                EventHandler eventHandler = new AuditPreservationEventHandler(auditPacker.getSequenceNumbersReached(),
+                        store, collectionID);
+                client.putFile(preservationSettings.getAuditTrailPreservationCollection(), url, auditPackage.getName(),
+                        auditPackage.length(), checksumData, null, eventHandler,
+                        "Preservation of audit trails from the AuditTrail service.");
 
-            log.debug("Cleanup of the uploaded audit trail package.");
+                preservedAuditCount += auditPacker.getPackedAuditCount();
+            } else {
+                log.info("No new audit trails to preserve. No preservation file uploaded.");
+            }
+
+            log.debug("Cleanup of the audit trail package.");
             FileUtils.delete(auditPackage);
         } catch (IOException e) {
             throw new CoordinationLayerException("Cannot perform the preservation of audit trails.", e);
@@ -263,10 +268,11 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
         @Override
         public void run() {
             if (getNextScheduledRun().getTime() < System.currentTimeMillis()) {
-                log.debug("Time to preserve the audit trails.");
+                log.info("Starting preservation of audit trails.");
                 schedule.start();
                 preserveRepositoryAuditTrails();
                 schedule.finish();
+                log.info("Finished preservation. Scheduled new preservation task to start {}", getNextScheduledRun());
             }
         }
     }
