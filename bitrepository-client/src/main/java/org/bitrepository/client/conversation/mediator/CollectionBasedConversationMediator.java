@@ -96,7 +96,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
     }
 
     /**
-     * Will try to fail a conversation gracefully. This entitles:
+     * Will try to fail a conversation gracefully. This consists of:
      * <ul>
      * <li> Removing the conversation from the list of conversations.
      * <li> Attempt to call the failConversation operation on the conversation. The call is made in a separate thread to
@@ -136,7 +136,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
     }
 
     /**
-     * Will clean out obsolete conversations in each run. An obsolete conversation is a conversation which satisfies ony
+     * Will clean out obsolete conversations in each run. An obsolete conversation is a conversation which satisfies one
      * of the following criteria: <ol>
      * <li> Returns true for the <code>hasEnded()</code> method.
      * <li> Is older than the conversationTimeout limit allows.
