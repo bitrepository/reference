@@ -188,8 +188,9 @@ public class AuditPacker {
         }
         log.debug("Packed a total of: {} AuditTrails in: {} ms",
                 numPackedAudits, System.currentTimeMillis() - timeStart);
-        packedAuditCount += numPackedAudits;
+
         if (numPackedAudits > 0) {
+            packedAuditCount += numPackedAudits;
             seqNumsReached.put(contributorID, largestSeqNumber);
         }
     }

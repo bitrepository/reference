@@ -92,6 +92,10 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
         initializeDatabaseEntries();
     }
 
+    /**
+     * Ensures that the collection and contributor entries exist in the database and adds a preservation entry
+     * for each pairing.
+     */
     private void initializeDatabaseEntries() {
         log.debug("Initializing collections and contributors in db.");
         List<String> collections = SettingsUtils.getAllCollectionsIDs();
