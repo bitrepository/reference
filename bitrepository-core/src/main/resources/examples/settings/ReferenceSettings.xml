@@ -37,7 +37,7 @@
     <!-- 
       The interval at which conversations are cleaned up.
       A non-negative XML durations consisting of hours, minutes and/or seconds.
-      The seconds may have up to 9 decimals of fraction.
+      The hours may be more than 24. The seconds may have up to 9 decimals of fraction.
       For example PT2H (2 hours), PT3M (3 minutes), PT1H22M22.5S (1 hour 22 minutes 22.5 seconds).
     -->
     <MediatorCleanupInterval>PT1S</MediatorCleanupInterval>
@@ -47,7 +47,7 @@
       This has some relation to Timeouts in RepositorySettings under ClientSettings. As such
       when writing the configuration, the values there should be taken into consideration. 
       A non-negative XML durations consisting of hours, minutes and/or seconds.
-      The seconds may have up to 9 decimals of fraction.
+      The hours may be more than 24. The seconds may have up to 9 decimals of fraction.
     -->
     <ConversationTimeout>PT1H</ConversationTimeout>
     
@@ -119,7 +119,7 @@
       Time estimate for how long it will take the pillar to start the delivery of a file
       when requested. 
       A non-negative XML durations consisting of hours, minutes and/or seconds.
-      The seconds may have up to 9 decimals of fraction.
+      The hours may be more than 24. The seconds may have up to 9 decimals of fraction.
     -->
     <TimeToStartDeliver>PT1S</TimeToStartDeliver>
     
@@ -319,7 +319,7 @@
     <!-- 
       Defines the interval at which AuditTrails should be collected.
       A non-negative XML durations consisting of hours, minutes and/or seconds.
-      The seconds may have up to 9 decimals of fraction.
+      The hours may be more than 24. The seconds may have up to 9 decimals of fraction.
     --> 
     <CollectAuditInterval>PT1H</CollectAuditInterval>
 
@@ -454,7 +454,7 @@
     <!-- 
       Interval at which status is requested. 
       A non-negative XML durations consisting of hours, minutes and/or seconds.
-      The seconds may have up to 9 decimals of fraction.
+      The hours may be more than 24. The seconds may have up to 9 decimals of fraction.
     -->
     <CollectionInterval>PT1M</CollectionInterval>
     <!-- 

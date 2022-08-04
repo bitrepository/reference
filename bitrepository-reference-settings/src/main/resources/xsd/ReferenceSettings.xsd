@@ -168,7 +168,7 @@
             <xs:documentation xml:lang="en">
               The duration between the cleanups in the ConversationMediator.
               Non-negative XML schema durations consisting of hours, minutes and/or seconds are accepted.
-              The seconds may have up to 9 decimals of fraction.
+              The hours may be more than 24. The seconds may have up to 9 decimals of fraction.
               For example PT2H (2 hours), PT3M (3 minutes), PT1H22M22.5S (1 hour 22 minutes 22.5 seconds).
             </xs:documentation>
           </xs:annotation>
@@ -183,7 +183,7 @@
             <xs:documentation xml:lang="en">
               The timeout for a conversation.
               Non-negative XML schema durations consisting of hours, minutes and/or seconds are accepted.
-              The seconds may have up to 9 decimals of fraction.
+              The hours may be more than 24. The seconds may have up to 9 decimals of fraction.
             </xs:documentation>
           </xs:annotation>
           <xs:simpleType>
@@ -633,7 +633,7 @@
             <xs:documentation>
               Interval at which statuses are to be collected from components.
               Non-negative XML schema durations consisting of hours, minutes and/or seconds are accepted.
-              The seconds may have up to 9 decimals of fraction.
+              The hours may be more than 24. The seconds may have up to 9 decimals of fraction.
             </xs:documentation>
           </xs:annotation>
           <xs:simpleType>
@@ -703,7 +703,7 @@
             <xs:documentation xml:lang="en">
               The interval between each collecting of audit trail data from the contributors.
               Non-negative XML schema durations consisting of hours, minutes and/or seconds are accepted.
-              The seconds may have up to 9 decimals of fraction.
+              The hours may be more than 24. The seconds may have up to 9 decimals of fraction.
             </xs:documentation>
           </xs:annotation>
           <xs:simpleType>
@@ -726,7 +726,7 @@
               Initial grace period after startup to allow the system to finish startup.
               The default is 0.
               Non-negative XML schema durations consisting of hours, minutes and/or seconds are accepted.
-              The seconds may have up to 9 decimals of fraction.
+              The hours may be more than 24. The seconds may have up to 9 decimals of fraction.
             </xs:documentation>
           </xs:annotation>
           <xs:simpleType>
@@ -806,7 +806,7 @@
               Initial grace period after startup to allow the system to finish startup.
               The default is 0.
               Non-negative XML schema durations consisting of hours, minutes and/or seconds are accepted.
-              The seconds may have up to 9 decimals of fraction.
+              The hours may be more than 24. The seconds may have up to 9 decimals of fraction.
             </xs:documentation>
           </xs:annotation>
           <xs:simpleType>
@@ -846,7 +846,7 @@
             <xs:documentation xml:lang="en">
               The time a file has to be known by the system before it is set to missing.
               Non-negative XML schema durations consisting of hours, minutes and/or seconds are accepted.
-              The seconds may have up to 9 decimals of fraction.
+              The hours may be more than 24. The seconds may have up to 9 decimals of fraction.
             </xs:documentation>
           </xs:annotation>
           <xs:simpleType>
