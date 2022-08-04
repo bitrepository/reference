@@ -32,8 +32,8 @@ import org.bitrepository.modify.putfile.conversation.PutFileCompletePillarEvent;
  * Prints out checksum results, if any.
  */
 public class PutFileEventHandler extends CompleteEventAwaiter {
-
     private final Boolean printOutput;
+    private final String saltedChecksum;
 
     /**
      * Constructor.
@@ -42,9 +42,10 @@ public class PutFileEventHandler extends CompleteEventAwaiter {
      * @param outputHandler The {@link OutputHandler} for handling output
      * @param printOutput   Setting for determining if output should be printed.
      */
-    public PutFileEventHandler(Settings settings, OutputHandler outputHandler, boolean printOutput) {
+    public PutFileEventHandler(Settings settings, OutputHandler outputHandler, boolean printOutput, String saltedChecksum) {
         super(settings, outputHandler);
         this.printOutput = printOutput;
+        this.saltedChecksum = saltedChecksum;
 
         if (printOutput) {
             output.resultHeader("PillarId \t Checksum");
@@ -54,15 +55,18 @@ public class PutFileEventHandler extends CompleteEventAwaiter {
     @Override
     public void handleComponentComplete(OperationEvent event) {
         if (!(event instanceof PutFileCompletePillarEvent)) {
-            output.warn("PutFileEventHandler received a component complete, which is not a "
-                    + PutFileCompletePillarEvent.class.getName());
+            output.warn("PutFileEventHandler received a component complete, which is not a " + PutFileCompletePillarEvent.class.getName());
         }
 
         assert event instanceof PutFileCompletePillarEvent;
         PutFileCompletePillarEvent pillarEvent = (PutFileCompletePillarEvent) event;
         if (printOutput && pillarEvent.getChecksums() != null) {
-            output.resultLine(
-                    pillarEvent.getContributorID() + " \t " + Base16Utils.decodeBase16(pillarEvent.getChecksums().getChecksumValue()));
+            if (saltedChecksum != null) {
+                output.resultLine(pillarEvent.getContributorID() + " \t " + saltedChecksum);
+            } else {
+                String checksum = Base16Utils.decodeBase16(pillarEvent.getChecksums().getChecksumValue());
+                output.resultLine(pillarEvent.getContributorID() + " \t " + checksum);
+            }
         }
     }
 

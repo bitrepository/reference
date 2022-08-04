@@ -119,7 +119,7 @@ public final class ChecksumUtils {
      * @return The HMAC calculated checksum in hexadecimal.
      */
     public static String generateChecksum(InputStream content, ChecksumSpecTYPE csSpec) {
-        byte[] digest = null;
+        byte[] digest;
         ChecksumType algorithm = csSpec.getChecksumType();
 
         try {

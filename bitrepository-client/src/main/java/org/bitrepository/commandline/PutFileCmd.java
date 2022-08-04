@@ -24,16 +24,37 @@ package org.bitrepository.commandline;
 import org.apache.commons.cli.Option;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.commandline.eventhandler.CompleteEventAwaiter;
 import org.bitrepository.commandline.eventhandler.PutFileEventHandler;
+import org.bitrepository.common.utils.Base16Utils;
+import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.putfile.PutFileClient;
+import org.bitrepository.protocol.FileExchange;
+import org.bitrepository.protocol.ProtocolComponentFactory;
 
+import java.io.IOException;
 import java.net.URL;
 
 import static org.bitrepository.commandline.Constants.ARGUMENT_IS_NOT_REQUIRED;
+import static org.bitrepository.commandline.Constants.CHECKSUM_ARG;
+import static org.bitrepository.commandline.Constants.DELETE_FILE_ARG;
+import static org.bitrepository.commandline.Constants.DELETE_FILE_DESC;
+import static org.bitrepository.commandline.Constants.EXIT_ARGUMENT_FAILURE;
+import static org.bitrepository.commandline.Constants.EXIT_OPERATION_FAILURE;
+import static org.bitrepository.commandline.Constants.EXIT_SUCCESS;
+import static org.bitrepository.commandline.Constants.FILE_ARG;
+import static org.bitrepository.commandline.Constants.FILE_ID_ARG;
+import static org.bitrepository.commandline.Constants.HAS_ARGUMENT;
+import static org.bitrepository.commandline.Constants.NO_ARGUMENT;
+import static org.bitrepository.commandline.Constants.REQUEST_CHECKSUM_SALT_ARG;
+import static org.bitrepository.commandline.Constants.REQUEST_CHECKSUM_SALT_DESC;
+import static org.bitrepository.commandline.Constants.REQUEST_CHECKSUM_TYPE_ARG;
+import static org.bitrepository.commandline.Constants.REQUEST_CHECKSUM_TYPE_DESC;
+import static org.bitrepository.commandline.Constants.URL_ARG;
 
 public class PutFileCmd extends CommandLineClient {
     private final PutFileClient client;
@@ -46,10 +67,10 @@ public class PutFileCmd extends CommandLineClient {
             PutFileCmd client = new PutFileCmd(args);
             client.runCommand();
         } catch (IllegalArgumentException iae) {
-            System.exit(Constants.EXIT_ARGUMENT_FAILURE);
+            System.exit(EXIT_ARGUMENT_FAILURE);
         } catch (Exception e) {
             e.printStackTrace();
-            System.exit(Constants.EXIT_OPERATION_FAILURE);
+            System.exit(EXIT_OPERATION_FAILURE);
         }
     }
 
@@ -82,9 +103,9 @@ public class PutFileCmd extends CommandLineClient {
         OperationEvent finalEvent = putTheFile();
         output.completeEvent("Results of the PutFile operation for the file '" + getFileIDForMessage() + "'", finalEvent);
         if (finalEvent.getEventType() == OperationEventType.COMPLETE) {
-            System.exit(Constants.EXIT_SUCCESS);
+            System.exit(EXIT_SUCCESS);
         } else {
-            System.exit(Constants.EXIT_OPERATION_FAILURE);
+            System.exit(EXIT_OPERATION_FAILURE);
         }
     }
 
@@ -92,32 +113,29 @@ public class PutFileCmd extends CommandLineClient {
     protected void createOptionsForCmdArgumentHandler() {
         super.createOptionsForCmdArgumentHandler();
 
-        Option fileOption = new Option(Constants.FILE_ARG, Constants.HAS_ARGUMENT,
-                "The path to the file to be uploaded. Is required, unless a URL is given.");
+        Option fileOption = new Option(FILE_ARG, HAS_ARGUMENT, "The path to the file to be uploaded. Is required, unless a URL is given.");
         fileOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(fileOption);
 
-        Option urlOption = new Option(Constants.URL_ARG, Constants.HAS_ARGUMENT,
+        Option urlOption = new Option(URL_ARG, HAS_ARGUMENT,
                 "The URL for the file to be uploaded. Is required, unless a local file is given.");
         urlOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(urlOption);
 
-        Option checksumOption = new Option(Constants.CHECKSUM_ARG, Constants.HAS_ARGUMENT,
+        Option checksumOption = new Option(CHECKSUM_ARG, HAS_ARGUMENT,
                 "The checksum for the file to be retrieved. Is required if using a URL.");
         checksumOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumOption);
 
-        Option checksumTypeOption = new Option(Constants.REQUEST_CHECKSUM_TYPE_ARG, Constants.HAS_ARGUMENT,
-                Constants.REQUEST_CHECKSUM_TYPE_DESC);
+        Option checksumTypeOption = new Option(REQUEST_CHECKSUM_TYPE_ARG, HAS_ARGUMENT, REQUEST_CHECKSUM_TYPE_DESC);
         checksumTypeOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumTypeOption);
 
-        Option checksumSaltOption = new Option(Constants.REQUEST_CHECKSUM_SALT_ARG, Constants.HAS_ARGUMENT,
-                Constants.REQUEST_CHECKSUM_SALT_DESC);
+        Option checksumSaltOption = new Option(REQUEST_CHECKSUM_SALT_ARG, HAS_ARGUMENT, REQUEST_CHECKSUM_SALT_DESC);
         checksumSaltOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumSaltOption);
 
-        Option deleteOption = new Option(Constants.DELETE_FILE_ARG, Constants.NO_ARGUMENT, Constants.DELETE_FILE_DESC);
+        Option deleteOption = new Option(DELETE_FILE_ARG, NO_ARGUMENT, DELETE_FILE_DESC);
         deleteOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(deleteOption);
     }
@@ -130,16 +148,16 @@ public class PutFileCmd extends CommandLineClient {
     protected void validateArguments() {
         super.validateArguments();
 
-        if (cmdHandler.hasOption(Constants.FILE_ARG) && cmdHandler.hasOption(Constants.URL_ARG)) {
+        if (cmdHandler.hasOption(FILE_ARG) && cmdHandler.hasOption(URL_ARG)) {
             throw new IllegalArgumentException("Cannot take both a file (-f) and a URL (-u) as argument.");
         }
-        if (!(cmdHandler.hasOption(Constants.FILE_ARG) || cmdHandler.hasOption(Constants.URL_ARG))) {
+        if (!(cmdHandler.hasOption(FILE_ARG) || cmdHandler.hasOption(URL_ARG))) {
             throw new IllegalArgumentException("Providing either file argument (-f) or URL argument (-u) is required.");
         }
-        if (cmdHandler.hasOption(Constants.URL_ARG) && !cmdHandler.hasOption(Constants.CHECKSUM_ARG)) {
+        if (cmdHandler.hasOption(URL_ARG) && !cmdHandler.hasOption(CHECKSUM_ARG)) {
             throw new IllegalArgumentException("Using URL argument (-u) requires the checksum argument (-C).");
         }
-        if (cmdHandler.hasOption(Constants.URL_ARG) && !cmdHandler.hasOption(Constants.FILE_ID_ARG)) {
+        if (cmdHandler.hasOption(URL_ARG) && !cmdHandler.hasOption(FILE_ID_ARG)) {
             throw new IllegalArgumentException("Using URL argument (-u) requires the file ID argument (-i).");
         }
     }
@@ -158,14 +176,28 @@ public class PutFileCmd extends CommandLineClient {
         ChecksumDataForFileTYPE validationChecksum = getValidationChecksum();
         ChecksumSpecTYPE requestChecksum = getRequestChecksumSpecOrNull();
 
-        boolean printChecksums = cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_TYPE_ARG);
+        boolean printChecksums = cmdHandler.hasOption(REQUEST_CHECKSUM_TYPE_ARG);
+        String saltedChecksum = null;
+        if (cmdHandler.hasOption(REQUEST_CHECKSUM_SALT_ARG)) {
+            String saltedAlg = cmdHandler.getOptionValue(REQUEST_CHECKSUM_TYPE_ARG);
+            String salt = cmdHandler.getOptionValue(REQUEST_CHECKSUM_SALT_ARG);
+            try {
+                FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
+                ChecksumSpecTYPE checksumSpecType = new ChecksumSpecTYPE();
+                checksumSpecType.setChecksumType(ChecksumType.valueOf(saltedAlg));
+                checksumSpecType.setChecksumSalt(Base16Utils.encodeBase16(salt));
+                saltedChecksum = ChecksumUtils.generateChecksum(fileexchange.getFile(url), checksumSpecType);
+            } catch (IOException e) {
+                throw new IllegalArgumentException("Could not convert the given URL to URI.");
+            }
+        }
 
-        CompleteEventAwaiter eventHandler = new PutFileEventHandler(settings, output, printChecksums);
+        CompleteEventAwaiter eventHandler = new PutFileEventHandler(settings, output, printChecksums, saltedChecksum);
         client.putFile(getCollectionID(), url, fileID, getSizeOfFileOrZero(), validationChecksum, requestChecksum, eventHandler, null);
 
         OperationEvent finalEvent = eventHandler.getFinish();
 
-        if (cmdHandler.hasOption(Constants.DELETE_FILE_ARG)) {
+        if (cmdHandler.hasOption(DELETE_FILE_ARG)) {
             deleteFileAfterwards(url);
         }
 
@@ -181,10 +213,10 @@ public class PutFileCmd extends CommandLineClient {
      * @return The spec-type of the checksum as {@link ChecksumDataForFileTYPE}.
      */
     protected ChecksumDataForFileTYPE getValidationChecksum() {
-        if (cmdHandler.hasOption(Constants.FILE_ARG)) {
+        if (cmdHandler.hasOption(FILE_ARG)) {
             return getValidationChecksumDataForFile(findTheFile());
         } else {
-            return getValidationChecksumDataFromArgument(Constants.CHECKSUM_ARG);
+            return getValidationChecksumDataFromArgument(CHECKSUM_ARG);
         }
     }
 
@@ -192,13 +224,12 @@ public class PutFileCmd extends CommandLineClient {
      * @return The filename (FileID) for the file to upload.
      */
     private String getFileIDForMessage() {
-        if (cmdHandler.hasOption(Constants.URL_ARG)) {
-            return cmdHandler.getOptionValue(Constants.URL_ARG) + " (with the id '" + cmdHandler.getOptionValue(Constants.FILE_ID_ARG) +
-                    "')";
+        if (cmdHandler.hasOption(URL_ARG)) {
+            return cmdHandler.getOptionValue(URL_ARG) + " (with the id '" + cmdHandler.getOptionValue(FILE_ID_ARG) + "')";
         }
-        if (cmdHandler.hasOption(Constants.FILE_ARG)) {
-            return cmdHandler.getOptionValue(Constants.FILE_ARG) + (cmdHandler.hasOption(Constants.FILE_ID_ARG) ?
-                    " (with the id '" + cmdHandler.getOptionValue(Constants.FILE_ID_ARG) + "')" : "");
+        if (cmdHandler.hasOption(FILE_ARG)) {
+            return cmdHandler.getOptionValue(FILE_ARG) +
+                    (cmdHandler.hasOption(FILE_ID_ARG) ? " (with the id '" + cmdHandler.getOptionValue(FILE_ID_ARG) + "')" : "");
         }
         return "Failed";
     }
