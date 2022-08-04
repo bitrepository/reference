@@ -284,8 +284,8 @@ public class RestIntegrityService {
                 String pillarHostname = Objects.requireNonNullElse(SettingsUtils.getHostname(pillar), "N/A");
                 PillarType pillarTypeObject = SettingsUtils.getPillarType(pillar);
                 String pillarType = pillarTypeObject != null ? pillarTypeObject.value() : null;
-                PillarCollectionStat emptyStat = new PillarCollectionStat(pillar, collectionID, pillarHostname, pillarType, 0L, 0L, 0L, 0L,
-                        0L, 0L, new Date(0), new Date(0));
+                PillarCollectionStat emptyStat = new PillarCollectionStat(pillar, collectionID, pillarHostname, pillarType, 0L,
+                        0L, 0L, 0L, 0L, 0L, new Date(0), new Date(0));
                 stats.put(pillar, emptyStat);
             }
         }
