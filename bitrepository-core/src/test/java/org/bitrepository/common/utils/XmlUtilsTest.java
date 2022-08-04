@@ -1,5 +1,7 @@
 package org.bitrepository.common.utils;
 
+import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
+import org.bitrepository.bitrepositoryelements.TimeMeasureUnit;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -7,6 +9,7 @@ import org.testng.annotations.Test;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
+import java.math.BigInteger;
 import java.time.Duration;
 
 public class XmlUtilsTest extends ExtendedTestCase {
@@ -26,6 +29,16 @@ public class XmlUtilsTest extends ExtendedTestCase {
     @Test(groups = {"regressiontest"})
     public void testXmlDurationToDuration() {
         addDescription("Tests xmlDurationToDuration in sunshine scenario cases");
+
+        addStep("Durations of 0 of some time unit", "Duration.ZERO");
+        Assert.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("P0Y")), Duration.ZERO);
+        Assert.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("P0M")), Duration.ZERO);
+        Assert.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("P0D")), Duration.ZERO);
+        Assert.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("PT0H")), Duration.ZERO);
+        Assert.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("PT0M")), Duration.ZERO);
+        Assert.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("PT0S")), Duration.ZERO);
+        Assert.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("PT0.0000S")),
+                Duration.ZERO);
 
         addStep("Test correct and precise conversion",
                 "Hours, minutes and seconds are converted with full precision");
@@ -91,6 +104,24 @@ public class XmlUtilsTest extends ExtendedTestCase {
         Assert.assertEquals(XmlUtils.xmlDurationToMilliseconds(factory.newDuration("PT0.001S")), 1);
         Assert.assertEquals(XmlUtils.xmlDurationToMilliseconds(factory.newDuration("PT0.001999S")), 1);
         Assert.assertEquals(XmlUtils.xmlDurationToMilliseconds(factory.newDuration("PT2S")), 2000);
+    }
+
+    @Test(groups = {"regressiontest"})
+    public void convertsToTimeMeasure() {
+        TimeMeasureTYPE shortTimeMeasure = XmlUtils.xmlDurationToTimeMeasure(factory.newDuration(1));
+        Assert.assertEquals(shortTimeMeasure.getTimeMeasureUnit(), TimeMeasureUnit.MILLISECONDS);
+        Assert.assertEquals(shortTimeMeasure.getTimeMeasureValue(), BigInteger.ONE);
+
+        long hours = 2_562_047_788_015L;
+        TimeMeasureTYPE longTimeMeasure = XmlUtils.xmlDurationToTimeMeasure(factory.newDurationDayTime(
+                true, BigInteger.ZERO, BigInteger.valueOf(hours), BigInteger.ZERO, BigInteger.ZERO));
+        if (longTimeMeasure.getTimeMeasureUnit() == TimeMeasureUnit.HOURS) {
+            Assert.assertEquals(longTimeMeasure.getTimeMeasureValue(), BigInteger.valueOf(hours));
+        } else {
+            Assert.assertEquals(longTimeMeasure.getTimeMeasureUnit(), TimeMeasureUnit.MILLISECONDS);
+            Assert.assertEquals(longTimeMeasure.getTimeMeasureValue(),
+                    BigInteger.valueOf(Duration.ofHours(hours).toMillis()));
+        }
     }
 
 }

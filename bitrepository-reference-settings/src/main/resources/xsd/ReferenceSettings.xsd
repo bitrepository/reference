@@ -73,13 +73,13 @@
       <xs:annotation>
         <xs:documentation xml:lang="en">
           Defines the thread pools to handle message.
-          A received message is check against the different message thread pools in the
+          A received message is checked against the different message thread pools in the
           following order:
           1. Is there defined pools specific to collection for the received message.
           2. Specific message type pools
           2. Category pools
-          3. Default pool (no message filters defined). Note that this poolwill always be create. If undefined a pool
-          with ondemand creation of processing threads is created (using CachedThreadPool).
+          3. Default pool (no message filters defined). Note that this pool will always be created. If undefined a pool
+          with on-demand creation of processing threads is created (using CachedThreadPool).
         </xs:documentation>
       </xs:annotation>
       <xs:sequence>
@@ -178,19 +178,26 @@
             </xs:restriction>
           </xs:simpleType>
         </xs:element>
-        <xs:element name="ConversationTimeout" type="xs:nonNegativeInteger">
+        <xs:element name="ConversationTimeout">
           <xs:annotation>
             <xs:documentation xml:lang="en">
-              The timeout for a conversation in milliseconds.
+              The timeout for a conversation.
+              Non-negative XML schema durations consisting of hours, minutes and/or seconds are accepted.
+              The seconds may have up to 9 decimals of fraction.
             </xs:documentation>
           </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:duration">
+              <xs:pattern value="PT(\d+H)?(\d+M)?(\d+(\.\d{1,9})?S)?" />
+            </xs:restriction>
+          </xs:simpleType>
         </xs:element>
         <xs:element name="OperationRetryCount" type="xs:nonNegativeInteger" minOccurs="0">
           <xs:annotation>
             <xs:documentation xml:lang="en">
               Number of allowed automatic retries for the performing part of an operation.
               This relates to operations which can fail due to file transfer errors.
-              0 denotes that a operation should not be retried (only the initial operation attempt).
+              0 denotes that an operation should not be retried (only the initial operation attempt).
               1 or higher denotes the number of additional attempts of file transfer. I.e. if 2 up to 3
               attempts is allowed before the operation fails.
             </xs:documentation>
@@ -255,27 +262,54 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="TimeToStartDeliver" type="xs:nonNegativeInteger">
+        <xs:element name="TimeToStartDeliver">
           <xs:annotation>
             <xs:documentation>
-              The time to use as timeToStartDeliver in identification responses in milliseconds.
+              The time to use as timeToStartDeliver in identification responses.
+              Non-negative XML schema durations consisting of days, hours, minutes and/or seconds are accepted.
+              The seconds may have up to 9 decimals of fraction.
+              For example P2D (2 days), PT3M (3 minutes), P1DT1H22M22.5S (1 day 1 hour 22 minutes 22.5 seconds).
+              A day will be understood as 24 hours always.
             </xs:documentation>
           </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:duration">
+              <xs:pattern value="P(\d+D)?(T(\d+H)?(\d+M)?(\d+(\.\d{1,9})?S)?)?" />
+            </xs:restriction>
+          </xs:simpleType>
         </xs:element>
-        <xs:element name="MaxAgeForChecksums" type="xs:nonNegativeInteger">
+        <xs:element name="MaxAgeForChecksums">
           <xs:annotation>
             <xs:documentation>
-              The number of milliseconds a checksum can be before it has to be recalculated.
+              The age a checksum can have before it has to be recalculated.
+              Non-negative XML schema durations are accepted. The seconds may have up to 9 decimals of fraction.
+              For example P1Y (1 year), P2M (2 months), PT3M (3 minutes),
+              P1DT1H22M22.5S (1 day 1 hour 22 minutes 22.5 seconds).
+              Years, months and days will be converted to time using heuristic average lengths
+              (24 hours for a day; between 30 and 31 days for a month).
             </xs:documentation>
           </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:duration">
+              <xs:pattern value="P(\d+Y)?(\d+M)?(\d+D)?(T(\d+H)?(\d+M)?(\d+(\.\d{1,9})?S)?)?" />
+            </xs:restriction>
+          </xs:simpleType>
         </xs:element>
-        <xs:element name="RecalculateOldChecksumsInterval" type="xs:nonNegativeInteger" minOccurs="0">
+        <xs:element name="RecalculateOldChecksumsInterval" minOccurs="0">
           <xs:annotation>
             <xs:documentation>
-              The number of milliseconds between running the workflow for ensuring the checksums integrity.
-              Default is once per hour, or 3600000.
+              The interval between running the workflow for ensuring the checksums' integrity.
+              Non-negative XML schema durations are accepted. The seconds may have up to 9 decimals of fraction.
+              Years, months and days will be converted to time using heuristic average lengths
+              (24 hours for a day; between 30 and 31 days for a month).
+              Default is once per hour or PT1H.
             </xs:documentation>
           </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:duration">
+              <xs:pattern value="P(\d+Y)?(\d+M)?(\d+D)?(T(\d+H)?(\d+M)?(\d+(\.\d{1,9})?S)?)?" />
+            </xs:restriction>
+          </xs:simpleType>
         </xs:element>
         <xs:element name="AuditTrailContributerDatabase" type="DatabaseSpecifics">
           <xs:annotation>
@@ -319,12 +353,12 @@
         <xs:element name="VerifyDataConsistencyOnMessage" type="xs:boolean" minOccurs="0">
           <xs:annotation>
             <xs:documentation>
-              Whether or not verify the consistency between files and the data in the checksum database, when handling
+              Whether or not to verify the consistency between files and the data in the checksum database when handling
               messages for operations involving the given files.
-              The consistency is already being checked by the scheduled job, so it setting is only for further
+              The consistency is already being checked by the scheduled job, so this setting is only for further
               verifying the consistency when handling messages.
               Default value is false.
-              This setting is only releavent for the FilePillar (since ChecksumPillars do not have the actual files).
+              This setting is only relevant for the FilePillar (since ChecksumPillars do not have the actual files).
             </xs:documentation>
           </xs:annotation>
         </xs:element>
@@ -360,7 +394,7 @@
           <xs:annotation>
             <xs:documentation xml:lang="en">
               The list of collection ids to have its data archived with the following list of directories.
-              Each collection will have its files archived in its own sub-directory with the collection name.
+              Each collection will have its files archived in its own subdirectory with the collection name.
               A collection is only able to be used in one 'CollectionDir'.
 
               If no collection ids are defined, then it will be used as default directory for the collections, which
@@ -594,12 +628,19 @@
       </xs:annotation>
       <xs:sequence>
         <xs:element name="ID" type="xs:string"/>
-        <xs:element name="CollectionInterval" type="xs:long">
+        <xs:element name="CollectionInterval">
           <xs:annotation>
             <xs:documentation>
-              Interval at which statuses is to be collected from components. Value in milliseconds.
+              Interval at which statuses are to be collected from components.
+              Non-negative XML schema durations consisting of hours, minutes and/or seconds are accepted.
+              The seconds may have up to 9 decimals of fraction.
             </xs:documentation>
           </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:duration">
+              <xs:pattern value="PT(\d+H)?(\d+M)?(\d+(\.\d{1,9})?S)?" />
+            </xs:restriction>
+          </xs:simpleType>
         </xs:element>
         <xs:element name="MaxRetries" type="xs:positiveInteger">
           <xs:annotation>
@@ -645,7 +686,7 @@
         <xs:element name="SendAlarmOnMissingContributer" type="xs:boolean" minOccurs="0">
           <xs:annotation>
             <xs:documentation>
-              Specifies whether the audit trail services should send alarms when contributers defined to be part of
+              Specifies whether the audit trail services should send alarms when contributors defined to be part of
               the collection, doesn't reply to identify requests. Default is false.
             </xs:documentation>
           </xs:annotation>
@@ -657,32 +698,47 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="CollectAuditInterval" type="xs:long">
+        <xs:element name="CollectAuditInterval">
           <xs:annotation>
             <xs:documentation xml:lang="en">
-              The amount of milliseconds to between each collecting of audit trail data from the contributors.
+              The interval between each collecting of audit trail data from the contributors.
+              Non-negative XML schema durations consisting of hours, minutes and/or seconds are accepted.
+              The seconds may have up to 9 decimals of fraction.
             </xs:documentation>
           </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:duration">
+              <xs:pattern value="PT(\d+H)?(\d+M)?(\d+(\.\d{1,9})?S)?" />
+            </xs:restriction>
+          </xs:simpleType>
         </xs:element>
         <xs:element name="TimerTaskCheckInterval" type="xs:long">
           <xs:annotation>
             <xs:documentation xml:lang="en">
-              The amount of milliseconds for the timertask to check whether it is time to run the collector.
+              The amount of milliseconds for the timer task to check whether it is time to run the collector.
+              Not used.
             </xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="GracePeriod" type="xs:long" minOccurs="0">
+        <xs:element name="GracePeriod" minOccurs="0">
           <xs:annotation>
             <xs:documentation xml:lang="en">
-              Initial grace period in milliseconds after startup to allow the system to finish startup. The default is
-              0 ms.
+              Initial grace period after startup to allow the system to finish startup.
+              The default is 0.
+              Non-negative XML schema durations consisting of hours, minutes and/or seconds are accepted.
+              The seconds may have up to 9 decimals of fraction.
             </xs:documentation>
           </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:duration">
+              <xs:pattern value="PT(\d+H)?(\d+M)?(\d+(\.\d{1,9})?S)?" />
+            </xs:restriction>
+          </xs:simpleType>
         </xs:element>
         <xs:element name="AuditTrailPreservation" type="AuditTrailPreservation" minOccurs="0">
           <xs:annotation>
             <xs:documentation xml:lang="en">
-              The settings to use for audit trail preservation, eg. backup of audit trails..
+              The settings to use for audit trail preservation, e.g., backup of audit trails.
             </xs:documentation>
           </xs:annotation>
         </xs:element>
@@ -692,12 +748,22 @@
 
   <xs:complexType name="AuditTrailPreservation">
     <xs:sequence>
-      <xs:element name="AuditTrailPreservationInterval" type="xs:long">
+      <xs:element name="AuditTrailPreservationInterval">
         <xs:annotation>
           <xs:documentation xml:lang="en">
-            The amount of milliseconds between each preservation of audit trails.
+            The interval between each preservation of audit trails.
+            Non-negative XML schema durations consisting of months, days, hours, minutes and/or seconds are accepted.
+            The seconds may have up to 9 decimals of fraction.
+            For example P2M (2 months), PT3M (3 minutes), P1DT1H22M22.5S (1 day 1 hour 22 minutes 22.5 seconds).
+            Months and days will be converted to time using heuristic average lengths
+            (24 hours for a day; between 30 and 31 days for a month).
           </xs:documentation>
         </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:duration">
+            <xs:pattern value="P(\d+M)?(\d+D)?(T(\d+H)?(\d+M)?(\d+(\.\d{1,9})?S)?)?" />
+          </xs:restriction>
+        </xs:simpleType>
       </xs:element>
       <xs:element name="AuditTrailPreservationCollection" type="xs:string">
         <xs:annotation>
@@ -733,21 +799,29 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="GracePeriod" type="xs:long" minOccurs="0">
+        <xs:element name="GracePeriod" minOccurs="0">
           <xs:annotation>
             <xs:documentation xml:lang="en">
-              Initial grace period in milliseconds after startup to allow the system to finish startup.
-              The default is 0 ms.
+              Not used (only the like-named setting in AuditTrailServiceSettings is).
+              Initial grace period after startup to allow the system to finish startup.
+              The default is 0.
+              Non-negative XML schema durations consisting of hours, minutes and/or seconds are accepted.
+              The seconds may have up to 9 decimals of fraction.
             </xs:documentation>
           </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:duration">
+              <xs:pattern value="PT(\d+H)?(\d+M)?(\d+(\.\d{1,9})?S)?" />
+            </xs:restriction>
+          </xs:simpleType>
         </xs:element>
         <xs:element name="AbortOnFailedContributor" type="xs:boolean" minOccurs="0">
           <xs:annotation>
             <xs:documentation xml:lang="en">
               Control how the integrity service should behave in case of a contributor failing to deliver
               FileIDs or Checksum data.
-              If set to true, stop the integrity check and send an alarm, if false, continue the check on
-              a incomplete set of data, and alert by sending an alarm.
+              If set to true, stop the integrity check and send an alarm. If false, continue the check on
+              an incomplete set of data, and alert by sending an alarm.
               The service defaults to true.
             </xs:documentation>
           </xs:annotation>
@@ -767,12 +841,19 @@
             </xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="TimeBeforeMissingFileCheck" type="xs:long">
+        <xs:element name="TimeBeforeMissingFileCheck">
           <xs:annotation>
             <xs:documentation xml:lang="en">
-              The number of milliseconds a file has to be known by the system before it is set to missing.
+              The time a file has to be known by the system before it is set to missing.
+              Non-negative XML schema durations consisting of hours, minutes and/or seconds are accepted.
+              The seconds may have up to 9 decimals of fraction.
             </xs:documentation>
           </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:duration">
+              <xs:pattern value="PT(\d+H)?(\d+M)?(\d+(\.\d{1,9})?S)?" />
+            </xs:restriction>
+          </xs:simpleType>
         </xs:element>
         <xs:element name="AuditTrailContributerDatabase" type="DatabaseSpecifics">
           <xs:annotation>
@@ -792,8 +873,9 @@
         <xs:element name="IntegrityReportsDir" type="xs:string">
           <xs:annotation xml:lang="en">
             <xs:documentation>
-              The directory where to write and store integrity reports. Directory must exists, and be read- and writable
-              E.g. /home/webservices/var/integrity-reports/
+              The directory where to write and store integrity reports.
+              The directory must exist and be readable and writable.
+              E.g., /home/webservices/var/integrity-reports/
             </xs:documentation>
           </xs:annotation>
         </xs:element>
@@ -856,14 +938,23 @@
         <xs:documentation>Defines a specific workflow.</xs:documentation>
       </xs:annotation>
       <xs:sequence>
-        <xs:element name="WorkflowInterval" type="xs:long">
+        <xs:element name="WorkflowInterval">
           <xs:annotation>
             <xs:documentation>
-              The time in milliseconds between the workflow is run.
-              If it is a non-positive number, then the workflow will not be scheduled, but it will be possible to run manually from the UI.
-              Also workflows with a positive interval will be run at start-up, whereas workflows with a non-positive interval will not.
+              The time between the workflow is run.
+              A duration longer than 0 will cause the workflow to run at startup and then at the specified interval.
+              If the duration is effectively zero or negative (e.g., P0D, PT0S or -PT1S),
+              then the workflow will not be scheduled, but it will be possible to run it manually from the UI.
+              The seconds of the duration may have up to 9 decimals of fraction.
+              Years, months and days will be converted to time using heuristic average lengths
+              (24 hours for a day; between 30 and 31 days for a month).
             </xs:documentation>
           </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:duration">
+              <xs:pattern value="-?P(\d+Y)?(\d+M)?(\d+D)?(T(\d+H)?(\d+M)?(\d+(\.\d{1,9})?S)?)?" />
+            </xs:restriction>
+          </xs:simpleType>
         </xs:element>
         <xs:element ref="Collections" minOccurs="0">
           <xs:annotation>
@@ -895,13 +986,21 @@
       </xs:documentation>
     </xs:annotation>
     <xs:sequence>
-      <xs:element name="DefaultMaxChecksumAge" type="xs:positiveInteger" minOccurs="0">
+      <xs:element name="DefaultMaxChecksumAge" minOccurs="0">
         <xs:annotation>
           <xs:documentation xml:lang="en">
-            The default MaxChecksumAge to use for pillars. Can be overridden by pillar specific settings. If undefined
-            1 year is used.
+            The default MaxChecksumAge to use for pillars. Can be overridden by pillar specific settings.
+            Non-negative XML schema durations are accepted. The seconds may have up to 9 decimals of fraction.
+            Years, months and days will be converted to time using heuristic average lengths
+            (24 hours for a day; between 30 and 31 days for a month).
+            If undefined, 1 year is used, P1Y.
           </xs:documentation>
         </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:duration">
+            <xs:pattern value="P(\d+Y)?(\d+M)?(\d+D)?(T(\d+H)?(\d+M)?(\d+(\.\d{1,9})?S)?)?" />
+          </xs:restriction>
+        </xs:simpleType>
       </xs:element>
       <xs:element name="MaxChecksumAgeForPillar" type="MaxChecksumAgeForPillar" minOccurs="0" maxOccurs="unbounded">
         <xs:annotation>
@@ -922,14 +1021,22 @@
           </xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element name="MaxChecksumAge" type="xs:nonNegativeInteger">
+      <xs:element name="MaxChecksumAge">
         <xs:annotation>
           <xs:documentation xml:lang="en">
-            The max checksum age for the pillar.
-            If set to 0, then the pillar is ignored for obsolete checksums check, e.g. for ChecksumPillars
-            who cannot recalculate the checksum.
+            The maximum checksum age for the pillar.
+            If set to 0 (e.g., P0Y or PT0S), then the pillar is ignored for obsolete checksums check effectively
+            causing checksums not to expire; e.g., for ChecksumPillars, which cannot recalculate the checksum.
+            Non-negative XML schema durations are accepted. The seconds may have up to 9 decimals of fraction.
+            Years, months and days will be converted to time using heuristic average lengths
+            (24 hours for a day; between 30 and 31 days for a month).
           </xs:documentation>
         </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:duration">
+            <xs:pattern value="P(\d+Y)?(\d+M)?(\d+D)?(T(\d+H)?(\d+M)?(\d+(\.\d{1,9})?S)?)?" />
+          </xs:restriction>
+        </xs:simpleType>
       </xs:element>
     </xs:sequence>
   </xs:complexType>
@@ -1003,7 +1110,7 @@
       <xs:element name="AllowAutoMigrate" type="xs:boolean" minOccurs="0" maxOccurs="1">
         <xs:annotation>
           <xs:documentation>
-            OPTIONAL. Setting for disallowing/allowing automigration of supported databases.
+            OPTIONAL. Setting for disallowing/allowing auto-migration of supported databases.
             Defaults to true.
           </xs:documentation>
         </xs:annotation>
@@ -1011,7 +1118,7 @@
       <xs:element name="AllowAutoCreate" type="xs:boolean" minOccurs="0" maxOccurs="1">
         <xs:annotation>
           <xs:documentation>
-            OPTIONAL. Setting for disallowing/allowing auto creation of supported databases.
+            OPTIONAL. Setting for disallowing/allowing auto-creation of supported databases.
             Defaults to true.
           </xs:documentation>
         </xs:annotation>

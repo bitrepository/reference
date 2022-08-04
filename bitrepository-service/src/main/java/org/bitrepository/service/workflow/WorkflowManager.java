@@ -23,6 +23,7 @@
 package org.bitrepository.service.workflow;
 
 import org.bitrepository.common.utils.SettingsUtils;
+import org.bitrepository.common.utils.XmlUtils;
 import org.bitrepository.service.scheduler.JobEventListener;
 import org.bitrepository.service.scheduler.JobScheduler;
 import org.bitrepository.settings.referencesettings.Schedule;
@@ -31,6 +32,7 @@ import org.bitrepository.settings.referencesettings.WorkflowSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.datatype.Duration;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -124,17 +126,19 @@ public abstract class WorkflowManager {
                         } else {
                             collectionsToScheduleWorkflowFor = SettingsUtils.getAllCollectionsIDs();
                         }
+                        Duration workflowInterval = schedule.getWorkflowInterval();
+                        long workflowIntervalMillis = XmlUtils.xmlDurationToMilliseconds(workflowInterval);
                         for (String collectionID : collectionsToScheduleWorkflowFor) {
                             Workflow workflow =
                                     (Workflow) lookupClass(workflowConf.getWorkflowClass()).getDeclaredConstructor().newInstance();
                             workflow.initialise(context, collectionID);
-                            scheduler.schedule(workflow, schedule.getWorkflowInterval());
+                            scheduler.schedule(workflow, workflowIntervalMillis);
                             addWorkflow(collectionID, workflow);
                             unscheduledCollections.remove(collectionID);
                         }
                     }
                 }
-                // Create a instance of all workflows not explicitly scheduled.
+                // Create an instance of all workflows not explicitly scheduled.
                 for (String collectionID : unscheduledCollections) {
                     Workflow workflow =
                             (Workflow) Class.forName(workflowConf.getWorkflowClass()).getDeclaredConstructor().newInstance();

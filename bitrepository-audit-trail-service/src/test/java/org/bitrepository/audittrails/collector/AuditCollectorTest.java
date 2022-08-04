@@ -39,6 +39,8 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import javax.xml.datatype.DatatypeFactory;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -65,11 +67,12 @@ public class AuditCollectorTest extends ExtendedTestCase {
     @Test(groups = {"regressiontest"})
     public void auditCollectorIntervalTest() throws Exception {
         addDescription("Test that the collector calls the AuditClient at the correct intervals.");
+        DatatypeFactory factory = DatatypeFactory.newInstance();
         settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().clear();
         settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().add(DEFAULT_CONTRIBUTOR);
-        settings.getReferenceSettings().getAuditTrailServiceSettings().setCollectAuditInterval(800);
+        settings.getReferenceSettings().getAuditTrailServiceSettings().setCollectAuditInterval(factory.newDuration(800));
         settings.getReferenceSettings().getAuditTrailServiceSettings().setTimerTaskCheckInterval(100L);
-        settings.getReferenceSettings().getAuditTrailServiceSettings().setGracePeriod(800L);
+        settings.getReferenceSettings().getAuditTrailServiceSettings().setGracePeriod(factory.newDuration(800));
 
         SettingsUtils.initialize(settings);
         AuditTrailClient client = mock(AuditTrailClient.class);

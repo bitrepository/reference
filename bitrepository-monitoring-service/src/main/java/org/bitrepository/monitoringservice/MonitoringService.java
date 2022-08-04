@@ -25,6 +25,7 @@ import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getstatus.GetStatusClient;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.SettingsUtils;
+import org.bitrepository.common.utils.XmlUtils;
 import org.bitrepository.monitoringservice.alarm.BasicMonitoringServiceAlerter;
 import org.bitrepository.monitoringservice.alarm.MonitorAlerter;
 import org.bitrepository.monitoringservice.collector.StatusCollector;
@@ -40,6 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.JMSException;
+import java.time.Duration;
 import java.util.Map;
 
 public class MonitoringService implements LifeCycledService {
@@ -80,8 +82,10 @@ public class MonitoringService implements LifeCycledService {
     /**
      * @return The interval between collecting status from the components.
      */
-    public long getCollectionInterval() {
-        return settings.getReferenceSettings().getMonitoringServiceSettings().getCollectionInterval();
+    public Duration getCollectionInterval() {
+        javax.xml.datatype.Duration collectionInterval =
+                settings.getReferenceSettings().getMonitoringServiceSettings().getCollectionInterval();
+        return XmlUtils.xmlDurationToDuration(collectionInterval);
     }
 
     @Override

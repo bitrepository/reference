@@ -32,7 +32,6 @@ import org.testng.annotations.Test;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
-import java.math.BigInteger;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
@@ -285,7 +284,9 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
         addDescription("Tests the the client handles lack of IdentifyPillarResponses gracefully  ");
 
         addStep("Set a 100 ms ConversationTimeout.", "");
-        settingsForCUT.getReferenceSettings().getClientSettings().setConversationTimeout(BigInteger.valueOf(100));
+        DatatypeFactory factory = DatatypeFactory.newInstance();
+        settingsForCUT.getReferenceSettings().getClientSettings()
+                .setConversationTimeout(factory.newDuration(100));
         renewConversationMediator();
 
         addStep("Start the operation",

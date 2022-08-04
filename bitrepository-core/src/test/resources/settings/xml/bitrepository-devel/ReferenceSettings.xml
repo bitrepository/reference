@@ -29,7 +29,7 @@
   </GeneralSettings>
   <ClientSettings>
     <MediatorCleanupInterval>PT1S</MediatorCleanupInterval>
-    <ConversationTimeout>3600000</ConversationTimeout>
+    <ConversationTimeout>PT1H</ConversationTimeout>
     <OperationRetryCount>2</OperationRetryCount>
   </ClientSettings>
   <PillarSettings>
@@ -39,9 +39,9 @@
       <FileDirs>target/test/referencepillar/file-archive</FileDirs>
     </CollectionDirs>
     <MinimumSizeLeft>1000000000</MinimumSizeLeft>
-    <TimeToStartDeliver>1000</TimeToStartDeliver>
-    <MaxAgeForChecksums>3600000</MaxAgeForChecksums>
-    <RecalculateOldChecksumsInterval>3600000</RecalculateOldChecksumsInterval>
+    <TimeToStartDeliver>PT1S</TimeToStartDeliver>
+    <MaxAgeForChecksums>PT1H</MaxAgeForChecksums>
+    <RecalculateOldChecksumsInterval>PT1H</RecalculateOldChecksumsInterval>
     <AuditTrailContributerDatabase>
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
       <DatabaseURL>jdbc:derby:target/test/referencepillar/auditcontributerdb</DatabaseURL>
@@ -72,10 +72,10 @@
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
       <DatabaseURL>jdbc:derby:target/auditservicedb</DatabaseURL>
     </AuditTrailServiceDatabase>
-    <CollectAuditInterval>3600000</CollectAuditInterval>
+    <CollectAuditInterval>PT1H</CollectAuditInterval>
     <TimerTaskCheckInterval>60000</TimerTaskCheckInterval>
     <AuditTrailPreservation>
-      <AuditTrailPreservationInterval>604800000</AuditTrailPreservationInterval>
+      <AuditTrailPreservationInterval>P7D</AuditTrailPreservationInterval>
       <AuditTrailPreservationCollection>TwoPillarCollection</AuditTrailPreservationCollection>
       <AuditTrailPreservationTemporaryDirectory>target/test/audittrailservice/tmpDir</AuditTrailPreservationTemporaryDirectory>
     </AuditTrailPreservation>
@@ -91,7 +91,7 @@
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
       <DatabaseURL>jdbc:derby:target/test/integrityservice/integritydb</DatabaseURL>
     </IntegrityDatabase>
-    <TimeBeforeMissingFileCheck>60000</TimeBeforeMissingFileCheck>
+    <TimeBeforeMissingFileCheck>PT1M</TimeBeforeMissingFileCheck>
     <AuditTrailContributerDatabase>
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
       <DatabaseURL>jdbc:derby:target/test/integrityservice/auditcontributerdb</DatabaseURL>
@@ -101,7 +101,7 @@
   </IntegrityServiceSettings>
   <MonitoringServiceSettings>
     <ID>monitoring-service</ID>
-    <CollectionInterval>300000</CollectionInterval>
+    <CollectionInterval>PT5M</CollectionInterval>
     <MaxRetries>3</MaxRetries>
   </MonitoringServiceSettings>
   <FileExchangeSettings>

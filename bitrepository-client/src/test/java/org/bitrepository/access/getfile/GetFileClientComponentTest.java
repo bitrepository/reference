@@ -352,7 +352,8 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
-        settingsForCUT.getReferenceSettings().getClientSettings().setConversationTimeout(BigInteger.valueOf(100));
+        DatatypeFactory factory = DatatypeFactory.newInstance();
+        settingsForCUT.getReferenceSettings().getClientSettings().setConversationTimeout(factory.newDuration(100));
         GetFileClient client = createGetFileClient();
 
         addStep("Request the delivery of a file from a specific pillar. A callback listener should be supplied.",

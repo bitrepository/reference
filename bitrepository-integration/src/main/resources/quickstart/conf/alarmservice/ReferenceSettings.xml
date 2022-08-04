@@ -28,7 +28,7 @@
 
   <ClientSettings>
     <MediatorCleanupInterval>PT1S</MediatorCleanupInterval>
-    <ConversationTimeout>3600000</ConversationTimeout>
+    <ConversationTimeout>PT1H</ConversationTimeout>
   </ClientSettings>
 
   <AlarmServiceSettings>

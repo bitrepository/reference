@@ -57,6 +57,8 @@ import org.jaccept.structure.ExtendedTestCase;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -105,8 +107,9 @@ public class MissingChecksumTests extends ExtendedTestCase {
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR_1);
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR_2);
-        
-        settings.getReferenceSettings().getIntegrityServiceSettings().setTimeBeforeMissingFileCheck(0);
+
+        Duration time = DatatypeFactory.newInstance().newDuration(0);
+        settings.getReferenceSettings().getIntegrityServiceSettings().setTimeBeforeMissingFileCheck(time);
         TEST_COLLECTION = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
         SettingsUtils.initialize(settings);
         

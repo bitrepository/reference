@@ -27,7 +27,7 @@
   </GeneralSettings>
   <ClientSettings>
     <MediatorCleanupInterval>PT1S</MediatorCleanupInterval>
-    <ConversationTimeout>3600000</ConversationTimeout>
+    <ConversationTimeout>PT1H</ConversationTimeout>
   </ClientSettings>
 
   <IntegrityServiceSettings>
@@ -37,7 +37,7 @@
         <WorkflowClass>CompleteIntegrityCheck</WorkflowClass>
         <Schedules>
           <Schedule>
-            <WorkflowInterval>86400000</WorkflowInterval>  
+            <WorkflowInterval>P1D</WorkflowInterval>
             <Collections>
               <CollectionID>books</CollectionID>
               <CollectionID>dvds</CollectionID>                          
@@ -49,7 +49,7 @@
         <WorkflowClass>IncrementalIntegrityCheck</WorkflowClass>
         <Schedules>
           <Schedule>
-            <WorkflowInterval>3600000</WorkflowInterval>  
+            <WorkflowInterval>PT1H</WorkflowInterval>
             <Collections>
               <CollectionID>books</CollectionID>
               <CollectionID>dvds</CollectionID>             
@@ -62,7 +62,7 @@
         <Schedules>
           <Schedule>
             <!-- Only run manually -->  
-            <WorkflowInterval>-1</WorkflowInterval>
+            <WorkflowInterval>-PT1S</WorkflowInterval>
             <Collections>
               <CollectionID>books</CollectionID>
               <CollectionID>dvds</CollectionID>             
@@ -75,7 +75,7 @@
         <Schedules>
           <Schedule>
             <!-- Only run manually -->  
-            <WorkflowInterval>-1</WorkflowInterval>
+            <WorkflowInterval>-PT1S</WorkflowInterval>
             <Collections>
               <CollectionID>books</CollectionID>
               <CollectionID>dvds</CollectionID>             
@@ -88,7 +88,7 @@
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
       <DatabaseURL>jdbc:derby:<!--foobarpattern-->conf/integrityservice/integritydb</DatabaseURL>
     </IntegrityDatabase>
-    <TimeBeforeMissingFileCheck>3600000</TimeBeforeMissingFileCheck> 
+    <TimeBeforeMissingFileCheck>PT1H</TimeBeforeMissingFileCheck>
     <AuditTrailContributerDatabase>
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
       <DatabaseURL>jdbc:derby:<!--foobarpattern-->conf/integrityservice/auditcontributerdb</DatabaseURL>

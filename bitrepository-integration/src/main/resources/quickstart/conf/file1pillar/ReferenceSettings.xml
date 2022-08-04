@@ -28,7 +28,7 @@
 
   <ClientSettings>
     <MediatorCleanupInterval>PT1S</MediatorCleanupInterval>
-    <ConversationTimeout>3600000</ConversationTimeout>
+    <ConversationTimeout>PT1H</ConversationTimeout>
   </ClientSettings>
 
   <PillarSettings> 
@@ -39,8 +39,8 @@
       <FileDirs><!--foobarpattern-->var/file1pillar/files</FileDirs>
     </CollectionDirs>
     <MinimumSizeLeft>1000000000</MinimumSizeLeft>
-    <TimeToStartDeliver>1000</TimeToStartDeliver>
-    <MaxAgeForChecksums>3600000</MaxAgeForChecksums>
+    <TimeToStartDeliver>PT1S</TimeToStartDeliver>
+    <MaxAgeForChecksums>PT1H</MaxAgeForChecksums>
     <AuditTrailContributerDatabase>
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
       <DatabaseURL>jdbc:derby:<!--foobarpattern-->var/file1pillar/auditcontributerdb</DatabaseURL>

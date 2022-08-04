@@ -34,6 +34,7 @@ import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.common.utils.TimeUtils;
+import org.bitrepository.common.utils.XmlUtils;
 import org.bitrepository.modify.putfile.BlockingPutFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.CoordinationLayerException;
@@ -46,9 +47,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Date;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -93,12 +96,14 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
             log.debug("Cancelling old timer.");
             timer.cancel();
         }
-        long preservationInterval = preservationSettings.getAuditTrailPreservationInterval();
-        long timerCheckInterval = preservationInterval / 10;
-        log.info("Instantiating the preservation of audit trails every " + TimeUtils.millisecondsToHuman(preservationInterval));
+        javax.xml.datatype.Duration preservationIntervalXmlDur = preservationSettings.getAuditTrailPreservationInterval();
+        Duration preservationInterval = XmlUtils.xmlDurationToDuration(preservationIntervalXmlDur);
+        long timerCheckIntervalMillis = preservationInterval.dividedBy(10).toMillis();
+        log.info("Instantiating the preservation of audit trails every " +
+                TimeUtils.durationToHuman(preservationInterval));
         timer = new Timer();
         auditTask = new AuditPreservationTimerTask(preservationInterval);
-        timer.scheduleAtFixedRate(auditTask, timerCheckInterval, timerCheckInterval);
+        timer.scheduleAtFixedRate(auditTask, timerCheckIntervalMillis, timerCheckIntervalMillis);
     }
 
     @Override
@@ -183,14 +188,14 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
      * Timer task for keeping track of the automated collecting of audit trails.
      */
     private class AuditPreservationTimerTask extends TimerTask {
-        private final long interval;
-        private Date nextRun;
+        private final Duration interval;
+        private Instant nextRun;
 
         /**
          * @param interval The interval between running this timer task.
          */
-        private AuditPreservationTimerTask(long interval) {
-            this.interval = interval;
+        private AuditPreservationTimerTask(Duration interval) {
+            this.interval = Objects.requireNonNull(interval, "interval");
             resetTime();
         }
 
@@ -198,12 +203,12 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
          * Resets the date for next run.
          */
         private void resetTime() {
-            nextRun = new Date(System.currentTimeMillis() + interval);
+            nextRun = Instant.now().plus(interval);
         }
 
         @Override
         public void run() {
-            if (nextRun.getTime() < System.currentTimeMillis()) {
+            if (nextRun.isBefore(Instant.now())) {
                 try {
                     log.debug("Time to preserve the audit trails.");
                     preserveRepositoryAuditTrails();

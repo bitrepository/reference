@@ -30,7 +30,6 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.ChecksumUtils;
-import org.bitrepository.common.utils.TimeMeasurementUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.protocol.MessageContext;
@@ -123,8 +122,7 @@ public class IdentifyPillarsForPutFileRequestHandler extends IdentifyRequestHand
         IdentifyPillarsForPutFileResponse response = createFinalResponse(message);
 
         response.setReplyTo(getSettings().getReceiverDestinationID());
-        response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMilliseconds(
-                getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
+        response.setTimeToDeliver(getTimeToStartDeliver());
         response.setChecksumDataForExistingFile(getPillarModel().getChecksumDataForFile(message.getFileID(), message.getCollectionID(),
                 ChecksumUtils.getDefault(getSettings())));
 
@@ -146,8 +144,7 @@ public class IdentifyPillarsForPutFileRequestHandler extends IdentifyRequestHand
 
         // Needs to filled in: AuditTrailInformation, PillarChecksumSpec, ReplyTo, TimeToDeliver
         response.setReplyTo(getSettings().getContributorDestinationID());
-        response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMilliseconds(
-                getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
+        response.setTimeToDeliver(getTimeToStartDeliver());
 
         ResponseInfo irInfo = new ResponseInfo();
         irInfo.setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);

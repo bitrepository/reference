@@ -31,6 +31,9 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.Duration;
+
 public class StatusCollectorTest extends ExtendedTestCase {
     Settings settings;
     
@@ -50,7 +53,8 @@ public class StatusCollectorTest extends ExtendedTestCase {
         MockAlerter alerter = new MockAlerter();
         MockStatusStore store = new MockStatusStore();
         MockGetStatusClient client = new MockGetStatusClient();
-        settings.getReferenceSettings().getMonitoringServiceSettings().setCollectionInterval(INTERVAL);
+        Duration intervalXmlDur = DatatypeFactory.newInstance().newDuration(INTERVAL);
+        settings.getReferenceSettings().getMonitoringServiceSettings().setCollectionInterval(intervalXmlDur);
 
         addStep("Create the collector", "");
         Assert.assertEquals(store.getCallsForGetStatusMap(), 0);

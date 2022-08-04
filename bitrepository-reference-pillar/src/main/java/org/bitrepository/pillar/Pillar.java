@@ -24,6 +24,7 @@ package org.bitrepository.pillar;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.SettingsUtils;
+import org.bitrepository.common.utils.XmlUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.messagehandler.PillarMediator;
 import org.bitrepository.pillar.schedulablejobs.RecalculateChecksumJob;
@@ -37,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.JMSException;
+import javax.xml.datatype.Duration;
 
 /**
  * Class for the Reference Pillar.
@@ -88,9 +90,10 @@ public class Pillar {
      */
     private void initializeWorkflows() {
         Long interval = DEFAULT_RECALCULATION_WORKFLOW_TIME;
-        if (settings.getReferenceSettings().getPillarSettings().getRecalculateOldChecksumsInterval() != null) {
-            interval = settings.getReferenceSettings().getPillarSettings()
-                    .getRecalculateOldChecksumsInterval().longValue();
+        Duration recalculateOldChecksumsInterval =
+                settings.getReferenceSettings().getPillarSettings().getRecalculateOldChecksumsInterval();
+        if (recalculateOldChecksumsInterval != null) {
+            interval = XmlUtils.xmlDurationToMilliseconds(recalculateOldChecksumsInterval);
         }
         for (String collectionID : SettingsUtils.getCollectionIDsForPillar(
                 settings.getReferenceSettings().getPillarSettings().getPillarID())) {
