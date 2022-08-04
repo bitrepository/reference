@@ -109,9 +109,7 @@ public class RestIntegrityService {
                             .type(MediaType.TEXT_PLAIN).build());
         }
 
-        return new HashMap<>() {{
-            put(pillarID, fileList);
-        }};
+        return new HashMap<>(Map.of(pillarID, fileList));
     }
 
     /**
@@ -174,9 +172,7 @@ public class RestIntegrityService {
             @QueryParam("pillarID")
                     String pillarID) {
         List<String> streamingOutput = streamPartFromLatestReport(ReportPart.OBSOLETE_CHECKSUM, collectionID, pillarID);
-        return new HashMap<>() {{
-            put(pillarID, streamingOutput);
-        }};
+        return new HashMap<>(Map.of(pillarID, streamingOutput));
     }
 
     /**
@@ -195,31 +191,7 @@ public class RestIntegrityService {
             @QueryParam("pillarID")
                     String pillarID) {
         List<String> streamingOutput = streamPartFromLatestReport(ReportPart.CHECKSUM_ERROR, collectionID, pillarID);
-        return new HashMap<>() {{
-            put(pillarID, streamingOutput);
-        }};
-    }
-
-    /**
-     * REST endpoint that fetches all missing files from all available pillars for the current collection ID.
-     *
-     * @param collectionID The current collection ID.
-     * @return Returns a {@link HashMap} mapping each pillar ID to the files it is missing.
-     */
-    @GET
-    @Path("/getAllMissingFilesInformation/")
-    @Produces(MediaType.APPLICATION_JSON)
-    public HashMap<String, List<String>> getAllMissingFilesInformation(
-            @QueryParam("collectionID")
-                    String collectionID) {
-        pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
-        HashMap<String, List<String>> output = new HashMap<>();
-        for (String pillar : pillars) {
-            List<String> streamingOutput = streamPartFromLatestReport(ReportPart.MISSING_FILE, collectionID, pillar);
-            output.put(pillar, streamingOutput);
-        }
-
-        return output;
+        return new HashMap<>(Map.of(pillarID, streamingOutput));
     }
 
     /**
