@@ -64,7 +64,7 @@ public class ExtractedChecksumResultSet {
         try {
             res.setChecksumValue(Base16Utils.encodeBase16(entry.getChecksum()));
         } catch (DecoderException e) {
-            log.error(e.getMessage());
+            throw new IllegalArgumentException("Could not encode checksum.", e);
         }
 
         res.setFileID(entry.getFileId());

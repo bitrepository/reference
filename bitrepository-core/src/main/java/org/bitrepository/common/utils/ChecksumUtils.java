@@ -272,8 +272,7 @@ public final class ChecksumUtils {
         try {
             verifyAlgorithm(res);
         } catch (NoSuchAlgorithmException e) {
-            System.err.println("The default settings file contains an invalid checksum spec.");
-            System.exit(1);
+            throw new IllegalArgumentException("The settings contains an invalid default checksum specification.", e);
         }
 
         return res;

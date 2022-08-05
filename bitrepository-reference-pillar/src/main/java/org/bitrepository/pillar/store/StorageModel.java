@@ -176,7 +176,7 @@ public abstract class StorageModel {
         try {
             res.setChecksumValue(Base16Utils.encodeBase16(entry.getChecksum()));
         } catch (DecoderException e) {
-            log.error(e.getMessage());
+            throw new IllegalArgumentException("Could not encode checksum.", e);
         }
 
         return res;

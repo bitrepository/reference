@@ -48,15 +48,11 @@ public class MessageDataTypeValidatorTest {
     }
 
     //@Test(expectedExceptions = {IllegalArgumentException.class})
-    public void validateChecksumDataForFileInvalidChecksumSpecTest() {
+    public void validateChecksumDataForFileInvalidChecksumSpecTest() throws DecoderException {
         ChecksumDataForFileTYPE noChecksumSpec = new ChecksumDataForFileTYPE();
         ChecksumSpecTYPE checksumTypeSpec = new ChecksumSpecTYPE();
         noChecksumSpec.setChecksumSpec(checksumTypeSpec);
-        try {
-            noChecksumSpec.setChecksumValue(Base16Utils.encodeBase16("abab"));
-        } catch (DecoderException e) {
-            System.err.println(e.getMessage());
-        }
+        noChecksumSpec.setChecksumValue(Base16Utils.encodeBase16("abab"));
         noChecksumSpec.setCalculationTimestamp(CalendarUtils.getNow());
 
         MessageDataTypeValidator.validate(noChecksumSpec, "noChecksumSpec");

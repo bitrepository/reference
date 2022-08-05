@@ -149,24 +149,22 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
             throw new CoordinationLayerException("Cannot perform the preservation of audit trails.", e);
         } catch (OperationFailedException e) {
             throw new CoordinationLayerException("Failed to put the packed audit trails.", e);
+        } catch (DecoderException e) {
+            throw new CoordinationLayerException("Failed to encode the checksum.", e);
         }
     }
 
     /**
      * Helper method to make a checksum for the PutFile call.
      */
-    private ChecksumDataForFileTYPE getValidationChecksumDataForFile(File file) {
+    private ChecksumDataForFileTYPE getValidationChecksumDataForFile(File file) throws DecoderException {
         ChecksumSpecTYPE csSpec = ChecksumUtils.getDefault(settings);
         String checksum = ChecksumUtils.generateChecksum(file, csSpec);
 
         ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
         res.setCalculationTimestamp(CalendarUtils.getNow());
         res.setChecksumSpec(csSpec);
-        try {
-            res.setChecksumValue(Base16Utils.encodeBase16(checksum));
-        } catch (DecoderException e) {
-            log.error(e.getMessage());
-        }
+        res.setChecksumValue(Base16Utils.encodeBase16(checksum));
 
         return res;
     }

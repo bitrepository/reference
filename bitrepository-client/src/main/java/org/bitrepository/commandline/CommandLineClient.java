@@ -312,8 +312,7 @@ public abstract class CommandLineClient {
             FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
             fileexchange.deleteFile(url);
         } catch (Exception e) {
-            System.err.println("Issue regarding removing file from server: " + e.getMessage());
-            e.printStackTrace();
+            output.error("Issue regarding removing file from server: " + e.getMessage());
         }
     }
 
