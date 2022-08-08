@@ -24,12 +24,10 @@ package org.bitrepository.commandline;
 import org.apache.commons.cli.Option;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.commandline.eventhandler.CompleteEventAwaiter;
 import org.bitrepository.commandline.eventhandler.PutFileEventHandler;
-import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.putfile.PutFileClient;
@@ -178,15 +176,11 @@ public class PutFileCmd extends CommandLineClient {
 
         boolean printChecksums = cmdHandler.hasOption(REQUEST_CHECKSUM_TYPE_ARG);
         String saltedChecksum = null;
-        if (cmdHandler.hasOption(REQUEST_CHECKSUM_SALT_ARG)) {
-            String saltedAlg = cmdHandler.getOptionValue(REQUEST_CHECKSUM_TYPE_ARG);
-            String salt = cmdHandler.getOptionValue(REQUEST_CHECKSUM_SALT_ARG);
+        if (requestChecksum != null && requestChecksum.isSetChecksumSalt()) {
             try {
-                FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
-                ChecksumSpecTYPE checksumSpecType = new ChecksumSpecTYPE();
-                checksumSpecType.setChecksumType(ChecksumType.valueOf(saltedAlg));
-                checksumSpecType.setChecksumSalt(Base16Utils.encodeBase16(salt));
-                saltedChecksum = ChecksumUtils.generateChecksum(fileexchange.getFile(url), checksumSpecType);
+                FileExchange fileExchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
+                saltedChecksum = ChecksumUtils.generateChecksum(fileExchange.getFile(url), requestChecksum);
+                // TODO: Compare checksum of URL with the cmd-input checksum?
             } catch (IOException e) {
                 throw new IllegalArgumentException("Could not convert the given URL to URI.");
             }
