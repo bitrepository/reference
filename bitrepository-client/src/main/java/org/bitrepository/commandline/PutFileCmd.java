@@ -182,7 +182,7 @@ public class PutFileCmd extends CommandLineClient {
                 saltedChecksum = ChecksumUtils.generateChecksum(fileExchange.getFile(url), requestChecksum);
                 // TODO: Compare checksum of URL with the cmd-input checksum?
             } catch (IOException e) {
-                throw new IllegalArgumentException("Could not convert the given URL to URI.");
+                throw new IllegalArgumentException("Could not retrieve file from " + url);
             }
         }
 
