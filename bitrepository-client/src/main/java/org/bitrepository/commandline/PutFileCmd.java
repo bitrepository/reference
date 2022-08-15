@@ -169,33 +169,50 @@ public class PutFileCmd extends CommandLineClient {
         output.debug("Uploading the file to the FileExchange.");
         URL url = getURLOrUploadFile();
         String fileID = retrieveFileID();
+        FileExchange fileExchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
 
         output.debug("Initiating the PutFile conversation.");
         ChecksumDataForFileTYPE validationChecksum = getValidationChecksum();
         ChecksumSpecTYPE requestChecksum = getRequestChecksumSpecOrNull();
 
+//        if ((cmdHandler.hasOption(URL_ARG) && cmdHandler.hasOption(CHECKSUM_ARG)) && !cmdHandler.hasOption(PILLAR_ARG)) {
+//            String checksumFromURL = getChecksumFromURL(url, fileExchange, requestChecksum);
+//            String checksumFromArg = new String(validationChecksum.getChecksumValue(), StandardCharsets.UTF_8);
+//            if (!checksumFromURL.equals(checksumFromArg)) {
+//                throw new IllegalArgumentException(
+//                        "Checksum from URL: " + checksumFromURL + " does not match checksum from argument: " + checksumFromArg);
+//            }
+//        }
+
         boolean printChecksums = cmdHandler.hasOption(REQUEST_CHECKSUM_TYPE_ARG);
         String saltedChecksum = null;
         if (requestChecksum != null && requestChecksum.isSetChecksumSalt()) {
-            try {
-                FileExchange fileExchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
-                saltedChecksum = ChecksumUtils.generateChecksum(fileExchange.getFile(url), requestChecksum);
-                // TODO: Compare checksum of URL with the cmd-input checksum?
-            } catch (IOException e) {
-                throw new IllegalArgumentException("Could not retrieve file from " + url);
-            }
+            saltedChecksum = getChecksumFromURL(url, fileExchange, requestChecksum);
         }
 
+        output.debug("Performing the PutFile conversation.");
         CompleteEventAwaiter eventHandler = new PutFileEventHandler(settings, output, printChecksums, saltedChecksum);
         client.putFile(getCollectionID(), url, fileID, getSizeOfFileOrZero(), validationChecksum, requestChecksum, eventHandler, null);
 
+        output.debug("Awaiting PutFile conversation final event.");
         OperationEvent finalEvent = eventHandler.getFinish();
 
         if (cmdHandler.hasOption(DELETE_FILE_ARG)) {
+            output.debug("Deleting file.");
             deleteFileAfterwards(url);
         }
 
         return finalEvent;
+    }
+
+    private String getChecksumFromURL(URL url, FileExchange fileExchange, ChecksumSpecTYPE requestChecksum) {
+        String saltedChecksum;
+        try {
+            saltedChecksum = ChecksumUtils.generateChecksum(fileExchange.getFile(url), requestChecksum);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Could not retrieve file from " + url);
+        }
+        return saltedChecksum;
     }
 
     /**
