@@ -106,12 +106,12 @@ public class SettingsUtils {
      * @param pillarID The pillarID for which the hostname is wanted.
      * @return Returns the hostname for the given pillar ID.
      */
-    public static String getHostname(String pillarID) {
+    public static String getPillarName(String pillarID) {
         PillarIntegrityDetails details = settings.getReferenceSettings().getIntegrityServiceSettings().getPillarIntegrityDetails();
         if (details != null) {
             for (PillarIntegrityDetails.PillarDetails d : details.getPillarDetails()) {
                 if (d.getPillarID().equals(pillarID)) {
-                    return d.getPillarHostname();
+                    return d.getPillarName();
                 }
             }
         }

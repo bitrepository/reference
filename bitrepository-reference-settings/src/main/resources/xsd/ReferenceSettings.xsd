@@ -328,7 +328,7 @@
   <xs:element name="PillarIntegrityDetails">
     <xs:annotation>
       <xs:documentation xml:lang="en">
-        The details of all the pillars used by integrity service to map pillar IDs to hostnames and pillar types.
+        The details of all the pillars used by integrity service to map pillar IDs to pillar names and pillar types.
       </xs:documentation>
     </xs:annotation>
     <xs:complexType>
@@ -337,7 +337,7 @@
           <xs:complexType>
             <xs:sequence>
               <xs:element name="PillarID" type="xs:string"/>
-              <xs:element name="PillarHostname" type="xs:string"/>
+              <xs:element name="PillarName" type="xs:string"/>
               <xs:element ref="PillarType"/>
             </xs:sequence>
           </xs:complexType>
@@ -793,7 +793,7 @@
         <xs:element ref="PillarIntegrityDetails" minOccurs="0">
           <xs:annotation xml:lang="en">
             <xs:documentation>
-              The Integrity details of all the pillars. This includes the Pillar hostnames and Pillar types.
+              The Integrity details of all the pillars. This includes the Pillar names and Pillar types.
             </xs:documentation>
           </xs:annotation>
         </xs:element>

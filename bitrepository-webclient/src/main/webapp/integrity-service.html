@@ -78,7 +78,7 @@
         <thead>
         <tr>
           <th>Pillar ID</th>
-          <th>Pillar Hostname</th>
+          <th>Pillar Name</th>
           <th>Pillar Type</th>
           <th>Total number of files</th>
           <th>Number of missing files</th>
@@ -228,10 +228,10 @@
     function getCellContext(id, type) {
         var context = {};
         context.url = integrityServiceUrl + "/integrity/IntegrityService/";
-        if(type == "Pillar Hostname") {
-            context.element = id + "-pillarHostname";
+        if(type == "Pillar Name") {
+            context.element = id + "-pillarName";
             context.title = type + " on " + id;
-            context.member = "pillarHostname";
+            context.member = "pillarName";
         } else if(type == "Pillar Type") {
             context.element = id + "-pillarType";
             context.title = type + " on " + id;
@@ -270,7 +270,7 @@
         var html = "";
         html += "<tr id=\"" + id + "-row\">";
         html += "<td><div style=\"padding:5px\">" + id + "</div></td>";
-        html += "<td id=\"" + id + "-pillarHostname\"></td>";
+        html += "<td id=\"" + id + "-pillarName\"></td>";
         html += "<td id=\"" + id + "-pillarType\"></td>";
         html += "<td id=\"" + id + "-totalFileCount\"></td>";
         html += "<td id=\"" + id + "-missingFiles\"></td>";
@@ -281,7 +281,7 @@
     }
 
     function updateCells(pillarID) {
-        updateStringCell(pillarID, "Pillar Hostname", pillars[pillarID].pillarHostname);
+        updateStringCell(pillarID, "Pillar Name", pillars[pillarID].pillarName);
         updateStringCell(pillarID, "Pillar Type", pillars[pillarID].pillarType);
         updateIntCell(pillarID, "Total files", pillars[pillarID].totalFileCount);
         updateIntCell(pillarID, "Missing files", pillars[pillarID].missingFilesCount);
@@ -319,7 +319,7 @@
                     $("#integrity-status-table-body").append(makePillarRow(j[i].pillarID));
                 }
                 pillars[j[i].pillarID] = {
-                    pillarHostname : j[i].pillarHostname,
+                    pillarName : j[i].pillarName,
                     pillarType : j[i].pillarType,
                     totalFileCount : j[i].totalFileCount,
                     missingFilesCount : j[i].missingFilesCount,
