@@ -151,11 +151,10 @@ public class AuditTrailService implements LifeCycledService {
      * @return PreservationInfo or null if not enabled.
      */
     public PreservationInfo getPreservationInfo() {
-        PreservationInfo info = null;
-        if (preserver != null) {
-            info = preserver.getPreservationInfo();
+        if (preserver == null ) {
+            return null;
         }
-        return info;
+        return preserver.getPreservationInfo();
     }
 
     /**

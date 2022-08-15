@@ -18,8 +18,8 @@ public class StubAuditEventIterator extends AuditEventIterator {
 
     @Override
     public AuditTrailEvent getNextAuditTrailEvent() {
-        String PILLAR_ID = "pillarID";
-        String ACTOR = "actor";
+        String pillarID = "pillarID";
+        String actor = "actor";
 
         if(called) {
             return null;
@@ -28,9 +28,9 @@ public class StubAuditEventIterator extends AuditEventIterator {
             AuditTrailEvent e1 = new AuditTrailEvent();
             e1.setActionDateTime(CalendarUtils.getNow());
             e1.setActionOnFile(FileAction.FAILURE);
-            e1.setActorOnFile(ACTOR);
+            e1.setActorOnFile(actor);
             e1.setSequenceNumber(BigInteger.ONE);
-            e1.setReportingComponent(PILLAR_ID);
+            e1.setReportingComponent(pillarID);
             return e1;
         }
     }
