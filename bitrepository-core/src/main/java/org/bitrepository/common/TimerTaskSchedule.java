@@ -19,18 +19,17 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package org.bitrepository.audittrails.collector;
+package org.bitrepository.common;
 
 import java.util.Date;
 
 /**
  * Class to handle the information about previous, current and future
- * timing and schedule of AuditTrail collection
- * Next run is at first scheduled as the interval after the current collection.
- * When a collection has been finished, the next run is updated so the
- * interval is after a collection has finished.
+ * timing and schedule of a timed task - e.g. audit-trail-service's AuditTrailCollectionTimerTask.
+ * Next run is at first scheduled as the interval after the current run of the task.
+ * When a task has been finished, the next run is updated so the interval is after a task has finished.
  */
-public class CollectionSchedule {
+public class TimerTaskSchedule {
     private Date nextRun;
     private Date lastStart = null;
     private Date lastFinish = null;
@@ -38,48 +37,48 @@ public class CollectionSchedule {
     private final long schedulingInterval;
 
     /**
-     * Constructor to create the CollectionSchedule.
+     * Constructor to create the TaskSchedule.
      *
-     * @param schedulingInterval The interval at which to schedule collection
-     * @param gracePeriod        The grace period to wait before the first scheduling the first collection
+     * @param schedulingInterval The interval at which to schedule a new run of the task.
+     * @param gracePeriod        The grace period to wait before the first scheduling.
      */
-    public CollectionSchedule(long schedulingInterval, int gracePeriod) {
+    public TimerTaskSchedule(long schedulingInterval, int gracePeriod) {
         this.schedulingInterval = schedulingInterval;
         nextRun = new Date(System.currentTimeMillis() + gracePeriod);
     }
 
     /**
-     * @return the date of the next scheduled collection
+     * @return The date of the next scheduled task.
      */
     public Date getNextRun() {
         return nextRun;
     }
 
     /**
-     * @return the date of the last finished collection, or the current collection if non has finished yet.
-     * May return null, if the first collection has not yet been started.
+     * @return The date of the last finished task, or the current run if none have finished yet.
+     * May return null, if the first run has not yet been started.
      */
     public Date getLastStart() {
         return lastStart;
     }
 
     /**
-     * @return the date of the last finished collection. Returns null if no collection has finished yet.
+     * @return The date of the last finished task. Returns null if no run has finished yet.
      */
     public Date getLastFinish() {
         return lastFinish;
     }
 
     /**
-     * @return the date of the currently running collection. Returns null, if no collection is currently running.
+     * @return The date of the currently running task. Returns null, if no task is currently running.
      */
     public Date getCurrentStart() {
         return currentStart;
     }
 
     /**
-     * Indicate that a collection has been started.
-     * Updates the next scheduled collection.
+     * Indicate that a task has been started.
+     * Updates the next scheduled run of the task.
      */
     public void start() {
         currentStart = new Date(System.currentTimeMillis());
@@ -90,8 +89,8 @@ public class CollectionSchedule {
     }
 
     /**
-     * Indicate that a collection has finished.
-     * Updates the next scheduled collection.
+     * Indicate that a task has finished.
+     * Updates the next scheduled run.
      */
     public void finish() {
         lastFinish = new Date(System.currentTimeMillis());

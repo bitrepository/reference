@@ -21,6 +21,8 @@
  */
 package org.bitrepository.audittrails.preserver;
 
+import org.bitrepository.audittrails.webservice.PreservationInfo;
+
 /**
  * Interface for the preservation of audit trails.
  * This will automatically preserve the audit trails with a given interval.
@@ -40,4 +42,10 @@ public interface AuditTrailPreserver {
      * Stop the preservation of audit trails.
      */
     void close();
+
+    /**
+     * Gets the latest preservation info.
+     * @return Object containing info about the latest preservation.
+     */
+    PreservationInfo getPreservationInfo();
 }
