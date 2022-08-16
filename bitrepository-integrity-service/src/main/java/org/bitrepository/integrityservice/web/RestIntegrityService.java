@@ -100,16 +100,13 @@ public class RestIntegrityService {
 
         IntegrityIssueIterator it = model.getFilesOnPillar(pillarID, 0, Integer.MAX_VALUE, collectionID);
 
-        List<String> fileList;
-        if (it != null) {
-            fileList = List.of(JSONStreamingTools.StreamIntegrityIssues(it).toString());
-        } else {
-            throw new WebApplicationException(
-                    Response.status(Response.Status.NO_CONTENT).entity("Failed to get missing files from database")
-                            .type(MediaType.TEXT_PLAIN).build());
+        if (it.getNextIntegrityIssue() == null) {
+            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
+                    .entity("Failed to get file IDs for collection: " + collectionID + " and pillar: " + pillarID)
+                    .type(MediaType.TEXT_PLAIN).build());
         }
 
-        return new HashMap<>(Map.of(pillarID, fileList));
+        return new HashMap<>(Map.of(pillarID, List.of(JSONStreamingTools.StreamIntegrityIssues(it).toString())));
     }
 
     /**
@@ -284,8 +281,8 @@ public class RestIntegrityService {
                 String pillarHostname = Objects.requireNonNullElse(SettingsUtils.getHostname(pillar), "N/A");
                 PillarType pillarTypeObject = SettingsUtils.getPillarType(pillar);
                 String pillarType = pillarTypeObject != null ? pillarTypeObject.value() : null;
-                PillarCollectionStat emptyStat = new PillarCollectionStat(pillar, collectionID, pillarHostname, pillarType, 0L,
-                        0L, 0L, 0L, 0L, 0L, new Date(0), new Date(0));
+                PillarCollectionStat emptyStat = new PillarCollectionStat(pillar, collectionID, pillarHostname, pillarType, 0L, 0L, 0L, 0L,
+                        0L, 0L, new Date(0), new Date(0));
                 stats.put(pillar, emptyStat);
             }
         }

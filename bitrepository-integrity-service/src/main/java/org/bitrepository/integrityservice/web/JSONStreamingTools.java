@@ -69,7 +69,7 @@ public class JSONStreamingTools {
                         it.close();
                     }
                 } catch (Exception e) {
-                    log.error("Caught execption when closing IntegrityIssueIterator", e);
+                    log.error("Caught exception when closing IntegrityIssueIterator", e);
                     throw new WebApplicationException(e);
                 }
             }
