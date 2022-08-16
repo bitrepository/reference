@@ -36,6 +36,7 @@ import org.bitrepository.protocol.ProtocolComponentFactory;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 import static org.bitrepository.commandline.Constants.ARGUMENT_IS_NOT_REQUIRED;
 import static org.bitrepository.commandline.Constants.CHECKSUM_ARG;
@@ -48,6 +49,7 @@ import static org.bitrepository.commandline.Constants.FILE_ARG;
 import static org.bitrepository.commandline.Constants.FILE_ID_ARG;
 import static org.bitrepository.commandline.Constants.HAS_ARGUMENT;
 import static org.bitrepository.commandline.Constants.NO_ARGUMENT;
+import static org.bitrepository.commandline.Constants.PILLAR_ARG;
 import static org.bitrepository.commandline.Constants.REQUEST_CHECKSUM_SALT_ARG;
 import static org.bitrepository.commandline.Constants.REQUEST_CHECKSUM_SALT_DESC;
 import static org.bitrepository.commandline.Constants.REQUEST_CHECKSUM_TYPE_ARG;
@@ -175,14 +177,15 @@ public class PutFileCmd extends CommandLineClient {
         ChecksumDataForFileTYPE validationChecksum = getValidationChecksum();
         ChecksumSpecTYPE requestChecksum = getRequestChecksumSpecOrNull();
 
-//        if ((cmdHandler.hasOption(URL_ARG) && cmdHandler.hasOption(CHECKSUM_ARG)) && !cmdHandler.hasOption(PILLAR_ARG)) {
-//            String checksumFromURL = getChecksumFromURL(url, fileExchange, requestChecksum);
-//            String checksumFromArg = new String(validationChecksum.getChecksumValue(), StandardCharsets.UTF_8);
-//            if (!checksumFromURL.equals(checksumFromArg)) {
-//                throw new IllegalArgumentException(
-//                        "Checksum from URL: " + checksumFromURL + " does not match checksum from argument: " + checksumFromArg);
-//            }
-//        }
+        // FIXME: The below code-snippet still does not prevent the checksum pillar from storing the checksum if the URL is invalid.
+        if ((cmdHandler.hasOption(URL_ARG) && cmdHandler.hasOption(CHECKSUM_ARG)) && !cmdHandler.hasOption(PILLAR_ARG)) {
+            String checksumFromURL = getChecksumFromURL(url, fileExchange, requestChecksum);
+            String checksumFromArg = new String(validationChecksum.getChecksumValue(), StandardCharsets.UTF_8);
+            if (!checksumFromURL.equals(checksumFromArg)) {
+                throw new IllegalArgumentException(
+                        "Checksum from URL: " + checksumFromURL + " does not match checksum from argument: " + checksumFromArg);
+            }
+        }
 
         boolean printChecksums = cmdHandler.hasOption(REQUEST_CHECKSUM_TYPE_ARG);
         String saltedChecksum = null;
