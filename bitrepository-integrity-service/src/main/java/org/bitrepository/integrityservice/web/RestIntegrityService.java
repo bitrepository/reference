@@ -100,13 +100,20 @@ public class RestIntegrityService {
 
         IntegrityIssueIterator it = model.getFilesOnPillar(pillarID, 0, Integer.MAX_VALUE, collectionID);
 
-        if (it.getNextIntegrityIssue() == null) {
-            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
-                    .entity("Failed to get file IDs for collection: " + collectionID + " and pillar: " + pillarID)
-                    .type(MediaType.TEXT_PLAIN).build());
+        if (it == null) {
+            throw new WebApplicationException(
+                    Response.status(Response.Status.NO_CONTENT).entity("Failed to get missing files from database")
+                            .type(MediaType.TEXT_PLAIN).build());
         }
 
-        return new HashMap<>(Map.of(pillarID, List.of(JSONStreamingTools.StreamIntegrityIssues(it).toString())));
+        List<String> iteratorAsList = StreamingTools.IteratorToList(it);
+        if (iteratorAsList.isEmpty()) {
+            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
+                    .entity("No fileIDs found for collection: " + collectionID + " and pillar: " + pillarID).type(MediaType.TEXT_PLAIN)
+                    .build());
+        }
+
+        return new HashMap<>(Map.of(pillarID, iteratorAsList));
     }
 
     /**
@@ -435,7 +442,8 @@ public class RestIntegrityService {
         try {
             IntegrityReportReader reader = integrityReportProvider.getLatestIntegrityReportReader(collectionID);
             File reportPart = reader.getReportPart(part.getPartName(), pillarID);
-            output = List.of(JSONStreamingTools.StreamFileParts(reportPart, 0, Integer.MAX_VALUE).toString());
+            //TODO FIXME: Use IntegrityReportToList instead? - also why no missing files when there's a checksum only on checksum-pillar?
+            output = List.of(StreamingTools.StreamFileParts(reportPart, 0, Integer.MAX_VALUE).toString());
         } catch (FileNotFoundException e) {
             throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
                     .entity("No integrity '" + part.getHumanString() + "' report part for collection: " + collectionID + " and pillar: " +

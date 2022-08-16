@@ -35,12 +35,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class to handle streaming of different kinds of JSON data
  */
-public class JSONStreamingTools {
-    private final static Logger log = LoggerFactory.getLogger(JSONStreamingTools.class);
+public class StreamingTools {
+    private final static Logger log = LoggerFactory.getLogger(StreamingTools.class);
 
     /**
      * Helper method to stream integrity issues as JSON for webservices.
@@ -74,6 +76,23 @@ public class JSONStreamingTools {
                 }
             }
         };
+    }
+
+    /**
+     * Iterates over the elements in an {@link IntegrityIssueIterator} and returns the items as a list.
+     *
+     * @param iterator The {@link IntegrityIssueIterator}.
+     * @return Returns a {@link List<String>}.
+     */
+    public static List<String> IteratorToList(IntegrityIssueIterator iterator) {
+        List<String> output = new ArrayList<>();
+        String issue;
+        while ((issue = iterator.getNextIntegrityIssue()) != null) {
+            output.add(issue);
+        }
+        iterator.close();
+
+        return output;
     }
 
     /**
