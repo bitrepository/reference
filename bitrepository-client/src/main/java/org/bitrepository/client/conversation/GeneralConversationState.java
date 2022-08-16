@@ -49,7 +49,7 @@ public abstract class GeneralConversationState implements ConversationState {
     private final Logger log = LoggerFactory.getLogger(getClass());
     /** The scheduler used for timeout checks. */
     private static final ScheduledExecutorService timer = Executors.newScheduledThreadPool(1,
-                                                                                           new DefaultThreadFactory("ConversationState-Timeout-", Thread.NORM_PRIORITY));
+            new DefaultThreadFactory("ConversationState-Timeout-", Thread.NORM_PRIORITY));
     private ScheduledFuture<?> scheduledTimeout;
     /** For response bookkeeping */
     private final ContributorResponseStatus responseStatus;
@@ -63,7 +63,7 @@ public abstract class GeneralConversationState implements ConversationState {
     }
 
     /**
-     * Startes the state by: <ol>
+     * Starts the state by: <ol>
      *     <li>Scheduling a timeout.</li>
      *     <li>Sends the request which triggers the responses for this state.</li>
      * </ol>
@@ -107,9 +107,9 @@ public abstract class GeneralConversationState implements ConversationState {
         }
 
         try {
-            if(processMessage(response)) {
+            if (processMessage(response)) {
                 responseStatus.responseReceived(response);
-                if (responseStatus.haveAllComponentsResponded()) {
+                if (responseStatus.haveAllComponentsResponded(response)) {
                     scheduledTimeout.cancel(true);
                     changeState();
                 }
