@@ -27,6 +27,13 @@ import org.testng.annotations.Test;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.Period;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.temporal.TemporalAmount;
 import java.util.Date;
 import java.util.Locale;
 
@@ -34,6 +41,8 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 public class TimeUtilsTest extends ExtendedTestCase {
+    private static final ZonedDateTime BASE = Instant.EPOCH.atZone(ZoneOffset.UTC);
+
     @Test(groups = {"regressiontest"})
     public void timeTester() throws Exception {
         addDescription("Tests the TimeUtils. Pi days = 271433605 milliseconds");
@@ -73,11 +82,67 @@ public class TimeUtilsTest extends ExtendedTestCase {
     @Test(groups = {"regressiontest"})
     public void zeroIntervalTest() throws Exception {
         addDescription("Verifies that a 0 ms interval is represented correctly");
-        addStep("Call the millisecondsToHuman with 0 ms", "The output should be '0 ms'");
+        addStep("Call millisecondsToHuman with 0 ms", "The output should be '0 ms'");
         String zeroTimeString = TimeUtils.millisecondsToHuman(0);
         assertEquals(zeroTimeString, " 0 ms");
     }
 
+    @Test(groups = {"regressiontest"})
+    public void differencesPrintHumanly() {
+        addDescription("TimeUtils.humanDifference() should return" +
+                " similar human readable strings to those from millisecondsToHuman()");
+
+        addStep("Call humanDifference() with same time twice", "The output should be '0 ms'");
+        String zeroTimeString = TimeUtils.humanDifference(BASE, BASE);
+        assertEquals(zeroTimeString, "0 ms");
+
+        addStep("Call humanDifference() with a difference obtained from a Duration",
+                "Expect corresponding readable output");
+        testHumanDifference("1 ns", Duration.ofNanos(1));
+        testHumanDifference("1 ms", Duration.ofMillis(1));
+        // If there are nanos, don’t print millis
+        testHumanDifference("2000003 ns", Duration.ofNanos(2_000_003));
+        testHumanDifference("1s", Duration.ofSeconds(1));
+        testHumanDifference("1m", Duration.ofMinutes(1));
+        testHumanDifference("1h", Duration.ofHours(1));
+        testHumanDifference("2h 3m 5s 7 ns", Duration.parse("PT2H3M5.000000007S"));
+
+        addStep("Call humanDifference() with a difference obtained from a Period",
+                "Expect corresponding readable output");
+        testHumanDifference("1d", Period.ofDays(1));
+        testHumanDifference("1m", Period.ofMonths(1));
+        testHumanDifference("1y", Period.ofYears(1));
+        testHumanDifference("2y 3m 5d", Period.of(2, 3, 5));
+
+        addStep("Call humanDifference() with a difference obtained from a combo of a Period and a Duration",
+                "Expect corresponding readable output");
+        testHumanDifference("3y 5m 7d 11h 13m 17s 23 ms",
+                Period.of(3, 5, 7), Duration.parse("PT11H13M17.023S"));
+
+        addStep("Call humanDifference()" +
+                        " with dates that are 2 days apart but times that cause the diff to be less than 2 full days",
+                "Expect output 1d something");
+        ZoneId testZoneId = ZoneId.of("Europe/Vienna");
+        String oneDaySomethingString = TimeUtils.humanDifference(
+                ZonedDateTime.of(2021, 1, 31,
+                        12, 0, 0, 0, testZoneId),
+                ZonedDateTime.of(2021, 2, 2,
+                        11, 59, 59, 0, testZoneId));
+        assertEquals("1d 23h 59m 59s", oneDaySomethingString);
+    }
+
+    /**
+     * Note that the expected result comes first in the argument list
+     * so that we can use varargs to pass a number of amounts, for example both a Period and a Duration.
+     */
+    private void testHumanDifference(String expected, TemporalAmount... amounts) {
+        ZonedDateTime end = BASE;
+        for (TemporalAmount amount: amounts) {
+            end = end.plus(amount);
+        }
+        String differenceString = TimeUtils.humanDifference(BASE, end);
+        assertEquals(differenceString, expected);
+    }
 
     /*
      * The test only ensures that the output format is fixed. Which timezone the the date is 
