@@ -155,7 +155,6 @@ public final class TimeUtils {
         // Since in practice the text is updated a few seconds later and any minutes 1 minute later,
         // it is not expected to be a problem for the user.
         List<String> elements = new ArrayList<>(6);
-
         if (periodBetween.getYears() != 0) {
             elements.add(periodBetween.getYears() + "y");
         }
