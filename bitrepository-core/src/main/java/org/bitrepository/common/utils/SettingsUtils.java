@@ -22,8 +22,8 @@
 package org.bitrepository.common.utils;
 
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.settings.referencesettings.IntegrityServiceSettings;
 import org.bitrepository.settings.referencesettings.PillarIntegrityDetails;
-import org.bitrepository.settings.referencesettings.PillarSettings;
 import org.bitrepository.settings.referencesettings.PillarType;
 import org.bitrepository.settings.repositorysettings.Collection;
 
@@ -119,27 +119,32 @@ public class SettingsUtils {
         return null;
     }
 
-    /**
-     * Get the configured max age for checksums for the given pillarID from the ReferenceSettings.
-     *
-     * @param pillarID The pillarID for which the max checksum age is wanted.
-     * @return human-readable maximum age for checksums for the given pillar ID.
-     */
-    public static String getMaxAgeForChecksums(String pillarID) {
-        PillarSettings pillarSettings = settings.getReferenceSettings().getPillarSettings();
-        if (pillarSettings == null) {
-            return "Not set (no pillar settings)";
-        }
-        if (! pillarSettings.getPillarID().equals(pillarID)) {
-            return "Unknown";
-        }
-        BigInteger maxAge = pillarSettings.getMaxAgeForChecksums();
-        try {
-            return TimeUtils.millisecondsToHuman(maxAge.longValueExact());
-        }
-        catch (ArithmeticException ae) {
-            return String.format(Locale.getDefault(Locale.Category.FORMAT), "Extremely long; %d ms", maxAge);
-        }
+    // TODO Ole V. delete method
+//    /**
+//     * Get the configured max age for checksums for the given pillarID from the ReferenceSettings.
+//     *
+//     * @param pillarID The pillarID for which the max checksum age is wanted.
+//     * @return human-readable maximum age for checksums for the given pillar ID.
+//     */
+//    public static String getMaxAgeForChecksums(String pillarID) {
+//        PillarSettings pillarSettings = settings.getReferenceSettings().getPillarSettings();
+//        if (pillarSettings == null) {
+//            return "Not set (no pillar settings)";
+//        }
+//        if (! pillarSettings.getPillarID().equals(pillarID)) {
+//            return "Unknown";
+//        }
+//        BigInteger maxAge = pillarSettings.getMaxAgeForChecksums();
+//        try {
+//            return TimeUtils.millisecondsToHuman(maxAge.longValueExact());
+//        }
+//        catch (ArithmeticException ae) {
+//            return String.format(Locale.getDefault(Locale.Category.FORMAT), "Extremely long; %d ms", maxAge);
+//        }
+//    }
+
+    public static IntegrityServiceSettings getIntegrityServiceSettings() {
+        return settings.getReferenceSettings().getIntegrityServiceSettings();
     }
 
     /**
@@ -231,4 +236,5 @@ public class SettingsUtils {
         contributors.addAll(SettingsUtils.getAllPillarIDs());
         return contributors;
     }
+
 }
