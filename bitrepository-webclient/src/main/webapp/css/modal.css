@@ -71,3 +71,12 @@
     cursor: copy !important;
     text-decoration: none !important;
 }
+
+.inline-block {
+    white-space: nowrap;
+    display: inline-block;
+}
+
+.prev-button, .next-button {
+    display: inline-block;
+}

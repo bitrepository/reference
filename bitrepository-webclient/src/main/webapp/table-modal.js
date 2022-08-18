@@ -21,7 +21,7 @@
  */
 
 
-function TableModal(pillarID, url, contentElement) {
+function TableModal(pillarID, url, contentElement, tableLoadSize) {
     this.pillarID = pillarID;
     this.url = url;
 
@@ -44,7 +44,15 @@ function TableModal(pillarID, url, contentElement) {
             files.sort(sortFn);
 
             // Create search bar
-            html += `<div class="fixed-div"><input type="text" class="search-bar" placeholder="Search for file.."></div>`;
+            html += `<div class="fixed-div"><input type="text" class="search-bar" placeholder="Search for file..">`;
+
+            // Create 'files information' and 'Next' and 'Prev' button
+            html += `<div class="inline-block">`;
+            html += `<button class="prev-button">Previous</button>`;
+            html += `<p>Total Files: ${files.length}</p>`;
+            html += `<button class="next-button">Next</button>`;
+            html += `</div>`;
+            html += `</div>`;
 
             // Create table
             html += `<table class="modal-table" style="width: 100%; border-collapse: separate;">`;
@@ -68,7 +76,11 @@ function TableModal(pillarID, url, contentElement) {
             html += header + `<tbody id="files-table">`
 
             // Populate the file status rows of the table. TODO: Needs autoload on scroll? Or is it okay to have a large table?
-            html += getTableBody(pillars, files, j);
+            if (files.length) {
+                let pages = Math.ceil(files.length / 100);
+                html += getTableBody(pillars, files, j, 0, tableLoadSize);
+            }
+
 
             html += `</tbody>`;
             html += `</table>`;
@@ -87,7 +99,7 @@ function TableModal(pillarID, url, contentElement) {
         });
     };
 
-    function getTableBody(pillars, files, j) {
+    function getTableBody(pillars, files, j, startIdx, loadSize) {
         let html = ``;
 
         // When a single pillar modal is opened, the pillarID will be used to show only the missing files.
@@ -99,7 +111,11 @@ function TableModal(pillarID, url, contentElement) {
             }
         }
 
-        for (let i = 0; i < files.length; i++) {
+        // Ensures we don't loop over files that does not exist
+        let stopIdx = startIdx + loadSize;
+        (stopIdx > files.length) ? (stopIdx = files.length) : stopIdx;
+
+        for (let i = startIdx; i < stopIdx; i++) {
             html += `<tr style="border-top: 1px solid #9996">`;
             html += `<td style="border-right: 1px solid #9996;">${i + 1}</td>`;
             html += `<td style="padding-left: 5px;"><a href="javascript:void(0);" class="file-id">${files[i]}</a></td>`;

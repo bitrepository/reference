@@ -213,7 +213,7 @@
 
     function showModal(title, url, pillarID = undefined) {
         return function () {
-            modal = new TableModal(pillarID, url, "#modalBody");
+            modal = new TableModal(pillarID, url, "#modalBody", 100);
             $("#modalLabel").html(title);
             $("#modalBody").html("<p>Loading</p>");
             modal.getModal();
