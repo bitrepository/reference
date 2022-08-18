@@ -123,19 +123,37 @@ public class RestIntegrityService {
      * @return Returns a {@link HashMap} mapping the given pillar to its missing files.
      */
     @GET
-    @Path("/getMissingFileIDs/")
+    @Path("/getAllMissingFileIDs/")
     @Produces(MediaType.APPLICATION_JSON)
-    public HashMap<String, List<String>> getMissingFileIDs(
+    public HashMap<String, List<String>> getAllMissingFileIDs(
             @QueryParam("collectionID")
                     String collectionID) {
         pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
         HashMap<String, List<String>> output = new HashMap<>();
+        List<String> streamingOutput;
+
         for (String pillar : pillars) {
-            List<String> streamingOutput = streamPartFromLatestReport(ReportPart.MISSING_FILE, collectionID, pillar);
+            try {
+                streamingOutput = getReportPart(ReportPart.MISSING_FILE, collectionID, pillar);
+            } catch (FileNotFoundException e) {
+                streamingOutput = List.of();
+            }
             output.put(pillar, streamingOutput);
         }
 
         return output;
+    }
+
+    @GET
+    @Path("/getMissingFileIDs/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public HashMap<String, List<String>> getMissingFileIDs(
+            @QueryParam("collectionID")
+                    String collectionID,
+            @QueryParam("pillarID")
+                    String pillarID) {
+        List<String> streamingOutput = getReportPartForPillar(ReportPart.MISSING_FILE, collectionID, pillarID);
+        return new HashMap<>(Map.of(pillarID, streamingOutput));
     }
 
 
@@ -154,10 +172,8 @@ public class RestIntegrityService {
                     String collectionID,
             @QueryParam("pillarID")
                     String pillarID) {
-        List<String> streamingOutput = streamPartFromLatestReport(ReportPart.MISSING_CHECKSUM, collectionID, pillarID);
-        return new HashMap<>() {{
-            put(pillarID, streamingOutput);
-        }};
+        List<String> streamingOutput = getReportPartForPillar(ReportPart.MISSING_CHECKSUM, collectionID, pillarID);
+        return new HashMap<>(Map.of(pillarID, streamingOutput));
     }
 
     /**
@@ -175,7 +191,7 @@ public class RestIntegrityService {
                     String collectionID,
             @QueryParam("pillarID")
                     String pillarID) {
-        List<String> streamingOutput = streamPartFromLatestReport(ReportPart.OBSOLETE_CHECKSUM, collectionID, pillarID);
+        List<String> streamingOutput = getReportPartForPillar(ReportPart.OBSOLETE_CHECKSUM, collectionID, pillarID);
         return new HashMap<>(Map.of(pillarID, streamingOutput));
     }
 
@@ -194,7 +210,7 @@ public class RestIntegrityService {
                     String collectionID,
             @QueryParam("pillarID")
                     String pillarID) {
-        List<String> streamingOutput = streamPartFromLatestReport(ReportPart.CHECKSUM_ERROR, collectionID, pillarID);
+        List<String> streamingOutput = getReportPartForPillar(ReportPart.CHECKSUM_ERROR, collectionID, pillarID);
         return new HashMap<>(Map.of(pillarID, streamingOutput));
     }
 
@@ -213,7 +229,12 @@ public class RestIntegrityService {
         pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
         HashMap<String, List<String>> output = new HashMap<>();
         for (String pillar : pillars) {
-            List<String> streamingOutput = streamPartFromLatestReport(ReportPart.MISSING_CHECKSUM, collectionID, pillar);
+            List<String> streamingOutput;
+            try {
+                streamingOutput = getReportPart(ReportPart.MISSING_CHECKSUM, collectionID, pillar);
+            } catch (FileNotFoundException e) {
+                streamingOutput = List.of();
+            }
             output.put(pillar, streamingOutput);
         }
 
@@ -235,7 +256,12 @@ public class RestIntegrityService {
         pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
         HashMap<String, List<String>> output = new HashMap<>();
         for (String pillar : pillars) {
-            List<String> streamingOutput = streamPartFromLatestReport(ReportPart.OBSOLETE_CHECKSUM, collectionID, pillar);
+            List<String> streamingOutput;
+            try {
+                streamingOutput = getReportPart(ReportPart.OBSOLETE_CHECKSUM, collectionID, pillar);
+            } catch (FileNotFoundException e) {
+                streamingOutput = List.of();
+            }
             output.put(pillar, streamingOutput);
         }
 
@@ -257,7 +283,12 @@ public class RestIntegrityService {
         pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
         HashMap<String, List<String>> output = new HashMap<>();
         for (String pillar : pillars) {
-            List<String> streamingOutput = streamPartFromLatestReport(ReportPart.CHECKSUM_ERROR, collectionID, pillar);
+            List<String> streamingOutput;
+            try {
+                streamingOutput = getReportPart(ReportPart.CHECKSUM_ERROR, collectionID, pillar);
+            } catch (FileNotFoundException e) {
+                streamingOutput = List.of();
+            }
             output.put(pillar, streamingOutput);
         }
 
@@ -437,13 +468,28 @@ public class RestIntegrityService {
      * @param collectionID The ID of the collection
      * @param pillarID     The ID of the pillar
      */
-    private List<String> streamPartFromLatestReport(ReportPart part, String collectionID, String pillarID) {
+    private List<String> getReportPart(ReportPart part, String collectionID, String pillarID) throws FileNotFoundException {
+        List<String> output;
+
+        IntegrityReportReader reader = integrityReportProvider.getLatestIntegrityReportReader(collectionID);
+        File reportPart = reader.getReportPart(part.getPartName(), pillarID);
+        //TODO: Test that this works for an IntegrityReport file. -
+        // also is there no missing files shown on the WebGUI when there's a checksum only on checksum-pillar?
+        output = StreamingTools.FilePartToList(reportPart, 0, Integer.MAX_VALUE);
+
+        return output;
+    }
+
+    /**
+     * Overloaded method calling {@link RestIntegrityService#getReportPart} but instead of returning an empty list, it will throw a
+     * {@link WebApplicationException}.
+     *
+     * @return Returns either a {@link List<String>} of fileIDs or throws a {@link WebApplicationException}.
+     */
+    private List<String> getReportPartForPillar(ReportPart part, String collectionID, String pillarID) {
         List<String> output;
         try {
-            IntegrityReportReader reader = integrityReportProvider.getLatestIntegrityReportReader(collectionID);
-            File reportPart = reader.getReportPart(part.getPartName(), pillarID);
-            //TODO FIXME: Use IntegrityReportToList instead? - also why no missing files when there's a checksum only on checksum-pillar?
-            output = List.of(StreamingTools.StreamFileParts(reportPart, 0, Integer.MAX_VALUE).toString());
+            output = getReportPart(part, collectionID, pillarID);
         } catch (FileNotFoundException e) {
             throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
                     .entity("No integrity '" + part.getHumanString() + "' report part for collection: " + collectionID + " and pillar: " +

@@ -79,23 +79,6 @@ public class StreamingTools {
     }
 
     /**
-     * Iterates over the elements in an {@link IntegrityIssueIterator} and returns the items as a list.
-     *
-     * @param iterator The {@link IntegrityIssueIterator}.
-     * @return Returns a {@link List<String>}.
-     */
-    public static List<String> IteratorToList(IntegrityIssueIterator iterator) {
-        List<String> output = new ArrayList<>();
-        String issue;
-        while ((issue = iterator.getNextIntegrityIssue()) != null) {
-            output.add(issue);
-        }
-        iterator.close();
-
-        return output;
-    }
-
-    /**
      * Helper method to stream whole or parts of a files content as a JSON formatted list
      * (one list entry per line)
      *
@@ -129,5 +112,51 @@ public class StreamingTools {
                 throw new WebApplicationException(e);
             }
         };
+    }
+
+    /**
+     * Iterates over the elements in an {@link IntegrityIssueIterator} and returns the items as a list.
+     *
+     * @param iterator The {@link IntegrityIssueIterator}.
+     * @return Returns a {@link List <String>}.
+     */
+    public static List<String> IteratorToList(IntegrityIssueIterator iterator) {
+        List<String> output = new ArrayList<>();
+        String issue;
+        while ((issue = iterator.getNextIntegrityIssue()) != null) {
+            output.add(issue);
+        }
+        iterator.close();
+
+        return output;
+    }
+
+    /**
+     * Helper method to create a {@link List<String>} of all or parts of a files' content.
+     * @param source The source file
+     * @param offset The number of lines to skip
+     * @param maxLines The number of lines to read
+     * @return Returns a {@link List<String>} of the found content.
+     */
+    public static List<String> FilePartToList(File source, int offset, int maxLines) {
+        List<String> output = new ArrayList<>();
+
+        try (BufferedReader b = new BufferedReader(new InputStreamReader(new FileInputStream(source), StandardCharsets.UTF_8))) {
+            int linesRead = 0;
+            String line;
+            while ((line = b.readLine()) != null) {
+                if (linesRead++ < offset) {
+                    continue;
+                }
+                output.add(line);
+                if (linesRead - offset >= maxLines) {
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            throw new WebApplicationException(e);
+        }
+
+        return output;
     }
 }

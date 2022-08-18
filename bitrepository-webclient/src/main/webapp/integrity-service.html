@@ -241,7 +241,7 @@
             context.element = id + "-missingFiles";
             context.title = type + " on " + id.toUpperCase();
             context.member = "missingFilesCount";
-            context.url += "getMissingFileIDs/";
+            context.url += "getAllMissingFileIDs/";
         } else if (type === "Missing checksums") {
             context.element = id + "-missingChecksums";
             context.title = type + " on " + id.toUpperCase();
@@ -268,7 +268,7 @@
         if (type === "Number of missing files") {
             context.element = "all-missingFiles";
             context.title = type + " on all pillars";
-            context.url += "getMissingFileIDs/";
+            context.url += "getAllMissingFileIDs/";
         } else if (type === "Number of missing checksums") {
             context.element = "all-missingChecksums";
             context.title = type + " on all pillars";
@@ -320,14 +320,19 @@
     function setHeader(type, value) {
         let context = getHeaderContext(type);
 
-        if (value === 0) {
-            let html = `${type}`;
-            $("#" + context.element).html(html);
-        } else {
-            let html = `<a style="text-decoration: none; cursor: pointer;" id="${context.element}-a">${type}</a>`;
-            $("#" + context.element).html(html);
-            $("#" + context.element + "-a").click(showModal(context.title, context.url));
-        }
+        let html = `<a style="text-decoration: none; cursor: pointer;" id="${context.element}-a">${type}</a>`;
+        $("#" + context.element).html(html);
+        $("#" + context.element + "-a").click(showModal(context.title, context.url));
+
+        //TODO: Use below code after testing has finished.
+        // if (value === 0) {
+        //     let html = `${type}`;
+        //     $("#" + context.element).html(html);
+        // } else {
+        //     let html = `<a style="text-decoration: none; cursor: pointer;" id="${context.element}-a">${type}</a>`;
+        //     $("#" + context.element).html(html);
+        //     $("#" + context.element + "-a").click(showModal(context.title, context.url));
+        // }
     }
 
     function updateTableBody(pillarID) {
