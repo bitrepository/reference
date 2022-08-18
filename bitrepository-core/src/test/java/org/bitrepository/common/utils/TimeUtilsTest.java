@@ -92,6 +92,7 @@ public class TimeUtilsTest extends ExtendedTestCase {
         addDescription("TimeUtils.humanDifference() should return" +
                 " similar human readable strings to those from millisecondsToHuman()");
 
+<<<<<<< HEAD
         addStep("Call humanDifference() with same time twice", "The output should be '0s'");
         String zeroTimeString = TimeUtils.humanDifference(BASE, BASE);
         assertEquals(zeroTimeString, "0s");

@@ -24,6 +24,7 @@ package org.bitrepository.common.utils;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.settings.referencesettings.IntegrityServiceSettings;
 import org.bitrepository.settings.referencesettings.PillarIntegrityDetails;
+import org.bitrepository.settings.referencesettings.PillarSettings;
 import org.bitrepository.settings.referencesettings.PillarType;
 import org.bitrepository.settings.repositorysettings.Collection;
 
