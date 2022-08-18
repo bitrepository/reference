@@ -42,7 +42,16 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Instant;
-import java.util.*;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Common parts of the implementation of the access to the integrity db.
@@ -504,7 +513,7 @@ public abstract class IntegrityDAO {
 
         String latestPillarStatsSql = "SELECT pillarID, file_count, file_size, missing_files_count," +
                 "   checksum_errors_count, missing_checksums_count, obsolete_checksums_count," +
-                "   1000000000000 as oldest_checksum_timestamp" + // TODO extend table with new col
+                "   1000000000000 as oldest_checksum_timestamp" + // TODO Ole V. use new col
                 " FROM pillarstats" +
                 " WHERE stat_key = (" + " SELECT MAX(stat_key) FROM stats" + " WHERE collectionID = ?)";
 
@@ -524,18 +533,20 @@ public abstract class IntegrityDAO {
                     String pillarHostname = Objects.requireNonNullElse(SettingsUtils.getHostname(pillarID), "N/A");
                     String pillarType = (SettingsUtils.getPillarType(pillarID) != null) ?
                             Objects.requireNonNull(SettingsUtils.getPillarType(pillarID)).value() : "Unknown";
+                    String maxAgeForChecksums = SettingsUtils.getMaxAgeForChecksums(pillarID);
                     long oldestChecksumTimestamp = dbResult.getLong("oldest_checksum_timestamp");
                     String ageOfOldestChecksum;
                     if (dbResult.wasNull()) {
                         ageOfOldestChecksum = "N/A";
                     } else {
-                        ageOfOldestChecksum = TimeUtils.millisecondsToHuman(
-                                System.currentTimeMillis() - oldestChecksumTimestamp);
+                        ZoneId zone = ZoneId.systemDefault();
+                        ZonedDateTime oldestChecksumZdt = Instant.ofEpochMilli(oldestChecksumTimestamp).atZone(zone);
+                        ageOfOldestChecksum = TimeUtils.humanDifference(oldestChecksumZdt, ZonedDateTime.now(zone));
                     }
                     PillarCollectionStat p = new PillarCollectionStat(pillarID, collectionID,
                             pillarHostname, pillarType, fileCount, dataSize,
                             missingFiles, checksumErrors, missingChecksums, obsoleteChecksums,
-                            "TODO", ageOfOldestChecksum, statsTime, updateTime);
+                            maxAgeForChecksums, ageOfOldestChecksum, statsTime, updateTime);
                     stats.add(p);
                 }
             }

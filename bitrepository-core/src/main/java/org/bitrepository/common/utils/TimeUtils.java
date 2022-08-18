@@ -21,10 +21,17 @@
  */
 package org.bitrepository.common.utils;
 
+import org.bitrepository.common.ArgumentValidator;
+
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.Period;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -123,6 +130,57 @@ public final class TimeUtils {
         return sb.toString();
     }
 
+    public static String humanDifference(ZonedDateTime start, ZonedDateTime end) {
+        ArgumentValidator.checkTrue(! end.isBefore(start), start + " > " + end);
+
+        Period periodBetween = Period.between(start.toLocalDate(), end.toLocalDate());
+        ZonedDateTime afterPeriod = start.plus(periodBetween);
+        if (afterPeriod.isAfter(end)) { // Too far
+            // One day fewer
+            periodBetween = Period.between(start.toLocalDate(), end.toLocalDate().minusDays(1));
+            afterPeriod = start.plus(periodBetween);
+        }
+        Duration durationBetween = Duration.between(afterPeriod, end);
+
+        if (periodBetween.isZero() && durationBetween.isZero()) {
+            return "0 ms";
+        }
+
+        // The following gives an ambiguous string like "3m"
+        // in the very rare cases where only months or only minutes are non-zero.
+        // Since in practice the text is updated a few seconds later, it is not expected to be a problem for the user.
+        List<String> elements = new ArrayList<>(7);
+        if (periodBetween.getYears() != 0) {
+            elements.add(periodBetween.getYears() + "y");
+        }
+        if (periodBetween.getMonths() != 0) {
+            elements.add(periodBetween.getMonths() + "m");
+        }
+        if (periodBetween.getDays() != 0) {
+            elements.add(periodBetween.getDays() + "d");
+        }
+        if (durationBetween.toHours() != 0) {
+            elements.add(durationBetween.toHours() + "h");
+        }
+        if (durationBetween.toMinutesPart() != 0) {
+            elements.add(durationBetween.toMinutesPart() + "m");
+        }
+        if (durationBetween.toSecondsPart() != 0) {
+            elements.add(durationBetween.toSecondsPart() + "s");
+        }
+        if (durationBetween.toNanosPart() != 0) {
+            int millis = durationBetween.toMillisPart();
+            int nanos = durationBetween.toNanosPart();
+            if (Duration.ofMillis(millis).toNanos() == nanos) { // millis give full precision; print them
+                elements.add(millis + " ms");
+            } else { // print only nanos
+                elements.add(nanos + " ns");
+            }
+        }
+
+        return String.join(" ", elements);
+    }
+
     public static String shortDate(Date date) {
         return formatter.format(date);
     }
@@ -145,4 +203,5 @@ public final class TimeUtils {
             return currentMax;
         }
     }
+
 }
