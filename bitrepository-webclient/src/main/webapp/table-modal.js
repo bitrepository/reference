@@ -116,9 +116,11 @@ function TableModal(operation, pillarID, url, contentElement, tableLoadSize) {
             html += `<td style="border-right: 1px solid #9996;">${i + 1}</td>`;
             html += `<td style="padding-left: 5px;"><a href="javascript:void(0);" class="file-id">${files[i]}</a></td>`;
             for (let k = 0; k < pillars.length; k++) {
-                if (json[pillars[k]].includes(files[i])) {
+                if (!json[pillars[k]].includes(files[i]) || operation === "Total files") {
+                    // File is NOT missing
                     html += `<td style="text-align: center; background-color: #bde9ba;">&#x2713;</td>`;
                 } else {
+                    // File is missing
                     html += `<td style="text-align: center; background-color: #db7070b0;">x</td>`;
                 }
             }
