@@ -211,9 +211,9 @@
         }).show().fadeOut({duration: 5000});
     }
 
-    function showModal(title, url, pillarID = undefined) {
+    function showModal(type, title, url, pillarID = undefined) {
         return function () {
-            modal = new TableModal(pillarID, url, "#modalBody", 100);
+            modal = new TableModal(type, pillarID, url, "#modalBody", 100);
             $("#modalLabel").html(title);
             $("#modalBody").html("<p>Loading</p>");
             modal.getModal();
@@ -322,7 +322,7 @@
 
         let html = `<a style="text-decoration: none; cursor: pointer;" id="${context.element}-a">${type}</a>`;
         $("#" + context.element).html(html);
-        $("#" + context.element + "-a").click(showModal(context.title, context.url));
+        $("#" + context.element + "-a").click(showModal("", context.title, context.url));
 
         //TODO: Use below code after testing has finished.
         // if (value === 0) {
@@ -360,7 +360,7 @@
             let innerElement = context.element + "-a";
             let html = `<a class="btn btn-link" id="${innerElement}">${formatInt(cellValue)}</a>`;
             $("#" + context.element).html(html);
-            $("#" + innerElement).click(showModal(context.title, context.url, pillarID));
+            $("#" + innerElement).click(showModal(type, context.title, context.url, pillarID));
         }
     }
 

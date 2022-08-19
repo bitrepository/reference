@@ -21,22 +21,22 @@
  */
 
 
-function TableModal(pillarID, url, contentElement, tableLoadSize) {
+function TableModal(operation, pillarID, url, contentElement, tableLoadSize) {
     this.pillarID = pillarID;
     this.url = url;
 
     this.getModal = function () {
-        $.getJSON(this.url, {}, function (j) {
+        $.getJSON(this.url, {}, function (json) {
             let html = `<div style="padding : 15px">`;
 
             // Initialize pillar and files information
             let pillars = [];
             let files = [];
-            for (let key in j) {
+            for (let key in json) {
                 pillars.push(key);
-                for (let i = 0; i < j[key].length; i++) {
-                    if (!files.includes(j[key][i])) {
-                        files.push(j[key][i]);
+                for (let i = 0; i < json[key].length; i++) {
+                    if (!files.includes(json[key][i])) {
+                        files.push(json[key][i]);
                     }
                 }
             }
@@ -78,7 +78,7 @@ function TableModal(pillarID, url, contentElement, tableLoadSize) {
             // Populate the file status rows of the table. TODO: Needs autoload on scroll? Or is it okay to have a large table?
             if (files.length) {
                 let pages = Math.ceil(files.length / 100);
-                html += getTableBody(pillars, files, j, 0, tableLoadSize);
+                html += getTableBody(operation, pillars, files, json, 0, tableLoadSize);
             }
 
 
@@ -99,16 +99,12 @@ function TableModal(pillarID, url, contentElement, tableLoadSize) {
         });
     };
 
-    function getTableBody(pillars, files, j, startIdx, loadSize) {
+    function getTableBody(operation, pillars, files, json, startIdx, loadSize) {
         let html = ``;
 
-        // When a single pillar modal is opened, the pillarID will be used to show only the missing files.
+        // When a single pillar modal is opened, show only files that are related to that pillar.
         if (typeof pillarID !== "undefined") {
-            for (let idx = (files.length - 1); 0 <= idx; idx--) {
-                if (j[pillarID].includes(files[idx])) {
-                    files.splice(idx, 1);
-                }
-            }
+            files = json[pillarID];
         }
 
         // Ensures we don't loop over files that does not exist
@@ -120,7 +116,7 @@ function TableModal(pillarID, url, contentElement, tableLoadSize) {
             html += `<td style="border-right: 1px solid #9996;">${i + 1}</td>`;
             html += `<td style="padding-left: 5px;"><a href="javascript:void(0);" class="file-id">${files[i]}</a></td>`;
             for (let k = 0; k < pillars.length; k++) {
-                if (j[pillars[k]].includes(files[i])) {
+                if (json[pillars[k]].includes(files[i])) {
                     html += `<td style="text-align: center; background-color: #bde9ba;">&#x2713;</td>`;
                 } else {
                     html += `<td style="text-align: center; background-color: #db7070b0;">x</td>`;

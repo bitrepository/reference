@@ -74,9 +74,11 @@
 
 .inline-block {
     white-space: nowrap;
-    display: inline-block;
+    display: inline-flex;
 }
 
 .prev-button, .next-button {
     display: inline-block;
+    margin-right: 5px;
+    margin-left: 5px;
 }
