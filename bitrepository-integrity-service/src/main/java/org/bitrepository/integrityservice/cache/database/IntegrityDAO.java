@@ -517,9 +517,12 @@ public abstract class IntegrityDAO {
 
         String latestPillarStatsSql = "SELECT pillarID, file_count, file_size, missing_files_count," +
                 "   checksum_errors_count, missing_checksums_count, obsolete_checksums_count," +
-                "   1000000000000 as oldest_checksum_timestamp" + // TODO Ole V. use new col
+                "   oldest_checksum_timestamp" +
                 " FROM pillarstats" +
-                " WHERE stat_key = (" + " SELECT MAX(stat_key) FROM stats" + " WHERE collectionID = ?)";
+                " WHERE stat_key = (" +
+                "   SELECT MAX(stat_key)" +
+                "   FROM stats" +
+                "   WHERE collectionID = ?)";
 
         try (Connection conn = dbConnector.getConnection();
              PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, latestPillarStatsSql, collectionID)) {
