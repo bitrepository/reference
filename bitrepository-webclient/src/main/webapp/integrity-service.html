@@ -211,12 +211,20 @@
         }).show().fadeOut({duration: 5000});
     }
 
-    function showModal(type, title, url, pillarID = undefined) {
+    function getMaxPages(pillarID, member) {
         return function () {
-            modal = new TableModal(type, pillarID, url, "#modalBody", 100);
+            return 1000;
+            //TODO:
+            //return pillars[pillarID][member];
+        }
+    }
+
+    function showModal(type, member, title, url, pillarID) {
+        return function () {
+            modal = new TableModal(type, pillarID, url, "#modalBody", getMaxPages(pillarID, member), 100);
             $("#modalLabel").html(title);
             $("#modalBody").html("<p>Loading</p>");
-            modal.getModal();
+            modal.getModal(1);
             $("#modalDialog").modal('show');
         }
     }
@@ -236,7 +244,7 @@
             context.element = id + "-totalFileCount";
             context.title = type + " on " + id.toUpperCase();
             context.member = "totalFileCount";
-            context.url += "getAllFileIDs/";
+            context.url += "getTotalFileIDs/";
         } else if (type === "Missing files") {
             context.element = id + "-missingFiles";
             context.title = type + " on " + id.toUpperCase();
@@ -264,25 +272,19 @@
 
     function getHeaderContext(type) {
         let context = {};
-        context.url = integrityServiceUrl + "/integrity/IntegrityService/";
         if (type === "Number of missing files") {
             context.element = "all-missingFiles";
             context.title = type + " on all pillars";
-            context.url += "getAllMissingFileIDs/";
         } else if (type === "Number of missing checksums") {
             context.element = "all-missingChecksums";
             context.title = type + " on all pillars";
-            context.url += "getAllMissingChecksumsInformation/";
         } else if (type === "Number of obsolete checksums") {
             context.element = "all-obsoleteChecksums";
             context.title = type + " on all pillars";
-            context.url += "getAllObsoleteChecksumsInformation/";
         } else if (type === "Number of inconsistent checksums") {
             context.element = "all-checksumErrors";
             context.title = type + " on all pillars";
-            context.url += "getAllInconsistentChecksumsInformation/";
         }
-        context.url += "?collectionID=" + getCollectionID();
         return context;
     }
 
@@ -301,38 +303,16 @@
     }
 
     function updateTableHeader() {
-        setHeader("Number of missing files", getValue("missingFilesCount"));
-        setHeader("Number of missing checksums", getValue("missingChecksumsCount"));
-        setHeader("Number of obsolete checksums", getValue("obsoleteChecksumsCount"));
-        setHeader("Number of inconsistent checksums", getValue("checksumErrorCount"));
+        setHeader("Number of missing files");
+        setHeader("Number of missing checksums");
+        setHeader("Number of obsolete checksums");
+        setHeader("Number of inconsistent checksums");
     }
 
-    function getValue(type) {
-        let sum = 0;
-        for (let i in pillars) {
-            for (let j in i[type]) {
-                sum += j;
-            }
-        }
-        return sum;
-    }
-
-    function setHeader(type, value) {
+    function setHeader(type) {
         let context = getHeaderContext(type);
-
-        let html = `<a style="text-decoration: none; cursor: pointer;" id="${context.element}-a">${type}</a>`;
+        let html = `${type}`;
         $("#" + context.element).html(html);
-        $("#" + context.element + "-a").click(showModal("", context.title, context.url));
-
-        //TODO: Use below code after testing has finished.
-        // if (value === 0) {
-        //     let html = `${type}`;
-        //     $("#" + context.element).html(html);
-        // } else {
-        //     let html = `<a style="text-decoration: none; cursor: pointer;" id="${context.element}-a">${type}</a>`;
-        //     $("#" + context.element).html(html);
-        //     $("#" + context.element + "-a").click(showModal(context.title, context.url));
-        // }
     }
 
     function updateTableBody(pillarID) {
@@ -353,15 +333,20 @@
 
     function updateIntCell(pillarID, type, cellValue) {
         let context = getBodyContext(pillarID, type);
-        if (cellValue === 0) {
-            let html = `<button class="btn btn-link" disabled>${formatInt(cellValue)}</button>`;
-            $("#" + context.element).html(html);
-        } else {
-            let innerElement = context.element + "-a";
-            let html = `<a class="btn btn-link" id="${innerElement}">${formatInt(cellValue)}</a>`;
-            $("#" + context.element).html(html);
-            $("#" + innerElement).click(showModal(type, context.title, context.url, pillarID));
-        }
+
+        let innerElement = context.element + "-a";
+        let html = `<a class="btn btn-link" id="${innerElement}">${formatInt(cellValue)}</a>`;
+        $("#" + context.element).html(html);
+        $("#" + innerElement).click(showModal(type, context.member, context.title, context.url, pillarID));
+        // if (cellValue === 0) {
+        //     let html = `<button class="btn btn-link" disabled>${formatInt(cellValue)}</button>`;
+        //     $("#" + context.element).html(html);
+        // } else {
+        //     let innerElement = context.element + "-a";
+        //     let html = `<a class="btn btn-link" id="${innerElement}">${formatInt(cellValue)}</a>`;
+        //     $("#" + context.element).html(html);
+        //     $("#" + innerElement).click(showModal(type, context.title, context.url, pillarID));
+        // }
     }
 
     function initializePage() {

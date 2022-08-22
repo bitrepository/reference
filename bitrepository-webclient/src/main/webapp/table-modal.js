@@ -21,36 +21,49 @@
  */
 
 
-function TableModal(operation, pillarID, url, contentElement, tableLoadSize) {
-    this.pillarID = pillarID;
+function TableModal(operation, pillarID, url, contentElement, maxPageMethod, pageSize) {
     this.url = url;
+    this.maxPageMethod = maxPageMethod;
+    this.pageSize = pageSize;
+    let pillars;
+    let files;
 
-    this.getModal = function () {
-        $.getJSON(this.url, {}, function (json) {
+    this.getModal = function (page) {
+        let self = this;
+        let maxPages = Math.ceil(this.maxPageMethod() / this.pageSize);
+
+        $.getJSON(this.url + "&pageSize=" + this.pageSize + "&page=" + page, {}, function (json) {
             let html = `<div style="padding : 15px">`;
 
             // Initialize pillar and files information
-            let pillars = [];
-            let files = [];
+            pillars = [];
             for (let key in json) {
-                pillars.push(key);
-                for (let i = 0; i < json[key].length; i++) {
-                    if (!files.includes(json[key][i])) {
-                        files.push(json[key][i]);
-                    }
+                if (key === pillarID) {
+                    // Ensures the pillar in focus is the first pillar in the list
+                    pillars.unshift(key);
+                } else {
+                    pillars.push(key);
                 }
             }
-            pillars.sort();
-            files.sort(sortFn);
+            files = json[pillarID];
 
             // Create search bar
             html += `<div class="fixed-div"><input type="text" class="search-bar" placeholder="Search for file..">`;
 
-            // Create 'files information' and 'Next' and 'Prev' button
+            // Create 'Next' and 'Prev' button
             html += `<div class="inline-block">`;
-            html += `<button class="prev-button">Previous</button>`;
-            html += `<p>Total Files: ${files.length}</p>`;
-            html += `<button class="next-button">Next</button>`;
+            if (page === 1) {
+                html += `<button class="prev-button" disabled>Previous</button>`;
+            } else {
+                html += `<button class="prev-button">Previous</button>`;
+            }
+            if (page === maxPages) {
+                html += `<button class="next-button" disabled>Next</button>`;
+            } else {
+                html += `<button class="next-button">Next</button>`;
+            }
+            // Show [current / total] pages.
+            html += `<p>Page ${page} / ${maxPages}</p>`;
             html += `</div>`;
             html += `</div>`;
 
@@ -63,8 +76,9 @@ function TableModal(operation, pillarID, url, contentElement, tableLoadSize) {
             header += `<th style="text-align: left; border-left: 1px solid white;">#</th>`;
             header += `<th style="text-align: left; padding-left: 5px; width: 35%">File ID</th>`;
 
+            // Color header yellow for the pillar that is in 'focus'
             for (let i = 0; i < pillars.length; i++) {
-                if (typeof pillarID !== 'undefined' && pillars[i] === pillarID) {
+                if (pillars[i] === pillarID) {
                     header += `<th style="background-color: #ecf275;">${pillars[i].toUpperCase()}</th>`;
                 } else {
                     header += `<th>${pillars[i].toUpperCase()}</th>`;
@@ -75,12 +89,9 @@ function TableModal(operation, pillarID, url, contentElement, tableLoadSize) {
             header += `</thead>`;
             html += header + `<tbody id="files-table">`
 
-            // Populate the file status rows of the table. TODO: Needs autoload on scroll? Or is it okay to have a large table?
-            if (files.length) {
-                let pages = Math.ceil(files.length / 100);
-                html += getTableBody(operation, pillars, files, json, 0, tableLoadSize);
-            }
-
+            // Populate the file status rows of the table. This only happens if there are more than 0 files.
+            let idxIncrement = (page - 1) * pageSize;
+            html += getTableBody(operation, json, idxIncrement);
 
             html += `</tbody>`;
             html += `</table>`;
@@ -91,6 +102,14 @@ function TableModal(operation, pillarID, url, contentElement, tableLoadSize) {
             $(contentElement).html(html);
             activateSearchbar();
             enableCopyToClipboard();
+
+            // Enable button functionality
+            if (page > 1) {
+                $(".prev-button").on("click", () => self.getModal(page - 1));
+            }
+            if (page < maxPages) {
+                $(".next-button").on("click", () => self.getModal(page + 1));
+            }
         }).fail(function () {
             let html = "<div class=\"alert alert-error\">"
             html += "Failed to load page";
@@ -99,28 +118,19 @@ function TableModal(operation, pillarID, url, contentElement, tableLoadSize) {
         });
     };
 
-    function getTableBody(operation, pillars, files, json, startIdx, loadSize) {
+    function getTableBody(operation, json, startIdx) {
         let html = ``;
 
-        // When a single pillar modal is opened, show only files that are related to that pillar.
-        if (typeof pillarID !== "undefined") {
-            files = json[pillarID];
-        }
-
-        // Ensures we don't loop over files that does not exist
-        let stopIdx = startIdx + loadSize;
-        (stopIdx > files.length) ? (stopIdx = files.length) : stopIdx;
-
-        for (let i = startIdx; i < stopIdx; i++) {
+        for (let i = 0; i < files.length; i++) {
             html += `<tr style="border-top: 1px solid #9996">`;
-            html += `<td style="border-right: 1px solid #9996;">${i + 1}</td>`;
+            html += `<td style="border-right: 1px solid #9996;">${startIdx + i + 1}</td>`;
             html += `<td style="padding-left: 5px;"><a href="javascript:void(0);" class="file-id">${files[i]}</a></td>`;
             for (let k = 0; k < pillars.length; k++) {
                 if (!json[pillars[k]].includes(files[i]) || operation === "Total files") {
                     // File is NOT missing
                     html += `<td style="text-align: center; background-color: #bde9ba;">&#x2713;</td>`;
                 } else {
-                    // File is missing
+                    // File IS missing
                     html += `<td style="text-align: center; background-color: #db7070b0;">x</td>`;
                 }
             }
@@ -129,7 +139,6 @@ function TableModal(operation, pillarID, url, contentElement, tableLoadSize) {
         return html;
     }
 
-
     function activateSearchbar() {
         $(".search-bar").on("keyup", function () {
             let filter = $(this).val().toUpperCase();
@@ -137,15 +146,6 @@ function TableModal(operation, pillarID, url, contentElement, tableLoadSize) {
                 $(this).toggle($(this).text().toUpperCase().indexOf(filter) > -1);
             });
             noSearchResult();
-        });
-    }
-
-    function enableCopyToClipboard() {
-        $(".file-id").each(function () {
-            $(this).on("click", function () {
-                let text = $(this).text();
-                navigator.clipboard.writeText(text).then();
-            });
         });
     }
 
@@ -161,15 +161,12 @@ function TableModal(operation, pillarID, url, contentElement, tableLoadSize) {
         hasResult ? noResultText.hide() : noResultText.show();
     }
 
-    function sortFn(a, b) {
-        let regA = a.replace(/[^a-zA-Z]/g, "");
-        let regB = b.replace(/[^a-zA-Z]/g, "");
-        if (regA === regB) {
-            let numA = parseInt(a.replace(/[^0-9]/g, ""), 10);
-            let numB = parseInt(b.replace(/[^0-9]/g, ""), 10);
-            return numA === numB ? 0 : numA > numB ? 1 : -1;
-        } else {
-            return regA > regB ? 1 : -1;
-        }
+    function enableCopyToClipboard() {
+        $(".file-id").each(function () {
+            $(this).on("click", function () {
+                let text = $(this).text();
+                navigator.clipboard.writeText(text).then();
+            });
+        });
     }
 }
