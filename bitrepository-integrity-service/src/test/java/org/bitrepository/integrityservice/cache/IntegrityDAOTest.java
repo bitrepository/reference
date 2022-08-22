@@ -24,6 +24,7 @@
  */
 package org.bitrepository.integrityservice.cache;
 
+import org.apache.commons.codec.DecoderException;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
@@ -718,7 +719,11 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<>();
         
         ChecksumDataForChecksumSpecTYPE csData = new ChecksumDataForChecksumSpecTYPE();
-        csData.setChecksumValue(Base16Utils.encodeBase16(checksum));
+        try {
+            csData.setChecksumValue(Base16Utils.encodeBase16(checksum));
+        } catch (DecoderException e) {
+            System.err.println(e.getMessage());
+        }
         csData.setCalculationTimestamp(CalendarUtils.getNow());
         csData.setFileID(fileID);
         res.add(csData);

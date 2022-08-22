@@ -25,9 +25,11 @@
 package org.bitrepository.audittrails;
 
 import org.bitrepository.audittrails.collector.AuditTrailCollector;
+import org.bitrepository.audittrails.preserver.AuditTrailPreserver;
 import org.bitrepository.audittrails.store.AuditEventIterator;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.audittrails.webservice.CollectorInfo;
+import org.bitrepository.audittrails.webservice.PreservationInfo;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
@@ -51,20 +53,22 @@ public class AuditTrailService implements LifeCycledService {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final AuditTrailStore store;
     private final AuditTrailCollector collector;
+    private final AuditTrailPreserver preserver;
     private final ContributorMediator mediator;
     private final Settings settings;
 
     /**
+     * Constructor for audit trail service.
+     *
      * @param store     The store for the audit trail data.
      * @param collector The collector of new audit trail data.
+     * @param preserver The preserver for saving collected audit trail data to a collection.
+     *                  Provide non-null preserver for enabling preservation.
      * @param mediator  The mediator for the communication of this contributor.
      * @param settings  The AuditTrailService settings.
      */
-    public AuditTrailService(
-            AuditTrailStore store,
-            AuditTrailCollector collector,
-            ContributorMediator mediator,
-            Settings settings) {
+    public AuditTrailService(AuditTrailStore store, AuditTrailCollector collector, AuditTrailPreserver preserver,
+                             ContributorMediator mediator, Settings settings) {
         ArgumentValidator.checkNotNull(collector, "AuditTrailCollector collector");
         ArgumentValidator.checkNotNull(store, "AuditTrailStore store");
         ArgumentValidator.checkNotNull(mediator, "ContributorMediator mediator");
@@ -72,10 +76,23 @@ public class AuditTrailService implements LifeCycledService {
 
         this.store = store;
         this.collector = collector;
+        this.preserver = preserver;
         this.mediator = mediator;
         this.settings = settings;
+    }
 
-        mediator.start();
+    /**
+     * Constructor for audit trail service with disabled preservation.
+     *
+     * See {@link #AuditTrailService(AuditTrailStore, AuditTrailCollector, AuditTrailPreserver, ContributorMediator,
+     * Settings)} for param descriptions.
+     */
+    public AuditTrailService(
+            AuditTrailStore store,
+            AuditTrailCollector collector,
+            ContributorMediator mediator,
+            Settings settings) {
+        this(store, collector, null, mediator, settings);
     }
 
     /**
@@ -89,7 +106,7 @@ public class AuditTrailService implements LifeCycledService {
      * @param reportingComponent Restrict the results to only be reported by this component
      * @param actor              Restrict the results to only be events caused by this actor
      * @param action             Restrict the results to only be about this type of action
-     * @param fingerprint        the fingerprint
+     * @param fingerprint        The fingerprint
      * @param operationID        Restrict the results to only this operationID
      * @return an iterator to all AuditTrailEvents matching the criteria from the parameters
      */
@@ -129,6 +146,18 @@ public class AuditTrailService implements LifeCycledService {
     }
 
     /**
+     * Get preservation info if preservation of audit trails is enabled.
+     *
+     * @return PreservationInfo or null if not enabled.
+     */
+    public PreservationInfo getPreservationInfo() {
+        if (preserver == null ) {
+            return null;
+        }
+        return preserver.getPreservationInfo();
+    }
+
+    /**
      * Get the list of known contributors from the backend.
      *
      * @return The list of known contributors
@@ -139,14 +168,21 @@ public class AuditTrailService implements LifeCycledService {
 
     @Override
     public void start() {
+        if (preserver != null) {
+            preserver.start();
+        }
         mediator.start();
     }
 
     @Override
     public void shutdown() {
         collector.close();
+        if (preserver != null) {
+            preserver.close();
+        }
         store.close();
         mediator.close();
+
         MessageBus messageBus = MessageBusManager.getMessageBus();
         if (messageBus != null) {
             try {

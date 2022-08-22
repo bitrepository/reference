@@ -21,6 +21,7 @@
  */
 package org.bitrepository.pillar;
 
+import org.apache.commons.codec.DecoderException;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
@@ -63,7 +64,11 @@ public abstract class DefaultPillarTest extends DefaultFixturePillarTest {
         ChecksumSpecTYPE checksumSpecTYPE = new ChecksumSpecTYPE();
         checksumSpecTYPE.setChecksumType(ChecksumType.MD5);
         EMPTY_FILE_CHECKSUM_DATA.setChecksumSpec(checksumSpecTYPE);
-        EMPTY_FILE_CHECKSUM_DATA.setChecksumValue(Base16Utils.encodeBase16(EMPTY_FILE_CHECKSUM));
+        try {
+            EMPTY_FILE_CHECKSUM_DATA.setChecksumValue(Base16Utils.encodeBase16(EMPTY_FILE_CHECKSUM));
+        } catch (DecoderException e) {
+            System.err.println(e.getMessage());
+        }
     }
     @Override
     protected void initializeCUT() {

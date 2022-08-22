@@ -34,7 +34,6 @@ import org.bitrepository.modify.replacefile.ReplaceFileClient;
 import java.net.URL;
 
 import static org.bitrepository.commandline.Constants.ARGUMENT_IS_NOT_REQUIRED;
-import static org.bitrepository.commandline.Constants.ARGUMENT_IS_REQUIRED;
 import static org.bitrepository.commandline.Constants.CHECKSUM_ARG;
 import static org.bitrepository.commandline.Constants.DELETE_FILE_ARG;
 import static org.bitrepository.commandline.Constants.EXIT_ARGUMENT_FAILURE;
@@ -111,18 +110,16 @@ public class ReplaceFileCmd extends CommandLineClient {
         cmdHandler.addOption(replaceChecksumOption);
 
         Option checksumTypeOption = new Option(REQUEST_CHECKSUM_TYPE_ARG, HAS_ARGUMENT,
-                "[OPTIONAL] The algorithm of checksum to request in the response from the pillars.");
+                Constants.REQUEST_CHECKSUM_TYPE_DESC);
         checksumTypeOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumTypeOption);
 
         Option checksumSaltOption = new Option(REQUEST_CHECKSUM_SALT_ARG, HAS_ARGUMENT,
-                "[OPTIONAL] The salt of checksum to request in the response. " +
-                        "Requires the ChecksumType argument.");
+                Constants.REQUEST_CHECKSUM_SALT_DESC);
         checksumSaltOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumSaltOption);
 
-        Option deleteOption = new Option(DELETE_FILE_ARG, NO_ARGUMENT,
-                "If this argument is present, then the file will be removed from the server, when the operation is complete.");
+        Option deleteOption = new Option(DELETE_FILE_ARG, NO_ARGUMENT, Constants.DELETE_FILE_DESC);
         deleteOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(deleteOption);
     }

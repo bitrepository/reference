@@ -21,6 +21,7 @@
  */
 package org.bitrepository.integrityservice.workflow;
 
+import org.apache.commons.codec.DecoderException;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileAction;
@@ -35,7 +36,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -56,7 +56,6 @@ public class SaltedChecksumWorkflow extends Workflow {
     protected IntegrityWorkflowContext context;
     protected String collectionID;
     protected IntegrityContributors integrityContributors;
-    protected Date workflowStart;
     protected WorkflowStep step = null;
 
     /**
@@ -108,7 +107,7 @@ public class SaltedChecksumWorkflow extends Workflow {
      *
      * @return The actual {@link ChecksumSpecTYPE}.
      */
-    private ChecksumSpecTYPE getChecksumSpecWithRandomSalt() {
+    private ChecksumSpecTYPE getChecksumSpecWithRandomSalt() throws IllegalArgumentException {
         ChecksumType defaultChecksum = ChecksumType.valueOf(
                 context.getSettings().getRepositorySettings().getProtocolSettings().getDefaultChecksumType());
         ChecksumSpecTYPE res = new ChecksumSpecTYPE();
@@ -130,8 +129,12 @@ public class SaltedChecksumWorkflow extends Workflow {
                 break;
         }
 
-        String salt = UUID.randomUUID().toString();
-        res.setChecksumSalt(Base16Utils.encodeBase16(salt));
+        String salt = UUID.randomUUID().toString().replace("-", "");
+        try {
+            res.setChecksumSalt(Base16Utils.encodeBase16(salt));
+        } catch (DecoderException e) {
+            throw new IllegalArgumentException("Failed to set random salt.", e);
+        }
 
         return res;
     }

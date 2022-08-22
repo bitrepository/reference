@@ -31,7 +31,6 @@ import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.client.conversation.ConversationContext;
 import org.bitrepository.client.conversation.PerformingOperationState;
 import org.bitrepository.client.conversation.selector.SelectedComponentInfo;
-import org.bitrepository.client.exceptions.UnexpectedResponseException;
 import org.bitrepository.common.utils.ChecksumUtils;
 
 import java.util.Collection;
@@ -57,7 +56,7 @@ public class ReplacingFile extends PerformingOperationState {
     }
 
     @Override
-    protected void generateContributorCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
+    protected void generateContributorCompleteEvent(MessageResponse msg) {
         ReplaceFileFinalResponse response = (ReplaceFileFinalResponse) msg;
         getContext().getMonitor().contributorComplete(new ReplaceFileCompletePillarEvent(
                 response.getPillarID(),
