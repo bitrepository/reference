@@ -31,8 +31,8 @@
         function makeMenu(page, element) {
           var menuHtml = "";
           menuHtml += "<div class=\"navbar navbar-inverse navbar-static-top\">";
-          menuHtml += "<img src='img/bitreplogo.png' alt='BitRepository Logo' style='float: left; right:0; top:0; margin-right: 1em;" +
-              " height: 40px'/>";
+          menuHtml += "<img src='img/bitreplogo.png' alt='BitRepository Logo' style='float: left; right:0; top:0; margin: 0.4em 1em 0 1.5em;" +
+              " height: 28px'/>";
           menuHtml += "<div class=\"navbar-inner\">";
           menuHtml += "<div class=\"container-fluid\">";
           menuHtml += "<a class=\"btn btn-navbar\" data-toggle=\"collapse\" data-target=\".nav-collapse\">";
