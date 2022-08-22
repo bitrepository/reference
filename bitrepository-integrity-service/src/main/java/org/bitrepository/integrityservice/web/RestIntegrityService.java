@@ -87,7 +87,8 @@ public class RestIntegrityService {
      *
      * @param collectionID The collection ID from which to return present file list.
      * @param pillarID     The ID of the pillar in the collection from which to return present file list
-     * @return TODO: Missing
+     * @return Returns a {@link HashMap} containing a key-pair of pillarID and its missing files as a {@link String} and
+     * {@link List<String>}.
      */
     @GET
     @Path("/getTotalFileIDs/")
@@ -103,7 +104,7 @@ public class RestIntegrityService {
             @QueryParam("pageSize")
                     int pageSize) {
 
-        IntegrityIssueIterator it = model.getFilesOnPillar(pillarID, 0, Integer.MAX_VALUE, collectionID);
+        IntegrityIssueIterator it = model.getFilesOnPillar(pillarID, getOffset(page, pageSize), pageSize, collectionID);
 
         if (it == null) {
             throw new WebApplicationException(
@@ -133,22 +134,33 @@ public class RestIntegrityService {
     public HashMap<String, List<String>> getAllMissingFileIDs(
             @QueryParam("collectionID")
                     String collectionID,
+            @QueryParam("pillarID")
+                    String pillarID,
             @QueryParam("page")
                     int page,
             @DefaultValue("100")
             @QueryParam("pageSize")
                     int pageSize) {
-        List<String> pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
         HashMap<String, List<String>> output = new HashMap<>();
-        List<String> streamingOutput;
+        ReportPart part = ReportPart.MISSING_FILE;
+        List<String> missingOnPillar;
+        List<String> missingOnOtherPillar;
+
+        List<String> pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
+        pillars.remove(pillarID);
+
+        try {
+            missingOnPillar = getReportPart(part, collectionID, pillarID, page, pageSize);
+            output.put(pillarID, missingOnPillar);
+        } catch (FileNotFoundException e) {
+            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
+                    .entity("No integrity '" + part.getHumanString() + "' report part for collection: " + collectionID + " and pillar: " +
+                            pillarID + " found!").type(MediaType.TEXT_PLAIN).build());
+        }
 
         for (String pillar : pillars) {
-            try {
-                streamingOutput = getReportPart(ReportPart.MISSING_FILE, collectionID, pillar, 0, Integer.MAX_VALUE);
-            } catch (FileNotFoundException e) {
-                streamingOutput = List.of();
-            }
-            output.put(pillar, streamingOutput);
+            missingOnOtherPillar = compareMissingFiles(missingOnPillar, collectionID, pillar, pageSize);
+            output.put(pillar, missingOnOtherPillar);
         }
 
         return output;
@@ -427,6 +439,53 @@ public class RestIntegrityService {
                             pillarID + " found!").type(MediaType.TEXT_PLAIN).build());
         }
         return output;
+    }
+
+    /**
+     * Compares the missing fileIDs to that of the missing fileIDs of the given pillar.
+     *
+     * @param missingOnPillar The list of files that are missing on the pillar in focus.
+     * @param collectionID    The collection ID.
+     * @param pillar          The pillar to compare to.
+     * @param pageSize        The paging size.
+     * @return Returns a {@link List<String>} containing the files that were also missing on the given pillar.
+     */
+    private List<String> compareMissingFiles(List<String> missingOnPillar, String collectionID, String pillar, int pageSize) {
+        List<String> batchToCheck;
+        List<String> output = new ArrayList<>();
+        for (String file : missingOnPillar) {
+            try {
+                batchToCheck = findBatchRecursively(file, collectionID, pillar, 1, pageSize);
+                if (batchToCheck.contains(file)) {
+                    output.add(file);
+                }
+            } catch (FileNotFoundException ignored) {
+                break;
+            }
+        }
+
+        return output;
+    }
+
+    /**
+     * Helper method to recursively find the batch in which the {@code fileID} we're looking for would be found if it exists.
+     *
+     * @return A {@link List<String>} of size {@code pageSize} with the files in which the {@code fileID} could be found.
+     * @throws FileNotFoundException If there's no integrity report, a {@link FileNotFoundException} will be thrown.
+     */
+    private List<String> findBatchRecursively(String fileID, String collectionID, String pillar, int i, int pageSize)
+            throws FileNotFoundException {
+        List<String> batchToCheck = getReportPart(ReportPart.MISSING_FILE, collectionID, pillar, i, pageSize);
+
+        if (!batchToCheck.isEmpty()) {
+            String lastFileInBatch = batchToCheck.get(batchToCheck.size() - 1);
+            if (fileID.compareTo(lastFileInBatch) > 0) {
+                // If the last index of the current batch is lexicographically lower than the fileID, then skip to next batch
+                batchToCheck = findBatchRecursively(fileID, collectionID, pillar, i + 1, pageSize);
+            }
+        }
+
+        return batchToCheck;
     }
 
     /**

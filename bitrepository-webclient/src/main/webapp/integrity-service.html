@@ -35,14 +35,14 @@
     <div class="span11">
       <h2>Integrity service</h2>
       <legend>
-          <span>
-            <span id="integrityLegend">
-              Integrity information
-            </span>
-            <span class="pull-right">
-              Change collection: <select class="input" id="collectionChooser"></select>
-            </span>
+        <span>
+          <span id="integrityLegend">
+            Integrity information
           </span>
+          <span class="pull-right">
+            Change collection: <select class="input" id="collectionChooser"></select>
+          </span>
+        </span>
       </legend>
     </div>
     <div class="span11" id="collectionInfoDiv"></div>
@@ -70,10 +70,10 @@
     </div>
     <div class="span11">
       <legend>
-            <span>
-              <span>Integrity status</span>
-              <span class="pull-right" id="integrityReportGetter"></span>
-            </span>
+        <span>
+          <span>Integrity status</span>
+          <span class="pull-right" id="integrityReportGetter"></span>
+        </span>
       </legend>
       <table id="integrity-status-table" class="table table-bordered table-striped">
         <thead>
@@ -213,9 +213,7 @@
 
     function getMaxPages(pillarID, member) {
         return function () {
-            return 1000;
-            //TODO:
-            //return pillars[pillarID][member];
+            return pillars[pillarID][member];
         }
     }
 
@@ -334,19 +332,15 @@
     function updateIntCell(pillarID, type, cellValue) {
         let context = getBodyContext(pillarID, type);
 
-        let innerElement = context.element + "-a";
-        let html = `<a class="btn btn-link" id="${innerElement}">${formatInt(cellValue)}</a>`;
-        $("#" + context.element).html(html);
-        $("#" + innerElement).click(showModal(type, context.member, context.title, context.url, pillarID));
-        // if (cellValue === 0) {
-        //     let html = `<button class="btn btn-link" disabled>${formatInt(cellValue)}</button>`;
-        //     $("#" + context.element).html(html);
-        // } else {
-        //     let innerElement = context.element + "-a";
-        //     let html = `<a class="btn btn-link" id="${innerElement}">${formatInt(cellValue)}</a>`;
-        //     $("#" + context.element).html(html);
-        //     $("#" + innerElement).click(showModal(type, context.title, context.url, pillarID));
-        // }
+        if (cellValue === 0) {
+            let html = `<button class="btn btn-link" disabled>${formatInt(cellValue)}</button>`;
+            $("#" + context.element).html(html);
+        } else {
+            let innerElement = context.element + "-a";
+            let html = `<a class="btn btn-link" id="${innerElement}">${formatInt(cellValue)}</a>`;
+            $("#" + context.element).html(html);
+            $("#" + innerElement).click(showModal(type, context.title, context.url, pillarID));
+        }
     }
 
     function initializePage() {
@@ -446,8 +440,6 @@
             collectionChanged();
         });
     });
-
-
 </script>
 </body>
 </html>

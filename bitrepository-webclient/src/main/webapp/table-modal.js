@@ -20,7 +20,6 @@
  * #L%
  */
 
-
 function TableModal(operation, pillarID, url, contentElement, maxPageMethod, pageSize) {
     this.url = url;
     this.maxPageMethod = maxPageMethod;
@@ -98,7 +97,7 @@ function TableModal(operation, pillarID, url, contentElement, maxPageMethod, pag
             html += `<p class="no-result-p" style="text-align:center; margin-top: 15px; display: none;">No results found</p>`;
             html += `</div>`;
 
-            // Assign html and activate searchbar filtering.
+            // Assign html and activate searchbar filtering and copy to clipboard.
             $(contentElement).html(html);
             activateSearchbar();
             enableCopyToClipboard();
