@@ -84,33 +84,42 @@ public class ReplaceFileCmd extends CommandLineClient {
     protected void createOptionsForCmdArgumentHandler() {
         super.createOptionsForCmdArgumentHandler();
 
-        Option checksumOption = new Option(CHECKSUM_ARG, HAS_ARGUMENT, "[OPTIONAL] The checksum of the file to be replaced.");
+        Option pillarOption = new Option(Constants.PILLAR_ARG, Constants.HAS_ARGUMENT, Constants.PILLAR_DESC);
+        pillarOption.setRequired(Constants.ARGUMENT_IS_REQUIRED);
+        cmdHandler.addOption(pillarOption);
+
+        Option checksumOption = new Option(CHECKSUM_ARG, HAS_ARGUMENT,
+                "The checksum of the file to be replaced.");
+        // Setting can allow -C to be non-required, so set it as so.
         checksumOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumOption);
+
         Option fileOption = new Option(FILE_ARG, HAS_ARGUMENT,
                 "The path to the new file for the replacement. Required unless using the URL argument.");
         fileOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(fileOption);
+
         Option urlOption = new Option(URL_ARG, HAS_ARGUMENT,
                 "The URL for the file to be retrieved. Is required, unless the actual file is given.");
         urlOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(urlOption);
+
         Option replaceChecksumOption = new Option(REPLACE_CHECKSUM_ARG, HAS_ARGUMENT,
                 "The checksum for the file to replace with. Required when using the URL argument.");
         replaceChecksumOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(replaceChecksumOption);
 
         Option checksumTypeOption = new Option(REQUEST_CHECKSUM_TYPE_ARG, HAS_ARGUMENT,
-                "[OPTIONAL] The algorithm of checksum to request in the response from the pillars.");
+                Constants.REQUEST_CHECKSUM_TYPE_DESC);
         checksumTypeOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumTypeOption);
+
         Option checksumSaltOption = new Option(REQUEST_CHECKSUM_SALT_ARG, HAS_ARGUMENT,
-                "[OPTIONAL] The salt of checksum to request in the response. Requires the ChecksumType argument.");
+                Constants.REQUEST_CHECKSUM_SALT_DESC);
         checksumSaltOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumSaltOption);
 
-        Option deleteOption = new Option(DELETE_FILE_ARG, NO_ARGUMENT,
-                "If this argument is present, then the file will be removed from the server, when the operation is complete.");
+        Option deleteOption = new Option(DELETE_FILE_ARG, NO_ARGUMENT, Constants.DELETE_FILE_DESC);
         deleteOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(deleteOption);
     }

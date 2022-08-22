@@ -108,16 +108,16 @@ public class PutFileCmd extends CommandLineClient {
         cmdHandler.addOption(checksumOption);
 
         Option checksumTypeOption = new Option(Constants.REQUEST_CHECKSUM_TYPE_ARG, Constants.HAS_ARGUMENT,
-                "[OPTIONAL] Used to request a specific checksum algorithm in the response from the pillars.");
+                Constants.REQUEST_CHECKSUM_TYPE_DESC);
         checksumTypeOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumTypeOption);
+
         Option checksumSaltOption = new Option(Constants.REQUEST_CHECKSUM_SALT_ARG, Constants.HAS_ARGUMENT,
-                "[OPTIONAL] Used to request a salted checksum in the response. Requires the ChecksumType argument.");
+                Constants.REQUEST_CHECKSUM_SALT_DESC);
         checksumSaltOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(checksumSaltOption);
 
-        Option deleteOption = new Option(Constants.DELETE_FILE_ARG, Constants.NO_ARGUMENT,
-                "If this argument is present, then the file will be removed from the server, when the chosen operation is complete.");
+        Option deleteOption = new Option(Constants.DELETE_FILE_ARG, Constants.NO_ARGUMENT, Constants.DELETE_FILE_DESC);
         deleteOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(deleteOption);
     }
@@ -131,16 +131,16 @@ public class PutFileCmd extends CommandLineClient {
         super.validateArguments();
 
         if (cmdHandler.hasOption(Constants.FILE_ARG) && cmdHandler.hasOption(Constants.URL_ARG)) {
-            throw new IllegalArgumentException("Cannot take both a file (-f) and an URL (-u) as argument.");
+            throw new IllegalArgumentException("Cannot take both a file (-f) and a URL (-u) as argument.");
         }
         if (!(cmdHandler.hasOption(Constants.FILE_ARG) || cmdHandler.hasOption(Constants.URL_ARG))) {
-            throw new IllegalArgumentException("Requires either the file argument (-f) or the URL argument (-u).");
+            throw new IllegalArgumentException("Providing either file argument (-f) or URL argument (-u) is required.");
         }
         if (cmdHandler.hasOption(Constants.URL_ARG) && !cmdHandler.hasOption(Constants.CHECKSUM_ARG)) {
-            throw new IllegalArgumentException("The URL argument requires also the checksum argument (-c).");
+            throw new IllegalArgumentException("Using URL argument (-u) requires the checksum argument (-C).");
         }
         if (cmdHandler.hasOption(Constants.URL_ARG) && !cmdHandler.hasOption(Constants.FILE_ID_ARG)) {
-            throw new IllegalArgumentException("The URL argument requires also the argument for the ID of the file (-i).");
+            throw new IllegalArgumentException("Using URL argument (-u) requires the file ID argument (-i).");
         }
     }
 

@@ -47,7 +47,7 @@ public class AuditPreservationEventHandlerTest extends ExtendedTestCase {
         Map<String, Long> map = new HashMap<>();
         map.put(PILLARID, 1L);
         AuditTrailStore store = mock(AuditTrailStore.class);
-        when(store.havePreservationKey(eq(PILLARID), eq(TEST_COLLECTION))).thenReturn(true);
+        when(store.hasPreservationKey(eq(PILLARID), eq(TEST_COLLECTION))).thenReturn(true);
         
         AuditPreservationEventHandler eventHandler = new AuditPreservationEventHandler(map, store, TEST_COLLECTION);
         

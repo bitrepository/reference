@@ -134,7 +134,7 @@ public class GetFileRequestIT extends PillarFunctionTest {
             localFileIS.skip(offsetAndLength);
             localFileIS.read(localFilePartContent, 0, offsetAndLength);
             String getFileContent = IOUtils.toString(getFileIS, StandardCharsets.UTF_8);
-            assertEquals(getFileContent, new String(localFilePartContent),
+            assertEquals(getFileContent, new String(localFilePartContent, StandardCharsets.UTF_8),
                     "Differing content between original file and file from GetFileRequest");
         }
     }

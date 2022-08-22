@@ -39,7 +39,6 @@ import java.util.Locale;
 import static org.testng.Assert.assertEquals;
 
 public class PermissionStoreTest extends ExtendedTestCase  {
-    
     private static final String componentID = "TEST";
     private PermissionStore permissionStore;
     
@@ -90,18 +89,18 @@ public class PermissionStoreTest extends ExtendedTestCase  {
     }
     
     //@Test(groups = {"regressiontest"})
-    public void certificatePermissionCheckTest() throws Exception {
+    public void certificatePermissionCheckTest() {
         addDescription("Tests that a certificate only allows for the expected permission.");
     }
     
     //@Test(groups = {"regressiontest"})
-    public void unknownCertificatePermissionCheckTest() throws Exception {
+    public void unknownCertificatePermissionCheckTest() {
         addDescription("Tests that a unknown certificate results in expected refusal.");
     }
 
     @Test(groups = {"regressiontest"})
     public void certificateFingerprintTest() throws Exception {
-        addDescription("Tests that a certificate fingerprint can correctly be retrived for a signer.");
+        addDescription("Tests that a certificate fingerprint can correctly be retrieved for a signer.");
         addFixture("Create signer to lookup fingerprint");
         byte[] decodeSig =
                 Base64.decode(SecurityTestConstants.getSignature().getBytes(SecurityModuleConstants.defaultEncodingType));

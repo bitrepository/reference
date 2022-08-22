@@ -130,7 +130,7 @@ public class SaltedChecksumWorkflow extends Workflow {
                 break;
         }
 
-        String salt = UUID.randomUUID().toString();
+        String salt = UUID.randomUUID().toString().replace("-", "");
         res.setChecksumSalt(Base16Utils.encodeBase16(salt));
 
         return res;
