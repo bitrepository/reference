@@ -21,6 +21,7 @@
  */
 package org.bitrepository.audittrails.preserver;
 
+import org.apache.commons.codec.DecoderException;
 import org.bitrepository.common.TimerTaskSchedule;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.audittrails.webservice.PreservationInfo;
@@ -185,13 +186,15 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
             throw new CoordinationLayerException("Cannot perform the preservation of audit trails.", e);
         } catch (OperationFailedException e) {
             throw new CoordinationLayerException("Failed to put the packed audit trails.", e);
+        } catch (DecoderException e) {
+            throw new CoordinationLayerException("Failed to encode the checksum.", e);
         }
     }
 
     /**
      * Helper method to make a checksum for the PutFile call.
      */
-    private ChecksumDataForFileTYPE getValidationChecksumDataForFile(File file) {
+    private ChecksumDataForFileTYPE getValidationChecksumDataForFile(File file) throws DecoderException {
         ChecksumSpecTYPE csSpec = ChecksumUtils.getDefault(settings);
         String checksum = ChecksumUtils.generateChecksum(file, csSpec);
 

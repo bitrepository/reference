@@ -21,11 +21,9 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
+import org.apache.commons.codec.DecoderException;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileAction;
-import org.bitrepository.bitrepositoryelements.FileIDsData;
-import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
-import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.SettingsUtils;
@@ -42,7 +40,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -214,10 +211,10 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
 
         addStep("Validate the file ids", "Should only have integrity issues on pillar 3.");
         Assert.assertTrue(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
-        Assert.assertTrue(cs.getCollectionStat().getChecksumErrors() == 1);
-        Assert.assertTrue(cs.getPillarCollectionStat(TEST_PILLAR_3).getChecksumErrors() == 1);
-        Assert.assertTrue(cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors() == 0);
-        Assert.assertTrue(cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors() == 0);
+        Assert.assertEquals((long) cs.getCollectionStat().getChecksumErrors(), 1);
+        Assert.assertEquals((long) cs.getPillarCollectionStat(TEST_PILLAR_3).getChecksumErrors(), 1);
+        Assert.assertEquals((long) cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors(), 0);
+        Assert.assertEquals((long) cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors(), 0);
     }
 
     @Test(groups = {"regressiontest", "integritytest"})
@@ -245,7 +242,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         
         List<FileInfo> fis = (List<FileInfo>) cache.getFileInfos(FILE_1, TEST_COLLECTION);
         System.out.println("number of files in the collection" + cache.getNumberOfFilesInCollection(TEST_COLLECTION));
-        System.out.println("number of fileinfos: " + fis.size());
+        System.out.println("number of file infos: " + fis.size());
         Assert.assertNotNull(fis.get(0).getChecksum());
         
         step.performStep();
@@ -256,7 +253,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         Assert.assertTrue(auditManager.latestAuditInfo.contains(FILE_2), auditManager.latestAuditInfo);
         Assert.assertTrue(auditManager.latestAuditInfo.contains(TEST_COLLECTION), auditManager.latestAuditInfo);
         
-        addStep("remove the last auditinfo", "");
+        addStep("remove the last audit info", "");
         auditManager.latestAuditInfo = null;
         
         addStep("Test step on data where two pillars have one checksum and the last pillar has a different one",
@@ -272,27 +269,17 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         Assert.assertTrue(auditManager.latestAuditInfo.contains(FILE_2), auditManager.latestAuditInfo);
         Assert.assertTrue(auditManager.latestAuditInfo.contains(TEST_COLLECTION), auditManager.latestAuditInfo);
     }
-    
-    private FileIDsData createFileIdData(String ... fileids) {
-        FileIDsData res = new FileIDsData();
-        FileIDsDataItems items = new FileIDsDataItems();
-        for(String fileid : fileids) {
-            FileIDsDataItem item = new FileIDsDataItem();
-            item.setFileID(fileid);
-            item.setFileSize(BigInteger.ONE);
-            item.setLastModificationTime(CalendarUtils.getNow());
-            items.getFileIDsDataItem().add(item);
-        }
-        res.setFileIDsDataItems(items);
-        return res;
-    }
-    
+
     private List<ChecksumDataForChecksumSpecTYPE> createChecksumData(String checksum, String ... fileids) {
         List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<>();
         for(String fileID : fileids) {
             ChecksumDataForChecksumSpecTYPE csData = new ChecksumDataForChecksumSpecTYPE();
             csData.setCalculationTimestamp(CalendarUtils.getNow());
-            csData.setChecksumValue(Base16Utils.encodeBase16(checksum));
+            try {
+                csData.setChecksumValue(Base16Utils.encodeBase16(checksum));
+            } catch (DecoderException e) {
+                System.err.println(e.getMessage());
+            }
             csData.setFileID(fileID);
             res.add(csData);
         }
@@ -303,7 +290,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         return new IntegrityDatabase(settings);
     }
     
-    private class TestAuditTrailManager implements AuditTrailManager {
+    private static class TestAuditTrailManager implements AuditTrailManager {
         String latestAuditInfo;
 
         @Override

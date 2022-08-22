@@ -1,5 +1,6 @@
 package org.bitrepository.protocol.utils;
 
+import org.apache.commons.codec.DecoderException;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
@@ -27,7 +28,7 @@ public class MessageDataTypeValidatorTest {
     }
 
     @Test(expectedExceptions = {IllegalArgumentException.class})
-    public void validateChecksumDataForFileNoTimestampTest() {
+    public void validateChecksumDataForFileNoTimestampTest() throws DecoderException {
         ChecksumDataForFileTYPE noChecksumSpec = new ChecksumDataForFileTYPE();
         ChecksumSpecTYPE checksumTypeSpec = new ChecksumSpecTYPE();
         checksumTypeSpec.setChecksumType(ChecksumType.MD5);
@@ -38,7 +39,7 @@ public class MessageDataTypeValidatorTest {
     }
 
     @Test(expectedExceptions = {IllegalArgumentException.class})
-    public void validateChecksumDataForFileNoChecksumSpecTest() {
+    public void validateChecksumDataForFileNoChecksumSpecTest() throws DecoderException {
         ChecksumDataForFileTYPE noChecksumSpec = new ChecksumDataForFileTYPE();
         noChecksumSpec.setChecksumValue(Base16Utils.encodeBase16("abab"));
         noChecksumSpec.setCalculationTimestamp(CalendarUtils.getNow());
@@ -47,7 +48,7 @@ public class MessageDataTypeValidatorTest {
     }
 
     //@Test(expectedExceptions = {IllegalArgumentException.class})
-    public void validateChecksumDataForFileInvalidChecksumSpecTest() {
+    public void validateChecksumDataForFileInvalidChecksumSpecTest() throws DecoderException {
         ChecksumDataForFileTYPE noChecksumSpec = new ChecksumDataForFileTYPE();
         ChecksumSpecTYPE checksumTypeSpec = new ChecksumSpecTYPE();
         noChecksumSpec.setChecksumSpec(checksumTypeSpec);
