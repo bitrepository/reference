@@ -101,10 +101,10 @@ public class SettingsUtils {
     }
 
     /**
-     * Get the hostname for the given pillarID from the ReferenceSettings.
+     * Get the human-readable pillar name for the given pillarID from the ReferenceSettings.
      *
-     * @param pillarID The pillarID for which the hostname is wanted.
-     * @return Returns the hostname for the given pillar ID.
+     * @param pillarID The pillarID for which the pillar name is wanted.
+     * @return Returns the pillar name for the given pillar ID.
      */
     public static String getPillarName(String pillarID) {
         PillarIntegrityDetails details = settings.getReferenceSettings().getIntegrityServiceSettings().getPillarIntegrityDetails();
