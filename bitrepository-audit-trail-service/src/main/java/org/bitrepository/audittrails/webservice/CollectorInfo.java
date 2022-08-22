@@ -26,11 +26,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class CollectorInfo {
 
-    String collectionID;
-    String lastStart;
-    String lastDuration;
-    String nextStart;
-    long collectedAudits;
+    private String collectionID;
+    private String lastStart;
+    private String lastDuration;
+    private String nextStart;
+    private long collectedAudits;
 
     public String getCollectionID() {
         return collectionID;

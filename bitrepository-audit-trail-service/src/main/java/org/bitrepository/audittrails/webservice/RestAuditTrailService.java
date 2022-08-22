@@ -55,11 +55,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 @Path("/AuditTrailService")
-
 public class RestAuditTrailService {
-    /**
-     * The log.
-     */
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final AuditTrailService service;
     private final CalendarUtils calendarUtils = CalendarUtils.getInstance(TimeZone.getDefault());
@@ -73,27 +69,16 @@ public class RestAuditTrailService {
     @Consumes("application/x-www-form-urlencoded")
     @Produces("application/json")
     public StreamingOutput queryAuditTrailEvents(
-            @FormParam("fromDate")
-                    String fromDate,
-            @FormParam("toDate")
-                    String toDate,
-            @FormParam("fileID")
-                    String fileID,
-            @FormParam("reportingComponent")
-                    String reportingComponent,
-            @FormParam("actor")
-                    String actor,
-            @FormParam("action")
-                    String action,
-            @FormParam("collectionID")
-                    String collectionID,
-            @FormParam("fingerprint")
-                    String fingerprint,
-            @FormParam("operationID")
-                    String operationID,
-            @DefaultValue("1000")
-            @FormParam("maxAudittrails")
-                    Integer maxResults) {
+            @FormParam("fromDate") String fromDate,
+            @FormParam("toDate") String toDate,
+            @FormParam("fileID") String fileID,
+            @FormParam("reportingComponent") String reportingComponent,
+            @FormParam("actor") String actor,
+            @FormParam("action") String action,
+            @FormParam("collectionID") String collectionID,
+            @FormParam("fingerprint") String fingerprint,
+            @FormParam("operationID") String operationID,
+            @DefaultValue("1000") @FormParam("maxAuditTrails") Integer maxResults) {
         Date from = calendarUtils.makeStartDateObject(fromDate);
         Date to = calendarUtils.makeEndDateObject(toDate);
 
@@ -149,6 +134,20 @@ public class RestAuditTrailService {
         return service.getCollectorInfos();
     }
 
+    @GET
+    @Path("/preservationSchedule")
+    @Produces(MediaType.APPLICATION_JSON)
+    public PreservationInfo getPreservationSchedule() {
+        PreservationInfo preservationInfo = service.getPreservationInfo();
+        if (preservationInfo != null) {
+            return preservationInfo;
+        } else {
+            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
+                    .entity("404: Preservation must be enabled in settings to use this endpoint")
+                    .type(MediaType.TEXT_PLAIN).build());
+        }
+    }
+
     private void writeAuditResult(AuditTrailEvent event, JsonGenerator jg) throws IOException {
         jg.writeStartObject();
         jg.writeObjectField("fileID", event.getFileID());
@@ -162,7 +161,6 @@ public class RestAuditTrailService {
         jg.writeObjectField("operationID", contentOrEmptyString(event.getOperationID()));
         jg.writeEndObject();
         jg.flush();
-
     }
 
     @GET

@@ -103,7 +103,7 @@ public class AuditTrailAdder {
             + " WHERE actor_name = ?),"
             + " ?, ?, ?, ?, ?, ? )";
 
-    private final String addLatestSequencesSql = "INSERT INTO collection_progress "
+    private final String addLatestSequenceSql = "INSERT INTO collection_progress "
             + "(collectionID, contributorID, latest_sequence_number)"
             + " ( SELECT collectionID, ?, ? FROM collection"
             + " WHERE collectionID = ?"
@@ -144,7 +144,7 @@ public class AuditTrailAdder {
         addFileIDPs = conn.prepareStatement(addFileIDSql);
         addAuditTrailPs = conn.prepareStatement(addAuditTrailSql);
         updateLatestSeqPs = conn.prepareStatement(updateLatestSequenceSql);
-        addLatestSeqPs = conn.prepareStatement(addLatestSequencesSql);
+        addLatestSeqPs = conn.prepareStatement(addLatestSequenceSql);
     }
 
     /**

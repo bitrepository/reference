@@ -40,7 +40,7 @@ public interface AuditTrailStore {
      *
      * @param fileID        [OPTIONAL] The id of the file for restricting the extraction.
      * @param collectionID  [OPTIONAL] The id of the collection from which to retrieve audit trails.
-     * @param contributorId [OPTIONAL] The id of the contributor for restricting the extraction.
+     * @param contributorID [OPTIONAL] The id of the contributor for restricting the extraction.
      * @param minSeqNumber  [OPTIONAL] The minimum sequence number for restricting the extraction.
      * @param maxSeqNumber  [OPTIONAL] The maximum sequence number for restricting the extraction.
      * @param actorName     [OPTIONAL] The name of the actor for restricting the extraction.
@@ -51,7 +51,7 @@ public interface AuditTrailStore {
      * @param operationID   [OPTIONAL] The ID of the operation (conversationID) for the audits
      * @return The requested audit trails from the store.
      */
-    AuditEventIterator getAuditTrailsByIterator(String fileID, String collectionID, String contributorId,
+    AuditEventIterator getAuditTrailsByIterator(String fileID, String collectionID, String contributorID,
                                                 Long minSeqNumber, Long maxSeqNumber, String actorName, FileAction operation,
                                                 Date startDate,
                                                 Date endDate, String fingerprint, String operationID);
@@ -66,32 +66,44 @@ public interface AuditTrailStore {
     void addAuditTrails(AuditTrailEvents auditTrailsEvents, String collectionID, String contributorID);
 
     /**
+     * Add a collection to the store.
+     * @param collectionID The collection ID to add.
+     */
+    void addCollection(String collectionID);
+
+    /**
+     * Add a contributor to the store.
+     * @param contributorID The contributor ID to add.
+     */
+    void addContributor(String contributorID);
+
+    /**
      * Retrieves the largest sequence number for a given contributor.
      *
-     * @param contributorId The id of the contributor to retrieve the largest sequence number from.
+     * @param contributorID The id of the contributor to retrieve the largest sequence number from.
      * @param collectionID  The id of the collection for the sequence number of the contributor.
      * @return The largest sequence number.
      */
-    long largestSequenceNumber(String contributorId, String collectionID);
+    long largestSequenceNumber(String contributorID, String collectionID);
 
     /**
      * Retrieves the preservation sequence number for the given contributor, which tells how far the preservation
      * of the audit trails has gotten.
      *
-     * @param contributorId The id of the contributor.
+     * @param contributorID The id of the contributor.
      * @param collectionID  The id of the collection for the sequence number of the contributor.
      * @return The preservation sequence number for the given contributor.
      */
-    long getPreservationSequenceNumber(String contributorId, String collectionID);
+    long getPreservationSequenceNumber(String contributorID, String collectionID);
 
     /**
      * Set the preservation sequence number for the given contributor.
      *
-     * @param contributorId The id of the contributor.
+     * @param contributorID The id of the contributor.
      * @param collectionID  The id of the collection for the sequence number of the contributor.
      * @param seqNumber     The new preservation sequence number for the given contributor.
      */
-    void setPreservationSequenceNumber(String contributorId, String collectionID, long seqNumber);
+    void setPreservationSequenceNumber(String contributorID, String collectionID, long seqNumber);
 
     /**
      * Check to see if the database knows a contributor
@@ -100,7 +112,7 @@ public interface AuditTrailStore {
      * @param collectionID  The ID of the collection;
      * @return boolean true, if the contributor is known by the database, false otherwise.
      */
-    boolean havePreservationKey(String contributorID, String collectionID);
+    boolean hasPreservationKey(String contributorID, String collectionID);
 
     /**
      * Get the list of known audit trail contributors. I.e. those contributors which have delivered
