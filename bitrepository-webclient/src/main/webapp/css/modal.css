@@ -77,6 +77,10 @@
     display: inline-flex;
 }
 
+.current-page-p {
+    margin: 0 0 0 10px;
+}
+
 .prev-button, .next-button {
     display: inline-block;
     margin-right: 5px;

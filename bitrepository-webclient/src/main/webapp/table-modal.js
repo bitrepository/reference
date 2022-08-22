@@ -63,7 +63,7 @@ function TableModal(operation, pillarID, url, contentElement, maxPageMethod, pag
                 html += `<button class="next-button">Next</button>`;
             }
             // Show [current / total] pages.
-            html += `<p>Page ${page} / ${maxPages}</p>`;
+            html += `<p class="current-page-p">Page ${page} / ${maxPages}</p>`;
             html += `</div>`;
             html += `</div>`;
 
