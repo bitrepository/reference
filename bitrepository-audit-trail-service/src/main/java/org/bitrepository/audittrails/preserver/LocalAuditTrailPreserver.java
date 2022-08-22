@@ -22,7 +22,9 @@
 package org.bitrepository.audittrails.preserver;
 
 import org.apache.commons.codec.DecoderException;
+import org.bitrepository.common.TimerTaskSchedule;
 import org.bitrepository.audittrails.store.AuditTrailStore;
+import org.bitrepository.audittrails.webservice.PreservationInfo;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.eventhandler.EventHandler;
@@ -49,6 +51,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -62,11 +65,12 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
     private final AuditTrailStore store;
     private final BlockingPutFileClient client;
     private Timer timer;
-    private AuditPreservationTimerTask auditTask = null;
+    private AuditPreservationTimerTask preservationTask = null;
     private final Map<String, AuditPacker> auditPackers = new HashMap<>();
     private final AuditTrailPreservation preservationSettings;
     private final Settings settings;
     private final FileExchange exchange;
+    private long preservedAuditCount = 0;
 
     /**
      * @param settings The preservationSettings for the audit trail service.
@@ -86,6 +90,26 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
         for (String collectionID : SettingsUtils.getAllCollectionsIDs()) {
             this.auditPackers.put(collectionID, new AuditPacker(store, preservationSettings, collectionID));
         }
+        initializeDatabaseEntries();
+    }
+
+    /**
+     * Ensures that the collection and contributor entries exist in the database and adds a preservation entry
+     * for each pairing.
+     */
+    private void initializeDatabaseEntries() {
+        log.debug("Initializing collections and contributors in db.");
+        List<String> collections = SettingsUtils.getAllCollectionsIDs();
+        for (String collectionID : collections) {
+            store.addCollection(collectionID);
+            for (String contributorID : SettingsUtils.getAuditContributorsForCollection(collectionID)) {
+                store.addContributor(contributorID);
+
+                if (!store.hasPreservationKey(contributorID, collectionID)) {
+                    store.setPreservationSequenceNumber(contributorID, collectionID, 0L);
+                }
+            }
+        }
     }
 
     @Override
@@ -96,10 +120,11 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
         }
         long preservationInterval = preservationSettings.getAuditTrailPreservationInterval();
         long timerCheckInterval = preservationInterval / 10;
-        log.info("Instantiating the preservation of audit trails every " + TimeUtils.millisecondsToHuman(preservationInterval));
-        timer = new Timer();
-        auditTask = new AuditPreservationTimerTask(preservationInterval);
-        timer.scheduleAtFixedRate(auditTask, timerCheckInterval, timerCheckInterval);
+        log.info("Instantiating the preservation of audit trails every {}",
+                TimeUtils.millisecondsToHuman(preservationInterval));
+        timer = new Timer(true);
+        preservationTask = new AuditPreservationTimerTask(preservationInterval);
+        timer.scheduleAtFixedRate(preservationTask, timerCheckInterval, timerCheckInterval);
     }
 
     @Override
@@ -111,14 +136,17 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
 
     @Override
     public void preserveRepositoryAuditTrails() {
-        if (auditTask == null) {
-            log.info("preserving the audit trails ");
-        } else {
-            auditTask.resetTime();
-        }
+        resetPreservedAuditCount();
         for (String collectionID : SettingsUtils.getAllCollectionsIDs()) {
             performAuditTrailPreservation(collectionID);
         }
+    }
+
+    /**
+     * Resets the preserved audit trail count so newly preserved audits can be counted.
+     */
+    private void resetPreservedAuditCount() {
+        preservedAuditCount = 0;
     }
 
     /**
@@ -132,18 +160,27 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
      */
     private synchronized void performAuditTrailPreservation(String collectionID) {
         try {
-            File auditPackage = auditPackers.get(collectionID).createNewPackage();
-            URL url = uploadFile(auditPackage);
-            log.info("Uploaded the file '" + auditPackage + "' to '" + url.toExternalForm() + "'");
+            AuditPacker auditPacker = auditPackers.get(collectionID);
+            File auditPackage = auditPacker.createNewPackage();
 
-            ChecksumDataForFileTYPE checksumData = getValidationChecksumDataForFile(auditPackage);
+            if (auditPacker.getPackedAuditCount() > 0) {
+                URL url = uploadFile(auditPackage);
+                log.info("Uploaded the file '{}' to '{}'", auditPackage, url.toExternalForm());
 
-            EventHandler eventHandler = new AuditPreservationEventHandler(auditPackers.get(collectionID).getSequenceNumbersReached(), store,
-                    collectionID);
-            client.putFile(preservationSettings.getAuditTrailPreservationCollection(), url, auditPackage.getName(), auditPackage.length(),
-                    checksumData, null, eventHandler, "Preservation of audit trails from the AuditTrail service.");
+                ChecksumDataForFileTYPE checksumData = getValidationChecksumDataForFile(auditPackage);
 
-            log.debug("Cleanup of the uploaded audit trail package.");
+                EventHandler eventHandler = new AuditPreservationEventHandler(auditPacker.getSequenceNumbersReached(),
+                        store, collectionID);
+                client.putFile(preservationSettings.getAuditTrailPreservationCollection(), url, auditPackage.getName(),
+                        auditPackage.length(), checksumData, null, eventHandler,
+                        "Preservation of audit trails from the AuditTrail service.");
+
+                preservedAuditCount += auditPacker.getPackedAuditCount();
+            } else {
+                log.info("No new audit trails to preserve. No preservation file uploaded.");
+            }
+
+            log.debug("Cleanup of the audit trail package.");
             FileUtils.delete(auditPackage);
         } catch (IOException e) {
             throw new CoordinationLayerException("Cannot perform the preservation of audit trails.", e);
@@ -182,38 +219,67 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
         return uploadedFileURL;
     }
 
+    @Override
+    public PreservationInfo getPreservationInfo() {
+        PreservationInfo info = new PreservationInfo();
+        info.setCollectionID(preservationSettings.getAuditTrailPreservationCollection());
+
+        Date lastStart = preservationTask.getLastPreservationStart();
+        Date lastFinish = preservationTask.getLastPreservationFinish();
+        Date nextStart = preservationTask.getNextScheduledRun();
+
+        // Need to handle the case where preservation has not started/finished yet.
+        if (lastStart != null) {
+            info.setLastStart(TimeUtils.shortDate(lastStart));
+            if (lastFinish != null) {
+                long lastDurationMS = lastFinish.getTime() - lastStart.getTime();
+                info.setLastDuration(TimeUtils.millisecondsToHuman(lastDurationMS));
+            } else {
+                info.setLastDuration("Preservation has not finished yet");
+            }
+        } else {
+            info.setLastStart("Audit trail preservation has not started yet");
+            info.setLastDuration("Not available");
+        }
+        info.setNextStart(TimeUtils.shortDate(nextStart));
+        info.setPreservedAuditCount(preservedAuditCount);
+        return info;
+    }
+
     /**
      * Timer task for keeping track of the automated collecting of audit trails.
      */
     private class AuditPreservationTimerTask extends TimerTask {
-        private final long interval;
-        private Date nextRun;
+        private final Logger log = LoggerFactory.getLogger(getClass());
+        private final TimerTaskSchedule schedule;
 
         /**
          * @param interval The interval between running this timer task.
          */
         private AuditPreservationTimerTask(long interval) {
-            this.interval = interval;
-            resetTime();
+            this.schedule = new TimerTaskSchedule(interval, 0);
         }
 
-        /**
-         * Resets the date for next run.
-         */
-        private void resetTime() {
-            nextRun = new Date(System.currentTimeMillis() + interval);
+        public Date getNextScheduledRun() {
+            return schedule.getNextRun();
+        }
+
+        public Date getLastPreservationStart() {
+            return schedule.getLastStart();
+        }
+
+        public Date getLastPreservationFinish() {
+            return schedule.getLastFinish();
         }
 
         @Override
         public void run() {
-            if (nextRun.getTime() < System.currentTimeMillis()) {
-                try {
-                    log.debug("Time to preserve the audit trails.");
-                    preserveRepositoryAuditTrails();
-                } catch (Exception e) {
-                    log.error("Caught exception while attempting to preserve AuditTrails", e);
-                }
-                resetTime();
+            if (getNextScheduledRun().getTime() < System.currentTimeMillis()) {
+                log.info("Starting preservation of audit trails.");
+                schedule.start();
+                preserveRepositoryAuditTrails();
+                schedule.finish();
+                log.info("Finished preservation. Scheduled new preservation task to start {}", getNextScheduledRun());
             }
         }
     }

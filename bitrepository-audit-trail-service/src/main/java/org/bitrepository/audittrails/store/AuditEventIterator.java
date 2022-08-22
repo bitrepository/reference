@@ -98,7 +98,8 @@ public class AuditEventIterator {
                 long tStart = System.currentTimeMillis();
                 log.debug("Executing query to get AuditTrailEvents ResultSet");
                 auditResultSet = ps.executeQuery();
-                log.debug("Finished executing AuditTrailEvents query, it took: " + (System.currentTimeMillis() - tStart) + "ms");
+                log.debug("Finished executing AuditTrailEvents query, it took: {} ms",
+                        System.currentTimeMillis() - tStart);
             }
             if (auditResultSet.next()) {
                 event = new AuditTrailEvent();

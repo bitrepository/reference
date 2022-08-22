@@ -19,7 +19,7 @@
     for(var i = 0; i < collectionIDs.length; i++) {
         collections[collectionIDs[i].collectionID] = {collectionID: collectionIDs[i].collectionID,
                                          collectionName: collectionIDs[i].collectionName,
-                                         numFiles: '-', 
+                                         numFiles: '-',
                                          latestIngest: "Fetching",
                                          collectionSize: '-',
                                          pillars: '-',
@@ -72,7 +72,7 @@
     }
   }
 
-  function updateCollectionStatistic(collection) { 
+  function updateCollectionStatistic(collection) {
     if(scheduleUpdate(collection, "stats")) {
       url = integrityServiceUrl + "/integrity/IntegrityService/getIntegrityStatus/?collectionID=" + collection;
       var c = collection;
@@ -88,7 +88,7 @@
         collections[c].pillars = pillarCount;
         collections[c].numChecksumErrors = checksumErrors;
         collections[c].numMissingFiles = missingFiles;
-      }).done(function(){updateCollectionRow(collections[c])}).always(function() {finishUpdate(c, "stats");}); 
+      }).done(function(){updateCollectionRow(collections[c])}).always(function() {finishUpdate(c, "stats");});
     }
   }
 
@@ -100,7 +100,7 @@
     }
   }
 
-  function makeCollectionRow(collection) { 
+  function makeCollectionRow(collection) {
     var id = collection.collectionID;
     var html = "";
     html += "<tr id=\"" + id + "-row\">";
@@ -118,7 +118,7 @@
 
   function updateCollectionRow(collection) {
     var id = collection.collectionID;
-    $("#" + id + "-name").html(collection.collectionName);
+    $("#" + id + "-name").html(`<a href='integrity-service.html?collectionID=${collection.collectionID}'>${collection.collectionName}</a>`);
     $("#" + id + "-numFiles").html(numeral(collection.numFiles).format('0,0'));
     $("#" + id + "-latestIngest").html(collection.latestIngest);
     $("#" + id + "-collectionSize").html(collection.collectionSize);
@@ -153,7 +153,7 @@
       return false;
     }
   }
-  
+
   function finishUpdate(collection, type) {
     return updateLock[collection][type] = true;
   }

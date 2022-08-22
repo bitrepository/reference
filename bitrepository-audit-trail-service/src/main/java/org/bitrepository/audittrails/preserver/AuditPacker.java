@@ -58,11 +58,13 @@ public class AuditPacker {
     /**
      * Map between the contributor id and the reached preservation sequence number.
      */
-    private final Map<String, Long> seqReached = new HashMap<>();
+    private final Map<String, Long> seqNumsReached = new HashMap<>();
     /**
      * Whether the output stream should be appended to the file.
      */
     private static final boolean APPEND = true;
+
+    private long packedAuditCount = 0;
 
     /**
      * Constructor.
@@ -77,7 +79,7 @@ public class AuditPacker {
         this.directory = FileUtils.retrieveDirectory(settings.getAuditTrailPreservationTemporaryDirectory());
         this.contributors.addAll(SettingsUtils.getAuditContributorsForCollection(collectionID));
 
-        initialiseReachedSequenceNumbers();
+        initializeReachedSequenceNumbers();
     }
 
     /**
@@ -86,16 +88,16 @@ public class AuditPacker {
      * @return A mapping between the contributor ids and their preservation sequence numbers.
      */
     public Map<String, Long> getSequenceNumbersReached() {
-        return new HashMap<>(seqReached);
+        return new HashMap<>(seqNumsReached);
     }
 
     /**
      * Retrieves the preservation sequence number for each contributor and inserts it into the map.
      */
-    private void initialiseReachedSequenceNumbers() {
+    private void initializeReachedSequenceNumbers() {
         for (String contributor : contributors) {
-            Long seq = store.getPreservationSequenceNumber(contributor, collectionID);
-            seqReached.put(contributor, seq);
+            Long seqNum = store.getPreservationSequenceNumber(contributor, collectionID);
+            seqNumsReached.put(contributor, seqNum);
         }
     }
 
@@ -107,6 +109,7 @@ public class AuditPacker {
      * @return A compressed file with all the audit trails.
      */
     public synchronized File createNewPackage() {
+        resetPackedAuditCount();
         File container = new File(directory, collectionID + "-audit-trails-" + System.currentTimeMillis());
         try {
             if (container.createNewFile()) {
@@ -122,6 +125,14 @@ public class AuditPacker {
             }
         }
         return null;
+    }
+
+    /**
+     * Resets {@link #packedAuditCount}.
+     * Done before creating a new package to ensure only new packed audits are counted.
+     */
+    private void resetPackedAuditCount() {
+        packedAuditCount = 0;
     }
 
     /**
@@ -148,15 +159,16 @@ public class AuditPacker {
     /**
      * Writes all the newest audit trails for a single contributor to the PrintWriter.
      *
-     * @param contributorId The id of the contributor to write the files for.
+     * @param contributorID The id of the contributor to write the files for.
      * @param writer        The PrinterWriter where the output will be written.
      */
-    private void packContributor(String contributorId, PrintWriter writer) {
-        long nextSeqNumber = store.getPreservationSequenceNumber(contributorId, collectionID);
+    private void packContributor(String contributorID, PrintWriter writer) {
+        long nextSeqNumber = store.getPreservationSequenceNumber(contributorID, collectionID) + 1;
         long largestSeqNumber = -1;
         long numPackedAudits = 0;
-        log.debug("Starting to pack AuditTrails for contributor: " + contributorId + " for collection: " + collectionID);
-        AuditEventIterator iterator = store.getAuditTrailsByIterator(null, collectionID, contributorId, nextSeqNumber, null,
+        log.debug("Starting to pack AuditTrails at seq-number {} for contributor: {} for collection: {}",
+                nextSeqNumber, contributorID, collectionID);
+        AuditEventIterator iterator = store.getAuditTrailsByIterator(null, collectionID, contributorID, nextSeqNumber, null,
                 null, null, null, null, null, null);
         long timeStart = System.currentTimeMillis();
         long logInterval = 1000;
@@ -171,12 +183,15 @@ public class AuditPacker {
             writer.println(event);
 
             if ((numPackedAudits % logInterval) == 0) {
-                log.debug("Packed " + numPackedAudits + " AuditTrails in: " + (System.currentTimeMillis() - timeStart) + " ms");
+                log.debug("Packed {} AuditTrails in: {} ms", numPackedAudits, System.currentTimeMillis() - timeStart);
             }
         }
-        log.debug("Packed a total of: " + numPackedAudits + " AuditTrails in: " + (System.currentTimeMillis() - timeStart) + " ms");
+        log.debug("Packed a total of: {} AuditTrails in: {} ms",
+                numPackedAudits, System.currentTimeMillis() - timeStart);
+
         if (numPackedAudits > 0) {
-            seqReached.put(contributorId, largestSeqNumber);
+            packedAuditCount += numPackedAudits;
+            seqNumsReached.put(contributorID, largestSeqNumber);
         }
     }
 
@@ -193,5 +208,14 @@ public class AuditPacker {
         File zippedFile = new File(directory, fileToCompress.getName() + ".zip");
         FileUtils.zipFile(fileToCompress, zippedFile);
         return zippedFile;
+    }
+
+    /**
+     * Get the last count of packed audits i.e. count of new audits from all contributors for the collection.
+     *
+     * @return Count of packed audits.
+     */
+    public long getPackedAuditCount() {
+        return packedAuditCount;
     }
 }
