@@ -132,8 +132,8 @@
 <script>
     var nameMapper;
     var descriptionMapper;
-    var auto_get_alarms;
-    var auto_enable_button;
+    var autoGetAlarmsInterval;
+    var autoEnableButtonInterval;
     var alarmServiceUrl;
 
     function clearElement(element) {
@@ -187,15 +187,15 @@
             $.getJSON('repo/reposervice/getCollections/', {}, function (collections) {
                 nameMapper = new CollectionNameMapper(collections);
                 var cols = nameMapper.getCollectionIDs();
-                for (i in cols) {
+                for (let i in cols) {
                     $("#collectionIDFilter").append('<option value="' + cols[i] + '">' + nameMapper.getName(cols[i]) + '</option>');
                 }
                 updateAlarms();
                 enableClickFunctionality();
-                auto_get_alarms = setInterval(function () {
+                autoGetAlarmsInterval = setInterval(function () {
                     updateAlarms();
                 }, 2500);
-                auto_enable_button = setInterval(function () {
+                autoEnableButtonInterval = setInterval(function () {
                     enableClickFunctionality();
                 }, 500);
             });
