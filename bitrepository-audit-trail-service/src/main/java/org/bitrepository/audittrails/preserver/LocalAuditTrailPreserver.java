@@ -177,7 +177,8 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
 
                 preservedAuditCount += auditPacker.getPackedAuditCount();
             } else {
-                log.info("No new audit trails to preserve. No preservation file uploaded.");
+                log.info("No new audit trails to preserve for collection '{}'. No preservation file uploaded.",
+                        collectionID);
             }
 
             log.debug("Cleanup of the audit trail package.");
