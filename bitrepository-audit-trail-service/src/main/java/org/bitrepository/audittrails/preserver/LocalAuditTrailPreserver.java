@@ -64,12 +64,12 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final AuditTrailStore store;
     private final BlockingPutFileClient client;
-    private Timer timer;
-    private AuditPreservationTimerTask preservationTask = null;
     private final Map<String, AuditPacker> auditPackers = new HashMap<>();
     private final AuditTrailPreservation preservationSettings;
     private final Settings settings;
     private final FileExchange exchange;
+    private Timer timer;
+    private AuditPreservationTimerTask preservationTask = null;
     private long preservedAuditCount = 0;
 
     /**
@@ -161,7 +161,7 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
     private synchronized void performAuditTrailPreservation(String collectionID) {
         try {
             AuditPacker auditPacker = auditPackers.get(collectionID);
-            File auditPackage = auditPacker.createNewPackage();
+            File auditPackage = auditPacker.createNewPackage().toFile();
 
             if (auditPacker.getPackedAuditCount() > 0) {
                 URL url = uploadFile(auditPackage);
@@ -177,7 +177,8 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
 
                 preservedAuditCount += auditPacker.getPackedAuditCount();
             } else {
-                log.info("No new audit trails to preserve. No preservation file uploaded.");
+                log.info("No new audit trails to preserve for collection '{}'. No preservation file uploaded.",
+                        collectionID);
             }
 
             log.debug("Cleanup of the audit trail package.");

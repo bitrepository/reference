@@ -9,6 +9,7 @@ import org.jaccept.structure.ExtendedTestCase;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +35,7 @@ public class AuditPackerTest extends ExtendedTestCase {
     }
 
     @Test
-    public void testCreateNewPackage() {
+    public void testCreateNewPackage() throws IOException {
         AuditPacker packer = new AuditPacker(store, preservationSettings, collectionID);
         Map<String, Long> seqNumsReached = packer.getSequenceNumbersReached();
         assertEquals(seqNumsReached.entrySet().size(), 3);
