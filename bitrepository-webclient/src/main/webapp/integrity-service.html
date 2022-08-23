@@ -116,7 +116,7 @@
     let pillars = {};
     let workflows = {};
     let modal;
-    let update_page;
+    let updatePageInterval;
     let nameMapper;
     let integrityServiceUrl;
 
@@ -126,9 +126,9 @@
 
     function loadWorkflows() {
         let url = integrityServiceUrl + '/integrity/IntegrityService/getWorkflowList/?collectionID=' + getCollectionID();
-        $.getJSON(url, {}, function (j) {
-            for (let i = 0; i < j.length; i++) {
-                $("#workflowSelector").append('<option value="' + j[i] + '">' + j[i] + '</option>');
+        $.getJSON(url, {}, function (json) {
+            for (let i = 0; i < json.length; i++) {
+                $("#workflowSelector").append('<option value="' + json[i] + '">' + json[i] + '</option>');
             }
         });
     }
@@ -180,23 +180,23 @@
 
     function getWorkflowStatuses() {
         let url = integrityServiceUrl + '/integrity/IntegrityService/getWorkflowSetup/?collectionID=' + getCollectionID();
-        $.getJSON(url, {}, function (j) {
-            for (let i = 0; i < j.length; i++) {
-                if (workflows[j[i].workflowID] == null) {
+        $.getJSON(url, {}, function (json) {
+            for (let i = 0; i < json.length; i++) {
+                if (workflows[json[i].workflowID] == null) {
                     $("#workflow-status-table-body").append(
-                        makeWorkflowRow(j[i].workflowID, j[i].nextRun, j[i].lastRun, j[i].executionInterval,
-                            j[i].currentState, j[i].lastRunFinishState));
-                    workflows[j[i].workflowID] = {
-                        workflowDescription: j[i].workflowDescription,
-                        lastRunDetails: j[i].lastRunDetails
+                        makeWorkflowRow(json[i].workflowID, json[i].nextRun, json[i].lastRun, json[i].executionInterval,
+                            json[i].currentState, json[i].lastRunFinishState));
+                    workflows[json[i].workflowID] = {
+                        workflowDescription: json[i].workflowDescription,
+                        lastRunDetails: json[i].lastRunDetails
                     };
-                    attachWorkflowInfoButton(j[i].workflowID, "workflowDescription");
-                    attachWorkflowInfoButton(j[i].workflowID, "lastRunDetails");
+                    attachWorkflowInfoButton(json[i].workflowID, "workflowDescription");
+                    attachWorkflowInfoButton(json[i].workflowID, "lastRunDetails");
                 } else {
-                    updateWorkflowRow(j[i].workflowID, j[i].nextRun, j[i].lastRun, j[i].executionInterval,
-                        j[i].currentState, j[i].lastRunFinishState);
-                    workflows[j[i].workflowID].workflowDescription = j[i].workflowDescription;
-                    workflows[j[i].workflowID].lastRunDetails = j[i].lastRunDetails;
+                    updateWorkflowRow(json[i].workflowID, json[i].nextRun, json[i].lastRun, json[i].executionInterval,
+                        json[i].currentState, json[i].lastRunFinishState);
+                    workflows[json[i].workflowID].workflowDescription = json[i].workflowDescription;
+                    workflows[json[i].workflowID].lastRunDetails = json[i].lastRunDetails;
                 }
             }
         });
@@ -361,16 +361,15 @@
     function collectionChanged() {
         clearContent();
         $("#integrityLegend").html("Integrity information for collection " + nameMapper.getName(getCollectionID()));
-        let reportUrl = integrityServiceUrl + "/integrity/IntegrityService/getLatestIntegrityReport/";
-        reportUrl += "?collectionID=" + getCollectionID();
-        reportUrl += "&workflowID=" + "CompleteIntegrityCheck";
+        let reportUrl = `${integrityServiceUrl}/integrity/IntegrityService/getLatestIntegrityReport/
+            ?collectionID=${getCollectionID()}&workflowID=CompleteIntegrityCheck`;
         $("#integrityReportGetter").html("<a class=\"btn btn-link\" href=\"" + reportUrl + "\" target=\"_blank\">Get latest integrity report</a>");
-        clearInterval(update_page);
+        clearInterval(updatePageInterval);
         loadWorkflows();
         getCollectionInformation();
         getWorkflowStatuses();
         getIntegrityStatus();
-        update_page = setInterval(function () {
+        updatePageInterval = setInterval(function () {
             getWorkflowStatuses();
             getIntegrityStatus();
             getCollectionInformation();
@@ -380,22 +379,22 @@
     function getIntegrityStatus() {
         let url = integrityServiceUrl + "/integrity/IntegrityService/getIntegrityStatus/?collectionID="
             + getCollectionID();
-        $.getJSON(url, {}, function (j) {
-            for (let i = 0; i < j.length; i++) {
-                if (pillars[j[i].pillarID] == null) {
+        $.getJSON(url, {}, function (json) {
+            for (let i = 0; i < json.length; i++) {
+                if (pillars[json[i].pillarID] == null) {
                     let tableBody = $("#integrity-status-table-body");
-                    tableBody.append(makePillarRow(j[i].pillarID));
+                    tableBody.append(makePillarRow(json[i].pillarID));
                 }
-                pillars[j[i].pillarID] = {
-                    pillarHostname: j[i].pillarHostname,
-                    pillarType: j[i].pillarType,
-                    totalFileCount: j[i].totalFileCount,
-                    missingFilesCount: j[i].missingFilesCount,
-                    missingChecksumsCount: j[i].missingChecksumsCount,
-                    obsoleteChecksumsCount: j[i].obsoleteChecksumsCount,
-                    checksumErrorCount: j[i].checksumErrorCount
+                pillars[json[i].pillarID] = {
+                    pillarHostname: json[i].pillarHostname,
+                    pillarType: json[i].pillarType,
+                    totalFileCount: json[i].totalFileCount,
+                    missingFilesCount: json[i].missingFilesCount,
+                    missingChecksumsCount: json[i].missingChecksumsCount,
+                    obsoleteChecksumsCount: json[i].obsoleteChecksumsCount,
+                    checksumErrorCount: json[i].checksumErrorCount
                 };
-                updateTableBody(j[i].pillarID);
+                updateTableBody(json[i].pillarID);
                 updateTableHeader();
             }
         });
@@ -407,10 +406,10 @@
 
     function getCollectionInformation() {
         let url = integrityServiceUrl + "/integrity/IntegrityService/getCollectionInformation/?collectionID=" + getCollectionID();
-        $.getJSON(url, {}, function (j) {
-            let infoHtml = "<span><b> Latest ingest: " + j.lastIngest + " &nbsp; &nbsp; ";
-            infoHtml += " Size: " + j.collectionSize + " &nbsp; &nbsp; ";
-            infoHtml += " Number of files: " + formatInt(j.numberOfFiles) + "</b></span>";
+        $.getJSON(url, {}, function (json) {
+            let infoHtml = `<span><b>Latest ingest: ${json.lastIngest} &nbsp; &nbsp;
+                Size: ${json.collectionSize} &nbsp; &nbsp;
+                Number of files: ${formatInt(json.numberOfFiles)}</b></span>`;
 
             $("#collectionInfoDiv").html(infoHtml);
         });

@@ -112,7 +112,7 @@ public class RestIntegrityService {
                             .type(MediaType.TEXT_PLAIN).build());
         }
 
-        List<String> iteratorAsList = StreamingTools.IteratorToList(it);
+        List<String> iteratorAsList = StreamingTools.iteratorToList(it);
         if (iteratorAsList.isEmpty()) {
             throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
                     .entity("No fileIDs found for collection: " + collectionID + " and pillar: " + pillarID).type(MediaType.TEXT_PLAIN)
@@ -418,7 +418,7 @@ public class RestIntegrityService {
 
         IntegrityReportReader reader = integrityReportProvider.getLatestIntegrityReportReader(collectionID);
         File reportPart = reader.getReportPart(part.getPartName(), pillarID);
-        output = StreamingTools.FilePartToList(reportPart, offset, pageSize);
+        output = StreamingTools.filePartToList(reportPart, offset, pageSize);
 
         return output;
     }

@@ -49,7 +49,7 @@ public class StreamingTools {
      *
      * @param iterator The IntegrityIssueIterator with integrity issues that is to be streamed out.
      */
-    public static StreamingOutput StreamIntegrityIssues(IntegrityIssueIterator iterator) {
+    public static StreamingOutput streamIntegrityIssues(IntegrityIssueIterator iterator) {
         final IntegrityIssueIterator it = iterator;
         return output -> {
             JsonFactory jf = new JsonFactory();
@@ -86,7 +86,7 @@ public class StreamingTools {
      * @param offset   The number of lines to skip
      * @param maxLines The maximum number of lines to output
      */
-    public static StreamingOutput StreamFileParts(File source, int offset, int maxLines) {
+    public static StreamingOutput streamFileParts(File source, int offset, int maxLines) {
         final File input = source;
         return output -> {
             JsonFactory jf = new JsonFactory();
@@ -120,7 +120,7 @@ public class StreamingTools {
      * @param iterator The {@link IntegrityIssueIterator}.
      * @return Returns a {@link List <String>}.
      */
-    public static List<String> IteratorToList(IntegrityIssueIterator iterator) {
+    public static List<String> iteratorToList(IntegrityIssueIterator iterator) {
         List<String> output = new ArrayList<>();
         String issue;
         while ((issue = iterator.getNextIntegrityIssue()) != null) {
@@ -138,7 +138,7 @@ public class StreamingTools {
      * @param maxLines The number of lines to read
      * @return Returns a {@link List<String>} of the found content.
      */
-    public static List<String> FilePartToList(File source, int offset, int maxLines) {
+    public static List<String> filePartToList(File source, int offset, int maxLines) {
         List<String> output = new ArrayList<>();
 
         try (BufferedReader b = new BufferedReader(new InputStreamReader(new FileInputStream(source), StandardCharsets.UTF_8))) {
