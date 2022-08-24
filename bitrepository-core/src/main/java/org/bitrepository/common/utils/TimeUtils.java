@@ -29,10 +29,7 @@ import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Period;
 import java.time.ZonedDateTime;
-<<<<<<< HEAD
 import java.time.temporal.ChronoUnit;
-=======
->>>>>>> 747f84e93 (BITMAG-1142 Show human-readable age of oldest checksum)
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -144,7 +141,6 @@ public final class TimeUtils {
             periodBetween = Period.between(start.toLocalDate(), end.toLocalDate().minusDays(1));
             afterPeriod = start.plus(periodBetween);
         }
-<<<<<<< HEAD
         // Round duration to whole seconds
         Duration durationBetween = Duration.between(afterPeriod, end)
                 .plusMillis(500)
@@ -159,18 +155,7 @@ public final class TimeUtils {
         // Since in practice the text is updated a few seconds later and any minutes 1 minute later,
         // it is not expected to be a problem for the user.
         List<String> elements = new ArrayList<>(6);
-=======
-        Duration durationBetween = Duration.between(afterPeriod, end);
 
-        if (periodBetween.isZero() && durationBetween.isZero()) {
-            return "0 ms";
-        }
-
-        // The following gives an ambiguous string like "3m"
-        // in the very rare cases where only months or only minutes are non-zero.
-        // Since in practice the text is updated a few seconds later, it is not expected to be a problem for the user.
-        List<String> elements = new ArrayList<>(7);
->>>>>>> 747f84e93 (BITMAG-1142 Show human-readable age of oldest checksum)
         if (periodBetween.getYears() != 0) {
             elements.add(periodBetween.getYears() + "y");
         }
