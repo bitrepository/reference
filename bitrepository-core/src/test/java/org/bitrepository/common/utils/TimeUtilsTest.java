@@ -92,20 +92,21 @@ public class TimeUtilsTest extends ExtendedTestCase {
         addDescription("TimeUtils.humanDifference() should return" +
                 " similar human readable strings to those from millisecondsToHuman()");
 
-        addStep("Call humanDifference() with same time twice", "The output should be '0 ms'");
+        addStep("Call humanDifference() with same time twice", "The output should be '0s'");
         String zeroTimeString = TimeUtils.humanDifference(BASE, BASE);
-        assertEquals(zeroTimeString, "0 ms");
+        assertEquals(zeroTimeString, "0s");
 
         addStep("Call humanDifference() with a difference obtained from a Duration",
                 "Expect corresponding readable output");
-        testHumanDifference("1 ns", Duration.ofNanos(1));
-        testHumanDifference("1 ms", Duration.ofMillis(1));
-        // If there are nanos, don’t print millis
-        testHumanDifference("2000003 ns", Duration.ofNanos(2_000_003));
+        // Don’t print fraction of second
+        testHumanDifference("0s", Duration.ofNanos(1));
+        testHumanDifference("0s", Duration.ofMillis(1));
+        testHumanDifference("0s", Duration.ofNanos(499_999_999));
+        testHumanDifference("1s", Duration.ofNanos(500_000_000));
         testHumanDifference("1s", Duration.ofSeconds(1));
         testHumanDifference("1m", Duration.ofMinutes(1));
         testHumanDifference("1h", Duration.ofHours(1));
-        testHumanDifference("2h 3m 5s 7 ns", Duration.parse("PT2H3M5.000000007S"));
+        testHumanDifference("2h 3m 5s", Duration.parse("PT2H3M5.000000007S"));
 
         addStep("Call humanDifference() with a difference obtained from a Period",
                 "Expect corresponding readable output");
@@ -116,7 +117,7 @@ public class TimeUtilsTest extends ExtendedTestCase {
 
         addStep("Call humanDifference() with a difference obtained from a combo of a Period and a Duration",
                 "Expect corresponding readable output");
-        testHumanDifference("3y 5m 7d 11h 13m 17s 23 ms",
+        testHumanDifference("3y 5m 7d 11h 13m 17s",
                 Period.of(3, 5, 7), Duration.parse("PT11H13M17.023S"));
 
         addStep("Call humanDifference()" +
