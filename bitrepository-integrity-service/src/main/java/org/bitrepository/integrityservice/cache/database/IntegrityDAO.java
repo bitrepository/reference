@@ -46,8 +46,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -541,11 +539,11 @@ public abstract class IntegrityDAO {
                     String pillarType = (SettingsUtils.getPillarType(pillarID) != null) ?
                             Objects.requireNonNull(SettingsUtils.getPillarType(pillarID)).value() : "Unknown";
                     String maxAgeForChecksums = getMaxAgeForChecksums(pillarID);
-                    String ageOfOldestChecksum = getAgeOfOldestChecksum(dbResult);
+                    Instant oldestChecksumTimestamp = getOldestChecksumTimestamp(dbResult);
                     PillarCollectionStat p = new PillarCollectionStat(pillarID, collectionID,
                             pillarHostname, pillarType, fileCount, dataSize,
                             missingFiles, checksumErrors, missingChecksums, obsoleteChecksums,
-                            maxAgeForChecksums, ageOfOldestChecksum, statsTime, updateTime);
+                            maxAgeForChecksums, oldestChecksumTimestamp, statsTime, updateTime);
                     stats.add(p);
                 }
             }
@@ -569,18 +567,9 @@ public abstract class IntegrityDAO {
         return maxAge == 0 ? "unlimited" : TimeUtils.millisecondsToHuman(maxAge);
     }
 
-    @NotNull
-    private String getAgeOfOldestChecksum(ResultSet dbResult) throws SQLException {
+    private Instant getOldestChecksumTimestamp(ResultSet dbResult) throws SQLException {
         long oldestChecksumTimestamp = dbResult.getLong("oldest_checksum_timestamp");
-        String ageOfOldestChecksum;
-        if (dbResult.wasNull()) {
-            ageOfOldestChecksum = "N/A";
-        } else {
-            ZoneId zone = ZoneId.systemDefault();
-            ZonedDateTime oldestChecksumZdt = Instant.ofEpochMilli(oldestChecksumTimestamp).atZone(zone);
-            ageOfOldestChecksum = TimeUtils.humanDifference(oldestChecksumZdt, ZonedDateTime.now(zone));
-        }
-        return ageOfOldestChecksum;
+        return dbResult.wasNull() ? null : Instant.ofEpochMilli(oldestChecksumTimestamp);
     }
 
     /**
