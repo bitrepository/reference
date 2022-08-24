@@ -29,6 +29,7 @@ import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Period;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -140,16 +141,20 @@ public final class TimeUtils {
             periodBetween = Period.between(start.toLocalDate(), end.toLocalDate().minusDays(1));
             afterPeriod = start.plus(periodBetween);
         }
-        Duration durationBetween = Duration.between(afterPeriod, end);
+        // Round duration to whole seconds
+        Duration durationBetween = Duration.between(afterPeriod, end)
+                .plusMillis(500)
+                .truncatedTo(ChronoUnit.SECONDS);
 
         if (periodBetween.isZero() && durationBetween.isZero()) {
-            return "0 ms";
+            return "0s";
         }
 
-        // The following gives an ambiguous string like "3m"
-        // in the very rare cases where only months or only minutes are non-zero.
-        // Since in practice the text is updated a few seconds later, it is not expected to be a problem for the user.
-        List<String> elements = new ArrayList<>(7);
+        // The following gives an ambiguous string like "3m" or "3y 11m 5s"
+        // in the very rare cases where months *or* minutes are non-zero and days and hours are zero.
+        // Since in practice the text is updated a few seconds later and any minutes 1 minute later,
+        // it is not expected to be a problem for the user.
+        List<String> elements = new ArrayList<>(6);
         if (periodBetween.getYears() != 0) {
             elements.add(periodBetween.getYears() + "y");
         }
@@ -167,15 +172,6 @@ public final class TimeUtils {
         }
         if (durationBetween.toSecondsPart() != 0) {
             elements.add(durationBetween.toSecondsPart() + "s");
-        }
-        if (durationBetween.toNanosPart() != 0) {
-            int millis = durationBetween.toMillisPart();
-            int nanos = durationBetween.toNanosPart();
-            if (Duration.ofMillis(millis).toNanos() == nanos) { // millis give full precision; print them
-                elements.add(millis + " ms");
-            } else { // print only nanos
-                elements.add(nanos + " ns");
-            }
         }
 
         return String.join(" ", elements);

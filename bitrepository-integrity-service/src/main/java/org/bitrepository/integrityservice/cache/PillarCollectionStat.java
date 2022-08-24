@@ -21,6 +21,12 @@
  */
 package org.bitrepository.integrityservice.cache;
 
+import org.bitrepository.common.utils.TimeUtils;
+import org.jetbrains.annotations.NotNull;
+
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 /**
@@ -38,8 +44,7 @@ public class PillarCollectionStat {
     private Long missingChecksums = 0L;
     private Long checksumErrors = 0L;
     private String maxAgeForChecksums;
-    /** Human-readable age of the oldest checksum, for example " 3m 46s 299 ms" */
-    private String ageOfOldestChecksum;
+    private Instant oldestChecksumTimestamp;
     private Date statsTime;
     private Date updateTime;
 
@@ -53,7 +58,8 @@ public class PillarCollectionStat {
     public PillarCollectionStat(String pillarID, String collectionID, String pillarName, String pillarType,
                                 Long fileCount, Long dataSize,
                                 Long missingFiles, Long checksumErrors, Long missingChecksums, Long obsoleteChecksum,
-                                String maxAgeForChecksums, String ageOfOldestChecksum, Date statsTime, Date updateTime) {
+                                String maxAgeForChecksums,
+                                Instant oldestChecksumTimestamp, Date statsTime, Date updateTime) {
         this.pillarID = pillarID;
         this.collectionID = collectionID;
         this.pillarName = pillarName;
@@ -67,7 +73,7 @@ public class PillarCollectionStat {
         this.statsTime = statsTime;
         this.updateTime = updateTime;
         this.maxAgeForChecksums = maxAgeForChecksums;
-        this.ageOfOldestChecksum = ageOfOldestChecksum;
+        this.oldestChecksumTimestamp = oldestChecksumTimestamp;
     }
 
     public String getPillarID() {
@@ -150,11 +156,31 @@ public class PillarCollectionStat {
         this.missingChecksums = missingChecksums;
     }
 
+    /** @return Human-readable age of the oldest checksum, for example "3m 46s" */
+    @NotNull
     public String getAgeOfOldestChecksum() {
-        return ageOfOldestChecksum;
+        if (oldestChecksumTimestamp == null) {
+            return "N/A";
+        }
+        ZoneId zone = ZoneId.systemDefault();
+        return TimeUtils.humanDifference(oldestChecksumTimestamp.atZone(zone), ZonedDateTime.now(zone));
+    }
+
+    public boolean hasOldestChecksumTimestamp() {
+        return oldestChecksumTimestamp != null;
+    }
+
+    /** @throws NullPointerException if hasOldestChecksumTimestamp() does not return true */
+    public long getOldestChecksumTimestampMillis() {
+        return oldestChecksumTimestamp.toEpochMilli();
+    }
+
+    public void setOldestChecksumTimestamp(Instant oldestChecksumTimestamp) {
+        this.oldestChecksumTimestamp = oldestChecksumTimestamp;
     }
 
     public String getMaxAgeForChecksums() {
         return maxAgeForChecksums;
     }
+
 }
