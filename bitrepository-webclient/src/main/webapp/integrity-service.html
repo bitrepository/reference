@@ -283,15 +283,15 @@
     }
 
     function makePillarRow(id) {
-        var html = "";
-        html += "<tr id=\"" + id + "-row\">";
-        html += "<td><div style=\"padding:5px\">" + id + "</div></td>";
-        html += "<td id=\"" + id + "-pillarName\"></td>";
-        html += "<td id=\"" + id + "-pillarType\"></td>";
-        html += "<td id=\"" + id + "-totalFileCount\"></td>";
-        html += "<td id=\"" + id + "-missingFiles\"></td>";
-        html += "<td id=\"" + id + "-missingChecksums\"></td>";
-        html += "<td id=\"" + id + "-obsoleteChecksums\"></td>";
+      var html = "";
+      html += "<tr id=\"" + id + "-row\">";
+      html += "<td><div style=\"padding:5px\">" + id + "</div></td>";
+      html += "<td id=\"" + id + "-pillarName\"></td>";
+      html += "<td id=\"" + id + "-pillarType\"></td>";
+      html += "<td id=\"" + id + "-totalFileCount\"></td>";
+      html += "<td id=\"" + id + "-missingFiles\"></td>";
+      html += "<td id=\"" + id + "-missingChecksums\"></td>";
+      html += "<td id=\"" + id + "-obsoleteChecksums\"></td>";
       html += "<td id=\"" + id + "-checksumErrors\"></td>";
       html += "<td id=\"" + id + "-maxAgeForChecksums\"></td>";
       html += "<td id=\"" + id + "-ageOfOldestChecksum\"></td>";
@@ -349,7 +349,11 @@
                     checksumErrorCount : j[i].checksumErrorCount,
                     maxAgeForChecksums : j[i].maxAgeForChecksums,
                     ageOfOldestChecksum : j[i].ageOfOldestChecksum
+<<<<<<< HEAD
                 };
+=======
+                   };
+>>>>>>> 2f286acfbec529ae49c96b80d928a0eb7c7db129
                 updateCells(j[i].pillarID);
             }
         });
