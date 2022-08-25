@@ -22,15 +22,17 @@
 
 
         var pages = [{page : "dashboard.html", title : "Dashboard"},
-                     {page : "configuration.html", title : "Configuration"}, 
+                     {page : "configuration.html", title : "Configuration"},
                      {page : "alarm-service.html", title : "Alarm"},
-                     {page : "integrity-service.html", title : "Integrity"}, 
-                     {page : "audit-trail-service.html", title : "Audit trail"}, 
+                     {page : "integrity-service.html", title : "Integrity"},
+                     {page : "audit-trail-service.html", title : "Audit trail"},
                      {page : "status-service.html", title : "Status"}];
 
         function makeMenu(page, element) {
           var menuHtml = "";
           menuHtml += "<div class=\"navbar navbar-inverse navbar-static-top\">";
+          menuHtml += "<img src='img/bitreplogo.png' alt='BitRepository Logo' style='float: left; right:0; top:0; margin: 0.4em 1em 0 1.5em;" +
+              " height: 28px'/>";
           menuHtml += "<div class=\"navbar-inner\">";
           menuHtml += "<div class=\"container-fluid\">";
           menuHtml += "<a class=\"btn btn-navbar\" data-toggle=\"collapse\" data-target=\".nav-collapse\">";
@@ -46,7 +48,7 @@
             if(pages[i].page == page) {
               linkClass="class=\"active\"";
             }
-            menuHtml += "<li " + linkClass +"><a href=\"" + pages[i].page + "\">"+ pages[i].title + "</a></li>";            
+            menuHtml += "<li " + linkClass +"><a href=\"" + pages[i].page + "\">"+ pages[i].title + "</a></li>";
           }
           menuHtml += "</ul>";
           menuHtml += "</div><!--/.nav-collapse -->";

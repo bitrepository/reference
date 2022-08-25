@@ -21,6 +21,7 @@
  */
 package org.bitrepository.pillar.integration.func.getchecksums;
 
+import org.apache.commons.codec.DecoderException;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
@@ -84,7 +85,11 @@ public class GetChecksumTest extends PillarFunctionTest {
             "The correct of SHA1 checksum should be returned (Not checked yet).");
         ChecksumSpecTYPE checksumSpec = new ChecksumSpecTYPE();
         checksumSpec.setChecksumType(ChecksumType.HMAC_MD5);
-        checksumSpec.setChecksumSalt(Base16Utils.encodeBase16("abab"));
+        try {
+            checksumSpec.setChecksumSalt(Base16Utils.encodeBase16("abab"));
+        } catch (DecoderException e) {
+            System.err.println(e.getMessage());
+        }
         List<ChecksumDataForChecksumSpecTYPE> checksums = pillarFileManager.getChecksums(
                 checksumSpec, null, DEFAULT_FILE_ID);
         assertNotNull(checksums.get(0));
@@ -99,7 +104,11 @@ public class GetChecksumTest extends PillarFunctionTest {
             "The correct of SHA1 checksum should be returned (Not checked yet).");
         ChecksumSpecTYPE checksumSpec = new ChecksumSpecTYPE();
         checksumSpec.setChecksumType(ChecksumType.HMAC_SHA1);
-        checksumSpec.setChecksumSalt(Base16Utils.encodeBase16("abab"));
+        try {
+            checksumSpec.setChecksumSalt(Base16Utils.encodeBase16("abab"));
+        } catch (DecoderException e) {
+            System.err.println(e.getMessage());
+        }
         List<ChecksumDataForChecksumSpecTYPE> checksums = pillarFileManager.getChecksums(
                 checksumSpec, null, DEFAULT_FILE_ID);
         assertNotNull(checksums.get(0));

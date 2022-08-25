@@ -116,16 +116,17 @@ public final class AuditTrailServiceFactory {
                     securityManager, serviceSettings.getID());
 
             AuditTrailCollector collector = new AuditTrailCollector(settings, client, store, alarmDispatcher);
-            AuditTrailPreserver preserver;
+
             if (serviceSettings.isSetAuditTrailPreservation()) {
-                preserver = new LocalAuditTrailPreserver(
+                log.info("Audit trail preservation enabled in configuration. Audit trail service will preserve trails.");
+                AuditTrailPreserver preserver = new LocalAuditTrailPreserver(
                         settings, store, putClient, ProtocolComponentFactory.getInstance().getFileExchange(settings));
-                preserver.start();
+                auditTrailService = new AuditTrailService(store, collector, preserver, mediator, settings);
             } else {
                 log.info("Audit trail preservation disabled, no configuration defined.");
+                auditTrailService = new AuditTrailService(store, collector, mediator, settings);
             }
-
-            auditTrailService = new AuditTrailService(store, collector, mediator, settings);
+            auditTrailService.start();
         }
 
         return auditTrailService;

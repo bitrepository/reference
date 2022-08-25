@@ -21,6 +21,7 @@
  */
 package org.bitrepository.common.utils;
 
+import org.apache.commons.codec.DecoderException;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -48,7 +49,7 @@ public class Base16UtilsTest extends ExtendedTestCase {
     }
     
     @Test(groups = { "regressiontest" })
-    public void decodeChecksum() throws Exception {
+    public void decodeChecksum() {
         addDescription("Validating the decoding of the checksums.");
         addStep("Decode the checksum and validate.", "It should match the precalculated constant.");
         String decodedChecksum = Base16Utils.decodeBase16(ENCODED_CHECKSUM);
@@ -56,23 +57,12 @@ public class Base16UtilsTest extends ExtendedTestCase {
     }
     
     @Test(groups = { "regressiontest" })
-    public void badArgumentTest() throws Exception {
+    public void badArgumentTest() {
         addDescription("Test bad arguments");
-        Assert.assertNull(Base16Utils.decodeBase16(null));
-        
-        try {
-            Base16Utils.encodeBase16(null);
-            Assert.fail("Should throw an exception");
-        } catch (IllegalArgumentException e) {
-            // expected
-        }
-        
-        addStep("Test with a odd number of characters.", "Should throw an exception");
-        try {
-            Base16Utils.encodeBase16("123");
-            Assert.fail("Should throw an exception");
-        } catch (IllegalArgumentException e) {
-            // expected
-        }
+        Assert.assertThrows(IllegalArgumentException.class, () -> Base16Utils.encodeBase16(null));
+
+        addStep("Test with an odd number of characters.", "Should throw a decoder exception");
+        Assert.assertThrows(DecoderException.class, () -> Base16Utils.encodeBase16("123"));
+
     }
 }

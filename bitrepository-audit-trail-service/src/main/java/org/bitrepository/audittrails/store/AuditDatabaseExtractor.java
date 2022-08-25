@@ -221,18 +221,18 @@ public class AuditDatabaseExtractor {
     private String createRestriction() {
         StringBuilder res = new StringBuilder();
 
-        if (model.getFileId() != null) {
+        if (model.getFileID() != null) {
             nextArgument(res);
             res.append(FILE_TABLE + "." + FILE_FILE_ID + " = ? ");
         }
 
-        if (model.getCollectionId() != null) {
+        if (model.getCollectionID() != null) {
             nextArgument(res);
             res.append(FILE_TABLE + "." + FILE_COLLECTION_KEY + " = ( SELECT " + COLLECTION_KEY + " FROM "
                     + COLLECTION_TABLE + " WHERE " + COLLECTION_ID + " = ? )");
         }
 
-        if (model.getContributorId() != null) {
+        if (model.getContributorID() != null) {
             nextArgument(res);
             res.append(AUDIT_TRAIL_TABLE + "." + AUDIT_TRAIL_CONTRIBUTOR_KEY + " = ( SELECT " + CONTRIBUTOR_KEY
                     + " FROM " + CONTRIBUTOR_TABLE + " WHERE " + CONTRIBUTOR_ID + " = ? )");
@@ -301,16 +301,16 @@ public class AuditDatabaseExtractor {
     private Object[] extractArgumentsFromModel() {
         List<Object> res = new ArrayList<>();
 
-        if (model.getFileId() != null) {
-            res.add(model.getFileId());
+        if (model.getFileID() != null) {
+            res.add(model.getFileID());
         }
 
-        if (model.getCollectionId() != null) {
-            res.add(model.getCollectionId());
+        if (model.getCollectionID() != null) {
+            res.add(model.getCollectionID());
         }
 
-        if (model.getContributorId() != null) {
-            res.add(model.getContributorId());
+        if (model.getContributorID() != null) {
+            res.add(model.getContributorID());
         }
 
         if (model.getMinSeqNumber() != null) {

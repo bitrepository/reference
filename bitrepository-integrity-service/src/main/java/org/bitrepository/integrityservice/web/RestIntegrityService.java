@@ -246,7 +246,7 @@ public class RestIntegrityService {
         }
         for (String pillar : pillars) {
             if (!stats.containsKey(pillar)) {
-                String pillarHostname = Objects.requireNonNullElse(SettingsUtils.getHostname(pillar), "N/A");
+                String pillarName = Objects.requireNonNullElse(SettingsUtils.getPillarName(pillar), "N/A");
                 PillarType pillarTypeObject = SettingsUtils.getPillarType(pillar);
                 String pillarType = pillarTypeObject != null ? pillarTypeObject.value() : null;
                 PillarCollectionStat emptyStat = new PillarCollectionStat(pillar, collectionID, pillarHostname,
@@ -258,7 +258,7 @@ public class RestIntegrityService {
         jg.writeStartArray();
         for (PillarCollectionStat stat : stats.values()) {
             writeIntegrityStatusObject(stat, jg);
-            log.debug("IntegrityStatus: Wrote hostname: " + stat.getPillarHostname() + " to pillar" + stat.getPillarID());
+            log.debug("IntegrityStatus: Wrote pillar name: " + stat.getPillarName() + " to pillar" + stat.getPillarID());
         }
         jg.writeEndArray();
         jg.flush();
@@ -416,7 +416,7 @@ public class RestIntegrityService {
     private void writeIntegrityStatusObject(PillarCollectionStat stat, JsonGenerator jg) throws IOException {
         jg.writeStartObject();
         jg.writeObjectField("pillarID", stat.getPillarID());
-        jg.writeObjectField("pillarHostname", stat.getPillarHostname());
+        jg.writeObjectField("pillarName", stat.getPillarName());
         jg.writeObjectField("pillarType", stat.getPillarType());
         jg.writeObjectField("totalFileCount", stat.getFileCount());
         jg.writeObjectField("missingFilesCount", stat.getMissingFiles());

@@ -27,11 +27,18 @@
 <RepositorySettings xmlns="http://bitrepository.org/settings/RepositorySettings.xsd">
   <Name>Development</Name>
   <Collections>
-    <Collection><ID>TwoPillarCollection</ID>
-      <PillarIDs><PillarID>Pillar1</PillarID><PillarID>Pillar2</PillarID></PillarIDs>
+    <Collection>
+      <ID>TwoPillarCollection</ID>
+      <PillarIDs>
+        <PillarID>Pillar1</PillarID>
+        <PillarID>Pillar2</PillarID>
+      </PillarIDs>
     </Collection>
-    <Collection><ID>SinglePillarCollection</ID>
-      <PillarIDs><PillarID>Pillar1</PillarID></PillarIDs>
+    <Collection>
+      <ID>SinglePillarCollection</ID>
+      <PillarIDs>
+        <PillarID>Pillar1</PillarID>
+      </PillarIDs>
     </Collection>
   </Collections>
   <ProtocolSettings>

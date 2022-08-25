@@ -35,7 +35,7 @@ import java.util.Date;
 public class PillarCollectionStat {
     private final String pillarID;
     private final String collectionID;
-    private final String pillarHostname;
+    private final String pillarName;
     private final String pillarType;
     private Long fileCount = 0L;
     private Long dataSize = 0L;
@@ -48,10 +48,10 @@ public class PillarCollectionStat {
     private Date statsTime;
     private Date updateTime;
 
-    public PillarCollectionStat(String pillarID, String collectionID, String pillarHostname, String pillarType) {
+    public PillarCollectionStat(String pillarID, String collectionID, String pillarName, String pillarType) {
         this.pillarID = pillarID;
         this.collectionID = collectionID;
-        this.pillarHostname = pillarHostname;
+        this.pillarName = pillarName;
         this.pillarType = pillarType;
     }
 
@@ -62,7 +62,7 @@ public class PillarCollectionStat {
                                 Instant oldestChecksumTimestamp, Date statsTime, Date updateTime) {
         this.pillarID = pillarID;
         this.collectionID = collectionID;
-        this.pillarHostname = pillarHostname;
+        this.pillarName = pillarName;
         this.pillarType = pillarType;
         this.fileCount = fileCount;
         this.dataSize = dataSize;
@@ -84,8 +84,8 @@ public class PillarCollectionStat {
         return collectionID;
     }
 
-    public String getPillarHostname() {
-        return pillarHostname;
+    public String getPillarName() {
+        return pillarName;
     }
 
     public String getPillarType() {
