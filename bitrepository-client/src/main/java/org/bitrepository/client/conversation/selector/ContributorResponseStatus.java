@@ -60,13 +60,14 @@ public class ContributorResponseStatus {
     public final void responseReceived(MessageResponse response) {
         if (MessageUtils.isEndMessageForPrimitive(response)) {
             String componentID = response.getFrom();
-            log.debug("Received response from: " + componentID);
+            log.debug("Received response from: {} ({})", componentID, MessageUtils.createMessageIdentifier(response));
             if (componentsWithOutstandingResponse.contains(componentID)) {
                 componentsWithOutstandingResponse.remove(componentID);
-            } else if (!componentsWithOutstandingResponse.contains(componentID) && componentsWhichShouldRespond.contains(componentID)) {
-                log.debug("Received more than one response from component " + componentID);
+            } else if (!componentsWithOutstandingResponse.contains(componentID) &&
+                    componentsWhichShouldRespond.contains(componentID)) {
+                log.debug("Received more than one response from component {}", componentID);
             } else {
-                log.debug("Received response from irrelevant component " + componentID);
+                log.debug("Received response from irrelevant component {}", componentID);
             }
         }
     }
@@ -83,10 +84,19 @@ public class ContributorResponseStatus {
     /**
      * @return true if all components have responded. False otherwise
      */
-    public final boolean haveAllComponentsResponded() {
-        log.debug("Expected contributors: " + componentsWhichShouldRespond + ", components that have not answered: " +
-                componentsWithOutstandingResponse);
+    public final boolean haveAllComponentsResponded(MessageResponse response) {
+        logContributorsStatus(response);
         return componentsWithOutstandingResponse.isEmpty();
+    }
+
+    /**
+     * Logs status of expected- and outstanding contributors.
+     * @param response The received response.
+     */
+    private void logContributorsStatus(MessageResponse response) {
+        log.debug("Expected contributors: {}, components that have not answered: {} ({})",
+                componentsWhichShouldRespond, componentsWithOutstandingResponse,
+                MessageUtils.createMessageIdentifier(response));
     }
 
     /**

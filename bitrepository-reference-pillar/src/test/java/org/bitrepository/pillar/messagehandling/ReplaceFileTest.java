@@ -24,6 +24,7 @@
  */
 package org.bitrepository.pillar.messagehandling;
 
+import org.apache.commons.codec.DecoderException;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -66,23 +67,15 @@ public class ReplaceFileTest extends MockedPillarTest {
 
     @SuppressWarnings("rawtypes")
     @Test( groups = {"regressiontest", "pillartest"})
-    public void goodCaseIdentification() throws Exception {
+    public void goodCaseIdentification() {
         addDescription("Tests the identification for a ReplaceFile operation on the pillar for the successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = DEFAULT_FILE_ID;
 
         addStep("Setup for having the file and delivering pillar id", 
                 "Should return true, when requesting file-id existence.");
-        doAnswer(new Answer() {
-            public Boolean answer(InvocationOnMock invocation) {
-                return true;
-            }
-        }).when(model).hasFileID(eq(FILE_ID), anyString());
-        doAnswer(new Answer() {
-            public String answer(InvocationOnMock invocation) {
-                return settingsForCUT.getComponentID();
-            }
-        }).when(model).getPillarID();
+        doAnswer(invocation -> true).when(model).hasFileID(eq(FILE_ID), anyString());
+        doAnswer(invocation -> settingsForCUT.getComponentID()).when(model).getPillarID();
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
@@ -104,23 +97,15 @@ public class ReplaceFileTest extends MockedPillarTest {
 
     @SuppressWarnings("rawtypes")
     @Test( groups = {"regressiontest", "pillartest"})
-    public void badCaseIdentification() throws Exception {
+    public void badCaseIdentification() {
         addDescription("Tests the identification for a ReplaceFile operation on the pillar for the failure scenario, when the file does not exist.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = DEFAULT_FILE_ID;
 
         addStep("Setup for not having the file and delivering pillar id", 
                 "Should return false, when requesting file-id existence.");
-        doAnswer(new Answer() {
-            public Boolean answer(InvocationOnMock invocation) {
-                return false;
-            }
-        }).when(model).hasFileID(eq(FILE_ID), anyString());
-        doAnswer(new Answer() {
-            public String answer(InvocationOnMock invocation) {
-                return settingsForCUT.getComponentID();
-            }
-        }).when(model).getPillarID();
+        doAnswer(invocation -> false).when(model).hasFileID(eq(FILE_ID), anyString());
+        doAnswer(invocation -> settingsForCUT.getComponentID()).when(model).getPillarID();
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
@@ -142,18 +127,14 @@ public class ReplaceFileTest extends MockedPillarTest {
 
     @SuppressWarnings("rawtypes")
     @Test( groups = {"regressiontest", "pillartest"})
-    public void badCaseOperationMissingFile() throws Exception {
+    public void badCaseOperationMissingFile() {
         addDescription("Tests the ReplaceFile operation on the pillar for the failure scenario, when the file is missing.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = DEFAULT_FILE_ID;
 
         addStep("Setup for not having the file and delivering pillar id", 
                 "Should return false, when requesting file-id existence.");
-        doAnswer(new Answer() {
-            public Boolean answer(InvocationOnMock invocation) {
-                return false;
-            }
-        }).when(model).hasFileID(eq(FILE_ID), anyString());
+        doAnswer(invocation -> false).when(model).hasFileID(eq(FILE_ID), anyString());
         doAnswer(new Answer() {
             public String answer(InvocationOnMock invocation) {
                 return settingsForCUT.getComponentID();
@@ -178,7 +159,7 @@ public class ReplaceFileTest extends MockedPillarTest {
 
     @SuppressWarnings("rawtypes")
     @Test( groups = {"regressiontest", "pillartest"})
-    public void badCaseOperationNoDestructiveChecksum() throws Exception {
+    public void badCaseOperationNoDestructiveChecksum() {
         addDescription("Tests the ReplaceFile operation on the pillar for the failure scenario, when no validation "
                 + "checksum is given for the destructive action, but though is required.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -187,16 +168,8 @@ public class ReplaceFileTest extends MockedPillarTest {
 
         addStep("Setup for having the file and delivering pillar id", 
                 "Should return true, when requesting file-id existence.");
-        doAnswer(new Answer() {
-            public Boolean answer(InvocationOnMock invocation) {
-                return true;
-            }
-        }).when(model).hasFileID(eq(FILE_ID), anyString());
-        doAnswer(new Answer() {
-            public String answer(InvocationOnMock invocation) {
-                return settingsForCUT.getComponentID();
-            }
-        }).when(model).getPillarID();
+        doAnswer(invocation -> true).when(model).hasFileID(eq(FILE_ID), anyString());
+        doAnswer(invocation -> settingsForCUT.getComponentID()).when(model).getPillarID();
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
@@ -219,7 +192,7 @@ public class ReplaceFileTest extends MockedPillarTest {
 
     @SuppressWarnings("rawtypes")
     @Test( groups = {"regressiontest", "pillartest"})
-    public void badCaseOperationNoValidationChecksum() throws Exception {
+    public void badCaseOperationNoValidationChecksum() {
         addDescription("Tests the ReplaceFile operation on the pillar for the failure scenario, when no validation "
                 + "checksum is given for the new file, but though is required.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -228,16 +201,8 @@ public class ReplaceFileTest extends MockedPillarTest {
 
         addStep("Setup for having the file and delivering pillar id", 
                 "Should return true, when requesting file-id existence.");
-        doAnswer(new Answer() {
-            public Boolean answer(InvocationOnMock invocation) {
-                return true;
-            }
-        }).when(model).hasFileID(eq(FILE_ID), anyString());
-        doAnswer(new Answer() {
-            public String answer(InvocationOnMock invocation) {
-                return settingsForCUT.getComponentID();
-            }
-        }).when(model).getPillarID();
+        doAnswer(invocation -> true).when(model).hasFileID(eq(FILE_ID), anyString());
+        doAnswer(invocation -> settingsForCUT.getComponentID()).when(model).getPillarID();
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
@@ -268,21 +233,9 @@ public class ReplaceFileTest extends MockedPillarTest {
 
         addStep("Setup for having the file and delivering pillar id", 
                 "Should return true, when requesting file-id existence.");
-        doAnswer(new Answer() {
-            public Boolean answer(InvocationOnMock invocation) {
-                return true;
-            }
-        }).when(model).hasFileID(eq(FILE_ID), anyString());
-        doAnswer(new Answer() {
-            public String answer(InvocationOnMock invocation) {
-                return settingsForCUT.getComponentID();
-            }
-        }).when(model).getPillarID();
-        doAnswer(new Answer() {
-            public String answer(InvocationOnMock invocation) {
-                return NON_DEFAULT_MD5_CHECKSUM;
-            }
-        }).when(model).getChecksumForFile(anyString(), anyString(), any(ChecksumSpecTYPE.class));
+        doAnswer(invocation -> true).when(model).hasFileID(eq(FILE_ID), anyString());
+        doAnswer(invocation -> settingsForCUT.getComponentID()).when(model).getPillarID();
+        doAnswer(invocation -> NON_DEFAULT_MD5_CHECKSUM).when(model).getChecksumForFile(anyString(), anyString(), any(ChecksumSpecTYPE.class));
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
@@ -312,21 +265,9 @@ public class ReplaceFileTest extends MockedPillarTest {
 
         addStep("Setup for already having the file and delivering pillar id", 
                 "Should return true, when requesting file-id existence.");
-        doAnswer(new Answer() {
-            public Boolean answer(InvocationOnMock invocation) {
-                return true;
-            }
-        }).when(model).hasFileID(eq(FILE_ID), anyString());
-        doAnswer(new Answer() {
-            public String answer(InvocationOnMock invocation) {
-                return settingsForCUT.getComponentID();
-            }
-        }).when(model).getPillarID();
-        doAnswer(new Answer() {
-            public String answer(InvocationOnMock invocation) {
-                return DEFAULT_MD5_CHECKSUM;
-            }
-        }).when(model).getChecksumForFile(anyString(), anyString(), any(ChecksumSpecTYPE.class));
+        doAnswer(invocation -> true).when(model).hasFileID(eq(FILE_ID), anyString());
+        doAnswer(invocation -> settingsForCUT.getComponentID()).when(model).getPillarID();
+        doAnswer(invocation -> DEFAULT_MD5_CHECKSUM).when(model).getChecksumForFile(anyString(), anyString(), any(ChecksumSpecTYPE.class));
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
@@ -364,38 +305,26 @@ public class ReplaceFileTest extends MockedPillarTest {
 
         addStep("Setup for already having the file and delivering pillar id", 
                 "Should return true, when requesting file-id existence.");
-        doAnswer(new Answer() {
-            public Boolean answer(InvocationOnMock invocation) {
-                return true;
-            }
-        }).when(model).hasFileID(eq(FILE_ID), anyString());
-        doAnswer(new Answer() {
-            public String answer(InvocationOnMock invocation) {
-                return settingsForCUT.getComponentID();
-            }
-        }).when(model).getPillarID();
-        doAnswer(new Answer() {
-            public String answer(InvocationOnMock invocation) {
-                return DEFAULT_MD5_CHECKSUM;
-            }            
-        }).when(model).getChecksumForFile(anyString(), anyString(), any(ChecksumSpecTYPE.class));
-        doAnswer(new Answer() {
-            public ChecksumDataForFileTYPE answer(InvocationOnMock invocation) {
-                ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
-                res.setChecksumSpec(otherCsSpec);
-                res.setCalculationTimestamp(CalendarUtils.getNow());
+        doAnswer(invocation -> true).when(model).hasFileID(eq(FILE_ID), anyString());
+        doAnswer(invocation -> settingsForCUT.getComponentID()).when(model).getPillarID();
+        doAnswer(invocation -> DEFAULT_MD5_CHECKSUM).when(model).getChecksumForFile(anyString(), anyString(), any(ChecksumSpecTYPE.class));
+        doAnswer(invocation -> {
+            ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
+            res.setChecksumSpec(otherCsSpec);
+            res.setCalculationTimestamp(CalendarUtils.getNow());
+            try {
                 res.setChecksumValue(Base16Utils.encodeBase16(NON_DEFAULT_MD5_CHECKSUM));
-                return res;
-            }            
+            } catch (DecoderException e) {
+                e.printStackTrace();
+            }
+            return res;
         }).when(model).getChecksumDataForFile(anyString(), anyString(), eq(otherCsSpec));
-        doAnswer(new Answer() {
-            public ChecksumDataForFileTYPE answer(InvocationOnMock invocation) {
-                ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
-                res.setChecksumSpec(csSpec);
-                res.setCalculationTimestamp(CalendarUtils.getNow());
-                res.setChecksumValue(Base16Utils.encodeBase16(DEFAULT_MD5_CHECKSUM));
-                return res;
-            }            
+        doAnswer(invocation -> {
+            ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
+            res.setChecksumSpec(csSpec);
+            res.setCalculationTimestamp(CalendarUtils.getNow());
+            res.setChecksumValue(Base16Utils.encodeBase16(DEFAULT_MD5_CHECKSUM));
+            return res;
         }).when(model).getChecksumDataForFile(anyString(), anyString(), eq(csSpec));
 
         addStep("Create and send the identify request message.",

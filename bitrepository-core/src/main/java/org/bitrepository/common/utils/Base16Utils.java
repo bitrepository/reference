@@ -52,13 +52,13 @@ public class Base16Utils {
      * @param hexString The string to encode to base16.
      * @return The string encoded to base16.
      */
-    public static byte[] encodeBase16(String hexString) {
+    public static byte[] encodeBase16(String hexString) throws DecoderException {
         ArgumentValidator.checkNotNullOrEmpty(hexString, "String hexString");
         // TODO Java 17 has HexFormat.of().parseHex(s) - consider using instead
         try {
             return Hex.decodeHex(hexString);
         } catch (DecoderException e) {
-            throw new IllegalArgumentException("Bad hex-string '" + hexString + "': " + e.getMessage());
+            throw new DecoderException("The string '" + hexString + "' is not a valid hex-string.");
         }
     }
 }

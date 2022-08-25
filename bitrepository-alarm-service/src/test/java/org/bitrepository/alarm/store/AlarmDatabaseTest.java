@@ -65,7 +65,7 @@ public class AlarmDatabaseTest extends ExtendedTestCase {
     File dbDir = null;
 
     @BeforeClass (alwaysRun = true)
-    public void setup() throws Exception {
+    public void setup() {
         settings = TestSettingsProvider.reloadSettings("AlarmDatabaseUnderTest");
 
         DerbyDatabaseDestroyer.deleteDatabase(
@@ -76,15 +76,15 @@ public class AlarmDatabaseTest extends ExtendedTestCase {
     }
     
     @AfterMethod (alwaysRun = true)
-    public void cleanupDatabase() throws Exception {
+    public void cleanupDatabase() {
         // TODO
         DBConnector connector = new DBConnector(settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase());
-        DatabaseUtils.executeStatement(connector, "DELETE FROM " + ALARM_TABLE, new Object[0]);
-        DatabaseUtils.executeStatement(connector, "DELETE FROM " + COMPONENT_TABLE, new Object[0]);
+        DatabaseUtils.executeStatement(connector, "DELETE FROM " + ALARM_TABLE);
+        DatabaseUtils.executeStatement(connector, "DELETE FROM " + COMPONENT_TABLE);
     }
 
     @AfterClass (alwaysRun = true)
-    public void shutdown() throws Exception {
+    public void shutdown()  {
         addStep("Cleanup after test.", "Should remove directory with test material.");
         if(dbDir != null) {
             FileUtils.delete(dbDir);
@@ -92,13 +92,13 @@ public class AlarmDatabaseTest extends ExtendedTestCase {
     }
 
     @Test(groups = {"regressiontest", "databasetest"})
-    public void AlarmDatabaseExtractionTest() throws Exception {
+    public void AlarmDatabaseExtractionTest() {
         addDescription("Testing the connection to the alarm service database especially with regards to "
                 + "extracting the data from it.");
         addStep("Setup the variables and constants.", "Should be ok.");
         Date restrictionDate = new Date(123456789); // Sometime between epoch and now!
         
-        addStep("Adds the variables to the settings and instantaites the database cache", "Should be connected.");
+        addStep("Adds the variables to the settings and instantiates the database cache", "Should be connected.");
         AlarmDAOFactory alarmDAOFactory = new AlarmDAOFactory();
         AlarmServiceDAO database = alarmDAOFactory.getAlarmServiceDAOInstance(
                 settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase());
@@ -184,7 +184,7 @@ public class AlarmDatabaseTest extends ExtendedTestCase {
     }
 
     @Test(groups = {"regressiontest", "databasetest"})
-    public void AlarmDatabaseLargeIngestionTest() throws Exception {
+    public void AlarmDatabaseLargeIngestionTest() {
         addDescription("Testing the ingestion of a large texts into the database");
         addStep("Setup and create alarm", "");
         AlarmDAOFactory alarmDAOFactory = new AlarmDAOFactory();

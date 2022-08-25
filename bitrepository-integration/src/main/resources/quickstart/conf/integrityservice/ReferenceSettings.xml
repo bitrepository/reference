@@ -97,17 +97,17 @@
     <PillarIntegrityDetails>
       <PillarDetails>
         <PillarID>checksum-pillar</PillarID>
-        <PillarHostname>test1@kb.dk</PillarHostname>
+        <PillarName>Alpha</PillarName>
         <PillarType>CHECKSUM</PillarType>
       </PillarDetails>
       <PillarDetails>
         <PillarID>file1-pillar</PillarID>
-        <PillarHostname>test2@kb.dk</PillarHostname>
+        <PillarName>Beta</PillarName>
         <PillarType>FILE</PillarType>
       </PillarDetails>
       <PillarDetails>
         <PillarID>file2-pillar</PillarID>
-        <PillarHostname>test3@kb.dk</PillarHostname>
+        <PillarName>Gamma</PillarName>
         <PillarType>FILE</PillarType>
       </PillarDetails>
     </PillarIntegrityDetails>

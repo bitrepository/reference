@@ -66,12 +66,12 @@ public class IncrementalCollector {
     private long collectedAudits = 0;
 
     /**
-     * @param collectionID       the collection ID
+     * @param collectionID       The collection ID
      * @param clientID           The clientID to use for the requests.
      * @param client             The client to use for the operations.
      * @param store              Where to persist the received results.
-     * @param maxNumberOfResults A optional limit on the number of audit trail events to request. If not set, {}
-     * @param alarmDispatcher    the alarm dispatcher
+     * @param maxNumberOfResults An optional limit on the number of audit trail events to request. If not set, {}
+     * @param alarmDispatcher    The alarm dispatcher
      */
     public IncrementalCollector(String collectionID, String clientID, AuditTrailClient client, AuditTrailStore store,
                                 int maxNumberOfResults, AlarmDispatcher alarmDispatcher) {
@@ -103,7 +103,6 @@ public class IncrementalCollector {
 
     /**
      * Setup and initiates the collection of audit trails through the client.
-     * Adds one to the sequence number to request only newer audit trails.
      *
      * @param contributors the collection of IDs of contributor
      */
@@ -121,7 +120,8 @@ public class IncrementalCollector {
     }
 
     /**
-     * Collect a page of audit trails from the active contributors
+     * Collect a page of audit trails from the active contributors.
+     * Adds 1 to the sequence number to only collect newer audit trails.
      *
      * @param contributors The contributors to collect from
      * @return Collection<String> the contributors that have more audits to collect
@@ -129,9 +129,9 @@ public class IncrementalCollector {
     private Collection<String> collect(Collection<String> contributors) {
         List<AuditTrailQuery> queries = new ArrayList<>();
 
-        for (String contributorId : contributors) {
-            long seq = store.largestSequenceNumber(contributorId, collectionID);
-            queries.add(new AuditTrailQuery(contributorId, seq + 1, null, maxNumberOfResults));
+        for (String contributorID : contributors) {
+            long seqNum = store.largestSequenceNumber(contributorID, collectionID);
+            queries.add(new AuditTrailQuery(contributorID, seqNum + 1, null, maxNumberOfResults));
         }
 
         log.debug("Collecting of AuditTrails for '{}' with ContributorQueries: {}", collectionID, queries);

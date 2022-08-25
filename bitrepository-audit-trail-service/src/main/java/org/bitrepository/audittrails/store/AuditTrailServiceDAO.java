@@ -49,14 +49,14 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
     }
 
     @Override
-    public AuditEventIterator getAuditTrailsByIterator(String fileID, String collectionID, String contributorId,
+    public AuditEventIterator getAuditTrailsByIterator(String fileID, String collectionID, String contributorID,
                                                        Long minSeqNumber, Long maxSeqNumber, String actorName, FileAction operation,
                                                        Date startDate,
                                                        Date endDate, String fingerprint, String operationID) {
         ExtractModel model = new ExtractModel();
-        model.setFileId(fileID);
-        model.setCollectionId(collectionID);
-        model.setContributorId(contributorId);
+        model.setFileID(fileID);
+        model.setCollectionID(collectionID);
+        model.setContributorID(contributorID);
         model.setMinSeqNumber(minSeqNumber);
         model.setMaxSeqNumber(maxSeqNumber);
         model.setActorName(actorName);
@@ -88,7 +88,7 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
 
     @Override
     public long largestSequenceNumber(String contributorID, String collectionID) {
-        ArgumentValidator.checkNotNullOrEmpty(contributorID, "String contributorId");
+        ArgumentValidator.checkNotNullOrEmpty(contributorID, "String contributorID");
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
 
         String sql = "SELECT latest_sequence_number FROM collection_progress"
@@ -101,8 +101,8 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
     }
 
     @Override
-    public long getPreservationSequenceNumber(String contributorId, String collectionID) {
-        ArgumentValidator.checkNotNullOrEmpty(contributorId, "String contributorId");
+    public long getPreservationSequenceNumber(String contributorID, String collectionID) {
+        ArgumentValidator.checkNotNullOrEmpty(contributorID, "String contributorID");
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
 
         String sql = "SELECT preserved_seq_number FROM preservation"
@@ -113,19 +113,18 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
                 + " SELECT collection_key FROM collection"
                 + " WHERE collectionid = ? )";
 
-        Long seq = DatabaseUtils.selectLongValue(dbConnector, sql, contributorId, collectionID);
-        if (seq != null) {
-            return seq.intValue();
-        }
-        return 0;
+        Long seq = DatabaseUtils.selectLongValue(dbConnector, sql, contributorID, collectionID);
+        log.debug("Looked up latest preservation seq number for {} in collection '{}', it was: {}",
+                contributorID, collectionID, seq);
+        return (seq != null ? seq : 0L);
     }
 
     @Override
-    public void setPreservationSequenceNumber(String contributorId, String collectionID, long seqNumber) {
-        ArgumentValidator.checkNotNullOrEmpty(contributorId, "String contributorId");
+    public void setPreservationSequenceNumber(String contributorID, String collectionID, long seqNumber) {
+        ArgumentValidator.checkNotNullOrEmpty(contributorID, "String contributorID");
         ArgumentValidator.checkNotNegative(seqNumber, "int seqNumber");
-        long preservationKey = retrievePreservationKey(contributorId, collectionID);
-        log.debug("Updating preservation sequence number for contributor: " + contributorId
+        long preservationKey = retrievePreservationKey(contributorID, collectionID);
+        log.debug("Updating preservation sequence number for contributor: " + contributorID
                 + " in collection: " + collectionID + " to seq: " + seqNumber);
 
         String sqlUpdate = "UPDATE preservation SET preserved_seq_number = ?"
@@ -134,7 +133,7 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
     }
 
     @Override
-    public boolean havePreservationKey(String contributorID, String collectionID) {
+    public boolean hasPreservationKey(String contributorID, String collectionID) {
         String sql = "SELECT preservation_key FROM preservation"
                 + " WHERE contributor_key = ("
                 + " SELECT contributor_key FROM contributor"
@@ -150,11 +149,11 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
     /**
      * Retrieves the key of the preservation table entry for the given collection and contributor.
      *
-     * @param contributorId The contributor of the preservation table entry.
+     * @param contributorID The contributor of the preservation table entry.
      * @param collectionID  The collection of the preservation table entry.
      * @return The key of the entry in the preservation table.
      */
-    private Long retrievePreservationKey(String contributorId, String collectionID) {
+    private Long retrievePreservationKey(String contributorID, String collectionID) {
         String sqlRetrieve = "SELECT preservation_key FROM preservation"
                 + " WHERE contributor_key = ("
                 + " SELECT contributor_key FROM contributor"
@@ -162,30 +161,50 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
                 + " AND collection_key = ("
                 + " SELECT collection_key FROM collection"
                 + " WHERE collectionid = ? )";
-        Long guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, contributorId, collectionID);
+        Long guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, contributorID, collectionID);
 
         if (guid == null) {
-            log.debug("Inserting preservation entry for contributor '" + contributorId + "' and collection '"
-                    + collectionID + "' into the preservation table.");
+            log.debug("Inserting preservation entry for contributor '{}' and collection '{}'" +
+                    " into the preservation table.", contributorID, collectionID);
             String sqlInsert = "INSERT INTO preservation ( contributor_key, collection_key)"
                     + " VALUES ( "
                     + "(SELECT contributor_key FROM contributor"
                     + " WHERE contributor_id = ?)"
                     + ", "
                     + "( SELECT collection_key FROM collection"
-                    + " WHERE collectionid" + " = ? )"
+                    + " WHERE collectionid = ? )"
                     + ")";
-            DatabaseUtils.executeStatement(dbConnector, sqlInsert, contributorId, collectionID);
+            DatabaseUtils.executeStatement(dbConnector, sqlInsert, contributorID, collectionID);
 
-            guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, contributorId, collectionID);
+            guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, contributorID, collectionID);
         }
 
         if (guid == null) {
-            throw new IllegalStateException("PreservationKey cannot be obtained for contributor: " + contributorId +
+            throw new IllegalStateException("PreservationKey cannot be obtained for contributor: " + contributorID +
                     " in collection: " + collectionID);
         }
 
         return guid;
+    }
+
+    @Override
+    public void addCollection(String collectionID) {
+        log.debug("Inserting collection with ID '{}' into db.", collectionID);
+        String insertQuery = "INSERT INTO collection ( collectionid )"
+                + " ( SELECT ? FROM collection"
+                + " WHERE collectionid = ?"
+                + " HAVING count(*) = 0 )";
+        DatabaseUtils.executeStatement(dbConnector, insertQuery, collectionID, collectionID);
+    }
+
+    @Override
+    public void addContributor(String contributorID) {
+        log.debug("Inserting contributor with ID '{}' into db.", contributorID);
+        String insertQuery = "INSERT INTO contributor ( contributor_id )"
+                + " ( SELECT ? FROM contributor"
+                + " WHERE contributor_id = ?"
+                + " HAVING count(*) = 0 )";
+        DatabaseUtils.executeStatement(dbConnector, insertQuery, contributorID, contributorID);
     }
 
     @Override
