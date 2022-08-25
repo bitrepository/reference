@@ -82,22 +82,12 @@
           <th>Pillar Name</th>
           <th>Pillar Type</th>
           <th>Total number of files</th>
-<<<<<<< HEAD
           <th id="all-missingFiles">Number of missing files</th>
           <th id="all-missingChecksums">Number of missing checksums</th>
           <th id="all-obsoleteChecksums">Number of obsolete checksums</th>
           <th id="all-checksumErrors">Number of inconsistent checksums</th>
-=======
-          <th>Number of missing files</th>
-          <th>Number of missing checksums</th>
-          <th>Number of obsolete checksums</th>
-          <th>Number of inconsistent checksums</th>
-          <th>Configured max age of checksums</th>
-          <th>Age of oldest checksum</th>
-<<<<<<< HEAD
->>>>>>> 10b99c1d8 (BITMAG-1142 Checksum age in GUI: underway)
-=======
->>>>>>> ac4d1581c (BITMAG-1142 Checksum age in GUI: underway)
+          <th id="all-maxAgeForChecksums">Configured max age of checksums</th>
+          <th id="all-ageOfOldestChecksum">Age of oldest checksum</th>
         </tr>
         </thead>
         <tbody id="integrity-status-table-body"></tbody>
@@ -214,8 +204,6 @@
         });
     }
 
-<<<<<<< HEAD
-=======
     function getPagingLimit(id, member) {
         var myID = id;
         var myMember = member;
@@ -353,13 +341,13 @@
                     obsoleteChecksumsCount : j[i].obsoleteChecksumsCount,
                     checksumErrorCount : j[i].checksumErrorCount,
                     maxAgeForChecksums : j[i].maxAgeForChecksums,
-                    ageOfOldestChecksum : j[i].ageOfOldestChecksum};
+                    ageOfOldestChecksum : j[i].ageOfOldestChecksum
+                };
                 updateCells(j[i].pillarID);
             }
         });
     }
 
->>>>>>> ac4d1581c (BITMAG-1142 Checksum age in GUI: underway)
     function startWorkflow() {
         let ID = $("#workflowSelector option:selected").val();
         let url = integrityServiceUrl + '/integrity/IntegrityService/startWorkflow';
