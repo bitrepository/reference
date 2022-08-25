@@ -535,7 +535,7 @@ public abstract class IntegrityDAO {
                     Long obsoleteChecksums = dbResult.getLong("obsolete_checksums_count");
                     Date statsTime = null;
                     Date updateTime = null;
-                    String pillarHostname = Objects.requireNonNullElse(SettingsUtils.getPillarName(pillarID), "N/A");
+                    String pillarName = Objects.requireNonNullElse(SettingsUtils.getPillarName(pillarID), "N/A");
                     String pillarType = (SettingsUtils.getPillarType(pillarID) != null) ?
                             Objects.requireNonNull(SettingsUtils.getPillarType(pillarID)).value() : "Unknown";
                     String maxAgeForChecksums = getMaxAgeForChecksums(pillarID);
