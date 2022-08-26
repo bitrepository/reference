@@ -41,6 +41,7 @@ import org.bitrepository.service.workflow.JobID;
 import org.bitrepository.service.workflow.Workflow;
 import org.bitrepository.service.workflow.WorkflowManager;
 import org.bitrepository.service.workflow.WorkflowStatistic;
+import org.bitrepository.settings.referencesettings.PillarType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,6 +67,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Path("/IntegrityService")
 public class RestIntegrityService {
@@ -244,15 +246,18 @@ public class RestIntegrityService {
         }
         for (String pillar : pillars) {
             if (!stats.containsKey(pillar)) {
-                PillarCollectionStat emptyStat = new PillarCollectionStat(pillar, collectionID, 0L, 0L, 0L, 0L, 0L, 0L, new Date(0),
-                        new Date(0));
-                ;
+                String pillarName = Objects.requireNonNullElse(SettingsUtils.getPillarName(pillar), "N/A");
+                PillarType pillarTypeObject = SettingsUtils.getPillarType(pillar);
+                String pillarType = pillarTypeObject != null ? pillarTypeObject.value() : null;
+                PillarCollectionStat emptyStat = new PillarCollectionStat(pillar, collectionID, pillarName, pillarType,
+                        0L, 0L, 0L, 0L, 0L, 0L, new Date(0), new Date(0));
                 stats.put(pillar, emptyStat);
             }
         }
         jg.writeStartArray();
         for (PillarCollectionStat stat : stats.values()) {
             writeIntegrityStatusObject(stat, jg);
+            log.debug("IntegrityStatus: Wrote pillar name: " + stat.getPillarName() + " to pillar" + stat.getPillarID());
         }
         jg.writeEndArray();
         jg.flush();
@@ -410,6 +415,8 @@ public class RestIntegrityService {
     private void writeIntegrityStatusObject(PillarCollectionStat stat, JsonGenerator jg) throws IOException {
         jg.writeStartObject();
         jg.writeObjectField("pillarID", stat.getPillarID());
+        jg.writeObjectField("pillarName", stat.getPillarName());
+        jg.writeObjectField("pillarType", stat.getPillarType());
         jg.writeObjectField("totalFileCount", stat.getFileCount());
         jg.writeObjectField("missingFilesCount", stat.getMissingFiles());
         jg.writeObjectField("checksumErrorCount", stat.getChecksumErrors());

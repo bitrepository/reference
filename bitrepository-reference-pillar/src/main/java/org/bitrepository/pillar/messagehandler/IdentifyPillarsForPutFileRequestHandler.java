@@ -128,6 +128,7 @@ public class IdentifyPillarsForPutFileRequestHandler extends IdentifyRequestHand
         response.setChecksumDataForExistingFile(getPillarModel().getChecksumDataForFile(message.getFileID(), message.getCollectionID(),
                 ChecksumUtils.getDefault(getSettings())));
 
+
         ResponseInfo irInfo = new ResponseInfo();
         irInfo.setResponseCode(ResponseCode.DUPLICATE_FILE_FAILURE);
         response.setResponseInfo(irInfo);

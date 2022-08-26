@@ -5,22 +5,23 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
 package org.bitrepository.pillar;
 
+import org.apache.commons.codec.DecoderException;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
@@ -75,7 +76,7 @@ public abstract class MockedPillarTest extends DefaultFixturePillarTest {
         PillarAlarmDispatcher alarmDispatcher = new PillarAlarmDispatcher(settingsForCUT, messageBus);
         context = new MessageHandlerContext(settingsForCUT,
                 SettingsHelper.getPillarCollections(settingsForCUT.getComponentID(), settingsForCUT.getCollections()),
-                new ResponseDispatcher(settingsForCUT, messageBus), 
+                new ResponseDispatcher(settingsForCUT, messageBus),
                 alarmDispatcher,
                 audits, fileExchangeMock);
         mediator = new PillarMediator(messageBus, context, model);
@@ -84,7 +85,7 @@ public abstract class MockedPillarTest extends DefaultFixturePillarTest {
         csSpec = new ChecksumSpecTYPE();
         csSpec.setChecksumSalt(null);
         csSpec.setChecksumType(ChecksumType.MD5);
-        
+
         otherCsSpec = new ChecksumSpecTYPE();
         otherCsSpec.setChecksumSalt(new byte[]{'a', 'b'});
         otherCsSpec.setChecksumType(ChecksumType.HMAC_SHA512);
@@ -92,16 +93,21 @@ public abstract class MockedPillarTest extends DefaultFixturePillarTest {
         csData = new ChecksumDataForFileTYPE();
         csData.setCalculationTimestamp(CalendarUtils.getEpoch());
         csData.setChecksumSpec(csSpec);
-        csData.setChecksumValue(Base16Utils.encodeBase16(DEFAULT_MD5_CHECKSUM));
 
         NON_DEFAULT_CS = new ChecksumDataForFileTYPE();
         NON_DEFAULT_CS.setCalculationTimestamp(CalendarUtils.getEpoch());
         NON_DEFAULT_CS.setChecksumSpec(csSpec);
-        NON_DEFAULT_CS.setChecksumValue(Base16Utils.encodeBase16(NON_DEFAULT_MD5_CHECKSUM));
+
+        try {
+            csData.setChecksumValue(Base16Utils.encodeBase16(DEFAULT_MD5_CHECKSUM));
+            NON_DEFAULT_CS.setChecksumValue(Base16Utils.encodeBase16(NON_DEFAULT_MD5_CHECKSUM));
+        } catch (DecoderException e) {
+            System.err.println(e.getMessage());
+        }
     }
 
     public void shutdownMediator() {
-        if(mediator != null) {
+        if (mediator != null) {
             mediator.close();
             mediator = null;
         }

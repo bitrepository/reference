@@ -65,7 +65,7 @@ create index fileindex on file ( fileid, collectionid );
 create table actor (
     actor_guid bigint not null generated always as identity primary key,
                                     -- The guid for the actor.
-    actor_name varchar(255)         -- The name of the actor.
+    actor_name varchar(255) unique  -- The name of the actor.
 );
 
 create index actorindex on actor ( actor_name );

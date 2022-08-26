@@ -21,6 +21,8 @@
  */
 package org.bitrepository.common.utils;
 
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.bitrepository.common.ArgumentValidator;
 
 /**
@@ -40,35 +42,23 @@ public class Base16Utils {
         if (data == null) {
             return null;
         }
-
-        StringBuilder sb = new StringBuilder(data.length * 2);
-        for (byte datum : data) {
-            int v = datum & 0xff;
-            if (v < 16) {
-                sb.append('0');
-            }
-            sb.append(Integer.toHexString(v));
-        }
-        return sb.toString();
+        // TODO Java 17 has HexFormat.of().formatHex(bytes) - consider using instead
+        return Hex.encodeHexString(data);
     }
 
     /**
-     * Encoding a hex string to base16.
+     * Encodes a hex string to a set of base16 bytes.
      *
      * @param hexString The string to encode to base16.
      * @return The string encoded to base16.
      */
-    public static byte[] encodeBase16(String hexString) {
+    public static byte[] encodeBase16(String hexString) throws DecoderException {
         ArgumentValidator.checkNotNullOrEmpty(hexString, "String hexString");
-        ArgumentValidator.checkTrue((hexString.length() % 2) == 0, "String hexString, '" + hexString
-                + "', must be an even number of characters.");
-
-        int len = hexString.length();
-        byte[] data = new byte[len / 2];
-        for (int i = 0; i < len; i += 2) {
-            data[i / 2] = (byte) ((Character.digit(hexString.charAt(i), 16) << 4)
-                    + Character.digit(hexString.charAt(i + 1), 16));
+        // TODO Java 17 has HexFormat.of().parseHex(s) - consider using instead
+        try {
+            return Hex.decodeHex(hexString);
+        } catch (DecoderException e) {
+            throw new DecoderException("The string '" + hexString + "' is not a valid hex-string.");
         }
-        return data;
     }
 }

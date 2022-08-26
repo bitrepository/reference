@@ -92,10 +92,25 @@ public class Constants {
     /**
      * The argument for the location of the results.
      */
-    public static final String LOCATION = "l";
+    public static final String LOCATION_ARG = "l";
+
+    public static final String PILLAR_DESC =
+            "The id of the pillar where the operation should be performed. " +
+                    "If undefined the operation is performed on all pillars.";
+
+    public static final String REQUEST_CHECKSUM_TYPE_DESC =
+            "[OPTIONAL] Request the use of a specific checksum algorithm in the response from the pillars. " +
+                    "E.g. '-" + REQUEST_CHECKSUM_TYPE_ARG + " SHA1'.";
+
+    public static final String REQUEST_CHECKSUM_SALT_DESC =
+            "[OPTIONAL] A salt for the requested checksum specified by the checksum type argument " +
+                    "[-" + REQUEST_CHECKSUM_TYPE_ARG + " REQUIRED]. Must be hexadecimal string of even length. " +
+                    "E.g. '-" + REQUEST_CHECKSUM_TYPE_ARG + " HMAC_SHA1 -" + REQUEST_CHECKSUM_SALT_ARG + " 0123abcd'";
+
+    public static final String DELETE_FILE_DESC = "If this flag is present the file will be removed from " +
+            "the file exchange when the chosen operation is complete.";
 
     public static final int EXIT_SUCCESS = 0;
     public static final int EXIT_ARGUMENT_FAILURE = 1;
     public static final int EXIT_OPERATION_FAILURE = -1;
-
 }

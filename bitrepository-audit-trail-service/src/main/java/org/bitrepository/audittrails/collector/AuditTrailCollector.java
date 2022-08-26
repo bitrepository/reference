@@ -103,7 +103,7 @@ public class AuditTrailCollector {
                 info.setLastDuration("Collection has not finished yet");
             }
         } else {
-            info.setLastStart("Audit trail collection have not started");
+            info.setLastStart("Audit trail collection has not started");
             info.setLastDuration("Not available");
         }
         info.setNextStart(TimeUtils.shortDate(nextRun));

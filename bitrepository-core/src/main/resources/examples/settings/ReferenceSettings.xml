@@ -425,6 +425,14 @@
       Directory must be write and readable by integrity service.
      -->
     <IntegrityReportsDir>/var/integrity-reports/</IntegrityReportsDir>
+
+    <PillarIntegrityDetails>
+      <PillarDetails>
+        <PillarID>Pillar1</PillarID>
+        <PillarName>Alpha</PillarName>
+        <PillarType>FILE</PillarType>
+      </PillarDetails>
+    </PillarIntegrityDetails>
   </IntegrityServiceSettings>
 
   <!-- Settings for the Monitoring / Status service -->

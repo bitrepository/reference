@@ -1,23 +1,23 @@
 /*
  * #%L
  * Bitrepository Common
- * 
+ *
  * $Id$
  * $HeadURL$
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -55,36 +55,27 @@ import javax.jms.JMSException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
+import java.util.List;
 
-/**
- * Contains the generic parts for integration testing.
- */
 public abstract class IntegrationTest extends ExtendedTestCase {
     protected static TestEventManager testEventManager = TestEventManager.getInstance();
     public static LocalActiveMQBroker broker;
     public static EmbeddedHttpServer server;
     public static HttpServerConfiguration httpServerConfiguration;
     public static MessageBus messageBus;
-
     private MessageReceiverManager receiverManager;
     protected static String alarmDestinationID;
     protected static MessageReceiver alarmReceiver;
-
     protected static SecurityManager securityManager;
-
-    /** Settings for the Component-Under-Test */
     protected static Settings settingsForCUT;
-    /** Settings for the Test components */
     protected static Settings settingsForTestClient;
     protected static String collectionID;
-
     protected String NON_DEFAULT_FILE_ID;
     protected static String DEFAULT_FILE_ID;
     protected static URL DEFAULT_FILE_URL;
     protected static String DEFAULT_DOWNLOAD_FILE_ADDRESS;
     protected static String DEFAULT_UPLOAD_FILE_ADDRESS;
-    protected String DEFAULT_AUDITINFORMATION;
+    protected String DEFAULT_AUDIT_INFORMATION;
 
     protected String testMethodName;
 
@@ -94,8 +85,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         settingsForTestClient = loadSettings("TestSuiteInitialiser");
         makeUserSpecificSettings(settingsForCUT);
         makeUserSpecificSettings(settingsForTestClient);
-        httpServerConfiguration = new HttpServerConfiguration(
-                settingsForTestClient.getReferenceSettings().getFileExchangeSettings());
+        httpServerConfiguration = new HttpServerConfiguration(settingsForTestClient.getReferenceSettings().getFileExchangeSettings());
         collectionID = settingsForTestClient.getCollections().get(0).getID();
 
         securityManager = createSecurityManager();
@@ -117,6 +107,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         alarmReceiver = new MessageReceiver(settingsForCUT.getAlarmDestination(), testEventManager);
         addReceiver(alarmReceiver);
     }
+
     protected void addReceiver(MessageReceiver receiver) {
         receiverManager.addReceiver(receiver);
     }
@@ -125,7 +116,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     public void initMessagebus() {
         setupMessageBus();
     }
-    
+
     @AfterSuite(alwaysRun = true)
     public void shutdownSuite() {
         teardownMessageBus();
@@ -140,22 +131,21 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         testMethodName = method.getName();
         setupSettings();
         NON_DEFAULT_FILE_ID = TestFileHelper.createUniquePrefix(testMethodName);
-        DEFAULT_AUDITINFORMATION = testMethodName;
+        DEFAULT_AUDIT_INFORMATION = testMethodName;
         receiverManager = new MessageReceiverManager(messageBus);
         registerMessageReceivers();
-        messageBus.setCollectionFilter(Arrays.asList(new String[]{}));
-        messageBus.setComponentFilter(Arrays.asList(new String[]{}));
+        messageBus.setCollectionFilter(List.of());
+        messageBus.setComponentFilter(List.of());
         receiverManager.startListeners();
         initializeCUT();
     }
-    /**
-     *  To be overridden by concrete tests wishing to do stuff. Remember to call super if this is overridden.
-     */
+
+
     protected void initializeCUT() {}
 
     @AfterMethod(alwaysRun = true)
     public final void afterMethod(ITestResult testResult) {
-        if ( receiverManager != null ) {
+        if (receiverManager != null) {
             receiverManager.stopListeners();
         }
         if (testResult.isSuccess()) {
@@ -165,7 +155,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     }
 
     /**
-     * May be used by by concrete tests for general verification when the test method has finished. Will only be run
+     * May be used by specific tests for general verification when the test method has finished. Will only be run
      * if the test has passed (so far).
      */
     protected void afterMethodVerification() {
@@ -178,8 +168,9 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     protected void clearReceivers() {
         receiverManager.clearMessagesInReceivers();
     }
+
     /**
-     *  May be overridden by concrete tests wishing to do stuff. Remember to call super if this is overridden.
+     * May be overridden by specific tests wishing to do stuff. Remember to call super if this is overridden.
      */
     protected void shutdownCUT() {}
 
@@ -197,20 +188,18 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         makeUserSpecificSettings(settingsForTestClient);
     }
 
-    /** Can be overloaded by tests needing to load custom settings */
+
     protected Settings loadSettings(String componentID) {
-        Settings settings = TestSettingsProvider.reloadSettings(componentID);
-        return settings;
+        return TestSettingsProvider.reloadSettings(componentID);
     }
 
     private void makeUserSpecificSettings(Settings settings) {
-        settings.getRepositorySettings().getProtocolSettings().setCollectionDestination(
-                settings.getCollectionDestination() + getTopicPostfix());
-        settings.getRepositorySettings().getProtocolSettings().setAlarmDestination(
-                settings.getAlarmDestination() + getTopicPostfix());
+        settings.getRepositorySettings().getProtocolSettings()
+                .setCollectionDestination(settings.getCollectionDestination() + getTopicPostfix());
+        settings.getRepositorySettings().getProtocolSettings().setAlarmDestination(settings.getAlarmDestination() + getTopicPostfix());
     }
 
-    @BeforeTest (alwaysRun = true)
+    @BeforeTest(alwaysRun = true)
     public void writeLogStatus() {
         if (System.getProperty("enableLogStatus", "false").equals("true")) {
             LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
@@ -218,12 +207,16 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         }
     }
 
-    /** Indicated whether an embedded active MQ should be started and used */
+    /**
+     * Indicated whether an embedded active MQ should be started and used
+     */
     public boolean useEmbeddedMessageBus() {
         return System.getProperty("useEmbeddedMessageBus", "true").equals("true");
     }
 
-    /** Indicated whether an embedded http server should be started and used */
+    /**
+     * Indicated whether an embedded http server should be started and used
+     */
     public boolean useEmbeddedHttpServer() {
         return System.getProperty("useEmbeddedHttpServer", "false").equals("true");
     }
@@ -232,7 +225,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
      * Hooks up the message bus.
      */
     protected void setupMessageBus() {
-        if(useEmbeddedMessageBus()) {
+        if (useEmbeddedMessageBus()) {
             if (messageBus == null) {
                 messageBus = new SimpleMessageBus();
             }
@@ -253,7 +246,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
             }
         }
 
-        if(broker != null) {
+        if (broker != null) {
             try {
                 broker.stop();
                 broker = null;
@@ -273,8 +266,9 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     }
 
     /**
-     * Returns the postfix string to use when accessing user specific topics, which is the mechanism we use in the 
+     * Returns the postfix string to use when accessing user specific topics, which is the mechanism we use in the
      * bit repository tests.
+     *
      * @return The string to postfix all topix names with.
      */
     protected String getTopicPostfix() {

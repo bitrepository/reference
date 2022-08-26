@@ -25,7 +25,6 @@
   <GeneralSettings>
     <ReceiverDestinationIDFactoryClass>org.bitrepository.protocol.messagebus.destination.DefaultReceiverDestinationIDFactory</ReceiverDestinationIDFactoryClass>
   </GeneralSettings>
-
   <ClientSettings>
     <MediatorCleanupInterval>1000</MediatorCleanupInterval>
     <ConversationTimeout>3600000</ConversationTimeout>
@@ -95,5 +94,22 @@
       <DatabaseURL>jdbc:derby:<!--foobarpattern-->conf/integrityservice/auditcontributerdb</DatabaseURL>
     </AuditTrailContributerDatabase>
     <IntegrityReportsDir>conf/integrityservice/reportdir</IntegrityReportsDir>
+    <PillarIntegrityDetails>
+      <PillarDetails>
+        <PillarID>checksum-pillar</PillarID>
+        <PillarName>Alpha</PillarName>
+        <PillarType>CHECKSUM</PillarType>
+      </PillarDetails>
+      <PillarDetails>
+        <PillarID>file1-pillar</PillarID>
+        <PillarName>Beta</PillarName>
+        <PillarType>FILE</PillarType>
+      </PillarDetails>
+      <PillarDetails>
+        <PillarID>file2-pillar</PillarID>
+        <PillarName>Gamma</PillarName>
+        <PillarType>FILE</PillarType>
+      </PillarDetails>
+    </PillarIntegrityDetails>
   </IntegrityServiceSettings>
 </ReferenceSettings>
