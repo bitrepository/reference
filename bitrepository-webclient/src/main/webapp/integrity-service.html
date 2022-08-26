@@ -179,7 +179,7 @@
     }
 
     function getWorkflowStatuses() {
-        let url = integrityServiceUrl + '/integrity/IntegrityService/getWorkflowSetup/?collectionID=' + getCollectionID();
+        let url = integrityServiceUrl + '/integrity/IntegrityService/getWorkflowSetup?collectionID=' + getCollectionID();
         $.getJSON(url, {}, function (json) {
             for (let i = 0; i < json.length; i++) {
                 if (workflows[json[i].workflowID] == null) {
@@ -204,7 +204,7 @@
 
     function startWorkflow() {
         let ID = $("#workflowSelector option:selected").val();
-        let url = integrityServiceUrl + '/integrity/IntegrityService/startWorkflow/';
+        let url = integrityServiceUrl + '/integrity/IntegrityService/startWorkflow';
         $('#formStatus').load(url, {
             workflowID: ID,
             collectionID: getCollectionID()
@@ -243,27 +243,27 @@
             context.element = id + "-totalFileCount";
             context.title = type + " on " + id.toUpperCase();
             context.member = "totalFileCount";
-            context.url += "getTotalFileIDs/";
+            context.url += "getTotalFileIDs";
         } else if (type === "Missing files") {
             context.element = id + "-missingFiles";
             context.title = type + " on " + id.toUpperCase();
             context.member = "missingFilesCount";
-            context.url += "getAllMissingFileIDs/";
+            context.url += "getMissingFileIDs";
         } else if (type === "Missing checksums") {
             context.element = id + "-missingChecksums";
             context.title = type + " on " + id.toUpperCase();
             context.member = "missingChecksumsCount";
-            context.url += "getMissingChecksumsFileIDs/";
+            context.url += "getMissingChecksumsFileIDs";
         } else if (type === "Obsolete checksums") {
             context.element = id + "-obsoleteChecksums";
             context.title = type + " on " + id.toUpperCase();
             context.member = "obsoleteChecksumsCount";
-            context.url += "getObsoleteChecksumsFileIDs/";
+            context.url += "getObsoleteChecksumsFileIDs";
         } else if (type === "Inconsistent checksums") {
             context.element = id + "-checksumErrors";
             context.title = type + " on " + id.toUpperCase();
             context.member = "checksumErrorCount";
-            context.url += "getChecksumErrorFileIDs/";
+            context.url += "getChecksumErrorFileIDs";
         }
         context.url += "?pillarID=" + id + "&collectionID=" + getCollectionID();
         return context;
@@ -368,7 +368,7 @@
     function collectionChanged(collectionID) {
         clearContent();
         $("#integrityLegend").html("Integrity information for collection " + nameMapper.getName(collectionID));
-        let reportUrl = `${integrityServiceUrl}/integrity/IntegrityService/getLatestIntegrityReport/
+        let reportUrl = `${integrityServiceUrl}/integrity/IntegrityService/getLatestIntegrityReport
             ?collectionID=${collectionID}&workflowID=CompleteIntegrityCheck`;
         $("#integrityReportGetter").html(
             `<a class="btn btn-link" href="${reportUrl}" target="_blank">Get latest integrity report</a>`);
@@ -389,7 +389,7 @@
     }
 
     function getIntegrityStatus() {
-        let url = integrityServiceUrl + "/integrity/IntegrityService/getIntegrityStatus/?collectionID="
+        let url = integrityServiceUrl + "/integrity/IntegrityService/getIntegrityStatus?collectionID="
             + getCollectionID();
         $.getJSON(url, {}, function (json) {
             for (let i = 0; i < json.length; i++) {
@@ -417,7 +417,7 @@
     }
 
     function getCollectionInformation() {
-        let url = integrityServiceUrl + "/integrity/IntegrityService/getCollectionInformation/?collectionID=" + getCollectionID();
+        let url = integrityServiceUrl + "/integrity/IntegrityService/getCollectionInformation?collectionID=" + getCollectionID();
         $.getJSON(url, {}, function (json) {
             let infoHtml = `<span><b>Latest ingest: ${json.lastIngest} &nbsp; &nbsp;
                 Size: ${json.collectionSize} &nbsp; &nbsp;
