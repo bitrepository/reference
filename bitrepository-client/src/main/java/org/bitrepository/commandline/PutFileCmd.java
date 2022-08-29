@@ -26,8 +26,10 @@ import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.client.exceptions.InvalidChecksumException;
 import org.bitrepository.commandline.eventhandler.CompleteEventAwaiter;
 import org.bitrepository.commandline.eventhandler.PutFileEventHandler;
+import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.putfile.PutFileClient;
@@ -36,7 +38,6 @@ import org.bitrepository.protocol.ProtocolComponentFactory;
 
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 
 import static org.bitrepository.commandline.Constants.ARGUMENT_IS_NOT_REQUIRED;
 import static org.bitrepository.commandline.Constants.CHECKSUM_ARG;
@@ -169,33 +170,30 @@ public class PutFileCmd extends CommandLineClient {
      */
     private OperationEvent putTheFile() {
         output.debug("Uploading the file to the FileExchange.");
-        URL url = getURLOrUploadFile();
+        final URL url = getURLOrUploadFile();
+
         String fileID = retrieveFileID();
         FileExchange fileExchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
 
         output.debug("Initiating the PutFile conversation.");
         ChecksumDataForFileTYPE validationChecksum = getValidationChecksum();
-        ChecksumSpecTYPE requestChecksum = getRequestChecksumSpecOrNull();
+        ChecksumSpecTYPE requestedChecksumSpec = getRequestChecksumSpecOrDefault();
 
-        // FIXME: The below code-snippet still does not prevent the checksum pillar from storing the checksum if the URL is invalid.
-        if ((cmdHandler.hasOption(URL_ARG) && cmdHandler.hasOption(CHECKSUM_ARG)) && !cmdHandler.hasOption(PILLAR_ARG)) {
-            String checksumFromURL = getChecksumFromURL(url, fileExchange, requestChecksum);
-            String checksumFromArg = new String(validationChecksum.getChecksumValue(), StandardCharsets.UTF_8);
+        if (cmdHandler.hasOption(URL_ARG) && !cmdHandler.hasOption(PILLAR_ARG)) {
+            output.debug("Generating checksum from URL.");
+            String checksumFromURL = getChecksumFromURL(url, fileExchange, getDefaultChecksumSpec());
+            String checksumFromArg = Base16Utils.decodeBase16(validationChecksum.getChecksumValue());
+            output.debug("Comparing given checksum with the checksum of the file on the URL.");
             if (!checksumFromURL.equals(checksumFromArg)) {
-                throw new IllegalArgumentException(
+                throw new InvalidChecksumException(
                         "Checksum from URL: " + checksumFromURL + " does not match checksum from argument: " + checksumFromArg);
             }
         }
 
-        boolean printChecksums = cmdHandler.hasOption(REQUEST_CHECKSUM_TYPE_ARG);
-        String saltedChecksum = null;
-        if (requestChecksum != null && requestChecksum.isSetChecksumSalt()) {
-            saltedChecksum = getChecksumFromURL(url, fileExchange, requestChecksum);
-        }
-
         output.debug("Performing the PutFile conversation.");
-        CompleteEventAwaiter eventHandler = new PutFileEventHandler(settings, output, printChecksums, saltedChecksum);
-        client.putFile(getCollectionID(), url, fileID, getSizeOfFileOrZero(), validationChecksum, requestChecksum, eventHandler, null);
+        CompleteEventAwaiter eventHandler = new PutFileEventHandler(settings, output, requestedChecksumSpec);
+        client.putFile(getCollectionID(), url, fileID, getSizeOfFileOrZero(), validationChecksum, requestedChecksumSpec, eventHandler,
+                null);
 
         output.debug("Awaiting PutFile conversation final event.");
         OperationEvent finalEvent = eventHandler.getFinish();
@@ -208,14 +206,20 @@ public class PutFileCmd extends CommandLineClient {
         return finalEvent;
     }
 
-    private String getChecksumFromURL(URL url, FileExchange fileExchange, ChecksumSpecTYPE requestChecksum) {
-        String saltedChecksum;
+    /**
+     * Generates the checksum of the file on the given URL.
+     *
+     * @param url              The URL where the file can be found.
+     * @param fileExchange     FileExchange, used convert the file to an {@link java.io.InputStream}.
+     * @param checksumSpecType The requested {@link ChecksumSpecTYPE}.
+     * @return Returns the checksum as a {@link String}.
+     */
+    private String getChecksumFromURL(URL url, FileExchange fileExchange, ChecksumSpecTYPE checksumSpecType) {
         try {
-            saltedChecksum = ChecksumUtils.generateChecksum(fileExchange.getFile(url), requestChecksum);
+            return ChecksumUtils.generateChecksum(fileExchange.getFile(url), checksumSpecType);
         } catch (IOException e) {
             throw new IllegalArgumentException("Could not retrieve file from " + url);
         }
-        return saltedChecksum;
     }
 
     /**
