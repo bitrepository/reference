@@ -130,7 +130,6 @@ public class Settings {
 
     static Duration getDurationFromXmlDurationOrMillis(
             javax.xml.datatype.Duration xmlDuration, BigInteger millis) {
-        // Prefer the XML Duration
         if (xmlDuration != null) {
             validateNonNegative(xmlDuration);
             return xmlDurationToDuration(xmlDuration);
