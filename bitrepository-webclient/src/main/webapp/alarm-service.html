@@ -207,9 +207,12 @@
         const maxLength = 80;
         $(".teaser").each(function () {
             let index = $(this).closest("tr").find("td:eq(0)").text() + $(this).text();
-            if (!descriptionMapper.hasOwnProperty(index) || descriptionMapper[index] === "none") {
-                let string = $(this).html();
+            //let index = $(this).closest("tr").find("td:eq(0)").text() + $(this).closest("tr").find("td:eq(4)").text();
+            let string = $(this).html();
 
+            if (descriptionMapper.hasOwnProperty(index) && descriptionMapper[index] !== "none") {
+                $(this).empty().html(`<span class="complete" style="display: inline">${string}</span>`);
+            } else {
                 if (string.length > maxLength) {
                     let newString = string.substring(0, maxLength);
                     let removedString = string.substring(maxLength, string.length);
@@ -235,8 +238,8 @@
     function getDescriptionState() {
         descriptionMapper = {};
         $("#alarms-table-body tr").each(function () {
-            let identifier = $(this).find("td:eq(0)").text() + $(this).find("td:eq(4)").text();
-            descriptionMapper[identifier] = $(this).find("td:eq(4)").find(".complete").css("display");
+            let identifier = $(this).find("td:eq(0)").text() + $(this).find("td:eq(5)").text();
+            descriptionMapper[identifier] = $(this).find("td:eq(5)").find(".complete").css("display");
         });
     }
 
