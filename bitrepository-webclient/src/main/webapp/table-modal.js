@@ -20,16 +20,16 @@
  * #L%
  */
 
-function TableModal(operation, pillarID, url, contentElement, maxPageMethod, pageSize) {
+function TableModal(operation, pillarID, url, contentElement, getTotalItemCountCallback, pageSize) {
     this.url = url;
-    this.maxPageMethod = maxPageMethod;
+    this.getTotalItemCountCallback = getTotalItemCountCallback;
     this.pageSize = pageSize;
     let pillars;
     let files;
 
     this.getModal = function (page) {
         let self = this;
-        let maxPages = Math.ceil(this.maxPageMethod() / this.pageSize);
+        let maxPages = Math.ceil(this.getTotalItemCountCallback() / this.pageSize);
 
         $.getJSON(this.url + "&pageSize=" + this.pageSize + "&page=" + page, {}, function (json) {
             let html = `<div style="padding : 15px">`;
