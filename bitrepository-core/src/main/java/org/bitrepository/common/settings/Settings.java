@@ -148,7 +148,7 @@ public class Settings {
     /**
      * Converts a javax.xml.datatype.Duration to a java.time.Duration using estimated values for days, months and years.
      */
-    public static Duration xmlDurationToDuration(javax.xml.datatype.Duration xmlDuration) {
+    static Duration xmlDurationToDuration(javax.xml.datatype.Duration xmlDuration) {
         return unitsToDuration(xmlDuration.getField(DatatypeConstants.YEARS), ChronoUnit.YEARS)
                 .plus(unitsToDuration(xmlDuration.getField(DatatypeConstants.MONTHS), ChronoUnit.MONTHS))
                 .plus(unitsToDuration(xmlDuration.getField(DatatypeConstants.DAYS), ChronoUnit.DAYS))
