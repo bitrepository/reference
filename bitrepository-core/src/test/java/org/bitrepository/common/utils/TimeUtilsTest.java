@@ -92,21 +92,17 @@ public class TimeUtilsTest extends ExtendedTestCase {
         addDescription("TimeUtils.humanDifference() should return" +
                 " similar human readable strings to those from millisecondsToHuman()");
 
-        addStep("Call humanDifference() with same time twice", "The output should be '0s'");
+        addStep("Call humanDifference() with same time twice", "The output should be '0m'");
         String zeroTimeString = TimeUtils.humanDifference(BASE, BASE);
-        assertEquals(zeroTimeString, "0s");
+        assertEquals(zeroTimeString, "0m");
 
         addStep("Call humanDifference() with a difference obtained from a Duration",
                 "Expect corresponding readable output");
-        // Don’t print fraction of second
-        testHumanDifference("0s", Duration.ofNanos(1));
-        testHumanDifference("0s", Duration.ofMillis(1));
-        testHumanDifference("0s", Duration.ofNanos(499_999_999));
-        testHumanDifference("1s", Duration.ofNanos(500_000_000));
-        testHumanDifference("1s", Duration.ofSeconds(1));
+        // Don’t print seconds
+        testHumanDifference("0m", Duration.ofSeconds(1));
         testHumanDifference("1m", Duration.ofMinutes(1));
         testHumanDifference("1h", Duration.ofHours(1));
-        testHumanDifference("2h 3m 5s", Duration.parse("PT2H3M5.000000007S"));
+        testHumanDifference("2h 3m", Duration.parse("PT2H3M5.000000007S"));
 
         addStep("Call humanDifference() with a difference obtained from a Period",
                 "Expect corresponding readable output");
@@ -117,8 +113,11 @@ public class TimeUtilsTest extends ExtendedTestCase {
 
         addStep("Call humanDifference() with a difference obtained from a combo of a Period and a Duration",
                 "Expect corresponding readable output");
-        testHumanDifference("3y 5m 7d 11h 13m 17s",
+        testHumanDifference("3y 5m 7d",
                 Period.of(3, 5, 7), Duration.parse("PT11H13M17.023S"));
+        testHumanDifference("2m 7d 11h",
+                Period.of(0, 2, 7), Duration.parse("PT11H13M17.023S"));
+        testHumanDifference("1d 11h 13m", Period.ofDays(1), Duration.parse("PT11H13M17.023S"));
 
         addStep("Call humanDifference()" +
                         " with dates that are 2 days apart but times that cause the diff to be less than 2 full days",
@@ -128,8 +127,35 @@ public class TimeUtilsTest extends ExtendedTestCase {
                 ZonedDateTime.of(2021, 1, 31,
                         12, 0, 0, 0, testZoneId),
                 ZonedDateTime.of(2021, 2, 2,
-                        11, 59, 59, 0, testZoneId));
-        assertEquals("1d 23h 59m 59s", oneDaySomethingString);
+                        11, 59, 29, 0, testZoneId));
+        assertEquals(oneDaySomethingString, "1d 23h 59m");
+    }
+
+    @Test(groups = {"regressiontest"})
+    public void differencesPrintsWithAppropriatePrecision() {
+        // Include hours if months are 6 or less.
+        testHumanDifference("11m", Period.ofMonths(11), Duration.ofHours(23));
+        testHumanDifference("1y 1d", Period.of(1, 0, 1), Duration.ofHours(23));
+        testHumanDifference("2m 1h", Period.ofMonths(2), Duration.ofHours(1));
+        // Include minutes if days are 8 or less.
+        testHumanDifference("1y", Period.ofYears(1), Duration.ofMinutes(23));
+        testHumanDifference("1m", Period.ofMonths(1), Duration.ofMinutes(23));
+        testHumanDifference("27d", Period.ofDays(27), Duration.ofMinutes(23));
+        testHumanDifference("2d 3m", Period.ofDays(2), Duration.ofMinutes(3));
+        // Round to whole minutes
+        testHumanDifference("2d 3m", Period.ofDays(2), Duration.ofMinutes(2).plusSeconds(30));
+        testHumanDifference("2d 3m", Period.ofDays(2), Duration.ofMinutes(3).plusSeconds(29));
+        // Never include seconds.
+        testHumanDifference("1y", Period.ofYears(1), Duration.ofSeconds(55));
+        testHumanDifference("1m", Period.ofMonths(1), Duration.ofSeconds(55));
+        testHumanDifference("1d", Period.ofDays(1), Duration.ofSeconds(29));
+        testHumanDifference("22h", Duration.ofHours(22).plusSeconds(29));
+        testHumanDifference("4m", Duration.ofMinutes(4).plusSeconds(29));
+        testHumanDifference("0m", Duration.ofSeconds(2).plusMillis(1));
+        testHumanDifference("0m", Duration.ofNanos(500_000_000));
+        testHumanDifference("0m", Duration.ofNanos(499_999_999));
+        testHumanDifference("0m", Duration.ofMillis(1));
+        testHumanDifference("0m", Duration.ofNanos(1));
     }
 
     /**
@@ -146,7 +172,7 @@ public class TimeUtilsTest extends ExtendedTestCase {
     }
 
     /*
-     * The test only ensures that the output format is fixed. Which timezone the the date is 
+     * The test only ensures that the output format is fixed. Which timezone the date is
      * formatted to depends on the default/system timezone. At some time the use of the old java Date 
      * api should be discontinued and the new Java Time api used instead.
      */

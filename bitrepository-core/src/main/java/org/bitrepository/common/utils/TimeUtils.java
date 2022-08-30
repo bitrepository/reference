@@ -131,6 +131,13 @@ public final class TimeUtils {
         return sb.toString();
     }
 
+    /**
+     * Generate a human-readable difference between start and end like "5y 2m 23d" or "7d 23m".
+     *
+     * Include years, months and days if they are non-zero. Include hours if months are 6 or less.
+     * Include minutes if days are 8 or less. Never include seconds.
+     * This generally gives the user a precision of 0.5 % of the difference or finer.
+     */
     public static String humanDifference(ZonedDateTime start, ZonedDateTime end) {
         ArgumentValidator.checkTrue(! end.isBefore(start), start + " > " + end);
 
@@ -141,19 +148,23 @@ public final class TimeUtils {
             periodBetween = Period.between(start.toLocalDate(), end.toLocalDate().minusDays(1));
             afterPeriod = start.plus(periodBetween);
         }
-        // Round duration to whole seconds
+        // Round duration to whole minutes
         Duration durationBetween = Duration.between(afterPeriod, end)
-                .plusMillis(500)
-                .truncatedTo(ChronoUnit.SECONDS);
+                .plusSeconds(30)
+                .truncatedTo(ChronoUnit.MINUTES);
 
         if (periodBetween.isZero() && durationBetween.isZero()) {
-            return "0s";
+            return "0m";
         }
 
-        // The following gives an ambiguous string like "3m" or "3y 11m 5s"
-        // in the very rare cases where months *or* minutes are non-zero and days and hours are zero.
-        // Since in practice the text is updated a few seconds later and any minutes 1 minute later,
-        // it is not expected to be a problem for the user.
+        boolean includeHours = periodBetween.getYears() == 0 && periodBetween.getMonths() <= 6;
+        boolean includeMinutes = periodBetween.getYears() == 0
+                && periodBetween.getMonths() == 0
+                && periodBetween.getDays() <= 8;
+
+        // The following gives an ambiguous string like "3m"
+        // in the very rare cases where months or minutes are non-zero and days and hours are zero.
+        // It is not expected to be a problem for the user in practice.
         List<String> elements = new ArrayList<>(6);
         if (periodBetween.getYears() != 0) {
             elements.add(periodBetween.getYears() + "y");
@@ -164,14 +175,11 @@ public final class TimeUtils {
         if (periodBetween.getDays() != 0) {
             elements.add(periodBetween.getDays() + "d");
         }
-        if (durationBetween.toHours() != 0) {
+        if (includeHours && durationBetween.toHours() != 0) {
             elements.add(durationBetween.toHours() + "h");
         }
-        if (durationBetween.toMinutesPart() != 0) {
+        if (includeMinutes && durationBetween.toMinutesPart() != 0) {
             elements.add(durationBetween.toMinutesPart() + "m");
-        }
-        if (durationBetween.toSecondsPart() != 0) {
-            elements.add(durationBetween.toSecondsPart() + "s");
         }
 
         return String.join(" ", elements);
