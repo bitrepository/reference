@@ -207,7 +207,6 @@
         const maxLength = 80;
         $(".teaser").each(function () {
             let index = $(this).closest("tr").find("td:eq(0)").text() + $(this).text();
-            //let index = $(this).closest("tr").find("td:eq(0)").text() + $(this).closest("tr").find("td:eq(4)").text();
             let string = $(this).html();
 
             if (descriptionMapper.hasOwnProperty(index) && descriptionMapper[index] !== "none") {
