@@ -22,6 +22,7 @@
 package org.bitrepository.commandline.eventhandler;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.commandline.output.OutputHandler;
@@ -30,6 +31,8 @@ import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.modify.putfile.conversation.PutFileCompletePillarEvent;
 
+import java.util.Locale;
+
 /**
  * Complete event awaiter for GetFile.
  * Prints out checksum results, if any.
@@ -37,6 +40,7 @@ import org.bitrepository.modify.putfile.conversation.PutFileCompletePillarEvent;
 public class PutFileEventHandler extends CompleteEventAwaiter {
     private final Boolean printOutput;
     private final ChecksumSpecTYPE checksumSpecTYPE;
+    private final ChecksumType defaultChecksumType;
 
     /**
      * Constructor.
@@ -47,7 +51,8 @@ public class PutFileEventHandler extends CompleteEventAwaiter {
     public PutFileEventHandler(Settings settings, OutputHandler outputHandler, ChecksumSpecTYPE checksumSpecTYPE) {
         super(settings, outputHandler);
         this.checksumSpecTYPE = checksumSpecTYPE;
-        this.printOutput = checksumSpecTYPE.getChecksumType() != ChecksumUtils.getDefaultChecksumType(settings);
+        this.defaultChecksumType = ChecksumUtils.getDefaultChecksumType(settings);
+        this.printOutput = checksumSpecTYPE.getChecksumType() != defaultChecksumType;
 
         if (printOutput) {
             output.resultHeader("PillarId \t Alg \t Checksum");
@@ -64,11 +69,13 @@ public class PutFileEventHandler extends CompleteEventAwaiter {
         PutFileCompletePillarEvent pillarEvent = (PutFileCompletePillarEvent) event;
         boolean isDuplicate = pillarEvent.getResponseInfo().getResponseCode().equals(ResponseCode.DUPLICATE_FILE_FAILURE);
         if (printOutput && pillarEvent.getChecksums() != null) {
+            String checksum = Base16Utils.decodeBase16(pillarEvent.getChecksums().getChecksumValue());
             if (isDuplicate) {
-                output.resultLine(pillarEvent.getContributorID() + " \t  \t File already exists, use get-checksums.");
+                output.resultLine(
+                        String.format(Locale.ROOT, "%s \t %s \t %s", pillarEvent.getContributorID(), defaultChecksumType, checksum));
             } else {
-                String checksum = Base16Utils.decodeBase16(pillarEvent.getChecksums().getChecksumValue());
-                output.resultLine(pillarEvent.getContributorID() + " \t " + checksumSpecTYPE.getChecksumType().value() + " \t " + checksum);
+                output.resultLine(String.format(Locale.ROOT, "%s \t %s \t %s \t*", pillarEvent.getContributorID(),
+                        checksumSpecTYPE.getChecksumType().value(), checksum));
             }
         }
     }
