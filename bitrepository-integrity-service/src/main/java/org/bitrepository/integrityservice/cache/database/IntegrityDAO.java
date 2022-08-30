@@ -540,7 +540,11 @@ public abstract class IntegrityDAO {
                     String pillarType = (SettingsUtils.getPillarType(pillarID) != null) ?
                             Objects.requireNonNull(SettingsUtils.getPillarType(pillarID)).value() : "Unknown";
                     String maxAgeForChecksums = getMaxAgeForChecksums(pillarID);
+<<<<<<< HEAD
                     Instant oldestChecksumTimestamp = getOldestChecksumTimestamp(dbResult);
+=======
+                    String ageOfOldestChecksum = getAgeOfOldestChecksum(dbResult);
+>>>>>>> 6c9197535 (BITMAG-1142 Display configured max age from MaxChecksumAgeProvider)
                     PillarCollectionStat p = new PillarCollectionStat(pillarID, collectionID,
                             pillarName, pillarType, fileCount, dataSize,
                             missingFiles, checksumErrors, missingChecksums, obsoleteChecksums,
@@ -568,9 +572,24 @@ public abstract class IntegrityDAO {
         return maxAge == 0 ? "unlimited" : TimeUtils.millisecondsToHuman(maxAge);
     }
 
+<<<<<<< HEAD
     private Instant getOldestChecksumTimestamp(ResultSet dbResult) throws SQLException {
         long oldestChecksumTimestamp = dbResult.getLong("oldest_checksum_timestamp");
         return dbResult.wasNull() ? null : Instant.ofEpochMilli(oldestChecksumTimestamp);
+=======
+    @NotNull
+    private String getAgeOfOldestChecksum(ResultSet dbResult) throws SQLException {
+        long oldestChecksumTimestamp = dbResult.getLong("oldest_checksum_timestamp");
+        String ageOfOldestChecksum;
+        if (dbResult.wasNull()) {
+            ageOfOldestChecksum = "N/A";
+        } else {
+            ZoneId zone = ZoneId.systemDefault();
+            ZonedDateTime oldestChecksumZdt = Instant.ofEpochMilli(oldestChecksumTimestamp).atZone(zone);
+            ageOfOldestChecksum = TimeUtils.humanDifference(oldestChecksumZdt, ZonedDateTime.now(zone));
+        }
+        return ageOfOldestChecksum;
+>>>>>>> 6c9197535 (BITMAG-1142 Display configured max age from MaxChecksumAgeProvider)
     }
 
     /**
