@@ -43,7 +43,7 @@ public class WebAlarm {
 
     public WebAlarm(Alarm alarm) {
         collectionID = alarm.getCollectionID() == null ? "" : alarm.getCollectionID();
-        fileID = alarm.getFileID() == null ? "" : alarm.getFileID();
+        fileID = (alarm.getFileID() == null) ? "" : alarm.getFileID();
         origDateTime = TimeUtils.shortDate(CalendarUtils.convertFromXMLGregorianCalendar(alarm.getOrigDateTime()));
         alarmRaiser = alarm.getAlarmRaiser();
         alarmCode = alarm.getAlarmCode();
