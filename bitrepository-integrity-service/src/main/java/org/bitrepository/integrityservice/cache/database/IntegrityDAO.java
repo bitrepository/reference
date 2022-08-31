@@ -54,7 +54,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.*;
 
 /**
  * Common parts of the implementation of the access to the integrity db.
