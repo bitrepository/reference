@@ -50,7 +50,6 @@ import static org.bitrepository.commandline.Constants.FILE_ARG;
 import static org.bitrepository.commandline.Constants.FILE_ID_ARG;
 import static org.bitrepository.commandline.Constants.HAS_ARGUMENT;
 import static org.bitrepository.commandline.Constants.NO_ARGUMENT;
-import static org.bitrepository.commandline.Constants.PILLAR_ARG;
 import static org.bitrepository.commandline.Constants.REQUEST_CHECKSUM_SALT_ARG;
 import static org.bitrepository.commandline.Constants.REQUEST_CHECKSUM_SALT_DESC;
 import static org.bitrepository.commandline.Constants.REQUEST_CHECKSUM_TYPE_ARG;
@@ -179,7 +178,7 @@ public class PutFileCmd extends CommandLineClient {
         ChecksumDataForFileTYPE validationChecksum = getValidationChecksum();
         ChecksumSpecTYPE requestedChecksumSpec = getRequestChecksumSpecOrDefault();
 
-        if (cmdHandler.hasOption(URL_ARG) && !cmdHandler.hasOption(PILLAR_ARG)) {
+        if (cmdHandler.hasOption(URL_ARG)) {
             output.debug("Generating checksum from URL.");
             String checksumFromURL = getChecksumFromURL(url, fileExchange, getDefaultChecksumSpec());
             String checksumFromArg = Base16Utils.decodeBase16(validationChecksum.getChecksumValue());
