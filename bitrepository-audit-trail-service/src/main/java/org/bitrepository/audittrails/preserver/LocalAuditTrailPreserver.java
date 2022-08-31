@@ -48,6 +48,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
@@ -164,18 +165,24 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
             File auditPackage = auditPacker.createNewPackage().toFile();
 
             if (auditPacker.getPackedAuditCount() > 0) {
-                URL url = uploadFile(auditPackage);
-                log.info("Uploaded the file '{}' to '{}'", auditPackage, url.toExternalForm());
+                URL fileURL = uploadFile(auditPackage);
+                log.info("Uploaded the file '{}' to '{}'", auditPackage, fileURL.toExternalForm());
 
                 ChecksumDataForFileTYPE checksumData = getValidationChecksumDataForFile(auditPackage);
 
                 EventHandler eventHandler = new AuditPreservationEventHandler(auditPacker.getSequenceNumbersReached(),
                         store, collectionID);
-                client.putFile(preservationSettings.getAuditTrailPreservationCollection(), url, auditPackage.getName(),
+                client.putFile(preservationSettings.getAuditTrailPreservationCollection(), fileURL, auditPackage.getName(),
                         auditPackage.length(), checksumData, null, eventHandler,
                         "Preservation of audit trails from the AuditTrail service.");
 
                 preservedAuditCount += auditPacker.getPackedAuditCount();
+
+                try {
+                    exchange.deleteFile(fileURL);
+                } catch (IOException | URISyntaxException e) {
+                    log.error("Failed cleaning up file '{}' at {}", auditPackage.getName(), fileURL.toExternalForm());
+                }
             } else {
                 log.info("No new audit trails to preserve for collection '{}'. No preservation file uploaded.",
                         collectionID);
