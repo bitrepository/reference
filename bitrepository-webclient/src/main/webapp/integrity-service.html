@@ -257,11 +257,11 @@
             context.title = type + " on " + id;
             context.member = "obsoleteChecksumsCount";
             context.url += "getObsoleteChecksumsFileIDs/";
-        } else if(type == "Inconsistent checksums") {
-          context.element = id + "-checksumErrors";
-          context.title = type + " on " + id;
-          context.member = "checksumErrorCount";
-          context.url += "getChecksumErrorFileIDs/";
+        } else if (type == "Inconsistent checksums") {
+            context.element = id + "-checksumErrors";
+            context.title = type + " on " + id;
+            context.member = "checksumErrorCount";
+            context.url += "getChecksumErrorFileIDs/";
         } else if(type == "Checksum age limit") {
           context.element = id + "-maxAgeForChecksums";
           context.title = type + " on " + id;
@@ -279,7 +279,7 @@
       var html = "";
       html += "<tr id=\"" + id + "-row\">";
       html += "<td><div style=\"padding:5px\">" + id + "</div></td>";
-      html += "<td id=\"" + id + "-pillarHostname\"></td>";
+      html += "<td id=\"" + id + "-pillarName\"></td>";
       html += "<td id=\"" + id + "-pillarType\"></td>";
       html += "<td id=\"" + id + "-totalFileCount\"></td>";
       html += "<td id=\"" + id + "-missingFiles\"></td>";

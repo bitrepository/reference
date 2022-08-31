@@ -283,7 +283,7 @@ public class RestIntegrityService {
     }
 
     /***
-     * Get the current workflow's setup as a JSON array
+     * Get the current workflow’s setup as a JSON array
      */
     @GET
     @Path("/getWorkflowSetup")
