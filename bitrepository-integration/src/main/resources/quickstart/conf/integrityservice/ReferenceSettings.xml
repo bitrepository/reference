@@ -93,6 +93,20 @@
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
       <DatabaseURL>jdbc:derby:<!--foobarpattern-->conf/integrityservice/auditcontributerdb</DatabaseURL>
     </AuditTrailContributerDatabase>
+    <ObsoleteChecksumSettings>
+      <MaxChecksumAgeForPillar>
+        <PillarID>checksum-pillar</PillarID>
+        <MaxChecksumAge>3600000000000</MaxChecksumAge>
+      </MaxChecksumAgeForPillar>
+      <MaxChecksumAgeForPillar>
+        <PillarID>file1-pillar</PillarID>
+        <MaxChecksumAge>3600000</MaxChecksumAge>
+      </MaxChecksumAgeForPillar>
+      <MaxChecksumAgeForPillar>
+        <PillarID>file2-pillar</PillarID>
+        <MaxChecksumAge>3600000</MaxChecksumAge>
+      </MaxChecksumAgeForPillar>
+    </ObsoleteChecksumSettings>
     <IntegrityReportsDir>conf/integrityservice/reportdir</IntegrityReportsDir>
     <PillarIntegrityDetails>
       <PillarDetails>

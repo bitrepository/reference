@@ -230,7 +230,8 @@
 
     function showModal(type, propertyName, title, url, pillarID) {
         return function () {
-            modal = new TableModal(type, pillarID, url, "#modalBody", getIntegrityStatusPropertyCountCallback(pillarID, propertyName), 100);
+            modal = new TableModal(type, pillarID, url, "#modalBody",
+                getIntegrityStatusPropertyCountCallback(pillarID, propertyName), 100);
             $("#modalLabel").html(title);
             $("#modalBody").html("<p>Loading</p>");
             modal.getModal(1);
@@ -244,12 +245,8 @@
 
         if (type === "Pillar Name") {
             context.element = id + "-pillarName";
-            context.title = type + " on " + id.toUpperCase();
-            context.propertyName = "pillarName";
         } else if (type === "Pillar Type") {
             context.element = id + "-pillarType";
-            context.title = type + " on " + id.toUpperCase();
-            context.propertyName = "pillarType";
         } else if (type === "Total files") {
             context.element = id + "-totalFileCount";
             context.title = type + " on " + id.toUpperCase();
@@ -277,14 +274,8 @@
             context.url += "getChecksumErrorFileIDs";
         } else if(type === "Checksum age limit") {
             context.element = id + "-maxAgeForChecksums";
-            context.title = type + " on " + id.toUpperCase();
-            context.propertyName = "maxAgeForChecksums";
-            context.url += "getMaxAgeForChecksums";
         } else if(type === "Oldest checksum age") {
             context.element = id + "-ageOfOldestChecksum";
-            context.title = type + " on " + id.toUpperCase();
-            context.propertyName = "ageOfOldestChecksum";
-            context.url += "getAgeOfOldestChecksum";
         }
         context.url += "?pillarID=" + id + "&collectionID=" + getCollectionID();
         return context;
@@ -348,6 +339,8 @@
         updateIntCell(pillarID, "Missing checksums", pillarIntegrityStatuses[pillarID].missingChecksumsCount);
         updateIntCell(pillarID, "Obsolete checksums", pillarIntegrityStatuses[pillarID].obsoleteChecksumsCount);
         updateIntCell(pillarID, "Inconsistent checksums", pillarIntegrityStatuses[pillarID].checksumErrorCount);
+        updateStringCell(pillarID, "Checksum age limit", pillarIntegrityStatuses[pillarID].maxAgeForChecksums);
+        updateStringCell(pillarID, "Oldest checksum age", pillarIntegrityStatuses[pillarID].ageOfOldestChecksum);
     }
 
     function updateStringCell(id, type, cellValue) {
@@ -430,7 +423,9 @@
                     missingFilesCount: json[i].missingFilesCount,
                     missingChecksumsCount: json[i].missingChecksumsCount,
                     obsoleteChecksumsCount: json[i].obsoleteChecksumsCount,
-                    checksumErrorCount: json[i].checksumErrorCount
+                    checksumErrorCount: json[i].checksumErrorCount,
+                    maxAgeForChecksums: json[i].maxAgeForChecksums,
+                    ageOfOldestChecksum: json[i].ageOfOldestChecksum
                 };
                 updateTableBody(json[i].pillarID);
                 updateTableHeader();
