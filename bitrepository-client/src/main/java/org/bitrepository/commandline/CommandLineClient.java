@@ -69,15 +69,15 @@ public abstract class CommandLineClient {
      */
     public void runCommand() throws Exception {
         try {
-            try {
-                performOperation();
-            } catch (InvalidChecksumException | IllegalArgumentException ie) {
-                System.out.println(ie.getMessage());
-                System.exit(Constants.EXIT_OPERATION_FAILURE);
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.exit(Constants.EXIT_OPERATION_FAILURE);
-            }
+            performOperation();
+        } catch (InvalidChecksumException | IllegalArgumentException ie) {
+            output.warn(ie.getMessage());
+            shutdown();
+            System.exit(Constants.EXIT_OPERATION_FAILURE);
+        } catch (Exception e) {
+            output.error("Unexpected Exception.", e);
+            shutdown();
+            System.exit(Constants.EXIT_OPERATION_FAILURE);
         } finally {
             shutdown();
         }
