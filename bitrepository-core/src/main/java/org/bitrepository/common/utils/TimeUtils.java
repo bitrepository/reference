@@ -22,6 +22,7 @@
 package org.bitrepository.common.utils;
 
 import org.bitrepository.common.ArgumentValidator;
+import org.jetbrains.annotations.NotNull;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.DateFormat;
@@ -132,6 +133,31 @@ public final class TimeUtils {
     }
 
     /**
+     * Formats a non-negative Duration to an approximate human-readable string like "1y 2m" or "3h 45m".
+     * The conversion uses approximate average values for the lengths of days, months and years.
+     *
+     * The duration must be non-negative and not longer than 4 382 910 hours (approximately 500 years)
+     *
+     * @throws IllegalArgumentException if dur is negative or longer than 4 382 910 hours
+     */
+    public static String durationToHuman(Duration dur) {
+        ArgumentValidator.checkTrue(! dur.isNegative(), "Cannot handle a negative duration; got " + dur);
+        ArgumentValidator.checkTrue(dur.compareTo(Duration.ofHours(4_382_910)) <= 0,
+                "Duration is too long: " + dur);
+
+        int years = Math.toIntExact(dur.dividedBy(ChronoUnit.YEARS.getDuration()));
+        dur = dur.minus(ChronoUnit.YEARS.getDuration().multipliedBy(years));
+        int months = Math.toIntExact(dur.dividedBy(ChronoUnit.MONTHS.getDuration()));
+        dur = dur.minus(ChronoUnit.MONTHS.getDuration().multipliedBy(months));
+        int days = Math.toIntExact(dur.dividedBy(ChronoUnit.DAYS.getDuration()));
+        dur = dur.minus(ChronoUnit.DAYS.getDuration().multipliedBy(days));
+
+        Period p = Period.of(years, months, days);
+
+        return humanPeriodAndDuration(p, dur);
+    }
+
+    /**
      * Generate a human-readable difference between start and end like "5y 2m 23d" or "7d 23m".
      *
      * Include years, months and days if they are non-zero. Include hours if months are 6 or less.
@@ -148,38 +174,43 @@ public final class TimeUtils {
             periodBetween = Period.between(start.toLocalDate(), end.toLocalDate().minusDays(1));
             afterPeriod = start.plus(periodBetween);
         }
-        // Round duration to whole minutes
-        Duration durationBetween = Duration.between(afterPeriod, end)
-                .plusSeconds(30)
-                .truncatedTo(ChronoUnit.MINUTES);
+        Duration durationBetween = Duration.between(afterPeriod, end);
 
-        if (periodBetween.isZero() && durationBetween.isZero()) {
+        return humanPeriodAndDuration(periodBetween, durationBetween);
+    }
+
+    @NotNull
+    private static String humanPeriodAndDuration(Period period, Duration dur) {
+        // Round duration to whole minutes
+        dur = dur.plusSeconds(30).truncatedTo(ChronoUnit.MINUTES);
+
+        if (period.isZero() && dur.isZero()) {
             return "0m";
         }
 
-        boolean includeHours = periodBetween.getYears() == 0 && periodBetween.getMonths() <= 6;
-        boolean includeMinutes = periodBetween.getYears() == 0
-                && periodBetween.getMonths() == 0
-                && periodBetween.getDays() <= 8;
+        boolean includeHours = period.getYears() == 0 && period.getMonths() <= 6;
+        boolean includeMinutes = period.getYears() == 0
+                && period.getMonths() == 0
+                && period.getDays() <= 8;
 
         // The following gives an ambiguous string like "3m"
         // in the very rare cases where months or minutes are non-zero and days and hours are zero.
         // It is not expected to be a problem for the user in practice.
         List<String> elements = new ArrayList<>(6);
-        if (periodBetween.getYears() != 0) {
-            elements.add(periodBetween.getYears() + "y");
+        if (period.getYears() != 0) {
+            elements.add(period.getYears() + "y");
         }
-        if (periodBetween.getMonths() != 0) {
-            elements.add(periodBetween.getMonths() + "m");
+        if (period.getMonths() != 0) {
+            elements.add(period.getMonths() + "m");
         }
-        if (periodBetween.getDays() != 0) {
-            elements.add(periodBetween.getDays() + "d");
+        if (period.getDays() != 0) {
+            elements.add(period.getDays() + "d");
         }
-        if (includeHours && durationBetween.toHours() != 0) {
-            elements.add(durationBetween.toHours() + "h");
+        if (includeHours && dur.toHours() != 0) {
+            elements.add(dur.toHours() + "h");
         }
-        if (includeMinutes && durationBetween.toMinutesPart() != 0) {
-            elements.add(durationBetween.toMinutesPart() + "m");
+        if (includeMinutes && dur.toMinutesPart() != 0) {
+            elements.add(dur.toMinutesPart() + "m");
         }
 
         return String.join(" ", elements);

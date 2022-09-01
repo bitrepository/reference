@@ -25,6 +25,7 @@ import org.jaccept.structure.ExtendedTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import javax.swing.border.TitledBorder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -33,6 +34,7 @@ import java.time.Period;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAmount;
 import java.util.Date;
 import java.util.Locale;
@@ -77,6 +79,22 @@ public class TimeUtilsTest extends ExtendedTestCase {
         assertTrue(human.contains(expectedMin), human);
         assertTrue(human.contains(expectedHours), human);
         assertTrue(human.contains(expectedDays), human);
+    }
+
+    @Test(groups = {"regressiontest"})
+    public void printsHumanDuration() {
+        assertEquals(TimeUtils.durationToHuman(ChronoUnit.YEARS.getDuration()), "1y");
+        assertEquals(TimeUtils.durationToHuman(ChronoUnit.MONTHS.getDuration()), "1m");
+        assertEquals(TimeUtils.durationToHuman(ChronoUnit.DAYS.getDuration()), "1d");
+        assertEquals(TimeUtils.durationToHuman(ChronoUnit.HOURS.getDuration()), "1h");
+        assertEquals(TimeUtils.durationToHuman(ChronoUnit.MINUTES.getDuration()), "1m");
+        // Don’t print seconds
+        assertEquals(TimeUtils.durationToHuman(ChronoUnit.SECONDS.getDuration()), "0m");
+        assertEquals(TimeUtils.durationToHuman(Duration.parse("PT2H3M5S")), "2h 3m");
+
+        addStep("Test the limits of what the method handles", "0m and 500y respectively");
+        assertEquals(TimeUtils.durationToHuman(Duration.ZERO), "0m");
+        assertEquals(TimeUtils.durationToHuman(Duration.ofHours(4_382_910)), "500y");
     }
 
     @Test(groups = {"regressiontest"})

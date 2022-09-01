@@ -45,6 +45,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -564,7 +565,7 @@ public abstract class IntegrityDAO {
                 new MaxChecksumAgeProvider(HandleObsoleteChecksumsStep.DEFAULT_MAX_CHECKSUM_AGE,
                         obsoleteChecksumSettings);
         long maxAge = maxChecksumAgeProvider.getMaxChecksumAge(pillarID);
-        return maxAge == 0 ? "unlimited" : TimeUtils.millisecondsToHuman(maxAge);
+        return maxAge == 0 ? "unlimited" : TimeUtils.durationToHuman(Duration.ofMillis(maxAge));
     }
 
     private Instant getOldestChecksumTimestamp(ResultSet dbResult) throws SQLException {
