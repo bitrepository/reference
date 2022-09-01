@@ -39,9 +39,8 @@ import java.util.List;
 
 /**
  * Contains the general configuration to be used by reference code components. Provides access to both
- * {@link ReferenceSettings} and {@link org.bitrepository.settings.repositorysettings.RepositorySettings}. Use a {@link SettingsProvider}
- * to access settings create
- * <code>Settings</code> objects.
+ * {@link ReferenceSettings} and {@link org.bitrepository.settings.repositorysettings.RepositorySettings}.
+ * Use a {@link SettingsProvider} to access settings create <code>Settings</code> objects.
  */
 public class Settings {
     public static final BigInteger MILLIS_PER_SECOND = BigInteger.valueOf(Duration.ofSeconds(1).toMillis());
@@ -105,14 +104,15 @@ public class Settings {
 
     /**
      * Wraps the {@link org.bitrepository.settings.repositorysettings.ClientSettings#getIdentificationTimeout()}
-     * and {@link ClientSettings#getIdentificationTimeoutDuration()} ()} methods, preferring to use the latter.
+     * and {@link org.bitrepository.settings.repositorysettings.ClientSettings#getIdentificationTimeoutDuration()}
+     * methods, preferring to use the latter.
      *
      * @return the timeout
-     * @see ClientSettings#getIdentificationTimeoutDuration()
+     * @see org.bitrepository.settings.repositorysettings.ClientSettings#getIdentificationTimeoutDuration()
      */
     public Duration getIdentificationTimeout() {
-        // TODO Ole V. Once the old IdentificationTimeout settings in milliseconds is done away with,
-        // TODO the following code gets simpler
+        // TODO Once the old IdentificationTimeout settings in milliseconds is done away with
+        //  the following code gets simpler
         javax.xml.datatype.Duration xmlDuration =
                 getRepositorySettings().getClientSettings().getIdentificationTimeoutDuration();
         BigInteger identificationTimeoutMillis =
