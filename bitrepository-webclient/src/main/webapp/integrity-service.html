@@ -24,6 +24,7 @@
 <head>
   <title>Bitrepository integrity service</title>
   <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+  <link href="css/integrity-service.css" rel="stylesheet" type="text/css">
   <link href="css/modal.css" rel="stylesheet" type="text/css">
 </head>
 <body>
@@ -299,7 +300,7 @@
     function makePillarRow(id) {
         let html = "";
         html += "<tr id=\"" + id + "-row\">";
-        html += "<td><div style=\"padding:5px\">" + id + "</div></td>";
+        html += "<td><p class='pillar-info' '>" + id + "</p></td>";
         html += "<td id=\"" + id + "-pillarName\"></td>";
         html += "<td id=\"" + id + "-pillarType\"></td>";
         html += "<td id=\"" + id + "-totalFileCount\"></td>";
@@ -335,7 +336,7 @@
 
     function updateStringCell(id, type, cellValue) {
         let context = getBodyContext(id, type);
-        let html = "<p>" + cellValue + "</p>";
+        let html = "<p class='pillar-info'>" + cellValue + "</p>";
         $("#" + context.element).html(html);
     }
 
