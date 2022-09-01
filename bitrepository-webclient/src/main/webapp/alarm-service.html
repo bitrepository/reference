@@ -20,181 +20,250 @@
   #L%
   -->
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Bitrepository alarm service</title>
-    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
-    <link href="datepicker/css/datepicker.css" rel="stylesheet">
-  </head>
-  <body>
-  
-  <div id="pageMenu"></div>
-  <div class="container-fluid">
-    <div class="row-fluid">
+<html lang="en">
+<head>
+  <title>Bitrepository alarm service</title>
+  <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+  <link href="datepicker/css/datepicker.css" rel="stylesheet">
+  <style>
+      .complete {
+          display: none;
+      }
+
+      .description {
+          width: 50%;
+      }
+  </style>
+</head>
+<body>
+
+<div id="pageMenu"></div>
+<div class="container-fluid">
+  <div class="row-fluid">
+    <div class="span11">
+      <div class="span11" style="height:0px; min-height:0px"></div>
+      <div class="span11"><h2>Alarm service</h2></div>
       <div class="span11">
-        <div class="span11" style="height:0px; min-height:0px"></div>
-        <div class="span11"><h2>Alarm service</h2></div>
-        <div class="span11"> 
-          <form class="form-inline">
-            <legend>Alarm display filters</legend>
-            <label> From date: <br>
-              <div class="input-append">
-                <input class="input-small" type="text" id="fromDate" placeholder="From date">
-                <button class="btn" id="fromDateClearButton" type="button"><i class="icon-remove"></i></button>
-              </div>
-            </label>
-            <label> To date: <br>
-              <div class="input-append">
-                <input class="input-small" type="text" id="toDate" placeholder="To date">
-                <button class="btn" id="toDateClearButton" type="button"><i class="icon-remove"></i></button>
-              </div>
-            </label>
-            <label> FileID: <br>
-              <div class="input-append">
-                <input id="fileIDFilter" type="text" placeholder="FileID">
-                <button class="btn" id="fileIDClearButton" type="button"><i class="icon-remove"></i></button>
-              </div>
-            </label>              
-            <label> Component: <br>
-              <div class="input-append">
-                <input id="componentFilter" type="text" placeholder="ComponentID">
-                <button class="btn" id="componentIDClearButton" type="button"><i class="icon-remove"></i></button>
-              </div>
-            </label>
-            <label> Alarm code: <br>
-              <div class="input-append">
-                <select id="alarmCodeFilter">
-                  <option>ALL</option>
-                  <option>INCONSISTENT_REQUEST</option>
-                  <option>COMPONENT_FAILURE</option>
-                  <option>CHECKSUM_ALARM</option>
-                  <option>FAILED_TRANSFER</option>
-                  <option>FAILED_OPERATION</option>
-                  <option>INVALID_MESSAGE</option>
-                  <option>INVALID_MESSAGE_VERSION</option>
-                  <option>TIMEOUT</option>    
-                  <option>INTEGRITY_ISSUE</option>
-                </select>
-              </div>
-            </label>
-            <label> Collection: <br>
-              <div class="input-append">
-                <select class="input-medium" id="collectionIDFilter">
-                  <option>ALL</option>
-                </select>
-              </div>
-            </label>
-            <label> Max alarms: <br>
-              <div class="input-append">
-                <select class="input-small" id="maxAlarms">
-                  <option>10</option>
-                  <option>20</option>
-                  <option>50</option>
-                  <option>100</option>
-                </select>
-              </div>
-            </label>
-          </form>
-        </div>
-        <div class="span11">  
-          <legend>Alarms</legend>
-          <table class="table table-bordered table-striped">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Component</th>
-                <th>Collection</th>
-                <th>FileID</th>
-                <th>Alarm code</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody id="alarms-table-body"></tbody>
-          </table>
-        </div>
+        <form class="form-inline">
+          <legend>Alarm display filters</legend>
+          <label> From date: <br>
+            <div class="input-append">
+              <input class="input-small" type="text" id="fromDate" placeholder="From date">
+              <button class="btn" id="fromDateClearButton" type="button"><i class="icon-remove"></i></button>
+            </div>
+          </label>
+          <label> To date: <br>
+            <div class="input-append">
+              <input class="input-small" type="text" id="toDate" placeholder="To date">
+              <button class="btn" id="toDateClearButton" type="button"><i class="icon-remove"></i></button>
+            </div>
+          </label>
+          <label> FileID: <br>
+            <div class="input-append">
+              <input id="fileIDFilter" type="text" placeholder="FileID">
+              <button class="btn" id="fileIDClearButton" type="button"><i class="icon-remove"></i></button>
+            </div>
+          </label>
+          <label> Component: <br>
+            <div class="input-append">
+              <input id="componentFilter" type="text" placeholder="ComponentID">
+              <button class="btn" id="componentIDClearButton" type="button"><i class="icon-remove"></i></button>
+            </div>
+          </label>
+          <label> Alarm code: <br>
+            <div class="input-append">
+              <select id="alarmCodeFilter">
+                <option>ALL</option>
+                <option>INCONSISTENT_REQUEST</option>
+                <option>COMPONENT_FAILURE</option>
+                <option>CHECKSUM_ALARM</option>
+                <option>FAILED_TRANSFER</option>
+                <option>FAILED_OPERATION</option>
+                <option>INVALID_MESSAGE</option>
+                <option>INVALID_MESSAGE_VERSION</option>
+                <option>TIMEOUT</option>
+                <option>INTEGRITY_ISSUE</option>
+              </select>
+            </div>
+          </label>
+          <label> Collection: <br>
+            <div class="input-append">
+              <select class="input-medium" id="collectionIDFilter">
+                <option>ALL</option>
+              </select>
+            </div>
+          </label>
+          <label> Max alarms: <br>
+            <div class="input-append">
+              <select class="input-small" id="maxAlarms">
+                <option>10</option>
+                <option>20</option>
+                <option>50</option>
+                <option>100</option>
+              </select>
+            </div>
+          </label>
+        </form>
+      </div>
+      <div class="span11">
+        <legend>Alarms</legend>
+        <table class="table table-bordered table-striped">
+          <thead>
+          <tr>
+            <th>Date</th>
+            <th>Component</th>
+            <th>Collection</th>
+            <th>FileID</th>
+            <th>Alarm code</th>
+            <th>Description</th>
+          </tr>
+          </thead>
+          <tbody id="alarms-table-body"></tbody>
+        </table>
       </div>
     </div>
   </div>
-  <script src="jquery/jquery-1.9.0.min.js"></script>
-  <script src="bootstrap/js/bootstrap.min.js"></script>
-  <script src="datepicker/js/bootstrap-datepicker.js"></script>
-  <script src="menu.js"></script>
-  <script src="utils.js"></script>
-  <script src="CollectionNameMapper.js"></script>
+</div>
+<script src="jquery/jquery-1.9.0.min.js"></script>
+<script src="bootstrap/js/bootstrap.min.js"></script>
+<script src="datepicker/js/bootstrap-datepicker.js"></script>
+<script src="menu.js"></script>
+<script src="utils.js"></script>
+<script src="CollectionNameMapper.js"></script>
 
-  <script>
-    var nameMapper;
-    var auto_get_alarms;
-    var alarmServiceUrl;
+<script>
+    let nameMapper;
+    let descriptionMapper;
+    let autoGetAlarmsInterval;
+    let alarmServiceUrl;
 
     function clearElement(element) {
-      $(element).val("");
+        $(element).val("");
     }
 
     function updateAlarms() {
-      var fromDateStr = $("#fromDate").val();
-      var toDateStr = $("#toDate").val();
-      var fileIDStr = $("#fileIDFilter").val();
-      var component = $("#componentFilter").val();
-      var alarmCodeStr = $("#alarmCodeFilter").val();
-      var maxAlarmStr = $("#maxAlarms").val();
-      var collectionIDStr = $("#collectionIDFilter").val();
-           
-      var url = alarmServiceUrl + '/alarm/AlarmService/queryAlarms/';
-      $.post(url,
-        {fromDate: fromDateStr,
-         toDate: toDateStr,
-         fileID: fileIDStr,
-         reportingComponent: component,
-         alarmCode: alarmCodeStr,
-         maxAlarms: maxAlarmStr,
-         collectionID: collectionIDStr,
-         oldestAlarmFirst: false}, function(j){
-         var htmlTableBody = "";
-         if(j != null) {
-           for (var i = 0; i < j.length; i++) {
-            htmlTableBody +=
-              `<tr>
-                <td>${j[i].origDateTime}</td>
-                <td>${j[i].alarmRaiser}</td>
-                <td>${nameMapper.getName(j[i].collectionID)}</td>
-                <td>${j[i].fileID}</td>
-                <td>${j[i].alarmCode}</td>
-                <td>${nl2br(j[i].alarmText)}</td>
-              </tr>`;
-          }
-        }
-        $("#alarms-table-body").html(htmlTableBody);
-      });
+        let fromDateStr = $("#fromDate").val();
+        let toDateStr = $("#toDate").val();
+        let fileIDStr = $("#fileIDFilter").val();
+        let component = $("#componentFilter").val();
+        let alarmCodeStr = $("#alarmCodeFilter").val();
+        let maxAlarmStr = $("#maxAlarms").val();
+        let collectionIDStr = $("#collectionIDFilter").val();
+        let url = alarmServiceUrl + '/alarm/AlarmService/queryAlarms/';
+
+        getDescriptionState();
+
+        $.post(url,
+            {
+                fromDate: fromDateStr,
+                toDate: toDateStr,
+                fileID: fileIDStr,
+                reportingComponent: component,
+                alarmCode: alarmCodeStr,
+                maxAlarms: maxAlarmStr,
+                collectionID: collectionIDStr,
+                oldestAlarmFirst: false
+            }, function (j) {
+                let htmlTableBody = "";
+                if (j != null) {
+                    for (let i = 0; i < j.length; i++) {
+                        htmlTableBody += `<tr>
+                          <td>${j[i].origDateTime}</td>
+                          <td>${j[i].alarmRaiser}</td>
+                          <td>${nameMapper.getName(j[i].collectionID)}</td>
+                          <td>${j[i].fileID}</td>
+                          <td>${j[i].alarmCode}</td>
+                          <td class="description"><p class="teaser">${nl2br(j[i].alarmText)}</p></td>
+                        </tr>`;
+                    }
+                }
+                $("#alarms-table-body").html(htmlTableBody);
+                compressDescription();
+                enableDescriptionExpansionOnClick();
+            });
     }
 
     function init() {
-      $.get('repo/urlservice/alarmService/', {}, function(url) {
-        alarmServiceUrl = url;
-      }, 'html').done(function() {
-        $.getJSON('repo/reposervice/getCollections/', {}, function(collections){
-          nameMapper = new CollectionNameMapper(collections);
-          var colls = nameMapper.getCollectionIDs();
-          for(i in colls) {
-            $("#collectionIDFilter").append('<option value="' + colls[i] + '">' + nameMapper.getName(colls[i]) + '</option>');
-          }
-          updateAlarms();
-          auto_get_alarms = setInterval(function() {updateAlarms();}, 2500);
-        });  
-      });
+        $.get('repo/urlservice/alarmService/', {}, function (url) {
+            alarmServiceUrl = url;
+        }, 'html').done(function () {
+            $.getJSON('repo/reposervice/getCollections/', {}, function (collections) {
+                nameMapper = new CollectionNameMapper(collections);
+                let cols = nameMapper.getCollectionIDs();
+                for (let i in cols) {
+                    $("#collectionIDFilter").append(
+                        `<option value="${cols[i]}">${nameMapper.getName(cols[i])}</option>`
+                    );
+                }
+                updateAlarms();
+                autoGetAlarmsInterval = setInterval(function () {
+                    updateAlarms();
+                }, 2500);
+            });
+        });
     }
 
-    $(document).ready(function(){
-      makeMenu("alarm-service.html", "#pageMenu");
-      init();
-      $("#fromDate").datepicker({format: "yyyy/mm/dd"});
-      $("#toDate").datepicker({format: "yyyy/mm/dd"});
-      $("#toDateClearButton").click(function(event) {event.preventDefault(); clearElement("#toDate")});
-      $("#fromDateClearButton").click(function(event) {event.preventDefault(); clearElement("#fromDate")});
-      $("#fileIDClearButton").click(function(event) {event.preventDefault(); clearElement("#fileIDFilter")});
-      $("#componentIDClearButton").click(function(event) {event.preventDefault(); clearElement("#componentFilter")});
-    }); 
+    function compressDescription() {
+        const maxLength = 80;
+        $(".teaser").each(function () {
+            let index = $(this).closest("tr").find("td:eq(0)").text() + $(this).text();
+            let string = $(this).html();
 
-    </script>
-  </body>
+            if (descriptionMapper.hasOwnProperty(index) && descriptionMapper[index] !== "none") {
+                $(this).empty().html(`<span class="complete" style="display: inline">${string}</span>`);
+            } else {
+                if (string.length > maxLength) {
+                    let newString = string.substring(0, maxLength);
+                    let removedString = string.substring(maxLength, string.length);
+                    $(this).empty().html(newString);
+                    $(this).append(`<span class="dots">... </span>`)
+                    $(this).append(`<span class="complete">${removedString}</span>`);
+                    $(this).append('<a href="javascript:void(0);" class="show-more">show more</a>');
+                }
+            }
+        });
+    }
+
+    function enableDescriptionExpansionOnClick() {
+        $(".teaser").each(function () {
+            $(this).children(".show-more").on("click", function () {
+                $(this).siblings(".complete").show();
+                $(this).siblings(".dots").remove();
+                $(this).remove();
+            });
+        });
+    }
+
+    function getDescriptionState() {
+        descriptionMapper = {};
+        $("#alarms-table-body tr").each(function () {
+            let identifier = $(this).find("td:eq(0)").text() + $(this).find("td:eq(5)").text();
+            descriptionMapper[identifier] = $(this).find("td:eq(5)").find(".complete").css("display");
+        });
+    }
+
+    $(document).ready(function () {
+        makeMenu("alarm-service.html", "#pageMenu");
+        init();
+        $("#fromDate").datepicker({format: "yyyy/mm/dd"});
+        $("#toDate").datepicker({format: "yyyy/mm/dd"});
+        $("#toDateClearButton").click(function (event) {
+            event.preventDefault();
+            clearElement("#toDate")
+        });
+        $("#fromDateClearButton").click(function (event) {
+            event.preventDefault();
+            clearElement("#fromDate")
+        });
+        $("#fileIDClearButton").click(function (event) {
+            event.preventDefault();
+            clearElement("#fileIDFilter")
+        });
+        $("#componentIDClearButton").click(function (event) {
+            event.preventDefault();
+            clearElement("#componentFilter")
+        });
+    });
+</script>
+</body>
 </html>

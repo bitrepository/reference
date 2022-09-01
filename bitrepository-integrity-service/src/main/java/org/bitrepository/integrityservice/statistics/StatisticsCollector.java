@@ -40,10 +40,10 @@ public class StatisticsCollector {
         pillarCollectionStats = new HashMap<>();
         List<String> pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
         for (String pillar : pillars) {
-            String pillarHostname = Objects.requireNonNullElse(SettingsUtils.getHostname(pillar), "N/A");
+            String pillarName = Objects.requireNonNullElse(SettingsUtils.getPillarName(pillar), "N/A");
             PillarType pillarTypeObject = SettingsUtils.getPillarType(pillar);
             String pillarType = (pillarTypeObject != null) ? pillarTypeObject.value() : "Unknown";
-            PillarCollectionStat ps = new PillarCollectionStat(pillar, collectionID, pillarHostname, pillarType);
+            PillarCollectionStat ps = new PillarCollectionStat(pillar, collectionID, pillarName, pillarType);
             pillarCollectionStats.put(pillar, ps);
         }
     }

@@ -46,8 +46,8 @@ import java.util.stream.Collectors;
 
 @Path("/AlarmService")
 public class RestAlarmService {
-    private AlarmService alarmService;
-    private CalendarUtils calendarUtils = CalendarUtils.getInstance(TimeZone.getDefault());
+    private final AlarmService alarmService;
+    private final CalendarUtils calendarUtils = CalendarUtils.getInstance(TimeZone.getDefault());
 
     public RestAlarmService() {
         alarmService = AlarmServiceFactory.getAlarmService();
@@ -63,9 +63,8 @@ public class RestAlarmService {
     @Path("/getShortAlarmList/")
     @Produces("application/json")
     public List<Alarm> getShortAlarmList() {
-        List<Alarm> alarmList = new ArrayList<>(alarmService.extractAlarms(null, null, null, null,
+        return new ArrayList<>(alarmService.extractAlarms(null, null, null, null,
                 null, null, 10, false));
-        return alarmList;
     }
 
     /**
@@ -77,9 +76,8 @@ public class RestAlarmService {
     @Path("/getFullAlarmList/")
     @Produces("application/json")
     public List<Alarm> getFullAlarmList() {
-        List<Alarm> alarmList = new ArrayList<>(alarmService.extractAlarms(null, null, null, null,
+        return new ArrayList<>(alarmService.extractAlarms(null, null, null, null,
                 null, null, null, true));
-        return alarmList;
     }
 
     @POST
