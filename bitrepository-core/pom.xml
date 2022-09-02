@@ -17,12 +17,12 @@
     </dependency>
     <dependency>
       <groupId>org.bitrepository.repository-settings</groupId>
-      <artifactId>bitrepository-repository-settings-xsd</artifactId>
+      <artifactId>repository-settings-xsd</artifactId>
       <version>${repository.settings.version}</version>
     </dependency>
     <dependency>
       <groupId>org.bitrepository.repository-settings</groupId>
-      <artifactId>bitrepository-repository-settings-java</artifactId>
+      <artifactId>repository-settings-java</artifactId>
       <version>${repository.settings.version}</version>
     </dependency>
     <dependency>
