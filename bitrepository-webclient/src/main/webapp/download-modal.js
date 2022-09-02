@@ -22,9 +22,10 @@
 
 function DownloadModal(collectionID, contentElement, url) {
     this.url = url;
+    this.collectionID = collectionID;
 
     this.getModal = function () {
-        $.getJSON(this.url, {}, function (json) {
+        $.getJSON(`${this.url}/getAvailableIntegrityReports?collectionID=${this.collectionID}`, {}, function (json) {
             // Create table
             let html = `<table class="modal-table" style="width: 100%; border-collapse: separate;">`;
 
@@ -46,6 +47,10 @@ function DownloadModal(collectionID, contentElement, url) {
 
             html += `</tbody>`;
             html += `</table>`;
+
+            // Init download button
+            html += `<div>`
+            html += `<a href="${url}/getIntegrityReportsAsZIP?collectionID=${collectionID}&reports=missingFile-file1-pillar" class="download-button">Download</a>`
             html += `</div>`;
 
             // Assign content
@@ -84,7 +89,7 @@ function DownloadModal(collectionID, contentElement, url) {
     function getReportPartTD(json, pillarID, reportPart) {
         let html = "";
         if (json[pillarID].includes(reportPart)) {
-            html += `<td style="border-right: 1px solid #9996; text-align:center;"><input type="checkbox" id="${pillarID}-${reportPart}"></td>`;
+            html += `<td style="border-right: 1px solid #9996; text-align:center;"><input type="checkbox" id="${reportPart}-${pillarID}"></td>`;
         } else {
             html += `<td style="border-right: 1px solid #9996; text-align:center; background-color: #b8bbb2;"></td>`;
         }

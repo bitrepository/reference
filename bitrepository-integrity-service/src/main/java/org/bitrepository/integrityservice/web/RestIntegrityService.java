@@ -58,10 +58,13 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -73,6 +76,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static javax.ws.rs.core.Response.ResponseBuilder;
+import static javax.ws.rs.core.Response.Status;
+import static javax.ws.rs.core.Response.status;
 
 @Path("/IntegrityService")
 public class RestIntegrityService {
@@ -113,14 +120,13 @@ public class RestIntegrityService {
 
         if (it == null) {
             throw new WebApplicationException(
-                    Response.status(Response.Status.NO_CONTENT).entity("Failed to get missing files from database")
-                            .type(MediaType.TEXT_PLAIN).build());
+                    status(Status.NO_CONTENT).entity("Failed to get missing files from database").type(MediaType.TEXT_PLAIN).build());
         }
 
         List<String> iteratorAsList = StreamingTools.iteratorToList(it);
         if (iteratorAsList.isEmpty()) {
-            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
-                    .entity(String.format(Locale.ROOT, "No fileIDs found for collection: '%s' and pillar: '%s'", collectionID, pillarID))
+            throw new WebApplicationException(status(Status.NOT_FOUND).entity(
+                            String.format(Locale.ROOT, "No fileIDs found for collection: '%s' and pillar: '%s'", collectionID, pillarID))
                     .type(MediaType.TEXT_PLAIN).build());
         }
 
@@ -158,8 +164,8 @@ public class RestIntegrityService {
             missingOnPillar = getReportPart(part, collectionID, pillarID, page, pageSize);
             output.put(pillarID, missingOnPillar);
         } catch (FileNotFoundException e) {
-            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
-                    .entity(String.format(Locale.ROOT, "No integrity '%s' report part for collection: '%s' and pillar: '%s' found!",
+            throw new WebApplicationException(status(Status.NOT_FOUND).entity(
+                    String.format(Locale.ROOT, "No integrity '%s' report part for collection: '%s' and pillar: '%s' found!",
                             part.getHumanString(), collectionID, pillarID)).type(MediaType.TEXT_PLAIN).build());
         }
 
@@ -366,30 +372,6 @@ public class RestIntegrityService {
      * Get the latest integrity report, or an error message telling no such report found.
      */
     @GET
-    @Path("/getIntegrityReportPart")
-    @Produces(MediaType.TEXT_PLAIN)
-    public StreamingOutput getLatestIntegrityReport(
-            @QueryParam("collectionID")
-                    String collectionID,
-            @QueryParam("pillarID")
-                    String pillarID,
-            @QueryParam("reportPart")
-                    String reportPart) {
-        final File reportPartFile;
-        try {
-            reportPartFile = integrityReportProvider.getIntegrityReportPart(collectionID, pillarID, reportPart);
-        } catch (FileNotFoundException e) {
-            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
-                    .entity(String.format(Locale.ROOT, "No '%s' report part for collection: '%s' and pillar: '%s' found!", reportPart,
-                            collectionID, pillarID)).type(MediaType.TEXT_PLAIN).build());
-        }
-        return output -> streamFile(reportPartFile, output);
-    }
-
-    /**
-     * Get the latest integrity report, or an error message telling no such report found.
-     */
-    @GET
     @Path("/getLatestIntegrityReport")
     @Produces(MediaType.TEXT_PLAIN)
     public StreamingOutput getLatestIntegrityReport(
@@ -399,11 +381,74 @@ public class RestIntegrityService {
         try {
             fullReport = integrityReportProvider.getLatestIntegrityReportReader(collectionID).getFullReport();
         } catch (FileNotFoundException e) {
-            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
-                    .entity(String.format(Locale.ROOT, "No integrity report for collection: '%s' found!", collectionID))
-                    .type(MediaType.TEXT_PLAIN).build());
+            throw new WebApplicationException(status(Status.NOT_FOUND).entity(
+                            String.format(Locale.ROOT, "No integrity report for collection: '%s' found!", collectionID)).type(MediaType.TEXT_PLAIN)
+                    .build());
         }
         return output -> streamFile(fullReport, output);
+    }
+
+    @GET
+    @Path("/getIntegrityReportsAsZIP")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public Response getIntegrityReportsAsZIP(
+            @QueryParam("collectionID")
+                    String collectionID,
+            @QueryParam("reports")
+                    List<String> reports) {
+        String fileName = "IntegrityReports.zip";
+        int bufferSize = 4096;
+        List<File> files = new ArrayList<>();
+
+        for (String report : reports) {
+            String[] parts = report.split("-", 2);
+            files.add(getLatestIntegrityReportPartFile(collectionID, parts[0], parts[1]));
+        }
+
+        ResponseBuilder response;
+        InputStream in;
+        try (FileInputStream fis = new FileInputStream(files.get(0))) {
+            in = new ByteArrayInputStream(fis.readAllBytes());
+            FileOutputStream out = new FileOutputStream(fileName);
+            byte[] bytes = new byte[bufferSize];
+            int i;
+
+            while ((i = in.read(bytes)) >= 0) {
+                out.write(bytes, 0, i);
+            }
+            out.flush();
+            out.close();
+            response = Response.ok(out);
+        } catch (IOException e) {
+            throw new WebApplicationException(status(Status.NOT_FOUND).entity(
+                            String.format(Locale.ROOT, "No integrity report for collection: '%s' and pillar: '%s' found!", collectionID,
+                                    "TODO"))
+                    .type(MediaType.TEXT_PLAIN).build());
+        }
+        response.header("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+        response.type("application/zip");
+        return response.build();
+    }
+
+    /**
+     * Get the latest integrity report, or an error message telling no such report found.
+     *
+     * @param collectionID The collection ID.
+     * @param pillarID     The pillar ID.
+     * @param reportPart   The report part.
+     * @return {@link StreamingOutput} of the report part for the given collection and pillar.
+     */
+    public File getLatestIntegrityReportPartFile(String collectionID, String reportPart, String pillarID) {
+        final File reportPartFile;
+        try {
+            reportPartFile = integrityReportProvider.getIntegrityReportPart(collectionID, pillarID, reportPart);
+        } catch (FileNotFoundException e) {
+            String errorMessage = String.format(Locale.ROOT, "No '%s' report part for collection: '%s' and pillar: '%s' found!", reportPart,
+                    collectionID, pillarID);
+            log.error(errorMessage);
+            throw new WebApplicationException(status(Status.NOT_FOUND).entity(errorMessage).type(MediaType.TEXT_PLAIN).build());
+        }
+        return reportPartFile;
     }
 
     /**
@@ -489,8 +534,8 @@ public class RestIntegrityService {
         try {
             reportPartContent = getReportPart(part, collectionID, pillarID, page, pageSize);
         } catch (FileNotFoundException e) {
-            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
-                    .entity(String.format(Locale.ROOT, "No integrity '%s' report part for collection: '%s' and pillar: '%s' found!",
+            throw new WebApplicationException(status(Status.NOT_FOUND).entity(
+                    String.format(Locale.ROOT, "No integrity '%s' report part for collection: '%s' and pillar: '%s' found!",
                             part.getHumanString(), collectionID, pillarID)).type(MediaType.TEXT_PLAIN).build());
         }
         return reportPartContent;

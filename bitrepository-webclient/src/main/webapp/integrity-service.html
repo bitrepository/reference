@@ -391,7 +391,7 @@
         clearContent();
         $("#integrityLegend").html("Integrity information for collection " + nameMapper.getName(collectionID));
 
-        let reportUrl = `${integrityServiceUrl}/integrity/IntegrityService/getAvailableIntegrityReports?collectionID=${getCollectionID()}`;
+        let reportUrl = `${integrityServiceUrl}/integrity/IntegrityService`;
         $("#integrityReportGetter").html(`<a class="btn btn-link" target="_blank">Download latest integrity reports</a>`).on("click",
             showDownloadModal(reportUrl));
 
