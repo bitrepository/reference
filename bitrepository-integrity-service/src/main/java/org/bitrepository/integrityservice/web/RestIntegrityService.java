@@ -58,13 +58,10 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -397,7 +394,6 @@ public class RestIntegrityService {
             @QueryParam("reports")
                     List<String> reports) {
         String fileName = "IntegrityReports.zip";
-        int bufferSize = 4096;
         List<File> files = new ArrayList<>();
 
         for (String report : reports) {
@@ -406,27 +402,24 @@ public class RestIntegrityService {
         }
 
         ResponseBuilder response;
-        InputStream in;
-        try (FileInputStream fis = new FileInputStream(files.get(0))) {
-            in = new ByteArrayInputStream(fis.readAllBytes());
-            FileOutputStream out = new FileOutputStream(fileName);
-            byte[] bytes = new byte[bufferSize];
-            int i;
+        response = Response.ok(files.get(0));
+        //response.type("application/zip");
+        response.header("Content-Disposition", "attachment; filename=" + fileName);
+        //TODO: Is downloadable, but needs to make all of the files into a Zip.
+//        try {
+//            FileOutputStream out = new FileOutputStream(fileName);
+//            streamFile(files.get(0), out);
+//            response = Response.ok(out);
+//            response.type("application/zip");
+//            response.header("Content-Disposition", "attachment; filename=" + fileName);
+//            out.flush();
+//            out.close();
+//        } catch (IOException e) {
+//            throw new WebApplicationException(status(Status.INTERNAL_SERVER_ERROR).entity("Something went wrong when trying to write
+//            file.")
+//                    .type(MediaType.TEXT_PLAIN).build());
+//        }
 
-            while ((i = in.read(bytes)) >= 0) {
-                out.write(bytes, 0, i);
-            }
-            out.flush();
-            out.close();
-            response = Response.ok(out);
-        } catch (IOException e) {
-            throw new WebApplicationException(status(Status.NOT_FOUND).entity(
-                            String.format(Locale.ROOT, "No integrity report for collection: '%s' and pillar: '%s' found!", collectionID,
-                                    "TODO"))
-                    .type(MediaType.TEXT_PLAIN).build());
-        }
-        response.header("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
-        response.type("application/zip");
         return response.build();
     }
 
