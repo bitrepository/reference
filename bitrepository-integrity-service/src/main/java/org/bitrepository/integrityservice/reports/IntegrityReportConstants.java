@@ -21,6 +21,10 @@
  */
 package org.bitrepository.integrityservice.reports;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Class containing constants related to integrity reports
  */
@@ -59,4 +63,8 @@ public class IntegrityReportConstants {
     public static final String SECTION_HEADER_START_STOP = "========";
     public static final String PILLAR_HEADER_START_STOP = "--------";
     public static final String NO_ISSUE_HEADER_START_STOP = "++++++++";
+
+    public static Set<ReportPart> getReportParts() {
+        return new HashSet<>(Arrays.asList(ReportPart.values()));
+    }
 }

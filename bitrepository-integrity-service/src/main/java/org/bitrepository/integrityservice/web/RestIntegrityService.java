@@ -34,6 +34,7 @@ import org.bitrepository.integrityservice.cache.CollectionStat;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.PillarCollectionStat;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
+import org.bitrepository.integrityservice.reports.IntegrityReportConstants;
 import org.bitrepository.integrityservice.reports.IntegrityReportConstants.ReportPart;
 import org.bitrepository.integrityservice.reports.IntegrityReportProvider;
 import org.bitrepository.integrityservice.reports.IntegrityReportReader;
@@ -61,6 +62,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -69,6 +71,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Path("/IntegrityService")
@@ -325,6 +328,65 @@ public class RestIntegrityService {
     }
 
     /**
+     * Gets a {@link HashMap} with key {@link String} representing the {@link ReportPart} and value {@link List} of {@link String}s
+     * representing
+     * which pillars have a file for the given report part.
+     * {@link ReportPart}
+     *
+     * @param collectionID The collection ID for which the look at.
+     * @return {@link HashMap} mapping {@link ReportPart} to a {@link List} of pillars.
+     */
+    @GET
+    @Path("/getAvailableIntegrityReports")
+    @Produces(MediaType.APPLICATION_JSON)
+    public HashMap<String, List<String>> getAvailableIntegrityReports(
+            @QueryParam("collectionID")
+                    String collectionID) {
+        HashMap<String, List<String>> availableIntegrityReports = new HashMap<>();
+        List<String> pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
+        Set<ReportPart> reportParts = IntegrityReportConstants.getReportParts();
+
+        for (String pillarID : pillars) {
+            List<String> reportPartOnPillar = new ArrayList<>();
+            for (ReportPart currentReportPart : reportParts) {
+                try {
+                    getReportPart(currentReportPart, collectionID, pillarID, 0, Integer.MAX_VALUE);
+                    reportPartOnPillar.add(currentReportPart.getPartName());
+                } catch (FileNotFoundException e) {
+                    log.debug(e.getMessage());
+                }
+            }
+            availableIntegrityReports.put(pillarID, reportPartOnPillar);
+        }
+
+        return availableIntegrityReports;
+    }
+
+    /**
+     * Get the latest integrity report, or an error message telling no such report found.
+     */
+    @GET
+    @Path("/getIntegrityReportPart")
+    @Produces(MediaType.TEXT_PLAIN)
+    public StreamingOutput getLatestIntegrityReport(
+            @QueryParam("collectionID")
+                    String collectionID,
+            @QueryParam("pillarID")
+                    String pillarID,
+            @QueryParam("reportPart")
+                    String reportPart) {
+        final File reportPartFile;
+        try {
+            reportPartFile = integrityReportProvider.getIntegrityReportPart(collectionID, pillarID, reportPart);
+        } catch (FileNotFoundException e) {
+            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
+                    .entity(String.format(Locale.ROOT, "No '%s' report part for collection: '%s' and pillar: '%s' found!", reportPart,
+                            collectionID, pillarID)).type(MediaType.TEXT_PLAIN).build());
+        }
+        return output -> streamFile(reportPartFile, output);
+    }
+
+    /**
      * Get the latest integrity report, or an error message telling no such report found.
      */
     @GET
@@ -341,19 +403,7 @@ public class RestIntegrityService {
                     .entity(String.format(Locale.ROOT, "No integrity report for collection: '%s' found!", collectionID))
                     .type(MediaType.TEXT_PLAIN).build());
         }
-        return output -> {
-            try {
-                int i;
-                byte[] data = new byte[4096];
-                FileInputStream is = new FileInputStream(fullReport);
-                while ((i = is.read(data)) >= 0) {
-                    output.write(data, 0, i);
-                }
-                is.close();
-            } catch (Exception e) {
-                throw new WebApplicationException(e);
-            }
-        };
+        return output -> streamFile(fullReport, output);
     }
 
     /**
@@ -502,6 +552,26 @@ public class RestIntegrityService {
      */
     private int getOffset(int page, int pageSize) {
         return (page - 1) * pageSize;
+    }
+
+    /**
+     * Streams the given file, allowing it to be downloaded on REST api call.
+     *
+     * @param file   The {@link File} to stream.
+     * @param output The {@link OutputStream} to write the stream to.
+     */
+    private void streamFile(File file, OutputStream output) {
+        try {
+            int i;
+            byte[] data = new byte[4096];
+            FileInputStream is = new FileInputStream(file);
+            while ((i = is.read(data)) >= 0) {
+                output.write(data, 0, i);
+            }
+            is.close();
+        } catch (Exception e) {
+            throw new WebApplicationException(e);
+        }
     }
 
     private void writeIntegrityStatusObject(PillarCollectionStat stat, JsonGenerator jg) throws IOException {

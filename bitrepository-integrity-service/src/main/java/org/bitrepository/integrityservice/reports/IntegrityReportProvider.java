@@ -64,6 +64,26 @@ public class IntegrityReportProvider {
     }
 
     /**
+     * Get the latest integrity report of a collection, for a specific report part and specific pillar.
+     *
+     * @param collectionID The specific collectionID.
+     * @param pillarID     The specific pillarID.
+     * @param reportPart   The specific ReportPart.
+     * @return Returns the given report part {@link File} if it exists.
+     * @throws FileNotFoundException If no such report part can be found for the given pillar and collection.
+     */
+    public synchronized File getIntegrityReportPart(String collectionID, String pillarID, String reportPart)
+            throws FileNotFoundException {
+        log.info("Trying to lookup the '{}' report on disk for collection '{}'", reportPart, collectionID);
+        File latestReportPart = getReportPartFromDisk(collectionID, pillarID, reportPart);
+        if (latestReportPart != null) {
+            return latestReportPart;
+        } else {
+            throw new FileNotFoundException("Could not find latest integrity report");
+        }
+    }
+
+    /**
      * Register the latest integrity report for a given collection
      *
      * @param collectionID The collection to register the report for
@@ -75,7 +95,7 @@ public class IntegrityReportProvider {
 
     private File getLatestReportFromDisk(String collectionID) {
         File collectionReports = new File(reportsDir, collectionID);
-        log.info("Looking for latest report dir in {}", collectionReports);
+        log.info("Looking for latest report dir in '{}'", collectionReports);
         File[] reports = collectionReports.listFiles(File::isDirectory);
         long lastModification = Long.MIN_VALUE;
         File latestReport = null;
@@ -87,7 +107,37 @@ public class IntegrityReportProvider {
                     latestReport = reportDir;
                     lastModification = latestReport.lastModified();
                 } else {
-                    log.debug("Candidate report dir {} had no report file", reportDir);
+                    log.debug("Candidate report dir '{}' had no report file", reportDir);
+                }
+            }
+        }
+
+        return latestReport;
+    }
+
+    /**
+     * Returns the latest report part for the given collection and pillar.
+     *
+     * @param collectionID The collection ID.
+     * @param pillarID     The pillar ID.
+     * @param reportPart   The wanted report part as {@link String}.
+     * @return Returns a {@link File} containing the latest report part for the given collection and pillar if such a file exists.
+     */
+    private File getReportPartFromDisk(String collectionID, String pillarID, String reportPart) {
+        File collectionReports = new File(reportsDir, collectionID);
+        log.info("Looking for latest report dir in '{}'", collectionReports);
+        File[] reports = collectionReports.listFiles(File::isDirectory);
+        long lastModification = Long.MIN_VALUE;
+        File latestReport = null;
+        assert reports != null;
+        for (File reportDir : reports) {
+            if (reportDir.lastModified() > lastModification) {
+                File reportFile = new File(reportDir, reportPart + "-" + pillarID);
+                if (reportFile.exists()) {
+                    latestReport = reportFile;
+                    lastModification = latestReport.lastModified();
+                } else {
+                    log.debug("Report dir '{}' had no '{}'-report for pillar '{}'", reportDir, reportPart, pillarID);
                 }
             }
         }
