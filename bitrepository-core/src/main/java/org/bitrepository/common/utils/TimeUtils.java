@@ -134,13 +134,14 @@ public final class TimeUtils {
 
     /**
      * Formats a non-negative Duration to an approximate human-readable string like "1y 2m" or "3h 45m".
-     * The conversion uses approximate average values for the lengths of days, months and years.
+     * The conversion uses estimated/approximate average values for the lengths of days, months and years.
+     * The method is therefore suitable for durations longer than a month.
      *
-     * The duration must be non-negative and not longer than 4 382 910 hours (approximately 500 years)
+     * The duration must be non-negative and not longer than 4 382 910 hours (approximately 500 years).
      *
      * @throws IllegalArgumentException if dur is negative or longer than 4 382 910 hours
      */
-    public static String durationToHuman(Duration dur) {
+    public static String durationToHumanUsingEstimates(Duration dur) {
         ArgumentValidator.checkTrue(! dur.isNegative(), "Cannot handle a negative duration; got " + dur);
         ArgumentValidator.checkTrue(dur.compareTo(Duration.ofHours(4_382_910)) <= 0,
                 "Duration is too long: " + dur);

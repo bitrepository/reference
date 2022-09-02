@@ -565,7 +565,7 @@ public abstract class IntegrityDAO {
                 new MaxChecksumAgeProvider(HandleObsoleteChecksumsStep.DEFAULT_MAX_CHECKSUM_AGE,
                         obsoleteChecksumSettings);
         long maxAge = maxChecksumAgeProvider.getMaxChecksumAge(pillarID);
-        return maxAge == 0 ? "unlimited" : TimeUtils.durationToHuman(Duration.ofMillis(maxAge));
+        return maxAge == 0 ? "unlimited" : TimeUtils.durationToHumanUsingEstimates(Duration.ofMillis(maxAge));
     }
 
     private Instant getOldestChecksumTimestamp(ResultSet dbResult) throws SQLException {
