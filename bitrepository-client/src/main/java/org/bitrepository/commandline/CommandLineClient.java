@@ -27,6 +27,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.codec.DecoderException;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.client.exceptions.InvalidChecksumException;
 import org.bitrepository.commandline.output.DefaultOutputHandler;
 import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.commandline.utils.ChecksumExtractionUtils;
@@ -45,7 +46,7 @@ import org.bitrepository.protocol.security.SecurityManager;
 
 import javax.jms.JMSException;
 import java.io.File;
-import java.net.MalformedURLException;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -70,12 +71,15 @@ public abstract class CommandLineClient {
      */
     public void runCommand() throws Exception {
         try {
-            try {
-                performOperation();
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.exit(Constants.EXIT_OPERATION_FAILURE);
-            }
+            performOperation();
+        } catch (InvalidChecksumException | IllegalArgumentException ie) {
+            output.warn(ie.getMessage());
+            shutdown();
+            System.exit(Constants.EXIT_OPERATION_FAILURE);
+        } catch (Exception e) {
+            output.error("Unexpected Exception.", e);
+            shutdown();
+            System.exit(Constants.EXIT_OPERATION_FAILURE);
         } finally {
             shutdown();
         }
@@ -225,6 +229,13 @@ public abstract class CommandLineClient {
     }
 
     /**
+     * @return Returns the default ChecksumSpecType by calling {@link ChecksumUtils#getDefault(Settings)}.
+     */
+    protected ChecksumSpecTYPE getDefaultChecksumSpec() {
+        return ChecksumUtils.getDefault(settings);
+    }
+
+    /**
      * @return The requested checksum spec, or null.
      */
     protected ChecksumSpecTYPE getRequestChecksumSpecOrNull() {
@@ -329,11 +340,19 @@ public abstract class CommandLineClient {
             FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
             return fileexchange.putFile(f);
         } else {
+            String urlArg = cmdHandler.getOptionValue(Constants.URL_ARG);
             try {
-                return new URL(cmdHandler.getOptionValue(Constants.URL_ARG));
-            } catch (MalformedURLException e) {
-                throw new IllegalArgumentException(
-                        "The URL argument is either empty or not a valid URL: " + cmdHandler.getOptionValue(Constants.URL_ARG), e);
+                final URL url = new URL(urlArg);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                int responseCode = connection.getResponseCode();
+
+                if (responseCode > 399) {
+                    throw new Exception("Http URL Connection ResponseCode: " + responseCode);
+                }
+
+                return url;
+            } catch (Exception e) {
+                throw new IllegalArgumentException("The URL argument is either empty or not a valid URL: " + urlArg, e);
             }
         }
     }

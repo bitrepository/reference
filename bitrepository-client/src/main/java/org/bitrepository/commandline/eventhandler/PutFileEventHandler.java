@@ -21,49 +21,62 @@
  */
 package org.bitrepository.commandline.eventhandler;
 
+import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumType;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.Base16Utils;
+import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.modify.putfile.conversation.PutFileCompletePillarEvent;
+
+import java.util.Locale;
 
 /**
  * Complete event awaiter for GetFile.
  * Prints out checksum results, if any.
  */
 public class PutFileEventHandler extends CompleteEventAwaiter {
-
     private final Boolean printOutput;
+    private final ChecksumSpecTYPE checksumSpecTYPE;
+    private final ChecksumType defaultChecksumType;
 
     /**
      * Constructor.
      *
      * @param settings      The {@link Settings}
      * @param outputHandler The {@link OutputHandler} for handling output
-     * @param printOutput   Setting for determining if output should be printed.
      */
-    public PutFileEventHandler(Settings settings, OutputHandler outputHandler, boolean printOutput) {
+    public PutFileEventHandler(Settings settings, OutputHandler outputHandler, ChecksumSpecTYPE checksumSpecTYPE) {
         super(settings, outputHandler);
-        this.printOutput = printOutput;
+        this.checksumSpecTYPE = checksumSpecTYPE;
+        this.defaultChecksumType = ChecksumUtils.getDefaultChecksumType(settings);
+        this.printOutput = checksumSpecTYPE.getChecksumType() != defaultChecksumType;
 
         if (printOutput) {
-            output.resultHeader("PillarId \t Checksum");
+            output.resultHeader("PillarId \t Alg \t Checksum");
         }
     }
 
     @Override
     public void handleComponentComplete(OperationEvent event) {
         if (!(event instanceof PutFileCompletePillarEvent)) {
-            output.warn("PutFileEventHandler received a component complete, which is not a "
-                    + PutFileCompletePillarEvent.class.getName());
+            output.warn("PutFileEventHandler received a component complete, which is not a " + PutFileCompletePillarEvent.class.getName());
         }
 
         assert event instanceof PutFileCompletePillarEvent;
         PutFileCompletePillarEvent pillarEvent = (PutFileCompletePillarEvent) event;
+        boolean isDuplicate = pillarEvent.getResponseInfo().getResponseCode().equals(ResponseCode.DUPLICATE_FILE_FAILURE);
         if (printOutput && pillarEvent.getChecksums() != null) {
-            output.resultLine(
-                    pillarEvent.getContributorID() + " \t " + Base16Utils.decodeBase16(pillarEvent.getChecksums().getChecksumValue()));
+            String checksum = Base16Utils.decodeBase16(pillarEvent.getChecksums().getChecksumValue());
+            if (isDuplicate) {
+                output.resultLine(
+                        String.format(Locale.ROOT, "%s \t %s \t %s", pillarEvent.getContributorID(), defaultChecksumType, checksum));
+            } else {
+                output.resultLine(String.format(Locale.ROOT, "%s \t %s \t %s \t*", pillarEvent.getContributorID(),
+                        checksumSpecTYPE.getChecksumType().value(), checksum));
+            }
         }
     }
-
 }
