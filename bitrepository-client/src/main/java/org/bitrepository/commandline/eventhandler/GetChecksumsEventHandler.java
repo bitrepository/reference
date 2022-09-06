@@ -26,6 +26,8 @@ import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.commandline.resultmodel.GetChecksumsResultModel;
 
+import java.time.Duration;
+
 /**
  * Event handler for paging through GetChecksums results
  */
@@ -33,7 +35,7 @@ public class GetChecksumsEventHandler extends PagingEventHandler {
 
     private final GetChecksumsResultModel model;
 
-    public GetChecksumsEventHandler(GetChecksumsResultModel model, Long timeout, OutputHandler outputHandler) {
+    public GetChecksumsEventHandler(GetChecksumsResultModel model, Duration timeout, OutputHandler outputHandler) {
         super(timeout, outputHandler);
         this.model = model;
     }

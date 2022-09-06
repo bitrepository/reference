@@ -30,9 +30,11 @@ import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.commandline.outputformatter.GetChecksumsOutputFormatter;
 import org.bitrepository.commandline.resultmodel.GetChecksumsResultModel;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Wrapper class for GetChecksumClient to handle paging through large result sets
@@ -42,13 +44,13 @@ public class PagingGetChecksumsClient {
     private GetChecksumsResultModel model;
     private final GetChecksumsOutputFormatter outputFormatter;
     private final OutputHandler outputHandler;
-    private final long timeout;
+    private final Duration timeout;
     private final int pageSize;
 
-    public PagingGetChecksumsClient(GetChecksumsClient client, long timeout, int pageSize, GetChecksumsOutputFormatter outputFormatter,
+    public PagingGetChecksumsClient(GetChecksumsClient client, Duration timeout, int pageSize, GetChecksumsOutputFormatter outputFormatter,
                                     OutputHandler outputHandler) {
         this.client = client;
-        this.timeout = timeout;
+        this.timeout = Objects.requireNonNull(timeout, "timeout");
         this.pageSize = pageSize;
         this.outputFormatter = outputFormatter;
         this.outputHandler = outputHandler;

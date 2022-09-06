@@ -27,6 +27,7 @@ package org.bitrepository.client.conversation;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.exceptions.UnableToFinishException;
 
+import java.time.Duration;
 import java.util.LinkedList;
 
 /**
@@ -54,8 +55,8 @@ public class FinishedState extends GeneralConversationState {
     }
 
     @Override
-    protected long getTimeoutValue() {
-        return 0;
+    protected Duration getTimeoutValue() {
+        return Duration.ZERO;
     }
 
     @Override

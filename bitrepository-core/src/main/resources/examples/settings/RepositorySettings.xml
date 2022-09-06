@@ -76,7 +76,7 @@
     -->
     <CollectionDestination>topic://dummy-repository-id</CollectionDestination>
     <!-- 
-      AlarmDestination, defines the destination to where alarms are send. This should be a topic, 
+      AlarmDestination, defines the destination to where alarms are sent. This should be a topic,
       so that multiple components interested in receiving alarms won't steal them from each other. 
     -->
     <AlarmDestination>topic://dummy-repository-id.alarms</AlarmDestination>
@@ -95,17 +95,21 @@
   <!-- General settings for the various clients -->
   <ClientSettings>
     <!-- 
-      IdentificationTimeout, the maximum time which clients should wait for identify* responses during
+      IdentificationTimeoutDuration, the maximum time which clients should wait for identify* responses during
       the identification phase of an operation. 
-      Unit in milliseconds. 
+      A non-negative XML durations consisting of hours, minutes and/or seconds.
+      The seconds may have up to 9 decimals of fraction.
+      For example PT2H (2 hours), PT3M (3 minutes), PT1H22M22.5S (1 hour 22 minutes 22.5 seconds).
     -->
-    <IdentificationTimeout>10000</IdentificationTimeout>
+    <IdentificationTimeoutDuration>PT10S</IdentificationTimeoutDuration>
     <!-- 
       OperationTimeout, the maximum time which clients should wait for an operation to finish after 
       an successful identification phase. 
-      Unit in milliseconds. 
+      A non-negative XML durations consisting of hours, minutes and/or seconds.
+      The seconds may have up to 9 decimals of fraction.
+      For example PT2H (2 hours), PT3M (3 minutes), PT1H22M22.5S (1 hour 22 minutes 22.5 seconds).
     -->
-    <OperationTimeout>3600000</OperationTimeout>
+    <OperationTimeoutDuration>PT1H</OperationTimeoutDuration>
   </ClientSettings>
 
   <!-- 

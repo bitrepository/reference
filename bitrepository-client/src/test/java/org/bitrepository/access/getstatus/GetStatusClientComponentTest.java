@@ -40,7 +40,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.math.BigInteger;
+import javax.xml.datatype.DatatypeFactory;
 import java.util.List;
 
 import static org.testng.Assert.assertEquals;
@@ -50,20 +50,20 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
         private TestGetStatusMessageFactory testMessageFactory;
 
         @BeforeMethod(alwaysRun=true)
-        public void beforeMethodSetup() throws Exception {
+        public void beforeMethodSetup() {
             testMessageFactory = new TestGetStatusMessageFactory(settingsForTestClient.getComponentID());
 
             if (settingsForCUT.getRepositorySettings().getGetStatusSettings() == null) {
                 settingsForCUT.getRepositorySettings().setGetStatusSettings(new GetStatusSettings());
             }
-            List<String> contributers = settingsForCUT.getRepositorySettings().getGetStatusSettings().getNonPillarContributorIDs();
-            contributers.clear();
-            contributers.add(PILLAR1_ID);
-            contributers.add(PILLAR2_ID);
+            List<String> contributors = settingsForCUT.getRepositorySettings().getGetStatusSettings().getNonPillarContributorIDs();
+            contributors.clear();
+            contributors.add(PILLAR1_ID);
+            contributors.add(PILLAR2_ID);
         }
 
         @Test(groups = {"regressiontest"})
-        public void verifyGetStatusClientFromFactory() throws Exception {
+        public void verifyGetStatusClientFromFactory() {
             Assert.assertTrue(AccessComponentFactory.getInstance().createGetStatusClient(
                     settingsForCUT, securityManager, settingsForTestClient.getComponentID())
                     instanceof ConversationBasedGetStatusClient,
@@ -74,11 +74,13 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
         @Test(groups = {"regressiontest"})
         public void incompleteSetOfIdendifyResponses() throws Exception {
             addDescription("Verify that the GetStatus client works correct without receiving responses from all " +
-                    "contributers.");
-            addStep("Configure 1 second timeout for identifying contributers. " +
-                    "The default 2 contributers collection is used", "");
+                    "contributors.");
+            addStep("Configure 1 second timeout for identifying contributors. " +
+                    "The default 2 contributors collection is used", "");
 
-            settingsForCUT.getRepositorySettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(1000));
+            DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
+            settingsForCUT.getRepositorySettings().getClientSettings()
+                    .setIdentificationTimeoutDuration(datatypeFactory.newDuration(1000));
             TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
             GetStatusClient client = createGetStatusClient();
 
@@ -113,7 +115,7 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
         
         @Test(groups = {"regressiontest"})
         public void getAllStatuses() throws InterruptedException {
-            addDescription("Tests the simplest case of getting status for all contributers.");
+            addDescription("Tests the simplest case of getting status for all contributors.");
 
             addStep("Create a GetStatusClient.", "");
             TestEventHandler testEventHandler = new TestEventHandler(testEventManager);

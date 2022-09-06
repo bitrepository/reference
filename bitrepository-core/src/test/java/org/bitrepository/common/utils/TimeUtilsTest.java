@@ -27,8 +27,11 @@ import org.testng.annotations.Test;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -78,9 +81,31 @@ public class TimeUtilsTest extends ExtendedTestCase {
         assertEquals(zeroTimeString, " 0 ms");
     }
 
+    @Test(groups = {"regressiontest"})
+    public void durationsPrintHumanly() {
+        addDescription("Tests durationToHuman()");
+
+        assertTrue(TimeUtils.durationToHuman(Duration.ZERO).contains("0"),
+                "Zero duration should contain a 0 digit");
+
+        assertEquals(TimeUtils.durationToHuman(Duration.ofDays(2)), "2d");
+        assertEquals(TimeUtils.durationToHuman(Duration.ofHours(3)), "3h");
+        assertEquals(TimeUtils.durationToHuman(Duration.ofMinutes(5)), "5m");
+        assertEquals(TimeUtils.durationToHuman(Duration.ofSeconds(7)), "7s");
+        assertEquals(TimeUtils.durationToHuman(Duration.ofMillis(11)), "11 ms");
+        assertEquals(TimeUtils.durationToHuman(Duration.ofNanos(13)), "13 ns");
+        // When there are nanoseconds, don't print millis
+        assertEquals(TimeUtils.durationToHuman(Duration.ofNanos(999_999_937)), "999999937 ns");
+
+        assertEquals(TimeUtils.durationToHuman(Duration.ofDays(-2)), "minus 2d");
+        assertEquals(TimeUtils.durationToHuman(Duration.ofNanos(-13)), "minus 13 ns");
+
+        Duration allUnits = Duration.parse("P3DT5H7M11.013000017S");
+        assertEquals(TimeUtils.durationToHuman(allUnits), "3d 5h 7m 11s 13000017 ns");
+    }
 
     /*
-     * The test only ensures that the output format is fixed. Which timezone the the date is 
+     * The test only ensures that the output format is fixed. Which timezone the date is
      * formatted to depends on the default/system timezone. At some time the use of the old java Date 
      * api should be discontinued and the new Java Time api used instead.
      */
@@ -89,6 +114,42 @@ public class TimeUtilsTest extends ExtendedTestCase {
     	DateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.ROOT);
         Date date = new Date(1360069129256L);
         String shortDateString = TimeUtils.shortDate(date);
-        Assert.assertEquals(shortDateString, formatter.format(date)); 
+        Assert.assertEquals(shortDateString, formatter.format(date));
     }
+
+    @Test(groups = {"regressiontest"})
+    public void rejectsNegativeDuration() {
+        Assert.assertThrows(IllegalArgumentException.class,
+                () -> TimeUtils.durationToCountAndTimeUnit(Duration.ofSeconds(Long.MIN_VALUE)));
+        Assert.assertThrows(IllegalArgumentException.class,
+                () -> TimeUtils.durationToCountAndTimeUnit(Duration.ofNanos(-1)));
+    }
+
+    @Test(groups = {"regressiontest"})
+    public void convertsDurationToCountAndTimeUnit() {
+        CountAndTimeUnit expectedZero = TimeUtils.durationToCountAndTimeUnit(Duration.ZERO);
+        Assert.assertEquals(expectedZero.getCount(), 0);
+        Assert.assertNotNull(expectedZero.getUnit());
+
+        Assert.assertEquals(TimeUtils.durationToCountAndTimeUnit(Duration.ofNanos(1)),
+                new CountAndTimeUnit(1, TimeUnit.NANOSECONDS));
+        Assert.assertEquals(TimeUtils.durationToCountAndTimeUnit(Duration.ofNanos(Long.MAX_VALUE)),
+                new CountAndTimeUnit(Long.MAX_VALUE, TimeUnit.NANOSECONDS));
+        Assert.assertEquals(
+                TimeUtils.durationToCountAndTimeUnit(Duration.of(Long.MAX_VALUE / 1000 + 1, ChronoUnit.MICROS)),
+                new CountAndTimeUnit(Long.MAX_VALUE / 1000 + 1, TimeUnit.MICROSECONDS));
+        Assert.assertEquals(TimeUtils.durationToCountAndTimeUnit(Duration.of(Long.MAX_VALUE, ChronoUnit.MICROS)),
+                new CountAndTimeUnit(Long.MAX_VALUE, TimeUnit.MICROSECONDS));
+        Assert.assertEquals(
+                TimeUtils.durationToCountAndTimeUnit(Duration.ofMillis(Long.MAX_VALUE / 1000 + 1)),
+                new CountAndTimeUnit(Long.MAX_VALUE / 1000 + 1, TimeUnit.MILLISECONDS));
+        Assert.assertEquals(TimeUtils.durationToCountAndTimeUnit(Duration.ofMillis(Long.MAX_VALUE)),
+                new CountAndTimeUnit(Long.MAX_VALUE, TimeUnit.MILLISECONDS));
+        Assert.assertEquals(
+                TimeUtils.durationToCountAndTimeUnit(Duration.ofSeconds(Long.MAX_VALUE / 1000 + 1)),
+                new CountAndTimeUnit(Long.MAX_VALUE / 1000 + 1, TimeUnit.SECONDS));
+        Assert.assertEquals(TimeUtils.durationToCountAndTimeUnit(Duration.ofSeconds(Long.MAX_VALUE)),
+                new CountAndTimeUnit(Long.MAX_VALUE, TimeUnit.SECONDS));
+    }
+
 }

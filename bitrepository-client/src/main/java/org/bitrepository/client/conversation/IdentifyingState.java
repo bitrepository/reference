@@ -28,6 +28,7 @@ import org.bitrepository.client.conversation.selector.SelectedComponentInfo;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
 import org.bitrepository.common.exceptions.UnableToFinishException;
 
+import java.time.Duration;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -79,9 +80,8 @@ public abstract class IdentifyingState extends GeneralConversationState {
     }
 
     @Override
-    protected long getTimeoutValue() {
-        return getContext().getSettings().getRepositorySettings().getClientSettings().getIdentificationTimeout()
-                .longValue();
+    protected Duration getTimeoutValue() {
+        return getContext().getSettings().getIdentificationTimeout();
     }
 
     /**

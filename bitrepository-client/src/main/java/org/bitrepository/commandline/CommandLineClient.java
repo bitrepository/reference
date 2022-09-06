@@ -49,6 +49,7 @@ import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
 import java.util.List;
 import java.util.Locale;
 
@@ -216,9 +217,8 @@ public abstract class CommandLineClient {
     /**
      * @return The timeout to use for performing the full operation.
      */
-    protected long getTimeout() {
-        return settings.getRepositorySettings().getClientSettings().getIdentificationTimeout().longValue() +
-                settings.getRepositorySettings().getClientSettings().getOperationTimeout().longValue();
+    protected Duration getTimeout() {
+        return settings.getIdentificationTimeout().plus(settings.getOperationTimeout());
     }
 
     /**

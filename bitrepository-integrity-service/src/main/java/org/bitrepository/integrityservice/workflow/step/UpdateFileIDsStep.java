@@ -38,6 +38,7 @@ import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -52,7 +53,7 @@ public abstract class UpdateFileIDsStep extends AbstractWorkFlowStep {
     private final IntegrityInformationCollector collector;
     protected final IntegrityModel store;
     private final IntegrityAlerter alerter;
-    private final Long timeout;
+    private final Duration timeout;
     private final Integer maxNumberOfResultsPerConversation;
     protected final String collectionID;
     private boolean abortInCaseOfFailure = true;
@@ -71,8 +72,7 @@ public abstract class UpdateFileIDsStep extends AbstractWorkFlowStep {
         this.alerter = alerter;
         this.collectionID = collectionID;
         this.integrityContributors = integrityContributors;
-        this.timeout = settings.getRepositorySettings().getClientSettings().getIdentificationTimeout().longValue() +
-                settings.getRepositorySettings().getClientSettings().getOperationTimeout().longValue();
+        this.timeout = settings.getIdentificationTimeout().plus(settings.getOperationTimeout());
         this.maxNumberOfResultsPerConversation = SettingsUtils.getMaxClientPageSize();
         if (settings.getReferenceSettings().getIntegrityServiceSettings().isSetAbortOnFailedContributor()) {
             abortInCaseOfFailure = settings.getReferenceSettings().getIntegrityServiceSettings().isAbortOnFailedContributor();

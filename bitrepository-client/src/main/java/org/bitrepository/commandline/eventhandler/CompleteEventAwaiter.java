@@ -26,7 +26,10 @@ import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.CountAndTimeUnit;
+import org.bitrepository.common.utils.TimeUtils;
 
+import java.time.Duration;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -39,7 +42,7 @@ public abstract class CompleteEventAwaiter implements EventHandler {
     /**
      * The amount of milliseconds before the results are required.
      */
-    private final Long timeout;
+    private final Duration timeout;
     /**
      * The handler of the output for this event handler.
      */
@@ -55,8 +58,7 @@ public abstract class CompleteEventAwaiter implements EventHandler {
      * @param outputHandler The {@link OutputHandler} for handling outputting results
      */
     public CompleteEventAwaiter(Settings settings, OutputHandler outputHandler) {
-        this.timeout = settings.getRepositorySettings().getClientSettings().getIdentificationTimeout().longValue()
-                + settings.getRepositorySettings().getClientSettings().getOperationTimeout().longValue();
+        this.timeout = settings.getIdentificationTimeout().plus(settings.getOperationTimeout());
         this.output = outputHandler;
     }
 
@@ -78,14 +80,16 @@ public abstract class CompleteEventAwaiter implements EventHandler {
     public abstract void handleComponentComplete(OperationEvent event);
 
     /**
-     * Retrieves the final event when the operation finishes. The final event is awaited for 'timeout' amount
-     * of milliseconds. If no final events has occurred, then an InterruptedException is thrown.
+     * Retrieves the final event when the operation finishes.
+     * The final event is awaited for 'timeout'. If no final events has occurred, null is returned.
      *
-     * @return The final event.
+     * @return The final event or null if none has occurred.
+     * @throws IllegalStateException if interrupted while waiting
      */
     public OperationEvent getFinish() {
         try {
-            return finalEventQueue.poll(timeout, TimeUnit.MILLISECONDS);
+            CountAndTimeUnit pollTimeout = TimeUtils.durationToCountAndTimeUnit(timeout);
+            return finalEventQueue.poll(pollTimeout.getCount(), pollTimeout.getUnit());
         } catch (InterruptedException e) {
             throw new IllegalStateException("Interrupted while waiting for the final response.", e);
         }
