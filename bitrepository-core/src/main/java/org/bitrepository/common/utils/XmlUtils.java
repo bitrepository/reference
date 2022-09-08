@@ -21,7 +21,7 @@ public class XmlUtils {
      * Converts a javax.xml.datatype.Duration to a java.time.Duration using estimated values for days, months and years.
      *
      * @throws ArithmeticException
-     * if either a number in the string exceeds a Java long or the total duration exceeds a java.time.Duration.
+     * if either a field in xmlDuration exceeds a Java long or the total converted duration exceeds a java.time.Duration
      */
     public static Duration xmlDurationToDuration(javax.xml.datatype.Duration xmlDuration) {
         boolean negative = xmlDuration.getSign() == -1;
@@ -39,7 +39,9 @@ public class XmlUtils {
         if (count == null) {
             return Duration.ZERO;
         }
-        return unit.getDuration().multipliedBy(((BigInteger) count).longValueExact());
+        BigInteger countBigInteger = (BigInteger) count;
+        assert countBigInteger.signum() >= 0 : "Unexpected negative " + count;
+        return unit.getDuration().multipliedBy(countBigInteger.longValueExact());
     }
 
     /** @param secondsValue a BigDecimal denoting the number of seconds with fraction or null */
@@ -48,6 +50,7 @@ public class XmlUtils {
             return Duration.ZERO;
         }
         BigDecimal secondsBigDecimal = (BigDecimal) secondsValue;
+        assert secondsBigDecimal.signum() >= 0 : "Unexpected negative seconds " + secondsValue;
         long wholeSeconds = secondsBigDecimal.toBigInteger().longValueExact();
         int nanos = secondsBigDecimal.subtract(BigDecimal.valueOf(wholeSeconds)).scaleByPowerOfTen(9).intValueExact();
         return Duration.ofSeconds(wholeSeconds, nanos);

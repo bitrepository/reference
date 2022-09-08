@@ -134,6 +134,11 @@ public class XmlUtilsTest extends ExtendedTestCase {
     }
 
     @Test(groups = {"regressiontest"})
+    public void testNegativeXmlDurationToMilliseconds() {
+        Assert.assertEquals(XmlUtils.xmlDurationToMilliseconds(factory.newDuration("-PT1S")), -1000);
+    }
+
+    @Test(groups = {"regressiontest"})
     public void convertsToTimeMeasure() {
         TimeMeasureTYPE shortTimeMeasure = XmlUtils.xmlDurationToTimeMeasure(factory.newDuration(1));
         Assert.assertEquals(shortTimeMeasure.getTimeMeasureUnit(), TimeMeasureUnit.MILLISECONDS);
