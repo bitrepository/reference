@@ -19,14 +19,19 @@ public class XmlUtils {
 
     /**
      * Converts a javax.xml.datatype.Duration to a java.time.Duration using estimated values for days, months and years.
+     *
+     * @throws ArithmeticException
+     * if either a number in the string exceeds a Java long or the total duration exceeds a java.time.Duration.
      */
     public static Duration xmlDurationToDuration(javax.xml.datatype.Duration xmlDuration) {
-        return unitsToDuration(xmlDuration.getField(DatatypeConstants.YEARS), ChronoUnit.YEARS)
+        boolean negative = xmlDuration.getSign() == -1;
+        Duration magnitude = unitsToDuration(xmlDuration.getField(DatatypeConstants.YEARS), ChronoUnit.YEARS)
                 .plus(unitsToDuration(xmlDuration.getField(DatatypeConstants.MONTHS), ChronoUnit.MONTHS))
                 .plus(unitsToDuration(xmlDuration.getField(DatatypeConstants.DAYS), ChronoUnit.DAYS))
                 .plus(unitsToDuration(xmlDuration.getField(DatatypeConstants.HOURS), ChronoUnit.HOURS))
                 .plus(unitsToDuration(xmlDuration.getField(DatatypeConstants.MINUTES), ChronoUnit.MINUTES))
                 .plus(secondsToDuration(xmlDuration.getField(DatatypeConstants.SECONDS)));
+        return negative ? magnitude.negated() : magnitude;
     }
 
     /** @param count a BigInteger or null */

@@ -80,6 +80,33 @@ public class XmlUtilsTest extends ExtendedTestCase {
         assertBetweenExclusive(convertedTwoYears, minTwoYearsLengthExclusive, maxTwoYearsLengthExclusive);
     }
 
+    @Test(groups = {"regressiontest"})
+    public void testNegativeXmlDurationToDuration() {
+        // WorkflowInterval may be negative (meaning don’t run automatically)
+        addDescription("Tests that xmlDurationToDuration() accepts a negative duration and converts it correctly");
+        addStep("Negative XML durations", "Corresponding negative java.time durations");
+        Assert.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("-PT3S")),
+                Duration.ofSeconds(-3));
+        Assert.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("-PT0.000001S")),
+                Duration.ofNanos(-1000));
+        Assert.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("-PT24H")),
+                Duration.ofHours(-24));
+        Assert.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("-P1D")),
+                Duration.ofDays(-1));
+
+        // We require minus 1 month to be between -31 and -28 days exclusive
+        Duration minNegativeMonthLengthExclusive = Duration.ofDays(-31);
+        Duration maxNegativeMonthLengthExclusive = Duration.ofDays(-28);
+        Duration convertedMinusOneMonth = XmlUtils.xmlDurationToDuration(factory.newDuration("-P1M"));
+        assertBetweenExclusive(convertedMinusOneMonth, minNegativeMonthLengthExclusive, maxNegativeMonthLengthExclusive);
+
+        // Minus 1 year is between -366 and -365 days
+        Duration minMinusOneYearLengthExclusive = Duration.ofDays(-366);
+        Duration maxMinusOneYearLengthExclusive = Duration.ofDays(-365);
+        Duration convertedMinusOneYears = XmlUtils.xmlDurationToDuration(factory.newDuration("-P1Y"));
+        assertBetweenExclusive(convertedMinusOneYears, minMinusOneYearLengthExclusive, maxMinusOneYearLengthExclusive);
+    }
+
     private static <T extends Comparable<T>> void assertBetweenExclusive(T actual, T minExclusive, T maxExclusive) {
         Assert.assertTrue(actual.compareTo(minExclusive) > 0);
         Assert.assertTrue(actual.compareTo(maxExclusive) < 0);
