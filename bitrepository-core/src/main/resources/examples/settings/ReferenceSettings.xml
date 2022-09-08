@@ -378,17 +378,19 @@
             Run every day on the TwoPillarCollection collection.
             -->
             <Schedule>
-              <WorkflowInterval>P1D</WorkflowInterval>  <Collections>
-              <CollectionID>TwoPillarCollection</CollectionID>
-            </Collections>
+              <WorkflowInterval>P1D</WorkflowInterval>
+              <Collections>
+                <CollectionID>TwoPillarCollection</CollectionID>
+              </Collections>
             </Schedule>
             <!--
             Run every hour on the SinglePillarCollection collection.
             -->
             <Schedule>
-              <WorkflowInterval>PT1H</WorkflowInterval>  <Collections>
-              <CollectionID>SinglePillarCollection</CollectionID>
-            </Collections>
+              <WorkflowInterval>PT1H</WorkflowInterval>
+              <Collections>
+                <CollectionID>SinglePillarCollection</CollectionID>
+              </Collections>
             </Schedule>
           </Schedules>
         </Workflow>

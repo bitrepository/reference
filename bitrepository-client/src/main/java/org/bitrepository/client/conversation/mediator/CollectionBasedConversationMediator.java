@@ -164,8 +164,8 @@ public class CollectionBasedConversationMediator implements ConversationMediator
                     Instant startTime = Instant.ofEpochMilli(conversation.getStartTime());
                     Instant expirationTime = startTime.plus(conversationTimeout);
                     if (expirationTime.isBefore(currentTime)) {
-                        log.warn("Failing timed out conversation " + conversation.getConversationID() + " " +
-                                "(Age " + TimeUtils.durationToHuman(Duration.between(startTime, currentTime)) + ")");
+                        log.warn("Failing timed out conversation {} (Age: {})", conversation.getConversationID(),
+                                TimeUtils.durationToHuman(Duration.between(startTime, currentTime)));
                         failConversation(conversation, "Failing timed out conversation " + conversation.getConversationID());
                     }
                 }
