@@ -53,6 +53,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -128,7 +129,7 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
         log.info("Instantiating the preservation of audit trails every {}",
                 TimeUtils.durationToHuman(preservationInterval));
         timer = new Timer(true);
-        preservationTask = new AuditPreservationTimerTask(preservationInterval);
+        preservationTask = new AuditPreservationTimerTask(preservationInterval.toMillis());
         timer.scheduleAtFixedRate(preservationTask, timerCheckIntervalMillis, timerCheckIntervalMillis);
     }
 
@@ -268,6 +269,7 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
         /**
          * @param interval The interval between running this timer task.
          */
+        // TODO: Replace old time representation (https://sbforge.org/jira/browse/BITMAG-1180)
         private AuditPreservationTimerTask(long interval) {
             this.schedule = new TimerTaskSchedule(interval, 0);
         }
