@@ -103,7 +103,7 @@ public abstract class WorkflowManager {
 
     public long getRunInterval(JobID jobID) {
         long interval = scheduler.getRunInterval(jobID);
-        if (interval == -1) {
+        if (interval < 0) {
             if (workflows.containsKey(jobID)) { // Unscheduled job
                 return -1;
             } else {
