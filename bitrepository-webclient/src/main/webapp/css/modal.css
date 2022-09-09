@@ -1,0 +1,102 @@
+.table th {
+    font-weight: bold;
+}
+
+.modal-table tr th {
+    border-bottom: 1px solid black;
+}
+
+.modal-table td {
+    border-bottom: 1px solid #9996;
+}
+
+.table thead th {
+    vertical-align: bottom;
+    padding: 15px;
+}
+
+.modal-table-head {
+    padding: 5px;
+    position: sticky;
+    top: 2%;
+    height: 35px;
+    background-color: #fff;
+}
+
+.modal-body {
+    position: relative;
+    margin-top: 20px;
+    height: inherit;
+    max-height: 86%;
+    padding: 15px;
+    overflow-y: auto;
+}
+
+.modal-dialog {
+    position: fixed;
+    z-index: 1050;
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 6px;
+    outline: 0;
+    box-shadow: 0 3px 7px rgb(0 0 0 / 30%);
+    -webkit-box-shadow: 0 3px 7px rgb(0 0 0 / 30%);
+    -moz-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+    background-clip: padding-box;
+    -webkit-background-clip: padding-box;
+    -moz-background-clip: padding;
+    left: 50%;
+    top: 10%;
+    bottom: 2%;
+    transform: translate(-50%, 0);
+    min-width: 70%;
+    /*height: 86%;*/
+}
+
+.fixed-div {
+    position: fixed;
+    width: 95%;
+    height: 6%;
+    background-color: #fff;
+    top: 6%;
+}
+
+.search-bar {
+    width: 33%;
+    margin: 10px;
+}
+
+.file-id {
+    color: #000 !important;
+    cursor: copy !important;
+    text-decoration: none !important;
+}
+
+.inline-block {
+    white-space: nowrap;
+    display: inline-flex;
+}
+
+.current-page-p {
+    margin: 0 0 0 10px;
+}
+
+.prev-button, .next-button {
+    display: inline-block;
+    margin-right: 5px;
+    margin-left: 5px;
+    background-color: #4fa7dc;
+    border: 1px solid #367def;
+    color: #000;
+}
+
+.prev-button:disabled, .next-button:disabled {
+    display: inline-block;
+    margin-right: 5px;
+    margin-left: 5px;
+    background-color: rgba(128, 128, 128, 0.5);
+    border: 1px solid rgba(89, 89, 89, 0.5);
+    color: rgba(0, 0, 0, 0.5);
+    cursor: not-allowed;
+}
+

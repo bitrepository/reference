@@ -1,103 +1,103 @@
-.controlLink{
+.controlLink {
     float: right;
     font-size: 1.2em;
     margin-top: 0.9em;
 }
 
-.collectionStatus, .dataSizeGraph, .collectionPieBox, .legPieBox{
+.collectionStatus, .dataSizeGraph, .collectionPieBox, .legPieBox {
     border: 1px solid #cccccc;
     float: left;
-    margin: 0em 0 2em;
+    margin: 0 0 2em;
     padding: 2em 1%;
     width: 100%;
-    -moz-box-sizing:    border-box;
+    -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
-    box-sizing:        border-box;
+    box-sizing: border-box;
 }
 
-.collectionStatus, .collectionPieBox, .legPieBox{
+.collectionStatus, .collectionPieBox, .legPieBox {
     background-color: #F9FCFF;
 }
 
-.collectionStatus td, .collectionStatus th{
+.collectionStatus td, .collectionStatus th {
     text-align: right;
 }
 
-td.collectionName, th.collectionName{
+td.collectionName, th.collectionName {
     text-align: left;
 }
 
-td.error{
+td.error {
     background-color: #CC0000;
     color: white;
     font-weight: bold;
 }
 
-.table-hover tbody tr:hover td.error{
+.table-hover tbody tr:hover td.error {
     background-color: #CC0000;
     color: white;
 }
 
-table.table .legPieBox th{
+table.table .legPieBox th {
     text-align: center;
 }
 
-form.dashboardForm{
+form.dashboardForm {
     margin: 0 0 2em 1.5em;
 }
 
-.dashboardForm select, .dashboardForm input[type="checkbox"]{
+.dashboardForm select, .dashboardForm input[type="checkbox"] {
     margin: 0 0 0 1.5em;
     vertical-align: baseline;
 }
 
-.dataSizeGraph #placeholder{
+.dataSizeGraph #placeholder {
     height: 300px;
     width: 96%;
 }
 
-.collectionPieBox, .legPieBox{
+.collectionPieBox, .legPieBox {
     padding: 0 2% 2em;
     width: 49%;
 }
 
-.collectionPieBox table, .legPieBox table{
+.collectionPieBox table, .legPieBox table {
     font-size: 1.2em;
     margin-top: 2em;
 }
 
-.collectionPieBox table td, .legPieBox table td{
+.collectionPieBox table td, .legPieBox table td {
     padding: 0 1em .4em 0;
     white-space: nowrap;
 }
 
-.collectionPieBox table td.dataLabel, .legPieBox table td.dataLabel{
+.collectionPieBox table td.dataLabel, .legPieBox table td.dataLabel {
     text-align: right;
     white-space: nowrap;
 }
 
-.collectionPieBox table td.dataData, .legPieBox table td.dataData{
+.collectionPieBox table td.dataData, .legPieBox table td.dataData {
     font-weight: bold;
 }
 
-.legPieBox{
+.legPieBox {
     margin-left: 2%;
 }
 
-.collectionPie, .legPie{
+.collectionPie, .legPie {
     float: left;
     margin-bottom: 2em;
     min-width: 350px;
     width: 48%;
 }
 
-.collectionCheckBoxes{
+.collectionCheckBoxes {
     display: inline-block;
     margin-top: .8em;
     white-space: nowrap;
 }
 
-.checkboxLegendWrap{
+.checkboxLegendWrap {
     border: 1px solid #cccccc;
     display: inline-block;
     height: 10px;
@@ -108,7 +108,7 @@ form.dashboardForm{
     width: 13px;
 }
 
-.checkboxLegend{
+.checkboxLegend {
     height: 10px;
     width: 13px;
 }

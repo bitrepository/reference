@@ -21,6 +21,7 @@
  */
 package org.bitrepository.integrityservice.integrationtest;
 
+import org.apache.commons.codec.DecoderException;
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
@@ -149,7 +150,7 @@ public class MissingChecksumTests extends ExtendedTestCase {
         populateDatabase(model, TEST_FILE_1);
         
         addStep("Add checksum results for only one pillar.", "");
-        final ResultingChecksums resultingChecksums = createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1);
+        final ResultingChecksums resultingChecksums = createResultingChecksums(TEST_FILE_1);
         doAnswer(invocation -> {
             EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
             eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(PILLAR_1, PILLAR_2)));
@@ -195,7 +196,7 @@ public class MissingChecksumTests extends ExtendedTestCase {
         populateDatabase(model, TEST_FILE_1);
         
         addStep("Add checksum results for both pillar.", "");
-        final ResultingChecksums resultingChecksums = createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1);
+        final ResultingChecksums resultingChecksums = createResultingChecksums(TEST_FILE_1);
         doAnswer(invocation -> {
             EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
             eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(PILLAR_1, PILLAR_2)));
@@ -281,18 +282,22 @@ public class MissingChecksumTests extends ExtendedTestCase {
         model.addFileIDs(data, PILLAR_2, collectionID);
     }
     
-    private ResultingChecksums createResultingChecksums(String checksum, String ... fileIDs) {
+    private ResultingChecksums createResultingChecksums(String... fileIDs) {
         ResultingChecksums res = new ResultingChecksums();
-        res.getChecksumDataItems().addAll(createChecksumData(checksum, fileIDs));
+        res.getChecksumDataItems().addAll(createChecksumData(fileIDs));
         return res;
     }
     
-    private List<ChecksumDataForChecksumSpecTYPE> createChecksumData(String checksum, String ... fileIDs) {
+    private List<ChecksumDataForChecksumSpecTYPE> createChecksumData(String... fileIDs) {
         List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<>();
         for(String fileID : fileIDs) {
             ChecksumDataForChecksumSpecTYPE csData = new ChecksumDataForChecksumSpecTYPE();
             csData.setCalculationTimestamp(CalendarUtils.getNow());
-            csData.setChecksumValue(Base16Utils.encodeBase16(checksum));
+            try {
+                csData.setChecksumValue(Base16Utils.encodeBase16(MissingChecksumTests.DEFAULT_CHECKSUM));
+            } catch (DecoderException e) {
+                System.err.println(e.getMessage());
+            }
             csData.setFileID(fileID);
             res.add(csData);
         }

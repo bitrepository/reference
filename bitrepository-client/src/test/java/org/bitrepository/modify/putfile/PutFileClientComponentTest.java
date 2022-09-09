@@ -413,7 +413,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
     @Test(groups={"regressiontest"})
     public void sameFileExistsOnOnePillar() throws Exception {
         addDescription("Tests that PutClient handles the presence of a file correctly, when the pillar " +
-                "returns a checksum equal the file being put (idempotent). ");
+                "returns a checksum equal the file being put (idempotent).");
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         PutFileClient putClient = createPutFileClient();
 

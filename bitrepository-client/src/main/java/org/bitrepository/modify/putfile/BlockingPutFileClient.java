@@ -63,20 +63,13 @@ public class BlockingPutFileClient {
      * @return The list of {@link ContributorEvent}s received during the operation
      * @throws OperationFailedException The operation didn't complete successfully.
      */
-    public List<ContributorEvent> putFile(
-            String collectionID,
-            URL url,
-            String fileID,
-            long sizeOfFile,
-            ChecksumDataForFileTYPE checksumForValidationAtPillar,
-            ChecksumSpecTYPE checksumRequestsForValidation,
-            EventHandler eventHandler,
-            String auditTrailInformation)
-            throws OperationFailedException {
+    public List<ContributorEvent> putFile(String collectionID, URL url, String fileID, long sizeOfFile,
+                                          ChecksumDataForFileTYPE checksumForValidationAtPillar,
+                                          ChecksumSpecTYPE checksumRequestsForValidation, EventHandler eventHandler,
+                                          String auditTrailInformation) throws OperationFailedException {
         BlockingEventHandler blocker = new BlockingEventHandler(eventHandler);
-        client.putFile(collectionID, url, fileID, sizeOfFile, checksumForValidationAtPillar,
-                checksumRequestsForValidation,
-                blocker, auditTrailInformation);
+        client.putFile(collectionID, url, fileID, sizeOfFile, checksumForValidationAtPillar, checksumRequestsForValidation, blocker,
+                auditTrailInformation);
         OperationEvent finishEvent = blocker.awaitFinished();
         if (finishEvent.getEventType() == OperationEvent.OperationEventType.COMPLETE) {
             return blocker.getResults();

@@ -24,6 +24,7 @@
  */
 package org.bitrepository.integrityservice.cache;
 
+import org.apache.commons.codec.DecoderException;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
@@ -77,14 +78,14 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     }
 
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
-    public void instantiationTest() throws Exception {
+    public void instantiationTest() {
         addDescription("Tests that the connection can be instantaited.");
         IntegrityDatabase integrityCache = new IntegrityDatabase(settings);
         Assert.assertNotNull(integrityCache);
     }
 
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
-    public void initialStateExtractionTest() throws Exception {
+    public void initialStateExtractionTest() {
         addDescription("Tests the initial state of the IntegrityModel. Should not contain any data.");
         IntegrityModel model = new IntegrityDatabase(settings);
         
@@ -122,7 +123,7 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     }
     
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
-    public void testIngestOfFileIDsData() throws Exception {
+    public void testIngestOfFileIDsData() {
         addDescription("Tests the ingesting of file ids data");
         IntegrityModel model = new IntegrityDatabase(settings);
         
@@ -143,7 +144,7 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     }
 
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
-    public void testIngestOfChecksumsData() throws Exception {
+    public void testIngestOfChecksumsData() {
         addDescription("Tests the ingesting of checksums data");
         IntegrityModel model = new IntegrityDatabase(settings);
         
@@ -163,7 +164,7 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     }
     
     @Test(groups = {"regressiontest", "databasetest", "integritytest"})
-    public void testDeletingEntry() throws Exception {
+    public void testDeletingEntry() {
         addDescription("Tests the deletion of an FileID entry.");
         IntegrityModel model = new IntegrityDatabase(settings);
 
@@ -191,7 +192,11 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<>();
         
         ChecksumDataForChecksumSpecTYPE csData = new ChecksumDataForChecksumSpecTYPE();
-        csData.setChecksumValue(Base16Utils.encodeBase16(checksum));
+        try {
+            csData.setChecksumValue(Base16Utils.encodeBase16(checksum));
+        } catch (DecoderException e) {
+            System.err.println(e.getMessage());
+        }
         csData.setCalculationTimestamp(CalendarUtils.getNow());
         csData.setFileID(fileID);
         res.add(csData);
@@ -220,7 +225,7 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
      */
     private List<String> getIssuesFromIterator(IntegrityIssueIterator it) {
         List<String> issues = new ArrayList<>();
-        String issue = null;
+        String issue;
         while((issue = it.getNextIntegrityIssue()) != null) {
             issues.add(issue);
         }

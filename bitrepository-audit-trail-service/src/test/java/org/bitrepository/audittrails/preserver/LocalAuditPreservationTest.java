@@ -23,7 +23,6 @@ package org.bitrepository.audittrails.preserver;
 
 import org.bitrepository.audittrails.store.AuditEventIterator;
 import org.bitrepository.audittrails.store.AuditTrailStore;
-import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileAction;
@@ -32,7 +31,6 @@ import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.DefaultThreadFactory;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
-import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.FileExchange;
@@ -46,7 +44,6 @@ import org.testng.annotations.Test;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 import java.io.FileInputStream;
-import java.math.BigInteger;
 import java.net.URL;
 import java.sql.Date;
 
@@ -64,8 +61,7 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/
     Settings settings;
     
-    String PILLARID = "pillarID";
-    String ACTOR = "actor";
+    String PILLAR_ID = "pillarID";
     String collectionID;
     private URL testUploadUrl;
     private DefaultThreadFactory threadFactory;
@@ -100,7 +96,7 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailPreservation()
                 .setAuditTrailPreservationInterval(interval);
         settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().clear();
-        settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().add(PILLARID);
+        settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().add(PILLAR_ID);
         
         addStep("Create the preserver", "No calls to store or client");
         FileExchange fileExchangeMock = mock(FileExchange.class);
@@ -116,7 +112,7 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         Assert.assertEquals(store.getCallsToSetPreservationSequenceNumber(), 0);
         Assert.assertEquals(client.getCallsToPutFile(), 0);*/
         
-        verify(store).getPreservationSequenceNumber(PILLARID, collectionID);
+        verify(store).getPreservationSequenceNumber(PILLAR_ID, collectionID);
         verifyNoMoreInteractions(store);
         
         addStep("Start the preservation scheduling and wait for more than one interval", "");
@@ -138,8 +134,8 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         preserver.close();
         // getPreservationSequenceNumber should be called twice, first to 'initialize' auditpacker, and second to 
         // run the preserver/packer...
-        verify(store, times(2)).getPreservationSequenceNumber(PILLARID, collectionID);
-        verify(store).getAuditTrailsByIterator(null, null, PILLARID, 0L, 
+        verify(store, times(2)).getPreservationSequenceNumber(PILLAR_ID, collectionID);
+        verify(store).getAuditTrailsByIterator(null, null, PILLAR_ID, 0L,
                 null, null, null, null, null, null, null);
         verify(iterator).getNextAuditTrailEvent();
         //Assert.assertEquals(store.getCallsToGetAuditTrails(), settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().size());
@@ -156,9 +152,9 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         MockPutClient client = new MockPutClient();
 
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
-        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLARID);
+        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR_ID);
         settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().clear();
-        settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().add(PILLARID);
+        settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().add(PILLAR_ID);
         SettingsUtils.initialize(settings);
 
         AuditTrailStore store = mock(AuditTrailStore.class);
@@ -168,10 +164,14 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         FileExchange fileExchange = mock(FileExchange.class);
 
         LocalAuditTrailPreserver preserver = new LocalAuditTrailPreserver(settings, store, client, fileExchange);
-        
-        verify(store).getPreservationSequenceNumber(PILLARID, collectionID);
+
+        verify(store).addCollection(collectionID);
+        verify(store).addContributor(PILLAR_ID);
+        verify(store).getPreservationSequenceNumber(PILLAR_ID, collectionID);
+        verify(store).hasPreservationKey(PILLAR_ID, collectionID);
+        verify(store).setPreservationSequenceNumber(PILLAR_ID, collectionID, 0);
         verifyNoMoreInteractions(store);
-        
+
         addStep("Call the preservation of audit trails now.", 
                 "Should make calls to the store, upload the file and call the client");
 
@@ -187,8 +187,8 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         preserver.preserveRepositoryAuditTrails();
         // getPreservationSequenceNumber should be called twice, first to 'initialize' auditpacker, and second to
         // run the preserver/packer...
-        verify(store, times(2)).getPreservationSequenceNumber(PILLARID, collectionID);
-        verify(store).getAuditTrailsByIterator(null, collectionID, PILLARID, 0L,
+        verify(store, times(2)).getPreservationSequenceNumber(PILLAR_ID, collectionID);
+        verify(store).getAuditTrailsByIterator(null, collectionID, PILLAR_ID, 1L,
                 null, null, null, null, null, null, null);
 
         assertEquals(client.getCallsToPutFile(), 1);
@@ -216,29 +216,6 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         }
         public int getCallsToPutFile() {
             return callsToPutFile;
-        }
-    }
-    
-    private class StubAuditEventIterator extends AuditEventIterator {
-        boolean called = false;
-        public StubAuditEventIterator() {
-            super(null);
-        }
-        
-        @Override
-        public AuditTrailEvent getNextAuditTrailEvent() {
-            if(called) {
-                return null;
-            } else {
-                called = true;
-                AuditTrailEvent e1 = new AuditTrailEvent();
-                e1.setActionDateTime(CalendarUtils.getNow());
-                e1.setActionOnFile(FileAction.FAILURE);
-                e1.setActorOnFile(ACTOR);
-                e1.setSequenceNumber(BigInteger.ONE);
-                e1.setReportingComponent(PILLARID);
-                return e1;
-            }
         }
     }
 }

@@ -35,19 +35,21 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class to handle streaming of different kinds of JSON data
  */
-public class JSONStreamingTools {
-    private final static Logger log = LoggerFactory.getLogger(JSONStreamingTools.class);
+public class StreamingTools {
+    private final static Logger log = LoggerFactory.getLogger(StreamingTools.class);
 
     /**
      * Helper method to stream integrity issues as JSON for webservices.
      *
      * @param iterator The IntegrityIssueIterator with integrity issues that is to be streamed out.
      */
-    public static StreamingOutput StreamIntegrityIssues(IntegrityIssueIterator iterator) {
+    public static StreamingOutput streamIntegrityIssues(IntegrityIssueIterator iterator) {
         final IntegrityIssueIterator it = iterator;
         return output -> {
             JsonFactory jf = new JsonFactory();
@@ -69,7 +71,7 @@ public class JSONStreamingTools {
                         it.close();
                     }
                 } catch (Exception e) {
-                    log.error("Caught execption when closing IntegrityIssueIterator", e);
+                    log.error("Caught exception when closing IntegrityIssueIterator", e);
                     throw new WebApplicationException(e);
                 }
             }
@@ -82,9 +84,9 @@ public class JSONStreamingTools {
      *
      * @param source   The source file
      * @param offset   The number of lines to skip
-     * @param maxlines The maximum number of lines to output
+     * @param maxLines The maximum number of lines to output
      */
-    public static StreamingOutput StreamFileParts(File source, int offset, int maxlines) {
+    public static StreamingOutput streamFileParts(File source, int offset, int maxLines) {
         final File input = source;
         return output -> {
             JsonFactory jf = new JsonFactory();
@@ -99,7 +101,7 @@ public class JSONStreamingTools {
                         continue;
                     }
                     jg.writeString(line);
-                    if (linesRead - offset >= maxlines) {
+                    if (linesRead - offset >= maxLines) {
                         break;
                     }
                 }
@@ -110,5 +112,51 @@ public class JSONStreamingTools {
                 throw new WebApplicationException(e);
             }
         };
+    }
+
+    /**
+     * Iterates over the elements in an {@link IntegrityIssueIterator} and returns the items as a list.
+     *
+     * @param iterator The {@link IntegrityIssueIterator}.
+     * @return Returns a {@link List <String>}.
+     */
+    public static List<String> iteratorToList(IntegrityIssueIterator iterator) {
+        List<String> output = new ArrayList<>();
+        String issue;
+        while ((issue = iterator.getNextIntegrityIssue()) != null) {
+            output.add(issue);
+        }
+        iterator.close();
+
+        return output;
+    }
+
+    /**
+     * Helper method to create a {@link List<String>} of all or parts of a files' content.
+     * @param source The source file
+     * @param offset The number of lines to skip
+     * @param maxLines The number of lines to read
+     * @return Returns a {@link List<String>} of the found content.
+     */
+    public static List<String> filePartToList(File source, int offset, int maxLines) {
+        List<String> output = new ArrayList<>();
+
+        try (BufferedReader b = new BufferedReader(new InputStreamReader(new FileInputStream(source), StandardCharsets.UTF_8))) {
+            int linesRead = 0;
+            String line;
+            while ((line = b.readLine()) != null) {
+                if (linesRead++ < offset) {
+                    continue;
+                }
+                output.add(line);
+                if (linesRead - offset >= maxLines) {
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            throw new WebApplicationException(e);
+        }
+
+        return output;
     }
 }

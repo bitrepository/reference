@@ -21,6 +21,7 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
+import org.apache.commons.codec.DecoderException;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
@@ -30,6 +31,8 @@ import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.integrityservice.collector.IntegrityEventCompleteAwaiter;
 import org.bitrepository.integrityservice.workflow.IntegrityWorkflowContext;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 
@@ -42,6 +45,7 @@ public class PutFileStep extends AbstractWorkFlowStep {
     private final String fileId;
     private final URL uploadUrl;
     private final String checksum;
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     /**
      * @param context      The context for the workflow.
@@ -70,7 +74,12 @@ public class PutFileStep extends AbstractWorkFlowStep {
         ChecksumDataForFileTYPE checksumValidationData = new ChecksumDataForFileTYPE();
         checksumValidationData.setCalculationTimestamp(CalendarUtils.getNow());
         checksumValidationData.setChecksumSpec(ChecksumUtils.getDefault(context.getSettings()));
-        checksumValidationData.setChecksumValue(Base16Utils.encodeBase16(checksum));
+        try {
+            checksumValidationData.setChecksumValue(Base16Utils.encodeBase16(checksum));
+        } catch (DecoderException e) {
+            throw new IllegalStateException(e);
+        }
+
 
         context.getCollector()
                 .putFile(collectionId, fileId, uploadUrl, checksumValidationData, eventHandler, "IntegrityService: " + getName());
@@ -78,7 +87,7 @@ public class PutFileStep extends AbstractWorkFlowStep {
         OperationEvent event = eventHandler.getFinish();
         if (event.getEventType() == OperationEventType.FAILED) {
             throw new IllegalStateException(
-                    "Aborting workflow due to failure putting the file '" + fileId + "'. " + "Cause: " + event.toString());
+                    "Aborting workflow due to failure putting the file '" + fileId + "'. " + "Cause: " + event);
         }
     }
 }

@@ -66,8 +66,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Path("/IntegrityService")
 public class RestIntegrityService {
@@ -83,153 +85,166 @@ public class RestIntegrityService {
     }
 
     /**
-     * Method to get the checksum errors per pillar in a given collection.
+     * REST endpoint to get the list of present files on a pillar in a given collection.
      *
-     * @param collectionID, the collectionID from which to return checksum errors
-     * @param pillarID,     the ID of the pillar in the collection from which to return checksum errors
-     * @param pageNumber,   the page number for calculating offsets (@see pageSize)
-     * @param pageSize,     the number of checksum errors per page.
+     * @param collectionID The collection ID from which to return present file list.
+     * @param pillarID     The ID of the pillar in the collection from which to return present file list
+     * @return Returns a {@link HashMap} containing a key-pair of pillarID and its missing files as a {@link String} and
+     * {@link List<String>}.
      */
     @GET
-    @Path("/getChecksumErrorFileIDs/")
+    @Path("/getTotalFileIDs")
     @Produces(MediaType.APPLICATION_JSON)
-    public StreamingOutput getChecksumErrors(
+    public HashMap<String, List<String>> getTotalFileIDs(
             @QueryParam("collectionID")
                     String collectionID,
             @QueryParam("pillarID")
                     String pillarID,
-            @QueryParam("pageNumber")
-                    int pageNumber,
+            @QueryParam("page")
+                    int page,
             @DefaultValue("100")
             @QueryParam("pageSize")
                     int pageSize) {
 
-        int firstID = (pageNumber - 1) * pageSize;
+        IntegrityIssueIterator it = model.getFilesOnPillar(pillarID, getOffset(page, pageSize), pageSize, collectionID);
 
-        return streamPartFromLatestReport(ReportPart.CHECKSUM_ISSUE, collectionID, pillarID, firstID, pageSize);
-    }
-
-    /**
-     * Method to get the list of missing files per pillar in a given collection.
-     *
-     * @param collectionID, the collectionID from which to return missing files
-     * @param pillarID,     the ID of the pillar in the collection from which to return missing files
-     * @param pageNumber,   the page number for calculating offsets (@see pageSize)
-     * @param pageSize,     the number of checksum errors per page.
-     */
-    @GET
-    @Path("/getMissingFileIDs/")
-    @Produces(MediaType.APPLICATION_JSON)
-    public StreamingOutput getMissingFileIDs(
-            @QueryParam("collectionID")
-                    String collectionID,
-            @QueryParam("pillarID")
-                    String pillarID,
-            @QueryParam("pageNumber")
-                    int pageNumber,
-            @DefaultValue("100")
-            @QueryParam("pageSize")
-                    int pageSize) {
-
-        int firstID = (pageNumber - 1) * pageSize;
-
-        return streamPartFromLatestReport(ReportPart.MISSING_FILE, collectionID, pillarID, firstID, pageSize);
-    }
-
-    /**
-     * Method to get the list of missing checksums per pillar in a given collection.
-     *
-     * @param collectionID, the collectionID
-     * @param pillarID,     the ID of the pillar in the collection
-     * @param pageNumber,   the page number for calculating offsets (@see pageSize)
-     * @param pageSize,     the maximum number of results per page.
-     */
-    @GET
-    @Path("/getMissingChecksumsFileIDs/")
-    @Produces(MediaType.APPLICATION_JSON)
-    public StreamingOutput getMissingChecksums(
-            @QueryParam("collectionID")
-                    String collectionID,
-            @QueryParam("pillarID")
-                    String pillarID,
-            @QueryParam("pageNumber")
-                    int pageNumber,
-            @DefaultValue("100")
-            @QueryParam("pageSize")
-                    int pageSize) {
-
-        int firstID = (pageNumber - 1) * pageSize;
-
-        return streamPartFromLatestReport(ReportPart.MISSING_CHECKSUM, collectionID, pillarID, firstID, pageSize);
-    }
-
-    /**
-     * Method to get the list of obsolete checksums per pillar in a given collection.
-     *
-     * @param collectionID, the collectionID
-     * @param pillarID,     the ID of the pillar in the collection
-     * @param pageNumber,   the page number for calculating offsets (@see pageSize)
-     * @param pageSize,     the maximum number of results per page.
-     */
-    @GET
-    @Path("/getObsoleteChecksumsFileIDs/")
-    @Produces(MediaType.APPLICATION_JSON)
-    public StreamingOutput geObsoleteChecksums(
-            @QueryParam("collectionID")
-                    String collectionID,
-            @QueryParam("pillarID")
-                    String pillarID,
-            @QueryParam("pageNumber")
-                    int pageNumber,
-            @DefaultValue("100")
-            @QueryParam("pageSize")
-                    int pageSize) {
-
-        int firstID = (pageNumber - 1) * pageSize;
-
-        return streamPartFromLatestReport(ReportPart.OBSOLETE_CHECKSUM, collectionID, pillarID, firstID, pageSize);
-    }
-
-    /**
-     * Method to get the list of present files on a pillar in a given collection.
-     *
-     * @param collectionID, the collectionID from which to return present file list
-     * @param pillarID,     the ID of the pillar in the collection from which to return present file list
-     * @param pageNumber,   the page number for calculating offsets (@see pageSize)
-     * @param pageSize,     the number of checksum errors per page.
-     */
-    @GET
-    @Path("/getAllFileIDs/")
-    @Produces(MediaType.APPLICATION_JSON)
-    public StreamingOutput getAllFileIDs(
-            @QueryParam("collectionID")
-                    String collectionID,
-            @QueryParam("pillarID")
-                    String pillarID,
-            @QueryParam("pageNumber")
-                    int pageNumber,
-            @DefaultValue("100")
-            @QueryParam("pageSize")
-                    int pageSize) {
-
-        int firstID = (pageNumber - 1) * pageSize;
-
-        IntegrityIssueIterator it = model.getFilesOnPillar(pillarID, firstID, pageSize, collectionID);
-
-        if (it != null) {
-            return JSONStreamingTools.StreamIntegrityIssues(it);
-        } else {
+        if (it == null) {
             throw new WebApplicationException(
                     Response.status(Response.Status.NO_CONTENT).entity("Failed to get missing files from database")
                             .type(MediaType.TEXT_PLAIN).build());
         }
+
+        List<String> iteratorAsList = StreamingTools.iteratorToList(it);
+        if (iteratorAsList.isEmpty()) {
+            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
+                    .entity(String.format(Locale.ROOT, "No fileIDs found for collection: '%s' and pillar: '%s'", collectionID, pillarID))
+                    .type(MediaType.TEXT_PLAIN).build());
+        }
+
+        return new HashMap<>(Map.of(pillarID, iteratorAsList));
+    }
+
+    /**
+     * REST endpoint to get the list of missing files for a pillar in a given collection.
+     *
+     * @param collectionID The collection ID from which to return missing files.
+     * @return Returns a {@link HashMap} mapping the given pillar to its missing files.
+     */
+    @GET
+    @Path("/getMissingFileIDs")
+    @Produces(MediaType.APPLICATION_JSON)
+    public HashMap<String, List<String>> getMissingFileIDs(
+            @QueryParam("collectionID")
+                    String collectionID,
+            @QueryParam("pillarID")
+                    String pillarID,
+            @QueryParam("page")
+                    int page,
+            @DefaultValue("100")
+            @QueryParam("pageSize")
+                    int pageSize) {
+        HashMap<String, List<String>> output = new HashMap<>();
+        ReportPart part = ReportPart.MISSING_FILE;
+        List<String> missingOnPillar;
+        List<String> missingOnOtherPillar;
+
+        List<String> otherPillars = SettingsUtils.getPillarIDsForCollection(collectionID).stream()
+                .filter(pillar -> !pillar.equals(pillarID)).collect(Collectors.toList());
+
+        try {
+            missingOnPillar = getReportPart(part, collectionID, pillarID, page, pageSize);
+            output.put(pillarID, missingOnPillar);
+        } catch (FileNotFoundException e) {
+            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
+                    .entity(String.format(Locale.ROOT, "No integrity '%s' report part for collection: '%s' and pillar: '%s' found!",
+                            part.getHumanString(), collectionID, pillarID)).type(MediaType.TEXT_PLAIN).build());
+        }
+
+        for (String otherPillar : otherPillars) {
+            missingOnOtherPillar = compareMissingFiles(missingOnPillar, collectionID, otherPillar, pageSize);
+            output.put(otherPillar, missingOnOtherPillar);
+        }
+
+        return output;
+    }
+
+    /**
+     * REST endpoint to get the list of missing checksums for a pillar in a given collection.
+     *
+     * @param collectionID, The collection ID.
+     * @param pillarID,     The ID of the pillar in the collection
+     * @return Returns a {@link HashMap} mapping the given pillar to its missing checksums.
+     */
+    @GET
+    @Path("/getMissingChecksumsFileIDs")
+    @Produces(MediaType.APPLICATION_JSON)
+    public HashMap<String, List<String>> getMissingChecksums(
+            @QueryParam("collectionID")
+                    String collectionID,
+            @QueryParam("pillarID")
+                    String pillarID,
+            @QueryParam("page")
+                    int page,
+            @DefaultValue("100")
+            @QueryParam("pageSize")
+                    int pageSize) {
+        List<String> streamingOutput = getReportPartForPillar(ReportPart.MISSING_CHECKSUM, collectionID, pillarID, page, pageSize);
+        return new HashMap<>(Map.of(pillarID, streamingOutput));
+    }
+
+    /**
+     * REST endpoint to get the list of obsolete checksums for a pillar in a given collection.
+     *
+     * @param collectionID The collection ID.
+     * @param pillarID     The ID of the pillar in the collection
+     * @return Returns a {@link HashMap} mapping the given pillar to its obsolete checksums.
+     */
+    @GET
+    @Path("/getObsoleteChecksumsFileIDs")
+    @Produces(MediaType.APPLICATION_JSON)
+    public HashMap<String, List<String>> geObsoleteChecksums(
+            @QueryParam("collectionID")
+                    String collectionID,
+            @QueryParam("pillarID")
+                    String pillarID,
+            @QueryParam("page")
+                    int page,
+            @DefaultValue("100")
+            @QueryParam("pageSize")
+                    int pageSize) {
+        List<String> streamingOutput = getReportPartForPillar(ReportPart.OBSOLETE_CHECKSUM, collectionID, pillarID, page, pageSize);
+        return new HashMap<>(Map.of(pillarID, streamingOutput));
+    }
+
+    /**
+     * REST endpoint that fetches the checksum errors, that are inconsistent, for a given pillar in a collection.
+     *
+     * @param collectionID The collectionID from which to return checksum errors
+     * @param pillarID     The ID of the pillar in the collection from which to return checksum errors
+     * @return Returns a {@link HashMap} mapping the given pillar to the checksum errors that are inconsistent.
+     */
+    @GET
+    @Path("/getChecksumErrorFileIDs")
+    @Produces(MediaType.APPLICATION_JSON)
+    public HashMap<String, List<String>> getChecksumErrors(
+            @QueryParam("collectionID")
+                    String collectionID,
+            @QueryParam("pillarID")
+                    String pillarID,
+            @QueryParam("page")
+                    int page,
+            @DefaultValue("100")
+            @QueryParam("pageSize")
+                    int pageSize) {
+        List<String> streamingOutput = getReportPartForPillar(ReportPart.CHECKSUM_ERROR, collectionID, pillarID, page, pageSize);
+        return new HashMap<>(Map.of(pillarID, streamingOutput));
     }
 
     /**
      * Get the listing of integrity status as a JSON array
      */
     @GET
-    @Path("/getIntegrityStatus/")
+    @Path("/getIntegrityStatus")
     @Produces(MediaType.APPLICATION_JSON)
     public String getIntegrityStatus(
             @QueryParam("collectionID")
@@ -246,18 +261,19 @@ public class RestIntegrityService {
         }
         for (String pillar : pillars) {
             if (!stats.containsKey(pillar)) {
-                String pillarHostname = Objects.requireNonNullElse(SettingsUtils.getHostname(pillar), "N/A");
+                String pillarName = Objects.requireNonNullElse(SettingsUtils.getPillarName(pillar), "N/A");
                 PillarType pillarTypeObject = SettingsUtils.getPillarType(pillar);
                 String pillarType = pillarTypeObject != null ? pillarTypeObject.value() : null;
-                PillarCollectionStat emptyStat = new PillarCollectionStat(pillar, collectionID, pillarHostname, pillarType,
-                        0L, 0L, 0L, 0L, 0L, 0L, new Date(0), new Date(0));
+                PillarCollectionStat emptyStat = new PillarCollectionStat(pillar, collectionID, pillarName, pillarType, 0L, 0L, 0L, 0L, 0L,
+                        0L, new Date(0), new Date(0));
                 stats.put(pillar, emptyStat);
             }
         }
         jg.writeStartArray();
         for (PillarCollectionStat stat : stats.values()) {
             writeIntegrityStatusObject(stat, jg);
-            log.debug("IntegrityStatus: Wrote hostname: " + stat.getPillarHostname() + " to pillar" + stat.getPillarID());
+            log.debug(String.format(Locale.ROOT, "IntegrityStatus: Wrote pillar name: '%s' to pillar '%s'", stat.getPillarName(),
+                    stat.getPillarID()));
         }
         jg.writeEndArray();
         jg.flush();
@@ -266,10 +282,10 @@ public class RestIntegrityService {
     }
 
     /***
-     * Get the current workflows setup as a JSON array
+     * Get the current workflow's setup as a JSON array
      */
     @GET
-    @Path("/getWorkflowSetup/")
+    @Path("/getWorkflowSetup")
     @Produces(MediaType.APPLICATION_JSON)
     public String getWorkflowSetup(
             @QueryParam("collectionID")
@@ -296,7 +312,7 @@ public class RestIntegrityService {
      * Get the list of possible workflows as a JSON array
      */
     @GET
-    @Path("/getWorkflowList/")
+    @Path("/getWorkflowList")
     @Produces(MediaType.APPLICATION_JSON)
     public List<String> getWorkflowList(
             @QueryParam("collectionID")
@@ -312,7 +328,7 @@ public class RestIntegrityService {
      * Get the latest integrity report, or an error message telling no such report found.
      */
     @GET
-    @Path("/getLatestIntegrityReport/")
+    @Path("/getLatestIntegrityReport")
     @Produces(MediaType.TEXT_PLAIN)
     public StreamingOutput getLatestIntegrityReport(
             @QueryParam("collectionID")
@@ -321,9 +337,9 @@ public class RestIntegrityService {
         try {
             fullReport = integrityReportProvider.getLatestIntegrityReportReader(collectionID).getFullReport();
         } catch (FileNotFoundException e) {
-            throw new WebApplicationException(
-                    Response.status(Response.Status.NOT_FOUND).entity("No integrity report for collection: " + collectionID + " found!")
-                            .type(MediaType.TEXT_PLAIN).build());
+            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
+                    .entity(String.format(Locale.ROOT, "No integrity report for collection: '%s' found!", collectionID))
+                    .type(MediaType.TEXT_PLAIN).build());
         }
         return output -> {
             try {
@@ -344,7 +360,7 @@ public class RestIntegrityService {
      * Start a named workflow.
      */
     @POST
-    @Path("/startWorkflow/")
+    @Path("/startWorkflow")
     @Consumes("application/x-www-form-urlencoded")
     @Produces("text/html")
     public String startWorkflow(
@@ -360,7 +376,7 @@ public class RestIntegrityService {
      * Start a named workflow.
      */
     @GET
-    @Path("/getCollectionInformation/")
+    @Path("/getCollectionInformation")
     @Produces(MediaType.APPLICATION_JSON)
     public String getCollectionInformation(
             @QueryParam("collectionID")
@@ -392,30 +408,106 @@ public class RestIntegrityService {
     }
 
     /**
-     * Private method to help stream parts from a given ReportPart, collection and pillar.
+     * Private method to help stream parts from a given {@link ReportPart}, collection and pillar.
      *
-     * @param part         The part to stream issues from
-     * @param collectionID The ID of the collection
-     * @param pillarID     The ID of the pillar
-     * @param firstID      Index of the first result
-     * @param maxLines     The maximum number of lines to stream
+     * @param part         The part to stream issues from.
+     * @param collectionID The ID of the collection.
+     * @param pillarID     The ID of the pillar.
+     * @return Returns a {@link List} of fileIDs from {@link ReportPart} of the given collection and pillar.
+     * @throws FileNotFoundException If there is no integrity report for the given {@link ReportPart}.
      */
-    private StreamingOutput streamPartFromLatestReport(ReportPart part, String collectionID, String pillarID, int firstID, int maxLines) {
+    private List<String> getReportPart(ReportPart part, String collectionID, String pillarID, int page, int pageSize)
+            throws FileNotFoundException {
+        List<String> reportPartContent;
+        int offset = getOffset(page, pageSize);
+
+        IntegrityReportReader reader = integrityReportProvider.getLatestIntegrityReportReader(collectionID);
+        File reportPart = reader.getReportPart(part.getPartName(), pillarID);
+        reportPartContent = StreamingTools.filePartToList(reportPart, offset, pageSize);
+
+        return reportPartContent;
+    }
+
+    /**
+     * Overloaded method calling {@link RestIntegrityService#getReportPart} but instead of returning an empty list, it will throw a
+     * {@link WebApplicationException}.
+     *
+     * @return Returns either a {@link List<String>} of fileIDs or throws a {@link WebApplicationException}.
+     */
+    private List<String> getReportPartForPillar(ReportPart part, String collectionID, String pillarID, int page, int pageSize) {
+        List<String> reportPartContent;
         try {
-            IntegrityReportReader reader = integrityReportProvider.getLatestIntegrityReportReader(collectionID);
-            File reportPart = reader.getReportPart(part.getPartName(), pillarID);
-            return JSONStreamingTools.StreamFileParts(reportPart, firstID, maxLines);
+            reportPartContent = getReportPart(part, collectionID, pillarID, page, pageSize);
         } catch (FileNotFoundException e) {
             throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
-                    .entity("No integrity '" + part.getHumanString() + "' report part for collection: " + collectionID + " and pillar: " +
-                            pillarID + " found!").type(MediaType.TEXT_PLAIN).build());
+                    .entity(String.format(Locale.ROOT, "No integrity '%s' report part for collection: '%s' and pillar: '%s' found!",
+                            part.getHumanString(), collectionID, pillarID)).type(MediaType.TEXT_PLAIN).build());
         }
+        return reportPartContent;
+    }
+
+    /**
+     * Compares the missing fileIDs to that of the missing fileIDs of the given pillar.
+     * <br>
+     * It is <u><b>important</b></u> to notice, that in order for this to work, it expects all the contents of the
+     * integrity reports to have been sorted using<br>
+     * {@link String#compareTo(String)}.
+     *
+     * @param missingOnPillar The list of files that are missing on the pillar in focus.
+     * @param collectionID    The collection ID.
+     * @param pillar          The pillar to compare to.
+     * @param pageSize        The paging size.
+     * @return Returns a {@link List<String>} containing the files that were also missing on the given pillar.
+     */
+    private List<String> compareMissingFiles(List<String> missingOnPillar, String collectionID, String pillar, int pageSize) {
+        List<String> batchToCheck;
+        List<String> agreedMissingFileIDs = new ArrayList<>();
+        for (String missingFileID : missingOnPillar) {
+            try {
+                batchToCheck = findBatchRecursively(missingFileID, collectionID, pillar, 1, pageSize);
+                if (batchToCheck.contains(missingFileID)) {
+                    agreedMissingFileIDs.add(missingFileID);
+                }
+            } catch (FileNotFoundException ignored) {
+                break; // If there is no integrity report for the given pillar, we break the for-loop.
+            }
+        }
+
+        return agreedMissingFileIDs;
+    }
+
+    /**
+     * Helper method to recursively find the batch in which the {@code fileID} we're looking for would be found if it exists.
+     *
+     * @return A {@link List<String>} of size {@code pageSize} with the files in which the {@code fileID} could be found.
+     * @throws FileNotFoundException If there's no integrity report, a {@link FileNotFoundException} will be thrown.
+     */
+    private List<String> findBatchRecursively(String fileID, String collectionID, String pillar, int i, int pageSize)
+            throws FileNotFoundException {
+        List<String> batchToCheck = getReportPart(ReportPart.MISSING_FILE, collectionID, pillar, i, pageSize);
+
+        if (!batchToCheck.isEmpty()) {
+            String lastFileInBatch = batchToCheck.get(batchToCheck.size() - 1);
+            if (fileID.compareTo(lastFileInBatch) > 0) {
+                // If the last index of the current batch is lexicographically lower than the fileID, then skip to next batch
+                batchToCheck = findBatchRecursively(fileID, collectionID, pillar, i + 1, pageSize);
+            }
+        }
+
+        return batchToCheck;
+    }
+
+    /**
+     * Helper method to compute start index.
+     */
+    private int getOffset(int page, int pageSize) {
+        return (page - 1) * pageSize;
     }
 
     private void writeIntegrityStatusObject(PillarCollectionStat stat, JsonGenerator jg) throws IOException {
         jg.writeStartObject();
         jg.writeObjectField("pillarID", stat.getPillarID());
-        jg.writeObjectField("pillarHostname", stat.getPillarHostname());
+        jg.writeObjectField("pillarName", stat.getPillarName());
         jg.writeObjectField("pillarType", stat.getPillarType());
         jg.writeObjectField("totalFileCount", stat.getFileCount());
         jg.writeObjectField("missingFilesCount", stat.getMissingFiles());

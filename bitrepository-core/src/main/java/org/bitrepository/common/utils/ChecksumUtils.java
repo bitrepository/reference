@@ -63,8 +63,7 @@ public final class ChecksumUtils {
         try {
             return generateChecksum(new FileInputStream(file), csSpec);
         } catch (IOException e) {
-            throw new CoordinationLayerException("Could not calculate the checksum for the file '"
-                    + file.getAbsolutePath() + "'.", e);
+            throw new CoordinationLayerException("Could not calculate the checksum for the file '" + file.getAbsolutePath() + "'.", e);
         }
     }
 
@@ -79,8 +78,7 @@ public final class ChecksumUtils {
         try {
             return generateChecksum(fileInfo.getInputStream(), csSpec);
         } catch (IOException e) {
-            throw new CoordinationLayerException("Could not calculate the checksum for the file '"
-                    + fileInfo.getFileID() + "'.", e);
+            throw new CoordinationLayerException("Could not calculate the checksum for the file '" + fileInfo.getFileID() + "'.", e);
         }
     }
 
@@ -119,26 +117,24 @@ public final class ChecksumUtils {
      * @return The HMAC calculated checksum in hexadecimal.
      */
     public static String generateChecksum(InputStream content, ChecksumSpecTYPE csSpec) {
-        byte[] digest = null;
+        byte[] digest;
         ChecksumType algorithm = csSpec.getChecksumType();
 
         try {
             if (requiresSalt(algorithm)) {
                 if (csSpec.getChecksumSalt() == null || csSpec.getChecksumSalt().length == 0) {
-                    throw new IllegalArgumentException("Cannot perform a HMAC checksum calculation without salt as requested:"
-                            + csSpec);
+                    throw new IllegalArgumentException("Cannot perform a HMAC checksum calculation without salt as requested:" + csSpec);
                 }
                 digest = calculateChecksumWithHMAC(content, algorithm, csSpec.getChecksumSalt());
             } else {
                 if (csSpec.getChecksumSalt() != null && csSpec.getChecksumSalt().length > 0) {
-                    throw new IllegalArgumentException("Cannot perform a message-digest checksum calculation with salt "
-                            + "as requested:" + csSpec);
+                    throw new IllegalArgumentException(
+                            "Cannot perform a message-digest checksum calculation with salt " + "as requested:" + csSpec);
                 }
                 digest = calculateChecksumWithMessageDigest(content, algorithm);
             }
         } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("The checksum algorithm '" + csSpec.getChecksumType().name()
-                    + "' is not supported.");
+            throw new IllegalStateException("The checksum algorithm '" + csSpec.getChecksumType().name() + "' is not supported.");
         }
 
         return Base16Utils.decodeBase16(digest);
@@ -206,8 +202,8 @@ public final class ChecksumUtils {
             return messageAuthenticationCode.doFinal();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new CoordinationLayerException("Cannot calculate the checksum with algorithm '" + algorithmName
-                    + "' and salt '" + Arrays.toString(salt) + "'", e);
+            throw new CoordinationLayerException(
+                    "Cannot calculate the checksum with algorithm '" + algorithmName + "' and salt '" + Arrays.toString(salt) + "'", e);
         }
     }
 
@@ -222,13 +218,13 @@ public final class ChecksumUtils {
 
         if (requiresSalt(algorithm)) {
             if (checksumSpec.getChecksumSalt() == null) {
-                throw new NoSuchAlgorithmException("Cannot perform a HMAC checksum calculation without salt as "
-                        + "requested: " + checksumSpec);
+                throw new NoSuchAlgorithmException(
+                        "Cannot perform a HMAC checksum calculation without salt as " + "requested: " + checksumSpec);
             }
         } else {
             if (checksumSpec.getChecksumSalt() != null && checksumSpec.getChecksumSalt().length > 0) {
-                throw new NoSuchAlgorithmException("Cannot perform a message-digest checksum calculation with salt "
-                        + "as requested: " + checksumSpec);
+                throw new NoSuchAlgorithmException(
+                        "Cannot perform a message-digest checksum calculation with salt " + "as requested: " + checksumSpec);
             }
         }
     }
@@ -241,17 +237,12 @@ public final class ChecksumUtils {
      * @throws NoSuchAlgorithmException If the algorithm is not supported.
      */
     public static boolean requiresSalt(ChecksumType algorithm) throws NoSuchAlgorithmException {
-        if ((algorithm == ChecksumType.MD5)
-                || (algorithm == ChecksumType.SHA1)
-                || (algorithm == ChecksumType.SHA256)
-                || (algorithm == ChecksumType.SHA384)
-                || (algorithm == ChecksumType.SHA512)) {
+        if ((algorithm == ChecksumType.MD5) || (algorithm == ChecksumType.SHA1) || (algorithm == ChecksumType.SHA256) ||
+                (algorithm == ChecksumType.SHA384) || (algorithm == ChecksumType.SHA512)) {
             return false;
-        } else if ((algorithm == ChecksumType.HMAC_MD5)
-                || (algorithm == ChecksumType.HMAC_SHA1)
-                || (algorithm == ChecksumType.HMAC_SHA256)
-                || (algorithm == ChecksumType.HMAC_SHA384)
-                || (algorithm == ChecksumType.HMAC_SHA512)) {
+        } else if ((algorithm == ChecksumType.HMAC_MD5) || (algorithm == ChecksumType.HMAC_SHA1) ||
+                (algorithm == ChecksumType.HMAC_SHA256) || (algorithm == ChecksumType.HMAC_SHA384) ||
+                (algorithm == ChecksumType.HMAC_SHA512)) {
             return true;
         } else {
             throw new NoSuchAlgorithmException("The checksum algorithm '" + algorithm + "' is not supported.");
@@ -267,8 +258,7 @@ public final class ChecksumUtils {
      */
     public static ChecksumSpecTYPE getDefault(Settings settings) {
         ChecksumSpecTYPE res = new ChecksumSpecTYPE();
-        res.setChecksumType(ChecksumType.valueOf(
-                settings.getRepositorySettings().getProtocolSettings().getDefaultChecksumType()));
+        res.setChecksumType(ChecksumType.valueOf(settings.getRepositorySettings().getProtocolSettings().getDefaultChecksumType()));
 
         try {
             verifyAlgorithm(res);
@@ -280,6 +270,16 @@ public final class ChecksumUtils {
     }
 
     /**
+     * Returns the default checksum type, defined in settings.
+     *
+     * @param settings The settings to retrieve the default checksum type from.
+     * @return The default checksum type from settigs.
+     */
+    public static ChecksumType getDefaultChecksumType(Settings settings) {
+        return ChecksumType.valueOf(settings.getRepositorySettings().getProtocolSettings().getDefaultChecksumType());
+    }
+
+    /**
      * Checks whether the checksum of two checksum data elements are identical.
      *
      * @param checksum1 The first checksum data element.
@@ -287,9 +287,7 @@ public final class ChecksumUtils {
      * @return Whether the checksum data elements are identical.
      */
     public static boolean areEqual(ChecksumDataForFileTYPE checksum1, ChecksumDataForFileTYPE checksum2) {
-        return (checksum1 == null && checksum2 == null) ||
-                ((checksum1 != null && checksum2 != null) &&
-                        Base16Utils.decodeBase16(checksum1.getChecksumValue()).equals(
-                                Base16Utils.decodeBase16(checksum2.getChecksumValue())));
+        return (checksum1 == null && checksum2 == null) || ((checksum1 != null && checksum2 != null) &&
+                Base16Utils.decodeBase16(checksum1.getChecksumValue()).equals(Base16Utils.decodeBase16(checksum2.getChecksumValue())));
     }
 }

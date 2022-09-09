@@ -21,6 +21,7 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
+import org.apache.commons.codec.DecoderException;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.utils.Base16Utils;
@@ -245,7 +246,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         
         List<FileInfo> fis = (List<FileInfo>) cache.getFileInfos(FILE_1, TEST_COLLECTION);
         System.out.println("number of files in the collection" + cache.getNumberOfFilesInCollection(TEST_COLLECTION));
-        System.out.println("number of fileinfos: " + fis.size());
+        System.out.println("number of file infos: " + fis.size());
         Assert.assertNotNull(fis.get(0).getChecksum());
         
         step.performStep();
@@ -256,7 +257,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         Assert.assertTrue(auditManager.latestAuditInfo.contains(FILE_2), auditManager.latestAuditInfo);
         Assert.assertTrue(auditManager.latestAuditInfo.contains(TEST_COLLECTION), auditManager.latestAuditInfo);
         
-        addStep("remove the last auditinfo", "");
+        addStep("remove the last audit info", "");
         auditManager.latestAuditInfo = null;
         
         addStep("Test step on data where two pillars have one checksum and the last pillar has a different one",
@@ -272,13 +273,17 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         Assert.assertTrue(auditManager.latestAuditInfo.contains(FILE_2), auditManager.latestAuditInfo);
         Assert.assertTrue(auditManager.latestAuditInfo.contains(TEST_COLLECTION), auditManager.latestAuditInfo);
     }
-    
+
     private List<ChecksumDataForChecksumSpecTYPE> createChecksumData(String checksum, String ... fileids) {
         List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<>();
         for(String fileID : fileids) {
             ChecksumDataForChecksumSpecTYPE csData = new ChecksumDataForChecksumSpecTYPE();
             csData.setCalculationTimestamp(CalendarUtils.getNow());
-            csData.setChecksumValue(Base16Utils.encodeBase16(checksum));
+            try {
+                csData.setChecksumValue(Base16Utils.encodeBase16(checksum));
+            } catch (DecoderException e) {
+                System.err.println(e.getMessage());
+            }
             csData.setFileID(fileID);
             res.add(csData);
         }

@@ -27,7 +27,11 @@ import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.ChecksumUtils;
 
+import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Utility class for extraction of checksum parameters from the commandline arguments.
@@ -44,13 +48,13 @@ public class ChecksumExtractionUtils {
      * @param output     The OutputHandler, where output and logging information is delivered.
      * @return The checksum type.
      */
-    public static ChecksumType extractChecksumType(CommandLineArgumentsHandler cmdHandler, Settings settings,
-                                                   OutputHandler output) {
+    public static ChecksumType extractChecksumType(CommandLineArgumentsHandler cmdHandler, Settings settings, OutputHandler output)
+            throws NoSuchAlgorithmException {
         String type;
         if (cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_TYPE_ARG)) {
             type = cmdHandler.getOptionValue(Constants.REQUEST_CHECKSUM_TYPE_ARG).toUpperCase(Locale.ROOT);
         } else {
-            type = ChecksumUtils.getDefault(settings).getChecksumType().name();
+            type = ChecksumUtils.getDefault(settings).getChecksumType().name().toUpperCase(Locale.ROOT);
         }
 
         if (cmdHandler.hasOption(Constants.REQUEST_CHECKSUM_SALT_ARG)) {
@@ -65,6 +69,14 @@ public class ChecksumExtractionUtils {
             }
         }
 
-        return ChecksumType.fromValue(type);
+        List<String> availableChecksums = Stream.of(ChecksumType.values()).filter(c -> !c.equals(ChecksumType.OTHER))
+                .map(ChecksumType::value).collect(Collectors.toList());
+
+        if (availableChecksums.contains(type)) {
+            return ChecksumType.fromValue(type);
+        } else {
+            throw new NoSuchAlgorithmException(
+                    "The algorithm '" + type + "' is not valid.\nValid checksum algorithms are:\n" + availableChecksums);
+        }
     }
 }

@@ -31,7 +31,7 @@ public class IntegrityReportConstants {
             public String getPartName() {return "deletedFile";}
 
             public String getHumanString() {return "deleted files";}
-        }, CHECKSUM_ISSUE {
+        }, CHECKSUM_ERROR {
             public String getPartName() {return "checksumIssue";}
 
             public String getHumanString() {return "inconsistent checksums";}

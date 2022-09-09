@@ -54,7 +54,8 @@ public class MessageUtils {
      */
     public static boolean isPositiveProgressResponse(MessageResponse response) {
         ResponseCode responseCode = response.getResponseInfo().getResponseCode();
-        return responseCode.equals(ResponseCode.IDENTIFICATION_POSITIVE) || responseCode.equals(ResponseCode.OPERATION_ACCEPTED_PROGRESS) ||
+        return responseCode.equals(ResponseCode.IDENTIFICATION_POSITIVE) ||
+                responseCode.equals(ResponseCode.OPERATION_ACCEPTED_PROGRESS) ||
                 responseCode.equals(ResponseCode.OPERATION_PROGRESS);
     }
 
@@ -66,7 +67,8 @@ public class MessageUtils {
      */
     public static boolean isIdentifyResponse(MessageResponse response) {
         ResponseCode responseCode = response.getResponseInfo().getResponseCode();
-        return responseCode.equals(ResponseCode.IDENTIFICATION_POSITIVE) || responseCode.equals(ResponseCode.IDENTIFICATION_NEGATIVE);
+        return responseCode.equals(ResponseCode.IDENTIFICATION_POSITIVE) ||
+                responseCode.equals(ResponseCode.IDENTIFICATION_NEGATIVE);
     }
 
     /**
@@ -82,12 +84,13 @@ public class MessageUtils {
 
     /**
      * @param response the supplied message
-     * @return whether the supplied message can be considered a end response for a primitive, emg. ends a series of
+     * @return whether the supplied message can be considered an end response for a primitive, i.e. it ends a series of
      * identify or operation responses.
      */
     public static boolean isEndMessageForPrimitive(MessageResponse response) {
         ResponseCode responseCode = response.getResponseInfo().getResponseCode();
-        return !(responseCode.equals(ResponseCode.OPERATION_PROGRESS) || responseCode.equals(ResponseCode.OPERATION_ACCEPTED_PROGRESS));
+        return !(responseCode.equals(ResponseCode.OPERATION_PROGRESS) ||
+                responseCode.equals(ResponseCode.OPERATION_ACCEPTED_PROGRESS));
     }
 
     /**

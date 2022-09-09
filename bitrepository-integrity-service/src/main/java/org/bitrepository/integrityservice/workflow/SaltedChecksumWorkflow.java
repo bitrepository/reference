@@ -21,6 +21,7 @@
  */
 package org.bitrepository.integrityservice.workflow;
 
+import org.apache.commons.codec.DecoderException;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FileAction;
@@ -35,7 +36,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -50,13 +50,9 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class SaltedChecksumWorkflow extends Workflow {
     private final static Logger log = LoggerFactory.getLogger(SaltedChecksumWorkflow.class);
-    /**
-     * The context for the workflow.
-     */
     protected IntegrityWorkflowContext context;
     protected String collectionID;
     protected IntegrityContributors integrityContributors;
-    protected Date workflowStart;
     protected WorkflowStep step = null;
 
     /**
@@ -69,7 +65,7 @@ public class SaltedChecksumWorkflow extends Workflow {
     protected ChecksumSpecTYPE currentChecksumSpec = null;
 
     /**
-     * Remember to call the initialize method needs to be called before the start method.
+     * REMEMBER: the initialize method needs to be called before the start method.
      */
     public SaltedChecksumWorkflow() {}
 
@@ -85,7 +81,7 @@ public class SaltedChecksumWorkflow extends Workflow {
     @Override
     public void start() {
         if (context == null) {
-            throw new IllegalStateException("The workflow can not be started before the initialise method has been " + "called.");
+            throw new IllegalStateException("The workflow can not be started before the initialise method has been called.");
         }
         super.start();
 
@@ -108,7 +104,7 @@ public class SaltedChecksumWorkflow extends Workflow {
      *
      * @return The actual {@link ChecksumSpecTYPE}.
      */
-    private ChecksumSpecTYPE getChecksumSpecWithRandomSalt() {
+    private ChecksumSpecTYPE getChecksumSpecWithRandomSalt() throws IllegalArgumentException {
         ChecksumType defaultChecksum = ChecksumType.valueOf(
                 context.getSettings().getRepositorySettings().getProtocolSettings().getDefaultChecksumType());
         ChecksumSpecTYPE res = new ChecksumSpecTYPE();
@@ -131,7 +127,11 @@ public class SaltedChecksumWorkflow extends Workflow {
         }
 
         String salt = UUID.randomUUID().toString().replace("-", "");
-        res.setChecksumSalt(Base16Utils.encodeBase16(salt));
+        try {
+            res.setChecksumSalt(Base16Utils.encodeBase16(salt));
+        } catch (DecoderException e) {
+            throw new IllegalArgumentException("Failed to set random salt.", e);
+        }
 
         return res;
     }

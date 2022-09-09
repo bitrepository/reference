@@ -443,7 +443,7 @@
     <PillarIntegrityDetails>
       <PillarDetails>
         <PillarID>Pillar1</PillarID>
-        <PillarHostname>test@kb.dk</PillarHostname>
+        <PillarName>Alpha</PillarName>
         <PillarType>FILE</PillarType>
       </PillarDetails>
     </PillarIntegrityDetails>
