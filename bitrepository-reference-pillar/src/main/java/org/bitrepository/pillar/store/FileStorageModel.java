@@ -35,6 +35,7 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
+import org.bitrepository.common.utils.XmlUtils;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumEntry;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumStore;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;
@@ -48,9 +49,11 @@ import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.IOException;
 import java.net.URL;
+import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -267,13 +270,12 @@ public class FileStorageModel extends StorageModel {
             verifyArchiveToCacheConsistencyForFile(fileID, collectionID);
         }
 
-        long maxAgeForChecksums = settings.getReferenceSettings().getPillarSettings()
-                .getMaxAgeForChecksums().longValue();
-        Date checksumDate = new Date(System.currentTimeMillis() - maxAgeForChecksums);
+        Duration maxAgeForChecksums = settings.getReferenceSettings().getPillarSettings().getMaxAgeForChecksums();
+        Instant checksumDate = Instant.now().minus(XmlUtils.xmlDurationToDuration(maxAgeForChecksums));
         for (String fileID : cache.getFileIDsWithOldChecksums(checksumDate, collectionID)) {
             recalculateChecksum(fileID, collectionID);
         }
-        // TODO: validate the 'last modified' timestamp ? 
+        // TODO: validate the 'last modified' timestamp?
     }
 
     /**

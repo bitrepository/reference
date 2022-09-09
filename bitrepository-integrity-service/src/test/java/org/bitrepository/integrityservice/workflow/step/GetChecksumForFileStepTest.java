@@ -41,6 +41,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import javax.xml.datatype.DatatypeConfigurationException;
 import java.util.Arrays;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -63,11 +64,10 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
     public static final String TEST_PILLAR_3 = "test-pillar-3";
 
     public static final String FILE_1 = "test-file-1";
-    public static final String FILE_2 = "test-file-2";
     String TEST_COLLECTION = "test-collection";
 
     @BeforeMethod(alwaysRun = true)
-    public void setup() {
+    public void setup() throws DatatypeConfigurationException {
         super.setup();
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(TEST_PILLAR_1);

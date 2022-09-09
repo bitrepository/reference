@@ -35,17 +35,21 @@
 
   <ClientSettings>
     <!-- 
-      The interval at which conversations are cleaned up. 
-      Unit in milliseconds.       
+      The interval at which conversations are cleaned up.
+      A non-negative XML durations consisting of hours, minutes and/or seconds.
+      The hours may be more than 24. The seconds may have up to 9 decimals of fraction.
+      For example PT2H (2 hours), PT3M (3 minutes), PT1H22M22.5S (1 hour 22 minutes 22.5 seconds).
     -->
-    <MediatorCleanupInterval>1000</MediatorCleanupInterval>
+    <MediatorCleanupInterval>PT1S</MediatorCleanupInterval>
 
     <!-- 
       The maximum amount of time a whole conversation may take. 
       This has some relation to Timeouts in RepositorySettings under ClientSettings. As such
       when writing the configuration, the values there should be taken into consideration. 
+      A non-negative XML durations consisting of hours, minutes and/or seconds.
+      The hours may be more than 24. The seconds may have up to 9 decimals of fraction.
     -->
-    <ConversationTimeout>3600000</ConversationTimeout>
+    <ConversationTimeout>PT1H</ConversationTimeout>
     
     <!--
       The maximum number of retries allowed before a file transfer is considered failed. The default is not to retry.
@@ -114,22 +118,25 @@
     <!-- 
       Time estimate for how long it will take the pillar to start the delivery of a file
       when requested. 
-      Time in milliseconds. 
+      A non-negative XML durations consisting of hours, minutes and/or seconds.
+      The hours may be more than 24. The seconds may have up to 9 decimals of fraction.
     -->
-    <TimeToStartDeliver>1000</TimeToStartDeliver>
+    <TimeToStartDeliver>PT1S</TimeToStartDeliver>
     
     <!--
-      The number of milliseconds for a checksum to become outdated in the ChecksumStore.
+      The AGE for a checksum to become outdated in the ChecksumStore.
       This is not used by the ChecksumPillar, since it anyway would not be able to 
-      recalculate the checksum. 
+      recalculate the checksum.
+      A non-negative XML duration. The seconds may have up to 9 decimals of fraction.
+      For example P4Y (4 years), P1D (1 day), PT1H (1 hour).
      -->
-    <MaxAgeForChecksums>3600000</MaxAgeForChecksums>
+    <MaxAgeForChecksums>PT1H</MaxAgeForChecksums>
     
     <!-- 
       The time between running the workflow for ensuring that the checksum are valid, 
       regarding checksum age and the age of the last modified timestamp of the file.
      -->
-    <RecalculateOldChecksumsInterval>3600000</RecalculateOldChecksumsInterval>
+    <RecalculateOldChecksumsInterval>PT1H</RecalculateOldChecksumsInterval>
 
     <!-- 
       Database specification object for the data about the AuditTrailContributer database.
@@ -311,13 +318,15 @@
 
     <!-- 
       Defines the interval at which AuditTrails should be collected.
-      Timeunit in milliseconds. 
+      A non-negative XML durations consisting of hours, minutes and/or seconds.
+      The hours may be more than 24. The seconds may have up to 9 decimals of fraction.
     --> 
-    <CollectAuditInterval>3600000</CollectAuditInterval> 
+    <CollectAuditInterval>PT1H</CollectAuditInterval>
 
     <!-- 
       Interval at which to check if its time to collect audit trails
-      Timeunit in milliseconds
+      Timeunit in milliseconds.
+      Not used; will be removed in a future version.
     -->
     <TimerTaskCheckInterval>2000</TimerTaskCheckInterval>
 
@@ -326,9 +335,12 @@
     <AuditTrailPreservation>
       <!--
         The interval at which collected AuditTrails are backedup / preserved.
-        Timeunit in milliseconds
+        A non-negative XML durations consisting of months, days, hours, minutes and/or seconds.
+        The seconds may have up to 9 decimals of fraction.
+        Months and days are converted to a fixed time using heuristic average lengths
+        (24 for a day, between 30 and 31 days for a month).
       -->
-      <AuditTrailPreservationInterval>604800000</AuditTrailPreservationInterval>
+      <AuditTrailPreservationInterval>P7D</AuditTrailPreservationInterval>
 
       <!--
         The collection to use for storing the audit trail backup.
@@ -366,17 +378,19 @@
             Run every day on the TwoPillarCollection collection.
             -->
             <Schedule>
-              <WorkflowInterval>86400000</WorkflowInterval>  <Collections>
-              <CollectionID>TwoPillarCollection</CollectionID>
-            </Collections>
+              <WorkflowInterval>P1D</WorkflowInterval>
+              <Collections>
+                <CollectionID>TwoPillarCollection</CollectionID>
+              </Collections>
             </Schedule>
             <!--
             Run every hour on the SinglePillarCollection collection.
             -->
             <Schedule>
-              <WorkflowInterval>360000</WorkflowInterval>  <Collections>
-              <CollectionID>SinglePillarCollection</CollectionID>
-            </Collections>
+              <WorkflowInterval>PT1H</WorkflowInterval>
+              <Collections>
+                <CollectionID>SinglePillarCollection</CollectionID>
+              </Collections>
             </Schedule>
           </Schedules>
         </Workflow>
@@ -399,11 +413,11 @@
     </IntegrityDatabase>
 
     <!--
-        The number of milliseconds a file has to be known by the system before it is sat to missing. 
+        The time a file has to be known by the system before it is set to missing.
         This is to avoid false negatives for a reporting a file missing on a pillar,
         when it is just not finished with the PutFile operation. (1 hour)
     -->
-    <TimeBeforeMissingFileCheck>3600000</TimeBeforeMissingFileCheck> 
+    <TimeBeforeMissingFileCheck>PT1H</TimeBeforeMissingFileCheck>
     
     <!-- 
       Database specification object for the Integrity service's audit trail information.
@@ -441,9 +455,10 @@
     <ID>monitoring-service</ID>
     <!-- 
       Interval at which status is requested. 
-      Timeunit in milliseconds.
+      A non-negative XML durations consisting of hours, minutes and/or seconds.
+      The hours may be more than 24. The seconds may have up to 9 decimals of fraction.
     -->
-    <CollectionInterval>60000</CollectionInterval> <!-- 1 minute -->
+    <CollectionInterval>PT1M</CollectionInterval>
     <!-- 
       The maximum number of times a component may fail to respond before 
       it being marked as unresponsive 

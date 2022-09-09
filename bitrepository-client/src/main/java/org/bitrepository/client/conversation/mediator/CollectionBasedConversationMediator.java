@@ -30,6 +30,8 @@ import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.common.DefaultThreadFactory;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.TimeUtils;
+import org.bitrepository.common.utils.XmlUtils;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
@@ -37,6 +39,8 @@ import org.bitrepository.protocol.security.SecurityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,8 +70,9 @@ public class CollectionBasedConversationMediator implements ConversationMediator
     @Override
     public void start() {
         messagebus.addListener(settings.getReceiverDestinationID(), this);
-        cleanTimer.scheduleAtFixedRate(new ConversationCleaner(), 0,
-                settings.getReferenceSettings().getClientSettings().getMediatorCleanupInterval().longValue());
+        javax.xml.datatype.Duration cleanupInterval = settings.getReferenceSettings().getClientSettings().getMediatorCleanupInterval();
+        cleanTimer.scheduleAtFixedRate(new ConversationCleaner(),
+                0, XmlUtils.xmlDurationToMilliseconds(cleanupInterval));
     }
 
     @Override
@@ -136,7 +141,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
     }
 
     /**
-     * Will clean out obsolete conversations in each run. An obsolete conversation is a conversation which satisfies any
+     * Will clean out obsolete conversations in each run. An obsolete conversation is a conversation which satisfies one
      * of the following criteria: <ol>
      * <li> Returns true for the <code>hasEnded()</code> method.
      * <li> Is older than the conversationTimeout limit allows.
@@ -149,15 +154,20 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         @Override
         public void run() {
             Conversation[] conversationArray = conversations.values().toArray(new Conversation[0]);
-            long currentTime = System.currentTimeMillis();
+            Duration conversationTimeout = XmlUtils.xmlDurationToDuration(
+                    settings.getReferenceSettings().getClientSettings().getConversationTimeout());
+            Instant currentTime = Instant.now();
             for (Conversation conversation : conversationArray) {
                 if (conversation.hasEnded()) {
                     conversations.remove(conversation.getConversationID());
-                } else if (currentTime - conversation.getStartTime() >
-                        settings.getReferenceSettings().getClientSettings().getConversationTimeout().longValue()) {
-                    log.warn("Failing timed out conversation " + conversation.getConversationID() + " " + "(Age " +
-                            (currentTime - conversation.getStartTime()) + "ms)");
-                    failConversation(conversation, "Failing timed out conversation " + conversation.getConversationID());
+                } else {
+                    Instant startTime = Instant.ofEpochMilli(conversation.getStartTime());
+                    Instant expirationTime = startTime.plus(conversationTimeout);
+                    if (expirationTime.isBefore(currentTime)) {
+                        log.warn("Failing timed out conversation {} (Age: {})", conversation.getConversationID(),
+                                TimeUtils.durationToHuman(Duration.between(startTime, currentTime)));
+                        failConversation(conversation, "Failing timed out conversation " + conversation.getConversationID());
+                    }
                 }
             }
         }

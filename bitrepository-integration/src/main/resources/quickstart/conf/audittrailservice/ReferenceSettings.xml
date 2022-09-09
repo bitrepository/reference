@@ -27,8 +27,8 @@
   </GeneralSettings>
 
   <ClientSettings>
-    <MediatorCleanupInterval>1000</MediatorCleanupInterval>
-    <ConversationTimeout>3600000</ConversationTimeout>
+    <MediatorCleanupInterval>PT1S</MediatorCleanupInterval>
+    <ConversationTimeout>PT1H</ConversationTimeout>
   </ClientSettings>
   
   <GetAuditTrailSettings></GetAuditTrailSettings>
@@ -40,7 +40,7 @@
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
       <DatabaseURL>jdbc:derby:<!--foobarpattern-->conf/audittrailservice/auditservicedb</DatabaseURL>
     </AuditTrailServiceDatabase>
-    <CollectAuditInterval>3600000</CollectAuditInterval> 
+    <CollectAuditInterval>PT1H</CollectAuditInterval>
     <TimerTaskCheckInterval>2000</TimerTaskCheckInterval>
   </AuditTrailServiceSettings>
   <FileExchangeSettings>

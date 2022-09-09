@@ -27,6 +27,7 @@ import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSe
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedFileIDsResultSet;
 
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -130,14 +131,13 @@ public class MemoryCacheMock implements ChecksumStore {
     }
 
     @Override
-    public List<String> getFileIDsWithOldChecksums(Date checksumDate, String collectionID) {
+    public List<String> getFileIDsWithOldChecksums(Instant checksumDate, String collectionID) {
         List<String> res = new ArrayList<>();
         for(ChecksumEntry ce : checksumMap.values()) {
-            if(ce.getCalculationDate().getTime() < checksumDate.getTime()) {
+            if(ce.getCalculationDate().toInstant().isBefore(checksumDate)) {
                 res.add(ce.getFileId());
             }
         }
         return res;
-        
     }
 }

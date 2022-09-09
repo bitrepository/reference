@@ -29,7 +29,6 @@ import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
-import org.bitrepository.common.utils.TimeMeasurementUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.protocol.MessageContext;
@@ -75,8 +74,7 @@ public class IdentifyPillarsForGetFileIDsRequestHandler extends IdentifyRequestH
     @Override
     protected void sendPositiveResponse(IdentifyPillarsForGetFileIDsRequest request, MessageContext requestContext) {
         IdentifyPillarsForGetFileIDsResponse response = createFinalResponse(request);
-        response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMilliseconds(
-                getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
+        response.setTimeToDeliver(getTimeToStartDeliver());
 
         ResponseInfo irInfo = new ResponseInfo();
         irInfo.setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);

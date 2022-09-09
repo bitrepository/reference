@@ -23,7 +23,6 @@ package org.bitrepository.integrityservice.workflow.step;
 
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.SettingsUtils;
-import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.integrityservice.checking.MaxChecksumAgeProvider;
@@ -35,6 +34,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 
@@ -48,7 +50,7 @@ public class HandleObsoleteChecksumsStep extends AbstractWorkFlowStep {
     private final IntegrityModel store;
     private final IntegrityReporter reporter;
     private final StatisticsCollector sc;
-    public static final long DEFAULT_MAX_CHECKSUM_AGE = TimeUtils.MS_PER_YEAR;
+    public static final Duration DEFAULT_MAX_CHECKSUM_AGE = ChronoUnit.YEARS.getDuration();
 
     public HandleObsoleteChecksumsStep(Settings settings, IntegrityModel store, IntegrityReporter reporter,
                                        StatisticsCollector statisticsCollector) {
@@ -76,28 +78,28 @@ public class HandleObsoleteChecksumsStep extends AbstractWorkFlowStep {
         List<String> pillars = SettingsUtils.getPillarIDsForCollection(reporter.getCollectionID());
 
         for (String pillar : pillars) {
-            Long obsolteteChecksums = 0L;
-            long maxAge = maxChecksumAgeProvider.getMaxChecksumAge(pillar);
-            if (maxAge == 0) {
+            long obsoleteChecksums = 0L;
+            Duration maxAge = maxChecksumAgeProvider.getMaxChecksumAge(pillar);
+            if (maxAge.isZero()) {
                 log.info("Skipping obsolete checksums check for pillar '" + pillar + "' as it has a " +
-                        "MaxChecksumAge of 0 (i.e. checksums don't expire).");
+                        "MaxChecksumAge of 0 (i.e., checksums don't expire).");
                 continue;
             } else {
-                Date outDated = new Date(System.currentTimeMillis() - maxAge);
-                try (IntegrityIssueIterator obsoleteChecksumsIterator = store.findChecksumsOlderThan(outDated, pillar,
+                Date outdated = Date.from(Instant.now().minus(maxAge));
+                try (IntegrityIssueIterator obsoleteChecksumsIterator = store.findChecksumsOlderThan(outdated, pillar,
                         reporter.getCollectionID())) {
                     String file;
                     while ((file = obsoleteChecksumsIterator.getNextIntegrityIssue()) != null) {
                         try {
                             reporter.reportObsoleteChecksum(file, pillar);
-                            obsolteteChecksums++;
+                            obsoleteChecksums++;
                         } catch (IOException e) {
                             throw new StepFailedException("Failed to report file: " + file + " as having an obsolete checksum", e);
                         }
                     }
                 }
             }
-            sc.getPillarCollectionStat(pillar).setObsoleteChecksums(obsolteteChecksums);
+            sc.getPillarCollectionStat(pillar).setObsoleteChecksums(obsoleteChecksums);
         }
     }
 

@@ -33,12 +33,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -50,14 +53,14 @@ public class HandleMissingFilesStep extends AbstractWorkFlowStep {
     private final IntegrityModel store;
     private final IntegrityReporter reporter;
     private final StatisticsCollector sc;
-    private final Long gracePeriod;
+    private final Duration gracePeriod;
 
     public HandleMissingFilesStep(IntegrityModel store, IntegrityReporter reporter, StatisticsCollector statisticsCollector,
-                                  Long missingFileGracePeriod) {
+                                  Duration missingFileGracePeriod) {
         this.store = store;
         this.reporter = reporter;
         this.sc = statisticsCollector;
-        this.gracePeriod = missingFileGracePeriod;
+        this.gracePeriod = Objects.requireNonNull(missingFileGracePeriod, "missingFileGracePeriod");
     }
 
     @Override
@@ -77,7 +80,8 @@ public class HandleMissingFilesStep extends AbstractWorkFlowStep {
         for (String pillar : pillars) {
             missingFilesMap.put(pillar, 0L);
         }
-        Date missingAfterDate = new Date(System.currentTimeMillis() - gracePeriod);
+        Instant missingAfterInstant = Instant.now().minus(gracePeriod);
+        Date missingAfterDate = Date.from(missingAfterInstant);
         log.info("Looking for missing files, files need to be older than {} to be considered missing.", missingAfterDate);
 
         try (IntegrityIssueIterator issueIterator = store.findFilesWithMissingCopies(reporter.getCollectionID(), pillars.size(), 0L,

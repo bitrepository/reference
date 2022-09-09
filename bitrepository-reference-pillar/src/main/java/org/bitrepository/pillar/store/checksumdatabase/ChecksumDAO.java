@@ -26,6 +26,7 @@ import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseManager;
 
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -152,9 +153,9 @@ public class ChecksumDAO implements ChecksumStore {
     }
 
     @Override
-    public List<String> getFileIDsWithOldChecksums(Date checksumDate, String collectionID) {
+    public List<String> getFileIDsWithOldChecksums(Instant checksumDate, String collectionID) {
         ArgumentValidator.checkNotNull(checksumDate, "Date checksumDate");
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
-        return extractor.extractFileIDsWithMaxChecksumDate(checksumDate.getTime(), collectionID);
+        return extractor.extractFileIDsWithMaxChecksumDate(checksumDate.toEpochMilli(), collectionID);
     }
 }
