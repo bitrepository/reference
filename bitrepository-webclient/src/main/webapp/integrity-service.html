@@ -378,10 +378,8 @@
     function collectionChanged(collectionID) {
         clearContent();
         $("#integrityLegend").html("Integrity information for collection " + nameMapper.getName(collectionID));
-        let reportUrl = `${integrityServiceUrl}/integrity/IntegrityService/getLatestIntegrityReport
-            ?collectionID=${collectionID}&workflowID=CompleteIntegrityCheck`;
-        $("#integrityReportGetter").html(
-            `<a class="btn btn-link" href="${reportUrl}" target="_blank">Get latest integrity report</a>`);
+        let reportUrl = `${integrityServiceUrl}/integrity/IntegrityService/getLatestIntegrityReport?collectionID=${collectionID}&workflowID=CompleteIntegrityCheck`;
+        $("#integrityReportGetter").html(`<a class="btn btn-link" href="${reportUrl}" target="_blank">Get latest integrity report</a>`);
         clearInterval(updatePageInterval);
         loadWorkflows();
         getCollectionInformation(collectionID);
