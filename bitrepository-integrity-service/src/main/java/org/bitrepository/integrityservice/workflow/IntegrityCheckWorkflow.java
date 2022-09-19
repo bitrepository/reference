@@ -22,6 +22,7 @@
 package org.bitrepository.integrityservice.workflow;
 
 import org.bitrepository.common.utils.SettingsUtils;
+import org.bitrepository.common.utils.XmlUtils;
 import org.bitrepository.integrityservice.IntegrityServiceManager;
 import org.bitrepository.integrityservice.reports.BasicIntegrityReporter;
 import org.bitrepository.integrityservice.reports.IntegrityReporter;
@@ -42,6 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Date;
 
 /**
@@ -116,8 +118,9 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
             }
 
             statisticsCollector.getCollectionStat().setStatsTime(new Date());
-            Long missingFileGracePeriod
-                    = context.getSettings().getReferenceSettings().getIntegrityServiceSettings().getTimeBeforeMissingFileCheck();
+            javax.xml.datatype.Duration timeBeforeMissingFileCheck =
+                    context.getSettings().getReferenceSettings().getIntegrityServiceSettings().getTimeBeforeMissingFileCheck();
+            Duration missingFileGracePeriod = XmlUtils.xmlDurationToDuration(timeBeforeMissingFileCheck);
             HandleMissingFilesStep handleMissingFilesStep = new HandleMissingFilesStep(context.getStore(), reporter,
                     statisticsCollector, missingFileGracePeriod);
             performStep(handleMissingFilesStep);

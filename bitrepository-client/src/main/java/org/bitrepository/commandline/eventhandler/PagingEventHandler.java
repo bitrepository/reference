@@ -25,9 +25,13 @@ import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.commandline.output.OutputHandler;
+import org.bitrepository.common.utils.CountAndTimeUnit;
+import org.bitrepository.common.utils.TimeUtils;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -36,15 +40,15 @@ import java.util.concurrent.TimeUnit;
  * Event handler for operations that need paging functionality.
  */
 public abstract class PagingEventHandler implements EventHandler {
-    private final Long timeout;
+    private final Duration timeout;
     private final BlockingQueue<OperationEvent> finalEventQueue = new LinkedBlockingQueue<>(1);
 
     protected List<String> pillarsWithPartialResults = new ArrayList<>();
 
     private final OutputHandler outputHandler;
 
-    public PagingEventHandler(Long timeout, OutputHandler outputHandler) {
-        this.timeout = timeout;
+    public PagingEventHandler(Duration timeout, OutputHandler outputHandler) {
+        this.timeout = Objects.requireNonNull(timeout, "timeout");
         this.outputHandler = outputHandler;
     }
 
@@ -62,14 +66,15 @@ public abstract class PagingEventHandler implements EventHandler {
     }
 
     /**
-     * Retrieves the final event when the operation finishes. The final event is awaited for 'timeout' amount
-     * of milliseconds. If no final events has occurred, then an IllegalStateException is thrown.
+     * Retrieves the final event when the operation finishes.
+     * The final event is awaited for 'timeout'. If no final events has occurred, then null is returned.
      *
-     * @return The final event.
+     * @return The final event or null if none has occurred.
      */
     public OperationEvent getFinish() {
         try {
-            return finalEventQueue.poll(timeout, TimeUnit.MILLISECONDS);
+            CountAndTimeUnit pollTimeout = TimeUtils.durationToCountAndTimeUnit(timeout);
+            return finalEventQueue.poll(pollTimeout.getCount(), pollTimeout.getUnit());
         } catch (InterruptedException e) {
             throw new IllegalStateException("Interrupted while waiting for the final response.", e);
         }

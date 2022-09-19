@@ -30,13 +30,17 @@ import org.bitrepository.settings.referencesettings.Schedules;
 import org.bitrepository.settings.referencesettings.WorkflowConfiguration;
 import org.bitrepository.settings.referencesettings.WorkflowSettings;
 
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.Duration;
+
 /**
  * Manages the workflows for the integrity service. Delegates most functionality to the <code>Workflow</code>
  * class, but handles som configuration specific to the integrity workflows.
  */
 public class IntegrityWorkflowManager extends WorkflowManager {
-    public static final long DAILY = 86400000;
-    public static final long HOURLY = 360000;
+    public static final long DAILY = 86_400_000;
+    public static final long HOURLY = 3_600_000;
 
     public IntegrityWorkflowManager(IntegrityWorkflowContext context, JobScheduler scheduler) {
         super(context, getWorkflowSettings(context.getSettings()), scheduler);
@@ -63,7 +67,14 @@ public class IntegrityWorkflowManager extends WorkflowManager {
         WorkflowConfiguration completeIntegrityWorkflowConf = new WorkflowConfiguration();
         completeIntegrityWorkflowConf.setWorkflowClass(CompleteIntegrityCheck.class.getCanonicalName());
         Schedule schedule = new Schedule();
-        schedule.setWorkflowInterval(DAILY);
+        try {
+            Duration workflowInterval = DatatypeFactory.newInstance().newDuration(DAILY);
+            schedule.setWorkflowInterval(workflowInterval);
+        } catch (DatatypeConfigurationException e) {
+            throw new RuntimeException(
+                    "Could not instantiate datatype factory for creating duration for workflow interval for settings",
+                    e);
+        }
         completeIntegrityWorkflowConf.setSchedules(new Schedules());
         completeIntegrityWorkflowConf.getSchedules().getSchedule().add(schedule);
         defaultWorkflowSettings.getWorkflow().add(completeIntegrityWorkflowConf);

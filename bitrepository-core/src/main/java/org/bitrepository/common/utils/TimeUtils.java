@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Util class to handle the presentation of time in a human-readable form
@@ -217,6 +218,47 @@ public final class TimeUtils {
         return String.join(" ", elements);
     }
 
+    /**
+     * @throws ArithmeticException if dur is negative by more than Long.MAX_VALUE seconds
+     */
+    public static String durationToHuman(Duration dur) {
+        if (dur.isZero()) {
+            return "0 ms";
+        }
+
+        List<String> parts = new ArrayList<>(5);
+
+        if (dur.isNegative()) {
+            parts.add("minus");
+            dur = dur.negated();
+        }
+
+        if (dur.toDays() > 0) {
+            parts.add("" + dur.toDays() + "d");
+        }
+        if (dur.toHoursPart() > 0) {
+            parts.add("" + dur.toHoursPart() + "h");
+        }
+        if (dur.toMinutesPart() > 0) {
+            parts.add("" + dur.toMinutesPart() + "m");
+        }
+        if (dur.toSecondsPart() > 0) {
+            parts.add("" + dur.toSecondsPart() + "s");
+        }
+        if (dur.toNanosPart() > 0) {
+            // If the fraction of second is a whole number of millis, print as such; otherwise print only as nanos
+            Duration fraction = Duration.ofNanos(dur.getNano());
+            Duration remainderAfterMillis = fraction.minusMillis(fraction.toMillisPart());
+            if (remainderAfterMillis.isZero()) {
+                parts.add("" + fraction.toMillisPart() + " ms");
+            } else {
+                parts.add("" + fraction.toNanosPart() + " ns");
+            }
+        }
+
+        return String.join(" ", parts);
+    }
+
     public static String shortDate(Date date) {
         return formatter.format(date);
     }
@@ -238,6 +280,33 @@ public final class TimeUtils {
         } else {
             return currentMax;
         }
+    }
+
+    /**
+     *
+     * @param duration a non-negative duration
+     * @return the duration converted to a long in either SECONDS, MILLISECONDS, MICROSECONDS or NANOSECONDS
+     * maintaining the best possible precision and truncated if necessary.
+     * @throws IllegalArgumentException if duration is negative
+     */
+    public static CountAndTimeUnit durationToCountAndTimeUnit(Duration duration) {
+        if (duration.isNegative()) {
+            throw new IllegalArgumentException("duration must be 0 or positive, was " + duration);
+        }
+
+        if (duration.compareTo(Duration.ofNanos(Long.MAX_VALUE)) <= 0) { // fits in nanos
+            return new CountAndTimeUnit(duration.toNanos(), TimeUnit.NANOSECONDS);
+        }
+        if (duration.compareTo(Duration.of(Long.MAX_VALUE, ChronoUnit.MICROS)) <= 0) { // fits in micros
+            return new CountAndTimeUnit(duration.dividedBy(ChronoUnit.MICROS.getDuration()), TimeUnit.MICROSECONDS);
+        }
+        if (duration.compareTo(Duration.ofMillis(Long.MAX_VALUE)) <= 0) { // fits in millis
+            return new CountAndTimeUnit(duration.toMillis(), TimeUnit.MILLISECONDS);
+        }
+        if (duration.compareTo(Duration.ofSeconds(Long.MAX_VALUE)) <= 0) { // fits in seconds
+            return new CountAndTimeUnit(duration.toSeconds(), TimeUnit.SECONDS);
+        }
+        return new CountAndTimeUnit(duration.toMinutes(), TimeUnit.MINUTES);
     }
 
 }

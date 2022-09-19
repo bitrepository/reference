@@ -39,6 +39,9 @@ import org.bitrepository.service.audit.AuditTrailManager;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.Duration;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
@@ -62,12 +65,13 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     String TEST_COLLECTION;
     
     @Override
-    protected void customizeSettings() {
+    protected void customizeSettings() throws DatatypeConfigurationException {
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(TEST_PILLAR_1);
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(TEST_PILLAR_2);
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(TEST_PILLAR_3);
-        settings.getReferenceSettings().getIntegrityServiceSettings().setTimeBeforeMissingFileCheck(0L);
+        Duration time = DatatypeFactory.newInstance().newDuration(0);
+        settings.getReferenceSettings().getIntegrityServiceSettings().setTimeBeforeMissingFileCheck(time);
         SettingsUtils.initialize(settings);
         TEST_COLLECTION = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
         auditManager = mock(AuditTrailManager.class);
@@ -106,10 +110,10 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
 
         addStep("Validate the file ids", "Should not have integrity issues.");
         Assert.assertFalse(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
-        Assert.assertTrue(cs.getCollectionStat().getChecksumErrors() == 0);
-        Assert.assertTrue(cs.getPillarCollectionStat(TEST_PILLAR_3).getChecksumErrors() == 0);
-        Assert.assertTrue(cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors() == 0);
-        Assert.assertTrue(cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors() == 0);
+        Assert.assertEquals(cs.getCollectionStat().getChecksumErrors(), Long.valueOf(0));
+        Assert.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_3).getChecksumErrors(), Long.valueOf(0));
+        Assert.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors(), Long.valueOf(0));
+        Assert.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors(), Long.valueOf(0));
         for(FileInfo fi : cache.getFileInfos(FILE_1, TEST_COLLECTION)) {
             Assert.assertEquals(fi.getChecksum(), "1234cccc4321");
         }
@@ -154,9 +158,9 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
 
         addStep("Validate the file ids", "Should have integrity issues. No entry should be valid.");
         Assert.assertTrue(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
-        Assert.assertTrue(cs.getCollectionStat().getChecksumErrors() == 1);
-        Assert.assertTrue(cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors() == 1);
-        Assert.assertTrue(cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors() == 1);
+        Assert.assertEquals(cs.getCollectionStat().getChecksumErrors(), Long.valueOf(1));
+        Assert.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors(), Long.valueOf(1));
+        Assert.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors(), Long.valueOf(1));
         /*for(FileInfo fi : cache.getFileInfos(FILE_1, TEST_COLLECTION)) {
             Assert.assertTrue(fi.getChecksumState() != ChecksumState.VALID);
         }*/
@@ -183,10 +187,10 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
 
         addStep("Validate the file ids", "Should have integrity issues.");
         Assert.assertTrue(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
-        Assert.assertTrue(cs.getCollectionStat().getChecksumErrors() == 1);
-        Assert.assertTrue(cs.getPillarCollectionStat(TEST_PILLAR_3).getChecksumErrors() == 1);
-        Assert.assertTrue(cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors() == 1);
-        Assert.assertTrue(cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors() == 1);
+        Assert.assertEquals(cs.getCollectionStat().getChecksumErrors(), Long.valueOf(1));
+        Assert.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_3).getChecksumErrors(), Long.valueOf(1));
+        Assert.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors(), Long.valueOf(1));
+        Assert.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors(), Long.valueOf(1));
     }
     
     @Test(groups = {"regressiontest", "integritytest"})
@@ -211,10 +215,10 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
 
         addStep("Validate the file ids", "Should only have integrity issues on pillar 3.");
         Assert.assertTrue(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
-        Assert.assertEquals((long) cs.getCollectionStat().getChecksumErrors(), 1);
-        Assert.assertEquals((long) cs.getPillarCollectionStat(TEST_PILLAR_3).getChecksumErrors(), 1);
-        Assert.assertEquals((long) cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors(), 0);
-        Assert.assertEquals((long) cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors(), 0);
+        Assert.assertEquals(cs.getCollectionStat().getChecksumErrors(), Long.valueOf(1));
+        Assert.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_3).getChecksumErrors(), Long.valueOf(1));
+        Assert.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors(), Long.valueOf(0));
+        Assert.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors(), Long.valueOf(0));
     }
 
     @Test(groups = {"regressiontest", "integritytest"})

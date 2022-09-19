@@ -24,9 +24,11 @@ package org.bitrepository.monitoringservice.collector;
 import org.bitrepository.access.getstatus.GetStatusClient;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.XmlUtils;
 import org.bitrepository.monitoringservice.alarm.MonitorAlerter;
 import org.bitrepository.monitoringservice.status.StatusStore;
 
+import javax.xml.datatype.Duration;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -37,9 +39,10 @@ public class StatusCollector {
     private final GetStatusClient getStatusClient;
     private final StatusStore statusStore;
     private final EventHandler eventHandler;
-    private static final Boolean TIMER_IS_DAEMON = true;
+    private static final boolean TIMER_IS_DAEMON = true;
     private static final String NAME_OF_TIMER = "GetStatus collection timer";
     private static final Timer timer = new Timer(NAME_OF_TIMER, TIMER_IS_DAEMON);
+    /** Collection interval in milliseconds */
     private final long collectionInterval;
 
     /**
@@ -52,7 +55,9 @@ public class StatusCollector {
         this.getStatusClient = getStatusClient;
         eventHandler = new GetStatusEventHandler(statusStore, alerter);
         this.statusStore = statusStore;
-        collectionInterval = settings.getReferenceSettings().getMonitoringServiceSettings().getCollectionInterval();
+        Duration collectionIntervalXmlDuration =
+                settings.getReferenceSettings().getMonitoringServiceSettings().getCollectionInterval();
+        collectionInterval = XmlUtils.xmlDurationToMilliseconds(collectionIntervalXmlDuration);
     }
 
     /**

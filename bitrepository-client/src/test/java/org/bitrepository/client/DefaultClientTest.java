@@ -27,9 +27,11 @@ import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.protocol.bus.MessageReceiver;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.math.BigInteger;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
@@ -40,6 +42,12 @@ import static org.testng.Assert.assertNotNull;
  */
 public abstract class DefaultClientTest extends DefaultFixtureClientTest {
     protected final TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+    private DatatypeFactory datatypeFactory;
+
+    @BeforeMethod(alwaysRun = true)
+    public void setUpFactory() throws DatatypeConfigurationException {
+        datatypeFactory = DatatypeFactory.newInstance();
+    }
 
     @Test(groups = {"regressiontest"})
     public void identificationNegativeTest() throws Exception {
@@ -129,7 +137,8 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
         addDescription("Verify that the client works correct without receiving identification responses from all " +
                 "contributors.");
         addFixture("Set the a identification timeout to 100 ms.");
-        settingsForCUT.getRepositorySettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(100));
+        settingsForCUT.getRepositorySettings().getClientSettings()
+                .setIdentificationTimeoutDuration(datatypeFactory.newDuration(100));
 
         addStep("Start the operation.",
                 "A IDENTIFY_REQUEST_SENT should be generate and a identification request should be sent.");
@@ -170,7 +179,8 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
                 "More concrete this means that the occurrence of a identification timeout should be handled correctly");
 
         addStep("Set a 100 ms timeout for identifying contributors.", "");
-        settingsForCUT.getRepositorySettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(100));
+        settingsForCUT.getRepositorySettings().getClientSettings()
+                .setIdentificationTimeoutDuration(datatypeFactory.newDuration(100));
 
         addStep("Start the operation.", "A IDENTIFY_REQUEST_SENT event should be generated.");
         startOperation(testEventHandler);
@@ -189,7 +199,8 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
         addDescription("Tests the the client handles lack of final responses gracefully.");
 
         addStep("Set a 100 ms operation timeout.", "");
-        settingsForCUT.getRepositorySettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(100));
+        settingsForCUT.getRepositorySettings().getClientSettings()
+                .setOperationTimeoutDuration(datatypeFactory.newDuration(100));
 
         addStep("Start the operation",
                 "A IDENTIFY_REQUEST_SENT event should be received.");
@@ -222,7 +233,8 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
         addDescription("Tests the the client provides collectionID in events.");
 
         addStep("Set a 0.5 second operation timeout.", "");
-        settingsForCUT.getRepositorySettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(500));
+        settingsForCUT.getRepositorySettings().getClientSettings()
+                .setOperationTimeoutDuration(datatypeFactory.newDuration(500));
 
         addStep("Start the operation", "A IDENTIFY_REQUEST_SENT event should be received.");
         startOperation(testEventHandler);
@@ -272,7 +284,9 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
         addDescription("Tests the the client handles lack of IdentifyPillarResponses gracefully  ");
 
         addStep("Set a 100 ms ConversationTimeout.", "");
-        settingsForCUT.getReferenceSettings().getClientSettings().setConversationTimeout(BigInteger.valueOf(100));
+        DatatypeFactory factory = DatatypeFactory.newInstance();
+        settingsForCUT.getReferenceSettings().getClientSettings()
+                .setConversationTimeout(factory.newDuration(100));
         renewConversationMediator();
 
         addStep("Start the operation",

@@ -27,8 +27,8 @@
   </GeneralSettings>
 
   <ClientSettings>
-    <MediatorCleanupInterval>1000</MediatorCleanupInterval>
-    <ConversationTimeout>3600000</ConversationTimeout>
+    <MediatorCleanupInterval>PT1S</MediatorCleanupInterval>
+    <ConversationTimeout>PT1H</ConversationTimeout>
   </ClientSettings>
 
   <IntegrityServiceSettings>
@@ -37,7 +37,7 @@
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
       <DatabaseURL>jdbc:derby:<!--foobarpattern-->target/database/integritydb</DatabaseURL>
     </IntegrityDatabase>
-    <TimeBeforeMissingFileCheck>3600000</TimeBeforeMissingFileCheck> 
+    <TimeBeforeMissingFileCheck>PT1H</TimeBeforeMissingFileCheck>
     <AuditTrailContributerDatabase>
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
       <DatabaseURL>jdbc:derby:<!--foobarpattern-->target/database/auditcontributerdb</DatabaseURL>

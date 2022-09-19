@@ -24,6 +24,7 @@
 <head>
   <title>Bitrepository integrity service</title>
   <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+  <link href="css/integrity-service.css" rel="stylesheet" type="text/css">
   <link href="css/modal.css" rel="stylesheet" type="text/css">
 </head>
 <body>
@@ -256,7 +257,7 @@
             context.element = id + "-missingFiles";
             context.title = type + " on " + id.toUpperCase();
             context.propertyName = "missingFilesCount";
-            context.url += "getAllMissingFileIDs";
+            context.url += "getMissingFileIDs";
         } else if (type === "Missing checksums") {
             context.element = id + "-missingChecksums";
             context.title = type + " on " + id.toUpperCase();
@@ -302,7 +303,7 @@
     function makePillarRow(id) {
         let html = "";
         html += "<tr id=\"" + id + "-row\">";
-        html += "<td><div style=\"padding:5px\">" + id + "</div></td>";
+        html += "<td><p class='pillar-info' '>" + id + "</p></td>";
         html += "<td id=\"" + id + "-pillarName\"></td>";
         html += "<td id=\"" + id + "-pillarType\"></td>";
         html += "<td id=\"" + id + "-totalFileCount\"></td>";
@@ -345,7 +346,7 @@
 
     function updateStringCell(id, type, cellValue) {
         let context = getBodyContext(id, type);
-        let html = "<p>" + cellValue + "</p>";
+        let html = "<p class='pillar-info'>" + cellValue + "</p>";
         $("#" + context.element).html(html);
     }
 
@@ -387,10 +388,8 @@
     function collectionChanged(collectionID) {
         clearContent();
         $("#integrityLegend").html("Integrity information for collection " + nameMapper.getName(collectionID));
-        let reportUrl = `${integrityServiceUrl}/integrity/IntegrityService/getLatestIntegrityReport
-            ?collectionID=${collectionID}&workflowID=CompleteIntegrityCheck`;
-        $("#integrityReportGetter").html(
-            `<a class="btn btn-link" href="${reportUrl}" target="_blank">Get latest integrity report</a>`);
+        let reportUrl = `${integrityServiceUrl}/integrity/IntegrityService/getLatestIntegrityReport?collectionID=${collectionID}&workflowID=CompleteIntegrityCheck`;
+        $("#integrityReportGetter").html(`<a class="btn btn-link" href="${reportUrl}" target="_blank">Get latest integrity report</a>`);
         clearInterval(updatePageInterval);
         loadWorkflows();
         getCollectionInformation(collectionID);

@@ -22,20 +22,24 @@
 package org.bitrepository.integrityservice.checking;
 
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.utils.XmlUtils;
 import org.bitrepository.settings.referencesettings.MaxChecksumAgeForPillar;
 import org.bitrepository.settings.referencesettings.ObsoleteChecksumSettings;
 
-import java.math.BigInteger;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import java.time.Duration;
+import java.util.Objects;
 
 /**
  * Provide easy access to the MaxChecksumAge for individual pillars.
  */
 public class MaxChecksumAgeProvider {
-    private final long defaultMaxAge;
+    private final Duration defaultMaxAge;
     private final ObsoleteChecksumSettings settings;
 
-    public MaxChecksumAgeProvider(long defaultMaxAge, ObsoleteChecksumSettings settings) {
-        this.defaultMaxAge = defaultMaxAge;
+    public MaxChecksumAgeProvider(Duration defaultMaxAge, ObsoleteChecksumSettings settings) {
+        this.defaultMaxAge = Objects.requireNonNull(defaultMaxAge, "defaultMaxAge");
         this.settings = settings;
     }
 
@@ -51,18 +55,20 @@ public class MaxChecksumAgeProvider {
      * @param pillarID the ID of the pillar
      * @return The MaxChecksumAge for the indicated pillar.
      */
-    public long getMaxChecksumAge(String pillarID) {
+    public Duration getMaxChecksumAge(String pillarID) {
         ArgumentValidator.checkNotNull(pillarID, "pillarID");
         if (settings != null) {
             if (settings.getMaxChecksumAgeForPillar() != null) {
                 for (MaxChecksumAgeForPillar maxChecksumAgeForPillar : settings.getMaxChecksumAgeForPillar()) {
                     if (pillarID.equals(maxChecksumAgeForPillar.getPillarID())) {
-                        return maxChecksumAgeForPillar.getMaxChecksumAge().longValue();
+                        javax.xml.datatype.Duration maxChecksumAge = maxChecksumAgeForPillar.getMaxChecksumAge();
+                        return XmlUtils.xmlDurationToDuration(maxChecksumAge);
                     }
                 }
             }
-            if (settings.getDefaultMaxChecksumAge() != null) {
-                return settings.getDefaultMaxChecksumAge().longValue();
+            javax.xml.datatype.Duration defaultMaxChecksumAge = settings.getDefaultMaxChecksumAge();
+            if (defaultMaxChecksumAge != null) {
+                return XmlUtils.xmlDurationToDuration(defaultMaxChecksumAge);
             }
         }
         return defaultMaxAge;
@@ -78,7 +84,11 @@ public class MaxChecksumAgeProvider {
     public static MaxChecksumAgeForPillar createMaxChecksumAgeForPillar(String pillarID, long value) {
         MaxChecksumAgeForPillar maxChecksumAgeForPillar = new MaxChecksumAgeForPillar();
         maxChecksumAgeForPillar.setPillarID(pillarID);
-        maxChecksumAgeForPillar.setMaxChecksumAge(BigInteger.valueOf(value));
+        try {
+            maxChecksumAgeForPillar.setMaxChecksumAge(DatatypeFactory.newInstance().newDuration(value));
+        } catch (DatatypeConfigurationException e) {
+            throw new RuntimeException("createMaxChecksumAgeForPillar(): creating datatype factory failed: ", e);
+        }
         return maxChecksumAgeForPillar;
     }
 }

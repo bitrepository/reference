@@ -31,11 +31,13 @@ import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.common.utils.TimeUtils;
+import org.bitrepository.common.utils.XmlUtils;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,7 +54,7 @@ public class AuditTrailCollector {
     /**
      * Initial grace period in milliseconds after startup to allow the system to finish startup.
      */
-    private static final int DEFAULT_GRACE_PERIOD = 0;
+    private static final Duration DEFAULT_GRACE_PERIOD = Duration.ZERO;
 
     /**
      * @param settings        The settings for this collector.
@@ -70,7 +72,10 @@ public class AuditTrailCollector {
 
         this.settings = settings;
         this.timer = new Timer(true);
-        long collectionInterval = settings.getReferenceSettings().getAuditTrailServiceSettings().getCollectAuditInterval();
+        javax.xml.datatype.Duration collectAuditInterval =
+                settings.getReferenceSettings().getAuditTrailServiceSettings().getCollectAuditInterval();
+        Duration collectionInterval = XmlUtils.xmlDurationToDuration(collectAuditInterval);
+        long collectionIntervalMillis = collectionInterval.toMillis();
 
         for (Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
             IncrementalCollector collector = new IncrementalCollector(c.getID(),
@@ -79,11 +84,11 @@ public class AuditTrailCollector {
                     SettingsUtils.getMaxClientPageSize(),
                     alarmDispatcher);
             AuditTrailCollectionTimerTask collectorTask = new AuditTrailCollectionTimerTask(
-                    collector, collectionInterval, getGracePeriod());
+                    collector, collectionIntervalMillis, Math.toIntExact(getGracePeriod().toMillis()));
             log.info("Will start collection of audit trail every " +
-                    TimeUtils.millisecondsToHuman(collectionInterval) + ", " +
-                    "after a grace period of " + TimeUtils.millisecondsToHuman(getGracePeriod()));
-            timer.scheduleAtFixedRate(collectorTask, getGracePeriod(), collectionInterval / 10);
+                    TimeUtils.durationToHuman(collectionInterval) + " " +
+                    "after a grace period of " + TimeUtils.durationToHuman(getGracePeriod()));
+            timer.scheduleAtFixedRate(collectorTask, getGracePeriod().toMillis(), collectionIntervalMillis / 10);
             collectorTasks.put(c.getID(), collectorTask);
         }
     }
@@ -124,9 +129,11 @@ public class AuditTrailCollector {
      * @return The time to wait before starting collection of audit trails. This enables the system to have time to
      * finish startup before they have to start delivering/process audit trails.
      */
-    private int getGracePeriod() {
+    private Duration getGracePeriod() {
         if (settings.getReferenceSettings().getAuditTrailServiceSettings().isSetGracePeriod()) {
-            return settings.getReferenceSettings().getAuditTrailServiceSettings().getGracePeriod().intValue();
+            javax.xml.datatype.Duration gracePeriod =
+                    settings.getReferenceSettings().getAuditTrailServiceSettings().getGracePeriod();
+            return XmlUtils.xmlDurationToDuration(gracePeriod);
         } else {
             return DEFAULT_GRACE_PERIOD;
         }

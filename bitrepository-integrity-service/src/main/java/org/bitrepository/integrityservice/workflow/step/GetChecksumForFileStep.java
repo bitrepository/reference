@@ -37,6 +37,7 @@ import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -49,7 +50,7 @@ public class GetChecksumForFileStep extends AbstractWorkFlowStep {
     private final IntegrityInformationCollector collector;
     private final ChecksumSpecTYPE checksumType;
     private final IntegrityAlerter alerter;
-    private final Long timeout;
+    private final Duration timeout;
     protected final String fileID;
     protected final String collectionID;
     private final IntegrityContributors integrityContributors;
@@ -72,8 +73,7 @@ public class GetChecksumForFileStep extends AbstractWorkFlowStep {
         this.collectionID = collectionID;
         this.fileID = fileID;
         this.integrityContributors = integrityContributors;
-        this.timeout = settings.getRepositorySettings().getClientSettings().getIdentificationTimeout().longValue() +
-                settings.getRepositorySettings().getClientSettings().getOperationTimeout().longValue();
+        this.timeout = settings.getIdentificationTimeout().plus(settings.getOperationTimeout());
     }
 
     @Override

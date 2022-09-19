@@ -27,11 +27,15 @@ import org.bitrepository.client.eventhandler.ContributorFailedEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.common.utils.CountAndTimeUnit;
+import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.workflow.IntegrityContributors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
+import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -44,18 +48,18 @@ import java.util.concurrent.TimeUnit;
 public class IntegrityCollectorEventHandler implements EventHandler {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final IntegrityModel store;
-    private final long timeout;
+    private final Duration timeout;
     private final BlockingQueue<OperationEvent> finalEventQueue = new LinkedBlockingQueue<>();
     private final IntegrityContributors integrityContributors;
 
     /**
      * @param model                 The integrity model, where the results of GetChecksums or GetFileIDs are to be delivered.
-     * @param timeout               The maximum amount of millisecond to wait for an result.
+     * @param timeout               The maximum duration to wait for a result.
      * @param integrityContributors the integrity contributors
      */
-    public IntegrityCollectorEventHandler(IntegrityModel model, long timeout, IntegrityContributors integrityContributors) {
+    public IntegrityCollectorEventHandler(IntegrityModel model, Duration timeout, IntegrityContributors integrityContributors) {
         this.store = model;
-        this.timeout = timeout;
+        this.timeout = Objects.requireNonNull(timeout, "timeout");
         this.integrityContributors = integrityContributors;
     }
 
@@ -80,14 +84,15 @@ public class IntegrityCollectorEventHandler implements EventHandler {
     }
 
     /**
-     * Retrieves the final event when the operation finishes. The final event is awaited for 'timeout' amount
-     * of milliseconds. If no final events has occurred, then an InterruptedException is thrown.
+     * Retrieves the final event when the operation finishes.
+     * The final event is awaited for 'timeout'. If no final events has occurred, then null is returned.
      *
-     * @return The final event.
-     * @throws InterruptedException If it timeouts before the final event.
+     * @return The final event or null if no final events has occurred.
+     * @throws InterruptedException If interrupted while waiting.
      */
     public OperationEvent getFinish() throws InterruptedException {
-        return finalEventQueue.poll(timeout, TimeUnit.MILLISECONDS);
+        CountAndTimeUnit pollTimeout = TimeUtils.durationToCountAndTimeUnit(timeout);
+        return finalEventQueue.poll(pollTimeout.getCount(), pollTimeout.getUnit());
     }
 
     /**

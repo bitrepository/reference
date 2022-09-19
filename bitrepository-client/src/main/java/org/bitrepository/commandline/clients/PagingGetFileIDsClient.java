@@ -29,9 +29,11 @@ import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.commandline.outputformatter.GetFileIDsOutputFormatter;
 import org.bitrepository.commandline.resultmodel.GetFileIDsResultModel;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Wrapper class for GetFileIDsClient to handle paging through large result sets
@@ -41,13 +43,13 @@ public class PagingGetFileIDsClient {
     private GetFileIDsResultModel model;
     private final GetFileIDsOutputFormatter outputFormatter;
     private final OutputHandler outputHandler;
-    private final long timeout;
+    private final Duration timeout;
     private final int pageSize;
 
-    public PagingGetFileIDsClient(GetFileIDsClient client, long timeout, int pageSize, GetFileIDsOutputFormatter outputFormatter,
+    public PagingGetFileIDsClient(GetFileIDsClient client, Duration timeout, int pageSize, GetFileIDsOutputFormatter outputFormatter,
                                   OutputHandler outputHandler) {
         this.client = client;
-        this.timeout = timeout;
+        this.timeout = Objects.requireNonNull(timeout, "timeout");
         this.pageSize = pageSize;
         this.outputFormatter = outputFormatter;
         this.outputHandler = outputHandler;

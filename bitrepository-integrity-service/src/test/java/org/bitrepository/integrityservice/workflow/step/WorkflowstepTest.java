@@ -33,13 +33,15 @@ import org.bitrepository.service.audit.AuditTrailManager;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.annotations.BeforeMethod;
 
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+
 import static org.mockito.Mockito.mock;
 
 public class WorkflowstepTest extends ExtendedTestCase {
     protected Settings settings;
 
     public static final String TEST_PILLAR_1 = "test-pillar-1";
-    public static final String TEST_FILE_1 = "test-file-1";
 
     protected String TEST_COLLECTION;
     protected IntegrityAlerter alerter;
@@ -49,11 +51,12 @@ public class WorkflowstepTest extends ExtendedTestCase {
     protected IntegrityContributors integrityContributors;
 
     @BeforeMethod(alwaysRun = true)
-    public void setup() {
+    public void setup() throws DatatypeConfigurationException {
         settings = TestSettingsProvider.reloadSettings(this.getClass().getSimpleName());
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(TEST_PILLAR_1);
-        settings.getReferenceSettings().getIntegrityServiceSettings().setTimeBeforeMissingFileCheck(0L);
+        DatatypeFactory factory = DatatypeFactory.newInstance();
+        settings.getReferenceSettings().getIntegrityServiceSettings().setTimeBeforeMissingFileCheck(factory.newDuration(0));
         TEST_COLLECTION = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
         SettingsUtils.initialize(settings);
 

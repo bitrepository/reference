@@ -27,8 +27,8 @@
   </GeneralSettings>
 
   <ClientSettings>
-    <MediatorCleanupInterval>1000</MediatorCleanupInterval>
-    <ConversationTimeout>3600000</ConversationTimeout>
+    <MediatorCleanupInterval>PT1S</MediatorCleanupInterval>
+    <ConversationTimeout>PT1H</ConversationTimeout>
   </ClientSettings>
 
   <DeleteFileSettings></DeleteFileSettings>

@@ -47,7 +47,7 @@ public class RestMonitoringService {
     public List<WebConfOption> getMonitoringServiceConfiguration() {
         List<WebConfOption> options = new ArrayList<>();
 
-        options.add(new WebConfOption("Check interval", TimeUtils.millisecondsToHuman(service.getCollectionInterval())));
+        options.add(new WebConfOption("Check interval", TimeUtils.durationToHuman(service.getCollectionInterval())));
         options.add(new WebConfOption("Max retries", Long.toString(service.getMaxRetries())));
 
         return options;

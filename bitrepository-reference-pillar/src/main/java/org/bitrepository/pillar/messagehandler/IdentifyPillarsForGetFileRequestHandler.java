@@ -29,7 +29,6 @@ import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
-import org.bitrepository.common.utils.TimeMeasurementUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.protocol.MessageContext;
@@ -79,8 +78,7 @@ public class IdentifyPillarsForGetFileRequestHandler extends IdentifyRequestHand
     protected void sendPositiveResponse(IdentifyPillarsForGetFileRequest request, MessageContext requestContext) {
         IdentifyPillarsForGetFileResponse response = createFinalResponse(request);
 
-        response.setTimeToDeliver(TimeMeasurementUtils.getTimeMeasurementFromMilliseconds(
-                getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver()));
+        response.setTimeToDeliver(getTimeToStartDeliver());
 
         ResponseInfo irInfo = new ResponseInfo();
         irInfo.setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);

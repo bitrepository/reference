@@ -22,6 +22,7 @@
 package org.bitrepository.pillar.store.checksumdatabase;
 
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -117,7 +118,7 @@ public interface ChecksumStore {
      * @param collectionID The id of the collection for the files.
      * @return The collection of ids for the files with old checksums.
      */
-    List<String> getFileIDsWithOldChecksums(Date checksumDate, String collectionID);
+    List<String> getFileIDsWithOldChecksums(Instant checksumDate, String collectionID);
 
     /**
      * Deletes a given entry from the cache.

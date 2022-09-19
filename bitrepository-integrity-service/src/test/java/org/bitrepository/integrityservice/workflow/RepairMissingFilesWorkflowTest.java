@@ -42,6 +42,8 @@ import org.mockito.stubbing.Answer;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.Duration;
 import java.math.BigInteger;
 import java.net.URL;
 import java.util.ArrayList;
@@ -83,7 +85,8 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR_1);
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR_2);
-        settings.getReferenceSettings().getIntegrityServiceSettings().setTimeBeforeMissingFileCheck(0);
+        Duration time = DatatypeFactory.newInstance().newDuration(0);
+        settings.getReferenceSettings().getIntegrityServiceSettings().setTimeBeforeMissingFileCheck(time);
         
         settings.getReferenceSettings().getFileExchangeSettings().setProtocolType(ProtocolType.HTTP);
         settings.getReferenceSettings().getFileExchangeSettings().setPath("dav");
@@ -100,7 +103,7 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
     }
 
     @Test(groups = {"regressiontest", "integritytest"})
-    public void testNoMissingFiles() throws Exception {
+    public void testNoMissingFiles() {
         addDescription("Test that the workflow does nothing, when it has no missing files.");
         addStep("Prepare for calls to mocks", "");
         when(model.findFilesWithMissingCopies(anyString(), anyInt(), anyLong(), anyLong()))
@@ -123,7 +126,7 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
     }
     
     @Test(groups = {"regressiontest", "integritytest"})
-    public void testSuccessRepair() throws Exception {
+    public void testSuccessRepair() {
         addDescription("Test that the workflow makes calls to the collector, when a file is missing");
         addStep("Prepare for calls to mocks to handle a repair", "");
         when(model.findFilesWithMissingCopies(eq(TEST_COLLECTION), anyInt(), anyLong(), anyLong()))
@@ -171,7 +174,7 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
     }
     
     @Test(groups = {"regressiontest", "integritytest"})
-    public void testFailedGetFile() throws Exception {
+    public void testFailedGetFile() {
         addDescription("Test that the workflow does not try to put a file, if it fails to get it.");
         addStep("Prepare for calls to mocks to fail when performing get-file", "");
         when(model.findFilesWithMissingCopies(eq(TEST_COLLECTION), anyInt(), anyLong(), anyLong()))
@@ -211,7 +214,7 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
     }
     
     @Test(groups = {"regressiontest", "integritytest"})
-    public void testFailedPutFile() throws Exception {
+    public void testFailedPutFile() {
         addDescription("Test that the workflow makes calls to the collector for get and put file, even when put file fails.");
         addStep("Prepare for calls to mocks", "");
         when(model.findFilesWithMissingCopies(eq(TEST_COLLECTION), anyInt(), anyLong(), anyLong()))

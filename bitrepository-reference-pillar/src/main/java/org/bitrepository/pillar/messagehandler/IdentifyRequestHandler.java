@@ -21,11 +21,15 @@
  */
 package org.bitrepository.pillar.messagehandler;
 
+import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
+import org.bitrepository.common.utils.XmlUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.exception.RequestHandlerException;
+
+import javax.xml.datatype.Duration;
 
 /**
  * Abstract class for the methods for handing the identify request messages.
@@ -69,4 +73,10 @@ public abstract class IdentifyRequestHandler<T extends MessageRequest> extends P
      */
     protected abstract void sendPositiveResponse(T request, MessageContext requestContext)
             throws RequestHandlerException;
+
+    protected TimeMeasureTYPE getTimeToStartDeliver() {
+        Duration timeToStartDeliver = getSettings().getReferenceSettings().getPillarSettings().getTimeToStartDeliver();
+        return XmlUtils.xmlDurationToTimeMeasure(timeToStartDeliver);
+    }
+
 }

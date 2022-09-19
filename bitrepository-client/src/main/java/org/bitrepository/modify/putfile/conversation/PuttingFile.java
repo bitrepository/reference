@@ -62,7 +62,7 @@ public class PuttingFile extends PerformingOperationState {
         if (msg instanceof PutFileFinalResponse) {
             PutFileFinalResponse response = (PutFileFinalResponse) msg;
             getContext().getMonitor().contributorComplete(new PutFileCompletePillarEvent(response.getPillarID(), response.getCollectionID(),
-                    response.getChecksumDataForNewFile()));
+                    response.getChecksumDataForNewFile(), response.getResponseInfo()));
         } else {
             throw new UnexpectedResponseException(
                     "Received unexpected msg " + msg.getClass().getSimpleName() + " while waiting for Put file response.");
@@ -149,7 +149,7 @@ public class PuttingFile extends PerformingOperationState {
                 case DUPLICATE_FILE_FAILURE:
                     if (ChecksumUtils.areEqual(response.getChecksumDataForExistingFile(), context.getChecksumForValidationAtPillar())) {
                         PutFileCompletePillarEvent event = new PutFileCompletePillarEvent(response.getPillarID(),
-                                response.getCollectionID(), response.getChecksumDataForExistingFile());
+                                response.getCollectionID(), response.getChecksumDataForExistingFile(), response.getResponseInfo());
                         event.setInfo("File already existed on " + response.getPillarID());
                         getContext().getMonitor().contributorComplete(event);
                     } else {

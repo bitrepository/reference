@@ -40,6 +40,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
@@ -330,17 +331,17 @@ public class ChecksumDatabaseTest extends ExtendedTestCase {
         cache.insertChecksumCalculation(FILE_ID_2, collectionID, DEFAULT_CHECKSUM, FILE_2_DATE);
         
         addStep("Extract all entries with checksum date older than now", "Returns both file ids");
-        List<String> extractedFileIDs = cache.getFileIDsWithOldChecksums(new Date(), collectionID);
+        List<String> extractedFileIDs = cache.getFileIDsWithOldChecksums(Instant.now(), collectionID);
         Assert.assertEquals(extractedFileIDs.size(), 2);
         Assert.assertTrue(extractedFileIDs.contains(FILE_ID_1));
         Assert.assertTrue(extractedFileIDs.contains(FILE_ID_2));
         
         addStep("Extract all entries with checksum date older than epoch", "Returns no file ids");
-        extractedFileIDs = cache.getFileIDsWithOldChecksums(new Date(0), collectionID);
+        extractedFileIDs = cache.getFileIDsWithOldChecksums(Instant.EPOCH, collectionID);
         Assert.assertEquals(extractedFileIDs.size(), 0);
         
         addStep("Extract all entries with checksum date older than middle date", "Returns the first file id");
-        extractedFileIDs = cache.getFileIDsWithOldChecksums(MIDDLE_DATE, collectionID);
+        extractedFileIDs = cache.getFileIDsWithOldChecksums(MIDDLE_DATE.toInstant(), collectionID);
         Assert.assertEquals(extractedFileIDs.size(), 1);
         Assert.assertTrue(extractedFileIDs.contains(FILE_ID_1));
     }
