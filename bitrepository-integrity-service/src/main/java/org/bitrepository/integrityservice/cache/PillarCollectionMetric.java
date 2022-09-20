@@ -1,5 +1,7 @@
 package org.bitrepository.integrityservice.cache;
 
+import java.time.Instant;
+
 /**
  * Class to carry information of collection specific pillar metrics.
  * The class exists as java is not able to handle simple tuples,
@@ -19,9 +21,13 @@ public class PillarCollectionMetric {
      */
     private final long pillarFileCount;
 
-    public PillarCollectionMetric(Long pillarCollectionSize, Long pillarFileCount) {
+    /** Timestamp of the oldest checksum on the pillar or null if no checksums yet */
+    private final Instant oldestChecksumTimestamp;
+
+    public PillarCollectionMetric(Long pillarCollectionSize, Long pillarFileCount, Instant oldestChecksumTimestamp) {
         this.pillarCollectionSize = pillarCollectionSize == null ? 0 : pillarCollectionSize;
         this.pillarFileCount = pillarFileCount == null ? 0 : pillarFileCount;
+        this.oldestChecksumTimestamp = oldestChecksumTimestamp;
     }
 
     public long getPillarCollectionSize() {
@@ -32,4 +38,7 @@ public class PillarCollectionMetric {
         return pillarFileCount;
     }
 
+    public Instant getOldestChecksumTimestamp() {
+        return oldestChecksumTimestamp;
+    }
 }

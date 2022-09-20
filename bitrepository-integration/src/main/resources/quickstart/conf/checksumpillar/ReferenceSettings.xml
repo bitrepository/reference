@@ -40,7 +40,7 @@
     </CollectionDirs>
     <MinimumSizeLeft>1000000000</MinimumSizeLeft>
     <TimeToStartDeliver>PT1S</TimeToStartDeliver>
-    <MaxAgeForChecksums>P114Y</MaxAgeForChecksums>
+    <MaxAgeForChecksums>P100Y</MaxAgeForChecksums>
     <AuditTrailContributerDatabase>
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
       <DatabaseURL>jdbc:derby:<!--foobarpattern-->var/checksumpillar/auditcontributerdb</DatabaseURL>
