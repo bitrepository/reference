@@ -202,12 +202,12 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
         results.setCollectionID(request.getCollectionID());
         results.getAuditTrailEvents().add(extractedAuditTrails.getAuditTrailEvents());
 
-        try (OutputStream is = new FileOutputStream(checksumResultFile)) {
+        try (OutputStream os = new FileOutputStream(checksumResultFile)) {
             JaxbHelper jaxb = new JaxbHelper(XSD_CLASSPATH, XSD_BR_DATA);
             String xmlMessage = jaxb.serializeToXml(results);
             jaxb.validate(new ByteArrayInputStream(xmlMessage.getBytes(StandardCharsets.UTF_8)));
-            is.write(xmlMessage.getBytes(StandardCharsets.UTF_8));
-            is.flush();
+            os.write(xmlMessage.getBytes(StandardCharsets.UTF_8));
+            os.flush();
         }
 
         return checksumResultFile;

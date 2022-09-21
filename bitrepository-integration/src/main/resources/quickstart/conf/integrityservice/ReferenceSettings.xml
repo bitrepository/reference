@@ -126,4 +126,10 @@
       </PillarDetails>
     </PillarIntegrityDetails>
   </IntegrityServiceSettings>
+  <FileExchangeSettings>
+    <ProtocolType>HTTP</ProtocolType>
+    <ServerName>localhost</ServerName>
+    <Port>80</Port>
+    <Path>/dav</Path>
+  </FileExchangeSettings>
 </ReferenceSettings>
