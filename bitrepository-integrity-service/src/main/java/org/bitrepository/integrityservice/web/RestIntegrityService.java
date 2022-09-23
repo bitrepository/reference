@@ -64,6 +64,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -73,6 +74,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static javax.ws.rs.core.Response.ResponseBuilder;
 import static javax.ws.rs.core.Response.Status;
@@ -394,31 +397,36 @@ public class RestIntegrityService {
             @QueryParam("reports")
                     List<String> reports) {
         String fileName = "IntegrityReports.zip";
-        List<File> files = new ArrayList<>();
+        HashMap<String, File> files = new HashMap<>();
 
         for (String report : reports) {
             String[] parts = report.split("-", 2);
-            files.add(getLatestIntegrityReportPartFile(collectionID, parts[0], parts[1]));
+            files.put(report, getLatestIntegrityReportPartFile(collectionID, parts[0], parts[1]));
         }
 
-        ResponseBuilder response;
-        response = Response.ok(files.get(0));
-        //response.type("application/zip");
+        StreamingOutput streamingOutput = output -> {
+            ZipOutputStream zipOut = new ZipOutputStream(output);
+            // Add the full integrity report to the hashmap
+            files.put("report", integrityReportProvider.getLatestIntegrityReportReader(collectionID).getFullReport());
+
+            // Zip each file in the files hashmap
+            files.forEach((key, value) -> {
+                try {
+                    zipOut.putNextEntry(new ZipEntry(key));
+                    zipOut.write(Files.readAllBytes(value.toPath()));
+                    zipOut.flush();
+                } catch (IOException e) {
+                    throw new WebApplicationException(
+                            status(Status.INTERNAL_SERVER_ERROR).entity("Something went wrong when trying to zip the file " + key + ".")
+                                    .type(MediaType.TEXT_PLAIN).build());
+                }
+            });
+            zipOut.close();
+        };
+        ResponseBuilder response = Response.ok();
+        response.type("application/zip");
         response.header("Content-Disposition", "attachment; filename=" + fileName);
-        //TODO: Is downloadable, but needs to make all of the files into a Zip.
-//        try {
-//            FileOutputStream out = new FileOutputStream(fileName);
-//            streamFile(files.get(0), out);
-//            response = Response.ok(out);
-//            response.type("application/zip");
-//            response.header("Content-Disposition", "attachment; filename=" + fileName);
-//            out.flush();
-//            out.close();
-//        } catch (IOException e) {
-//            throw new WebApplicationException(status(Status.INTERNAL_SERVER_ERROR).entity("Something went wrong when trying to write
-//            file.")
-//                    .type(MediaType.TEXT_PLAIN).build());
-//        }
+        response.entity(streamingOutput);
 
         return response.build();
     }

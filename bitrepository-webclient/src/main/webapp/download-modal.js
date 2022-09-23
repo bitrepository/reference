@@ -24,10 +24,14 @@ function DownloadModal(collectionID, contentElement, url) {
     this.url = url;
     this.collectionID = collectionID;
 
-    this.getModal = function () {
-        $.getJSON(`${this.url}/getAvailableIntegrityReports?collectionID=${this.collectionID}`, {}, function (json) {
+    this.getModal = function (integrityURL = this.url) {
+        $.getJSON(`${integrityURL}/getAvailableIntegrityReports?collectionID=${this.collectionID}`, {}, function (json) {
+            let html = `<p style="text-align: center; margin: 0 0 40px;">`;
+            html += `Select the reports you wish to download. If none are selected, only the latest full integrity report will be downloaded.`;
+            html += `</p>`;
+
             // Create table
-            let html = `<table class="modal-table" style="width: 100%; border-collapse: separate;">`;
+            html += `<table class="modal-table" style="width: 100%; border-collapse: separate;">`;
 
             // Populate the header of the table.
             html += `<thead class="modal-table-head">`;
@@ -41,7 +45,7 @@ function DownloadModal(collectionID, contentElement, url) {
             html += `</thead>`;
 
             // Init table body
-            html += `<tbody id="download-table">`
+            html += `<tbody id="download-table">`;
             // Populate the table body
             html += getTableBody(json);
 
@@ -49,16 +53,18 @@ function DownloadModal(collectionID, contentElement, url) {
             html += `</table>`;
 
             // Init download button
-            html += `<div>`
-            html += `<a href="${url}/getIntegrityReportsAsZIP?collectionID=${collectionID}&reports=missingFile-file1-pillar" class="download-button">Download</a>`
+            html += `<div style="text-align: center; margin: 25px">`;
+            let zipURL = `${integrityURL}/getIntegrityReportsAsZIP?collectionID=${collectionID}`;
+            html += `<a href="${zipURL}" class="download-button">Download Reports</a>`;
             html += `</div>`;
 
-            // Assign content
+            // Assign content and apply listener functions.
             $(contentElement).html(html);
+            updateDownloadLink(zipURL);
         }).fail(function () {
-            let html = "<div class=\"alert alert-error\">"
+            let html = "<div class=\"alert alert-error\">";
             html += "Failed to load page";
-            html += "</div>"
+            html += "</div>";
             $(contentElement).html(html);
         });
     };
@@ -77,6 +83,7 @@ function DownloadModal(collectionID, contentElement, url) {
             html += getReportPartTD(json, pillars[i], "missingChecksum");
             html += getReportPartTD(json, pillars[i], "obsoleteChecksum");
             html += getReportPartTD(json, pillars[i], "checksumIssue");
+            // html += getReportPartTD(json, pillars[i], "deletedFile");
             // TODO: Include deletedFiles
 
             html += `</tr>`;
@@ -89,11 +96,29 @@ function DownloadModal(collectionID, contentElement, url) {
     function getReportPartTD(json, pillarID, reportPart) {
         let html = "";
         if (json[pillarID].includes(reportPart)) {
-            html += `<td style="border-right: 1px solid #9996; text-align:center;"><input type="checkbox" id="${reportPart}-${pillarID}"></td>`;
+            html += `<td style="border-right: 1px solid #ecf275; text-align:center; background-color: #bde9ba;">
+                <input type="checkbox" name="report-checkbox" value="${reportPart}-${pillarID}" style="margin: 0"></td>`;
         } else {
-            html += `<td style="border-right: 1px solid #9996; text-align:center; background-color: #b8bbb2;"></td>`;
+            html += `<td style="border-right: 1px solid #9996; text-align:center; background-color: #e5e5e5;"></td>`;
         }
         return html;
+    }
+
+    function updateDownloadLink(zipURL) {
+        $("input:checkbox[name=report-checkbox]").on("change", function () {
+            $(".download-button").attr("href", function () {
+                return zipURL + getSelected();
+            })
+        });
+    }
+
+    function getSelected() {
+        let output = "";
+        $("input:checkbox[name=report-checkbox]:checked").each(function () {
+            output += `&reports=${$(this).val()}`;
+        });
+
+        return output;
     }
 
     function getTableFooter() {
