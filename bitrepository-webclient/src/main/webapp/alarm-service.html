@@ -42,7 +42,9 @@
   <div class="row-fluid">
     <div class="span11">
       <div class="span11" style="height:0px; min-height:0px"></div>
-      <div class="span11"><h2>Alarm service</h2></div>
+      <div class="span11">
+        <h2>Alarm service</h2>
+      </div>
       <div class="span11">
         <form class="form-inline">
           <legend>Alarm display filters</legend>
@@ -192,7 +194,7 @@
 
     function renderAlarmDescription(index, alarmDescription) {
         const maxLength = 80;
-        let descriptionHtml = $('<p class="teaser">');
+        let descriptionHtml = $('<p class="teaser">').css("margin", 0);
         let isExpandedDesc = descriptionExpandedMapper.hasOwnProperty(index) &&
             descriptionExpandedMapper[index] !== "none";
 
