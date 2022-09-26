@@ -71,7 +71,7 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
     }
 
     /**
-     * Queries the IntegrityModel for missing files on each pillar. Reports them if any is returned.
+     * Queries the IntegrityModel for inconsistent checksums on each pillar. Reports them if any is returned.
      */
     @Override
     public synchronized void performStep() throws StepFailedException {
@@ -121,7 +121,7 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
     }
 
     /**
-     * Creates a audit-trail for inconsistency between checksums.
+     * Creates an audit-trail for inconsistency between checksums.
      * If only one pillar is alone with a checksum compared to all the others, then it is pointed out at the possible
      * cause.
      *
