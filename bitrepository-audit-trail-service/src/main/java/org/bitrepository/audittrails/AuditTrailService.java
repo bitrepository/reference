@@ -83,15 +83,11 @@ public class AuditTrailService implements LifeCycledService {
 
     /**
      * Constructor for audit trail service with disabled preservation.
-     * <p>
+     * <p/>
      * See {@link #AuditTrailService(AuditTrailStore, AuditTrailCollector, AuditTrailPreserver, ContributorMediator,
      * Settings)} for param descriptions.
      */
-    public AuditTrailService(
-            AuditTrailStore store,
-            AuditTrailCollector collector,
-            ContributorMediator mediator,
-            Settings settings) {
+    public AuditTrailService(AuditTrailStore store, AuditTrailCollector collector, ContributorMediator mediator, Settings settings) {
         this(store, collector, null, mediator, settings);
     }
 
@@ -110,20 +106,19 @@ public class AuditTrailService implements LifeCycledService {
      * @param operationID        Restrict the results to only this operationID
      * @return an iterator to all AuditTrailEvents matching the criteria from the parameters
      */
-    public AuditEventIterator queryAuditTrailEventsByIterator(Date fromDate, Date toDate, String fileID,
-                                                              String collectionID, String reportingComponent, String actor,
-                                                              FileAction action,
+    public AuditEventIterator queryAuditTrailEventsByIterator(Date fromDate, Date toDate, String fileID, String collectionID,
+                                                              String reportingComponent, String actor, FileAction action,
                                                               String fingerprint, String operationID) {
-        return store.getAuditTrailsByIterator(fileID, collectionID, reportingComponent, null, null, actor, action,
-                fromDate, toDate, fingerprint, operationID);
+        return store.getAuditTrailsByIterator(fileID, collectionID, reportingComponent, null, null, actor, action, fromDate, toDate,
+                fingerprint, operationID);
     }
 
     /**
      * Collects all the newest audit trails from all collections.
      */
     public void collectAuditTrails() {
-        for (org.bitrepository.settings.repositorysettings.Collection c
-                : settings.getRepositorySettings().getCollections().getCollection()) {
+        for (org.bitrepository.settings.repositorysettings.Collection c : settings.getRepositorySettings().getCollections()
+                .getCollection()) {
             collector.collectNewestAudits(c.getID());
         }
     }
@@ -142,8 +137,8 @@ public class AuditTrailService implements LifeCycledService {
      */
     public List<CollectorInfo> getCollectorInfos() {
         List<CollectorInfo> infos = new ArrayList<>();
-        for (org.bitrepository.settings.repositorysettings.Collection c
-                : settings.getRepositorySettings().getCollections().getCollection()) {
+        for (org.bitrepository.settings.repositorysettings.Collection c : settings.getRepositorySettings().getCollections()
+                .getCollection()) {
             infos.add(collector.getCollectorInfo(c.getID()));
         }
 
