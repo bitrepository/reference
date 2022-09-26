@@ -70,35 +70,23 @@ public class RestAuditTrailService {
     @Path("/queryAuditTrailEvents/")
     @Consumes("application/x-www-form-urlencoded")
     @Produces("application/json")
-    public StreamingOutput queryAuditTrailEvents(
-            @FormParam("fromDate")
-                    String fromDate,
-            @FormParam("toDate")
-                    String toDate,
-            @FormParam("fileID")
-                    String fileID,
-            @FormParam("reportingComponent")
-                    String reportingComponent,
-            @FormParam("actor")
-                    String actor,
-            @FormParam("action")
-                    String action,
-            @FormParam("collectionID")
-                    String collectionID,
-            @FormParam("fingerprint")
-                    String fingerprint,
-            @FormParam("operationID")
-                    String operationID,
-            @DefaultValue("1000")
-            @FormParam("maxAuditTrails")
-                    Integer maxResults) {
+    public StreamingOutput queryAuditTrailEvents(@FormParam("fromDate") String fromDate,
+            @FormParam("toDate") String toDate,
+            @FormParam("fileID") String fileID,
+            @FormParam("reportingComponent") String reportingComponent,
+            @FormParam("actor") String actor,
+            @FormParam("action") String action,
+            @FormParam("collectionID") String collectionID,
+            @FormParam("fingerprint") String fingerprint,
+            @FormParam("operationID") String operationID,
+            @DefaultValue("1000") @FormParam("maxAuditTrails") Integer maxResults) {
         Date from = calendarUtils.makeStartDateObject(fromDate);
         Date to = calendarUtils.makeEndDateObject(toDate);
 
         final int maxAudits = maxResults;
-        final AuditEventIterator it = service.queryAuditTrailEventsByIterator(from, to, contentOrNull(fileID), collectionID,
-                contentOrNull(reportingComponent), contentOrNull(actor), filterAction(action), contentOrNull(fingerprint),
-                contentOrNull(operationID));
+        final AuditEventIterator it = service.queryAuditTrailEventsByIterator(from, to, contentOrNull(fileID),
+                collectionID, contentOrNull(reportingComponent), contentOrNull(actor), filterAction(action),
+                contentOrNull(fingerprint), contentOrNull(operationID));
         if (it != null) {
             return output -> {
                 JsonFactory jf = new JsonFactory();
@@ -127,8 +115,9 @@ public class RestAuditTrailService {
                 }
             };
         } else {
-            throw new WebApplicationException(Response.status(Response.Status.NO_CONTENT).entity("Failed to get audit trails from database")
-                    .type(MediaType.TEXT_PLAIN).build());
+            throw new WebApplicationException(
+                    Response.status(Response.Status.NO_CONTENT).entity("Failed to get audit trails from database")
+                            .type(MediaType.TEXT_PLAIN).build());
         }
     }
 
@@ -143,9 +132,7 @@ public class RestAuditTrailService {
     @POST
     @Path("/collectSpecificAuditTrail")
     @Produces("text/html")
-    public String collectSpecificAuditTrail(
-            @QueryParam("collectionID")
-                    String collectionID) {
+    public String collectSpecificAuditTrail(@QueryParam("collectionID") String collectionID) {
         service.collectAuditTrails(collectionID);
         return String.format(Locale.ROOT, "Started collecting audit trails for collection: %s.", collectionID);
     }
@@ -165,9 +152,9 @@ public class RestAuditTrailService {
         if (preservationInfo != null) {
             return preservationInfo;
         } else {
-            throw new WebApplicationException(
-                    Response.status(Response.Status.NOT_FOUND).entity("404: Preservation must be enabled in settings to use this endpoint.")
-                            .type(MediaType.TEXT_PLAIN).build());
+            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
+                    .entity("404: Preservation must be enabled in settings to use this endpoint.")
+                    .type(MediaType.TEXT_PLAIN).build());
         }
     }
 
@@ -177,7 +164,8 @@ public class RestAuditTrailService {
         jg.writeObjectField("reportingComponent", event.getReportingComponent());
         jg.writeObjectField("actor", contentOrEmptyString(event.getActorOnFile()));
         jg.writeObjectField("action", event.getActionOnFile().toString());
-        jg.writeObjectField("timeStamp", TimeUtils.shortDate(CalendarUtils.convertFromXMLGregorianCalendar(event.getActionDateTime())));
+        jg.writeObjectField("timeStamp",
+                TimeUtils.shortDate(CalendarUtils.convertFromXMLGregorianCalendar(event.getActionDateTime())));
         jg.writeObjectField("info", contentOrEmptyString(event.getInfo()));
         jg.writeObjectField("auditTrailInfo", contentOrEmptyString(event.getAuditTrailInformation()));
         jg.writeObjectField("fingerprint", contentOrEmptyString(event.getCertificateID()));

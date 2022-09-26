@@ -48,7 +48,8 @@ public class IntegrityReportProvider {
      * @return IntegrityReportReader with the latest integrity report
      * @throws FileNotFoundException if no report could be found
      */
-    public synchronized IntegrityReportReader getLatestIntegrityReportReader(String collectionID) throws FileNotFoundException {
+    public synchronized IntegrityReportReader getLatestIntegrityReportReader(String collectionID)
+            throws FileNotFoundException {
         IntegrityReportReader reader = reports.get(collectionID);
         if (reader == null) {
             log.info("Trying to lookup the latest report on disk for collection {}", collectionID);
