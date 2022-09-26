@@ -44,6 +44,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -52,6 +53,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 
 @Path("/AuditTrailService")
@@ -69,16 +71,27 @@ public class RestAuditTrailService {
     @Consumes("application/x-www-form-urlencoded")
     @Produces("application/json")
     public StreamingOutput queryAuditTrailEvents(
-            @FormParam("fromDate") String fromDate,
-            @FormParam("toDate") String toDate,
-            @FormParam("fileID") String fileID,
-            @FormParam("reportingComponent") String reportingComponent,
-            @FormParam("actor") String actor,
-            @FormParam("action") String action,
-            @FormParam("collectionID") String collectionID,
-            @FormParam("fingerprint") String fingerprint,
-            @FormParam("operationID") String operationID,
-            @DefaultValue("1000") @FormParam("maxAuditTrails") Integer maxResults) {
+            @FormParam("fromDate")
+                    String fromDate,
+            @FormParam("toDate")
+                    String toDate,
+            @FormParam("fileID")
+                    String fileID,
+            @FormParam("reportingComponent")
+                    String reportingComponent,
+            @FormParam("actor")
+                    String actor,
+            @FormParam("action")
+                    String action,
+            @FormParam("collectionID")
+                    String collectionID,
+            @FormParam("fingerprint")
+                    String fingerprint,
+            @FormParam("operationID")
+                    String operationID,
+            @DefaultValue("1000")
+            @FormParam("maxAuditTrails")
+                    Integer maxResults) {
         Date from = calendarUtils.makeStartDateObject(fromDate);
         Date to = calendarUtils.makeEndDateObject(toDate);
 
@@ -120,11 +133,21 @@ public class RestAuditTrailService {
     }
 
     @POST
-    @Path("/collectAuditTrails/")
+    @Path("/collectAuditTrails")
     @Produces("text/html")
     public String collectAuditTrails() {
         service.collectAuditTrails();
-        return "Started audit trails collection";
+        return "Started audit trails collection.";
+    }
+
+    @POST
+    @Path("/collectSpecificAuditTrail")
+    @Produces("text/html")
+    public String collectSpecificAuditTrail(
+            @QueryParam("collectionID")
+                    String collectionID) {
+        service.collectAuditTrails(collectionID);
+        return String.format(Locale.ROOT, "Started collecting audit trails for collection: %s.", collectionID);
     }
 
     @GET
@@ -142,9 +165,9 @@ public class RestAuditTrailService {
         if (preservationInfo != null) {
             return preservationInfo;
         } else {
-            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
-                    .entity("404: Preservation must be enabled in settings to use this endpoint")
-                    .type(MediaType.TEXT_PLAIN).build());
+            throw new WebApplicationException(
+                    Response.status(Response.Status.NOT_FOUND).entity("404: Preservation must be enabled in settings to use this endpoint.")
+                            .type(MediaType.TEXT_PLAIN).build());
         }
     }
 
