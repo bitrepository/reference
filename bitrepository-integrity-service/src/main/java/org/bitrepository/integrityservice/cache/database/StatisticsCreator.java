@@ -49,8 +49,8 @@ public class StatisticsCreator {
             + " (SELECT MAX(stat_key), ?, ?, ?, ? FROM stats WHERE collectionID = ?)";
 
     private final String insertPillarStatEntrySql = "INSERT INTO pillarstats"
-            + " (stat_key, pillarID, file_count, file_size, missing_files_count, "
-            + "checksum_errors_count, missing_checksums_count, obsolete_checksums_count, oldest_checksum_timestamp)"
+            + " (stat_key, pillarID, file_count, file_size, missing_files_count,"
+            + " checksum_errors_count, missing_checksums_count, obsolete_checksums_count, oldest_checksum_timestamp)"
             + " (SELECT MAX(stat_key), ?, ?, ?, ?, ?, ?, ?, ? FROM stats WHERE collectionID = ?)";
 
     private final Logger log = LoggerFactory.getLogger(getClass());

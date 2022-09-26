@@ -156,7 +156,8 @@ public abstract class IntegrityDAO {
         ArgumentValidator.checkNotNullOrEmpty(pillarID, "String pillarID");
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
 
-        String retrieveSql = "SELECT latest_file_timestamp FROM collection_progress" + " WHERE collectionID = ? " + " AND pillarID = ?";
+        String retrieveSql = "SELECT latest_file_timestamp FROM collection_progress" +
+                " WHERE collectionID = ? AND pillarID = ?";
 
         Long time = DatabaseUtils.selectFirstLongValue(dbConnector, retrieveSql, collectionID, pillarID);
         return (time == null ? null : new Date(time));
@@ -171,7 +172,7 @@ public abstract class IntegrityDAO {
     public Date getLatestFileDateInCollection(String collectionID) {
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
 
-        String retrieveSql = "SELECT MAX(latest_file_timestamp) FROM collection_progress" + " WHERE collectionID = ?";
+        String retrieveSql = "SELECT MAX(latest_file_timestamp) FROM collection_progress WHERE collectionID = ?";
 
         Long time = DatabaseUtils.selectFirstLongValue(dbConnector, retrieveSql, collectionID);
         return (time == null ? null : new Date(time));
@@ -188,7 +189,9 @@ public abstract class IntegrityDAO {
         ArgumentValidator.checkNotNullOrEmpty(pillarID, "String pillarID");
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
 
-        String retrieveSql = "SELECT latest_checksum_timestamp FROM collection_progress" + " WHERE collectionID = ? " + " AND pillarID = ?";
+        String retrieveSql = "SELECT latest_checksum_timestamp FROM collection_progress" +
+                " WHERE collectionID = ? " +
+                " AND pillarID = ?";
         Long time = DatabaseUtils.selectFirstLongValue(dbConnector, retrieveSql, collectionID, pillarID);
         return (time == null ? null : new Date(time));
     }
@@ -200,7 +203,9 @@ public abstract class IntegrityDAO {
      */
     public void resetFileCollectionProgress(String collectionID) {
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
-        String resetSql = "UPDATE collection_progress" + " SET latest_file_timestamp = NULL" + " WHERE collectionID = ?";
+        String resetSql = "UPDATE collection_progress" +
+                " SET latest_file_timestamp = NULL" +
+                " WHERE collectionID = ?";
 
         DatabaseUtils.executeStatement(dbConnector, resetSql, collectionID);
     }
@@ -212,7 +217,9 @@ public abstract class IntegrityDAO {
      */
     public void resetChecksumCollectionProgress(String collectionID) {
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
-        String resetSql = "UPDATE collection_progress" + " SET latest_checksum_timestamp = NULL" + " WHERE collectionID = ?";
+        String resetSql = "UPDATE collection_progress" +
+                " SET latest_checksum_timestamp = NULL" +
+                " WHERE collectionID = ?";
 
         DatabaseUtils.executeStatement(dbConnector, resetSql, collectionID);
     }
@@ -230,8 +237,10 @@ public abstract class IntegrityDAO {
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
         ArgumentValidator.checkNotNull(maxDate, "Date maxDate");
 
-        String retrieveSql =
-                "SELECT fileID from fileinfo" + " WHERE collectionID = ?" + " AND pillarID = ?" + " AND checksum_timestamp < ?";
+        String retrieveSql = "SELECT fileID FROM fileinfo" +
+                " WHERE collectionID = ?" +
+                " AND pillarID = ?" +
+                " AND checksum_timestamp < ?";
 
         return makeIntegrityIssueIterator(retrieveSql, collectionID, pillarID, maxDate.getTime());
     }
@@ -250,8 +259,10 @@ public abstract class IntegrityDAO {
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
         ArgumentValidator.checkNotNullOrEmpty(pillarID, "String pillarID");
 
-        String retrieveSql = "SELECT fileID from fileinfo" + " WHERE collectionID = ?" + " AND pillarID = ?" + " AND (checksum is NULL" +
-                " OR last_seen_getchecksums < ?)";
+        String retrieveSql = "SELECT fileID FROM fileinfo" +
+                " WHERE collectionID = ?" +
+                " AND pillarID = ?" +
+                " AND (checksum IS NULL OR last_seen_getchecksums < ?)";
 
         return makeIntegrityIssueIterator(retrieveSql, collectionID, pillarID, cutoffDate.getTime());
     }
@@ -269,8 +280,10 @@ public abstract class IntegrityDAO {
         ArgumentValidator.checkNotNullOrEmpty(pillarID, "String pillarID");
         ArgumentValidator.checkNotNull(cutoffDate, "Date cutoffDate");
 
-        String findOrphansSql =
-                "SELECT fileID from fileinfo" + " WHERE collectionID = ?" + " AND pillarID = ?" + " AND last_seen_getfileids < ?";
+        String findOrphansSql = "SELECT fileID FROM fileinfo" +
+                " WHERE collectionID = ?" +
+                " AND pillarID = ?" +
+                " AND last_seen_getfileids < ?";
 
         return makeIntegrityIssueIterator(findOrphansSql, collectionID, pillarID, cutoffDate.getTime());
     }
@@ -287,7 +300,9 @@ public abstract class IntegrityDAO {
         ArgumentValidator.checkNotNullOrEmpty(pillarID, "String pillarID");
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
 
-        String removeSql = "DELETE FROM fileinfo" + " WHERE collectionID = ?" + " AND pillarID = ?" + " AND fileID = ?";
+        String removeSql = "DELETE FROM fileinfo" +
+                " WHERE collectionID = ?" +
+                " AND pillarID = ? AND fileID = ?";
 
         DatabaseUtils.executeStatement(dbConnector, removeSql, collectionID, pillarID, fileID);
     }
@@ -328,8 +343,12 @@ public abstract class IntegrityDAO {
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
 
         String findInconsistentChecksumsSql =
-                "SELECT fileID FROM (" + " SELECT fileID, count(distinct(checksum)) as checksums FROM fileinfo" +
-                        " WHERE collectionID = ?" + " GROUP BY fileID) as subselect" + " WHERE checksums > 1";
+                "SELECT fileID FROM (" +
+                        " SELECT fileID, COUNT(distinct(checksum)) AS checksums" +
+                        " FROM fileinfo" +
+                        " WHERE collectionID = ?" +
+                        " GROUP BY fileID) AS subselect" +
+                        " WHERE checksums > 1";
 
         return makeIntegrityIssueIterator(findInconsistentChecksumsSql, collectionID);
     }
@@ -392,8 +411,9 @@ public abstract class IntegrityDAO {
 
         List<FileInfo> res = new ArrayList<>();
         String getFileInfoSql = "SELECT pillarID, filesize, checksum, file_timestamp," +
-                " checksum_timestamp, last_seen_getfileids, last_seen_getchecksums FROM fileinfo" + " WHERE collectionID = ?" +
-                " AND fileID = ?";
+                " checksum_timestamp, last_seen_getfileids, last_seen_getchecksums" +
+                " FROM fileinfo" +
+                " WHERE collectionID = ? AND fileID = ?";
 
         try (Connection conn = dbConnector.getConnection();
              PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, getFileInfoSql, collectionID, fileID)) {
@@ -407,16 +427,16 @@ public abstract class IntegrityDAO {
                     Date lastSeenGetFileIDs = new Date(dbResult.getLong("last_seen_getfileids"));
                     Date lastSeenGetChecksums = new Date(dbResult.getLong("last_seen_getchecksums"));
 
-                    FileInfo f = new FileInfo(fileID, CalendarUtils.getXmlGregorianCalendar(lastFileCheck), checksum, fileSize,
-                            CalendarUtils.getXmlGregorianCalendar(lastChecksumCheck), pillarID);
+                    FileInfo f = new FileInfo(fileID, CalendarUtils.getXmlGregorianCalendar(lastFileCheck), checksum,
+                            fileSize, CalendarUtils.getXmlGregorianCalendar(lastChecksumCheck), pillarID);
                     f.setLastSeenGetFileIDs(lastSeenGetFileIDs);
                     f.setLastSeenGetChecksums(lastSeenGetChecksums);
                     res.add(f);
                 }
             }
         } catch (SQLException e) {
-            throw new IllegalStateException("Could not retrieve the FileInfo for '" + fileID + "' with the SQL '" + getFileInfoSql + "'.",
-                    e);
+            throw new IllegalStateException("Could not retrieve the FileInfo for '" + fileID + "' with the SQL '" +
+                    getFileInfoSql + "'.", e);
         }
         return res;
     }
@@ -436,7 +456,7 @@ public abstract class IntegrityDAO {
 
 
     /**
-     * Method to retrieves the metrics for the pillars in the given collection
+     * Method to retrieve the metrics for the pillars in the given collection
      * I.e. the summed filesize and file count per pillar
      *
      * @param collectionID The ID of the collection to get metrics for
@@ -446,8 +466,8 @@ public abstract class IntegrityDAO {
     public Map<String, PillarCollectionMetric> getPillarCollectionMetrics(String collectionID) {
         Map<String, PillarCollectionMetric> metrics = new HashMap<>();
         String selectSql =
-                "SELECT pillarID, COUNT(fileID) as filecount, SUM(filesize) as sizesum," +
-                        "   MIN(checksum_timestamp) as oldest_checksum_timestamp" +
+                "SELECT pillarID, COUNT(fileID) AS filecount, SUM(filesize) AS sizesum," +
+                        "   MIN(checksum_timestamp) AS oldest_checksum_timestamp" +
                         " FROM fileinfo" +
                         " WHERE collectionID = ?" +
                         " GROUP BY pillarID";
@@ -467,9 +487,8 @@ public abstract class IntegrityDAO {
                 metrics.put(pillarID, metric);
             }
         } catch (SQLException e) {
-            throw new IllegalStateException(
-                    "Could not retrieve PillarCollectionMetrics for collection '" + collectionID + "' with the SQL '" + selectSql + "'.",
-                    e);
+            throw new IllegalStateException("Could not retrieve PillarCollectionMetrics for collection '"
+                    + collectionID + "' with the SQL '" + selectSql + "'.", e);
         }
 
         return metrics;
@@ -485,7 +504,8 @@ public abstract class IntegrityDAO {
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
 
         String getCollectionSizeSql =
-                "SELECT SUM(filesize) FROM " + "(SELECT distinct(fileID), filesize from fileinfo" + " WHERE collectionID = ?) AS subselect";
+                "SELECT SUM(filesize) FROM " +
+                        "(SELECT distinct(fileID), filesize FROM fileinfo WHERE collectionID = ?) AS subselect";
         Long size = DatabaseUtils.selectFirstLongValue(dbConnector, getCollectionSizeSql, collectionID);
         return (size == null ? 0 : size);
     }
@@ -499,7 +519,7 @@ public abstract class IntegrityDAO {
     public Long getNumberOfFilesInCollection(String collectionID) {
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
 
-        String getNumberOfFilesSql = "SELECT COUNT(DISTINCT(fileid)) FROM fileinfo" + " WHERE collectionID = ?";
+        String getNumberOfFilesSql = "SELECT COUNT(DISTINCT(fileid)) FROM fileinfo WHERE collectionID = ?";
 
         return DatabaseUtils.selectFirstLongValue(dbConnector, getNumberOfFilesSql, collectionID);
     }
@@ -550,7 +570,7 @@ public abstract class IntegrityDAO {
             }
         } catch (SQLException e) {
             throw new IllegalStateException(
-                    "Could not retrieve the latest PillarCollectionStat's for '" + collectionID + "' " + "with the SQL '" +
+                    "Could not retrieve the latest PillarCollectionStat's for '" + collectionID + "' with the SQL '" +
                             latestPillarStatsSql + "'.", e);
         }
 
@@ -594,7 +614,8 @@ public abstract class IntegrityDAO {
         String latestCollectionStatSql = getLatestCollectionStatsSql();
 
         try (Connection conn = dbConnector.getConnection();
-             PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, latestCollectionStatSql, collectionID, count)) {
+             PreparedStatement ps = DatabaseUtils.createPreparedStatement(
+                     conn, latestCollectionStatSql, collectionID, count)) {
             try (ResultSet dbResult = ps.executeQuery()) {
                 while (dbResult.next()) {
                     Long fileCount = dbResult.getLong("file_count");
@@ -604,15 +625,15 @@ public abstract class IntegrityDAO {
                     Date statsTime = new Date(dbResult.getLong("stat_time"));
                     Date updateTime = new Date(dbResult.getLong("last_update"));
 
-                    CollectionStat stat = new CollectionStat(collectionID, fileCount, dataSize, checksumErrors, latestFile, statsTime,
-                            updateTime);
+                    CollectionStat stat = new CollectionStat(collectionID, fileCount, dataSize, checksumErrors,
+                            latestFile, statsTime, updateTime);
                     stats.add(stat);
                 }
             }
         } catch (SQLException e) {
-            throw new IllegalStateException(
-                    "Could not retrieve the latest PillarStat's for '" + collectionID + "' " + "with the SQL '" + latestCollectionStatSql +
-                            "' with arguments '" + Arrays.asList(collectionID, count) + "'.", e);
+            throw new IllegalStateException("Could not retrieve the latest PillarStat's for '" + collectionID +
+                    "' with the SQL '" + latestCollectionStatSql +
+                    "' with arguments '" + Arrays.asList(collectionID, count) + "'.", e);
         }
         java.util.Collections.reverse(stats);
         return stats;
@@ -629,8 +650,10 @@ public abstract class IntegrityDAO {
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
 
-        String getEarliestFileDateSql = "SELECT MIN(file_timestamp) FROM fileinfo" + " WHERE collectionID = ?" + " AND fileID = ?";
-        long time = Optional.ofNullable(DatabaseUtils.selectFirstLongValue(dbConnector, getEarliestFileDateSql, collectionID, fileID))
+        String getEarliestFileDateSql = "SELECT MIN(file_timestamp) FROM fileinfo" +
+                " WHERE collectionID = ? AND fileID = ?";
+        long time = Optional.ofNullable(
+                DatabaseUtils.selectFirstLongValue(dbConnector, getEarliestFileDateSql, collectionID, fileID))
                 .orElse(0L);
         return new Date(time);
     }
@@ -643,8 +666,8 @@ public abstract class IntegrityDAO {
             ps = DatabaseUtils.createPreparedStatement(conn, query, args);
             return new IntegrityIssueIterator(ps);
         } catch (Exception e) {
-            throw new IllegalStateException(
-                    "Failed to create IntegrityIssueIterator for query '" + query + "' with arguments" + Arrays.asList(args), e);
+            throw new IllegalStateException("Failed to create IntegrityIssueIterator for query '" + query +
+                    "' with arguments" + Arrays.asList(args), e);
         }
     }
 }

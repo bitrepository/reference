@@ -50,20 +50,27 @@ public class FileUpdater {
      * tuple is not already found in the database
      */
     private final String insertFileInfoSql =
-            "INSERT INTO fileinfo (" + " collectionID, pillarID, fileID, filesize, file_timestamp, last_seen_getfileids)" +
-                    " (SELECT collectionID, ?, ?, ?, ?, ? FROM collections" + " WHERE collectionID = ? " + " AND NOT EXISTS (" +
-                    " SELECT * FROM fileinfo " + " WHERE fileID = ?" + " AND collectionID = ?" + " AND pillarID = ?))";
+            "INSERT INTO fileinfo (collectionID, pillarID, fileID, filesize, file_timestamp, last_seen_getfileids)" +
+                    " (SELECT collectionID, ?, ?, ?, ?, ? FROM collections" +
+                    " WHERE collectionID = ? " +
+                    " AND NOT EXISTS (" +
+                    " SELECT * FROM fileinfo " +
+                    " WHERE fileID = ?" +
+                    " AND collectionID = ?" +
+                    " AND pillarID = ?))";
 
-    private final String updateFileInfoSql =
-            "UPDATE fileinfo " + "	SET filesize = ?," + " file_timestamp = ?," + " last_seen_getfileids = ?" + " WHERE fileID = ?" +
-                    "	AND collectionID = ?" + " AND pillarID = ?";
+    private final String updateFileInfoSql = "UPDATE fileinfo " +
+                    " SET filesize = ?, file_timestamp = ?, last_seen_getfileids = ?" +
+                    " WHERE fileID = ? AND collectionID = ? AND pillarID = ?";
 
-    private final String insertLatestFileTime = "INSERT INTO collection_progress " + "(collectionID, pillarID, latest_file_timestamp)" +
-            " ( SELECT collectionID, ?, ? FROM collections" + " WHERE collectionID = ?" +
-            " AND NOT EXISTS ( SELECT * FROM collection_progress" + " WHERE collectionID = ?" + " AND pillarID = ?))";
+    private final String insertLatestFileTime =
+            "INSERT INTO collection_progress (collectionID, pillarID, latest_file_timestamp)" +
+                    " (SELECT collectionID, ?, ? FROM collections" +
+                    " WHERE collectionID = ? AND NOT EXISTS" +
+                    " (SELECT * FROM collection_progress WHERE collectionID = ? AND pillarID = ?))";
 
     private final String updateLatestFileTime =
-            "UPDATE collection_progress" + " SET latest_file_timestamp = ? " + " WHERE collectionID = ?" + " AND pillarID = ?";
+            "UPDATE collection_progress SET latest_file_timestamp = ? WHERE collectionID = ? AND pillarID = ?";
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
