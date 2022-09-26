@@ -31,11 +31,14 @@ import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.referencesettings.ProtocolType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides access to the different component in the org.bitrepository.org.bitrepository.protocol module (Spring/IOC wannabe)
  */
 public final class ProtocolComponentFactory {
+    private static final Logger log = LoggerFactory.getLogger(ProtocolComponentFactory.class);
     private static ProtocolComponentFactory instance;
 
     public static synchronized ProtocolComponentFactory getInstance() {
@@ -84,7 +87,8 @@ public final class ProtocolComponentFactory {
                 } else if (protocolType == ProtocolType.HTTPS) {
                     fileExchange = new HttpsFileExchange(settings);
                 } else if (protocolType == ProtocolType.FILE) {
-                    fileExchange = new LocalFileExchange(settings.getReferenceSettings().getFileExchangeSettings().getPath());
+                    fileExchange = new LocalFileExchange(
+                            settings.getReferenceSettings().getFileExchangeSettings().getPath());
                 }
             } else {
                 fileExchange = new HttpFileExchange(settings);

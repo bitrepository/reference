@@ -107,7 +107,7 @@ public class BasicIntegrityReporter implements IntegrityReporter {
     private String generateSummary() {
         StringBuilder report = new StringBuilder();
         if (deletedFilesCount != 0L) {
-            report.append("Detected ").append(deletedFilesCount).append(" files as removed from the collection.");
+            report.append("\n").append("Detected ").append(deletedFilesCount).append(" file(s) as removed from the collection.");
         }
         for (String pillar : missingFiles.keySet()) {
             if (missingFiles.get(pillar) != 0) {
