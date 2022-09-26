@@ -24,11 +24,18 @@ function DownloadModal(collectionID, contentElement, url) {
     this.url = url;
     this.collectionID = collectionID;
 
-    this.getModal = function (integrityURL = this.url) {
-        $.getJSON(`${integrityURL}/getAvailableIntegrityReports?collectionID=${this.collectionID}`, {}, function (json) {
-            let html = `<p style="text-align: center; margin: 0 0 40px;">`;
+    this.getModal = function () {
+        let self = this;
+        $.getJSON(`${self.url}/getAvailableIntegrityReports?collectionID=${self.collectionID}`, {}, function (json) {
+            let html = `<p style="text-align: center; margin: 0;">`;
             html += `Select the reports you wish to download. If none are selected, only the latest full integrity report will be downloaded.`;
             html += `</p>`;
+
+            // Create "select all" checkbox and "reload table" button.
+            html += `<hr><div style="text-align: center;">`;
+            html += `Select all: <input type="checkbox" name="select-all" style="margin-bottom: 5px;"/>`;
+            html += `<span id="refresh" title="Reload reports" style="cursor: pointer; margin-left: 15px;">&#128260;</span>`;
+            html += `</div><hr>`;
 
             // Create table
             html += `<table class="modal-table" style="width: 100%; border-collapse: separate;">`;
@@ -54,20 +61,21 @@ function DownloadModal(collectionID, contentElement, url) {
 
             // Init download button
             html += `<div style="text-align: center; margin: 25px">`;
-            let zipURL = `${integrityURL}/getIntegrityReportsAsZIP?collectionID=${collectionID}`;
+            let zipURL = `${self.url}/getIntegrityReportsAsZIP?collectionID=${self.collectionID}`;
             html += `<a href="${zipURL}" class="download-button">Download Reports</a>`;
             html += `</div>`;
 
             // Assign content and apply listener functions.
             $(contentElement).html(html);
             updateDownloadLink(zipURL);
+            enableOnClickFunctionality(self);
         }).fail(function () {
             let html = "<div class=\"alert alert-error\">";
             html += "Failed to load page";
             html += "</div>";
             $(contentElement).html(html);
         });
-    };
+    }
 
     function getTableBody(json) {
         let html = ``;
@@ -97,7 +105,7 @@ function DownloadModal(collectionID, contentElement, url) {
         let html = "";
         if (json[pillarID].includes(reportPart)) {
             html += `<td style="border-right: 1px solid #ecf275; text-align:center; background-color: #bde9ba;">
-                <input type="checkbox" name="report-checkbox" value="${reportPart}-${pillarID}" style="margin: 0"></td>`;
+                <input type="checkbox" name="report-checkbox" value="${reportPart}-${pillarID}" style="margin: 0"/></td>`;
         } else {
             html += `<td style="border-right: 1px solid #9996; text-align:center; background-color: #e5e5e5;"></td>`;
         }
@@ -105,11 +113,14 @@ function DownloadModal(collectionID, contentElement, url) {
     }
 
     function updateDownloadLink(zipURL) {
-        $("input:checkbox[name=report-checkbox]").on("change", function () {
-            $(".download-button").attr("href", function () {
-                return zipURL + getSelected();
-            })
+        $("a[class=download-button]").on("click", function (e) {
+            e.originalEvent.currentTarget.href = zipURL + getSelected();
         });
+        // $("input:checkbox[name=report-checkbox]").on("change", function () {
+        //     $(".download-button").attr("href", function () {
+        //         return zipURL + getSelected();
+        //     })
+        // });
     }
 
     function getSelected() {
@@ -121,10 +132,25 @@ function DownloadModal(collectionID, contentElement, url) {
         return output;
     }
 
-    function getTableFooter() {
-        // TODO: Footer with "Get all integrity reports" checkbox.
-        let footer = "";
-        footer += "";
-        return footer;
+    function enableOnClickFunctionality(self) {
+        // On click refresh table
+        $("span#refresh").on("click", function () {
+            self.getModal();
+        });
+
+        // On click either select all or deselect all
+        $("input:checkbox[name=select-all]").change(function () {
+            if (this.checked) {
+                changeAllCheckboxes(true);
+            } else {
+                changeAllCheckboxes(false);
+            }
+        });
+    }
+
+    function changeAllCheckboxes(bool) {
+        $("input:checkbox").each(function () {
+            $(this).prop("checked", bool);
+        });
     }
 }
