@@ -47,7 +47,8 @@ function DownloadModal(collectionID, contentElement, url) {
             html += `<th style="border-right: 1px solid #9996;">Missing Files</th>`;
             html += `<th style="border-right: 1px solid #9996;">Missing Checksums</th>`;
             html += `<th style="border-right: 1px solid #9996;">Obsolete Checksums</th>`;
-            html += `<th>Inconsistent Checksums</th>`;
+            html += `<th style="border-right: 1px solid #9996;">Inconsistent Checksums</th>`;
+            html += `<th>Deleted Files</th>`;
             html += `</tr>`;
             html += `</thead>`;
 
@@ -91,13 +92,11 @@ function DownloadModal(collectionID, contentElement, url) {
             html += getReportPartTD(json, pillars[i], "missingChecksum");
             html += getReportPartTD(json, pillars[i], "obsoleteChecksum");
             html += getReportPartTD(json, pillars[i], "checksumIssue");
-            // html += getReportPartTD(json, pillars[i], "deletedFile");
-            // TODO: Include deletedFiles
+            html += getReportPartTD(json, pillars[i], "deletedFile");
 
             html += `</tr>`;
         }
 
-        // TODO: Create download button that uses "/getIntegrityReportPart"
         return html;
     }
 
@@ -116,11 +115,6 @@ function DownloadModal(collectionID, contentElement, url) {
         $("a[class=download-button]").on("click", function (e) {
             e.originalEvent.currentTarget.href = zipURL + getSelected();
         });
-        // $("input:checkbox[name=report-checkbox]").on("change", function () {
-        //     $(".download-button").attr("href", function () {
-        //         return zipURL + getSelected();
-        //     })
-        // });
     }
 
     function getSelected() {
