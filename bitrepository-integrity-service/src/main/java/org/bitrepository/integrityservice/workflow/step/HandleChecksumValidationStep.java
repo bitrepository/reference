@@ -52,8 +52,8 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
     private Long allPillarChecksumErrors = 0L;
     private Long collectionChecksumErrors = 0L;
 
-    public HandleChecksumValidationStep(IntegrityModel store, AuditTrailManager auditManager, IntegrityReporter reporter,
-                                        StatisticsCollector statisticsCollector) {
+    public HandleChecksumValidationStep(IntegrityModel store, AuditTrailManager auditManager,
+            IntegrityReporter reporter, StatisticsCollector statisticsCollector) {
         this.store = store;
         this.auditManager = auditManager;
         this.reporter = reporter;
@@ -75,7 +75,8 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
      */
     @Override
     public synchronized void performStep() throws StepFailedException {
-        try (IntegrityIssueIterator inconsistentFilesIterator = store.getFilesWithInconsistentChecksums(reporter.getCollectionID())) {
+        try (IntegrityIssueIterator inconsistentFilesIterator = store.getFilesWithInconsistentChecksums(
+                reporter.getCollectionID())) {
             String fileID;
             while ((fileID = inconsistentFilesIterator.getNextIntegrityIssue()) != null) {
                 handleChecksumInconsistency(store.getFileInfos(fileID, reporter.getCollectionID()), fileID);

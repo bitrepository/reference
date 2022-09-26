@@ -41,14 +41,14 @@ public class HandleMissingChecksumsStep extends AbstractWorkFlowStep {
     private final IntegrityModel store;
     private final IntegrityReporter reporter;
     private final StatisticsCollector sc;
-    private final Date cutoff;
+    private final Date cutoffDate;
 
     public HandleMissingChecksumsStep(IntegrityModel store, IntegrityReporter reporter, StatisticsCollector statisticsCollector,
                                       Date latestChecksumUpdate) {
         this.store = store;
         this.reporter = reporter;
         this.sc = statisticsCollector;
-        this.cutoff = latestChecksumUpdate;
+        this.cutoffDate = latestChecksumUpdate;
     }
 
     @Override
@@ -72,7 +72,7 @@ public class HandleMissingChecksumsStep extends AbstractWorkFlowStep {
 
             String missingFile;
             try (IntegrityIssueIterator missingChecksumsIterator = store.findFilesWithMissingChecksum(reporter.getCollectionID(), pillar,
-                    cutoff)) {
+                    cutoffDate)) {
                 while ((missingFile = missingChecksumsIterator.getNextIntegrityIssue()) != null) {
                     try {
                         reporter.reportMissingChecksum(missingFile, pillar);

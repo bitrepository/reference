@@ -53,15 +53,15 @@ import java.util.Date;
  * And finally it is verified whether any missing or obsolete checksums can be found.
  */
 public abstract class IntegrityCheckWorkflow extends Workflow {
+    /**
+     * The default number of retries if none is set in ReferenceSettings
+     */
+    private static final int DEFAULT_MAX_RETRIES = 3;
     private final Logger log = LoggerFactory.getLogger(getClass());
     protected IntegrityWorkflowContext context;
     protected String collectionID;
     protected IntegrityContributors integrityContributors;
     protected Date workflowStart;
-    /**
-     * The default number of retries if none is set in ReferenceSettings
-     */
-    private static final int DEFAULT_MAX_RETRIES = 3;
 
     /**
      * Remember to call the initialise method needs to be called before the start method.
@@ -85,7 +85,6 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
 
     @Override
     public void start() {
-
         workflowStart = new Date();
 
         if (context == null) {
@@ -98,8 +97,8 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
         super.start();
         try {
             StatisticsCollector statisticsCollector = new StatisticsCollector(collectionID);
-            Integer maxRetries
-                    = context.getSettings().getReferenceSettings().getIntegrityServiceSettings().getComponentRetries();
+            Integer maxRetries = context.getSettings().getReferenceSettings().getIntegrityServiceSettings()
+                    .getComponentRetries();
             integrityContributors = new IntegrityContributors(SettingsUtils.getPillarIDsForCollection(collectionID),
                     maxRetries == null ? DEFAULT_MAX_RETRIES : maxRetries);
 
@@ -118,25 +117,23 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
             }
 
             statisticsCollector.getCollectionStat().setStatsTime(new Date());
-            javax.xml.datatype.Duration timeBeforeMissingFileCheck =
-                    context.getSettings().getReferenceSettings().getIntegrityServiceSettings().getTimeBeforeMissingFileCheck();
+            javax.xml.datatype.Duration timeBeforeMissingFileCheck = context.getSettings().getReferenceSettings()
+                    .getIntegrityServiceSettings().getTimeBeforeMissingFileCheck();
             Duration missingFileGracePeriod = XmlUtils.xmlDurationToDuration(timeBeforeMissingFileCheck);
             HandleMissingFilesStep handleMissingFilesStep = new HandleMissingFilesStep(context.getStore(), reporter,
                     statisticsCollector, missingFileGracePeriod);
             performStep(handleMissingFilesStep);
 
-            HandleChecksumValidationStep handleChecksumValidationStep
-                    = new HandleChecksumValidationStep(context.getStore(), context.getAuditManager(), reporter,
-                    statisticsCollector);
+            HandleChecksumValidationStep handleChecksumValidationStep = new HandleChecksumValidationStep(
+                    context.getStore(), context.getAuditManager(), reporter, statisticsCollector);
             performStep(handleChecksumValidationStep);
 
             HandleMissingChecksumsStep handleMissingChecksumsStep = new HandleMissingChecksumsStep(context.getStore(),
                     reporter, statisticsCollector, getChecksumUpdateCutoffDate());
             performStep(handleMissingChecksumsStep);
 
-            HandleObsoleteChecksumsStep handleObsoleteChecksumsStep
-                    = new HandleObsoleteChecksumsStep(context.getSettings(), context.getStore(), reporter,
-                    statisticsCollector);
+            HandleObsoleteChecksumsStep handleObsoleteChecksumsStep = new HandleObsoleteChecksumsStep(
+                    context.getSettings(), context.getStore(), reporter, statisticsCollector);
             performStep(handleObsoleteChecksumsStep);
 
             CreateStatisticsEntryStep createStatistics = new CreateStatisticsEntryStep(
@@ -149,7 +146,8 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
                 }
                 try {
                     reporter.generateReport();
-                    IntegrityServiceManager.getIntegrityReportProvider().setLatestReport(collectionID, reporter.getReportDir());
+                    IntegrityServiceManager.getIntegrityReportProvider()
+                            .setLatestReport(collectionID, reporter.getReportDir());
                 } catch (IOException e) {
                     log.error("Failed to generate integrity report", e);
                     context.getAlerter().integrityComponentFailure("Failed to generate integrity report", collectionID);
