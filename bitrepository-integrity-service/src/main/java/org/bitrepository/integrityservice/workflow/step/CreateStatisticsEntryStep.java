@@ -31,8 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A workflow step for finding missing checksums.
- * Uses the IntegrityChecker to perform the actual check.
+ * A workflow step for creating pillar statistics.
  */
 public class CreateStatisticsEntryStep extends AbstractWorkFlowStep {
     private final IntegrityModel store;
@@ -51,8 +50,7 @@ public class CreateStatisticsEntryStep extends AbstractWorkFlowStep {
     }
 
     /**
-     * Uses IntegrityChecker to validate whether any checksums are missing.
-     * Dispatches an alarm if any checksums were missing.
+     * Collects pillar metrics for the given collection and creates from them a statistics entry in the store.
      */
     @Override
     public synchronized void performStep() {
@@ -63,9 +61,11 @@ public class CreateStatisticsEntryStep extends AbstractWorkFlowStep {
             if (metric == null) {
                 sc.getPillarCollectionStat(pillar).setFileCount(0L);
                 sc.getPillarCollectionStat(pillar).setDataSize(0L);
+                sc.getPillarCollectionStat(pillar).setOldestChecksumTimestamp(null);
             } else {
                 sc.getPillarCollectionStat(pillar).setFileCount(metric.getPillarFileCount());
                 sc.getPillarCollectionStat(pillar).setDataSize(metric.getPillarCollectionSize());
+                sc.getPillarCollectionStat(pillar).setOldestChecksumTimestamp(metric.getOldestChecksumTimestamp());
             }
         }
         sc.getCollectionStat().setFileCount(store.getNumberOfFilesInCollection(collectionID));

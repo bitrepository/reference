@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Date;
 import java.util.List;
 
@@ -49,8 +50,8 @@ public class StatisticsCreator {
 
     private final String insertPillarStatEntrySql = "INSERT INTO pillarstats"
             + " (stat_key, pillarID, file_count, file_size, missing_files_count, "
-            + "checksum_errors_count, missing_checksums_count, obsolete_checksums_count)"
-            + " (SELECT MAX(stat_key), ?, ?, ?, ?, ?, ?, ? FROM stats WHERE collectionID = ?)";
+            + "checksum_errors_count, missing_checksums_count, obsolete_checksums_count, oldest_checksum_timestamp)"
+            + " (SELECT MAX(stat_key), ?, ?, ?, ?, ?, ?, ?, ? FROM stats WHERE collectionID = ?)";
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -112,18 +113,23 @@ public class StatisticsCreator {
         insertCollectionStatPS.setString(5, cs.getCollectionID());
     }
 
-    private void addPillarStat(PillarCollectionStat ps) throws SQLException {
-        insertPillarStatPS.setString(1, ps.getPillarID());
-        insertPillarStatPS.setLong(2, ps.getFileCount());
-        insertPillarStatPS.setLong(3, ps.getDataSize());
-        insertPillarStatPS.setLong(4, ps.getMissingFiles());
-        insertPillarStatPS.setLong(5, ps.getChecksumErrors());
-        insertPillarStatPS.setLong(6, ps.getMissingChecksums());
-        insertPillarStatPS.setLong(7, ps.getObsoleteChecksums());
-        insertPillarStatPS.setString(8, ps.getCollectionID());
+    private void addPillarStat(PillarCollectionStat pcStat) throws SQLException {
+        insertPillarStatPS.setString(1, pcStat.getPillarID());
+        insertPillarStatPS.setLong(2, pcStat.getFileCount());
+        insertPillarStatPS.setLong(3, pcStat.getDataSize());
+        insertPillarStatPS.setLong(4, pcStat.getMissingFiles());
+        insertPillarStatPS.setLong(5, pcStat.getChecksumErrors());
+        insertPillarStatPS.setLong(6, pcStat.getMissingChecksums());
+        insertPillarStatPS.setLong(7, pcStat.getObsoleteChecksums());
+        if (pcStat.hasOldestChecksumTimestamp()) {
+            insertPillarStatPS.setLong(8, pcStat.getOldestChecksumTimestampMillis());
+        } else {
+            insertPillarStatPS.setNull(8, Types.BIGINT);
+        }
+
+        insertPillarStatPS.setString(9, pcStat.getCollectionID());
         insertPillarStatPS.addBatch();
     }
-
 
     private void execute() throws SQLException {
         insertStatisticsEntryPS.execute();

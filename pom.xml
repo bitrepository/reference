@@ -496,7 +496,7 @@
     <!-- Enable forbiddenapis plugin, do disable set to none -->
     <api.check.phase>process-classes</api.check.phase> <!-- forbidden-apis dislikes TestValidationUtils #validateUtilityClass -->
     <message.xml.version>31</message.xml.version>
-    <repository.settings.version>13</repository.settings.version>
+    <repository.settings.version>14</repository.settings.version>
     <derby.version>10.14.2.0</derby.version>
     <activemq.version>5.16.4</activemq.version>
     <cxf.version>3.3.6</cxf.version>

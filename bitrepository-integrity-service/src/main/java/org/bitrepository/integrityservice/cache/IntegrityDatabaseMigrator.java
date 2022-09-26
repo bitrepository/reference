@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 
 /**
- * Migration class for the AuditTrailDatabase of the AuditTrailService.
+ * Migration class for the IntegrityDatabaseDatabase of the IntegrityDatabaseService.
  * Will only try to perform the migration on an embedded derby database.
  */
 public class IntegrityDatabaseMigrator extends DatabaseMigrator {
@@ -63,10 +63,13 @@ public class IntegrityDatabaseMigrator extends DatabaseMigrator {
      * The name of the update script for version 6 to 7.
      */
     private static final String UPDATE_SCRIPT_VERSION_6_TO_7 = "sql/derby/integrityDB6to7migration.sql";
+
+    private static final String UPDATE_SCRIPT_VERSION_7_TO_8 = "sql/derby/integrityDB7to8migration.sql";
+
     /**
      * The current version of the database.
      */
-    private final Integer currentVersion = 7;
+    private final int currentVersion = 8;
 
     /**
      * @param connector connection to the database.
@@ -113,6 +116,15 @@ public class IntegrityDatabaseMigrator extends DatabaseMigrator {
         if (versions.get(DATABASE_VERSION_ENTRY) < 7) {
             log.warn("Migrating integrityDB from version 6 to 7");
             migrateDerbyDatabase(UPDATE_SCRIPT_VERSION_6_TO_7);
+        }
+        if (versions.get(DATABASE_VERSION_ENTRY) < 8) {
+            log.warn("Migrating integrityDB from version 7 to 8");
+            migrateDerbyDatabase(UPDATE_SCRIPT_VERSION_7_TO_8);
+        }
+
+        if (needsMigration()) {
+            log.error("Database still appears to need migration after it has been migrated. Expected version is {}.",
+                    currentVersion);
         }
     }
 

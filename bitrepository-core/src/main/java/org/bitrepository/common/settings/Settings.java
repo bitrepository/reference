@@ -24,21 +24,25 @@
  */
 package org.bitrepository.common.settings;
 
+import org.bitrepository.common.utils.XmlUtils;
 import org.bitrepository.settings.referencesettings.ReferenceSettings;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
 import org.bitrepository.settings.repositorysettings.Permission;
 import org.bitrepository.settings.repositorysettings.RepositorySettings;
 
+import java.math.BigInteger;
+import java.time.Duration;
 import java.util.List;
 
 /**
  * Contains the general configuration to be used by reference code components. Provides access to both
- * {@link ReferenceSettings} and {@link org.bitrepository.settings.repositorysettings.RepositorySettings}. Use a {@link SettingsProvider}
- * to access settings create
- * <code>Settings</code> objects.
+ * {@link ReferenceSettings} and {@link org.bitrepository.settings.repositorysettings.RepositorySettings}.
+ * Use a {@link SettingsProvider} to access settings create <code>Settings</code> objects.
  */
 public class Settings {
+    public static final BigInteger MILLIS_PER_SECOND = BigInteger.valueOf(Duration.ofSeconds(1).toMillis());
+
     protected final String componentID;
     protected final String receiverDestinationID;
     protected final ReferenceSettings referenceSettings;
@@ -97,13 +101,41 @@ public class Settings {
     }
 
     /**
-     * Wraps the {@link org.bitrepository.settings.repositorysettings.ClientSettings#getIdentificationTimeout()} method.
+     * Wraps the {@link org.bitrepository.settings.repositorysettings.ClientSettings#getIdentificationTimeout()}
+     * and {@link org.bitrepository.settings.repositorysettings.ClientSettings#getIdentificationTimeoutDuration()}
+     * methods, preferring to use the latter.
      *
      * @return the timeout
-     * @see org.bitrepository.settings.repositorysettings.ClientSettings#getIdentificationTimeout()
+     * @see org.bitrepository.settings.repositorysettings.ClientSettings#getIdentificationTimeoutDuration()
      */
-    public long getIdentificationTimeout() {
-        return getRepositorySettings().getClientSettings().getIdentificationTimeout().longValue();
+    public Duration getIdentificationTimeout() {
+        // TODO Once the old IdentificationTimeout settings in milliseconds is done away with
+        //  the following code gets simpler
+        javax.xml.datatype.Duration xmlDuration =
+                getRepositorySettings().getClientSettings().getIdentificationTimeoutDuration();
+        BigInteger identificationTimeoutMillis =
+                getRepositorySettings().getClientSettings().getIdentificationTimeout();
+        return getDurationFromXmlDurationOrMillis(xmlDuration, identificationTimeoutMillis);
+    }
+
+    public Duration getOperationTimeout() {
+        javax.xml.datatype.Duration xmlDuration =
+                getRepositorySettings().getClientSettings().getOperationTimeoutDuration();
+        BigInteger operationTimeoutMillis =
+                getRepositorySettings().getClientSettings().getOperationTimeout();
+        return getDurationFromXmlDurationOrMillis(xmlDuration, operationTimeoutMillis);
+    }
+
+    static Duration getDurationFromXmlDurationOrMillis(
+            javax.xml.datatype.Duration xmlDuration, BigInteger millis) {
+        // Prefer the XML Duration
+        if (xmlDuration != null) {
+            XmlUtils.validateNonNegative(xmlDuration);
+            return XmlUtils.xmlDurationToDuration(xmlDuration);
+        }
+        BigInteger[] secondsAndMillis = millis.divideAndRemainder(MILLIS_PER_SECOND);
+        return Duration.ofSeconds(secondsAndMillis[0].longValueExact())
+                .plusMillis(secondsAndMillis[1].intValueExact());
     }
 
     /**

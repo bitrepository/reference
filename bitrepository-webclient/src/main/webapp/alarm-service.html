@@ -42,7 +42,9 @@
   <div class="row-fluid">
     <div class="span11">
       <div class="span11" style="height:0px; min-height:0px"></div>
-      <div class="span11"><h2>Alarm service</h2></div>
+      <div class="span11">
+        <h2>Alarm service</h2>
+      </div>
       <div class="span11">
         <form class="form-inline">
           <legend>Alarm display filters</legend>
@@ -133,7 +135,7 @@
 
 <script>
     let nameMapper;
-    let descriptionMapper;
+    let descriptionExpandedMapper;
     let autoGetAlarmsInterval;
     let alarmServiceUrl;
 
@@ -151,7 +153,7 @@
         let collectionIDStr = $("#collectionIDFilter").val();
         let url = alarmServiceUrl + '/alarm/AlarmService/queryAlarms/';
 
-        getDescriptionState();
+        getDescriptionExpandedState();
 
         $.post(url,
             {
@@ -163,24 +165,61 @@
                 maxAlarms: maxAlarmStr,
                 collectionID: collectionIDStr,
                 oldestAlarmFirst: false
-            }, function (j) {
+            }, function (json) {
                 let htmlTableBody = "";
-                if (j != null) {
-                    for (let i = 0; i < j.length; i++) {
+                if (json != null) {
+                    for (let i = 0; i < json.length; i++) {
                         htmlTableBody += `<tr>
-                          <td>${j[i].origDateTime}</td>
-                          <td>${j[i].alarmRaiser}</td>
-                          <td>${nameMapper.getName(j[i].collectionID)}</td>
-                          <td>${j[i].fileID}</td>
-                          <td>${j[i].alarmCode}</td>
-                          <td class="description"><p class="teaser">${nl2br(j[i].alarmText)}</p></td>
+                          <td>${json[i].origDateTime}</td>
+                          <td>${json[i].alarmRaiser}</td>
+                          <td>${nameMapper.getName(json[i].collectionID)}</td>
+                          <td>${json[i].fileID}</td>
+                          <td>${json[i].alarmCode}</td>
+                          <td class="description">${renderAlarmDescription(i, json[i].alarmText).prop('outerHTML')}</td>
                         </tr>`;
                     }
                 }
                 $("#alarms-table-body").html(htmlTableBody);
-                compressDescription();
                 enableDescriptionExpansionOnClick();
             });
+    }
+
+    function getDescriptionExpandedState() {
+        descriptionExpandedMapper = {};
+        $("#alarms-table-body tr").each(function (index) {
+            // Grab the
+            descriptionExpandedMapper[index] = $(this).find("td:eq(5)").find(".complete").css("display");
+        });
+    }
+
+    function renderAlarmDescription(index, alarmDescription) {
+        const maxLength = 80;
+        let descriptionHtml = $('<p class="teaser">').css("margin", 0);
+        let isExpandedDesc = descriptionExpandedMapper.hasOwnProperty(index) &&
+            descriptionExpandedMapper[index] !== "none";
+
+        if (alarmDescription.length <= maxLength || isExpandedDesc) {
+            let fullDescSpan = `<span class="complete" style="display: inline">${nl2br(alarmDescription)}</span>`
+            descriptionHtml.empty().html(fullDescSpan);
+        } else { // Alarm description is too long and is not expanded
+            let shortenedDesc = alarmDescription.substring(0, maxLength);
+            let remainingDesc = alarmDescription.substring(maxLength, alarmDescription.length);
+            descriptionHtml.empty().html(nl2br(shortenedDesc));
+            descriptionHtml.append(`<span class="dots">... </span>`)
+            descriptionHtml.append(`<span class="complete">${nl2br(remainingDesc)}</span>`);
+            descriptionHtml.append('<a href="javascript:void(0);" class="show-more">show more</a>');
+        }
+        return descriptionHtml;
+    }
+
+    function enableDescriptionExpansionOnClick() {
+        $(".teaser").each(function () {
+            $(this).children(".show-more").on("click", function () {
+                $(this).siblings(".complete").show();
+                $(this).siblings(".dots").remove();
+                $(this).remove();
+            });
+        });
     }
 
     function init() {
@@ -200,45 +239,6 @@
                     updateAlarms();
                 }, 2500);
             });
-        });
-    }
-
-    function compressDescription() {
-        const maxLength = 80;
-        $(".teaser").each(function () {
-            let index = $(this).closest("tr").find("td:eq(0)").text() + $(this).text();
-            let string = $(this).html();
-
-            if (descriptionMapper.hasOwnProperty(index) && descriptionMapper[index] !== "none") {
-                $(this).empty().html(`<span class="complete" style="display: inline">${string}</span>`);
-            } else {
-                if (string.length > maxLength) {
-                    let newString = string.substring(0, maxLength);
-                    let removedString = string.substring(maxLength, string.length);
-                    $(this).empty().html(newString);
-                    $(this).append(`<span class="dots">... </span>`)
-                    $(this).append(`<span class="complete">${removedString}</span>`);
-                    $(this).append('<a href="javascript:void(0);" class="show-more">show more</a>');
-                }
-            }
-        });
-    }
-
-    function enableDescriptionExpansionOnClick() {
-        $(".teaser").each(function () {
-            $(this).children(".show-more").on("click", function () {
-                $(this).siblings(".complete").show();
-                $(this).siblings(".dots").remove();
-                $(this).remove();
-            });
-        });
-    }
-
-    function getDescriptionState() {
-        descriptionMapper = {};
-        $("#alarms-table-body tr").each(function () {
-            let identifier = $(this).find("td:eq(0)").text() + $(this).find("td:eq(5)").text();
-            descriptionMapper[identifier] = $(this).find("td:eq(5)").find(".complete").css("display");
         });
     }
 

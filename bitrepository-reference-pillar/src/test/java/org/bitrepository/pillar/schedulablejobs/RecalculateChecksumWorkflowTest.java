@@ -24,19 +24,29 @@ package org.bitrepository.pillar.schedulablejobs;
 import org.bitrepository.pillar.DefaultPillarTest;
 import org.bitrepository.service.workflow.SchedulableJob;
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.math.BigInteger;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
 import java.util.Date;
 
 public class RecalculateChecksumWorkflowTest extends DefaultPillarTest {
+
+    DatatypeFactory factory;
+
+    @BeforeMethod(alwaysRun = true)
+    public void setUpFactory() throws DatatypeConfigurationException {
+        factory = DatatypeFactory.newInstance();
+    }
+
     @Test( groups = {"regressiontest", "pillartest"})
     public void testWorkflowRecalculatesChecksum() throws Exception {
         addDescription("Test that the workflow recalculates the workflows, when the maximum age has been met.");
         Date beforeWorkflowDate = csCache.getCalculationDate(DEFAULT_FILE_ID, collectionID);
         Assert.assertEquals(csCache.getAllFileIDs(collectionID).size(), 1);
         Assert.assertEquals(archives.getAllFileIds(collectionID).size(), 1);
-        settingsForCUT.getReferenceSettings().getPillarSettings().setMaxAgeForChecksums(BigInteger.ZERO);
+        settingsForCUT.getReferenceSettings().getPillarSettings().setMaxAgeForChecksums(factory.newDuration(0));
         
         synchronized(this) {
             wait(100);
@@ -58,7 +68,8 @@ public class RecalculateChecksumWorkflowTest extends DefaultPillarTest {
         Date beforeWorkflowDate = csCache.getCalculationDate(DEFAULT_FILE_ID, collectionID);
         Assert.assertEquals(csCache.getAllFileIDs(collectionID).size(), 1);
         Assert.assertEquals(archives.getAllFileIds(collectionID).size(), 1);
-        settingsForCUT.getReferenceSettings().getPillarSettings().setMaxAgeForChecksums(BigInteger.valueOf(Long.MAX_VALUE));
+        settingsForCUT.getReferenceSettings().getPillarSettings()
+                .setMaxAgeForChecksums(factory.newDuration(Long.MAX_VALUE));
         
         synchronized(this) {
             wait(100);

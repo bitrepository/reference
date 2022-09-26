@@ -30,8 +30,8 @@
     <ReceiverDestinationIDFactoryClass>org.bitrepository.protocol.messagebus.destination.UserSpecificReceiverDestinationIDFactory</ReceiverDestinationIDFactoryClass>
   </GeneralSettings>
   <ClientSettings>
-    <MediatorCleanupInterval>10000</MediatorCleanupInterval>
-    <ConversationTimeout>3600000</ConversationTimeout>
+    <MediatorCleanupInterval>PT10S</MediatorCleanupInterval>
+    <ConversationTimeout>PT1H</ConversationTimeout>
   </ClientSettings>
   <PillarSettings>
     <PillarID>EmbeddedReferencePillar</PillarID>
@@ -40,9 +40,9 @@
       <FileDirs>target/reference1pillar/test-archive</FileDirs>
     </CollectionDirs>
     <MinimumSizeLeft>1000000000</MinimumSizeLeft>
-    <TimeToStartDeliver>1000</TimeToStartDeliver>
-    <MaxAgeForChecksums>86400000</MaxAgeForChecksums>
-    <RecalculateOldChecksumsInterval>3600000</RecalculateOldChecksumsInterval>
+    <TimeToStartDeliver>PT1S</TimeToStartDeliver>
+    <MaxAgeForChecksums>P1D</MaxAgeForChecksums>
+    <RecalculateOldChecksumsInterval>PT1H</RecalculateOldChecksumsInterval>
     <AuditTrailContributerDatabase>
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
       <DatabaseURL>jdbc:derby:target/reference1pillar/auditcontributerdb</DatabaseURL>

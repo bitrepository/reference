@@ -37,6 +37,7 @@ import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.common.utils.TimeUtils;
+import org.bitrepository.common.utils.XmlUtils;
 import org.bitrepository.modify.putfile.BlockingPutFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.CoordinationLayerException;
@@ -50,10 +51,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -119,13 +123,14 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
             log.debug("Cancelling old timer.");
             timer.cancel();
         }
-        long preservationInterval = preservationSettings.getAuditTrailPreservationInterval();
-        long timerCheckInterval = preservationInterval / 10;
+        javax.xml.datatype.Duration preservationIntervalXmlDur = preservationSettings.getAuditTrailPreservationInterval();
+        Duration preservationInterval = XmlUtils.xmlDurationToDuration(preservationIntervalXmlDur);
+        long timerCheckIntervalMillis = preservationInterval.dividedBy(10).toMillis();
         log.info("Instantiating the preservation of audit trails every {}",
-                TimeUtils.millisecondsToHuman(preservationInterval));
+                TimeUtils.durationToHuman(preservationInterval));
         timer = new Timer(true);
-        preservationTask = new AuditPreservationTimerTask(preservationInterval);
-        timer.scheduleAtFixedRate(preservationTask, timerCheckInterval, timerCheckInterval);
+        preservationTask = new AuditPreservationTimerTask(preservationInterval.toMillis());
+        timer.scheduleAtFixedRate(preservationTask, timerCheckIntervalMillis, timerCheckIntervalMillis);
     }
 
     @Override
@@ -264,6 +269,7 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
         /**
          * @param interval The interval between running this timer task.
          */
+        // TODO: Replace old time representation (https://sbforge.org/jira/browse/BITMAG-1180)
         private AuditPreservationTimerTask(long interval) {
             this.schedule = new TimerTaskSchedule(interval, 0);
         }

@@ -42,6 +42,7 @@ import org.mockito.ArgumentCaptor;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import javax.xml.datatype.DatatypeFactory;
 import java.util.concurrent.ThreadFactory;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -74,11 +75,14 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
     @Test(groups = {"unstable"})
     public void auditTrailServiceTest() throws Exception {
         addDescription("Test the Audit Trail Service");
+        DatatypeFactory factory = DatatypeFactory.newInstance();
         settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().clear();
         settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().add(DEFAULT_CONTRIBUTOR);
-        settings.getReferenceSettings().getAuditTrailServiceSettings().setCollectAuditInterval(800);
+        settings.getReferenceSettings().getAuditTrailServiceSettings()
+                .setCollectAuditInterval(factory.newDuration(800));
         settings.getReferenceSettings().getAuditTrailServiceSettings().setTimerTaskCheckInterval(100L);
-        settings.getReferenceSettings().getAuditTrailServiceSettings().setGracePeriod(800L);
+        settings.getReferenceSettings().getAuditTrailServiceSettings()
+                .setGracePeriod(factory.newDuration(800));
 
         AuditTrailStore store = mock(AuditTrailStore.class);
         AuditTrailClient client = mock(AuditTrailClient.class);

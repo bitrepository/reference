@@ -26,7 +26,9 @@ import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.conversation.selector.SelectedComponentInfo;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
 import org.bitrepository.common.exceptions.UnableToFinishException;
+import org.bitrepository.common.utils.TimeUtils;
 
+import java.time.Duration;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -79,14 +81,15 @@ public abstract class PerformingOperationState extends GeneralConversationState 
 
     @Override
     protected void logStateTimeout() throws UnableToFinishException {
-        throw new UnableToFinishException(
-                "Failed to receive responses from all contributors before timeout(" + getTimeoutValue() + "ms). Missing contributors " +
+        throw new UnableToFinishException("Failed to receive responses from all contributors before timeout (" +
+                        TimeUtils.durationToHuman(getTimeoutValue()) +
+                        "). Missing contributors " +
                         getOutstandingComponents());
     }
 
     @Override
-    protected long getTimeoutValue() {
-        return getContext().getSettings().getRepositorySettings().getClientSettings().getOperationTimeout().longValue();
+    protected Duration getTimeoutValue() {
+        return getContext().getSettings().getOperationTimeout();
     }
 
     @Override

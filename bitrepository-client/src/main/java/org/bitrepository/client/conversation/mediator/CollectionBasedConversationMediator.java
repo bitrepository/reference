@@ -30,6 +30,8 @@ import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.common.DefaultThreadFactory;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.utils.TimeUtils;
+import org.bitrepository.common.utils.XmlUtils;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
@@ -37,6 +39,8 @@ import org.bitrepository.protocol.security.SecurityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -51,7 +55,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final Map<String, Conversation> conversations;
     private final Settings settings;
-    private static final Boolean TIMER_IS_DAEMON = true;
+    private static final boolean TIMER_IS_DAEMON = true;
     private static final String NAME_OF_TIMER = "Collection based conversation timer";
     /**
      * The timer used to schedule cleaning of conversations.
@@ -66,8 +70,9 @@ public class CollectionBasedConversationMediator implements ConversationMediator
     @Override
     public void start() {
         messagebus.addListener(settings.getReceiverDestinationID(), this);
-        cleanTimer.scheduleAtFixedRate(new ConversationCleaner(), 0,
-                settings.getReferenceSettings().getClientSettings().getMediatorCleanupInterval().longValue());
+        javax.xml.datatype.Duration cleanupInterval = settings.getReferenceSettings().getClientSettings().getMediatorCleanupInterval();
+        cleanTimer.scheduleAtFixedRate(new ConversationCleaner(),
+                0, XmlUtils.xmlDurationToMilliseconds(cleanupInterval));
     }
 
     @Override
@@ -96,7 +101,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
     }
 
     /**
-     * Will try to fail a conversation gracefully. This entitles:
+     * Will try to fail a conversation gracefully. This consists of:
      * <ul>
      * <li> Removing the conversation from the list of conversations.
      * <li> Attempt to call the failConversation operation on the conversation. The call is made in a separate thread to
@@ -136,10 +141,10 @@ public class CollectionBasedConversationMediator implements ConversationMediator
     }
 
     /**
-     * Will clean out obsolete conversations in each run. An obsolete conversation is a conversation which satisfies on
-     * of the following criterias: <ol>
+     * Will clean out obsolete conversations in each run. An obsolete conversation is a conversation which satisfies one
+     * of the following criteria: <ol>
      * <li> Returns true for the <code>hasEnded()</code> method.
-     * <li> Is older than the conversationTImeout limit allows.
+     * <li> Is older than the conversationTimeout limit allows.
      * </ol>
      * <p>
      * A copy of the current conversations is created before running through the conversations to avoid having to lock
@@ -149,15 +154,20 @@ public class CollectionBasedConversationMediator implements ConversationMediator
         @Override
         public void run() {
             Conversation[] conversationArray = conversations.values().toArray(new Conversation[0]);
-            long currentTime = System.currentTimeMillis();
+            Duration conversationTimeout = XmlUtils.xmlDurationToDuration(
+                    settings.getReferenceSettings().getClientSettings().getConversationTimeout());
+            Instant currentTime = Instant.now();
             for (Conversation conversation : conversationArray) {
                 if (conversation.hasEnded()) {
                     conversations.remove(conversation.getConversationID());
-                } else if (currentTime - conversation.getStartTime() >
-                        settings.getReferenceSettings().getClientSettings().getConversationTimeout().longValue()) {
-                    log.warn("Failing timed out conversation " + conversation.getConversationID() + " " + "(Age " +
-                            (currentTime - conversation.getStartTime()) + "ms)");
-                    failConversation(conversation, "Failing timed out conversation " + conversation.getConversationID());
+                } else {
+                    Instant startTime = Instant.ofEpochMilli(conversation.getStartTime());
+                    Instant expirationTime = startTime.plus(conversationTimeout);
+                    if (expirationTime.isBefore(currentTime)) {
+                        log.warn("Failing timed out conversation {} (Age: {})", conversation.getConversationID(),
+                                TimeUtils.durationToHuman(Duration.between(startTime, currentTime)));
+                        failConversation(conversation, "Failing timed out conversation " + conversation.getConversationID());
+                    }
                 }
             }
         }

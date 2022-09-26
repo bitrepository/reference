@@ -22,6 +22,7 @@
 package org.bitrepository.common.utils;
 
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.settings.referencesettings.IntegrityServiceSettings;
 import org.bitrepository.settings.referencesettings.PillarIntegrityDetails;
 import org.bitrepository.settings.referencesettings.PillarType;
 import org.bitrepository.settings.repositorysettings.Collection;
@@ -118,6 +119,10 @@ public class SettingsUtils {
         return null;
     }
 
+    public static IntegrityServiceSettings getIntegrityServiceSettings() {
+        return settings.getReferenceSettings().getIntegrityServiceSettings();
+    }
+
     /**
      * Get the {@link PillarType} for the given Pillar ID.
      *
@@ -207,4 +212,5 @@ public class SettingsUtils {
         contributors.addAll(SettingsUtils.getAllPillarIDs());
         return contributors;
     }
+
 }

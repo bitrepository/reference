@@ -35,10 +35,10 @@ import java.util.Date;
  */
 public interface JobScheduler {
     /**
-     * Adds a job for the scheduler to schedule.
+     * If interval is > 0, adds a job for the scheduler to schedule.
      *
      * @param job      The job to schedule.
-     * @param interval The interval for how often the job should be triggered.
+     * @param interval The interval in milliseconds for how often the job should be triggered; 0 or negative if never.
      */
     void schedule(SchedulableJob job, Long interval);
 

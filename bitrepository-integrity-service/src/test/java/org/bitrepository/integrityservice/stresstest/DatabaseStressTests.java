@@ -42,6 +42,8 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigInteger;
 import java.util.Date;
@@ -72,8 +74,9 @@ public class DatabaseStressTests extends ExtendedTestCase {
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR_2);
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR_3);
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR_4);
-        
-        settings.getReferenceSettings().getIntegrityServiceSettings().setTimeBeforeMissingFileCheck(0);
+
+        Duration time = DatatypeFactory.newInstance().newDuration(0);
+        settings.getReferenceSettings().getIntegrityServiceSettings().setTimeBeforeMissingFileCheck(time);
     }
     
     protected void populateDatabase(IntegrityDAO cache) {
@@ -96,10 +99,10 @@ public class DatabaseStressTests extends ExtendedTestCase {
     }
     
     @AfterMethod (alwaysRun = true)
-    public void clearDatabase() throws Exception {
+    public void clearDatabase() {
         DBConnector connector = new DBConnector(settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
-        DatabaseUtils.executeStatement(connector, "DELETE FROM fileinfo", new Object[0]);
-        DatabaseUtils.executeStatement(connector, "DELETE FROM pillar", new Object[0]);
+        DatabaseUtils.executeStatement(connector, "DELETE FROM fileinfo");
+        DatabaseUtils.executeStatement(connector, "DELETE FROM pillar");
     }
     
     @Test(groups = {"stresstest", "integritytest"})
@@ -114,8 +117,8 @@ public class DatabaseStressTests extends ExtendedTestCase {
         
         startTime = System.currentTimeMillis();
         String collection = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
-        int numberOfpillarsInCollection = settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().size();
-        cache.findFilesWithMissingCopies(collection, numberOfpillarsInCollection, 0L, Long.MAX_VALUE);
+        int numberOfPillarsInCollection = settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().size();
+        cache.findFilesWithMissingCopies(collection, numberOfPillarsInCollection, 0L, Long.MAX_VALUE);
         System.err.println("Time to find missing files: " + TimeUtils.millisecondsToHuman(System.currentTimeMillis() - startTime));
 
         startTime = System.currentTimeMillis();

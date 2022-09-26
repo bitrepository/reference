@@ -57,8 +57,8 @@
   </ProtocolSettings>
   
   <ClientSettings>
-    <IdentificationTimeout>60000</IdentificationTimeout>
-    <OperationTimeout>60000</OperationTimeout>
+    <IdentificationTimeoutDuration>PT1M</IdentificationTimeoutDuration>
+    <OperationTimeoutDuration>PT1M</OperationTimeoutDuration>
   </ClientSettings>
 
   <GetAuditTrailSettings>

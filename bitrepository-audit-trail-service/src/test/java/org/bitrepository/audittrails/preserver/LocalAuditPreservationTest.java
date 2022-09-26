@@ -41,6 +41,8 @@ import org.mockito.stubbing.Answer;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.Duration;
 import java.io.FileInputStream;
 import java.net.URL;
 import java.sql.Date;
@@ -90,7 +92,9 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         MockPutClient client = new MockPutClient();
         
         settings.getReferenceSettings().getAuditTrailServiceSettings().setTimerTaskCheckInterval(100);
-        settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailPreservation().setAuditTrailPreservationInterval(300);
+        Duration interval = DatatypeFactory.newInstance().newDuration(300);
+        settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailPreservation()
+                .setAuditTrailPreservationInterval(interval);
         settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().clear();
         settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().add(PILLAR_ID);
         

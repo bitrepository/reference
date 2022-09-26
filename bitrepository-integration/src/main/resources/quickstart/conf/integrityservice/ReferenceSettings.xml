@@ -26,8 +26,8 @@
     <ReceiverDestinationIDFactoryClass>org.bitrepository.protocol.messagebus.destination.DefaultReceiverDestinationIDFactory</ReceiverDestinationIDFactoryClass>
   </GeneralSettings>
   <ClientSettings>
-    <MediatorCleanupInterval>1000</MediatorCleanupInterval>
-    <ConversationTimeout>3600000</ConversationTimeout>
+    <MediatorCleanupInterval>PT1S</MediatorCleanupInterval>
+    <ConversationTimeout>PT1H</ConversationTimeout>
   </ClientSettings>
 
   <IntegrityServiceSettings>
@@ -37,7 +37,7 @@
         <WorkflowClass>CompleteIntegrityCheck</WorkflowClass>
         <Schedules>
           <Schedule>
-            <WorkflowInterval>86400000</WorkflowInterval>  
+            <WorkflowInterval>P1D</WorkflowInterval>
             <Collections>
               <CollectionID>books</CollectionID>
               <CollectionID>dvds</CollectionID>                          
@@ -49,7 +49,7 @@
         <WorkflowClass>IncrementalIntegrityCheck</WorkflowClass>
         <Schedules>
           <Schedule>
-            <WorkflowInterval>3600000</WorkflowInterval>  
+            <WorkflowInterval>PT1H</WorkflowInterval>
             <Collections>
               <CollectionID>books</CollectionID>
               <CollectionID>dvds</CollectionID>             
@@ -62,7 +62,7 @@
         <Schedules>
           <Schedule>
             <!-- Only run manually -->  
-            <WorkflowInterval>-1</WorkflowInterval>
+            <WorkflowInterval>-PT1S</WorkflowInterval>
             <Collections>
               <CollectionID>books</CollectionID>
               <CollectionID>dvds</CollectionID>             
@@ -75,7 +75,7 @@
         <Schedules>
           <Schedule>
             <!-- Only run manually -->  
-            <WorkflowInterval>-1</WorkflowInterval>
+            <WorkflowInterval>-PT1S</WorkflowInterval>
             <Collections>
               <CollectionID>books</CollectionID>
               <CollectionID>dvds</CollectionID>             
@@ -88,11 +88,25 @@
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
       <DatabaseURL>jdbc:derby:<!--foobarpattern-->conf/integrityservice/integritydb</DatabaseURL>
     </IntegrityDatabase>
-    <TimeBeforeMissingFileCheck>3600000</TimeBeforeMissingFileCheck> 
+    <TimeBeforeMissingFileCheck>PT1H</TimeBeforeMissingFileCheck>
     <AuditTrailContributerDatabase>
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
       <DatabaseURL>jdbc:derby:<!--foobarpattern-->conf/integrityservice/auditcontributerdb</DatabaseURL>
     </AuditTrailContributerDatabase>
+    <ObsoleteChecksumSettings>
+      <MaxChecksumAgeForPillar>
+        <PillarID>checksum-pillar</PillarID>
+        <MaxChecksumAge>P100Y</MaxChecksumAge>
+      </MaxChecksumAgeForPillar>
+      <MaxChecksumAgeForPillar>
+        <PillarID>file1-pillar</PillarID>
+        <MaxChecksumAge>PT1H</MaxChecksumAge>
+      </MaxChecksumAgeForPillar>
+      <MaxChecksumAgeForPillar>
+        <PillarID>file2-pillar</PillarID>
+        <MaxChecksumAge>PT1H</MaxChecksumAge>
+      </MaxChecksumAgeForPillar>
+    </ObsoleteChecksumSettings>
     <IntegrityReportsDir>conf/integrityservice/reportdir</IntegrityReportsDir>
     <PillarIntegrityDetails>
       <PillarDetails>
@@ -112,4 +126,10 @@
       </PillarDetails>
     </PillarIntegrityDetails>
   </IntegrityServiceSettings>
+  <FileExchangeSettings>
+    <ProtocolType>HTTP</ProtocolType>
+    <ServerName>localhost</ServerName>
+    <Port>80</Port>
+    <Path>/dav</Path>
+  </FileExchangeSettings>
 </ReferenceSettings>

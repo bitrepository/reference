@@ -26,13 +26,18 @@ import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.SettingsUtils;
+import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.integrityservice.cache.CollectionStat;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.PillarCollectionMetric;
 import org.bitrepository.integrityservice.cache.PillarCollectionStat;
+import org.bitrepository.integrityservice.checking.MaxChecksumAgeProvider;
 import org.bitrepository.integrityservice.statistics.StatisticsCollector;
+import org.bitrepository.integrityservice.workflow.step.HandleObsoleteChecksumsStep;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
+import org.bitrepository.settings.referencesettings.ObsoleteChecksumSettings;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +45,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -75,12 +82,12 @@ public abstract class IntegrityDAO {
     }
 
     /**
-     * Method to ensure that pillars found in RepositorySettings is present in the database
+     * Method to ensure that pillars found in RepositorySettings are present in the database
      */
     protected abstract void initializePillars();
 
     /**
-     * Method to ensure that collections found in RepositorySettings is present in the database
+     * Method to ensure that collections found in RepositorySettings are present in the database
      */
     protected abstract void initializeCollections();
 
@@ -439,7 +446,10 @@ public abstract class IntegrityDAO {
     public Map<String, PillarCollectionMetric> getPillarCollectionMetrics(String collectionID) {
         Map<String, PillarCollectionMetric> metrics = new HashMap<>();
         String selectSql =
-                "SELECT pillarID, COUNT(fileID) as filecount, SUM(filesize) as sizesum FROM fileinfo" + " WHERE collectionID = ?" +
+                "SELECT pillarID, COUNT(fileID) as filecount, SUM(filesize) as sizesum," +
+                        "   MIN(checksum_timestamp) as oldest_checksum_timestamp" +
+                        " FROM fileinfo" +
+                        " WHERE collectionID = ?" +
                         " GROUP BY pillarID";
 
         try (Connection conn = dbConnector.getConnection();
@@ -447,9 +457,13 @@ public abstract class IntegrityDAO {
              ResultSet dbResult = ps.executeQuery()) {
             while (dbResult.next()) {
                 String pillarID = dbResult.getString("pillarID");
-                Long fileCount = dbResult.getLong("filecount");
-                Long fileSize = dbResult.getLong("sizesum");
-                PillarCollectionMetric metric = new PillarCollectionMetric(fileSize, fileCount);
+                long fileCount = dbResult.getLong("filecount");
+                // In case SUM(filesize) returned null, dbResult.getLong() will return 0, which is the sum we want
+                long fileSize = dbResult.getLong("sizesum");
+                long oldestChecksumTimestampMillis = dbResult.getLong("oldest_checksum_timestamp");
+                Instant oldestChecksumTimestamp =
+                        dbResult.wasNull() ? null : Instant.ofEpochMilli(oldestChecksumTimestampMillis);
+                PillarCollectionMetric metric = new PillarCollectionMetric(fileSize, fileCount, oldestChecksumTimestamp);
                 metrics.put(pillarID, metric);
             }
         } catch (SQLException e) {
@@ -501,8 +515,13 @@ public abstract class IntegrityDAO {
         List<PillarCollectionStat> stats = new ArrayList<>();
 
         String latestPillarStatsSql = "SELECT pillarID, file_count, file_size, missing_files_count," +
-                " checksum_errors_count, missing_checksums_count, obsolete_checksums_count" + " FROM pillarstats" + " WHERE stat_key = (" +
-                " SELECT MAX(stat_key) FROM stats" + " WHERE collectionID = ?)";
+                "   checksum_errors_count, missing_checksums_count, obsolete_checksums_count," +
+                "   oldest_checksum_timestamp" +
+                " FROM pillarstats" +
+                " WHERE stat_key = (" +
+                "   SELECT MAX(stat_key)" +
+                "   FROM stats" +
+                "   WHERE collectionID = ?)";
 
         try (Connection conn = dbConnector.getConnection();
              PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, latestPillarStatsSql, collectionID)) {
@@ -520,8 +539,12 @@ public abstract class IntegrityDAO {
                     String pillarName = Objects.requireNonNullElse(SettingsUtils.getPillarName(pillarID), "N/A");
                     String pillarType = (SettingsUtils.getPillarType(pillarID) != null) ?
                             Objects.requireNonNull(SettingsUtils.getPillarType(pillarID)).value() : "Unknown";
-                    PillarCollectionStat p = new PillarCollectionStat(pillarID, collectionID, pillarName, pillarType, fileCount,
-                            dataSize, missingFiles, checksumErrors, missingChecksums, obsoleteChecksums, statsTime, updateTime);
+                    String maxAgeForChecksums = getMaxAgeForChecksums(pillarID);
+                    Instant oldestChecksumTimestamp = getOldestChecksumTimestamp(dbResult);
+                    PillarCollectionStat p = new PillarCollectionStat(pillarID, collectionID,
+                            pillarName, pillarType, fileCount, dataSize,
+                            missingFiles, checksumErrors, missingChecksums, obsoleteChecksums,
+                            maxAgeForChecksums, oldestChecksumTimestamp, statsTime, updateTime);
                     stats.add(p);
                 }
             }
@@ -532,6 +555,22 @@ public abstract class IntegrityDAO {
         }
 
         return stats;
+    }
+
+    @NotNull
+    private String getMaxAgeForChecksums(String pillarID) {
+        ObsoleteChecksumSettings obsoleteChecksumSettings =
+                SettingsUtils.getIntegrityServiceSettings().getObsoleteChecksumSettings();
+        MaxChecksumAgeProvider maxChecksumAgeProvider =
+                new MaxChecksumAgeProvider(HandleObsoleteChecksumsStep.DEFAULT_MAX_CHECKSUM_AGE,
+                        obsoleteChecksumSettings);
+        Duration maxAge = maxChecksumAgeProvider.getMaxChecksumAge(pillarID);
+        return maxAge.isZero() ? "unlimited" : TimeUtils.durationToHumanUsingEstimates(maxAge);
+    }
+
+    private Instant getOldestChecksumTimestamp(ResultSet dbResult) throws SQLException {
+        long oldestChecksumTimestamp = dbResult.getLong("oldest_checksum_timestamp");
+        return dbResult.wasNull() ? null : Instant.ofEpochMilli(oldestChecksumTimestamp);
     }
 
     /**

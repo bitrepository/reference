@@ -62,8 +62,8 @@
     </MessageBusConfiguration>
   </ProtocolSettings>
   <ClientSettings>
-    <IdentificationTimeout>180000</IdentificationTimeout>
-    <OperationTimeout>3600000</OperationTimeout>
+    <IdentificationTimeoutDuration>PT3M</IdentificationTimeoutDuration>
+    <OperationTimeoutDuration>PT1H</OperationTimeoutDuration>
   </ClientSettings>
   <PillarSettings/>
   <DeleteFileSettings/>

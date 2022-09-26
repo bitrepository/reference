@@ -37,6 +37,7 @@ import org.jaccept.structure.ExtendedTestCase;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
+import javax.xml.datatype.DatatypeConfigurationException;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -105,5 +106,5 @@ public abstract class IntegrityDatabaseTestCase extends ExtendedTestCase {
      * Method to modify the by constructor loaded settings. 
      * Default implementation does nothing, so override to change behavior. 
      */
-    protected void customizeSettings() { }
+    protected void customizeSettings() throws DatatypeConfigurationException { }
 }

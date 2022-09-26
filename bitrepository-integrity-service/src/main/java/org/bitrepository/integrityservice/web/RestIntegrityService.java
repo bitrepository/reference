@@ -273,8 +273,9 @@ public class RestIntegrityService {
                 String pillarName = Objects.requireNonNullElse(SettingsUtils.getPillarName(pillar), "N/A");
                 PillarType pillarTypeObject = SettingsUtils.getPillarType(pillar);
                 String pillarType = pillarTypeObject != null ? pillarTypeObject.value() : null;
-                PillarCollectionStat emptyStat = new PillarCollectionStat(pillar, collectionID, pillarName, pillarType, 0L, 0L, 0L, 0L, 0L,
-                        0L, new Date(0), new Date(0));
+                PillarCollectionStat emptyStat = new PillarCollectionStat(pillar, collectionID, pillarName,
+                        pillarType, 0L, 0L, 0L, 0L, 0L,
+                        0L, "", null, new Date(0), new Date(0));
                 stats.put(pillar, emptyStat);
             }
         }
@@ -291,7 +292,7 @@ public class RestIntegrityService {
     }
 
     /***
-     * Get the current workflow's setup as a JSON array
+     * Get the current workflow’s setup as a JSON array
      */
     @GET
     @Path("/getWorkflowSetup")
@@ -630,6 +631,8 @@ public class RestIntegrityService {
         jg.writeObjectField("checksumErrorCount", stat.getChecksumErrors());
         jg.writeObjectField("obsoleteChecksumsCount", stat.getObsoleteChecksums());
         jg.writeObjectField("missingChecksumsCount", stat.getMissingChecksums());
+        jg.writeObjectField("maxAgeForChecksums", stat.getMaxAgeForChecksums());
+        jg.writeObjectField("ageOfOldestChecksum", stat.getAgeOfOldestChecksum());
         jg.writeEndObject();
     }
 

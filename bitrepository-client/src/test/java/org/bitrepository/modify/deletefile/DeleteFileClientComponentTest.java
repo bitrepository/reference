@@ -45,15 +45,17 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.math.BigInteger;
+import javax.xml.datatype.DatatypeFactory;
 import java.nio.charset.StandardCharsets;
 
 public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
     private TestDeleteFileMessageFactory messageFactory;
+    private DatatypeFactory datatypeFactory;
 
     @BeforeMethod(alwaysRun=true)
     public void initialise() throws Exception {
         messageFactory = new TestDeleteFileMessageFactory(collectionID);
+        datatypeFactory = DatatypeFactory.newInstance();
     }
 
     @Test(groups={"regressiontest"})
@@ -94,8 +96,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
                 testEventHandler,
                 null);
 
-        IdentifyPillarsForDeleteFileRequest receivedIdentifyRequestMessage = null;
-        receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
+        IdentifyPillarsForDeleteFileRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
                 IdentifyPillarsForDeleteFileRequest.class);
         Assert.assertEquals(receivedIdentifyRequestMessage.getCollectionID(), collectionID);
         Assert.assertNotNull(receivedIdentifyRequestMessage.getCorrelationID());
@@ -193,7 +194,8 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
 
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
-        settingsForCUT.getRepositorySettings().getClientSettings().setIdentificationTimeout(BigInteger.valueOf(1000L));
+        settingsForCUT.getRepositorySettings().getClientSettings()
+                .setIdentificationTimeoutDuration(datatypeFactory.newDuration(1000));
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         DeleteFileClient deleteClient = createDeleteFileClient();
 
@@ -217,7 +219,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
 
         addStep("Do not respond. Just await the timeout.",
-                "Should make send a Failure event to the eventhandler.");
+                "Should make send a Failure event to the event handler.");
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_TIMEOUT);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_FAILED);
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
@@ -231,7 +233,8 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
 
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
-        settingsForCUT.getRepositorySettings().getClientSettings().setOperationTimeout(BigInteger.valueOf(100L));
+        settingsForCUT.getRepositorySettings().getClientSettings()
+                .setOperationTimeoutDuration(datatypeFactory.newDuration(100));
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
         DeleteFileClient deleteClient = createDeleteFileClient();
 
@@ -271,7 +274,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
 
         addStep("Do not respond. Just await the timeout.",
-                "Should make send a Failure event to the eventhandler.");
+                "Should make send a Failure event to the event handler.");
         Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 

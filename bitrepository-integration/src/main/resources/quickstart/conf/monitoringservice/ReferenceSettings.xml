@@ -27,15 +27,15 @@
   </GeneralSettings>
 
   <ClientSettings>
-    <MediatorCleanupInterval>1000</MediatorCleanupInterval>
-    <ConversationTimeout>3600000</ConversationTimeout>
+    <MediatorCleanupInterval>PT1S</MediatorCleanupInterval>
+    <ConversationTimeout>PT1H</ConversationTimeout>
   </ClientSettings>
   
   <GetStatusSettings></GetStatusSettings>
   
   <MonitoringServiceSettings>
     <ID>monitoring-service</ID>
-    <CollectionInterval>60000</CollectionInterval>
+    <CollectionInterval>PT1M</CollectionInterval>
     <MaxRetries>3</MaxRetries>
   </MonitoringServiceSettings>
 </ReferenceSettings>

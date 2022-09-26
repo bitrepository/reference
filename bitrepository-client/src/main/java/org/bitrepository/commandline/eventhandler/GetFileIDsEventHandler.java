@@ -26,13 +26,15 @@ import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.commandline.resultmodel.GetFileIDsResultModel;
 
+import java.time.Duration;
+
 /**
  * Event handler for paging through GetFileIDs results
  */
 public class GetFileIDsEventHandler extends PagingEventHandler {
     private final GetFileIDsResultModel model;
 
-    public GetFileIDsEventHandler(GetFileIDsResultModel model, Long timeout, OutputHandler outputHandler) {
+    public GetFileIDsEventHandler(GetFileIDsResultModel model, Duration timeout, OutputHandler outputHandler) {
         super(timeout, outputHandler);
         this.model = model;
     }
