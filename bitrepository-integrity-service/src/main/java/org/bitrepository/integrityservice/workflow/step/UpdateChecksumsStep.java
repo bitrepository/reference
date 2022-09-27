@@ -133,7 +133,7 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
                         integrityContributors.getFailedContributors(), collectionID);
                 throw new WorkflowAbortedException("Aborting workflow due to failure collecting checksums. " + "Cause: " + ofe.toString());
             } else {
-                log.info("Failure occured collecting fileIDs, continuing collecting checksums. Failure {}", ofe.toString());
+                log.info("Failure occurred collecting fileIDs, continuing collecting checksums. Failure {}", ofe.toString());
                 alerter.integrityFailed("Failure while collecting checksums, the check will continue " +
                                 "with the information available. The failed contributors were: " + integrityContributors.getFailedContributors(),
                         collectionID);
