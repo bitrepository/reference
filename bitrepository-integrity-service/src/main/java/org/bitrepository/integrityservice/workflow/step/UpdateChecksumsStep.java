@@ -49,16 +49,16 @@ import java.util.Set;
  * The step for collecting the checksums of all files from all pillars.
  */
 public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
+    protected final IntegrityModel store;
+    protected final String collectionID;
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final IntegrityInformationCollector collector;
-    protected final IntegrityModel store;
     private final ChecksumSpecTYPE checksumType;
     private final IntegrityAlerter alerter;
     private final Duration timeout;
     private final Integer maxNumberOfResultsPerConversation;
-    protected final String collectionID;
-    private boolean abortInCaseOfFailure = true;
     private final IntegrityContributors integrityContributors;
+    private boolean abortInCaseOfFailure = true;
 
     /**
      * @param collector    The client for collecting the checksums.
@@ -67,8 +67,8 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
      * @param checksumType The type of checksum to collect.
      */
     public UpdateChecksumsStep(IntegrityInformationCollector collector, IntegrityModel store, IntegrityAlerter alerter,
-                               ChecksumSpecTYPE checksumType, Settings settings, String collectionID,
-                               IntegrityContributors integrityContributors) {
+            ChecksumSpecTYPE checksumType, Settings settings, String collectionID,
+            IntegrityContributors integrityContributors) {
         this.collector = collector;
         this.store = store;
         this.checksumType = checksumType;
@@ -78,7 +78,8 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
         this.timeout = settings.getIdentificationTimeout().plus(settings.getOperationTimeout());
         this.maxNumberOfResultsPerConversation = SettingsUtils.getMaxClientPageSize();
         if (settings.getReferenceSettings().getIntegrityServiceSettings().isSetAbortOnFailedContributor()) {
-            abortInCaseOfFailure = settings.getReferenceSettings().getIntegrityServiceSettings().isAbortOnFailedContributor();
+            abortInCaseOfFailure = settings.getReferenceSettings().getIntegrityServiceSettings()
+                    .isAbortOnFailedContributor();
         }
     }
 
@@ -98,11 +99,14 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
             initialStepAction();
 
             Set<String> pillarsToCollectFrom = integrityContributors.getActiveContributors();
-            log.debug("Collecting checksums from '" + pillarsToCollectFrom + "' for collection '" + collectionID + "'.");
+            log.debug(
+                    "Collecting checksums from '" + pillarsToCollectFrom + "' for collection '" + collectionID + "'.");
             while (!pillarsToCollectFrom.isEmpty()) {
-                IntegrityCollectorEventHandler eventHandler = new IntegrityCollectorEventHandler(store, timeout, integrityContributors);
+                IntegrityCollectorEventHandler eventHandler = new IntegrityCollectorEventHandler(store, timeout,
+                        integrityContributors);
                 ContributorQuery[] queries = getQueries(pillarsToCollectFrom);
-                collector.getChecksums(collectionID, pillarsToCollectFrom, checksumType, null, "IntegrityService: " + getName(), queries,
+                collector.getChecksums(collectionID, pillarsToCollectFrom, checksumType, null,
+                        "IntegrityService: " + getName(), queries,
                         eventHandler);
 
                 OperationEvent event = eventHandler.getFinish();
@@ -131,12 +135,14 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
             if (abortInCaseOfFailure) {
                 alerter.integrityFailed("Integrity check aborted while getting checksums due to failed contributors: " +
                         integrityContributors.getFailedContributors(), collectionID);
-                throw new WorkflowAbortedException("Aborting workflow due to failure collecting checksums. " + "Cause: " + ofe.toString());
+                throw new WorkflowAbortedException("Aborting workflow due to failure collecting checksums. " +
+                        "Cause: " + ofe.toString());
             } else {
-                log.info("Failure occurred collecting fileIDs, continuing collecting checksums. Failure {}", ofe.toString());
+                log.info("Failure occurred collecting fileIDs, continuing collecting checksums. Failure {}",
+                        ofe.toString());
                 alerter.integrityFailed("Failure while collecting checksums, the check will continue " +
-                                "with the information available. The failed contributors were: " + integrityContributors.getFailedContributors(),
-                        collectionID);
+                        "with the information available. The failed contributors were: " +
+                        integrityContributors.getFailedContributors(), collectionID);
             }
         }
     }
