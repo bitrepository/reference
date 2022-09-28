@@ -71,7 +71,9 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
     }
 
     /**
-     * Queries the IntegrityModel for inconsistent checksums on each pillar. Reports them if any is returned.
+     * Queries the IntegrityModel for inconsistent checksums in the collection.
+     * Checks every reported inconsistent checksum, to verify that it's actually inconsistent.
+     * Updates database model to reflect the discovered situation.
      */
     @Override
     public synchronized void performStep() throws StepFailedException {

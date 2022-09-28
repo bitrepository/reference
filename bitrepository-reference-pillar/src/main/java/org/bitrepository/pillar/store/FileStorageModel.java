@@ -78,8 +78,7 @@ public class FileStorageModel extends StorageModel {
     }
 
     @Override
-    public void verifyFileToCacheConsistencyOfAllDataIfRequired(
-            String collectionID) {
+    public void verifyFileToCacheConsistencyOfAllDataIfRequired(String collectionID) {
         Boolean verify = settings.getReferenceSettings().getPillarSettings().isVerifyDataConsistencyOnMessage();
         if (verify != null && verify) {
             verifyFileToCacheConsistencyOfAllData(collectionID);

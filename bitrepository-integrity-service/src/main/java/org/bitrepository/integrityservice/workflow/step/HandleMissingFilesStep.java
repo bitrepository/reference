@@ -69,9 +69,7 @@ public class HandleMissingFilesStep extends AbstractWorkFlowStep {
     }
 
     /**
-     * Queries the IntegrityModel for inconsistent checksums in the collection.
-     * Checks every reported inconsistent checksum, to verify that it's actually inconsistent.
-     * Updates database model to reflect the discovered situation.
+     * Queries the IntegrityModel for missing files on each pillar. Reports them if any is returned.
      */
     @Override
     public synchronized void performStep() throws StepFailedException {
