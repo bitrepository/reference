@@ -111,6 +111,7 @@
 <script src="bootstrap/js/bootstrap.min.js"></script>
 <script src="menu.js"></script>
 <script src="table-modal.js"></script>
+<script src="download-modal.js"></script>
 <script src="utils.js"></script>
 <script src="CollectionNameMapper.js"></script>
 <script src="numeral.min.js"></script>
@@ -119,6 +120,7 @@
     let pillarIntegrityStatuses = {};
     let workflows = {};
     let modal;
+    let downloadModal;
     let updatePageInterval;
     let nameMapper;
     let integrityServiceUrl;
@@ -240,14 +242,28 @@
         }
     }
 
+    function showDownloadModal(integrityURL) {
+        return function () {
+            downloadModal = new DownloadModal(getCollectionID(), "#modalBody", integrityURL);
+            $("#modalLabel").html("Select Reports to Download");
+            $("#modalBody").html("<p>Loading</p>");
+            downloadModal.getModal();
+            $("#modalDialog").modal('show');
+        }
+    }
+
     function getBodyContext(id, type) {
         let context = {};
         context.url = integrityServiceUrl + "/integrity/IntegrityService/";
 
         if (type === "Pillar Name") {
             context.element = id + "-pillarName";
+            context.title = type + " on " + id.toUpperCase();
+            context.propertyName = "pillarName";
         } else if (type === "Pillar Type") {
             context.element = id + "-pillarType";
+            context.title = type + " on " + id.toUpperCase();
+            context.propertyName = "pillarType";
         } else if (type === "Total files") {
             context.element = id + "-totalFileCount";
             context.title = type + " on " + id.toUpperCase();
@@ -388,8 +404,10 @@
     function collectionChanged(collectionID) {
         clearContent();
         $("#integrityLegend").html("Integrity information for collection " + nameMapper.getName(collectionID));
-        let reportUrl = `${integrityServiceUrl}/integrity/IntegrityService/getLatestIntegrityReport?collectionID=${collectionID}&workflowID=CompleteIntegrityCheck`;
-        $("#integrityReportGetter").html(`<a class="btn btn-link" href="${reportUrl}" target="_blank">Get latest integrity report</a>`);
+        let reportUrl = `${integrityServiceUrl}/integrity/IntegrityService`;
+        $("#integrityReportGetter").html(`<a class="btn btn-link" target="_blank">Download latest integrity reports</a>`).on("click",
+            showDownloadModal(reportUrl));
+
         clearInterval(updatePageInterval);
         loadWorkflows();
         getCollectionInformation(collectionID);

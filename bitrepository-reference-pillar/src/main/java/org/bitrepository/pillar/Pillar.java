@@ -90,8 +90,8 @@ public class Pillar {
      */
     private void initializeWorkflows() {
         Long interval = DEFAULT_RECALCULATION_WORKFLOW_TIME;
-        Duration recalculateOldChecksumsInterval =
-                settings.getReferenceSettings().getPillarSettings().getRecalculateOldChecksumsInterval();
+        Duration recalculateOldChecksumsInterval = settings.getReferenceSettings().getPillarSettings()
+                .getRecalculateOldChecksumsInterval();
         if (recalculateOldChecksumsInterval != null) {
             interval = XmlUtils.xmlDurationToMilliseconds(recalculateOldChecksumsInterval);
         }
