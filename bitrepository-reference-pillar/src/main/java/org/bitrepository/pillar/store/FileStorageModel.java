@@ -74,7 +74,7 @@ public class FileStorageModel extends StorageModel {
      * @param fileExchange    The file exchange.
      */
     public FileStorageModel(FileStore archives, ChecksumStore cache, AlarmDispatcher alarmDispatcher, Settings settings,
-            FileExchange fileExchange) {
+                            FileExchange fileExchange) {
         super(archives, cache, alarmDispatcher, settings, fileExchange);
         log.info("Instantiating the FileStorageModel: " + getPillarID());
     }
@@ -106,7 +106,8 @@ public class FileStorageModel extends StorageModel {
 
     @Override
     public ExtractedFileIDsResultSet getFileIDsResultSet(String fileID, XMLGregorianCalendar minTimestamp,
-            XMLGregorianCalendar maxTimestamp, Long maxResults, String collectionID) {
+                                                         XMLGregorianCalendar maxTimestamp, Long maxResults,
+                                                         String collectionID) {
         Long minTime = null;
         if (minTimestamp != null) {
             minTime = CalendarUtils.convertFromXMLGregorianCalendar(minTimestamp).getTime();
@@ -144,7 +145,7 @@ public class FileStorageModel extends StorageModel {
 
     @Override
     protected ExtractedChecksumResultSet getNonDefaultChecksumResultSet(Long maxResults, String collectionID,
-            ChecksumSpecTYPE csSpec) {
+                                                                        ChecksumSpecTYPE csSpec) {
         ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
 
         long i = 0;
@@ -178,7 +179,7 @@ public class FileStorageModel extends StorageModel {
 
     @Override
     public void putFile(String collectionID, String fileID, String fileAddress,
-            ChecksumDataForFileTYPE expectedChecksum) throws RequestHandlerException {
+                        ChecksumDataForFileTYPE expectedChecksum) throws RequestHandlerException {
         transferFileToTmp(fileID, collectionID, fileAddress);
         verifyFileInTmp(fileID, collectionID, expectedChecksum);
         fileArchive.moveToArchive(fileID, collectionID);
@@ -187,7 +188,7 @@ public class FileStorageModel extends StorageModel {
 
     @Override
     public void replaceFile(String fileID, String collectionID, String fileAddress,
-            ChecksumDataForFileTYPE expectedChecksum) throws RequestHandlerException {
+                            ChecksumDataForFileTYPE expectedChecksum) throws RequestHandlerException {
         transferFileToTmp(fileID, collectionID, fileAddress);
         verifyFileInTmp(fileID, collectionID, expectedChecksum);
         fileArchive.replaceFile(fileID, collectionID);
@@ -230,7 +231,7 @@ public class FileStorageModel extends StorageModel {
      * @return The requested file ids.
      */
     private ExtractedFileIDsResultSet getFileIds(Long minTime, Long maxTime, Long maxNumberOfResults,
-            String collectionID) {
+                                                 String collectionID) {
         ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
 
         // Map between lastModifiedDate and fileInfo.
