@@ -76,7 +76,7 @@ public abstract class StorageModel {
      * @param fileExchange    The file exchange.
      */
     protected StorageModel(FileStore archives, ChecksumStore cache, AlarmDispatcher alarmDispatcher, Settings settings,
-                           FileExchange fileExchange) {
+            FileExchange fileExchange) {
         this.cache = cache;
         this.fileArchive = archives;
         this.alarmDispatcher = alarmDispatcher;
@@ -125,7 +125,8 @@ public abstract class StorageModel {
      * @return The requested type of checksum for the given file.
      * @throws RequestHandlerException If a non-default checksum is requested for a checksum-pillar.
      */
-    public String getChecksumForFile(String fileID, String collectionID, ChecksumSpecTYPE csType) throws RequestHandlerException {
+    public String getChecksumForFile(String fileID, String collectionID, ChecksumSpecTYPE csType)
+            throws RequestHandlerException {
         if (csType.equals(defaultChecksumSpec)) {
             verifyFileToCacheConsistencyIfRequired(fileID, collectionID);
             return cache.getChecksum(fileID, collectionID);
@@ -195,16 +196,15 @@ public abstract class StorageModel {
      * @throws RequestHandlerException If it is a non-default checksum specification, which is not supported (e.g. if
      *                                 it is a ChecksumPillar).
      */
-    public ExtractedChecksumResultSet getChecksumResultSet(XMLGregorianCalendar minTimestamp, XMLGregorianCalendar maxTimestamp,
-                                                           Long maxResults, String collectionID, ChecksumSpecTYPE csSpec)
+    public ExtractedChecksumResultSet getChecksumResultSet(XMLGregorianCalendar minTimestamp,
+            XMLGregorianCalendar maxTimestamp, Long maxResults, String collectionID, ChecksumSpecTYPE csSpec)
             throws RequestHandlerException {
         verifyFileToCacheConsistencyOfAllDataIfRequired(collectionID);
         if (csSpec.equals(defaultChecksumSpec)) {
             return cache.getChecksumResults(minTimestamp, maxTimestamp, maxResults, collectionID);
         } else {
-            log.info(
-                    "Bulk-extraction of non-default checksums for spec: " + csSpec + ", on collection " + collectionID + ", with maximum " +
-                            maxResults + " results.");
+            log.info("Bulk-extraction of non-default checksums for spec: {}, on collection {}, with maximum {} " +
+                    "results.", csSpec, collectionID, maxResults);
             // We ignore minTimestamp and maxTimestamp when dealing with non-default checksums.
             return getNonDefaultChecksumResultSet(maxResults, collectionID, csSpec);
         }
@@ -224,18 +224,29 @@ public abstract class StorageModel {
      * @throws RequestHandlerException If it is not possible to extract the checksum result, e.g. due to unsupported
      *                                 checksum specification.
      */
-    public ExtractedChecksumResultSet getSingleChecksumResultSet(String fileID, String collectionID, XMLGregorianCalendar minTimestamp,
-                                                                 XMLGregorianCalendar maxTimestamp, ChecksumSpecTYPE csSpec)
+    public ExtractedChecksumResultSet getSingleChecksumResultSet(String fileID, String collectionID,
+            XMLGregorianCalendar minTimestamp, XMLGregorianCalendar maxTimestamp, ChecksumSpecTYPE csSpec)
             throws RequestHandlerException {
         ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
         ChecksumEntry entry = getChecksumEntryForFile(fileID, collectionID, csSpec);
-        if ((minTimestamp == null ||
-                CalendarUtils.convertFromXMLGregorianCalendar(minTimestamp).getTime() <= entry.getCalculationDate().getTime()) &&
-                (maxTimestamp == null ||
-                        CalendarUtils.convertFromXMLGregorianCalendar(maxTimestamp).getTime() >= entry.getCalculationDate().getTime())) {
+
+        boolean lowerBound = minTimestamp == null || getTime(minTimestamp) <= entry.getCalculationDate().getTime();
+        boolean upperBound = maxTimestamp == null || getTime(maxTimestamp) >= entry.getCalculationDate().getTime();
+        if (lowerBound && upperBound) {
             res.insertChecksumEntry(entry);
         }
         return res;
+    }
+
+    /**
+     * Helper method to convert from XMLGregorianCalender to a {@link Long}.
+     *
+     * @param xmlGregorianCalendar The {@link XMLGregorianCalendar} timestamp to convert.
+     * @return Returns the number of milliseconds since January 1, 1970, 00:00:00 GMT represented by this date, as a
+     * {@link Long}.
+     */
+    private long getTime(XMLGregorianCalendar xmlGregorianCalendar) {
+        return CalendarUtils.convertFromXMLGregorianCalendar(xmlGregorianCalendar).getTime();
     }
 
     /**
@@ -278,8 +289,8 @@ public abstract class StorageModel {
         // Validate against ChecksumPillar specific algorithm (if is a ChecksumPillar).
         if (getChecksumPillarSpec() != null && !(getChecksumPillarSpec().equals(checksumSpec))) {
             throw new InvalidMessageException(ResponseCode.REQUEST_NOT_SUPPORTED,
-                    "Cannot handle the checksum " + "specification '" + checksumSpec + "'.This checksum pillar can only handle '" +
-                            getChecksumPillarSpec() + "'");
+                    "Cannot handle the checksum " + "specification '" + checksumSpec +
+                            "'.This checksum pillar can only handle '" + getChecksumPillarSpec() + "'");
         }
 
         try {
@@ -322,7 +333,8 @@ public abstract class StorageModel {
      * @throws RequestHandlerException If it is not possible to store a file with the given size within the
      *                                 archive of the given collection.
      */
-    public abstract void verifyEnoughFreeSpaceLeftForFile(Long fileSize, String collectionID) throws RequestHandlerException;
+    public abstract void verifyEnoughFreeSpaceLeftForFile(Long fileSize, String collectionID)
+            throws RequestHandlerException;
 
     /**
      * Handles the ReplaceFile operation.
@@ -334,8 +346,8 @@ public abstract class StorageModel {
      * @throws RequestHandlerException If something goes wrong, e.g. the downloaded file does not have the expected
      *                                 checksum.
      */
-    public abstract void replaceFile(String fileID, String collectionID, String fileAddress, ChecksumDataForFileTYPE validationChecksum)
-            throws RequestHandlerException;
+    public abstract void replaceFile(String fileID, String collectionID, String fileAddress,
+            ChecksumDataForFileTYPE validationChecksum) throws RequestHandlerException;
 
     /**
      * Handles the PutFile operation.
@@ -347,8 +359,8 @@ public abstract class StorageModel {
      * @throws RequestHandlerException If something goes wrong, e.g. the downloaded file does not have the expected
      *                                 checksum.
      */
-    public abstract void putFile(String collectionID, String fileID, String fileAddress, ChecksumDataForFileTYPE expectedChecksum)
-            throws RequestHandlerException;
+    public abstract void putFile(String collectionID, String fileID, String fileAddress,
+            ChecksumDataForFileTYPE expectedChecksum) throws RequestHandlerException;
 
     /**
      * Verify the consistency between all the data in the file archive and in the cache, if it is required by the
@@ -400,7 +412,8 @@ public abstract class StorageModel {
      * @return The fileInfo for the file.
      * @throws RequestHandlerException If it is a ChecksumPillar.
      */
-    public abstract FileInfo getFileInfoForActualFile(String fileID, String collectionID) throws RequestHandlerException;
+    public abstract FileInfo getFileInfoForActualFile(String fileID, String collectionID)
+            throws RequestHandlerException;
 
     /**
      * Extracts a set of file ids according to the given restrictions.
@@ -413,7 +426,7 @@ public abstract class StorageModel {
      * @return The extracted file ids.
      */
     public abstract ExtractedFileIDsResultSet getFileIDsResultSet(String fileID, XMLGregorianCalendar minTimestamp,
-                                                                  XMLGregorianCalendar maxTimestamp, Long maxResults, String collectionID);
+            XMLGregorianCalendar maxTimestamp, Long maxResults, String collectionID);
 
     /**
      * Retrieves the checksums with a non-default checksum specification for some files.
@@ -426,7 +439,7 @@ public abstract class StorageModel {
      *                                 ChecksumPillar.
      */
     protected abstract ExtractedChecksumResultSet getNonDefaultChecksumResultSet(Long maxResults, String collectionID,
-                                                                                 ChecksumSpecTYPE csSpec) throws RequestHandlerException;
+            ChecksumSpecTYPE csSpec) throws RequestHandlerException;
 
     /**
      * Throws an exception unless the actual file exists and is available.

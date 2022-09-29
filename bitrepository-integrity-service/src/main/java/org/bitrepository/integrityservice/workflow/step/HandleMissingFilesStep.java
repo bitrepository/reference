@@ -55,8 +55,8 @@ public class HandleMissingFilesStep extends AbstractWorkFlowStep {
     private final StatisticsCollector sc;
     private final Duration gracePeriod;
 
-    public HandleMissingFilesStep(IntegrityModel store, IntegrityReporter reporter, StatisticsCollector statisticsCollector,
-                                  Duration missingFileGracePeriod) {
+    public HandleMissingFilesStep(IntegrityModel store, IntegrityReporter reporter,
+            StatisticsCollector statisticsCollector, Duration missingFileGracePeriod) {
         this.store = store;
         this.reporter = reporter;
         this.sc = statisticsCollector;
@@ -80,10 +80,11 @@ public class HandleMissingFilesStep extends AbstractWorkFlowStep {
         }
         Instant missingAfterInstant = Instant.now().minus(gracePeriod);
         Date missingAfterDate = Date.from(missingAfterInstant);
-        log.info("Looking for missing files, files need to be older than {} to be considered missing.", missingAfterDate);
+        log.info("Looking for missing files, files need to be older than {} to be considered missing.",
+                missingAfterDate);
 
-        try (IntegrityIssueIterator issueIterator = store.findFilesWithMissingCopies(reporter.getCollectionID(), pillars.size(), 0L,
-                Long.MAX_VALUE)) {
+        try (IntegrityIssueIterator issueIterator = store.findFilesWithMissingCopies(reporter.getCollectionID(),
+                pillars.size(), 0L, Long.MAX_VALUE)) {
 
             String missingFile;
             while ((missingFile = issueIterator.getNextIntegrityIssue()) != null) {

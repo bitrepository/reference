@@ -88,8 +88,8 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
         workflowStart = new Date();
 
         if (context == null) {
-            throw new IllegalStateException("The workflow can not be started before the initialise method has been " +
-                    "called.");
+            throw new IllegalStateException(
+                    "The workflow can not be started before the initialise method has been " + "called.");
         }
         IntegrityReporter reporter = new BasicIntegrityReporter(jobID.getCollectionID(), jobID.getWorkflowName(),
                 IntegrityServiceManager.getIntegrityReportStorageDir());
@@ -111,8 +111,8 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
             performStep(updateChecksumStep);
 
             if (cleanDeletedFiles()) {
-                HandleDeletedFilesStep handleDeletedFilesStep = new HandleDeletedFilesStep(context.getStore(),
-                        reporter, workflowStart, integrityContributors.getFinishedContributors());
+                HandleDeletedFilesStep handleDeletedFilesStep = new HandleDeletedFilesStep(context.getStore(), reporter,
+                        workflowStart, integrityContributors.getFinishedContributors());
                 performStep(handleDeletedFilesStep);
             }
 
@@ -136,8 +136,8 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
                     context.getSettings(), context.getStore(), reporter, statisticsCollector);
             performStep(handleObsoleteChecksumsStep);
 
-            CreateStatisticsEntryStep createStatistics = new CreateStatisticsEntryStep(
-                    context.getStore(), collectionID, statisticsCollector);
+            CreateStatisticsEntryStep createStatistics = new CreateStatisticsEntryStep(context.getStore(), collectionID,
+                    statisticsCollector);
             performStep(createStatistics);
 
             if (currentState() != WorkflowState.ABORTED) {
