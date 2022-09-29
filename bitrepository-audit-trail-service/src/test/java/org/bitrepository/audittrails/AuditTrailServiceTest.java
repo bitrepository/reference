@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -54,35 +54,35 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 public class AuditTrailServiceTest extends ExtendedTestCase {
-    /** The settings for the tests. Should be instantiated in the setup.*/
+    /** The settings for the tests. Should be instantiated in the setup. */
     Settings settings;
-    
+
     public static final String TEST_COLLECTION = "dummy-collection";
     public static final String DEFAULT_CONTRIBUTOR = "Contributor1";
     private ThreadFactory threadFactory;
 
 
-    @BeforeClass (alwaysRun = true)
+    @BeforeClass(alwaysRun = true)
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("AuditTrailServiceUnderTest");
         Collection c = settings.getRepositorySettings().getCollections().getCollection().get(0);
         settings.getRepositorySettings().getCollections().getCollection().clear();
         c.setID(TEST_COLLECTION);
         settings.getRepositorySettings().getCollections().getCollection().add(c);
-        threadFactory = new DefaultThreadFactory(this.getClass().getSimpleName(),Thread.NORM_PRIORITY);
+        threadFactory = new DefaultThreadFactory(this.getClass().getSimpleName(), Thread.NORM_PRIORITY);
     }
-    
+
     @Test(groups = {"unstable"})
     public void auditTrailServiceTest() throws Exception {
         addDescription("Test the Audit Trail Service");
         DatatypeFactory factory = DatatypeFactory.newInstance();
         settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().clear();
-        settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().add(DEFAULT_CONTRIBUTOR);
+        settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs()
+                .add(DEFAULT_CONTRIBUTOR);
         settings.getReferenceSettings().getAuditTrailServiceSettings()
                 .setCollectAuditInterval(factory.newDuration(800));
         settings.getReferenceSettings().getAuditTrailServiceSettings().setTimerTaskCheckInterval(100L);
-        settings.getReferenceSettings().getAuditTrailServiceSettings()
-                .setGracePeriod(factory.newDuration(800));
+        settings.getReferenceSettings().getAuditTrailServiceSettings().setGracePeriod(factory.newDuration(800));
 
         AuditTrailStore store = mock(AuditTrailStore.class);
         AuditTrailClient client = mock(AuditTrailClient.class);
@@ -90,39 +90,37 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
 
         ContributorMediator mediator = mock(ContributorMediator.class);
         AuditTrailCollector collector = new AuditTrailCollector(settings, client, store, alarmDispatcher);
-        
+
         addStep("Instantiate the service.", "Should work.");
         AuditTrailService service = new AuditTrailService(store, collector, mediator, settings);
         service.start();
-        
+
         addStep("Try to collect audit trails.", "Should make a call to the client.");
         CollectionRunner collectionRunner = new CollectionRunner(service);
         Thread t = threadFactory.newThread(collectionRunner);
         t.start();
-        
+
         ArgumentCaptor<EventHandler> eventHandlerCaptor = ArgumentCaptor.forClass(EventHandler.class);
         verify(client, timeout(3000).times(1)).getAuditTrails(eq(TEST_COLLECTION), any(AuditTrailQuery[].class),
                 isNull(), isNull(), eventHandlerCaptor.capture(), any(String.class));
-        
-        AuditTrailResult event = new AuditTrailResult(DEFAULT_CONTRIBUTOR, TEST_COLLECTION, new ResultingAuditTrails(), false);
+
+        AuditTrailResult event = new AuditTrailResult(DEFAULT_CONTRIBUTOR, TEST_COLLECTION, new ResultingAuditTrails(),
+                false);
         eventHandlerCaptor.getValue().handleEvent(event);
         eventHandlerCaptor.getValue().handleEvent(new CompleteEvent(TEST_COLLECTION, null));
-        
-        addStep("Retrieve audit trails with and without an action", "Should work.");
-        
-        verify(store, times(1)).addAuditTrails(any(AuditTrailEvents.class), eq(TEST_COLLECTION), eq(DEFAULT_CONTRIBUTOR));
-        service.queryAuditTrailEventsByIterator(null, null, null, null, null, null, null, null, null);
-        verify(store, times(1)).getAuditTrailsByIterator(isNull(), isNull(),
-                isNull(), isNull(), isNull(), isNull(),
-                isNull(), isNull(), isNull(), isNull(),
-                isNull());
-        service.queryAuditTrailEventsByIterator(null, null, null, null, null, null, FileAction.FAILURE, null, null);
-        verify(store, times(1)).getAuditTrailsByIterator(isNull(), isNull(),
-                isNull(), isNull(), isNull(), isNull(),
-                eq(FileAction.FAILURE), isNull(), isNull(), isNull(),
-                isNull());
 
-        
+        addStep("Retrieve audit trails with and without an action", "Should work.");
+
+        verify(store, times(1)).addAuditTrails(any(AuditTrailEvents.class), eq(TEST_COLLECTION),
+                eq(DEFAULT_CONTRIBUTOR));
+        service.queryAuditTrailEventsByIterator(null, null, null, null, null, null, null, null, null);
+        verify(store, times(1)).getAuditTrailsByIterator(isNull(), isNull(), isNull(), isNull(), isNull(), isNull(),
+                isNull(), isNull(), isNull(), isNull(), isNull());
+        service.queryAuditTrailEventsByIterator(null, null, null, null, null, null, FileAction.FAILURE, null, null);
+        verify(store, times(1)).getAuditTrailsByIterator(isNull(), isNull(), isNull(), isNull(), isNull(), isNull(),
+                eq(FileAction.FAILURE), isNull(), isNull(), isNull(), isNull());
+
+
         addStep("Shutdown", "");
         service.shutdown();
     }

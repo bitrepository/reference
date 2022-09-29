@@ -83,7 +83,7 @@ public class AuditTrailService implements LifeCycledService {
 
     /**
      * Constructor for audit trail service with disabled preservation.
-     *
+     * <p/>
      * See {@link #AuditTrailService(AuditTrailStore, AuditTrailCollector, AuditTrailPreserver, ContributorMediator,
      * Settings)} for param descriptions.
      */
@@ -119,15 +119,20 @@ public class AuditTrailService implements LifeCycledService {
     }
 
     /**
-     * Collects all the newest audit trails from the given collection.
-     * TODO this currently calls all collections. It should only call a specified collection, which should be given
-     * as argument.
+     * Collects all the newest audit trails from all collections.
      */
     public void collectAuditTrails() {
         for (org.bitrepository.settings.repositorysettings.Collection c
                 : settings.getRepositorySettings().getCollections().getCollection()) {
             collector.collectNewestAudits(c.getID());
         }
+    }
+
+    /**
+     * Collects all the newest audit trails from a specific collection.
+     */
+    public void collectAuditTrails(String collectionID) {
+        collector.collectNewestAudits(collectionID);
     }
 
     /**
@@ -151,7 +156,7 @@ public class AuditTrailService implements LifeCycledService {
      * @return PreservationInfo or null if not enabled.
      */
     public PreservationInfo getPreservationInfo() {
-        if (preserver == null ) {
+        if (preserver == null) {
             return null;
         }
         return preserver.getPreservationInfo();
