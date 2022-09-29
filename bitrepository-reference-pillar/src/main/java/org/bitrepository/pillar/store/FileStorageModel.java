@@ -63,6 +63,8 @@ import java.util.concurrent.ConcurrentSkipListMap;
  */
 public class FileStorageModel extends StorageModel {
     private final Logger log = LoggerFactory.getLogger(getClass());
+    private final Boolean verify = settings.getReferenceSettings().getPillarSettings()
+            .isVerifyDataConsistencyOnMessage();
 
     /**
      * @param archives        The file archives.
@@ -79,7 +81,6 @@ public class FileStorageModel extends StorageModel {
 
     @Override
     public void verifyFileToCacheConsistencyOfAllDataIfRequired(String collectionID) {
-        Boolean verify = settings.getReferenceSettings().getPillarSettings().isVerifyDataConsistencyOnMessage();
         if (verify != null && verify) {
             verifyFileToCacheConsistencyOfAllData(collectionID);
         }
@@ -87,7 +88,6 @@ public class FileStorageModel extends StorageModel {
 
     @Override
     protected void verifyFileToCacheConsistencyIfRequired(String fileID, String collectionID) {
-        Boolean verify = settings.getReferenceSettings().getPillarSettings().isVerifyDataConsistencyOnMessage();
         if (verify != null && verify) {
             recalculateChecksum(fileID, collectionID);
         }
@@ -133,13 +133,13 @@ public class FileStorageModel extends StorageModel {
 
     @Override
     public void verifyEnoughFreeSpaceLeftForFile(Long fileSize, String collectionID) throws RequestHandlerException {
-        long useableSizeLeft = fileArchive.sizeLeftInArchive(collectionID) -
+        long usableSizeLeft = fileArchive.sizeLeftInArchive(collectionID) -
                 settings.getReferenceSettings().getPillarSettings().getMinimumSizeLeft();
 
-        if (useableSizeLeft < fileSize) {
+        if (usableSizeLeft < fileSize) {
             throw new IdentifyContributorException(ResponseCode.FAILURE,
                     "Not enough space left in this pillar. " + "Requires '" + fileSize + "' but has only '" +
-                            useableSizeLeft + "'");
+                            usableSizeLeft + "'");
         }
     }
 

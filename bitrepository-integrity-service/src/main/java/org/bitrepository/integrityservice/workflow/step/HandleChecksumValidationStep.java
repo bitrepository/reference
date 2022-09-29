@@ -52,8 +52,8 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
     private Long allPillarChecksumErrors = 0L;
     private Long collectionChecksumErrors = 0L;
 
-    public HandleChecksumValidationStep(IntegrityModel store, AuditTrailManager auditManager, IntegrityReporter reporter,
-                                        StatisticsCollector statisticsCollector) {
+    public HandleChecksumValidationStep(IntegrityModel store, AuditTrailManager auditManager,
+            IntegrityReporter reporter, StatisticsCollector statisticsCollector) {
         this.store = store;
         this.auditManager = auditManager;
         this.reporter = reporter;
@@ -71,11 +71,14 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
     }
 
     /**
-     * Queries the IntegrityModel for missing files on each pillar. Reports them if any is returned.
+     * Queries the IntegrityModel for inconsistent checksums in the collection.
+     * Checks every reported inconsistent checksum, to verify that it's actually inconsistent.
+     * Updates database model to reflect the discovered situation.
      */
     @Override
     public synchronized void performStep() throws StepFailedException {
-        try (IntegrityIssueIterator inconsistentFilesIterator = store.getFilesWithInconsistentChecksums(reporter.getCollectionID())) {
+        try (IntegrityIssueIterator inconsistentFilesIterator = store.getFilesWithInconsistentChecksums(
+                reporter.getCollectionID())) {
             String fileID;
             while ((fileID = inconsistentFilesIterator.getNextIntegrityIssue()) != null) {
                 handleChecksumInconsistency(store.getFileInfos(fileID, reporter.getCollectionID()), fileID);
@@ -120,7 +123,7 @@ public class HandleChecksumValidationStep extends AbstractWorkFlowStep {
     }
 
     /**
-     * Creates a audit-trail for inconsistency between checksums.
+     * Creates an audit-trail for inconsistency between checksums.
      * If only one pillar is alone with a checksum compared to all the others, then it is pointed out at the possible
      * cause.
      *

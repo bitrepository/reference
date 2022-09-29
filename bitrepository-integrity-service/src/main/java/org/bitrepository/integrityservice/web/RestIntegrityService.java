@@ -253,8 +253,8 @@ public class RestIntegrityService {
         jg.writeStartArray();
         for (PillarCollectionStat stat : stats.values()) {
             writeIntegrityStatusObject(stat, jg);
-            log.debug(String.format(Locale.ROOT, "IntegrityStatus: Wrote pillar name: '%s' to pillar '%s'",
-                    stat.getPillarName(), stat.getPillarID()));
+            log.debug("IntegrityStatus: Wrote pillar name: '{}' to pillar '{}'", stat.getPillarName(),
+                    stat.getPillarID());
         }
         jg.writeEndArray();
         jg.flush();
