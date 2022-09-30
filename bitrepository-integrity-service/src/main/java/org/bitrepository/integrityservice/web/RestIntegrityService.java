@@ -516,34 +516,19 @@ public class RestIntegrityService {
      */
     private List<String> compareMissingFiles(List<String> missingOnPillar, String collectionID, String pillar) {
         List<String> agreedMissingFileIDs = new ArrayList<>();
-        for (String missingFileID : missingOnPillar) {
-            try {
-                if (missingOnPillar(missingFileID, collectionID, pillar)) {
+        try {
+            List<String> filesMissingOnPillar = getReportPart(ReportPart.MISSING_FILE, collectionID, pillar, 1,
+                    Integer.MAX_VALUE);
+            for (String missingFileID : missingOnPillar) {
+                if (Collections.binarySearch(filesMissingOnPillar, missingFileID) >= 0) {
                     agreedMissingFileIDs.add(missingFileID);
                 }
-            } catch (FileNotFoundException ignored) {
-                break; // If there is no integrity report for the given pillar, we break the for-loop.
             }
+        } catch (FileNotFoundException ignored) {
+            // If no integrity report exists, we just return an empty list.
         }
 
         return agreedMissingFileIDs;
-    }
-
-    /**
-     * Helper method to found out if a {@code fileID} is also missing on another given pillar.
-     *
-     * @return A {@link Boolean} representing if the {@code fileID} is missing on the given pillar.
-     * @throws FileNotFoundException If there's no integrity report, a {@link FileNotFoundException} will be thrown.
-     */
-    private boolean missingOnPillar(String fileID, String collectionID, String pillar) throws FileNotFoundException {
-        List<String> filesMissingOnPillar = getReportPart(ReportPart.MISSING_FILE, collectionID, pillar, 1,
-                Integer.MAX_VALUE);
-
-        if (!filesMissingOnPillar.isEmpty()) {
-            return Collections.binarySearch(filesMissingOnPillar, fileID) >= 0;
-        }
-
-        return false;
     }
 
     /**
