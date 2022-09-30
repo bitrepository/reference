@@ -66,6 +66,7 @@ import java.io.OutputStream;
 import java.io.StringWriter;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -106,9 +107,9 @@ public class RestIntegrityService {
     @Path("/getTotalFileIDs")
     @Produces(MediaType.APPLICATION_JSON)
     public HashMap<String, List<String>> getTotalFileIDs(@QueryParam("collectionID") String collectionID,
-            @QueryParam("pillarID") String pillarID,
-            @QueryParam("page") int page,
-            @DefaultValue("100") @QueryParam("pageSize") int pageSize) {
+                                                         @QueryParam("pillarID") String pillarID,
+                                                         @QueryParam("page") int page,
+                                                         @DefaultValue("100") @QueryParam("pageSize") int pageSize) {
 
         IntegrityIssueIterator it = model.getFilesOnPillar(pillarID, getOffset(page, pageSize), pageSize, collectionID);
 
@@ -138,9 +139,9 @@ public class RestIntegrityService {
     @Path("/getMissingFileIDs")
     @Produces(MediaType.APPLICATION_JSON)
     public HashMap<String, List<String>> getMissingFileIDs(@QueryParam("collectionID") String collectionID,
-            @QueryParam("pillarID") String pillarID,
-            @QueryParam("page") int page,
-            @DefaultValue("100") @QueryParam("pageSize") int pageSize) {
+                                                           @QueryParam("pillarID") String pillarID,
+                                                           @QueryParam("page") int page,
+                                                           @DefaultValue("100") @QueryParam("pageSize") int pageSize) {
         HashMap<String, List<String>> output = new HashMap<>();
         ReportPart part = ReportPart.MISSING_FILE;
         List<String> missingOnPillar;
@@ -159,7 +160,7 @@ public class RestIntegrityService {
         }
 
         for (String otherPillar : otherPillars) {
-            missingOnOtherPillar = compareMissingFiles(missingOnPillar, collectionID, otherPillar, pageSize);
+            missingOnOtherPillar = compareMissingFiles(missingOnPillar, collectionID, otherPillar);
             output.put(otherPillar, missingOnOtherPillar);
         }
 
@@ -177,9 +178,9 @@ public class RestIntegrityService {
     @Path("/getMissingChecksumsFileIDs")
     @Produces(MediaType.APPLICATION_JSON)
     public HashMap<String, List<String>> getMissingChecksums(@QueryParam("collectionID") String collectionID,
-            @QueryParam("pillarID") String pillarID,
-            @QueryParam("page") int page,
-            @DefaultValue("100") @QueryParam("pageSize") int pageSize) {
+                                                             @QueryParam("pillarID") String pillarID,
+                                                             @QueryParam("page") int page,
+                                                             @DefaultValue("100") @QueryParam("pageSize") int pageSize) {
         List<String> streamingOutput = getReportPartForPillar(ReportPart.MISSING_CHECKSUM, collectionID, pillarID, page,
                 pageSize);
         return new HashMap<>(Map.of(pillarID, streamingOutput));
@@ -196,9 +197,9 @@ public class RestIntegrityService {
     @Path("/getObsoleteChecksumsFileIDs")
     @Produces(MediaType.APPLICATION_JSON)
     public HashMap<String, List<String>> geObsoleteChecksums(@QueryParam("collectionID") String collectionID,
-            @QueryParam("pillarID") String pillarID,
-            @QueryParam("page") int page,
-            @DefaultValue("100") @QueryParam("pageSize") int pageSize) {
+                                                             @QueryParam("pillarID") String pillarID,
+                                                             @QueryParam("page") int page,
+                                                             @DefaultValue("100") @QueryParam("pageSize") int pageSize) {
         List<String> streamingOutput = getReportPartForPillar(ReportPart.OBSOLETE_CHECKSUM, collectionID, pillarID,
                 page, pageSize);
         return new HashMap<>(Map.of(pillarID, streamingOutput));
@@ -215,9 +216,9 @@ public class RestIntegrityService {
     @Path("/getChecksumErrorFileIDs")
     @Produces(MediaType.APPLICATION_JSON)
     public HashMap<String, List<String>> getChecksumErrors(@QueryParam("collectionID") String collectionID,
-            @QueryParam("pillarID") String pillarID,
-            @QueryParam("page") int page,
-            @DefaultValue("100") @QueryParam("pageSize") int pageSize) {
+                                                           @QueryParam("pillarID") String pillarID,
+                                                           @QueryParam("page") int page,
+                                                           @DefaultValue("100") @QueryParam("pageSize") int pageSize) {
         List<String> streamingOutput = getReportPartForPillar(ReportPart.CHECKSUM_ERROR, collectionID, pillarID, page,
                 pageSize);
         return new HashMap<>(Map.of(pillarID, streamingOutput));
@@ -356,7 +357,7 @@ public class RestIntegrityService {
     @Path("/getIntegrityReportsAsZIP")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public Response getIntegrityReportsAsZIP(@QueryParam("collectionID") String collectionID,
-            @QueryParam("reports") List<String> reports) {
+                                             @QueryParam("reports") List<String> reports) {
         String fileName = "IntegrityReports.zip";
         HashMap<String, File> files = new HashMap<>();
 
@@ -423,7 +424,7 @@ public class RestIntegrityService {
     @Consumes("application/x-www-form-urlencoded")
     @Produces("text/html")
     public String startWorkflow(@FormParam("workflowID") String workflowID,
-            @FormParam("collectionID") String collectionID) {
+                                @FormParam("collectionID") String collectionID) {
         log.debug("Starting workflow '" + workflowID + "' on collection '" + collectionID + "'.");
         return workflowManager.startWorkflow(new JobID(workflowID, collectionID));
     }
@@ -488,11 +489,8 @@ public class RestIntegrityService {
      *
      * @return Returns either a {@link List<String>} of fileIDs or throws a {@link WebApplicationException}.
      */
-    private List<String> getReportPartForPillar(ReportPart part,
-            String collectionID,
-            String pillarID,
-            int page,
-            int pageSize) {
+    private List<String> getReportPartForPillar(ReportPart part, String collectionID, String pillarID, int page,
+                                                int pageSize) {
         List<String> reportPartContent;
         try {
             reportPartContent = getReportPart(part, collectionID, pillarID, page, pageSize);
@@ -514,19 +512,13 @@ public class RestIntegrityService {
      * @param missingOnPillar The list of files that are missing on the pillar in focus.
      * @param collectionID    The collection ID.
      * @param pillar          The pillar to compare to.
-     * @param pageSize        The paging size.
      * @return Returns a {@link List<String>} containing the files that were also missing on the given pillar.
      */
-    private List<String> compareMissingFiles(List<String> missingOnPillar,
-            String collectionID,
-            String pillar,
-            int pageSize) {
-        List<String> batchToCheck;
+    private List<String> compareMissingFiles(List<String> missingOnPillar, String collectionID, String pillar) {
         List<String> agreedMissingFileIDs = new ArrayList<>();
         for (String missingFileID : missingOnPillar) {
             try {
-                batchToCheck = findBatchRecursively(missingFileID, collectionID, pillar, 1, pageSize);
-                if (batchToCheck.contains(missingFileID)) {
+                if (missingOnPillar(missingFileID, collectionID, pillar)) {
                     agreedMissingFileIDs.add(missingFileID);
                 }
             } catch (FileNotFoundException ignored) {
@@ -538,24 +530,20 @@ public class RestIntegrityService {
     }
 
     /**
-     * Helper method to recursively find the batch in which the {@code fileID} we're looking for would be found if it exists.
+     * Helper method to found out if a {@code fileID} is also missing on another given pillar.
      *
-     * @return A {@link List<String>} of size {@code pageSize} with the files in which the {@code fileID} could be found.
+     * @return A {@link Boolean} representing if the {@code fileID} is missing on the given pillar.
      * @throws FileNotFoundException If there's no integrity report, a {@link FileNotFoundException} will be thrown.
      */
-    private List<String> findBatchRecursively(String fileID, String collectionID, String pillar, int i, int pageSize)
-            throws FileNotFoundException {
-        List<String> batchToCheck = getReportPart(ReportPart.MISSING_FILE, collectionID, pillar, i, pageSize);
+    private boolean missingOnPillar(String fileID, String collectionID, String pillar) throws FileNotFoundException {
+        List<String> filesMissingOnPillar = getReportPart(ReportPart.MISSING_FILE, collectionID, pillar, 1,
+                Integer.MAX_VALUE);
 
-        if (!batchToCheck.isEmpty()) {
-            String lastFileInBatch = batchToCheck.get(batchToCheck.size() - 1);
-            if (fileID.compareTo(lastFileInBatch) > 0) {
-                // If the last index of the current batch is lexicographically lower than the fileID, then skip to next batch
-                batchToCheck = findBatchRecursively(fileID, collectionID, pillar, i + 1, pageSize);
-            }
+        if (!filesMissingOnPillar.isEmpty()) {
+            return Collections.binarySearch(filesMissingOnPillar, fileID) >= 0;
         }
 
-        return batchToCheck;
+        return false;
     }
 
     /**
