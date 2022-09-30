@@ -115,8 +115,8 @@ public class RestIntegrityService {
 
         if (it == null) {
             throw new WebApplicationException(
-                    status(Status.NO_CONTENT).entity("Failed to get missing files from database")
-                            .type(MediaType.TEXT_PLAIN).build());
+                    status(Status.NO_CONTENT).entity("Failed to get missing files from database").type(
+                            MediaType.TEXT_PLAIN).build());
         }
 
         List<String> iteratorAsList = StreamingTools.iteratorToList(it);
@@ -147,8 +147,8 @@ public class RestIntegrityService {
         List<String> missingOnPillar;
         List<String> missingOnOtherPillar;
 
-        List<String> otherPillars = SettingsUtils.getPillarIDsForCollection(collectionID).stream()
-                .filter(pillar -> !pillar.equals(pillarID)).collect(Collectors.toList());
+        List<String> otherPillars = SettingsUtils.getPillarIDsForCollection(collectionID).stream().filter(
+                pillar -> !pillar.equals(pillarID)).collect(Collectors.toList());
 
         try {
             missingOnPillar = getReportPart(part, collectionID, pillarID, page, pageSize);
@@ -254,8 +254,6 @@ public class RestIntegrityService {
         jg.writeStartArray();
         for (PillarCollectionStat stat : stats.values()) {
             writeIntegrityStatusObject(stat, jg);
-            log.debug("IntegrityStatus: Wrote pillar name: '{}' to pillar '{}'", stat.getPillarName(),
-                    stat.getPillarID());
         }
         jg.writeEndArray();
         jg.flush();
@@ -347,8 +345,8 @@ public class RestIntegrityService {
             fullReport = integrityReportProvider.getLatestIntegrityReportReader(collectionID).getFullReport();
         } catch (FileNotFoundException e) {
             throw new WebApplicationException(status(Status.NOT_FOUND).entity(
-                            String.format(Locale.ROOT, "No integrity report for collection: '%s' found!", collectionID))
-                    .type(MediaType.TEXT_PLAIN).build());
+                    String.format(Locale.ROOT, "No integrity report for collection: '%s' found!", collectionID)).type(
+                    MediaType.TEXT_PLAIN).build());
         }
         return output -> streamFile(fullReport, output);
     }
@@ -379,8 +377,8 @@ public class RestIntegrityService {
                     zipOut.flush();
                 } catch (IOException e) {
                     throw new WebApplicationException(status(Status.INTERNAL_SERVER_ERROR).entity(
-                                    "Something went wrong when trying to zip the file " + key + ".").type(MediaType.TEXT_PLAIN)
-                            .build());
+                            "Something went wrong when trying to zip the file " + key + ".").type(
+                            MediaType.TEXT_PLAIN).build());
                 }
             });
             zipOut.close();
