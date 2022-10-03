@@ -18,17 +18,16 @@
 .modal-table-head {
     padding: 5px;
     position: sticky;
-    top: 2%;
+    top: 3.6em;
     height: 35px;
     background-color: #fff;
 }
 
 .modal-body {
     position: relative;
-    margin-top: 20px;
     height: inherit;
-    max-height: 86%;
-    padding: 15px;
+    max-height: 90%;
+    padding: 0 10px 0 10px;
     overflow-y: auto;
 }
 
@@ -54,16 +53,17 @@
 }
 
 .fixed-div {
-    position: fixed;
-    width: 95%;
-    height: 6%;
+    position: sticky;
+    top: 0;
+    padding-top: 10px;
+    width: 100%;
+    left: 0;
     background-color: #fff;
-    top: 6%;
 }
 
 .search-bar {
-    width: 33%;
-    margin: 10px;
+    width: 350px;
+    margin-left: 30px;
 }
 
 .file-id {

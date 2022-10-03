@@ -289,9 +289,9 @@
             context.title = type + " on " + id.toUpperCase();
             context.propertyName = "checksumErrorCount";
             context.url += "getChecksumErrorFileIDs";
-        } else if(type === "Checksum age limit") {
+        } else if (type === "Checksum age limit") {
             context.element = id + "-maxAgeForChecksums";
-        } else if(type === "Oldest checksum age") {
+        } else if (type === "Oldest checksum age") {
             context.element = id + "-ageOfOldestChecksum";
         }
         context.url += "?pillarID=" + id + "&collectionID=" + getCollectionID();
@@ -330,7 +330,7 @@
         html += "<td id=\"" + id + "-maxAgeForChecksums\"></td>";
         html += "<td id=\"" + id + "-ageOfOldestChecksum\"></td>";
         html += "</tr>";
-      return html;
+        return html;
     }
 
     function updateTableHeader() {
@@ -369,15 +369,21 @@
     function updateIntCell(pillarID, type, cellValue) {
         let context = getBodyContext(pillarID, type);
 
-        if (cellValue === 0) {
-            let html = `<button class="btn btn-link" disabled>${formatInt(cellValue)}</button>`;
-            $("#" + context.element).html(html);
-        } else {
-            let innerElement = context.element + "-a";
-            let html = `<a class="btn btn-link" id="${innerElement}">${formatInt(cellValue)}</a>`;
-            $("#" + context.element).html(html);
-            $("#" + innerElement).click(showModal(type, context.propertyName, context.title, context.url, pillarID));
-        }
+        //TODO: remove
+        let innerElement = context.element + "-a";
+        let html = `<a class="btn btn-link" id="${innerElement}">${formatInt(cellValue)}</a>`;
+        $("#" + context.element).html(html);
+        $("#" + innerElement).click(showModal(type, context.propertyName, context.title, context.url, pillarID));
+
+        // if (cellValue === 0) {
+        //     let html = `<button class="btn btn-link" disabled>${formatInt(cellValue)}</button>`;
+        //     $("#" + context.element).html(html);
+        // } else {
+        //     let innerElement = context.element + "-a";
+        //     let html = `<a class="btn btn-link" id="${innerElement}">${formatInt(cellValue)}</a>`;
+        //     $("#" + context.element).html(html);
+        //     $("#" + innerElement).click(showModal(type, context.propertyName, context.title, context.url, pillarID));
+        // }
     }
 
     function initializePage() {
