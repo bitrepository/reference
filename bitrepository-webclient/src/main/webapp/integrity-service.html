@@ -369,21 +369,15 @@
     function updateIntCell(pillarID, type, cellValue) {
         let context = getBodyContext(pillarID, type);
 
-        //TODO: remove
-        let innerElement = context.element + "-a";
-        let html = `<a class="btn btn-link" id="${innerElement}">${formatInt(cellValue)}</a>`;
-        $("#" + context.element).html(html);
-        $("#" + innerElement).click(showModal(type, context.propertyName, context.title, context.url, pillarID));
-
-        // if (cellValue === 0) {
-        //     let html = `<button class="btn btn-link" disabled>${formatInt(cellValue)}</button>`;
-        //     $("#" + context.element).html(html);
-        // } else {
-        //     let innerElement = context.element + "-a";
-        //     let html = `<a class="btn btn-link" id="${innerElement}">${formatInt(cellValue)}</a>`;
-        //     $("#" + context.element).html(html);
-        //     $("#" + innerElement).click(showModal(type, context.propertyName, context.title, context.url, pillarID));
-        // }
+        if (cellValue === 0) {
+            let html = `<button class="btn btn-link" disabled>${formatInt(cellValue)}</button>`;
+            $("#" + context.element).html(html);
+        } else {
+            let innerElement = context.element + "-a";
+            let html = `<a class="btn btn-link" id="${innerElement}">${formatInt(cellValue)}</a>`;
+            $("#" + context.element).html(html);
+            $("#" + innerElement).click(showModal(type, context.propertyName, context.title, context.url, pillarID));
+        }
     }
 
     function initializePage() {

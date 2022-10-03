@@ -32,7 +32,6 @@ function TableModal(operation, pillarID, url, contentElement, getTotalItemCountC
         let maxPages = Math.ceil(this.getTotalItemCountCallback() / this.pageSize);
 
         $.getJSON(this.url + "&pageSize=" + this.pageSize + "&page=" + page, {}, function (json) {
-            //let html = `<div style="padding : 15px">`;
             let html = ``;
 
             // Initialize pillar and files information
@@ -98,7 +97,6 @@ function TableModal(operation, pillarID, url, contentElement, getTotalItemCountC
             html += `</table>`;
             html += `<p class="no-result-p" style="text-align:center; margin-top: 15px; display: none;">No results found</p>`;
             html += `</div>`;
-            //html += `</div>`;
 
             // Assign html and activate searchbar filtering and copy to clipboard.
             $(contentElement).html(html);
