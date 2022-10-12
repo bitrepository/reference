@@ -22,13 +22,14 @@
 package org.bitrepository.audittrails.preserver;
 
 import org.apache.commons.codec.DecoderException;
-import org.bitrepository.common.TimerTaskSchedule;
+import org.bitrepository.audittrails.AuditTrailTaskStarter;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.audittrails.webservice.PreservationInfo;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.TimerTaskSchedule;
 import org.bitrepository.common.exceptions.OperationFailedException;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.Base16Utils;
@@ -52,12 +53,10 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -65,13 +64,11 @@ import java.util.TimerTask;
  * Handles the preservation of audit trails to a collection defined for the local repository.
  * This means, that each set of audit trails will be preserved within its own collection.
  */
-public class LocalAuditTrailPreserver implements AuditTrailPreserver {
+public class LocalAuditTrailPreserver extends AuditTrailTaskStarter implements AuditTrailPreserver {
     private final Logger log = LoggerFactory.getLogger(getClass());
-    private final AuditTrailStore store;
     private final BlockingPutFileClient client;
     private final Map<String, AuditPacker> auditPackers = new HashMap<>();
     private final AuditTrailPreservation preservationSettings;
-    private final Settings settings;
     private final FileExchange exchange;
     private Timer timer;
     private AuditPreservationTimerTask preservationTask = null;
@@ -83,13 +80,10 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
      * @param client   The PutFileClient for putting the audit trail packages to the collection.
      */
     public LocalAuditTrailPreserver(Settings settings, AuditTrailStore store, PutFileClient client, FileExchange exchange) {
-        ArgumentValidator.checkNotNull(settings, "Settings preservationSettings");
-        ArgumentValidator.checkNotNull(store, "AuditTrailStore store");
+        super(settings, store);
         ArgumentValidator.checkNotNull(client, "PutFileClient client");
 
-        this.settings = settings;
         this.preservationSettings = settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailPreservation();
-        this.store = store;
         this.client = new BlockingPutFileClient(client);
         this.exchange = exchange;
         for (String collectionID : SettingsUtils.getAllCollectionsIDs()) {
@@ -126,16 +120,19 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
         javax.xml.datatype.Duration preservationIntervalXmlDur = preservationSettings.getAuditTrailPreservationInterval();
         Duration preservationInterval = XmlUtils.xmlDurationToDuration(preservationIntervalXmlDur);
         long timerCheckIntervalMillis = preservationInterval.dividedBy(10).toMillis();
-        log.info("Instantiating the preservation of audit trails every {}",
-                TimeUtils.durationToHuman(preservationInterval));
+        Duration preservationGracePeriod = getGracePeriod();
+        log.info("Starting the preservation of audit trails every {} after grace period of {}.",
+                TimeUtils.durationToHuman(preservationInterval), TimeUtils.durationToHuman(preservationGracePeriod));
         timer = new Timer(true);
-        preservationTask = new AuditPreservationTimerTask(preservationInterval.toMillis());
-        timer.scheduleAtFixedRate(preservationTask, timerCheckIntervalMillis, timerCheckIntervalMillis);
+        preservationTask = new AuditPreservationTimerTask(preservationInterval.toMillis(),
+                Math.toIntExact(preservationGracePeriod.toMillis()));
+        timer.scheduleAtFixedRate(preservationTask, preservationGracePeriod.toMillis(), timerCheckIntervalMillis);
     }
 
     @Override
     public void close() {
         if (timer != null) {
+            preservationTask.cancel();
             timer.cancel();
         }
     }
@@ -270,8 +267,8 @@ public class LocalAuditTrailPreserver implements AuditTrailPreserver {
          * @param interval The interval between running this timer task.
          */
         // TODO: Replace old time representation (https://sbforge.org/jira/browse/BITMAG-1180)
-        private AuditPreservationTimerTask(long interval) {
-            this.schedule = new TimerTaskSchedule(interval, 0);
+        private AuditPreservationTimerTask(long interval, int gracePeriod) {
+            this.schedule = new TimerTaskSchedule(interval, gracePeriod);
         }
 
         public Date getNextScheduledRun() {

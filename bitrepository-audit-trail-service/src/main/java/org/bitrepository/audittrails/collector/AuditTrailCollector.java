@@ -25,6 +25,7 @@
 package org.bitrepository.audittrails.collector;
 
 import org.bitrepository.access.getaudittrails.AuditTrailClient;
+import org.bitrepository.audittrails.AuditTrailTaskStarter;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.audittrails.webservice.CollectorInfo;
 import org.bitrepository.common.ArgumentValidator;
@@ -46,36 +47,29 @@ import java.util.Timer;
 /**
  * Manages the retrieval of AuditTrails from contributors.
  */
-public class AuditTrailCollector {
+public class AuditTrailCollector extends AuditTrailTaskStarter {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final Map<String, AuditTrailCollectionTimerTask> collectorTasks = new HashMap<>();
     private final Timer timer;
-    private final Settings settings;
-    /**
-     * Initial grace period in milliseconds after startup to allow the system to finish startup.
-     */
-    private static final Duration DEFAULT_GRACE_PERIOD = Duration.ZERO;
 
     /**
      * @param settings        The settings for this collector.
      * @param client          The client for handling the conversation for collecting the audit trails.
      * @param store           The storage of the audit trails data.
-     * @param alarmDispatcher the alarm dispatcher. Can be null.
+     * @param alarmDispatcher The alarm dispatcher. Can be null.
      */
     public AuditTrailCollector(Settings settings, AuditTrailClient client, AuditTrailStore store,
                                AlarmDispatcher alarmDispatcher) {
-        ArgumentValidator.checkNotNull(settings, "settings");
+        super(settings, store);
         ArgumentValidator.checkNotNull(client, "AuditTrailClient client");
-        ArgumentValidator.checkNotNull(store, "AuditTrailStore store");
         ArgumentValidator.checkNotNull(alarmDispatcher, "AlarmDispatcher alarmDispatcher");
 
-
-        this.settings = settings;
         this.timer = new Timer(true);
         javax.xml.datatype.Duration collectAuditInterval =
                 settings.getReferenceSettings().getAuditTrailServiceSettings().getCollectAuditInterval();
         Duration collectionInterval = XmlUtils.xmlDurationToDuration(collectAuditInterval);
         long collectionIntervalMillis = collectionInterval.toMillis();
+        Duration collectionGracePeriod = getGracePeriod();
 
         for (Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
             IncrementalCollector collector = new IncrementalCollector(c.getID(),
@@ -84,11 +78,10 @@ public class AuditTrailCollector {
                     SettingsUtils.getMaxClientPageSize(),
                     alarmDispatcher);
             AuditTrailCollectionTimerTask collectorTask = new AuditTrailCollectionTimerTask(
-                    collector, collectionIntervalMillis, Math.toIntExact(getGracePeriod().toMillis()));
-            log.info("Will start collection of audit trail every " +
-                    TimeUtils.durationToHuman(collectionInterval) + " " +
-                    "after a grace period of " + TimeUtils.durationToHuman(getGracePeriod()));
-            timer.scheduleAtFixedRate(collectorTask, getGracePeriod().toMillis(), collectionIntervalMillis / 10);
+                    collector, collectionIntervalMillis, Math.toIntExact(collectionGracePeriod.toMillis()));
+            log.info("Will start collection of audit trail every " + TimeUtils.durationToHuman(collectionInterval) +
+                    "after a grace period of " + TimeUtils.durationToHuman(collectionGracePeriod));
+            timer.scheduleAtFixedRate(collectorTask, collectionGracePeriod.toMillis(), collectionIntervalMillis / 10);
             collectorTasks.put(c.getID(), collectorTask);
         }
     }
@@ -108,7 +101,7 @@ public class AuditTrailCollector {
                 info.setLastDuration("Collection has not finished yet");
             }
         } else {
-            info.setLastStart("Audit trail collection has not started");
+            info.setLastStart("Audit trail collection has not started yet");
             info.setLastDuration("Not available");
         }
         info.setNextStart(TimeUtils.shortDate(nextRun));
@@ -123,20 +116,6 @@ public class AuditTrailCollector {
      */
     public void collectNewestAudits(String collectionID) {
         collectorTasks.get(collectionID).runCollection();
-    }
-
-    /**
-     * @return The time to wait before starting collection of audit trails. This enables the system to have time to
-     * finish startup before they have to start delivering/process audit trails.
-     */
-    private Duration getGracePeriod() {
-        if (settings.getReferenceSettings().getAuditTrailServiceSettings().isSetGracePeriod()) {
-            javax.xml.datatype.Duration gracePeriod =
-                    settings.getReferenceSettings().getAuditTrailServiceSettings().getGracePeriod();
-            return XmlUtils.xmlDurationToDuration(gracePeriod);
-        } else {
-            return DEFAULT_GRACE_PERIOD;
-        }
     }
 
     /**
