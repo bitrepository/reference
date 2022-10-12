@@ -79,8 +79,8 @@ public class AuditTrailCollector extends AuditTrailTaskStarter {
                     alarmDispatcher);
             AuditTrailCollectionTimerTask collectorTask = new AuditTrailCollectionTimerTask(
                     collector, collectionIntervalMillis, Math.toIntExact(collectionGracePeriod.toMillis()));
-            log.info("Will start collection of audit trail every " + TimeUtils.durationToHuman(collectionInterval) +
-                    "after a grace period of " + TimeUtils.durationToHuman(collectionGracePeriod));
+            log.info("Starting collection of audit trails every {} after grace period of {}.",
+                    TimeUtils.durationToHuman(collectionInterval), TimeUtils.durationToHuman(collectionGracePeriod));
             timer.scheduleAtFixedRate(collectorTask, collectionGracePeriod.toMillis(), collectionIntervalMillis / 10);
             collectorTasks.put(c.getID(), collectorTask);
         }

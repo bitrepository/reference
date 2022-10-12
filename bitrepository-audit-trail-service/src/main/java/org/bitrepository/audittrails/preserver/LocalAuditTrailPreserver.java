@@ -121,7 +121,7 @@ public class LocalAuditTrailPreserver extends AuditTrailTaskStarter implements A
         Duration preservationInterval = XmlUtils.xmlDurationToDuration(preservationIntervalXmlDur);
         long timerCheckIntervalMillis = preservationInterval.dividedBy(10).toMillis();
         Duration preservationGracePeriod = getGracePeriod();
-        log.info("Starting the preservation of audit trails every {} after grace period of {}.",
+        log.info("Starting preservation of audit trails every {} after grace period of {}.",
                 TimeUtils.durationToHuman(preservationInterval), TimeUtils.durationToHuman(preservationGracePeriod));
         timer = new Timer(true);
         preservationTask = new AuditPreservationTimerTask(preservationInterval.toMillis(),
