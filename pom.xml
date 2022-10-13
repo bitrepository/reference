@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.bitrepository.reference</groupId>
   <artifactId>bitrepository-parent</artifactId>
-  <version>1.11</version>
+  <version>1.11-SNAPSHOT</version>
 
   <parent>
     <groupId>org.sbforge</groupId>
@@ -125,7 +125,7 @@
     <url>https://sbforge.org/fisheye/browse/bitrepository-reference</url>
     <connection>scm:git:git@github.com:bitrepository/reference.git</connection>
     <developerConnection>scm:git:git@github.com:bitrepository/reference.git</developerConnection>
-    <tag>bitrepository-parent-1.11</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <dependencies>
