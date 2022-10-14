@@ -117,16 +117,16 @@ public class LocalAuditTrailPreserver extends AuditTrailTaskStarter implements A
             log.debug("Cancelling old timer.");
             timer.cancel();
         }
+
         javax.xml.datatype.Duration preservationIntervalXmlDur = preservationSettings.getAuditTrailPreservationInterval();
         Duration preservationInterval = XmlUtils.xmlDurationToDuration(preservationIntervalXmlDur);
-        long timerCheckIntervalMillis = preservationInterval.dividedBy(10).toMillis();
         Duration preservationGracePeriod = getGracePeriod();
         log.info("Starting preservation of audit trails every {} after grace period of {}.",
                 TimeUtils.durationToHuman(preservationInterval), TimeUtils.durationToHuman(preservationGracePeriod));
         timer = new Timer(true);
         preservationTask = new AuditPreservationTimerTask(preservationInterval.toMillis(),
                 Math.toIntExact(preservationGracePeriod.toMillis()));
-        timer.scheduleAtFixedRate(preservationTask, preservationGracePeriod.toMillis(), timerCheckIntervalMillis);
+        timer.scheduleAtFixedRate(preservationTask, preservationGracePeriod.toMillis(), preservationInterval.toMillis());
     }
 
     @Override
@@ -285,13 +285,11 @@ public class LocalAuditTrailPreserver extends AuditTrailTaskStarter implements A
 
         @Override
         public void run() {
-            if (getNextScheduledRun().getTime() < System.currentTimeMillis()) {
-                log.info("Starting preservation of audit trails.");
-                schedule.start();
-                preserveRepositoryAuditTrails();
-                schedule.finish();
-                log.info("Finished preservation. Scheduled new preservation task to start {}", getNextScheduledRun());
-            }
+            log.info("Starting preservation of audit trails.");
+            schedule.start();
+            preserveRepositoryAuditTrails();
+            schedule.finish();
+            log.info("Finished preservation. Scheduled new preservation task to start {}", getNextScheduledRun());
         }
     }
 }

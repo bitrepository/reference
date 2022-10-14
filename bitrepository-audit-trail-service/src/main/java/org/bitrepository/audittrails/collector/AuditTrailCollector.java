@@ -68,7 +68,6 @@ public class AuditTrailCollector extends AuditTrailTaskStarter {
         javax.xml.datatype.Duration collectAuditInterval =
                 settings.getReferenceSettings().getAuditTrailServiceSettings().getCollectAuditInterval();
         Duration collectionInterval = XmlUtils.xmlDurationToDuration(collectAuditInterval);
-        long collectionIntervalMillis = collectionInterval.toMillis();
         Duration collectionGracePeriod = getGracePeriod();
 
         for (Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
@@ -78,10 +77,10 @@ public class AuditTrailCollector extends AuditTrailTaskStarter {
                     SettingsUtils.getMaxClientPageSize(),
                     alarmDispatcher);
             AuditTrailCollectionTimerTask collectorTask = new AuditTrailCollectionTimerTask(
-                    collector, collectionIntervalMillis, Math.toIntExact(collectionGracePeriod.toMillis()));
+                    collector, collectionInterval.toMillis(), Math.toIntExact(collectionGracePeriod.toMillis()));
             log.info("Starting collection of audit trails every {} after grace period of {}.",
                     TimeUtils.durationToHuman(collectionInterval), TimeUtils.durationToHuman(collectionGracePeriod));
-            timer.scheduleAtFixedRate(collectorTask, collectionGracePeriod.toMillis(), collectionIntervalMillis / 10);
+            timer.scheduleAtFixedRate(collectorTask, collectionGracePeriod.toMillis(), collectionInterval.toMillis());
             collectorTasks.put(c.getID(), collectorTask);
         }
     }
