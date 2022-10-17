@@ -63,7 +63,7 @@ public class BasicAlarmService implements AlarmService {
 
     @Override
     public void addHandler(AlarmHandler handler) {
-        log.info("Adding handler '" + handler.getClass().getName() + "' for alarms.");
+        log.info("Adding handler '{}' for alarms.", handler.getClass().getName());
         alarmMediator.addHandler(handler);
     }
 

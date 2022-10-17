@@ -130,13 +130,13 @@ public class ReferenceArchive {
         File downloadedFile;
         synchronized (lock) {
             downloadedFile = dir.getNewFileInTempDir(fileID);
-            log.debug("Downloading the file '" + fileID + "' for validation.");
+            log.debug("Downloading the file '{}' for validation", fileID);
 
             // Save InputStream to the file.
             try (BufferedOutputStream bufferedOutputstream
                          = new BufferedOutputStream(new FileOutputStream(downloadedFile))) {
                 byte[] buffer = new byte[MAX_BUFFER_SIZE];
-                int bytesRead = 0;
+                int bytesRead;
                 while ((bytesRead = inputStream.read(buffer)) != -1) {
                     bufferedOutputstream.write(buffer, 0, bytesRead);
                 }
@@ -152,7 +152,7 @@ public class ReferenceArchive {
      */
     public void moveToArchive(String fileID) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
-        log.info("Moving the file '" + fileID + "' to archive.");
+        log.info("Moving the file '{}' to archive", fileID);
 
         synchronized (lock) {
             ArchiveDirectory dir = getDirWithTmpFile(fileID);
@@ -218,7 +218,7 @@ public class ReferenceArchive {
     public void ensureFileNotInTmpDir(String fileID) {
         for (ArchiveDirectory dir : directories) {
             if (dir.hasFileInTempDir(fileID)) {
-                log.info("Removing tmp file '" + fileID + "' from tmp dir '" + dir + "'.");
+                log.info("Removing tmp file '{}' from tmp dir '{}'", fileID, dir);
                 dir.removeFileFromTmp(fileID);
             }
         }

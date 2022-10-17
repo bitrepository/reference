@@ -60,7 +60,7 @@ public class ConversationEventMonitor {
     /**
      * The general logger.
      */
-    private final ConversationLogger log;
+    private final ConversationLogger logger;
     /**
      * The event logger. Adds context information to the log entry.
      */
@@ -94,7 +94,7 @@ public class ConversationEventMonitor {
      */
     public ConversationEventMonitor(String collectionID, String conversationID, OperationType operationType, String fileID,
                                     EventHandler eventHandler) {
-        log = new ConversationLogger();
+        logger = new ConversationLogger();
         this.collectionID = collectionID;
         this.conversationID = getShortConversationID(conversationID);
         this.operationType = operationType;
@@ -260,7 +260,8 @@ public class ConversationEventMonitor {
      * @param e       Description of the context
      */
     public void invalidMessage(Message message, Exception e) {
-        log.warn("Received invalid " + message.getClass().getSimpleName() + " from " + message.getFrom() + "\nMessage: " + message, e);
+        logger.warn("Received invalid " + message.getClass().getSimpleName() + " from " + message.getFrom() +
+                "\nMessage: " + message, e);
         notifyEventListeners((createContributorEvent(WARNING, e.getMessage(), message.getFrom())));
     }
 
@@ -270,7 +271,7 @@ public class ConversationEventMonitor {
      * @param message the message
      */
     public void outOfSequenceMessage(Message message) {
-        log.warn("Can not handle messages of type " + message.getClass().getSimpleName());
+        logger.warn("Can not handle messages of type " + message.getClass().getSimpleName());
     }
 
     /**
@@ -302,7 +303,7 @@ public class ConversationEventMonitor {
      * @param info The debug info to log.
      */
     public void debug(String info) {
-        log.debug(info);
+        logger.debug(info);
     }
 
     /**
@@ -312,7 +313,7 @@ public class ConversationEventMonitor {
      * @param e    the Exception to log
      */
     public void debug(String info, Exception e) {
-        log.debug(info, e);
+        logger.debug(info, e);
     }
 
     /**
@@ -457,7 +458,7 @@ public class ConversationEventMonitor {
             try {
                 eventHandler.handleEvent(event);
             } catch (Throwable thr) {
-                log.warn("The eventHandler (" + eventHandler + ") failed when called with event " + event, thr);
+                logger.warn("The eventHandler (" + eventHandler + ") failed when called with event " + event, thr);
             }
         }
     }

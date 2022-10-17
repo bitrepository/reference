@@ -115,7 +115,7 @@ public abstract class WorkflowManager {
 
     private void loadWorkFlows(WorkflowSettings configuration) {
         for (WorkflowConfiguration workflowConf : configuration.getWorkflow()) {
-            log.info("Scheduling from configuration: " + workflowConf);
+            log.info("Scheduling from configuration: {}", workflowConf);
             List<String> unscheduledCollections = new LinkedList<>(SettingsUtils.getAllCollectionsIDs());
             try {
                 if (workflowConf.getSchedules() != null) {
@@ -146,7 +146,7 @@ public abstract class WorkflowManager {
                     addWorkflow(collectionID, workflow);
                 }
             } catch (Exception e) {
-                log.error("Unable to load workflow " + workflowConf.getWorkflowClass(), e);
+                log.error("Unable to load workflow {}", workflowConf.getWorkflowClass(), e);
             }
         }
     }

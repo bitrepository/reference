@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class LocalActiveMQBroker {
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
     
     private BrokerService broker;
     
@@ -43,7 +43,7 @@ public class LocalActiveMQBroker {
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
-        log.info("Created embedded broker " + LoggerFactory.getLogger(getClass()));
+        log.info("Created embedded broker {}", broker);
     }
     
     public void start() {

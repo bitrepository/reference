@@ -45,7 +45,7 @@ import java.util.Arrays;
  * The reference implementation of the client side of the GetFileIDs identification and operation.
  * The default <code>GetFileIDsClient</code>
  * <p>
- * This class is just a thin wrapper which creates a conversion each time a operation is started.
+ * This class is just a thin wrapper which creates a conversion each time an operation is started.
  */
 public class ConversationBasedGetFileIDsClient extends AbstractClient implements GetFileIDsClient {
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -57,25 +57,27 @@ public class ConversationBasedGetFileIDsClient extends AbstractClient implements
      * @param clientID             The ID of the client
      * @see AbstractClient
      */
-    public ConversationBasedGetFileIDsClient(MessageBus messageBus, ConversationMediator conversationMediator, Settings settings,
-                                             String clientID) {
+    public ConversationBasedGetFileIDsClient(MessageBus messageBus, ConversationMediator conversationMediator,
+            Settings settings, String clientID) {
         super(settings, conversationMediator, messageBus, clientID);
     }
 
     @Override
-    public void getFileIDs(String collectionID, ContributorQuery[] contributorQueries, String fileID, URL addressForResult,
-                           EventHandler eventHandler) {
+    public void getFileIDs(String collectionID, ContributorQuery[] contributorQueries, String fileID,
+            URL addressForResult, EventHandler eventHandler) {
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "collectionID");
         validateFileID(fileID);
         if (contributorQueries == null) {
-            contributorQueries = ContributorQueryUtils.createFullContributorQuery(SettingsUtils.getPillarIDsForCollection(collectionID));
+            contributorQueries = ContributorQueryUtils.createFullContributorQuery(
+                    SettingsUtils.getPillarIDsForCollection(collectionID));
         }
 
-        log.info("Requesting the fileIDs for file '" + fileID + "' with query " + Arrays.asList(contributorQueries) + ". " +
+        log.info("Requesting the fileIDs for file '{}' with query {}. {}", fileID, Arrays.asList(contributorQueries),
                 (addressForResult != null ? "The result should be uploaded to '" + addressForResult + "'." : ""));
 
-        GetFileIDsConversationContext context = new GetFileIDsConversationContext(collectionID, contributorQueries, fileID,
-                addressForResult, settings, messageBus, clientID, ContributorQueryUtils.getContributors(contributorQueries), eventHandler);
+        GetFileIDsConversationContext context = new GetFileIDsConversationContext(
+                collectionID, contributorQueries, fileID, addressForResult, settings, messageBus, clientID,
+                ContributorQueryUtils.getContributors(contributorQueries), eventHandler);
 
         startConversation(context, new IdentifyPillarsForGetFileIDs(context));
     }

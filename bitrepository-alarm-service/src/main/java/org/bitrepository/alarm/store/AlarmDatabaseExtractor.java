@@ -131,7 +131,7 @@ public abstract class AlarmDatabaseExtractor {
             List<Alarm> res = new ArrayList<>();
             ps.setFetchSize(100);
             try (ResultSet result = ps.executeQuery()) {
-                log.debug("Extracting sql '" + sql + "' with arguments '" + Arrays.asList(extractArgumentsFromModel()) + "'");
+                log.debug("Extracting sql '{}' with arguments '{}'", sql, Arrays.asList(extractArgumentsFromModel()));
                 while (result.next()) {
                     res.add(extractAlarm(result));
                 }

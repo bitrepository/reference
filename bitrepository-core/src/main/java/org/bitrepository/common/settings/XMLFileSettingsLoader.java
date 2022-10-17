@@ -82,7 +82,7 @@ public class XMLFileSettingsLoader implements SettingsLoader {
                     throw new RuntimeException("Unable to load settings from " + fileLocation, e);
                 }
             }
-            log.debug("Loading the settings file '" + fileLocation + "'.");
+            log.debug("Loading the settings file '{}'", fileLocation);
             try {
                 jaxbHelper.validate(configStreamValidate);
                 return jaxbHelper.loadXml(settingsClass, configStreamLoad);

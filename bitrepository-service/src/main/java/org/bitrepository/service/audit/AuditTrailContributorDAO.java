@@ -115,8 +115,8 @@ public abstract class AuditTrailContributorDAO implements AuditTrailManager {
                                  String auditTrail, FileAction operation, String operationID, String fingerprint) {
         ArgumentValidator.checkNotNull(collectionID, "String collectionID");
         ArgumentValidator.checkNotNull(operation, "FileAction operation");
-        log.debug("Inserting an audit event for file '" + fileID + "', from actor '" + actor
-                + "' performing operation '" + operation + "', with the audit trail information '" + auditTrail + "'");
+        log.debug("Inserting an audit event for file '{}', from actor '{}' performing operation '{}'," +
+                " with audit trail info: '{}'", fileID, actor, operation, auditTrail);
 
         long fileGuid;
         if (fileID == null || fileID.isEmpty()) {
@@ -277,7 +277,7 @@ public abstract class AuditTrailContributorDAO implements AuditTrailManager {
         Long guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, fileID, collectionID);
 
         if (guid == null) {
-            log.debug("Inserting fileid '" + fileID + "' into the file table.");
+            log.debug("Inserting fileid '{}' into the file table", fileID);
             String sqlInsert = "INSERT INTO " + FILE_TABLE + " ( " + FILE_FILE_ID + " , " + FILE_COLLECTION_ID
                     + " ) VALUES ( ? , ? )";
             DatabaseUtils.executeStatement(dbConnector, sqlInsert, fileID, collectionID);
@@ -300,7 +300,7 @@ public abstract class AuditTrailContributorDAO implements AuditTrailManager {
         Long guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, actorName);
 
         if (guid == null) {
-            log.debug("Inserting actor '" + actorName + "' into the actor table.");
+            log.debug("Inserting actor '{}' into the actor table", actorName);
             String sqlInsert = "INSERT INTO " + ACTOR_TABLE + " ( " + ACTOR_NAME + " ) VALUES ( ? )";
             DatabaseUtils.executeStatement(dbConnector, sqlInsert, actorName);
 
