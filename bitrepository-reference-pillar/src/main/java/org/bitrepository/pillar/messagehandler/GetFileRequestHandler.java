@@ -93,8 +93,8 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
 
     @Override
     protected void performOperation(GetFileRequest request, MessageContext requestContext) throws RequestHandlerException {
-        log.info(MessageUtils.createMessageIdentifier(request) + " Performing GetFile for file " + request.getFileID() + " on collection " +
-                request.getCollectionID());
+        log.info("{} Performing GetFile for file '{}' on collection '{}'",
+                MessageUtils.createMessageIdentifier(request), request.getFileID(), request.getCollectionID());
         uploadToClient(request);
         getAuditManager().addAuditEvent(request.getCollectionID(), request.getFileID(), request.getFrom(), "Failed identifying pillar.",
                 request.getAuditTrailInformation(), FileAction.GET_FILE, request.getCorrelationID(),
@@ -119,7 +119,7 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
                 is = extractFilePart(requestedFile, message.getFilePart());
             }
 
-            log.info("Uploading file: {} to {}", requestedFile.getFileID(), message.getFileAddress());
+            log.info("Uploading file '{}' to {}", requestedFile.getFileID(), message.getFileAddress());
             context.getFileExchange().putFile(is, new URL(message.getFileAddress()));
         } catch (IOException e) {
             log.warn("The file '{}' from collection '{}' could not be uploaded at '{}'",
