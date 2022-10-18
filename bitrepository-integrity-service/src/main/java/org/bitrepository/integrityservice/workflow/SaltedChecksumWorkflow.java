@@ -81,7 +81,8 @@ public class SaltedChecksumWorkflow extends Workflow {
     @Override
     public void start() {
         if (context == null) {
-            throw new IllegalStateException("The workflow can not be started before the initialise method has been called.");
+            throw new IllegalStateException(
+                    "The workflow can not be started before the initialise method has been called.");
         }
         super.start();
 
@@ -91,7 +92,8 @@ public class SaltedChecksumWorkflow extends Workflow {
             Map<String, String> checksums = requestSaltedChecksumForFileStep();
             validateChecksums(checksums);
         } catch (IllegalStateException e) {
-            context.getAlerter().integrityFailed("Failed trying to check salted checksum: " + e.getMessage(), collectionID);
+            context.getAlerter().integrityFailed("Failed trying to check salted checksum: " + e.getMessage(),
+                    collectionID);
         } finally {
             finish();
         }
@@ -156,9 +158,9 @@ public class SaltedChecksumWorkflow extends Workflow {
      * @return The map between pillars and checksums.
      */
     private Map<String, String> requestSaltedChecksumForFileStep() {
-        log.info("Request the file '" + currentFileID + "' with the checksumSpecTYPE ' " + currentChecksumSpec + "'.");
-        GetChecksumForFileStep step = new GetChecksumForFileStep(context.getCollector(), context.getAlerter(), currentChecksumSpec,
-                currentFileID, context.getSettings(), collectionID, integrityContributors);
+        log.info("Request the file '{}' with the checksumSpecTYPE '{}'", currentFileID, currentChecksumSpec);
+        GetChecksumForFileStep step = new GetChecksumForFileStep(context.getCollector(), context.getAlerter(),
+                currentChecksumSpec, currentFileID, context.getSettings(), collectionID, integrityContributors);
         performStep(step);
         return step.getResults();
     }
@@ -170,7 +172,8 @@ public class SaltedChecksumWorkflow extends Workflow {
      */
     private void validateChecksums(Map<String, String> checksums) {
         if (checksums == null || checksums.isEmpty()) {
-            sendFailure("No checksums with checksumSpec '" + currentChecksumSpec + "' received for file '" + currentFileID + "'.");
+            sendFailure("No checksums with checksumSpec '" + currentChecksumSpec + "' received for file '"
+                    + currentFileID + "'.");
             return;
         }
         List<String> cs = new ArrayList<>();
@@ -180,17 +183,19 @@ public class SaltedChecksumWorkflow extends Workflow {
             }
         }
         if (cs.size() > 1) {
-            sendFailure("Inconsistent salted checksum found for file '" + currentFileID + "' with checksumSpecTYPE '" +
-                    currentChecksumSpec.getChecksumType() + "' and salt '" +
-                    Base16Utils.decodeBase16(currentChecksumSpec.getChecksumSalt()) + "'. The pillars had the checksums: " + checksums);
+            sendFailure("Inconsistent salted checksum found for file '" + currentFileID +
+                    "' with checksumSpecTYPE '" + currentChecksumSpec.getChecksumType() + "' and salt '" +
+                    Base16Utils.decodeBase16(currentChecksumSpec.getChecksumSalt()) + "'." +
+                    " The pillars had the checksums: " + checksums);
         } else {
             String audit = "Validated salted checksum for file '" + currentFileID + "' with checksumSpecTYPE '" +
                     currentChecksumSpec.getChecksumType() + "' and salt '" +
-                    Base16Utils.decodeBase16(currentChecksumSpec.getChecksumSalt()) + "' for pillars: " + checksums.keySet();
+                    Base16Utils.decodeBase16(currentChecksumSpec.getChecksumSalt()) + "' for pillars: " +
+                    checksums.keySet();
             log.info(audit);
             context.getAuditManager()
-                    .addAuditEvent(collectionID, currentFileID, "IntegrityServiceWorkflow: " + this.getClass().getName(), audit,
-                            "Integrity salted checksum check", FileAction.INTEGRITY_CHECK, null, null);
+                    .addAuditEvent(collectionID, currentFileID, "IntegrityServiceWorkflow: " + getClass().getName(),
+                            audit, "Integrity salted checksum check", FileAction.INTEGRITY_CHECK, null, null);
         }
     }
 
@@ -202,8 +207,8 @@ public class SaltedChecksumWorkflow extends Workflow {
     private void sendFailure(String failureMessage) {
         log.warn("Failure in checksum salted checksum: " + failureMessage);
         context.getAuditManager()
-                .addAuditEvent(collectionID, currentFileID, "IntegrityServiceWorkflow: " + this.getClass().getName(), failureMessage,
-                        "Integrity salted checksum check", FileAction.INTEGRITY_CHECK, null, null);
+                .addAuditEvent(collectionID, currentFileID, "IntegrityServiceWorkflow: " + getClass().getName(),
+                        failureMessage,"Integrity salted checksum check", FileAction.INTEGRITY_CHECK, null, null);
         context.getAlerter().integrityFailed(failureMessage, collectionID);
     }
 

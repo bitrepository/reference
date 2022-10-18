@@ -100,7 +100,7 @@ public final class MessageBusManager {
             try {
                 bus.close();
             } catch (JMSException e) {
-                log.warn("Failed to close message bus " + bus + " during clear()");
+                log.warn("Failed to close message bus {} during clear()", bus);
             }
         }
         messageBusMap.clear();

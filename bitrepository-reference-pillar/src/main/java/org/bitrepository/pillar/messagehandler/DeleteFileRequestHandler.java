@@ -96,16 +96,16 @@ public class DeleteFileRequestHandler extends PerformRequestHandler<DeleteFileRe
             String requestedChecksum = Base16Utils.decodeBase16(checksumData.getChecksumValue());
             if (!calculatedChecksum.equals(requestedChecksum)) {
                 // Log the different checksums, but do not send the right checksum back!
-                log.warn("Failed to handle delete operation on file '" + request.getFileID() + "' since the request "
-                        + "had the checksum '" + requestedChecksum + "' where our local file has the value '"
-                        + calculatedChecksum + "'. Sending alarm and respond failure.");
+                log.warn("Failed to handle delete operation on file '{}' since the request had the checksum '{}'" +
+                        " where our local file has the value '{}'. Sending alarm and respond failure.",
+                        request.getFileID(), requestedChecksum, calculatedChecksum);
 
                 throw new IllegalOperationException(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE, "Cannot delete file "
                         + "due to inconsistency between checksums.", request.getFileID());
             }
         } else {
-            log.debug("No checksum for validation of the existing file before delete the file '" + request.getFileID()
-                    + "'");
+            log.debug("No checksum for validation of the existing file before deleting the file '{}'",
+                    request.getFileID());
         }
 
         log.debug(MessageUtils.createMessageIdentifier(request) + "' validated and accepted.");
@@ -130,8 +130,8 @@ public class DeleteFileRequestHandler extends PerformRequestHandler<DeleteFileRe
     @Override
     protected void performOperation(DeleteFileRequest request, MessageContext requestContext)
             throws RequestHandlerException {
-        log.info(MessageUtils.createMessageIdentifier(request) + " Deleting file " + request.getFileID()
-                + " on collection " + request.getCollectionID());
+        log.info("{} Deleting file '{}' in collection '{}'", MessageUtils.createMessageIdentifier(request),
+                request.getFileID(), request.getCollectionID());
         ChecksumDataForFileTYPE resultingChecksum = calculatedRequestedChecksum(request);
         deleteTheFile(request);
         getAuditManager().addAuditEvent(request.getCollectionID(), request.getFileID(), request.getFrom(),

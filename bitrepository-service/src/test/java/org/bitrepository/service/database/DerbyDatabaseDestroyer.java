@@ -42,7 +42,7 @@ public class DerbyDatabaseDestroyer {
      * @param databaseSpecifics necessary information to decide which database.
      * */
     public static void deleteDatabase(DatabaseSpecifics databaseSpecifics) {
-        log.info("Removing database: " + databaseSpecifics);
+        log.info("Removing database: {}", databaseSpecifics);
         String dbUrl = databaseSpecifics.getDatabaseURL();
         String[] dbUrlParts = dbUrl.split(":");
         if (new File(dbUrlParts[2]).isDirectory()) {

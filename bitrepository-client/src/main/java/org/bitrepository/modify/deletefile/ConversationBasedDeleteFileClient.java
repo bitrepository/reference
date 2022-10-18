@@ -69,9 +69,9 @@ public class ConversationBasedDeleteFileClient extends AbstractClient implements
             ArgumentValidator.checkNotNull(checksumForPillar, "ChecksumForPillar");
         }
 
-        log.info("Requesting the deletion of the file '" + fileID + "' from the pillar '" + pillarID
-                + "' with checksum '" + checksumForPillar + "', while requested checksum '" + checksumRequested
-                + "'. And the audit trail information '" + auditTrailInformation + "'.");
+        log.info("Requesting the deletion of the file '{}' from the pillar '{}' with checksum '{}'," +
+                        " and requested checksum type '{}'. Audit trail info: '{}'",
+                fileID, pillarID, checksumForPillar, checksumRequested, auditTrailInformation);
 
         DeleteFileConversationContext context = new DeleteFileConversationContext(collectionID, fileID,
                 checksumForPillar, checksumRequested, settings, messageBus, clientID,

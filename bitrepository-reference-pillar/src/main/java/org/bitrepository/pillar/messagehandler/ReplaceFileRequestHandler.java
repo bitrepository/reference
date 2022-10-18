@@ -115,8 +115,8 @@ public class ReplaceFileRequestHandler extends PerformRequestHandler<ReplaceFile
     @Override
     protected void performOperation(ReplaceFileRequest request, MessageContext requestContext)
             throws RequestHandlerException {
-        log.info(MessageUtils.createMessageIdentifier(request) + " Performing ReplaceFile for file "
-                + request.getFileID() + " on collection " + request.getCollectionID());
+        log.info("{} Performing ReplaceFile for file '{}' on collection '{}'",
+                MessageUtils.createMessageIdentifier(request), request.getFileID(), request.getCollectionID());
         try {
             ChecksumDataForFileTYPE requestedOldChecksum = calculateChecksumOnOldFile(request);
             replaceFile(request);
@@ -175,9 +175,9 @@ public class ReplaceFileRequestHandler extends PerformRequestHandler<ReplaceFile
             String requestedChecksum = Base16Utils.decodeBase16(checksumData.getChecksumValue());
             if (!calculatedChecksum.equals(requestedChecksum)) {
                 // Log the different checksums, but do not send the right checksum back!
-                log.warn("Failed to handle replace operation on file '" + request.getFileID() + "' since the request "
-                        + "had the checksum '" + requestedChecksum + "' where our local file has the value '"
-                        + calculatedChecksum + "'. Sending alarm and respond failure.");
+                log.warn("Failed to handle replace operation on file '{}' since the request had checksum '{}'" +
+                        " where our local file has the value '{}'. Sending alarm and respond failure",
+                        request.getFileID(), requestedChecksum, calculatedChecksum);
                 String errMsg = "Requested to replace the file '" + request.getFileID() + "' with checksum '"
                         + requestedChecksum + "', but our file had a different checksum.";
 
@@ -218,8 +218,7 @@ public class ReplaceFileRequestHandler extends PerformRequestHandler<ReplaceFile
      * @param message The request containing the location of the file and the checksum of it.
      */
     private void replaceFile(ReplaceFileRequest message) throws RequestHandlerException {
-        log.info("Replacing the file '" + message.getFileID() + "' in the archive with the one in the "
-                + "temporary area.");
+        log.info("Replacing the file '{}' in the archive with the one in the temporary area", message.getFileID());
         getPillarModel().replaceFile(message.getFileID(), message.getCollectionID(),
                 message.getFileAddress(), message.getChecksumDataForNewFile());
     }

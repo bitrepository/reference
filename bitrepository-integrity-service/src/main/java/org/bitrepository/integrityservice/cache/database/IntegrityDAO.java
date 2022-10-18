@@ -123,7 +123,7 @@ public abstract class IntegrityDAO {
         ArgumentValidator.checkNotNull(data, "FileIDsData data");
         ArgumentValidator.checkNotNullOrEmpty(pillarID, "String pillarID");
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
-        log.trace("Updating the file ids '" + data + "' for pillar '" + pillarID + "'");
+        log.trace("Updating the file ids '{}' for pillar '{}'", data, pillarID);
 
         FileUpdater fu = new FileUpdater(pillarID, dbConnector.getConnection(), collectionID);
         fu.updateFiles(data.getFileIDsDataItems());
