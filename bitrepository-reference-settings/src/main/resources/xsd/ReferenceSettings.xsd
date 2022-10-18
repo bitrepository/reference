@@ -732,9 +732,8 @@
         </xs:element>
         <xs:element name="TimerTaskCheckInterval" type="xs:long">
           <xs:annotation>
-            <xs:documentation xml:lang="en">
+            <xs:documentation xml:lang="en"> <!-- TODO REMOVE ME?? Is currently not used -->
               The amount of milliseconds for the timer task to check whether it is time to run the collector.
-              Not used.
             </xs:documentation>
           </xs:annotation>
         </xs:element>

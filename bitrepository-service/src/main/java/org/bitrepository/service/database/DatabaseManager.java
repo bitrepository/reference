@@ -68,7 +68,7 @@ public abstract class DatabaseManager {
     /**
      * Get a connection to a postgres database
      * This method won't attempt to create a database if connection is unsuccessful,
-     * also i won't attempt to migrate the database.
+     * also it won't attempt to migrate the database.
      *
      * @return {@link DBConnector} The connector to the database
      */
@@ -78,8 +78,8 @@ public abstract class DatabaseManager {
         }
         if (needsMigration()) {
             throw new IllegalStateException("Automatic migration of postgres databases are not supported. " +
-                    "The database on: " + getDatabaseSpecifics().getDatabaseURL() +
-                    " needs manuel migration.");
+                    "The database at '" + getDatabaseSpecifics().getDatabaseURL() +
+                    "' needs manual migration.");
         }
 
         return connector;

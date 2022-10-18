@@ -51,11 +51,11 @@ public class HandleDeletedFilesStep extends AbstractWorkFlowStep {
 
     @Override
     public String getName() {
-        return "Handle files that's no longer in the collection.";
+        return "Handle files that are no longer in the collection.";
     }
 
     /**
-     * Queries the IntegrityModel for 'orphan files'. Reports and removes them if any is returned.
+     * Queries the IntegrityModel for 'orphan files'. Reports and removes them if any are returned.
      */
     @Override
     public synchronized void performStep() throws StepFailedException {
