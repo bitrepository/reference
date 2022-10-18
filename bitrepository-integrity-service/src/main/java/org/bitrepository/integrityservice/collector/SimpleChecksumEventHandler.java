@@ -113,7 +113,7 @@ public class SimpleChecksumEventHandler implements EventHandler {
                 integrityContributors.finishContributor(contributorID);
             }
         } else {
-            log.warn("Unexpected component complete event: " + event.toString());
+            log.warn("Unexpected component complete event: {}", event.toString());
         }
     }
 

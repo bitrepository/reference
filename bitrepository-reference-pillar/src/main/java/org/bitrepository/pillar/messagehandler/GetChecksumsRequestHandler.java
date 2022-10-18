@@ -235,7 +235,7 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
         URL uploadUrl = new URL(url);
 
         // Upload the file.
-        log.debug("Uploading file: " + fileToUpload.getName() + " to " + url);
+        log.debug("Uploading file '{}' to {}", fileToUpload.getName(), url);
         try (InputStream in = new BufferedInputStream(new FileInputStream(fileToUpload))) {
             context.getFileExchange().putFile(in, uploadUrl);
         }

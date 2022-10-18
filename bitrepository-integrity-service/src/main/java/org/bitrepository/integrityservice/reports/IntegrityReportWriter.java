@@ -66,7 +66,7 @@ public class IntegrityReportWriter {
      */
     public String getReportFilePath() {
         File reportFile = new File(reportDir, IntegrityReportConstants.REPORT_FILE);
-        log.debug("getReportFilePath: Report file located at: " + reportFile.getAbsolutePath());
+        log.debug("getReportFilePath: Report file located at: {}", reportFile.getAbsolutePath());
         return reportFile.getAbsolutePath();
     }
 
@@ -229,7 +229,7 @@ public class IntegrityReportWriter {
         writeSectionHeader(report, sectionName);
         if (!sectionData.isEmpty()) {
             for (String pillar : sectionData.keySet()) {
-                log.debug("Writing part for pillar: " + pillar);
+                log.debug("Writing part for pillar: {}", pillar);
                 writePillarHeader(report, pillar);
                 writeSectionPart(report, sectionData.get(pillar));
             }

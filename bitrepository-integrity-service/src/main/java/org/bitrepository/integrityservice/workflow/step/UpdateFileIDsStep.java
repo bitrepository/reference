@@ -90,7 +90,7 @@ public abstract class UpdateFileIDsStep extends AbstractWorkFlowStep {
 
         try {
             Set<String> pillarsToCollectFrom = integrityContributors.getActiveContributors();
-            log.debug("Collecting fileIDs from: " + pillarsToCollectFrom);
+            log.debug("Collecting fileIDs from: {}", pillarsToCollectFrom);
             while (!pillarsToCollectFrom.isEmpty()) {
                 IntegrityCollectorEventHandler eventHandler = new IntegrityCollectorEventHandler(store, timeout, integrityContributors);
                 ContributorQuery[] queries = getQueries(pillarsToCollectFrom);
@@ -100,7 +100,7 @@ public abstract class UpdateFileIDsStep extends AbstractWorkFlowStep {
                 if (event.getEventType() == OperationEventType.FAILED) {
                     handleFailureEvent(event);
                 }
-                log.debug("Collection of file ids had the final event: " + event);
+                log.debug("Collection of file ids had the final event: {}", event);
                 pillarsToCollectFrom = integrityContributors.getActiveContributors();
             }
         } catch (InterruptedException e) {

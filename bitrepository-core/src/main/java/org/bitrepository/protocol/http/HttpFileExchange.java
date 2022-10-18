@@ -97,7 +97,8 @@ public class HttpFileExchange implements FileExchange {
             }
             return url;
         } catch (IOException e) {
-            throw new CoordinationLayerException("Could not upload the file '" + dataFile.getAbsolutePath() + "' to the server.", e);
+            throw new CoordinationLayerException("Could not upload the file '" + dataFile.getAbsolutePath() +
+                    "' to the server.", e);
         }
     }
 
@@ -116,8 +117,8 @@ public class HttpFileExchange implements FileExchange {
                 performDownload(out, url);
             }
         } catch (IOException e) {
-            throw new CoordinationLayerException(
-                    "Could not download data " + "from '" + fileAddress + "' to the file '" + outputFile.getAbsolutePath() + "'.", e);
+            throw new CoordinationLayerException("Could not download data from '" + fileAddress + "' to the file '" +
+                    outputFile.getAbsolutePath() + "'.", e);
         }
     }
 
@@ -181,9 +182,11 @@ public class HttpFileExchange implements FileExchange {
             // HTTP code >= 300 means error!
             if (response.getStatusLine().getStatusCode() >= HTTP_ERROR_CODE_BARRIER) {
                 throw new IOException(
-                        "Could not upload file to URL '" + url.toExternalForm() + "'. got status code '" + response.getStatusLine() + "'");
+                        "Could not upload file to URL '" + url.toExternalForm() + "'. got status code '" +
+                                response.getStatusLine() + "'");
             }
-            log.debug("Uploaded data-stream to url '" + url + "' and " + "received the response line '" + response.getStatusLine() + "'.");
+            log.debug("Uploaded data-stream to url '{}' and received the response line '{}'",
+                    url, response.getStatusLine());
         }
     }
 
@@ -223,7 +226,9 @@ public class HttpFileExchange implements FileExchange {
         HttpClientBuilder builder = HttpClients.custom();
         PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager(
                 new ChunkyManagedHttpClientConnectionFactory(HTTP_CHUNK_SIZE));
-        SocketConfig socketConfig = SocketConfig.custom().setSndBufSize(HTTP_BUFFER_SIZE).setRcvBufSize(HTTP_BUFFER_SIZE).build();
+        SocketConfig socketConfig = SocketConfig.custom()
+                .setSndBufSize(HTTP_BUFFER_SIZE)
+                .setRcvBufSize(HTTP_BUFFER_SIZE).build();
         connectionManager.setDefaultSocketConfig(socketConfig);
         builder.setConnectionManager(connectionManager);
         return builder.build();

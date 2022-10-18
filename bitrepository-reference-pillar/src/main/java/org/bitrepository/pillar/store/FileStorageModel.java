@@ -76,7 +76,7 @@ public class FileStorageModel extends StorageModel {
     public FileStorageModel(FileStore archives, ChecksumStore cache, AlarmDispatcher alarmDispatcher, Settings settings,
                             FileExchange fileExchange) {
         super(archives, cache, alarmDispatcher, settings, fileExchange);
-        log.info("Instantiating the FileStorageModel: " + getPillarID());
+        log.info("Instantiating the FileStorageModel: {}", getPillarID());
     }
 
     @Override

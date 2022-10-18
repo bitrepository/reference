@@ -48,7 +48,7 @@ public class GetStatusEventHandler implements EventHandler {
 
     @Override
     public void handleEvent(OperationEvent event) {
-        log.debug("Got event: " + event);
+        log.debug("Got event: {}", event);
 
         switch (event.getEventType()) {
             case COMPONENT_COMPLETE:

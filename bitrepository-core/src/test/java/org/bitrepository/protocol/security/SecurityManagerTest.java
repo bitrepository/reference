@@ -161,7 +161,7 @@ public class SecurityManagerTest extends ExtendedTestCase {
 
         String signatureString = new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)),
                 StandardCharsets.UTF_8);
-        log.info("Signature for testdata is: " + signatureString);
+        log.info("Signature for testdata is: {}", signatureString);
 
         addStep("Check signature matches the data ", "Signature and data matches");
         try {
@@ -184,7 +184,7 @@ public class SecurityManagerTest extends ExtendedTestCase {
         }
         String signatureString = new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)),
                 StandardCharsets.UTF_8);
-        log.info("Signature for testdata is: " + signatureString);
+        log.info("Signature for testdata is: {}", signatureString);
 
         addStep("Check signature matches the data", "Signature cant be matched as certificate is unknown.");
         try {
@@ -211,7 +211,7 @@ public class SecurityManagerTest extends ExtendedTestCase {
 
         String signatureString = new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)),
                 StandardCharsets.UTF_8);
-        log.info("Signature for testdata is: " + signatureString);
+        log.info("Signature for testdata is: {}", signatureString);
 
         addStep("Check signature matches the data ", "Signature and data matches does not match");
         String corruptData = SecurityTestConstants.getTestData() + "foobar";

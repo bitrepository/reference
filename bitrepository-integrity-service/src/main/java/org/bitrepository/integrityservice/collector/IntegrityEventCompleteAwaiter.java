@@ -66,7 +66,7 @@ public class IntegrityEventCompleteAwaiter implements EventHandler {
         } else if (event.getEventType() == OperationEventType.FAILED) {
             finalEventQueue.add(event);
         } else {
-            log.debug("Received event: " + event);
+            log.debug("Received event: {}", event);
         }
     }
 

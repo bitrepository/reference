@@ -205,7 +205,7 @@ public class SaltedChecksumWorkflow extends Workflow {
      * @param failureMessage The failure message.
      */
     private void sendFailure(String failureMessage) {
-        log.warn("Failure in checksum salted checksum: " + failureMessage);
+        log.warn("Failure in checksum salted checksum: {}", failureMessage);
         context.getAuditManager()
                 .addAuditEvent(collectionID, currentFileID, "IntegrityServiceWorkflow: " + getClass().getName(),
                         failureMessage,"Integrity salted checksum check", FileAction.INTEGRITY_CHECK, null, null);

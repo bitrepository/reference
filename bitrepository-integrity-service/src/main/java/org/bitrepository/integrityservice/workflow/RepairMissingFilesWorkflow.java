@@ -115,7 +115,7 @@ public class RepairMissingFilesWorkflow extends Workflow {
                     deleteUrl(url);
                 } catch (Exception e) {
                     // Fault barrier. Just try to continue
-                    log.warn("Error occurred during repair of missing file, '" + fileId + "'. Tries to continue.", e);
+                    log.warn("Error occurred during repair of missing file '{}'. Trying to continue.", fileId, e);
                     filesNotRepaired.add(fileId);
                 }
             }

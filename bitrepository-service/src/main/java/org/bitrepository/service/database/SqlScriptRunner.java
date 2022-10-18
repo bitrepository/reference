@@ -161,7 +161,7 @@ public class SqlScriptRunner {
                             }
                             resultSB.append("\n");
                         }
-                        log.info("Result: " + resultSB);
+                        log.info("Result: {}", resultSB);
                     }
 
                     command = null;

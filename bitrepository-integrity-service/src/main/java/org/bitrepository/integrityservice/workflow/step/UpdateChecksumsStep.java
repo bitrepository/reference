@@ -99,8 +99,7 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
             initialStepAction();
 
             Set<String> pillarsToCollectFrom = integrityContributors.getActiveContributors();
-            log.debug(
-                    "Collecting checksums from '" + pillarsToCollectFrom + "' for collection '" + collectionID + "'.");
+            log.debug("Collecting checksums from '{}' for collection '{}'", pillarsToCollectFrom, collectionID);
             while (!pillarsToCollectFrom.isEmpty()) {
                 IntegrityCollectorEventHandler eventHandler = new IntegrityCollectorEventHandler(store, timeout,
                         integrityContributors);
@@ -113,7 +112,7 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
                 if (event.getEventType() == OperationEventType.FAILED) {
                     handleFailureEvent(event);
                 }
-                log.debug("Collecting of checksums ids had the final event: " + event);
+                log.debug("Collecting of checksums ids had the final event: {}", event);
                 pillarsToCollectFrom = integrityContributors.getActiveContributors();
             }
 

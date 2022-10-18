@@ -251,7 +251,7 @@ public class ActiveMQMessageBus implements MessageBus {
     @Override
     public void close() throws JMSException {
         receivedMessageHandler.close();
-        log.info("Closing message bus: " + configuration);
+        log.info("Closing message bus: {}", configuration);
         producerSession.close();
         log.debug("Producer session closed.");
         consumerSession.close();
@@ -477,7 +477,7 @@ public class ActiveMQMessageBus implements MessageBus {
                         new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8)));
                 log.trace("Checking signature '{}'", signature);
                 SignerId signer = securityManager.authenticateMessage(text, signature);
-                securityManager.authorizeCertificateUse((content).getFrom(), text, signature);
+                securityManager.authorizeCertificateUse(content.getFrom(), text, signature);
                 if (content instanceof MessageRequest) {
                     securityManager.authorizeOperation(content.getClass().getSimpleName(), text, signature,
                             content.getCollectionID());
