@@ -23,6 +23,8 @@ package org.bitrepository.integrityservice.collector;
 
 import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
 import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEvent;
+import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.client.eventhandler.ContributorFailedEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
@@ -35,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -66,20 +69,20 @@ public class IntegrityCollectorEventHandler implements EventHandler {
     @Override
     public void handleEvent(OperationEvent event) {
         if (event.getEventType() == OperationEventType.COMPONENT_COMPLETE) {
-            log.debug("Component complete: " + event);
+            log.debug("Component complete: {}", event);
             handleResult(event);
         } else if (event.getEventType() == OperationEventType.COMPLETE) {
-            log.debug("Complete: " + event);
+            log.debug("Complete: {}", event);
             finalEventQueue.add(event);
         } else if (event.getEventType() == OperationEventType.FAILED) {
-            log.warn("Failure: " + event);
+            log.warn("Failure: {}", event);
             finalEventQueue.add(event);
         } else if (event.getEventType() == OperationEventType.COMPONENT_FAILED) {
             ContributorFailedEvent cfe = (ContributorFailedEvent) event;
-            log.warn("Component failure for '" + cfe.getContributorID() + "'.");
+            log.warn("Component failure for '{}'", cfe.getContributorID());
             integrityContributors.failContributor(cfe.getContributorID());
         } else {
-            log.debug("Received event: " + event);
+            log.debug("Received event: {}", event);
         }
     }
 
@@ -103,25 +106,31 @@ public class IntegrityCollectorEventHandler implements EventHandler {
     private void handleResult(OperationEvent event) {
         if (event instanceof ChecksumsCompletePillarEvent) {
             ChecksumsCompletePillarEvent checksumEvent = (ChecksumsCompletePillarEvent) event;
-            log.trace("Receiving GetChecksums result: {}", checksumEvent.getChecksums().getChecksumDataItems().toString());
-            store.addChecksums(checksumEvent.getChecksums().getChecksumDataItems(), checksumEvent.getContributorID(),
-                    checksumEvent.getCollectionID());
+            List<ChecksumDataForChecksumSpecTYPE> checksumsData = checksumEvent.getChecksums()
+                    .getChecksumDataItems();
+            String contributorID = checksumEvent.getContributorID();
+            log.trace("Receiving GetChecksums result: {}", checksumsData.toString());
+            store.addChecksums(checksumsData, contributorID, checksumEvent.getCollectionID());
+
             if (checksumEvent.isPartialResult()) {
-                integrityContributors.succeedContributor(checksumEvent.getContributorID());
+                integrityContributors.succeedContributor(contributorID);
             } else {
-                integrityContributors.finishContributor(checksumEvent.getContributorID());
+                integrityContributors.finishContributor(contributorID);
             }
         } else if (event instanceof FileIDsCompletePillarEvent) {
             FileIDsCompletePillarEvent fileIDEvent = (FileIDsCompletePillarEvent) event;
-            log.trace("Receiving GetFileIDs result: {}", fileIDEvent.getFileIDs().getFileIDsData().toString());
-            store.addFileIDs(fileIDEvent.getFileIDs().getFileIDsData(), fileIDEvent.getContributorID(), fileIDEvent.getCollectionID());
+            FileIDsData fileIDsData = fileIDEvent.getFileIDs().getFileIDsData();
+            String contributorID = fileIDEvent.getContributorID();
+            log.trace("Receiving GetFileIDs result: {}", fileIDsData.toString());
+            store.addFileIDs(fileIDsData, contributorID, fileIDEvent.getCollectionID());
+
             if (fileIDEvent.isPartialResult()) {
-                integrityContributors.succeedContributor(fileIDEvent.getContributorID());
+                integrityContributors.succeedContributor(contributorID);
             } else {
-                integrityContributors.finishContributor(fileIDEvent.getContributorID());
+                integrityContributors.finishContributor(contributorID);
             }
         } else {
-            log.warn("Unexpected component complete event: " + event.toString());
+            log.warn("Unexpected component complete event: {}", event.toString());
         }
     }
 }

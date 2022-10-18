@@ -423,7 +423,7 @@ public class RestIntegrityService {
     @Produces("text/html")
     public String startWorkflow(@FormParam("workflowID") String workflowID,
                                 @FormParam("collectionID") String collectionID) {
-        log.debug("Starting workflow '" + workflowID + "' on collection '" + collectionID + "'.");
+        log.debug("Starting workflow '{}' on collection '{}'", workflowID, collectionID);
         return workflowManager.startWorkflow(new JobID(workflowID, collectionID));
     }
 

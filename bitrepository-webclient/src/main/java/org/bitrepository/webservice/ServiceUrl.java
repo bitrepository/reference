@@ -37,11 +37,11 @@ import java.util.Properties;
 
 @Path("/urlservice")
 public class ServiceUrl {
-    private static final String CONFIGFILE = "services.properties";
-    private static final String ALARMURL = "org.bitrepository.webclient.alarmserviceurl"; 
-    private static final String AUDITTRAILURL = "org.bitrepository.webclient.audittrailserviceurl"; 
-    private static final String INTEGRITYURL = "org.bitrepository.webclient.integrityserviceurl"; 
-    private static final String MONITORINGURL = "org.bitrepository.webclient.monitoringserviceurl";
+    private static final String CONFIG_FILE = "services.properties";
+    private static final String ALARM_URL = "org.bitrepository.webclient.alarmserviceurl";
+    private static final String AUDIT_TRAIL_URL = "org.bitrepository.webclient.audittrailserviceurl";
+    private static final String INTEGRITY_URL = "org.bitrepository.webclient.integrityserviceurl";
+    private static final String MONITORING_URL = "org.bitrepository.webclient.monitoringserviceurl";
     
     private static String alarmUrl = "";
     private static String auditTrailUrl = "";
@@ -52,11 +52,11 @@ public class ServiceUrl {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     public ServiceUrl() {
-        if(configDir == null) {
+        if (configDir == null) {
             log.debug("ServiceUrl constructor called before init!!");
             throw new RuntimeException("No configuration dir has been set!");
         }
-        log.debug("Called ServiceUrl constructor, confdir: " + configDir);
+        log.debug("Called ServiceUrl constructor, conf dir: {}", configDir);
         loadProperties();
     }
 
@@ -64,19 +64,19 @@ public class ServiceUrl {
         log.debug("Loading service properties..");
         Properties properties = new Properties();
         try {
-            String propertiesFile = configDir + "/" + CONFIGFILE;
+            String propertiesFile = configDir + "/" + CONFIG_FILE;
             BufferedReader reader = new BufferedReader(
                     new InputStreamReader(new FileInputStream(propertiesFile), StandardCharsets.UTF_8));
             properties.load(reader);
 
-            alarmUrl = properties.getProperty(ALARMURL);
-            auditTrailUrl = properties.getProperty(AUDITTRAILURL);
-            integrityUrl = properties.getProperty(INTEGRITYURL);
-            monitoringUrl = properties.getProperty(MONITORINGURL);
+            alarmUrl = properties.getProperty(ALARM_URL);
+            auditTrailUrl = properties.getProperty(AUDIT_TRAIL_URL);
+            integrityUrl = properties.getProperty(INTEGRITY_URL);
+            monitoringUrl = properties.getProperty(MONITORING_URL);
             log.debug("Properties has been loaded:");
-            log.debug("alarm:" +alarmUrl);
-            log.debug("auditTrail:" +auditTrailUrl);
-            log.debug("integrity:" +integrityUrl);
+            log.debug("alarm: {}", alarmUrl);
+            log.debug("auditTrail: {}", auditTrailUrl);
+            log.debug("integrity: {}", integrityUrl);
         } catch (IOException e) {
             //will just fail setting keystore stuff and we won't be able to connect over ssl
             // not a big deal..

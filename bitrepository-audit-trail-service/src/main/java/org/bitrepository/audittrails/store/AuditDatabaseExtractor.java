@@ -149,8 +149,8 @@ public class AuditDatabaseExtractor {
                 + joinWithContributorTable() + createRestriction()
                 + " ORDER BY " + AUDIT_TRAIL_TABLE + "." + AUDIT_TRAIL_OPERATION_DATE;
         try {
-            log.debug("Creating prepared statement with sql '" + sql + "' and arguments '"
-                    + Arrays.asList(extractArgumentsFromModel()) + " for AuditEventIterator");
+            log.debug("Creating prepared statement with sql '{}' and arguments '{}' for AuditEventIterator",
+                    sql, Arrays.asList(extractArgumentsFromModel()));
             PreparedStatement ps = DatabaseUtils.createPreparedStatement(dbConnector.getConnection(),
                     sql, extractArgumentsFromModel());
             return new AuditEventIterator(ps);

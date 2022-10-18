@@ -43,16 +43,16 @@ public class AlarmLogger implements AlarmHandler {
      * Constructor. Nothing to initialize.
      */
     public AlarmLogger() {
-        log.debug("Instantiating the AlarmHandler '" + this.getClass().getCanonicalName() + "'");
+        log.debug("Instantiating the AlarmHandler '{}'", this.getClass().getCanonicalName());
     }
 
     @Override
     public void handleAlarm(AlarmMessage msg) {
-        log.info("ALARM: " + msg.toString());
+        log.info("ALARM: {}", msg.toString());
     }
 
     @Override
     public void close() {
-        log.debug("Closing the AlarmHandler '" + this.getClass().getCanonicalName() + "'");
+        log.debug("Closing the AlarmHandler '{}'", this.getClass().getCanonicalName());
     }
 }

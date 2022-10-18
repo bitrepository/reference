@@ -83,7 +83,7 @@ public class PillarMediator extends AbstractContributorMediator {
             dispatchNegativeResponse(request, handler, responseInfo);
             getAlarmDispatcher().handleIllegalArgumentException(e);
         } catch (RequestHandlerException e) {
-            log.debug("Failed to handle request '" + request + "'", e);
+            log.debug("Failed to handle request '{}'", request, e);
             dispatchNegativeResponse(request, handler, e.getResponseInfo());
             getAlarmDispatcher().handleRequestException(e, request.getCollectionID());
         } catch (RuntimeException e) {
@@ -135,7 +135,7 @@ public class PillarMediator extends AbstractContributorMediator {
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void dispatchNegativeResponse(MessageRequest request, RequestHandler handler, ResponseInfo info) {
-        log.info("Cannot perform operation. Sending failed response. Cause: " + info.getResponseText());
+        log.info("Cannot perform operation. Sending failed response. Cause: {}", info.getResponseText());
         MessageResponse response = handler.generateFailedResponse(request);
         response.setResponseInfo(info);
         context.getResponseDispatcher().dispatchResponse(response, request);

@@ -74,7 +74,7 @@ public class Pillar {
 
         PillarType pillarType = settings.getReferenceSettings().getPillarSettings().getPillarType();
 
-        log.info("Starting the ReferencePillar of type '" + pillarType + "'.");
+        log.info("Starting the ReferencePillar of type '{}'", pillarType);
         messageBus.setCollectionFilter(context.getPillarCollections());
         mediator = new PillarMediator(messageBus, context, pillarModel);
         mediator.start();

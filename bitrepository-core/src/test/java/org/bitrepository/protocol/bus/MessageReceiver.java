@@ -114,11 +114,11 @@ public class MessageReceiver {
         } catch (InterruptedException e) {
             throw new RuntimeException(e); // Should never happen
         }
-        long waitTime = System.currentTimeMillis()-startWait;
+        long waitTime = System.currentTimeMillis() - startWait;
         if (message != null) {
-            log.debug("Read message after (" + waitTime + " ms): " + message);
+            log.debug("Read message after ({} ms): {}", waitTime, message);
         } else {
-            log.info("Wait for " + messageType.getSimpleName() + " message timed out (" + waitTime + " ms).");
+            log.info("Wait for {} message timed out ({} ms).", messageType.getSimpleName(), waitTime);
             Assert.fail("Wait for " + messageType.getSimpleName() + " message timed out (" + waitTime + " ms).");
         }
         return message;

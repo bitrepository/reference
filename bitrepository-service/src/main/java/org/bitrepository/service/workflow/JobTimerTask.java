@@ -83,7 +83,7 @@ public class JobTimerTask extends TimerTask {
     public void runJob() {
         try {
             if (job.currentState().equals(WorkflowState.NOT_RUNNING)) {
-                log.info("Starting job: " + job.getJobID());
+                log.info("Starting job: {}", job.getJobID());
                 job.setCurrentState(WorkflowState.WAITING);
                 job.start();
                 if (interval > 0) {
@@ -91,10 +91,10 @@ public class JobTimerTask extends TimerTask {
                 }
                 notifyListenersAboutFinishedJob(job);
             } else {
-                log.info("Ignoring start request for " + job.getJobID() + " the job is already running");
+                log.info("Ignoring start request for job '{}'. The job is already running", job.getJobID());
             }
         } catch (Throwable e) {
-            log.error("Fault barrier for '" + job.getJobID() + "' caught unexpected exception.", e);
+            log.error("Fault barrier for '{}' caught unexpected exception.", job.getJobID(), e);
         }
     }
 

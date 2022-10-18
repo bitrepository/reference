@@ -200,7 +200,7 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
                                            ExtractedChecksumResultSet checksumResultSet) throws IOException, JAXBException, SAXException {
         // Create the temporary file.
         File checksumResultFile = File.createTempFile(request.getCorrelationID(), new Date().getTime() + ".cs");
-        log.debug("Writing the list of checksums to the file '" + checksumResultFile + "'");
+        log.debug("Writing the list of checksums to the file '{}'", checksumResultFile);
 
         // Create data format 
         GetChecksumsResults results = new GetChecksumsResults();
