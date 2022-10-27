@@ -123,14 +123,12 @@ public class HttpFileExchange implements FileExchange {
     }
 
     /**
-     * Retrieves the data from a given url and puts it onto a given
-     * output-stream. It has to be a 'HTTP' url, since the data is retrieved
-     * through a HTTP-request.
+     * Retrieves the data from a given url and puts it onto a given output-stream.
+     * It has to be a 'HTTP' url, since the data is retrieved through an HTTP-request.
      *
      * @param out The output stream to put the data.
      * @param url The url for where the data should be retrieved.
-     * @throws IOException If any problems occurs during the retrieval of the
-     *                     data.
+     * @throws IOException If any problems occurs during the retrieval of the data.
      */
     protected void performDownload(OutputStream out, URL url) throws IOException {
         if (out == null || url == null) {
@@ -171,7 +169,6 @@ public class HttpFileExchange implements FileExchange {
         ArgumentValidator.checkNotNull(in, "InputStream in");
         ArgumentValidator.checkNotNull(url, "URL url");
 
-
         try (CloseableHttpClient httpClient = getHttpClient()) {
             HttpPut httpPut = new HttpPut(url.toExternalForm());
             InputStreamEntity reqEntity = new LargeChunkedInputStreamEntity(in);
@@ -181,8 +178,7 @@ public class HttpFileExchange implements FileExchange {
 
             // HTTP code >= 300 means error!
             if (response.getStatusLine().getStatusCode() >= HTTP_ERROR_CODE_BARRIER) {
-                throw new IOException(
-                        "Could not upload file to URL '" + url.toExternalForm() + "'. got status code '" +
+                throw new IOException("Could not upload file to URL '" + url.toExternalForm() + "'. got status code '" +
                                 response.getStatusLine() + "'");
             }
             log.debug("Uploaded data-stream to url '{}' and received the response line '{}'",

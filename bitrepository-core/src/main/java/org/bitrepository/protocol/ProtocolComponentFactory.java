@@ -80,7 +80,7 @@ public final class ProtocolComponentFactory {
      */
     public FileExchange getFileExchange(Settings settings) {
         if (fileExchange == null) {
-            if ((settings.getReferenceSettings().getFileExchangeSettings() != null)) {
+            if (settings.getReferenceSettings().getFileExchangeSettings() != null) {
                 ProtocolType protocolType = settings.getReferenceSettings().getFileExchangeSettings().getProtocolType();
                 if (protocolType == ProtocolType.HTTP) {
                     fileExchange = new HttpFileExchange(settings);
