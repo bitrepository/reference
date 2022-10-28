@@ -85,7 +85,7 @@ public class IdentifyPillarsForReplaceFileRequestHandler extends IdentifyRequest
         response.setResponseInfo(irInfo);
 
         dispatchResponse(response, request);
-        log.debug(MessageUtils.createMessageIdentifier(request) + " Identified for performing a ReplaceFile operation.");
+        log.debug("{} Identified for performing a ReplaceFile operation.", MessageUtils.createMessageIdentifier(request));
     }
 
     /**
