@@ -90,7 +90,7 @@ public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRe
             verifyFileIDExistence(request.getFileIDs(), request.getCollectionID());
         }
 
-        log.debug(MessageUtils.createMessageIdentifier(request) + "' validated and accepted.");
+        log.debug("{} validated and accepted.", MessageUtils.createMessageIdentifier(request));
     }
 
     @Override
@@ -108,8 +108,8 @@ public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRe
     @Override
     protected void performOperation(GetFileIDsRequest request, MessageContext requestContext)
             throws RequestHandlerException {
-        log.debug(MessageUtils.createMessageIdentifier(request) + " Performing GetFileIDs for file(s) "
-                + request.getFileIDs() + " on collection " + request.getCollectionID());
+        log.debug("{} Performing GetFileIDs for file(s) {} on collection '{}'",
+                MessageUtils.createMessageIdentifier(request), request.getFileIDs(), request.getCollectionID());
         ExtractedFileIDsResultSet extractedFileIDs = retrieveFileIDsData(request);
         ResultingFileIDs results = new ResultingFileIDs();
         if (request.getResultAddress() == null) {

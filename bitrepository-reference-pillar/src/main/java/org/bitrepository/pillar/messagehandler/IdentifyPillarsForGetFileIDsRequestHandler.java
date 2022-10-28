@@ -82,7 +82,7 @@ public class IdentifyPillarsForGetFileIDsRequestHandler extends IdentifyRequestH
         response.setResponseInfo(irInfo);
 
         dispatchResponse(response, request);
-        log.debug(MessageUtils.createMessageIdentifier(request) + " Identified for performing a GetFileIDs operation.");
+        log.debug("{} Identified for performing a GetFileIDs operation.", MessageUtils.createMessageIdentifier(request));
     }
 
     /**

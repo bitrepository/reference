@@ -95,7 +95,7 @@ public class AlarmMailer implements AlarmHandler {
     @Override
     public void handleAlarm(AlarmMessage msg) {
         String subject = "Received alarm '" + msg.getAlarm() + "'";
-        log.info(subject + ":\n{}", msg);
+        log.info("{}:\n{}", subject, msg);
         sendMail(subject, msg.toString());
     }
 

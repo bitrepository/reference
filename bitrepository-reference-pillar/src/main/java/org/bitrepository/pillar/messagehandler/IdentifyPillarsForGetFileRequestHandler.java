@@ -86,7 +86,7 @@ public class IdentifyPillarsForGetFileRequestHandler extends IdentifyRequestHand
         response.setResponseInfo(irInfo);
 
         dispatchResponse(response, request);
-        log.debug(MessageUtils.createMessageIdentifier(request) + " Identified for performing a GetFile operation.");
+        log.debug("{} Identified for performing a GetFile operation.", MessageUtils.createMessageIdentifier(request));
     }
 
     /**

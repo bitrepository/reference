@@ -108,7 +108,7 @@ public class DeleteFileRequestHandler extends PerformRequestHandler<DeleteFileRe
                     request.getFileID());
         }
 
-        log.debug(MessageUtils.createMessageIdentifier(request) + "' validated and accepted.");
+        log.debug("{} validated and accepted.", MessageUtils.createMessageIdentifier(request));
     }
 
     /**

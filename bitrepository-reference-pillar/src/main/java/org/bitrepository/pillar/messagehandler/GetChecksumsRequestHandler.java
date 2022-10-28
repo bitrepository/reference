@@ -90,7 +90,7 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
             verifyFileIDExistence(request.getFileIDs(), request.getCollectionID());
         }
 
-        log.debug(MessageUtils.createMessageIdentifier(request) + "' validated and accepted.");
+        log.debug("{} validated and accepted.", MessageUtils.createMessageIdentifier(request));
     }
 
     @Override
@@ -108,8 +108,8 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
     @Override
     protected void performOperation(GetChecksumsRequest request, MessageContext requestContext)
             throws RequestHandlerException {
-        log.debug(MessageUtils.createMessageIdentifier(request) + " Performing GetChecksums for file(s) "
-                + request.getFileIDs() + " on collection " + request.getCollectionID());
+        log.debug("{} Performing GetChecksums for file(s) {} on collection '{}'",
+                MessageUtils.createMessageIdentifier(request), request.getFileIDs(), request.getCollectionID());
         ExtractedChecksumResultSet extractedChecksums = extractChecksumResults(request);
         ResultingChecksums checksumResults;
         if (request.getResultAddress() == null) {
