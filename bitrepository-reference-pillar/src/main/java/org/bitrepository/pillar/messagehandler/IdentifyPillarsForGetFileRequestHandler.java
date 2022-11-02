@@ -63,9 +63,11 @@ public class IdentifyPillarsForGetFileRequestHandler extends IdentifyRequestHand
     }
 
     @Override
-    protected void validateRequest(IdentifyPillarsForGetFileRequest request, MessageContext requestContext) throws RequestHandlerException {
+    protected void validateRequest(IdentifyPillarsForGetFileRequest request, MessageContext requestContext)
+            throws RequestHandlerException {
         if (getPillarModel().getChecksumPillarSpec() != null) {
-            throw new InvalidMessageException(ResponseCode.REQUEST_NOT_SUPPORTED, "A ChecksumPillar cannot deliver " + "actual files.");
+            throw new InvalidMessageException(ResponseCode.REQUEST_NOT_SUPPORTED,
+                    "A ChecksumPillar cannot deliver actual files.");
         }
 
         validateCollectionID(request);

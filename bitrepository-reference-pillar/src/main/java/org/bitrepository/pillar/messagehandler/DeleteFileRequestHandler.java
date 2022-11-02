@@ -69,7 +69,7 @@ public class DeleteFileRequestHandler extends PerformRequestHandler<DeleteFileRe
     protected void validateRequest(DeleteFileRequest request, MessageContext messageContext)
             throws RequestHandlerException {
         validateCollectionID(request);
-        validatePillarId(request.getPillarID());
+        validatePillarID(request.getPillarID());
         getPillarModel().verifyChecksumAlgorithm(request.getChecksumRequestForExistingFile());
         if (request.getChecksumDataForExistingFile() != null) {
             getPillarModel().verifyChecksumAlgorithm(request.getChecksumDataForExistingFile().getChecksumSpec());

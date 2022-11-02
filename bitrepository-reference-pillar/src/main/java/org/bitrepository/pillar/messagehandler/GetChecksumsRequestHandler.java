@@ -83,7 +83,7 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
     protected void validateRequest(GetChecksumsRequest request, MessageContext requestContext)
             throws RequestHandlerException {
         validateCollectionID(request);
-        validatePillarId(request.getPillarID());
+        validatePillarID(request.getPillarID());
         getPillarModel().verifyChecksumAlgorithm(request.getChecksumRequestForExistingFile());
         if (request.getFileIDs() != null && request.getFileIDs().getFileID() != null) {
             validateFileIDFormat(request.getFileIDs().getFileID());
@@ -248,8 +248,7 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
      * @param results        The results of the checksum calculations.
      * @param hasMoreEntries Whether more results can be found.
      */
-    private void sendFinalResponse(GetChecksumsRequest request, ResultingChecksums results,
-                                   boolean hasMoreEntries) {
+    private void sendFinalResponse(GetChecksumsRequest request, ResultingChecksums results, boolean hasMoreEntries) {
         GetChecksumsFinalResponse response = createFinalResponse(request);
 
         ResponseInfo fri = new ResponseInfo();

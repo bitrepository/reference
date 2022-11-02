@@ -88,7 +88,7 @@ public abstract class PillarMessageHandler<T extends MessageRequest> extends Abs
      *
      * @param pillarID The pillar id.
      */
-    protected void validatePillarId(String pillarID) {
+    protected void validatePillarID(String pillarID) {
         if (!pillarID.equals(getSettings().getComponentID())) {
             throw new IllegalArgumentException(
                     "The message had a wrong PillarId: " + "Expected '" + getSettings().getComponentID() + "' but was '" + pillarID + "'.");

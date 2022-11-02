@@ -94,7 +94,7 @@ public interface FileExchange {
      * Removes a file from the given URL.
      *
      * @param url The URL where the file should be removed from.
-     * @throws IOException        If issues occurs while removing the file.
+     * @throws IOException        If issues occur while removing the file.
      * @throws URISyntaxException If the URL is not valid.
      */
     void deleteFile(URL url) throws IOException, URISyntaxException;

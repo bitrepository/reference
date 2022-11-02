@@ -144,8 +144,8 @@ public class GetFileCmd extends CommandLineClient {
         } else {
             outputFile = new File(cmdHandler.getOptionValue(Constants.FILE_ID_ARG));
         }
-        FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
-        fileexchange.getFile(outputFile, fileUrl.toExternalForm());
+        FileExchange fileExchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
+        fileExchange.getFile(outputFile, fileUrl.toExternalForm());
     }
 
     /**
@@ -156,8 +156,8 @@ public class GetFileCmd extends CommandLineClient {
      */
     private URL extractUrl(String fileID) {
         try {
-            FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
-            return fileexchange.getURL(fileID);
+            FileExchange fileExchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
+            return fileExchange.getURL(fileID);
         } catch (MalformedURLException e) {
             throw new IllegalStateException("Could not make an URL for the file '" + fileID + "'.", e);
         }

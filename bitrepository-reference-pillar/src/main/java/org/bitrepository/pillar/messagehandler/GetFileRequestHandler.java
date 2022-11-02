@@ -72,7 +72,7 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
     @Override
     protected void validateRequest(GetFileRequest request, MessageContext requestContext) throws RequestHandlerException {
         validateCollectionID(request);
-        validatePillarId(request.getPillarID());
+        validatePillarID(request.getPillarID());
         validateFileIDFormat(request.getFileID());
 
         getPillarModel().verifyFileExists(request.getFileID(), request.getCollectionID());

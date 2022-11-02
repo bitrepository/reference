@@ -69,12 +69,12 @@ public class PutFileRequestHandler extends PerformRequestHandler<PutFileRequest>
     @Override
     protected void validateRequest(PutFileRequest request, MessageContext requestContext) throws RequestHandlerException {
         validateCollectionID(request);
-        validatePillarId(request.getPillarID());
+        validatePillarID(request.getPillarID());
         if (request.getChecksumDataForNewFile() != null) {
             getPillarModel().verifyChecksumAlgorithm(request.getChecksumDataForNewFile().getChecksumSpec());
         } else if (getSettings().getRepositorySettings().getProtocolSettings().isRequireChecksumForNewFileRequests()) {
             throw new IllegalOperationException(ResponseCode.NEW_FILE_CHECKSUM_FAILURE,
-                    "A checksum is required for " + "the PutFile operation to be performed.", request.getFileID());
+                    "A checksum is required for the PutFile operation to be performed.", request.getFileID());
         }
 
         getPillarModel().verifyChecksumAlgorithm(request.getChecksumRequestForNewFile());
@@ -102,9 +102,9 @@ public class PutFileRequestHandler extends PerformRequestHandler<PutFileRequest>
                 MessageUtils.createMessageIdentifier(request), request.getFileID(), request.getCollectionID());
         try {
             retrieveFile(request);
-            getAuditManager().addAuditEvent(request.getCollectionID(), request.getFileID(), request.getFrom(), "Add file to archive.",
-                    request.getAuditTrailInformation(), FileAction.PUT_FILE, request.getCorrelationID(),
-                    requestContext.getCertificateFingerprint());
+            getAuditManager().addAuditEvent(request.getCollectionID(), request.getFileID(), request.getFrom(),
+                    "Add file to archive.", request.getAuditTrailInformation(), FileAction.PUT_FILE,
+                    request.getCorrelationID(), requestContext.getCertificateFingerprint());
             sendFinalResponse(request);
         } finally {
             getPillarModel().ensureFileNotInTmpDir(request.getFileID(), request.getCollectionID());
@@ -167,8 +167,8 @@ public class PutFileRequestHandler extends PerformRequestHandler<PutFileRequest>
         response.setResponseInfo(frInfo);
 
         if (message.getChecksumRequestForNewFile() != null) {
-            response.setChecksumDataForNewFile(getPillarModel().getChecksumDataForFile(message.getFileID(), message.getCollectionID(),
-                    message.getChecksumRequestForNewFile()));
+            response.setChecksumDataForNewFile(getPillarModel().getChecksumDataForFile(message.getFileID(),
+                    message.getCollectionID(), message.getChecksumRequestForNewFile()));
         } else {
             log.debug("No checksum validation requested.");
         }

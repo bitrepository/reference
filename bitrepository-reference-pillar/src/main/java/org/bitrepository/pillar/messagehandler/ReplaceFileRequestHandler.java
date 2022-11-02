@@ -82,7 +82,7 @@ public class ReplaceFileRequestHandler extends PerformRequestHandler<ReplaceFile
     protected void validateRequest(ReplaceFileRequest request, MessageContext requestContext)
             throws RequestHandlerException {
         validateCollectionID(request);
-        validatePillarId(request.getPillarID());
+        validatePillarID(request.getPillarID());
         validateFileIDFormat(request.getFileID());
 
         if (!getPillarModel().hasFileID(request.getFileID(), request.getCollectionID())) {
