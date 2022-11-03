@@ -30,8 +30,6 @@ package org.bitrepository.alarm;
 @SuppressWarnings("serial")
 public class AlarmException extends RuntimeException {
     /**
-     * Constructor for this exception with both text message and a cause.
-     *
      * @param message The message for the exception.
      * @param cause   The cause in the form of another Throwable which has triggered this exception.
      */
