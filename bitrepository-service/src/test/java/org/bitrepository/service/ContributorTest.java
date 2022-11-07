@@ -28,7 +28,7 @@ import org.bitrepository.protocol.message.ClientTestMessageFactory;
 /**
  * Contains the general functionality for creating contributor tests.
  */
-public abstract class ContributerTest extends IntegrationTest {
+public abstract class ContributorTest extends IntegrationTest {
     protected static final String DEFAULT_FILE_ID = ClientTestMessageFactory.FILE_ID_DEFAULT;
 
     protected static String clientDestinationId;

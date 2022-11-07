@@ -44,7 +44,7 @@ import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.protocol.security.SecurityManagerUtil;
 import org.bitrepository.service.LifeCycledService;
 import org.bitrepository.service.ServiceSettingsProvider;
-import org.bitrepository.service.audit.AuditTrailContributerDAOFactory;
+import org.bitrepository.service.audit.AuditTrailContributorDAOFactory;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.ContributorMediator;
 import org.bitrepository.service.contributor.SimpleContributorMediator;
@@ -114,7 +114,7 @@ public final class IntegrityServiceManager {
 
         messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings, securityManager);
 
-        AuditTrailContributerDAOFactory daoFactory = new AuditTrailContributerDAOFactory();
+        AuditTrailContributorDAOFactory daoFactory = new AuditTrailContributorDAOFactory();
         AuditTrailManager auditManager = daoFactory.getAuditTrailContributorDAO(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getAuditTrailContributerDatabase(),
                 settings.getComponentID());

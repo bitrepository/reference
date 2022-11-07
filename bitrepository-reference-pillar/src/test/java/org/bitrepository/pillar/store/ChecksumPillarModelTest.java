@@ -27,12 +27,10 @@ import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.store.checksumcache.MemoryCacheMock;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumStore;
-import org.bitrepository.protocol.LocalFileExchange;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.settings.referencesettings.ChecksumPillarFileDownload;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
 import java.util.Date;
 
 import static org.testng.Assert.assertEquals;
@@ -54,8 +52,7 @@ public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
     protected void initializeCUT() {
         cache = new MemoryCacheMock();
         alarmDispatcher = new AlarmDispatcher(settingsForCUT, messageBus);
-        pillarModel = new ChecksumStorageModel(cache, alarmDispatcher, settingsForCUT,
-                new LocalFileExchange("src/test/resources"));
+        pillarModel = new ChecksumStorageModel(cache, alarmDispatcher, settingsForCUT);
         
         defaultCsType = ChecksumUtils.getDefault(settingsForCUT);
         
@@ -65,7 +62,7 @@ public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
-    public void testPillarModelBasicFunctionality() throws Exception {
+    public void testPillarModelBasicFunctionality() {
         addDescription("Test the basic functions of the full reference pillar model.");
         addStep("Check the pillar id in the pillar model", "Identical to the one from the test.");
         assertEquals(pillarModel.getPillarID(), getPillarID());
@@ -190,7 +187,7 @@ public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
-    public void testPillarModelNoFile() throws Exception {
+    public void testPillarModelNoFile() {
         addDescription("Test that the file exists, when placed in the archive and cache");
         addStep("Setup", "Should place the 'existing file' in the directory.");
         
@@ -213,7 +210,7 @@ public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
         }
     }
     
-    private void initializeWithDefaultFile() throws IOException {
+    private void initializeWithDefaultFile() {
         cache.insertChecksumCalculation(DEFAULT_FILE_ID, collectionID, EMPTY_MD5_CHECKSUM, new Date());
     }
 }

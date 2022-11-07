@@ -21,8 +21,10 @@
  */
 package org.bitrepository.protocol;
 
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.common.utils.StreamUtils;
+import org.bitrepository.settings.referencesettings.FileExchangeSettings;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -38,10 +40,10 @@ import java.net.URL;
  * File exchange used for exchanging files on a local filesystem
  */
 public class LocalFileExchange implements FileExchange {
-    private final File storageDir;
+    private final FileExchangeSettings settings;
 
-    public LocalFileExchange(String storageDir) {
-        this.storageDir = new File(storageDir);
+    public LocalFileExchange(FileExchangeSettings settings) {
+        this.settings = settings;
     }
 
     @Override
@@ -58,7 +60,7 @@ public class LocalFileExchange implements FileExchange {
     @Override
     public URL putFile(File dataFile) {
         try {
-            File dest = new File(storageDir, new File(dataFile.toString()).getName());
+            File dest = new File(settings.getPath(), dataFile.getName());
             FileUtils.copyFile(dataFile, dest);
             return dest.toURI().toURL();
         } catch (MalformedURLException e) {
@@ -98,7 +100,9 @@ public class LocalFileExchange implements FileExchange {
 
     @Override
     public URL getURL(String filename) throws MalformedURLException {
-        File dest = new File(storageDir, new File(filename).getName());
+        ArgumentValidator.checkNotNull(settings,
+                "The ReferenceSettings are missing the settings for the file exchange.");
+        File dest = new File(settings.getPath(), new File(filename).getName());
         URL url;
         try {
             url = dest.toURI().toURL();

@@ -25,20 +25,16 @@
 package org.bitrepository.protocol;
 
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.protocol.http.HttpFileExchange;
-import org.bitrepository.protocol.http.HttpsFileExchange;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.SecurityManager;
-import org.bitrepository.settings.referencesettings.ProtocolType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.bitrepository.protocol.utils.FileExchangeResolver;
+import org.bitrepository.settings.referencesettings.FileExchangeSettings;
 
 /**
- * Provides access to the different component in the org.bitrepository.org.bitrepository.protocol module (Spring/IOC wannabe)
+ * Provides access to the different components in the org.bitrepository.protocol module (Spring/IOC wannabe)
  */
 public final class ProtocolComponentFactory {
-    private static final Logger log = LoggerFactory.getLogger(ProtocolComponentFactory.class);
     private static ProtocolComponentFactory instance;
 
     public static synchronized ProtocolComponentFactory getInstance() {
@@ -72,7 +68,7 @@ public final class ProtocolComponentFactory {
     }
 
     /**
-     * Gets you an <code>FileExchange</code> instance for data communication. Is instantiated based on the
+     * Gets you a <code>FileExchange</code> instance for data communication. Is instantiated based on the
      * configurations.
      *
      * @param settings The settings for the file exchange.
@@ -80,18 +76,11 @@ public final class ProtocolComponentFactory {
      */
     public FileExchange getFileExchange(Settings settings) {
         if (fileExchange == null) {
-            if (settings.getReferenceSettings().getFileExchangeSettings() != null) {
-                ProtocolType protocolType = settings.getReferenceSettings().getFileExchangeSettings().getProtocolType();
-                if (protocolType == ProtocolType.HTTP) {
-                    fileExchange = new HttpFileExchange(settings);
-                } else if (protocolType == ProtocolType.HTTPS) {
-                    fileExchange = new HttpsFileExchange(settings);
-                } else if (protocolType == ProtocolType.FILE) {
-                    fileExchange = new LocalFileExchange(
-                            settings.getReferenceSettings().getFileExchangeSettings().getPath());
-                }
+            FileExchangeSettings fileExchangeSettings = settings.getReferenceSettings().getFileExchangeSettings();
+            if (fileExchangeSettings != null) {
+                fileExchange = FileExchangeResolver.getFileExchange(fileExchangeSettings);
             } else {
-                fileExchange = new HttpFileExchange(settings);
+                throw new IllegalStateException("No FileExchangeSettings found in configuration");
             }
         }
         return fileExchange;

@@ -30,7 +30,6 @@ import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.store.checksumcache.MemoryCacheMock;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumStore;
 import org.bitrepository.pillar.store.filearchive.CollectionArchiveManager;
-import org.bitrepository.protocol.LocalFileExchange;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.exception.RequestHandlerException;
 import org.testng.annotations.Test;
@@ -60,8 +59,7 @@ public class FullPillarModelTest extends DefaultFixturePillarTest {
         cache = new MemoryCacheMock();
         archives = new CollectionArchiveManager(settingsForCUT);
         alarmDispatcher = new AlarmDispatcher(settingsForCUT, messageBus);
-        pillarModel = new FileStorageModel(archives, cache, alarmDispatcher, settingsForCUT,
-                new LocalFileExchange("src/test/resources"));
+        pillarModel = new FileStorageModel(archives, cache, alarmDispatcher, settingsForCUT);
         
         defaultCsType = ChecksumUtils.getDefault(settingsForCUT);
         
@@ -139,13 +137,10 @@ public class FullPillarModelTest extends DefaultFixturePillarTest {
         } catch (Exception e) {
             // expected
         }
-        
-        
-//        pillarModel.
     }
     
-    private void emptyArchive() throws IOException {
-        if(archives.hasFile(DEFAULT_FILE_ID, collectionID)) {
+    private void emptyArchive() {
+        if (archives.hasFile(DEFAULT_FILE_ID, collectionID)) {
             archives.deleteFile(DEFAULT_FILE_ID, collectionID);
         }
         archives.ensureFileNotInTmpDir(DEFAULT_FILE_ID, collectionID);

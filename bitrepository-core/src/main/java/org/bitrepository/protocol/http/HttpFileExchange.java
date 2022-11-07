@@ -35,7 +35,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.ChunkyManagedHttpClientConnectionFactory;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.StreamUtils;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.FileExchange;
@@ -63,9 +62,9 @@ public class HttpFileExchange implements FileExchange {
     private static final int HTTP_ERROR_CODE_BARRIER = 300;
     protected int HTTP_BUFFER_SIZE = 1024 * 1024;
     protected static final int HTTP_CHUNK_SIZE = 64 * 1024;
-    protected final Settings settings;
+    protected final FileExchangeSettings settings;
 
-    public HttpFileExchange(Settings settings) {
+    public HttpFileExchange(FileExchangeSettings settings) {
         this.settings = settings;
     }
 
@@ -189,13 +188,12 @@ public class HttpFileExchange implements FileExchange {
     @Override
     public URL getURL(String filename) throws MalformedURLException {
         ArgumentValidator.checkNotNullOrEmpty(filename, "String fileName");
-        ArgumentValidator.checkNotNull(settings.getReferenceSettings().getFileExchangeSettings(),
+        ArgumentValidator.checkNotNull(settings,
                 "The ReferenceSettings are missing the settings for the file exchange.");
-        FileExchangeSettings feSettings = settings.getReferenceSettings().getFileExchangeSettings();
         String urlEncodedFilename = URLEncoder.encode(filename, StandardCharsets.UTF_8);
 
-        return new URL(feSettings.getProtocolType().value(), feSettings.getServerName(), feSettings.getPort().intValue(),
-                feSettings.getPath() + "/" + urlEncodedFilename);
+        return new URL(settings.getProtocolType().value(), settings.getServerName(), settings.getPort().intValue(),
+                settings.getPath() + "/" + urlEncodedFilename);
     }
 
     /**

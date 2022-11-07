@@ -38,7 +38,6 @@ import org.bitrepository.pillar.store.checksumdatabase.ChecksumEntry;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumStore;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedFileIDsResultSet;
-import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -66,22 +65,18 @@ public abstract class StorageModel {
     protected final ChecksumSpecTYPE defaultChecksumSpec;
     protected final AlarmDispatcher alarmDispatcher;
     protected final Settings settings;
-    protected final FileExchange fileExchange;
 
     /**
      * @param archives        The archive with the data.
      * @param cache           The storage for the checksums.
      * @param alarmDispatcher The alarm dispatcher.
      * @param settings        The configuration to use.
-     * @param fileExchange    The file exchange.
      */
-    protected StorageModel(FileStore archives, ChecksumStore cache, AlarmDispatcher alarmDispatcher, Settings settings,
-            FileExchange fileExchange) {
-        this.cache = cache;
+    protected StorageModel(FileStore archives, ChecksumStore cache, AlarmDispatcher alarmDispatcher, Settings settings) {
         this.fileArchive = archives;
+        this.cache = cache;
         this.alarmDispatcher = alarmDispatcher;
         this.settings = settings;
-        this.fileExchange = fileExchange;
         this.defaultChecksumSpec = ChecksumUtils.getDefault(settings);
     }
 

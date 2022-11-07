@@ -30,7 +30,7 @@ import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
  *
  * FIXME: Code does not reflect generic type.
  */
-public class AuditTrailContributerDAOFactory extends DatabaseFactory<AuditTrailContributorDAO> {
+public class AuditTrailContributorDAOFactory extends DatabaseFactory<AuditTrailContributorDAO> {
 
     public AuditTrailContributorDAO getAuditTrailContributorDAO(DatabaseSpecifics ds, String componentID) {
         AuditTrailContributorDAO dao = getDAOInstance(ds);

@@ -43,6 +43,7 @@ import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.settings.referencesettings.ProtocolType;
 
 import javax.jms.JMSException;
 import java.io.File;
@@ -335,19 +336,26 @@ public abstract class CommandLineClient {
      * @return The URL for the file.
      */
     protected URL getURLOrUploadFile() {
+        FileExchange fileExchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
         if (cmdHandler.hasOption(Constants.FILE_ARG)) {
             File f = findTheFile();
-            FileExchange fileexchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
-            return fileexchange.putFile(f);
+            return fileExchange.putFile(f);
         } else {
             String urlArg = cmdHandler.getOptionValue(Constants.URL_ARG);
+
             try {
                 final URL url = new URL(urlArg);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                int responseCode = connection.getResponseCode();
 
-                if (responseCode > 399) {
-                    throw new Exception("Http URL Connection ResponseCode: " + responseCode);
+                ProtocolType protocolType = ProtocolType.fromValue(url.getProtocol().toUpperCase(Locale.ROOT));
+                if (protocolType != ProtocolType.FILE) {
+                    // Test if URL can actually be opened to exit early
+                    // - otherwise checksum pillars will still receive and store checksum.
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    int responseCode = connection.getResponseCode();
+
+                    if (responseCode > 399) {
+                        throw new Exception("Http URL Connection ResponseCode: " + responseCode);
+                    }
                 }
 
                 return url;
