@@ -100,7 +100,7 @@ public class ReplaceFileCmd extends CommandLineClient {
         cmdHandler.addOption(fileOption);
 
         Option urlOption = new Option(URL_ARG, HAS_ARGUMENT,
-                "The URL for the file to be retrieved. Is required, unless the actual file is given.");
+                "The URL for the file to replace with. Is required, unless the actual file is given.");
         urlOption.setRequired(ARGUMENT_IS_NOT_REQUIRED);
         cmdHandler.addOption(urlOption);
 
