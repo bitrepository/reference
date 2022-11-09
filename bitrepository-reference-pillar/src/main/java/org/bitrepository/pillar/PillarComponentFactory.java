@@ -118,8 +118,7 @@ public final class PillarComponentFactory {
                 SettingsHelper.getPillarCollections(settings.getComponentID(), settings.getCollections()),
                 responseDispatcher,
                 alarmDispatcher,
-                audits,
-                ProtocolComponentFactory.getInstance().getFileExchange(settings));
+                audits);
 
         return new Pillar(messageBus, settings, pillarModel, context);
     }

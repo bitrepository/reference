@@ -34,7 +34,7 @@ import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.FileExchange;
-import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.utils.FileExchangeResolver;
 
 import java.io.IOException;
 import java.net.URL;
@@ -172,7 +172,7 @@ public class PutFileCmd extends CommandLineClient {
         final URL url = getURLOrUploadFile();
 
         String fileID = retrieveFileID();
-        FileExchange fileExchange = ProtocolComponentFactory.getInstance().getFileExchange(settings);
+        FileExchange fileExchange = FileExchangeResolver.getBasicFileExchangeFromURL(url);
 
         output.debug("Initiating the PutFile conversation.");
         ChecksumDataForFileTYPE validationChecksum = getValidationChecksum();

@@ -35,7 +35,6 @@ import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
 import org.bitrepository.service.contributor.handler.RequestHandler;
-import org.bitrepository.service.exception.RequestHandlerException;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -51,18 +50,18 @@ public class MediatorTest extends DefaultFixturePillarTest {
     StorageModel model = null;
     
     @BeforeMethod (alwaysRun=true)
-    public void initialiseTest() throws Exception {
+    public void initialiseTest() {
         audits = new MockAuditManager();
         context = new MessageHandlerContext(
                 settingsForCUT,
                 SettingsHelper.getPillarCollections(settingsForCUT.getComponentID(), settingsForCUT.getCollections()),
             new ResponseDispatcher(settingsForCUT, messageBus),
             new PillarAlarmDispatcher(settingsForCUT, messageBus),
-            audits, null);
+            audits);
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
-    public void testMediatorRuntimeExceptionHandling() throws Exception {
+    public void testMediatorRuntimeExceptionHandling() {
         addDescription("Tests the handling of a runtime exception");
         addStep("Setup create and start the mediator.", "");
         
@@ -97,7 +96,7 @@ public class MediatorTest extends DefaultFixturePillarTest {
         return "MediatorUnderTest";
     }
 
-    private class TestMediator extends PillarMediator {
+    private static class TestMediator extends PillarMediator {
 
         public TestMediator(MessageHandlerContext context, StorageModel model) {
             super(messageBus, context, model);
@@ -107,11 +106,11 @@ public class MediatorTest extends DefaultFixturePillarTest {
         protected RequestHandler[] createListOfHandlers() {
             List<RequestHandler> handlers = new ArrayList<>();
             handlers.add(new ErroneousRequestHandler());
-            return handlers.toArray(new RequestHandler[handlers.size()]);
+            return handlers.toArray(new RequestHandler[0]);
         }
     }
     
-    private class ErroneousRequestHandler implements RequestHandler<IdentifyContributorsForGetStatusRequest> {
+    private static class ErroneousRequestHandler implements RequestHandler<IdentifyContributorsForGetStatusRequest> {
 
         @Override
         public Class<IdentifyContributorsForGetStatusRequest> getRequestClass() {
@@ -119,7 +118,7 @@ public class MediatorTest extends DefaultFixturePillarTest {
         }
 
         @Override
-        public void processRequest(IdentifyContributorsForGetStatusRequest request, MessageContext messageContext) throws RequestHandlerException {
+        public void processRequest(IdentifyContributorsForGetStatusRequest request, MessageContext messageContext) {
             throw new RuntimeException("I am supposed to throw a RuntimeException");
         }
 

@@ -135,14 +135,12 @@ public final class IntegrityServiceManager {
         workFlowManager = new IntegrityWorkflowManager(
                 new IntegrityWorkflowContext(settings, collector, model, alarmDispatcher, auditManager),
                 new TimerBasedScheduler());
-        contributor = new SimpleContributorMediator(messageBus, settings, auditManager, null);
+        contributor = new SimpleContributorMediator(messageBus, settings, auditManager);
         contributor.start();
     }
 
     /**
      * Retrieves the shared settings based on the directory specified in the {@link #initialize(String)} method.
-     *
-     * @return The settings to used for the integrity service.
      */
     private static void loadSettings() {
         if (confDir == null) {

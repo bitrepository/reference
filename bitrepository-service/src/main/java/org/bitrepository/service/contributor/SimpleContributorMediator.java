@@ -26,7 +26,6 @@ import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.settings.Settings;
-import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.service.AlarmDispatcher;
@@ -59,15 +58,14 @@ public class SimpleContributorMediator extends AbstractContributorMediator {
      * @param messageBus   The message-bus for the mediator.
      * @param settings     the settings for the mediator.
      * @param auditManager [OPTIONAL] The manager of audit trails. Only if the contributor has audit trails.
-     * @param fileExchange the file exchange
      */
     public SimpleContributorMediator(
-            MessageBus messageBus, Settings settings, AuditTrailManager auditManager, FileExchange fileExchange) {
+            MessageBus messageBus, Settings settings, AuditTrailManager auditManager) {
         super(messageBus);
         context = new ContributorContext(
                 new ResponseDispatcher(settings, messageBus),
                 new AlarmDispatcher(settings, messageBus),
-                settings, fileExchange);
+                settings);
         this.auditManager = auditManager;
     }
 
