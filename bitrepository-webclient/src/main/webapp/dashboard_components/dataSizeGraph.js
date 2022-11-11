@@ -1,36 +1,34 @@
+function DataSizeGraph(collections, colorMapper, fileSizeUtils, dataUrl, graphTypeSelector, graphPlaceholder) {
+    let i;
+    let collectionIDs = {};
+    let colorMap = colorMapper;
+    let sizeUtils = fileSizeUtils;
+    let graphType = graphTypeSelector;
+    let placeholder = graphPlaceholder;
+    let graphDataPool = {};
+    let url = dataUrl;
+    let yAxisText = "y-axis text";
+    let tooltipText;
+    let isFloatData = true;
+    let mySelf = this;
+    let msPerDay = 86400 * 1000;
 
-
-  function dataSizeGraph(collections, colorMapper, fileSizeUtils, dataUrl, graphTypeSelector, graphPlaceholder) {
- 
-    var collectionIDs = new Object();
-    var colorMap = colorMapper;
-    var sizeUtils = fileSizeUtils;
-    var graphType = graphTypeSelector;
-    var placeholder = graphPlaceholder;
-    var graphDataPool = new Object();
-    var url = dataUrl;
-    var yAxisText = "y-axis text";
-    var tooltipText;
-    var isFloatData = true;
-    var mySelf = this;
-    var msPerDay = 86400 * 1000;
-
-    for(var i=0; i<collections.length; i++) {
-      collectionIDs[collections[i].collectionID] = {state : "active" };
+    for (i = 0; i < collections.length; i++) {
+        collectionIDs[collections[i].collectionID] = {state : "active" };
     }
 
     this.enableCollection = function(collectionID) {
-      collectionIDs[collectionID].state = "active";
-      this.renderGraph();
+        collectionIDs[collectionID].state = "active";
+        this.renderGraph();
     };
 
     this.disableCollection = function(collectionID) {
-      collectionIDs[collectionID].state = "disabled";
-      this.renderGraph();
+        collectionIDs[collectionID].state = "disabled";
+        this.renderGraph();
     };
 
     this.graphTypeChanged = function() {
-      this.renderGraph();
+        this.renderGraph();
     };
 
     function showTooltip(x, y, contents) {
@@ -49,213 +47,207 @@
     }
 
     function useRange(element, plot, dataObj, options) {
-      $(element).bind("plotselected", function (event,ranges) {
-        // do the zooming
-        plot = $.plot($(element), 
-                      dataObj,
-                      $.extend(true,
-                               {},
-                               options,
-                               {
-                                xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to },   
-                                yaxis: { min: ranges.yaxis.from, max: ranges.yaxis.to }
-                               }
-                              )
-                     );
+        $(element).bind("plotselected", function (event,ranges) {
+            // do the zooming
+            plot = $.plot($(element),
+                dataObj,
+                $.extend(true,
+                    {},
+                    options,
+                    {
+                        xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to },
+                        yaxis: { min: ranges.yaxis.from, max: ranges.yaxis.to }
+                    }
+                )
+            );
         });
     }
 
     function handleHover(element, plot, dataObj, options) {
-      $(element).bind("plothover", function (event, pos, item) {
-        if(item) {
-          if(previousPoint != item.dataIndex) {
-            previousPoint = item.dataIndex;
-            $("#tooltip").remove();
-            var x = item.datapoint[0];
-            var y = item.datapoint[1];
-            var formated_date = moment.utc(x).format("YYYY/MM/DD HH:mm");
-            var formattedValue;
-            if(isFloatData) {
-                formattedValue = numeral(y).format('0,0.0[000]');
-            } else {
-                formattedValue = numeral(y).format('0,0');
-            }
-            showTooltip(item.pageX, 
+        $(element).bind("plothover", function (event, pos, item) {
+            if (item) {
+                if (previousPoint !== item.dataIndex) {
+                    previousPoint = item.dataIndex;
+                    $("#tooltip").remove();
+                    let x = item.datapoint[0];
+                    let y = item.datapoint[1];
+                    let formatted_date = moment.utc(x).format("YYYY/MM/DD HH:mm");
+                    let formattedValue;
+                    if (isFloatData) {
+                        formattedValue = numeral(y).format('0,0.0[000]');
+                    } else {
+                        formattedValue = numeral(y).format('0,0');
+                    }
+                    showTooltip(item.pageX,
                         item.pageY,
-                        formated_date  + "<br/><strong>" + formattedValue + " " + tooltipText +  "</strong>");
-          }
-        } else {
-          $("#tooltip").remove();
-          previousPoint = null;
-        }
-        $('<div class="button" style="left:600px;top:20px">zoom out</div>').appendTo(element).click(function (e) {
-            e.preventDefault();
-            plot.setupGrid();
-            plot.draw();
-            plot = $.plot(placeholder, dataObj, options);
+                        formatted_date  + "<br/><strong>" + formattedValue + " " + tooltipText +  "</strong>");
+                }
+            } else {
+                $("#tooltip").remove();
+                previousPoint = null;
+            }
+            $('<div class="button" style="left:600px;top:20px">zoom out</div>').appendTo(element).click(function (e) {
+                e.preventDefault();
+                plot.setupGrid();
+                plot.draw();
+                plot = $.plot(placeholder, dataObj, options);
+            });
         });
-      });
     }
 
     function scaleAndCopyData(data, factor) {
-      scaledData = new Array();
-      for(i=0; i<data.length; i++) {
-        scaledData[i] = [data[i][0], data[i][1]/factor];
-      }
-      return scaledData;
+        let scaledData = [];
+        for (i = 0; i < data.length; i++) {
+            scaledData[i] = [data[i][0], data[i][1] / factor];
+        }
+        return scaledData;
     }
 
     this.renderGraph = function() {
-      var dataObj = new Array();
-      var dMax = 0;
-      var dataField = "data";
-      var dMaxField = "dataMax";
-      if($(graphType).val() == "data") {
-        dataField = "data";
-        dMaxField = "dataMax";
-        isFloatData = true;
-      } else if($(graphType).val() == "datadelta") {
-        dataField = "deltaData";
-        dMaxField = "deltaMax";
-        isFloatData = true;
-      } else if($(graphType).val() == "filecount") {
-        dataField = "fileCount";
-        dMaxField = "fileCountMax";
-        isFloatData = false;
-      } else if($(graphType).val() == "filedelta") {
-        dataField = "deltaCount";
-        dMaxField = "deltaCountMax";
-        isFloatData = true;
-      }
-      
-      for(i in collectionIDs) {
-        var collectionID = i;
-        if(collectionIDs[i].state == "active" && graphDataPool[collectionID] != null) {
-          if(graphDataPool[collectionID][dMaxField] > dMax) {
-            dMax = graphDataPool[collectionID][dMaxField];
-          }
+        let dataObj = [];
+        let dMax = 0;
+        let dataField = "data";
+        let dMaxField = "dataMax";
+        if ($(graphType).val() === "data") {
+            dataField = "data";
+            dMaxField = "dataMax";
+            isFloatData = true;
+        } else if ($(graphType).val() === "datadelta") {
+            dataField = "deltaData";
+            dMaxField = "deltaMax";
+            isFloatData = true;
+        } else if ($(graphType).val() === "filecount") {
+            dataField = "fileCount";
+            dMaxField = "fileCountMax";
+            isFloatData = false;
+        } else if ($(graphType).val() === "filedelta") {
+            dataField = "deltaCount";
+            dMaxField = "deltaCountMax";
+            isFloatData = true;
         }
-      }
-  
-      var unitSuffix = sizeUtils.toHumanUnit(dMax);
-      var scale = sizeUtils.getByteSize(unitSuffix);
-      
-      for(i in collectionIDs) {
-        var collectionID = i;
-        if(collectionIDs[i].state == "active" && graphDataPool[collectionID] != null) {
-          var dataArray;
-          //Avoid scaling y-axis data when working with filecount.
-          if($(graphType).val() == "filecount" || $(graphType).val() == "filedelta") {
-            dataArray = graphDataPool[collectionID][dataField];
-          } else {
-            dataArray = scaleAndCopyData(graphDataPool[collectionID][dataField], scale);          
-          }
 
-          var collectionObj = {data: dataArray, color: colorMap.getCollectionColor(collectionID)};
-          dataObj.push(collectionObj);
+        for (let collectionID in collectionIDs) {
+            if (collectionIDs[collectionID].state === "active" && graphDataPool[collectionID] != null) {
+                if (graphDataPool[collectionID][dMaxField] > dMax) {
+                    dMax = graphDataPool[collectionID][dMaxField];
+                }
+            }
         }
-      }
 
-      if($(graphType).val() == "data") {
-        yAxisText = unitSuffix;
-        tooltipText = unitSuffix;
-      } else if($(graphType).val() == "datadelta") {
-        yAxisText = unitSuffix + " per day";
-        tooltipText = unitSuffix + " per day";
-      } else if($(graphType).val() == "filecount") {
-        yAxisText = "Number of files";
-        tooltipText = "files";
-      } else if($(graphType).val() == "filedelta") {
-        yAxisText = "Files per day";
-        tooltipText = "files per day";
-      }
+        let unitSuffix = sizeUtils.toHumanUnit(dMax);
+        let scale = sizeUtils.getByteSize(unitSuffix);
 
-      var options = {
-        hoverable: true,
-        grid:  {
+        for (let collectionID in collectionIDs) {
+            if (collectionIDs[collectionID].state === "active" && graphDataPool[collectionID] != null) {
+                let dataArray;
+                //Avoid scaling y-axis data when working with filecount.
+                if ($(graphType).val() === "filecount" || $(graphType).val() === "filedelta") {
+                    dataArray = graphDataPool[collectionID][dataField];
+                } else {
+                    dataArray = scaleAndCopyData(graphDataPool[collectionID][dataField], scale);
+                }
+
+                let collectionObj = {data: dataArray, color: colorMap.getCollectionColor(collectionID)};
+                dataObj.push(collectionObj);
+            }
+        }
+
+        if ($(graphType).val() === "data") {
+            yAxisText = unitSuffix;
+            tooltipText = unitSuffix;
+        } else if ($(graphType).val() === "datadelta") {
+            yAxisText = unitSuffix + " per day";
+            tooltipText = unitSuffix + " per day";
+        } else if ($(graphType).val() === "filecount") {
+            yAxisText = "Number of files";
+            tooltipText = "files";
+        } else if ($(graphType).val() === "filedelta") {
+            yAxisText = "Files per day";
+            tooltipText = "files per day";
+        }
+
+        let options = {
             hoverable: true,
-            borderColor: "#cccccc"
-        },
-        xaxis: {  mode: "time",  localTimezone: true , zoomRange: [0.1, 10] , timeformat: "%y/%0m/%0d %0H:%0M"},
-        yaxis: {  axisLabel: yAxisText},
-        selection:{  mode: "xy" } ,
-        points: { show: true ,  radius: 1} ,
-        lines: { show: true},
-        zoom: { interactive: true}
-      };
-    
-      var plot = $.plot(placeholder, dataObj, options);
-      useRange(placeholder, plot, dataObj, options);
-      handleHover(placeholder, plot, dataObj, options);
-    };
+            grid: {
+                hoverable: true,
+                borderColor: "#cccccc"
+            },
+            xaxis: {mode: "time",  localTimezone: true , zoomRange: [0.1, 10] , timeformat: "%y/%0m/%0d %0H:%0M"},
+            yaxis: {axisLabel: yAxisText},
+            selection: {mode: "xy"} ,
+            points: {show: true, radius: 1},
+            lines: {show: true},
+            zoom: {interactive: true}
+        };
 
-    this.getGraphData = function() {
-      return graphDataPool;
+        let plot = $.plot(placeholder, dataObj, options);
+        useRange(placeholder, plot, dataObj, options);
+        handleHover(placeholder, plot, dataObj, options);
     };
 
     function updateCollectionData(collection) {
-      var c = collection;
-      $.getJSON(url + c, {}, function(data) {
-          var collectionData = new Array();
-          var deltaCollectionData = new Array();
-          var dMax = 0;
-          var deltaDataMax = 0;
-          var fileCountData = new Array();
-          var deltaCountData = new Array();
-          var fileCountDataMax = 0;
-          var fileCountDeltaMax = 0;
-          // Get the timezone offset in milliseconds
-          var timeOffset = moment().tz("Europe/Copenhagen")._offset * 1000 * 60;
-          for(i=0; i<data.length; i++) {
-            var a = new Array(data[i].dateMillis - timeOffset, data[i].dataSize);
-            if(data[i].dataSize > dMax) {
-              dMax = data[i].dataSize;
-            }
-            collectionData.push(a);
-            
-            var fc = new Array(data[i].dateMillis - timeOffset, data[i].fileCount);
-            if(data[i].fileCount > fileCountDataMax) {
-              fileCountDataMax = data[i].fileCount;
-            }
-            fileCountData.push(fc);
+        let c = collection;
+        $.getJSON(url + c, {}, function(data) {
+            let collectionData = [];
+            let deltaCollectionData = [];
+            let dMax = 0;
+            let deltaDataMax = 0;
+            let fileCountData = [];
+            let deltaCountData = [];
+            let fileCountDataMax = 0;
+            let fileCountDeltaMax = 0;
+            // Get the timezone offset in milliseconds
+            let timeOffset = moment().tz("Europe/Copenhagen")._offset * 1000 * 60;
+            for (i=0; i<data.length; i++) {
+                let a = [data[i].dateMillis - timeOffset, data[i].dataSize];
+                if (data[i].dataSize > dMax) {
+                    dMax = data[i].dataSize;
+                }
+                collectionData.push(a);
 
-            //Build delta data
-            if(i == 0) {
-              deltaCollectionData.push([data[i].dateMillis - timeOffset, 0]);
-              deltaCountData.push([data[i].dateMillis - timeOffset, 0]);
-            } else {
-              var deltaBytes = data[i].dataSize - data[i-1].dataSize;
-              var deltaCount = data[i].fileCount - data[i-1].fileCount;
-              var deltaMs = data[i].dateMillis - data[i-1].dateMillis;
-              var growthPerDay = (msPerDay * deltaBytes) / deltaMs;
-              if(growthPerDay > deltaDataMax) {
-                deltaDataMax = growthPerDay;
-              }
-              deltaCollectionData.push([data[i].dateMillis - timeOffset, growthPerDay]);
-              var fileGrowthPerDay = (msPerDay * deltaCount) / deltaMs;
-              if(fileGrowthPerDay > fileCountDeltaMax) {
-              	fileCountDeltaMax = fileGrowthPerDay;
-              }
-              deltaCountData.push([data[i].dateMillis - timeOffset, fileGrowthPerDay]);
+                let fc = [data[i].dateMillis - timeOffset, data[i].fileCount];
+                if (data[i].fileCount > fileCountDataMax) {
+                    fileCountDataMax = data[i].fileCount;
+                }
+                fileCountData.push(fc);
+
+                //Build delta data
+                if (i === 0) {
+                    deltaCollectionData.push([data[i].dateMillis - timeOffset, 0]);
+                    deltaCountData.push([data[i].dateMillis - timeOffset, 0]);
+                } else {
+                    let deltaBytes = data[i].dataSize - data[i-1].dataSize;
+                    let deltaCount = data[i].fileCount - data[i-1].fileCount;
+                    let deltaMs = data[i].dateMillis - data[i-1].dateMillis;
+                    let growthPerDay = (msPerDay * deltaBytes) / deltaMs;
+                    if (growthPerDay > deltaDataMax) {
+                        deltaDataMax = growthPerDay;
+                    }
+                    deltaCollectionData.push([data[i].dateMillis - timeOffset, growthPerDay]);
+                    let fileGrowthPerDay = (msPerDay * deltaCount) / deltaMs;
+                    if (fileGrowthPerDay > fileCountDeltaMax) {
+                        fileCountDeltaMax = fileGrowthPerDay;
+                    }
+                    deltaCountData.push([data[i].dateMillis - timeOffset, fileGrowthPerDay]);
+                }
             }
-          }
-          graphDataPool[c] = {data: collectionData, dataMax: dMax, 
-                              deltaData: deltaCollectionData, deltaMax: deltaDataMax,
-                              fileCount: fileCountData, fileCountMax: fileCountDataMax,
-                              deltaCount: deltaCountData, deltaCountMax: fileCountDeltaMax};
+            graphDataPool[c] = {data: collectionData, dataMax: dMax,
+                deltaData: deltaCollectionData, deltaMax: deltaDataMax,
+                fileCount: fileCountData, fileCountMax: fileCountDataMax,
+                deltaCount: deltaCountData, deltaCountMax: fileCountDeltaMax};
         }).done(function() {mySelf.renderGraph();});
     }
 
     this.updateData = function() {
-      var keys = Object.keys(collectionIDs);
-      for(i in keys) {
-        updateCollectionData(keys[i]);
-      }
+        let keys = Object.keys(collectionIDs);
+        for (i in keys) {
+            updateCollectionData(keys[i]);
+        }
     };
 
     this.getCollectionIDs = function() {
-      return Object.keys(collectionIDs);
-    }; 
-  }
+        return Object.keys(collectionIDs);
+    };
+}
 
 
