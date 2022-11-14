@@ -28,16 +28,16 @@
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
   </head>
   <body>
-  
+
   <div id="pageMenu"></div>
   <div class="container">
     <div class="row">
       <div class="span9"><h2>Status service</h2></div>
-      <div class="span9">   
-        <div class="accordion" id="configuration-accordion">  
+      <div class="span9">
+        <div class="accordion" id="configuration-accordion">
           <div class="accordion-group">
             <div class="accordion-heading">
-              <a class="accordion-toggle" data-toggle="collapse" data-parent="#configuration-accordion" href="#collapseOne"> 
+              <a class="accordion-toggle" data-toggle="collapse" data-parent="#configuration-accordion" href="#collapseOne">
                 Show monitoring service configuration <i class="icon-chevron-down"></i>
               </a>
             </div>
@@ -51,7 +51,7 @@
                     </tr>
                   </thead>
                   <tbody id="configuration-table-body"></tbody>
-                </table> 
+                </table>
               </div>
             </div>
           </div>
@@ -59,7 +59,7 @@
       </div>
     </div>
     <div class="row">
-      <div class="span9"> 
+      <div class="span9">
         <table class="table table-bordered">
           <thead>
             <tr>
@@ -80,18 +80,18 @@
   <script src="utils.js"></script>
 
   <script>
-    var components = new Object();
-    var monitoringServiceUrl;  
+    var components = {};
+    var monitoringServiceUrl;
     var update_component_status;
 
     function makeComponentRow(id, status, time) {
       var html = "";
       var classAttr = "class=\"success\"";
-      if(status == "WARNING") {
+      if(status === "WARNING") {
         classAttr = "class=\"alert\"";
-      } else if(status == "UNRESPONSIVE" || status == "ERROR") {
+      } else if(status === "UNRESPONSIVE" || status === "ERROR") {
         classAttr = "class=\"alert alert-error\"";
-      } else if(status == "UNKNOWN") {
+      } else if(status === "UNKNOWN") {
         classAttr = "class=\"info\"";
       }
       html += "<tr " + classAttr + " id=\"" + id +"-row\">";
@@ -99,25 +99,26 @@
       html += "<td id=\"" + id + "-status\">" + status + " </td>";
       html += "<td id=\"" + id + "-time\">" + time + "</td>";
       html += "<td> <button class=\"btn btn-mini\" id=\"" + id + "-msg-btn\"> Show details <i class=\"icon-chevron-right\"></i></button></td>";
-      html += "<tr>";    
+      html += "<tr>";
       return html;
     }
 
     function updateComponentRow(id, status, time) {
-      $("#" + id + "-row").removeClass("success alert alert-error info");
+      let rowElement = $("#" + id + "-row");
+      rowElement.removeClass("success alert alert-error info");
       var newClass = "success";
-      if(status == "WARNING") {
+      if(status === "WARNING") {
         newClass = "alert";
-      } else if(status == "UNRESPONSIVE" || status == "ERROR") {
+      } else if(status === "UNRESPONSIVE" || status === "ERROR") {
         newClass = "alert alert-error";
-      } else if(status == "UNKNOWN") {
+      } else if(status === "UNKNOWN") {
         newClass = "info";
       }
-      $("#" + id + "-row").addClass(newClass);
+      rowElement.addClass(newClass);
       $("#" + id + "-status").html(status);
       $("#" + id + "-time").html(time);
     }
-        
+
     function populateStatusServiceConfiguration() {
       var url = monitoringServiceUrl + '/monitoring/MonitoringService/getMonitoringConfiguration/';
       $.getJSON(url, {}, function(j){
@@ -128,34 +129,36 @@
         $("#configuration-table-body").html(htmlTableBody);
       });
     }
-        
+
     function getMsg(id) {
       return function() {
         return components[id].msg;
       }
-    } 
+    }
 
     function attachButtonAction(id, message) {
       var element = "#" + id + "-msg-btn";
-      $(element).popover({placement : "right",
-          html: true,  
-    	  title: id + " status message", 
-          content: getMsg(nl2br(id))});
+      $(element).popover({
+          placement : "right",
+          html: true,
+          title: id + " status message",
+          content: getMsg(nl2br(id))
+      });
     }
-        
+
     function getStatuses() {
       var url = monitoringServiceUrl + '/monitoring/MonitoringService/getComponentStatus/';
-      $.getJSON(url, {}, function(j){
-        for(var i = 0; i < j.length; i++) {
-          if(components[j[i].componentID] == null) {
+      $.getJSON(url, {}, function(json){
+        for(var i = 0; i < json.length; i++) {
+          if(components[json[i].componentID] == null) {
             $("#component-status-table-body").append(
-              makeComponentRow(j[i].componentID, j[i].status, j[i].timeStamp));
-              components[j[i].componentID] = {msg : j[i].info};
-              attachButtonAction(j[i].componentID, j[i].info);
-            } else {
-              updateComponentRow(j[i].componentID, j[i].status, j[i].timeStamp);
-              components[j[i].componentID].msg = j[i].info;
-            }
+              makeComponentRow(json[i].componentID, json[i].status, json[i].timeStamp));
+            components[json[i].componentID] = {msg : json[i].info};
+            attachButtonAction(json[i].componentID, json[i].info);
+          } else {
+            updateComponentRow(json[i].componentID, json[i].status, json[i].timeStamp);
+            components[json[i].componentID].msg = json[i].info;
+          }
         }
       });
     }
@@ -168,12 +171,12 @@
         update_component_status = setInterval(function() {getStatuses(); }, 2500);
       }, 'html');
     }
-        
+
     $(document).ready(function(){
       makeMenu("status-service.html", "#pageMenu");
       initPage();
       closePopoverOnClick();
-    }); 
+    });
 
     </script>
   </body>
