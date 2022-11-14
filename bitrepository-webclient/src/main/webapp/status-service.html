@@ -80,7 +80,7 @@
   <script src="utils.js"></script>
 
   <script>
-    var components = {};
+    var knownComponents = new Set();
     var monitoringServiceUrl;
     var update_component_status;
 
@@ -130,19 +130,13 @@
       });
     }
 
-    function getMsg(id) {
-      return function() {
-        return components[id].msg;
-      }
-    }
-
     function attachButtonAction(id, message) {
       var element = "#" + id + "-msg-btn";
       $(element).popover({
           placement : "right",
           html: true,
           title: id + " status message",
-          content: getMsg(nl2br(id))
+          content: message
       });
     }
 
@@ -150,15 +144,15 @@
       var url = monitoringServiceUrl + '/monitoring/MonitoringService/getComponentStatus/';
       $.getJSON(url, {}, function(json){
         for(var i = 0; i < json.length; i++) {
-          if(components[json[i].componentID] == null) {
-            $("#component-status-table-body").append(
-              makeComponentRow(json[i].componentID, json[i].status, json[i].timeStamp));
-            components[json[i].componentID] = {msg : json[i].info};
-            attachButtonAction(json[i].componentID, json[i].info);
+          let componentID = json[i].componentID;
+          if(knownComponents.has(componentID)) {
+            updateComponentRow(componentID, json[i].status, json[i].timeStamp);
           } else {
-            updateComponentRow(json[i].componentID, json[i].status, json[i].timeStamp);
-            components[json[i].componentID].msg = json[i].info;
+            $("#component-status-table-body").append(
+              makeComponentRow(componentID, json[i].status, json[i].timeStamp));
+            attachButtonAction(componentID, json[i].info);
           }
+          knownComponents.add(componentID);
         }
       });
     }
