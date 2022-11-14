@@ -120,10 +120,10 @@ More detail and specific examples can be found in the included HTML file.
 			var options = plot.getOptions();
 			if (options.series.pie.show) {
 				if (options.grid.hoverable) {
-					eventHolder.unbind("mousemove").mousemove(onMouseMove);
+					eventHolder.off("mousemove").on("mousemove", onMouseMove);
 				}
 				if (options.grid.clickable) {
-					eventHolder.unbind("click").click(onClick);
+					eventHolder.off("click").on("click", onClick);
 				}
 			}
 		});
@@ -180,13 +180,14 @@ More detail and specific examples can be found in the included HTML file.
 				// new one; this is more efficient and preserves any extra data
 				// that the user may have stored in higher indexes.
 
-				if ($.isArray(value)) {
-					if ($.isNumeric(value[1])) {
+				if (Array.isArray(value)) {
+					// Equivalent to $.isNumeric() but compatible with jQuery < 1.7
+					if (!isNaN(parseFloat(value[1])) && isFinite(value[1])) {
 						value[1] = +value[1];
 					} else {
 						value[1] = 0;
 					}
-				} else if ($.isNumeric(value)) {
+				} else if (!isNaN(parseFloat(value)) && isFinite(value)) {
 					value = [1, +value];
 				} else {
 					value = [1, 0];

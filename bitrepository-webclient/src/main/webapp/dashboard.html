@@ -88,7 +88,7 @@
     </div>
 
     <!-- Javascript -->
-    <script src="jquery/jquery-1.9.0.min.js"></script>
+    <script src="jquery/jquery-3.6.1.min.js"></script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
     <script src="flot/excanvas.js"></script>     
     <script src="flot/jquery.flot.min.js"></script>
@@ -108,7 +108,7 @@
     <script src="dashboard_components/collectionStatus.js"></script>
     <script src="dashboard_components/legsSizePie.js"></script>
     <script src="dashboard_components/collectionSizePie.js"></script>
-    <script src="dashboard_components/dataSizeGraph.js"></script>
+    <script src="dashboard_components/DataSizeGraph.js"></script>
     <script src="dashboard_components/dataSizeGraphController.js"></script>
 
     <script>
@@ -129,11 +129,11 @@
             setNameMapper(nameMapper);
             initiateCollectionStatus(collections, "#collectionStatusBody", 10000);
             var dataUrl = url + "/integrity/Statistics/getDataSizeHistory/?collectionID=";
-            dsGraph = new dataSizeGraph(collections, colorMapper, new FileSizeUtils(), dataUrl, "#graphType", "#dataSizeGraphPlaceholder");
+            dsGraph = new DataSizeGraph(collections, colorMapper, new FileSizeUtils(), dataUrl, "#graphType", "#dataSizeGraphPlaceholder");
             makeCollectionSelectionCheckboxes("#dataSizeGraphCollectionSelection", dsGraph, colorMapper, nameMapper);
             drawPillarDataSizePieChart(url + "/integrity/Statistics/getLatestPillarDataSize/");
             drawCollectionDataSizePieChart(url + "/integrity/Statistics/getLatestcollectionDataSize/", colorMapper);
-            $("#graphType").change(function(event) {event.preventDefault(); dsGraph.graphTypeChanged();});
+            $("#graphType").on("change", function(event) {event.preventDefault(); dsGraph.graphTypeChanged();});
             dsGraph.updateData();
             // Update graphs every hour
             update_data_size_graph = setInterval(function() {
