@@ -47,7 +47,7 @@ function DataSizeGraph(collections, colorMapper, fileSizeUtils, dataUrl, graphTy
     }
 
     function useRange(element, plot, dataObj, options) {
-        $(element).bind("plotselected", function (event,ranges) {
+        $(element).on("plotselected", function (event,ranges) {
             // do the zooming
             plot = $.plot($(element),
                 dataObj,
@@ -64,7 +64,7 @@ function DataSizeGraph(collections, colorMapper, fileSizeUtils, dataUrl, graphTy
     }
 
     function handleHover(element, plot, dataObj, options) {
-        $(element).bind("plothover", function (event, pos, item) {
+        $(element).on("plothover", function (event, pos, item) {
             if (item) {
                 if (previousPoint !== item.dataIndex) {
                     previousPoint = item.dataIndex;
@@ -86,7 +86,7 @@ function DataSizeGraph(collections, colorMapper, fileSizeUtils, dataUrl, graphTy
                 $("#tooltip").remove();
                 previousPoint = null;
             }
-            $('<div class="button" style="left:600px;top:20px">zoom out</div>').appendTo(element).click(function (e) {
+            $('<div class="button" style="left:600px;top:20px">zoom out</div>').appendTo(element).on("click", function (e) {
                 e.preventDefault();
                 plot.setupGrid();
                 plot.draw();
