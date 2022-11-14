@@ -34,11 +34,14 @@ function initiateCollectionStatus(collectionIDs, tableBody, updateInterval) {
 function updateWorkflowStatus(collection) {
     if (scheduleUpdate(collection, "status")) {
         let url = integrityServiceUrl + "/integrity/IntegrityService/getWorkflowSetup/?collectionID=" + collection;
-        let c = collection;
         $.getJSON(url, {}, function(j) {
-            collections[c].lastCheck = j[0].lastRun;
-            collections[c].nextCheck = j[0].nextRun;
-        }).done(function(){updateCollectionRow(collections[c]);}).always(function() {finishUpdate(c, "status");});
+            collections[collection].lastCheck = j[0].lastRun;
+            collections[collection].nextCheck = j[0].nextRun;
+        }).done(function() {
+            updateCollectionRow(collections[collection]);
+        }).always(function() {
+            finishUpdate(collection, "status");
+        });
     }
 }
 
@@ -57,7 +60,11 @@ function updateCollectionInfo(collection) {
             collections[collection].numFiles = j.numberOfFiles;
             collections[collection].collectionSize = j.collectionSize;
             collections[collection].latestIngest = j.lastIngest;
-        }).done(function(){updateCollectionRow(collections[c]);}).always(function() {finishUpdate(c, "info");});
+        }).done(function() {
+            updateCollectionRow(collections[collection]);
+        }).always(function() {
+            finishUpdate(collection, "info");
+        });
     }
 }
 
@@ -84,7 +91,11 @@ function updateCollectionStatistic(collection) {
             collections[collection].pillars = pillarCount;
             collections[collection].numChecksumErrors = checksumErrors;
             collections[collection].numMissingFiles = missingFiles;
-        }).done(function(){updateCollectionRow(collections[c])}).always(function() {finishUpdate(c, "stats");});
+        }).done(function() {
+            updateCollectionRow(collections[collection])
+        }).always(function() {
+            finishUpdate(collection, "stats");
+        });
     }
 }
 
