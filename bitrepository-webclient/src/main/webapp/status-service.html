@@ -80,18 +80,18 @@
   <script src="utils.js"></script>
 
   <script>
-    var knownComponents = new Set();
-    var monitoringServiceUrl;
-    var update_component_status;
+    let knownComponents = new Set();
+    let monitoringServiceUrl;
+    let update_component_status;
 
     function makeComponentRow(id, status, time) {
-      var html = "";
-      var classAttr = "class=\"success\"";
-      if(status === "WARNING") {
+      let html = "";
+      let classAttr = "class=\"success\"";
+      if (status === "WARNING") {
         classAttr = "class=\"alert\"";
-      } else if(status === "UNRESPONSIVE" || status === "ERROR") {
+      } else if (status === "UNRESPONSIVE" || status === "ERROR") {
         classAttr = "class=\"alert alert-error\"";
-      } else if(status === "UNKNOWN") {
+      } else if (status === "UNKNOWN") {
         classAttr = "class=\"info\"";
       }
       html += "<tr " + classAttr + " id=\"" + id +"-row\">";
@@ -106,12 +106,12 @@
     function updateComponentRow(id, status, time) {
       let rowElement = $("#" + id + "-row");
       rowElement.removeClass("success alert alert-error info");
-      var newClass = "success";
-      if(status === "WARNING") {
+      let newClass = "success";
+      if (status === "WARNING") {
         newClass = "alert";
-      } else if(status === "UNRESPONSIVE" || status === "ERROR") {
+      } else if (status === "UNRESPONSIVE" || status === "ERROR") {
         newClass = "alert alert-error";
-      } else if(status === "UNKNOWN") {
+      } else if (status === "UNKNOWN") {
         newClass = "info";
       }
       rowElement.addClass(newClass);
@@ -120,18 +120,18 @@
     }
 
     function populateStatusServiceConfiguration() {
-      var url = monitoringServiceUrl + '/monitoring/MonitoringService/getMonitoringConfiguration/';
-      $.getJSON(url, {}, function(j){
-        var htmlTableBody = "";
-        for (var i = 0; i < j.length; i++) {
-          htmlTableBody += "<tr><td>" + j[i].confOption + "</td><td>" + j[i].confValue + "</td></tr>";
+      let url = monitoringServiceUrl + '/monitoring/MonitoringService/getMonitoringConfiguration/';
+      $.getJSON(url, {}, function (json) {
+        let htmlTableBody = "";
+        for (let i = 0; i < json.length; i++) {
+          htmlTableBody += "<tr><td>" + json[i].confOption + "</td><td>" + json[i].confValue + "</td></tr>";
         }
         $("#configuration-table-body").html(htmlTableBody);
       });
     }
 
     function attachButtonAction(id, message) {
-      var element = "#" + id + "-msg-btn";
+      let element = "#" + id + "-msg-btn";
       $(element).popover({
           placement : "right",
           html: true,
@@ -141,11 +141,11 @@
     }
 
     function getStatuses() {
-      var url = monitoringServiceUrl + '/monitoring/MonitoringService/getComponentStatus/';
-      $.getJSON(url, {}, function(json){
-        for(var i = 0; i < json.length; i++) {
+      let url = monitoringServiceUrl + '/monitoring/MonitoringService/getComponentStatus/';
+      $.getJSON(url, {}, function (json) {
+        for (let i = 0; i < json.length; i++) {
           let componentID = json[i].componentID;
-          if(knownComponents.has(componentID)) {
+          if (knownComponents.has(componentID)) {
             updateComponentRow(componentID, json[i].status, json[i].timeStamp);
           } else {
             $("#component-status-table-body").append(
@@ -158,15 +158,15 @@
     }
 
     function initPage() {
-      $.get('repo/urlservice/monitoringService', {}, function(url) {
+      $.get('repo/urlservice/monitoringService', {}, function (url) {
         monitoringServiceUrl = url;
         populateStatusServiceConfiguration();
         getStatuses();
-        update_component_status = setInterval(function() {getStatuses(); }, 2500);
+        update_component_status = setInterval(function () { getStatuses(); }, 2500);
       }, 'html');
     }
 
-    $(document).ready(function(){
+    $(document).ready(function () {
       makeMenu("status-service.html", "#pageMenu");
       initPage();
       closePopoverOnClick();
