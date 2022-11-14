@@ -196,7 +196,7 @@
   </div>
 
 </div>
-<script src="jquery/jquery-1.9.0.min.js"></script>
+<script src="jquery/jquery-3.6.1.min.js"></script>
 <script src="bootstrap/js/bootstrap.min.js"></script>
 <script src="datepicker/js/bootstrap-datepicker.js"></script>
 <script src="menu.js"></script>
@@ -374,10 +374,10 @@
       auditTrailServiceUrl = url;
       let collectAuditTrailsButton = $("#collectAuditTrails");
       let queryAuditTrailsButton = $("#queryAuditTrails");
-      collectAuditTrailsButton.click(function(event) { event.preventDefault(); startAuditTrailsCollection(); });
-      collectAuditTrailsButton.removeAttr("disabled");
-      queryAuditTrailsButton.click(function(event) {event.preventDefault(); getAuditTrails()});
-      queryAuditTrailsButton.removeAttr("disabled");
+      collectAuditTrailsButton.on("click", function(event) { event.preventDefault(); startAuditTrailsCollection(); });
+      collectAuditTrailsButton.prop("disabled", false);
+      queryAuditTrailsButton.on("click", function(event) {event.preventDefault(); getAuditTrails()});
+      queryAuditTrailsButton.prop("disabled", false);
       loadCollectionSchedule();
       loadPreservationSchedule();
       getContributorIDs();
@@ -390,12 +390,12 @@
     getCollectionIDs();
     $("#fromDate").datepicker({format: "yyyy/mm/dd"});
     $("#toDate").datepicker({format: "yyyy/mm/dd"});
-    $("#toDateClearButton").click(function(event) {event.preventDefault(); clearElement("#toDate")});
-    $("#fromDateClearButton").click(function(event) {event.preventDefault(); clearElement("#fromDate")});
-    $("#fileIDClearButton").click(function(event) {event.preventDefault(); clearElement("#fileIDFilter")});
-    $("#actorClearButton").click(function(event) {event.preventDefault(); clearElement("#actorFilter")});
-    $("#fingerprintClearButton").click(function(event) {event.preventDefault(); clearElement("#fingerprintFilter")});
-    $("#operationIDClearButton").click(function(event) {event.preventDefault(); clearElement("#operationIDFilter")});
+    $("#toDateClearButton").on("click", function(event) {event.preventDefault(); clearElement("#toDate")});
+    $("#fromDateClearButton").on("click", function(event) {event.preventDefault(); clearElement("#fromDate")});
+    $("#fileIDClearButton").on("click", function(event) {event.preventDefault(); clearElement("#fileIDFilter")});
+    $("#actorClearButton").on("click", function(event) {event.preventDefault(); clearElement("#actorFilter")});
+    $("#fingerprintClearButton").on("click", function(event) {event.preventDefault(); clearElement("#fingerprintFilter")});
+    $("#operationIDClearButton").on("click", function(event) {event.preventDefault(); clearElement("#operationIDFilter")});
   });
 
 </script>

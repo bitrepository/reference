@@ -133,7 +133,7 @@ function DownloadModal(collectionID, contentElement, url) {
         });
 
         // On click either select all or deselect all
-        $("input:checkbox[name=select-all]").change(function () {
+        $("input:checkbox[name=select-all]").on("change", function () {
             if (this.checked) {
                 changeAllCheckboxes(true);
             } else {
