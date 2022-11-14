@@ -33,7 +33,7 @@
 <div class="container-fluid">
   <div class="row-fluid">
     <div class="span11">
-      <div class="span11" style="height:0px; min-height:0px"></div>
+      <div class="span11" style="height:0; min-height:0"></div>
       <div class="span11">
         <div class="row-fluid">
           <div class="span6">
@@ -130,7 +130,7 @@
             </div>
           </label>
           <label> Actor: <br>
-            <div class="input-append" style="padding: 0px">
+            <div class="input-append" style="padding: 0">
               <input class="input-medium" id="actorFilter" type="text" placeholder="Actor">
               <button class="btn" id="actorClearButton" type="button"><i class="icon-remove"></i></button>
             </div>
@@ -170,13 +170,13 @@
             </div>
           </label>
           <label> Certificate fingerprint: <br>
-            <div class="input-append" style="padding: 0px">
+            <div class="input-append" style="padding: 0">
               <input class="input-medium" id="fingerprintFilter" type="text" placeholder="Fingerprint">
               <button class="btn" id="fingerprintClearButton" type="button"><i class="icon-remove"></i></button>
             </div>
           </label>
           <label> OperationID: <br>
-            <div class="input-append" style="padding: 0px">
+            <div class="input-append" style="padding: 0">
               <input class="input-medium" id="operationIDFilter" type="text" placeholder="OperationID">
               <button class="btn" id="operationIDClearButton" type="button"><i class="icon-remove"></i></button>
             </div>
@@ -291,9 +291,10 @@
   function getContributorIDs() {
     var url = auditTrailServiceUrl + '/audittrails/AuditTrailService/contributors';
     $.getJSON(url, {}, function(ids){
-      $("#componentFilter").append('<option value=""> ALL </option>');
+        let componentFilterElement = $("#componentFilter");
+        componentFilterElement.append('<option value=""> ALL </option>');
       for(var i = 0; i < ids.length; i++) {
-        $("#componentFilter").append('<option value="' + ids[i] + '">' + ids[i] + '</option>');
+        componentFilterElement.append('<option value="' + ids[i] + '">' + ids[i] + '</option>');
       }
     });
   }
