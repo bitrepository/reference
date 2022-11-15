@@ -21,7 +21,7 @@
  */
 
 
-var pages = [{page : "dashboard.html", title : "Dashboard"},
+let pages = [{page : "dashboard.html", title : "Dashboard"},
     {page : "configuration.html", title : "Configuration"},
     {page : "alarm-service.html", title : "Alarm"},
     {page : "integrity-service.html", title : "Integrity"},
@@ -29,9 +29,9 @@ var pages = [{page : "dashboard.html", title : "Dashboard"},
     {page : "status-service.html", title : "Status"}];
 
 function makeMenu(page, element) {
-    var menuHtml = "";
+    let menuHtml = "";
     menuHtml += "<div class=\"navbar navbar-inverse navbar-static-top\">";
-    menuHtml += "<img src='img/bitreplogo.png' alt='BitRepository Logo' style='float: left; right:0; top:0; margin: 0.4em 1em 0 1.5em;" +
+    menuHtml += "<img src='static/img/bitreplogo.png' alt='BitRepository Logo' style='float: left; right:0; top:0; margin: 0.4em 1em 0 1.5em;" +
         " height: 28px'/>";
     menuHtml += "<div class=\"navbar-inner\">";
     menuHtml += "<div class=\"container-fluid\">";
@@ -43,10 +43,10 @@ function makeMenu(page, element) {
     menuHtml += "<a class=\"brand\" href=\"bitrepository-frontpage.html\">Bitrepository</a>";
     menuHtml += "<div class=\"nav-collapse collapse\">";
     menuHtml += "<ul class=\"nav\">";
-    for(var i=0; i<pages.length; i++) {
-        linkClass="";
-        if(pages[i].page == page) {
-            linkClass="class=\"active\"";
+    for (let i = 0; i < pages.length; i++) {
+        let linkClass = "";
+        if (pages[i].page === page) {
+            linkClass = "class=\"active\"";
         }
         menuHtml += "<li " + linkClass +"><a href=\"" + pages[i].page + "\">"+ pages[i].title + "</a></li>";
     }
