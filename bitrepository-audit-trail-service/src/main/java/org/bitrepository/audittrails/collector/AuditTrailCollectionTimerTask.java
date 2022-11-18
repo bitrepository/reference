@@ -75,8 +75,6 @@ public class AuditTrailCollectionTimerTask extends TimerTask {
 
     @Override
     public void run() {
-        if (schedule.getNextRun().getTime() < System.currentTimeMillis()) {
-            runCollection();
-        }
+        runCollection();
     }
 }
