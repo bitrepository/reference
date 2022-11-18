@@ -80,16 +80,17 @@ public class GetChecksumForFileStep extends AbstractWorkFlowStep {
     public synchronized void performStep() throws WorkflowAbortedException {
         try {
             Set<String> pillarsToCollectFrom = integrityContributors.getActiveContributors();
-            log.debug("Collecting checksums from '" + pillarsToCollectFrom + "' for collection '" + collectionID + "'.");
+            log.debug("Collecting checksums from '{}' for collection '{}'", pillarsToCollectFrom, collectionID);
             SimpleChecksumEventHandler eventHandler = new SimpleChecksumEventHandler(timeout, integrityContributors);
             collector.getChecksums(collectionID, pillarsToCollectFrom, checksumType, fileID,
-                    "Getting salted " + checksumType.getChecksumType() + " checksum for spot integrity check", null, eventHandler);
+                    "Getting salted " + checksumType.getChecksumType() + " checksum for spot integrity check",
+                    null, eventHandler);
 
             OperationEvent event = eventHandler.getFinish();
             if (event.getEventType() == OperationEventType.FAILED) {
                 handleFailureEvent(event);
             }
-            log.debug("Collecting of checksums had the final event: " + event);
+            log.debug("Collecting of checksums had the final event: {}", event);
             checksumResults = eventHandler.getResults();
         } catch (InterruptedException e) {
             log.warn("Interrupted while collecting checksums.", e);
@@ -107,8 +108,8 @@ public class GetChecksumForFileStep extends AbstractWorkFlowStep {
             OperationFailedEvent ofe = (OperationFailedEvent) event;
             log.info("Failure occurred collecting checksums. Failure {}", ofe.toString());
             alerter.integrityFailed("Failure while collecting checksums, the check will continue " +
-                            "with the information available. The failed contributors were: " + integrityContributors.getFailedContributors(),
-                    collectionID);
+                            "with the information available. The failed contributors were: " +
+                            integrityContributors.getFailedContributors(), collectionID);
         }
     }
 
@@ -124,7 +125,7 @@ public class GetChecksumForFileStep extends AbstractWorkFlowStep {
         Map<String, String> res = new HashMap<>();
         for (Map.Entry<String, ResultingChecksums> entry : checksumResults.entrySet()) {
             if (!validateResults(entry.getValue())) {
-                log.warn("No or invalid checksum results from pillar '" + entry.getKey() + "': " + entry.getValue());
+                log.warn("No or invalid checksum results from pillar '{}': {}", entry.getKey(), entry.getValue());
                 continue;
             }
             String checksum = Base16Utils.decodeBase16(entry.getValue().getChecksumDataItems().get(0).getChecksumValue());

@@ -68,7 +68,7 @@ public abstract class AbstractBitrepositoryContextListener implements ServletCon
         if (confDir == null) {
             throw new RuntimeException("No configuration directory specified!");
         }
-        log.debug("Configuration dir = " + confDir);
+        log.debug("Configuration dir = {}", confDir);
 
         try {
             new LogbackConfigLoader(confDir + "/logback.xml");

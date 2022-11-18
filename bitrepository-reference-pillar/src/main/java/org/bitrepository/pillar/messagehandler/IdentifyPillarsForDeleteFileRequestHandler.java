@@ -84,7 +84,7 @@ public class IdentifyPillarsForDeleteFileRequestHandler
         response.setResponseInfo(irInfo);
 
         dispatchResponse(response, request);
-        log.debug(MessageUtils.createMessageIdentifier(request) + " Identified for performing a DeleteFile operation.");
+        log.debug("{} Identified for performing a DeleteFile operation.", MessageUtils.createMessageIdentifier(request));
     }
 
     /**

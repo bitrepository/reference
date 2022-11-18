@@ -86,7 +86,8 @@ public class IdentifyPillarsForGetChecksumsRequestHandler extends IdentifyReques
         response.setResponseInfo(irInfo);
 
         dispatchResponse(response, request);
-        log.debug(MessageUtils.createMessageIdentifier(request) + " Identified for performing a GetChecksums operation.");
+        log.debug("{} Identified for performing a GetChecksums operation.",
+                MessageUtils.createMessageIdentifier(request));
     }
 
     /**

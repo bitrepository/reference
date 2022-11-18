@@ -65,20 +65,20 @@ public class SimpleChecksumEventHandler implements EventHandler {
     @Override
     public void handleEvent(OperationEvent event) {
         if (event.getEventType() == OperationEventType.COMPONENT_COMPLETE) {
-            log.debug("Component complete: " + event);
+            log.debug("Component complete: {}", event);
             handleResult(event);
         } else if (event.getEventType() == OperationEventType.COMPLETE) {
-            log.debug("Complete: " + event);
+            log.debug("Complete: {}", event);
             finalEventQueue.add(event);
         } else if (event.getEventType() == OperationEventType.FAILED) {
-            log.warn("Failure: " + event);
+            log.warn("Failure: {}", event);
             finalEventQueue.add(event);
         } else if (event.getEventType() == OperationEventType.COMPONENT_FAILED) {
             ContributorFailedEvent cfe = (ContributorFailedEvent) event;
-            log.warn("Component failure for '" + cfe.getContributorID() + "'.");
+            log.warn("Component failure for '{}'", cfe.getContributorID());
             integrityContributors.failContributor(cfe.getContributorID());
         } else {
-            log.debug("Received event: " + event);
+            log.debug("Received event: {}", event);
         }
     }
 
@@ -102,15 +102,18 @@ public class SimpleChecksumEventHandler implements EventHandler {
     private void handleResult(OperationEvent event) {
         if (event instanceof ChecksumsCompletePillarEvent) {
             ChecksumsCompletePillarEvent checksumEvent = (ChecksumsCompletePillarEvent) event;
-            log.trace("Receiving GetChecksums result: {}", checksumEvent.getChecksums().getChecksumDataItems().toString());
-            checksumResults.put(checksumEvent.getContributorID(), checksumEvent.getChecksums());
+            String contributorID = checksumEvent.getContributorID();
+            ResultingChecksums checksums = checksumEvent.getChecksums();
+            log.trace("Receiving GetChecksums result: {}", checksums.getChecksumDataItems().toString());
+            checksumResults.put(contributorID, checksums);
+
             if (checksumEvent.isPartialResult()) {
-                integrityContributors.succeedContributor(checksumEvent.getContributorID());
+                integrityContributors.succeedContributor(contributorID);
             } else {
-                integrityContributors.finishContributor(checksumEvent.getContributorID());
+                integrityContributors.finishContributor(contributorID);
             }
         } else {
-            log.warn("Unexpected component complete event: " + event.toString());
+            log.warn("Unexpected component complete event: {}", event.toString());
         }
     }
 

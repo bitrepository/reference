@@ -81,8 +81,8 @@ public class HandleObsoleteChecksumsStep extends AbstractWorkFlowStep {
             long obsoleteChecksums = 0L;
             Duration maxAge = maxChecksumAgeProvider.getMaxChecksumAge(pillar);
             if (maxAge.isZero()) {
-                log.info("Skipping obsolete checksums check for pillar '" + pillar + "' as it has a " +
-                        "MaxChecksumAge of 0 (i.e., checksums don't expire).");
+                log.info("Skipping obsolete checksums check for pillar '{}' as it has a MaxChecksumAge of 0" +
+                        " (i.e., checksums don't expire).", pillar);
                 continue;
             } else {
                 Date outdated = Date.from(Instant.now().minus(maxAge));
@@ -94,7 +94,8 @@ public class HandleObsoleteChecksumsStep extends AbstractWorkFlowStep {
                             reporter.reportObsoleteChecksum(file, pillar);
                             obsoleteChecksums++;
                         } catch (IOException e) {
-                            throw new StepFailedException("Failed to report file: " + file + " as having an obsolete checksum", e);
+                            throw new StepFailedException(
+                                    "Failed to report file: " + file + " as having an obsolete checksum", e);
                         }
                     }
                 }

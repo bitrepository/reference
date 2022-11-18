@@ -125,8 +125,8 @@ public class CollectionBasedConversationMediator implements ConversationMediator
      * @param message The message with the unknown conversation ID.
      */
     private void handleUnknownConversation(Message message) {
-        log.debug(message.getClass().getSimpleName() + " from " + message.getFrom() + " with correlationID '" + message.getCorrelationID() +
-                "' could not be delegated to any " + "conversation.");
+        log.debug("{} from {} with correlationID '{}' could not be delegated to any conversation.",
+                message.getClass().getSimpleName(), message.getFrom(), message.getCorrelationID());
     }
 
     @Override

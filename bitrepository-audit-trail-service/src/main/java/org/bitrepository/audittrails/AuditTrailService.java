@@ -193,7 +193,7 @@ public class AuditTrailService implements LifeCycledService {
             try {
                 messageBus.close();
             } catch (JMSException e) {
-                log.warn("Failed to close message bus cleanly, " + e.getMessage());
+                log.warn("Failed to close message bus cleanly, {}", e.getMessage());
             }
         }
     }

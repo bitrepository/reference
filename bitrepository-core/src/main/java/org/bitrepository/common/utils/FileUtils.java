@@ -144,7 +144,7 @@ public final class FileUtils {
             }
         }
         if (!dir.delete()) {
-            log.warn("Could not delete '" + dir.getAbsolutePath() + "'");
+            log.warn("Could not delete '{}'", dir.getAbsolutePath());
         }
     }
 

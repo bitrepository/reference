@@ -85,7 +85,7 @@ public class IdentifyPillarsForReplaceFileRequestHandler extends IdentifyRequest
         response.setResponseInfo(irInfo);
 
         dispatchResponse(response, request);
-        log.debug(MessageUtils.createMessageIdentifier(request) + " Identified for performing a ReplaceFile operation.");
+        log.debug("{} Identified for performing a ReplaceFile operation.", MessageUtils.createMessageIdentifier(request));
     }
 
     /**
@@ -110,7 +110,8 @@ public class IdentifyPillarsForReplaceFileRequestHandler extends IdentifyRequest
     private void checkSpaceForStoringNewFile(IdentifyPillarsForReplaceFileRequest message) throws RequestHandlerException {
         BigInteger fileSize = message.getFileSize();
         if (fileSize == null) {
-            log.debug("No file size given in the identification request. " + "Validating that the archive has any space left.");
+            log.debug("No file size given in the identification request. "
+                    + "Validating that the archive has any space left.");
             fileSize = BigInteger.ZERO;
         }
 

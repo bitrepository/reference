@@ -85,7 +85,7 @@ public class ChecksumDBMigrator extends DatabaseMigrator {
      * Just adds the column 'collectionid', which is set to the current (or first) collection id.
      */
     private void migrateChecksumsTableFromVersion1To2() {
-        log.warn("Migrating the " + CHECKSUM_TABLE + " table from version 1 to 2 in the ChecksumDatabase.");
+        log.warn("Migrating the {} table from version 1 to 2 in the ChecksumDatabase.", CHECKSUM_TABLE);
 
         String alterSql = "ALTER TABLE " + CHECKSUM_TABLE + " ADD COLUMN " + CS_COLLECTION_ID + " VARCHAR(255)";
         updateTable(CHECKSUM_TABLE, 2, alterSql);

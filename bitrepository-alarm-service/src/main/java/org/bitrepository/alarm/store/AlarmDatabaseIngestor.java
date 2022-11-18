@@ -206,7 +206,7 @@ public class AlarmDatabaseIngestor {
         Long guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, componentId);
 
         if (guid == null) {
-            log.debug("Inserting component '" + componentId + "' into the component table.");
+            log.debug("Inserting component '{}' into the component table", componentId);
             String sqlInsert = "INSERT INTO " + COMPONENT_TABLE + " ( " + COMPONENT_ID + " ) VALUES ( ? )";
             DatabaseUtils.executeStatement(dbConnector, sqlInsert, componentId);
 

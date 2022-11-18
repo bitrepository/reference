@@ -90,7 +90,7 @@ public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRe
             verifyFileIDExistence(request.getFileIDs(), request.getCollectionID());
         }
 
-        log.debug(MessageUtils.createMessageIdentifier(request) + "' validated and accepted.");
+        log.debug("{} validated and accepted.", MessageUtils.createMessageIdentifier(request));
     }
 
     @Override
@@ -108,8 +108,8 @@ public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRe
     @Override
     protected void performOperation(GetFileIDsRequest request, MessageContext requestContext)
             throws RequestHandlerException {
-        log.debug(MessageUtils.createMessageIdentifier(request) + " Performing GetFileIDs for file(s) "
-                + request.getFileIDs() + " on collection " + request.getCollectionID());
+        log.debug("{} Performing GetFileIDs for file(s) {} on collection '{}'",
+                MessageUtils.createMessageIdentifier(request), request.getFileIDs(), request.getCollectionID());
         ExtractedFileIDsResultSet extractedFileIDs = retrieveFileIDsData(request);
         ResultingFileIDs results = new ResultingFileIDs();
         if (request.getResultAddress() == null) {
@@ -167,7 +167,7 @@ public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRe
             throws IOException, JAXBException {
         // Create the temporary file.
         File checksumResultFile = File.createTempFile(request.getCorrelationID(), new Date().getTime() + ".id");
-        log.info("Writing the requested fileIDs to the file '" + checksumResultFile + "'");
+        log.info("Writing the requested fileIDs to the file '{}'", checksumResultFile);
 
         // Print all the file ids data safely (close the streams!)
         try (OutputStream is = new FileOutputStream(checksumResultFile)) {
@@ -205,7 +205,7 @@ public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRe
     private void uploadFile(File fileToUpload, String url) throws IOException {
         URL uploadUrl = new URL(url);
 
-        log.debug("Uploading file: " + fileToUpload.getName() + " to " + url);
+        log.debug("Uploading file '{}' to {}", fileToUpload.getName(), url);
         try (InputStream in = new BufferedInputStream(new FileInputStream(fileToUpload))) {
             context.getFileExchange().putFile(in, uploadUrl);
         }

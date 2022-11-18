@@ -53,7 +53,7 @@ public abstract class Workflow implements SchedulableJob {
         if (currentState != WorkflowState.ABORTED) {
             this.currentState = WorkflowState.RUNNING;
             this.currentStep = step;
-            log.info("Starting step: '" + step.getName() + "'");
+            log.info("Starting step: '{}'", step.getName());
             try {
                 statistics.startSubStatistic(step.getName());
                 step.performStep();
@@ -61,7 +61,7 @@ public abstract class Workflow implements SchedulableJob {
                 this.currentState = WorkflowState.ABORTED;
                 log.warn("Failure occurred, aborting workflow", e);
             } catch (Exception e) {
-                log.error("Failure in step: '" + step.getName() + "'.", e);
+                log.error("Failure in step: '{}'", step.getName(), e);
                 throw new RuntimeException("Failed to run step " + step.getName(), e);
             } finally {
                 statistics.finishSubStatistic(getFinishedWorkflowStatus());

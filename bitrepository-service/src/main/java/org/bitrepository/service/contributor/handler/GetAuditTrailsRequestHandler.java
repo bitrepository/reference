@@ -174,7 +174,7 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
             File fileToUpload = createAuditTrailFile(message, extractedAuditTrails);
             URL uploadUrl = new URL(message.getResultAddress());
 
-            log.debug("Uploading file: " + fileToUpload.getName() + " to " + uploadUrl.toExternalForm());
+            log.debug("Uploading file '{}' to {}", fileToUpload.getName(), uploadUrl.toExternalForm());
             getContext().getFileExchange().putFile(new FileInputStream(fileToUpload), uploadUrl);
         } catch (Exception e) {
             throw new InvalidMessageException(ResponseCode.FILE_TRANSFER_FAILURE,

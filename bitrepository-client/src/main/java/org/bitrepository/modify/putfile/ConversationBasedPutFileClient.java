@@ -67,7 +67,8 @@ public class ConversationBasedPutFileClient extends AbstractClient implements Pu
         MessageDataTypeValidator.validate(checksumForValidationAtPillar, "checksumForValidationAtPillar");
         MessageDataTypeValidator.validate(checksumRequestsForValidation, "checksumRequestsForValidation");
 
-        log.info("Starting putFile of " + fileID + " for client " + clientID + ". " + auditTrailInformation);
+        log.info("Starting putFile of file '{}' for client '{}'. Audit trail info: {}",
+                fileID, clientID, auditTrailInformation);
         if (settings.getRepositorySettings().getProtocolSettings().isRequireChecksumForNewFileRequests()) {
             ArgumentValidator.checkNotNull(checksumForValidationAtPillar, "ChecksumDataForFileTYPE checksumForValidationAtPillar");
         }

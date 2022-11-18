@@ -101,13 +101,13 @@ public class ChecksumStorageModel extends StorageModel {
     @Override
     protected String getNonDefaultChecksum(String fileID, String collectionID, ChecksumSpecTYPE csType) throws RequestHandlerException {
         throw new InvalidMessageException(ResponseCode.REQUEST_NOT_SUPPORTED,
-                "The ChecksumPillar cannot handle a " + "non-default checksum specification '" + csType + "'.'");
+                "The ChecksumPillar cannot handle a non-default checksum specification '" + csType + "'.'");
     }
 
     @Override
     public FileInfo getFileInfoForActualFile(String fileID, String collectionID) throws RequestHandlerException {
         throw new InvalidMessageException(ResponseCode.REQUEST_NOT_SUPPORTED,
-                "This is a checksum pillar and it does " + "not have the actual file. Only it's checksum.");
+                "This is a checksum pillar and it does not have the actual file. Only it's checksum.");
     }
 
     @Override
@@ -120,13 +120,13 @@ public class ChecksumStorageModel extends StorageModel {
     protected ExtractedChecksumResultSet getNonDefaultChecksumResultSet(Long maxResults, String collectionID, ChecksumSpecTYPE csSpec)
             throws RequestHandlerException {
         throw new InvalidMessageException(ResponseCode.REQUEST_NOT_SUPPORTED,
-                "This is a checksum pillar and it does " + "not have the actual file. Only it's checksum.");
+                "This is a checksum pillar and it does not have the actual file. Only it's checksum.");
     }
 
     @Override
     public void verifyFileExists(String fileID, String collectionID) throws RequestHandlerException {
         throw new InvalidMessageException(ResponseCode.REQUEST_NOT_SUPPORTED,
-                "This is a checksum pillar and it does " + "not have the actual file. Only it's checksum.");
+                "This is a checksum pillar and it does not have the actual file. Only it's checksum.");
     }
 
     /**
@@ -187,7 +187,7 @@ public class ChecksumStorageModel extends StorageModel {
             return Base16Utils.decodeBase16(checksumData.getChecksumValue());
         } else {
             throw new InvalidMessageException(ResponseCode.NEW_FILE_CHECKSUM_FAILURE,
-                    "The checksum should have been " + "provided with the message");
+                    "The checksum should have been provided with the message");
         }
     }
 
@@ -205,8 +205,8 @@ public class ChecksumStorageModel extends StorageModel {
         String calculatedChecksum = calculateChecksumForFileAtURL(fileAddress);
         if (!validChecksum(calculatedChecksum, expectedChecksum)) {
             String givenChecksum = Base16Utils.decodeBase16(expectedChecksum.getChecksumValue());
-            log.error("Wrong checksum for file '" + fileID + "' at '" + collectionID + "'! Expected: [" + givenChecksum +
-                    "], but calculated: [" + calculatedChecksum + "]");
+            log.error("Wrong checksum for file '{}' at '{}'! Expected: [{}], but calculated: [{}]",
+                    fileID, collectionID, givenChecksum, calculatedChecksum);
             throw new IllegalOperationException(ResponseCode.NEW_FILE_CHECKSUM_FAILURE,
                     "Expected checksums '" + givenChecksum + "' but the checksum was '" + calculatedChecksum + "'.", fileID);
         }
@@ -222,7 +222,7 @@ public class ChecksumStorageModel extends StorageModel {
      * @throws RequestHandlerException If data for the file could not be retrieved.
      */
     private String calculateChecksumForFileAtURL(String fileAddress) throws RequestHandlerException {
-        log.debug("Retrieving the data from URL: '" + fileAddress + "'");
+        log.debug("Retrieving the data from URL: '{}'", fileAddress);
 
         try {
             return ChecksumUtils.generateChecksum(fileExchange.getFile(new URL(fileAddress)), defaultChecksumSpec);

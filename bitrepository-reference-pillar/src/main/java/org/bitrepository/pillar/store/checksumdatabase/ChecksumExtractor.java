@@ -169,8 +169,8 @@ public class ChecksumExtractor {
              PreparedStatement ps = DatabaseUtils.createPreparedStatement(conn, sql.toString(), args.toArray())) {
             try (ResultSet res = ps.executeQuery()) {
                 if (!res.next()) {
-                    log.debug("No checksum entry found for file '" + fileID + "' at collection '" + collectionID
-                            + "', with calculation date interval: [" + minTimeStamp + " , " + maxTimeStamp + "]");
+                    log.debug("No checksum entry found for file '{}' in collection '{}', with calculation date" +
+                            " interval: [{} , {}]", fileID, collectionID, minTimeStamp, maxTimeStamp);
                     return null;
                 }
                 return extractChecksumEntry(res);

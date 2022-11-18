@@ -58,7 +58,7 @@ public class LogbackConfigLoader {
         configurator.setContext(loggerContext);
         loggerContext.reset();
         configurator.doConfigure(configFileLocation);
-        log.info("Configured Logback with config file from: " + configFileLocation);
+        log.info("Configured Logback with config file from: {}", configFileLocation);
     }
 }
 

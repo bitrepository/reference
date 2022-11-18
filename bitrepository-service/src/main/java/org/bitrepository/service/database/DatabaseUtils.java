@@ -114,8 +114,8 @@ public class DatabaseUtils {
              PreparedStatement ps = createPreparedStatement(conn, query, args)) {
             try (ResultSet res = ps.executeQuery()) {
                 if (!res.next()) {
-                    log.trace("Got an empty result set for statement '" + query + "' with arguments '"
-                            + Arrays.asList(args) + "' on database '" + conn + "'. Returning a null.");
+                    log.trace("Got an empty result set for statement '{}' with arguments '{}' on database '{}'." +
+                            " Returning a null.", query, Arrays.asList(args), conn);
                     return null;
                 }
                 Long resultLong = res.getLong(1);
@@ -153,8 +153,8 @@ public class DatabaseUtils {
              PreparedStatement ps = createPreparedStatement(conn, query, args)) {
             try (ResultSet res = ps.executeQuery()) {
                 if (!res.next()) {
-                    log.trace("Got an empty result set for statement '" + query + "' with arguments '"
-                            + Arrays.asList(args) + "' on database '" + conn + "'. Returning a null.");
+                    log.trace("Got an empty result set for statement '{}' with arguments '{}' on database '{}'." +
+                            " Returning a null.", query, Arrays.asList(args), conn);
                     return null;
                 }
                 Long resultLong = res.getLong(1);
@@ -189,8 +189,8 @@ public class DatabaseUtils {
              PreparedStatement ps = createPreparedStatement(conn, query, args)) {
             try (ResultSet res = ps.executeQuery()) {
                 if (!res.next()) {
-                    log.trace("Got an empty result set for statement '" + query + "' with arguments '"
-                            + Arrays.asList(args) + "' on database '" + conn + "'. Returning a null.");
+                    log.trace("Got an empty result set for statement '{}' with arguments '{}' on database '{}'." +
+                            " Returning a null.", query, Arrays.asList(args), conn);
                     return null;
                 }
                 String resultString = res.getString(1);
@@ -285,8 +285,8 @@ public class DatabaseUtils {
              PreparedStatement ps = createPreparedStatement(conn, query, args)) {
             try (ResultSet res = ps.executeQuery()) {
                 if (!res.next()) {
-                    log.trace("Got an empty result set for statement '" + query + "' on database '"
-                            + conn + "'. Returning a null.");
+                    log.trace("Got an empty result set for statement '{}' with arguments '{}' on database '{}'." +
+                            " Returning a null.", query, Arrays.asList(args), conn);
                     return null;
                 }
                 Timestamp resultDate = res.getTimestamp(1);
@@ -323,7 +323,7 @@ public class DatabaseUtils {
              PreparedStatement ps = createPreparedStatement(conn, query, args)) {
             try (ResultSet res = ps.executeQuery()) {
                 if (!res.next()) {
-                    log.trace("No string was found for the query '" + query + "'. A null has been returned.");
+                    log.trace("No string was found for the query '{}'. A null has been returned", query);
                     return null;
                 }
                 return res.getString(1);
@@ -400,7 +400,7 @@ public class DatabaseUtils {
      */
     public static PreparedStatement createPreparedStatement(Connection dbConnection, String query, Object... args)
             throws SQLException {
-        log.trace("Preparing the statement: '" + query + "' with arguments '" + Arrays.asList(args) + "'");
+        log.trace("Preparing the statement: '{}' with arguments '{}'", query, Arrays.asList(args));
         PreparedStatement s = dbConnection.prepareStatement(query);
         int i = 1;
         for (Object arg : args) {

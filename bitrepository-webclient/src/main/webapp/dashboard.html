@@ -20,136 +20,97 @@
   #L%
   -->
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Bitrepository dashboard</title>
-    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
-    <link href="css/dashboard.css" rel="stylesheet" media="screen">
-    <link href="css/zoombutton.css" rel="stylesheet" media="screen">
-  </head>
-  <body>
-    <div id="pageMenu"></div>
-    <div class="container-fluid">
-      <div class="row-fluid">
-        <div class="">
-          <h2 id="pageHeader">Overview</h2>
+<html lang="en">
+<head>
+  <title>Bitrepository dashboard</title>
+  <link href="static/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+  <link href="static/css/dashboard.css" rel="stylesheet" media="screen">
+  <link href="static/css/zoombutton.css" rel="stylesheet" media="screen">
+</head>
+<body>
+<div id="pageMenu"></div>
+<div class="container-fluid">
+  <div class="row-fluid">
+    <div class="">
+      <h2 id="pageHeader">Overview</h2>
+    </div>
+    <div class="collectionStatus" id="statusDiv">
+      <table class="table table-hover table-condensed">
+        <thead>
+        <tr>
+          <th class="collectionName">Collection name</th>
+          <th>Number of files</th>
+          <th>Latest Ingest</th>
+          <th>Collection size</th>
+          <th>Pillars</th>
+          <th>Latest check</th>
+          <th>Inconsistent checksum</th>
+          <th>Missing files</th>
+          <th>Next check</th>
+        </tr>
+        </thead>
+        <tbody id="collectionStatusBody"></tbody>
+      </table>
+    </div>
+    <div id="dataSizeGraphContainer" class="dataSizeGraph">
+      <form class="dashboardForm">
+        <div style="float:left;">
+          <select id="graphType">
+            <option value="data" selected>Datasize</option>
+            <option value="datadelta">Rate of growth</option>
+            <option value="filecount">Files</option>
+            <option value="filedelta">Growth of files</option>
+          </select>
         </div>
-        <div class="collectionStatus" id="statusDiv">
-          <table class="table table-hover table-condensed">
-            <thead>
-              <tr>
-                <th class="collectionName">Collection name</th>
-                <th>Number of files</th>
-                <th>Latest Ingest</th>
-                <th>Collection size</th>
-                <th>Pillars</th>
-                <th>Latest check</th>
-                <th>Inconsistent checksum</th>
-                <th>Missing files</th>
-                <th>Next check</th>
-              </tr>
-            </thead>
-            <tbody id="collectionStatusBody"></tbody>
-          </table>
-        </div>
-        <div id="dataSizeGraphContainer" class="dataSizeGraph">
-          <form class="dashboardForm">
-            <div style="float:left;"> 
-              <select id="graphType">
-                <option value="data" selected>Datasize</option>
-                <option value="datadelta">Rate of growth</option>
-                <option value="filecount">Files</option>
-                <option value="filedelta">Growth of files</option>
-              </select>
-            </div>
-            <div id="dataSizeGraphCollectionSelection"></div>
-          </form>
-          <div id="dataSizeGraphPlaceholder" style="height:300px; width:94%;"></div>
-        </div>
-        <div id="collectionPieBoxContainer" class="collectionPieBox">
-          <h3>Data distributed on collections</h3>
-          <div class="collectionPie">
-            <div id="collection">
-              <div id="flotcontainer_collection" style="width: 280px;height:280px; text-align: left;"></div>
-            </div>
-          </div>
-          <div id=collectionLegendDiv></div>
-        </div>
-        <div id="legPieBoxContainer" class="legPieBox">
-          <h3>Data distributed on pillars</h3>
-          <div class="legPie">
-            <div id="data_pillar">
-              <div id="flotcontainer_data_pillar" style="width: 280px;height:280px; text-align: left;"></div>
-            </div>
-          </div>
-          <div id=pillarLegendDiv></div>
+        <div id="dataSizeGraphCollectionSelection"></div>
+      </form>
+      <div id="dataSizeGraphPlaceholder" style="height:300px; width:94%;"></div>
+    </div>
+    <div id="collectionPieBoxContainer" class="collectionPieBox">
+      <h3>Data distributed on collections</h3>
+      <div class="collectionPie">
+        <div id="collection">
+          <div id="flotcontainer_collection" style="width: 280px;height:280px; text-align: left;"></div>
         </div>
       </div>
+      <div id=collectionLegendDiv></div>
     </div>
+    <div id="legPieBoxContainer" class="legPieBox">
+      <h3>Data distributed on pillars</h3>
+      <div class="legPie">
+        <div id="data_pillar">
+          <div id="flotcontainer_data_pillar" style="width: 280px;height:280px; text-align: left;"></div>
+        </div>
+      </div>
+      <div id=pillarLegendDiv></div>
+    </div>
+  </div>
+</div>
 
-    <!-- Javascript -->
-    <script src="jquery/jquery-1.9.0.min.js"></script>
-    <script src="bootstrap/js/bootstrap.min.js"></script>
-    <script src="flot/excanvas.js"></script>     
-    <script src="flot/jquery.flot.min.js"></script>
-    <script src="flot/jquery.flot.pie.js"></script>
-    <script src="flot/jquery.flot.selection.min.js"></script>
-    <script src="flot/jquery.flot.axislabels.js"></script>
-    <script src="flot/jquery.flot.resize.js"></script>
-    <script src="numeral.min.js"></script>
+<!-- Javascript -->
+<script src="static/js/jquery/jquery-3.6.1.min.js"></script>
+<script src="static/bootstrap/js/bootstrap.min.js"></script>
+<script src="static/js/flot/excanvas.js"></script>
+<script src="static/js/flot/jquery.flot.min.js"></script>
+<script src="static/js/flot/jquery.flot.pie.js"></script>
+<script src="static/js/flot/jquery.flot.selection.min.js"></script>
+<script src="static/js/flot/jquery.flot.axislabels.js"></script>
+<script src="static/js/flot/jquery.flot.resize.js"></script>
+<script src="static/js/numeral.min.js"></script>
 
-    <script src="menu.js"></script>
-    <script src="FileSizeUtils.js"></script>
-    <script src="momentjs/moment.min.js"></script>
-    <script src="momentjs/moment-timezone.min.js"></script>
-    <script src="momentjs/moment-timezone-data.js"></script>
-    <script src="dashboard_components/ColorMapper.js"></script>
-    <script src="CollectionNameMapper.js"></script>
-    <script src="dashboard_components/collectionStatus.js"></script>
-    <script src="dashboard_components/legsSizePie.js"></script>
-    <script src="dashboard_components/collectionSizePie.js"></script>
-    <script src="dashboard_components/dataSizeGraph.js"></script>
-    <script src="dashboard_components/dataSizeGraphController.js"></script>
+<script src="static/js/menu.js"></script>
+<script src="static/js/FileSizeUtils.js"></script>
+<script src="static/js/momentjs/moment.min.js"></script>
+<script src="static/js/momentjs/moment-timezone.min.js"></script>
+<script src="static/js/momentjs/moment-timezone-data.js"></script>
+<script src="static/js/dashboard_components/ColorMapper.js"></script>
+<script src="static/js/CollectionNameMapper.js"></script>
+<script src="static/js/dashboard_components/collectionStatus.js"></script>
+<script src="static/js/dashboard_components/legsSizePie.js"></script>
+<script src="static/js/dashboard_components/collectionSizePie.js"></script>
+<script src="static/js/dashboard_components/DataSizeGraph.js"></script>
+<script src="static/js/dashboard_components/dataSizeGraphController.js"></script>
 
-    <script>
-      var update_data_size_graph;
-      var colorMapper;
-      var nameMapper;
-      var dsGraph;
-
-      function init() {
-        $.get('repo/urlservice/integrityService', {}, function(url) {
-          setIntegrityServiceUrl(url);
-          $.get("repo/reposervice/getRepositoryName/", {}, function(j) {
-            $("#pageHeader").html("Overview of " + j);
-          }, "html");
-          $.getJSON("repo/reposervice/getCollections/", {}, function(collections) {
-            colorMapper = new ColorMapper(collections);
-            nameMapper = new CollectionNameMapper(collections);
-            setNameMapper(nameMapper);
-            initiateCollectionStatus(collections, "#collectionStatusBody", 10000);
-            var dataUrl = url + "/integrity/Statistics/getDataSizeHistory/?collectionID=";
-            dsGraph = new dataSizeGraph(collections, colorMapper, new FileSizeUtils(), dataUrl, "#graphType", "#dataSizeGraphPlaceholder");
-            makeCollectionSelectionCheckboxes("#dataSizeGraphCollectionSelection", dsGraph, colorMapper, nameMapper);
-            drawPillarDataSizePieChart(url + "/integrity/Statistics/getLatestPillarDataSize/");
-            drawCollectionDataSizePieChart(url + "/integrity/Statistics/getLatestcollectionDataSize/", colorMapper);
-            $("#graphType").change(function(event) {event.preventDefault(); dsGraph.graphTypeChanged();});
-            dsGraph.updateData();
-            // Update graphs every hour
-            update_data_size_graph = setInterval(function() {
-              dsGraph.updateData();
-              drawPillarDataSizePieChart(url + "/integrity/Statistics/getLatestPillarDataSize/");
-              drawCollectionDataSizePieChart(url + "/integrity/Statistics/getLatestcollectionDataSize/", colorMapper);
-            }, 3600000);
-          });
-        }, 'html');
-      }
-
-      $.ajaxSetup({cache: false});
-      $(document).ready(function(){
-        makeMenu("dashboard.html", "#pageMenu");
-        init();
-      });
-    </script>
-  </body>
+<script src="static/js/views/dashboard-page.js"></script>
+</body>
 </html>

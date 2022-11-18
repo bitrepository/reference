@@ -20,46 +20,44 @@
   #L%
 -->
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Bitrepository frontpage</title>
-    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
-  </head>
-  <body>
-  
-  <div id="pageMenu"></div>
-  <div class="container-fluid">
-    <div class="row-fluid">
-      <div class="span9"> 
-        <div class="span9" style="height:0px; min-height:0px"></div>
-        <div class="span9"><h2>Welcome</h2></div>
-        <div class="span9">
-           Welcome to the Bitrepository services frontpage. <br>
-           Please move on the the specific service pages. <br>
-           The services are: 
-           <ul>
-             <li><a href="dashboard.html">Dashboard</a></li>
-             <li><a href="alarm-service.html">Alarm</a></li>
-             <li><a href="integrity-service.html">Integrity</a></li>
-             <li><a href="audit-trail-service.html">Audit trail</a></li>
-             <li><a href="status-service.html">Status</a></li>
-           </ul>
+<html lang="en">
+<head>
+  <title>Bitrepository frontpage</title>
+  <link href="static/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+</head>
+<body>
 
-           To perform actions on the content in the repository, use the commandline clients. 
-        </div>
+<div id="pageMenu"></div>
+<div class="container-fluid">
+  <div class="row-fluid">
+    <div class="span9">
+      <div class="span9" style="height:0; min-height:0"></div>
+      <div class="span9"><h2>Welcome</h2></div>
+      <div class="span9">
+        Welcome to the Bitrepository services frontpage. <br>
+        Please move on to the specific service pages. <br>
+        The services are:
+        <ul>
+          <li><a href="dashboard.html">Dashboard</a></li>
+          <li><a href="alarm-service.html">Alarm</a></li>
+          <li><a href="integrity-service.html">Integrity</a></li>
+          <li><a href="audit-trail-service.html">Audit trail</a></li>
+          <li><a href="status-service.html">Status</a></li>
+        </ul>
+
+        To perform actions on the content in the repository, use the commandline clients.
       </div>
     </div>
   </div>
-  <script src="jquery/jquery-1.9.0.min.js"></script>
-  <script src="bootstrap/js/bootstrap.min.js"></script>
-  <script src="menu.js"></script>
+</div>
+<script src="static/js/jquery/jquery-3.6.1.min.js"></script>
+<script src="static/bootstrap/js/bootstrap.min.js"></script>
+<script src="static/js/menu.js"></script>
 
-  <script>
-        
-    $(document).ready(function(){
-      makeMenu("bitrepository-frontpage.html", "#pageMenu");
-    }); 
-
-    </script>
-  </body>
+<script>
+    $(document).ready(function() {
+        makeMenu("bitrepository-frontpage.html", "#pageMenu");
+    });
+</script>
+</body>
 </html>

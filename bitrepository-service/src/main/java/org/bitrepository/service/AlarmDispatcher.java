@@ -74,8 +74,8 @@ public class AlarmDispatcher extends MessageDispatcher {
     public void warning(Alarm alarm) {
         ArgumentValidator.checkNotNull(alarm, "alarm");
         if (alarmLevel != AlarmLevel.WARNING) {
-            log.debug("Will send a '" + AlarmLevel.WARNING + "' alarm, when the alarm level is '"
-                    + alarmLevel + "'{}", alarm);
+            log.debug("Will send a '{}' alarm, when the alarm level is '{}'. Alarm: {}",
+                    AlarmLevel.WARNING, alarmLevel, alarm);
         } else {
             sendAlarm(alarm);
         }
@@ -90,8 +90,8 @@ public class AlarmDispatcher extends MessageDispatcher {
     public void error(Alarm alarm) {
         ArgumentValidator.checkNotNull(alarm, "alarm");
         if (alarmLevel == AlarmLevel.EMERGENCY) {
-            log.debug("Cannot send a '" + AlarmLevel.ERROR + "' alarm, when the alarm level is '"
-                    + alarmLevel + "'{}", alarm);
+            log.debug("Cannot send a '{}' alarm, when the alarm level is '{}'. Alarm: {}",
+                    AlarmLevel.ERROR, alarmLevel, alarm);
         } else {
             sendAlarm(alarm);
         }
@@ -123,7 +123,7 @@ public class AlarmDispatcher extends MessageDispatcher {
         message.setDestination(settings.getAlarmDestination());
         message.setCollectionID(alarm.getCollectionID());
 
-        log.warn("Sending alarm: " + alarm);
+        log.warn("Sending alarm: {}", alarm);
         dispatchMessage(message);
     }
 }

@@ -68,7 +68,7 @@ public class PillarPerformanceTest extends PillarIntegrationTest {
         // Do Nothing, test receivers should be used in performance tests.
     }
     /**
-     * Avoid usind messagebuswrapper.
+     * Avoid using messagebuswrapper.
      */
     @Override
     protected void setupMessageBus() {
@@ -141,11 +141,11 @@ public class PillarPerformanceTest extends PillarIntegrationTest {
         @Override
         public void handleEvent(OperationEvent event) {
             if (event.getEventType().equals(OperationEvent.OperationEventType.COMPLETE)) {
-                log.debug("Received " + event.getOperationType() + " complete event for " + event.getFileID());
+                log.debug("Received {} complete event for '{}'", event.getOperationType(), event.getFileID());
                 this.metrics.mark("#" + metrics.getCount());
                 operationLimiter.removeJob(event.getFileID());
             } else if (event.getEventType().equals(OperationEvent.OperationEventType.FAILED)) {
-                log.debug("Received " + event.getOperationType() + " failed event for " + event.getFileID());
+                log.debug("Received {} failed event for '{}'", event.getOperationType(), event.getFileID());
                 this.metrics.registerError(event.getInfo());
                 operationLimiter.removeJob(event.getFileID());
             }
@@ -165,13 +165,13 @@ public class PillarPerformanceTest extends PillarIntegrationTest {
             if (message instanceof MessageResponse) {
                 MessageResponse response = (MessageResponse)message;
                 if (response.getResponseInfo().getResponseCode().equals(ResponseCode.OPERATION_COMPLETED)) {
-                    log.debug("Received " + response.getClass().getSimpleName() +
-                            " complete message(" + response.getCorrelationID() + ")");
+                    log.debug("Received {} complete message({})", response.getClass().getSimpleName(),
+                            response.getCorrelationID());
                     this.metrics.mark("#" + metrics.getCount());
                     operationLimiter.removeJob(response.getCorrelationID());
                 } else if (response.getResponseInfo().getResponseCode().equals(ResponseCode.FAILURE)) {
-                    log.debug("Received " + response.getClass().getSimpleName() +
-                            " failure message(" + response.getCorrelationID() + ")");
+                    log.debug("Received {} failure message({})", response.getClass().getSimpleName(),
+                            response.getCorrelationID());
                     this.metrics.registerError(response.getCorrelationID());
                     operationLimiter.removeJob(response.getCorrelationID());
                 }

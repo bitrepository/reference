@@ -76,7 +76,7 @@ public class FileStorageModel extends StorageModel {
     public FileStorageModel(FileStore archives, ChecksumStore cache, AlarmDispatcher alarmDispatcher, Settings settings,
                             FileExchange fileExchange) {
         super(archives, cache, alarmDispatcher, settings, fileExchange);
-        log.info("Instantiating the FileStorageModel: " + getPillarID());
+        log.info("Instantiating the FileStorageModel: {}", getPillarID());
     }
 
     @Override
@@ -165,8 +165,8 @@ public class FileStorageModel extends StorageModel {
     @Override
     public void verifyFileExists(String fileID, String collectionID) throws RequestHandlerException {
         if (!hasFileID(fileID, collectionID)) {
-            log.warn("The file '" + fileID + "' has been requested, but we do not have that file in collection '" +
-                    collectionID + "'!");
+            log.warn("The file '{}' has been requested, but we do not have that file in collection '{}'!",
+                    fileID, collectionID);
             throw new InvalidMessageException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.");
         }
     }
@@ -202,7 +202,7 @@ public class FileStorageModel extends StorageModel {
      * @param collectionID The id of the collection of the file.
      */
     protected void recalculateChecksum(String fileID, String collectionID) {
-        log.info("Recalculating the checksum of file '" + fileID + "'.");
+        log.info("Recalculating the checksum of file '{}'", fileID);
         FileInfo fi = fileArchive.getFileInfo(fileID, collectionID);
         String checksum = ChecksumUtils.generateChecksum(fi, defaultChecksumSpec);
         cache.insertChecksumCalculation(fileID, collectionID, checksum, new Date());
@@ -286,8 +286,8 @@ public class FileStorageModel extends StorageModel {
      */
     private void verifyCacheToArchiveConsistencyForFile(String fileID, String collectionID) {
         if (!fileArchive.hasFile(fileID, collectionID)) {
-            log.warn("The file '" + fileID + "' in the ChecksumCache is no longer in the archive. " +
-                    "Dispatching an alarm, and removing it from the cache.");
+            log.warn("The file '{}' in the ChecksumCache is no longer in the archive." +
+                    " Dispatching an alarm, and removing it from the cache.", fileID);
             Alarm alarm = new Alarm();
             alarm.setAlarmCode(AlarmCode.COMPONENT_FAILURE);
             alarm.setAlarmText("The file '" + fileID + "' has been removed from the archive without it being removed " +
@@ -308,7 +308,7 @@ public class FileStorageModel extends StorageModel {
      */
     private void verifyArchiveToCacheConsistencyForFile(String fileID, String collectionID) {
         if (!cache.hasFile(fileID, collectionID)) {
-            log.debug("No checksum cached for file '" + fileID + "'. Calculating the checksum.");
+            log.debug("No checksum cached for file '{}'. Calculating the checksum.", fileID);
             recalculateChecksum(fileID, collectionID);
         }
     }
@@ -323,7 +323,7 @@ public class FileStorageModel extends StorageModel {
      */
     private void transferFileToTmp(String fileID, String collectionID, String fileAddress)
             throws RequestHandlerException {
-        log.debug("Retrieving the data to be stored from URL: '" + fileAddress + "'");
+        log.debug("Retrieving the data to be stored from URL: '{}'", fileAddress);
 
         try {
             fileArchive.downloadFileForValidation(fileID, collectionID, fileExchange.getFile(new URL(fileAddress)));
@@ -348,16 +348,16 @@ public class FileStorageModel extends StorageModel {
             String calculatedChecksum = getChecksumForTempFile(fileID, collectionID,
                     expectedChecksum.getChecksumSpec());
             String expectedChecksumValue = Base16Utils.decodeBase16(expectedChecksum.getChecksumValue());
-            log.debug("Validating newly downloaded file, '" + fileID + "', against expected checksum '" +
-                    expectedChecksumValue + "'.");
+            log.debug("Validating newly downloaded file '{}' against expected checksum '{}'",
+                    fileID, expectedChecksumValue);
             if (!calculatedChecksum.equals(expectedChecksumValue)) {
-                log.warn("Wrong checksum! Expected: [" + expectedChecksumValue + "], but calculated: [" +
-                        calculatedChecksum + "]");
+                log.warn("Wrong checksum! Expected: [{}], but calculated: [{}]",
+                        expectedChecksumValue, calculatedChecksum);
                 throw new IllegalOperationException(ResponseCode.NEW_FILE_CHECKSUM_FAILURE,
-                        "The downloaded file does " + "not have the expected checksum", fileID);
+                        "The downloaded file does not have the expected checksum", fileID);
             }
         } else {
-            log.debug("No checksums for validating the newly downloaded file '" + fileID + "'.");
+            log.debug("No checksums for validating the newly downloaded file '{}'", fileID);
         }
     }
 }

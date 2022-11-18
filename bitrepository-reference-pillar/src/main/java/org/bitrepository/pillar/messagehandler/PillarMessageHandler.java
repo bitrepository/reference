@@ -109,7 +109,7 @@ public abstract class PillarMessageHandler<T extends MessageRequest> extends Abs
         }
 
         if (!getPillarModel().hasFileID(fileIDs.getFileID(), collectionID)) {
-            log.warn("The following file is missing '" + fileIDs.getFileID() + "' at collection '" + collectionID + "'.");
+            log.warn("File '{}' is missing in collection '{}'", fileIDs.getFileID(), collectionID);
             throw new InvalidMessageException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.");
         }
     }

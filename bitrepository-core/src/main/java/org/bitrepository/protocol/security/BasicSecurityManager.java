@@ -356,7 +356,7 @@ public class BasicSecurityManager implements SecurityManager {
         PrivateKey privKey = null;
         X509Certificate privCert = null;
         if (privateKeyFile == null || !(new File(privateKeyFile)).isFile()) {
-            log.info("Key file '" + privateKeyFile + "' with private key and certificate does not exist!");
+            log.info("Key file '{}' with private key and certificate does not exist!", privateKeyFile);
             return;
         }
         BufferedReader bufferedReader = new BufferedReader(
@@ -380,7 +380,7 @@ public class BasicSecurityManager implements SecurityManager {
                 JcaPEMKeyConverter converter = new JcaPEMKeyConverter();
                 privKey = converter.getPrivateKey(pki);
             } else {
-                log.debug("Got something, that we don't (yet) recognize. Class: " + pemObj.getClass().getSimpleName());
+                log.debug("Got something, that we don't (yet) recognize. Class: {}", pemObj.getClass().getSimpleName());
             }
             pemObj = pemParser.readObject();
         }
@@ -417,8 +417,8 @@ public class BasicSecurityManager implements SecurityManager {
                     keyStore.setEntry(getNewAlias(), new KeyStore.TrustedCertificateEntry(certificate),
                             SecurityModuleConstants.nullProtectionParameter);
                 } catch (CertificateException ce) {
-                    log.warn("Check of certificate validity failed, not adding certificate ({}) to keystore.", permission.getDescription(),
-                            ce);
+                    log.warn("Check of certificate validity failed, not adding certificate ({}) to keystore.",
+                            permission.getDescription(), ce);
                 } catch (IOException e) {
                     log.debug("Failed closing ByteArrayInputStream", e);
                 }

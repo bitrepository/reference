@@ -105,7 +105,8 @@ public class IdentifyPillarsForPutFileRequestHandler extends IdentifyRequestHand
     private void checkSpaceForStoringNewFile(IdentifyPillarsForPutFileRequest message) throws RequestHandlerException {
         BigInteger fileSize = message.getFileSize();
         if (fileSize == null) {
-            log.debug("No file size given in the identification request. " + "Validating that the archive has any space left.");
+            log.debug("No file size given in the identification request." +
+                    " Validating that the archive has any space left.");
             fileSize = BigInteger.ZERO;
         }
 
@@ -132,7 +133,8 @@ public class IdentifyPillarsForPutFileRequestHandler extends IdentifyRequestHand
         response.setResponseInfo(irInfo);
 
         dispatchResponse(response, message);
-        log.debug(MessageUtils.createMessageIdentifier(message) + " Duplicate file identification for PutFile operation");
+        log.debug("{} Duplicate file identification for PutFile operation",
+                MessageUtils.createMessageIdentifier(message));
     }
 
     /**
@@ -153,7 +155,7 @@ public class IdentifyPillarsForPutFileRequestHandler extends IdentifyRequestHand
         response.setResponseInfo(irInfo);
 
         dispatchResponse(response, request);
-        log.debug(MessageUtils.createMessageIdentifier(request) + " Identified for performing a PutFile operation.");
+        log.debug("{} Identified for performing a PutFile operation.", MessageUtils.createMessageIdentifier(request));
     }
 
     /**

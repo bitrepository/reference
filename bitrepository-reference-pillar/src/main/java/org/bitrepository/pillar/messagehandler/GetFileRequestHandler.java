@@ -93,8 +93,8 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
 
     @Override
     protected void performOperation(GetFileRequest request, MessageContext requestContext) throws RequestHandlerException {
-        log.info(MessageUtils.createMessageIdentifier(request) + " Performing GetFile for file " + request.getFileID() + " on collection " +
-                request.getCollectionID());
+        log.info("{} Performing GetFile for file '{}' on collection '{}'",
+                MessageUtils.createMessageIdentifier(request), request.getFileID(), request.getCollectionID());
         uploadToClient(request);
         getAuditManager().addAuditEvent(request.getCollectionID(), request.getFileID(), request.getFrom(), "Failed identifying pillar.",
                 request.getAuditTrailInformation(), FileAction.GET_FILE, request.getCorrelationID(),
@@ -119,11 +119,11 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
                 is = extractFilePart(requestedFile, message.getFilePart());
             }
 
-            log.info("Uploading file: " + requestedFile.getFileID() + " to " + message.getFileAddress());
+            log.info("Uploading file '{}' to {}", requestedFile.getFileID(), message.getFileAddress());
             context.getFileExchange().putFile(is, new URL(message.getFileAddress()));
         } catch (IOException e) {
-            log.warn("The file '" + message.getFileID() + "' from collection '" + message.getCollectionID() +
-                    "' could not be uploaded at '" + message.getFileAddress() + "'");
+            log.warn("The file '{}' from collection '{}' could not be uploaded at '{}'",
+                    message.getFileID(), message.getCollectionID(), message.getFileAddress());
             throw new InvalidMessageException(ResponseCode.FILE_TRANSFER_FAILURE,
                     "Could not deliver file to address '" + message.getFileAddress() + "'", e);
         }
@@ -143,7 +143,7 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
         byte[] partOfFile = new byte[size];
         InputStream fis = null;
         try {
-            log.debug("Extracting " + size + " bytes with offset " + offset + " from " + fileInfo.getFileID());
+            log.debug("Extracting {} bytes with offset {} from {}", size, offset, fileInfo.getFileID());
             fis = fileInfo.getInputStream();
 
             long skipped = fis.skip(offset);

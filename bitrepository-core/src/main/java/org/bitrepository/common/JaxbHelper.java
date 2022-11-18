@@ -68,7 +68,7 @@ public final class JaxbHelper {
         }
 
         InputStream schemaStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(pathToSchema + schemaName);
-        log.debug("Creating JAXBHelper based on schema from: " +
+        log.debug("Creating JAXBHelper based on schema from: {}",
                 Thread.currentThread().getContextClassLoader().getResource(pathToSchema + schemaName));
         LSResourceResolver resourceResolver = new ResourceResolver(pathToSchema);
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -85,17 +85,17 @@ public final class JaxbHelper {
      * based on the xsd for the xml.
      *
      * @param <T>         The root class to deserialize to.
-     * @param xmlroot     The root class to deserialize to.
+     * @param xmlRoot     The root class to deserialize to.
      * @param inputStream The input stream containing the xml data.
      * @return Returns a new object representation of the xml data.
      * @throws JAXBException The attempt to load the xml into a new object representation failed.
      */
-    public <T> T loadXml(Class<T> xmlroot, InputStream inputStream) throws JAXBException {
-        ArgumentValidator.checkNotNull(xmlroot, "xmlroot");
+    public <T> T loadXml(Class<T> xmlRoot, InputStream inputStream) throws JAXBException {
+        ArgumentValidator.checkNotNull(xmlRoot, "xmlRoot");
         ArgumentValidator.checkNotNull(inputStream, "inputStream");
-        JAXBContext context = JAXBContext.newInstance(xmlroot);
+        JAXBContext context = JAXBContext.newInstance(xmlRoot);
         Unmarshaller unmarshaller = context.createUnmarshaller();
-        return xmlroot.cast(unmarshaller.unmarshal(inputStream));
+        return xmlRoot.cast(unmarshaller.unmarshal(inputStream));
     }
 
     /**

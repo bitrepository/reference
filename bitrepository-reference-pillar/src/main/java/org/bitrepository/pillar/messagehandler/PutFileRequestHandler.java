@@ -98,8 +98,8 @@ public class PutFileRequestHandler extends PerformRequestHandler<PutFileRequest>
 
     @Override
     protected void performOperation(PutFileRequest request, MessageContext requestContext) throws RequestHandlerException {
-        log.info(MessageUtils.createMessageIdentifier(request) + " Performing PutFile for file " + request.getFileID() + " on collection " +
-                request.getCollectionID());
+        log.info("{} Performing PutFile for file '{}' on collection '{}'",
+                MessageUtils.createMessageIdentifier(request), request.getFileID(), request.getCollectionID());
         try {
             retrieveFile(request);
             getAuditManager().addAuditEvent(request.getCollectionID(), request.getFileID(), request.getFrom(), "Add file to archive.",

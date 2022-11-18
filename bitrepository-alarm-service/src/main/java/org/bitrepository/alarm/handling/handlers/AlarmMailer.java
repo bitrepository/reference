@@ -89,13 +89,13 @@ public class AlarmMailer implements AlarmHandler {
         this.messageReceiver = config.getMailReceiver();
         this.messageSender = config.getMailSender();
         this.mailServer = config.getMailServer();
-        log.debug("Instantiating the AlarmHandler '" + this.getClass().getCanonicalName() + "'");
+        log.debug("Instantiating the AlarmHandler '{}'", this.getClass().getCanonicalName());
     }
 
     @Override
     public void handleAlarm(AlarmMessage msg) {
         String subject = "Received alarm '" + msg.getAlarm() + "'";
-        log.info(subject + ":\n{}", msg);
+        log.info("{}:\n{}", subject, msg);
         sendMail(subject, msg.toString());
     }
 
@@ -208,6 +208,6 @@ public class AlarmMailer implements AlarmHandler {
 
     @Override
     public void close() {
-        log.debug("Closing the AlarmHandler '" + this.getClass().getCanonicalName() + "'");
+        log.debug("Closing the AlarmHandler '{}'", this.getClass().getCanonicalName());
     }
 }

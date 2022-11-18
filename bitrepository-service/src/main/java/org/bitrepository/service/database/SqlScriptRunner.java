@@ -126,7 +126,7 @@ public class SqlScriptRunner {
 
                     Statement statement = conn.createStatement();
 
-                    log.debug("Executing statement: " + command);
+                    log.debug("Executing statement: {}", command);
 
                     boolean hasResults = false;
                     if (stopOnError) {
@@ -136,7 +136,7 @@ public class SqlScriptRunner {
                             statement.execute(command.toString());
                         } catch (SQLException e) {
                             e.fillInStackTrace();
-                            log.error("Error executing: " + command, e);
+                            log.error("Error executing: {}", command, e);
                         }
                     }
 
@@ -161,7 +161,7 @@ public class SqlScriptRunner {
                             }
                             resultSB.append("\n");
                         }
-                        log.info("Result: " + resultSB);
+                        log.info("Result: {}", resultSB);
                     }
 
                     command = null;

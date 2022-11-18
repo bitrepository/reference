@@ -88,7 +88,7 @@ public class IntegrityIssueIterator implements Closeable {
                 long tStart = System.currentTimeMillis();
                 log.debug("Executing query to get issues resultSet");
                 issueResultSet = ps.executeQuery();
-                log.debug("Finished executing issues query, it took: " + (System.currentTimeMillis() - tStart) + "ms");
+                log.debug("Finished executing issues query, it took: {} ms", (System.currentTimeMillis() - tStart));
             }
             if (issueResultSet.next()) {
                 issue = issueResultSet.getString(1);

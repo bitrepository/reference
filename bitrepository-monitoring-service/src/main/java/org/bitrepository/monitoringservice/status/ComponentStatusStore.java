@@ -55,7 +55,7 @@ public class ComponentStatusStore implements StatusStore {
         if(statusMap.containsKey(componentID)) {
             statusMap.get(componentID).updateStatus(status);
         } else {
-            log.warn("Got status from an unexpected component: " + componentID);
+            log.warn("Got status from an unexpected component: {}", componentID);
         }
     }
     

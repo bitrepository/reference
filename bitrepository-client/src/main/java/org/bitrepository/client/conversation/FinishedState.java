@@ -65,7 +65,7 @@ public class FinishedState extends GeneralConversationState {
     }
 
     @Override
-    protected void logStateTimeout() throws UnableToFinishException {
+    protected void logStateTimeout() {
         throw new UnsupportedOperationException("Finished state should never timeout");
     }
 

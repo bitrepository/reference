@@ -168,7 +168,7 @@ public class ActiveMQMessageBus implements MessageBus {
             Settings settings,
             SecurityManager securityManager) {
         configuration = settings.getMessageBusConfiguration();
-        log.info("Initializing ActiveMQMessageBus:'" + configuration + "'.");
+        log.info("Initializing ActiveMQMessageBus: '{}'", configuration);
         this.securityManager = securityManager;
         clientID = settings.getComponentID();
         String schemaLocation = "BitRepositoryMessages.xsd";
@@ -189,7 +189,7 @@ public class ActiveMQMessageBus implements MessageBus {
         } catch (JMSException e) {
             throw new CoordinationLayerException("Unable to initialise connection to message bus", e);
         }
-        log.debug("ActiveMQConnection initialized for '" + configuration + "'.");
+        log.debug("ActiveMQConnection initialized for '{}'", configuration);
 
         MessageThreadPools messageThreadPoolConfig = null;
         if (settings.getReferenceSettings().getGeneralSettings() != null) {
@@ -220,7 +220,7 @@ public class ActiveMQMessageBus implements MessageBus {
 
     @Override
     public synchronized void addListener(String destinationID, final MessageListener listener, boolean durable) {
-        log.debug("Adding " + (durable ? "durable " : "") + "listener '{}' to destination: '{}' on message-bus '{}'.",
+        log.debug("Adding {} listener '{}' to destination: '{}' on message-bus '{}'.", (durable ? "durable " : ""),
                 listener, destinationID, configuration.getName());
         MessageConsumer consumer = getMessageConsumer(destinationID, listener, durable);
         try {
@@ -233,8 +233,8 @@ public class ActiveMQMessageBus implements MessageBus {
 
     @Override
     public synchronized void removeListener(String destinationID, MessageListener listener) {
-        log.debug("Removing listener '" + listener + "' from destination: '" + destinationID + "' " +
-                "on message-bus '" + configuration + "'.");
+        log.debug("Removing listener '{}' from destination: '{}' on message-bus '{}'",
+                listener, destinationID, configuration);
         MessageConsumer consumer = getMessageConsumer(destinationID, listener, false);
         try {
             // We need to set the listener to null to have the removeListener take effect at once.
@@ -251,7 +251,7 @@ public class ActiveMQMessageBus implements MessageBus {
     @Override
     public void close() throws JMSException {
         receivedMessageHandler.close();
-        log.info("Closing message bus: " + configuration);
+        log.info("Closing message bus: {}", configuration);
         producerSession.close();
         log.debug("Producer session closed.");
         consumerSession.close();
@@ -289,8 +289,8 @@ public class ActiveMQMessageBus implements MessageBus {
         try {
             xmlContent = jaxbHelper.serializeToXml(content);
             jaxbHelper.validate(new ByteArrayInputStream(xmlContent.getBytes(StandardCharsets.UTF_8)));
-            log.trace("The following message is sent to the destination '" + destinationID + "'" + " on message-bus '"
-                    + configuration.getName() + "': \n{}", xmlContent);
+            log.trace("The following message is sent to the destination '{}' on message-bus '{}': \n{}",
+                    destinationID, configuration.getName(), xmlContent);
 
             TextMessage msg = producerSession.createTextMessage(xmlContent);
             String stringData = msg.getText();
@@ -324,10 +324,10 @@ public class ActiveMQMessageBus implements MessageBus {
      */
     private MessageConsumer getMessageConsumer(String destinationID, MessageListener listener, boolean durable) {
         String key = getConsumerHash(destinationID, listener);
-        log.debug("Retrieving message consumer on destination '" + destinationID + "' for listener '" + listener
-                + "'. Key: '" + key + "'.");
+        log.debug("Retrieving message consumer on destination '{}' for listener '{}'. Key: '{}'",
+                destinationID, listener, key);
         if (!consumers.containsKey(key)) {
-            log.debug("No consumer known. Creating new for key '" + key + "'.");
+            log.debug("No consumer known. Creating new for key '{}", key);
             Destination destination = getDestination(destinationID, consumerSession);
             MessageConsumer consumer;
             try {
@@ -456,28 +456,28 @@ public class ActiveMQMessageBus implements MessageBus {
                 if (type.startsWith("Identify") && type.endsWith("Request")) {
                     if (!componentFilter.isEmpty()) {
                         if (recipientID != null && !componentFilter.contains(recipientID)) {
-                            log.trace("Ignoring " + type + " message to other component " + recipientID);
+                            log.trace("Ignoring {} message to other component '{}'", type, recipientID);
                             return;
                         }
                     }
                     String collectionID = jmsMessage.getStringProperty(COLLECTION_ID_KEY);
                     if (!collectionFilter.isEmpty()) {
                         if (collectionID != null && !collectionFilter.contains(collectionID)) {
-                            log.trace("Ignoring message to unknown collection " + collectionID);
+                            log.trace("Ignoring message to unknown collection '{}'", collectionID);
                             return;
                         }
                     }
                 }
                 String signature = jmsMessage.getStringProperty(MESSAGE_SIGNATURE_KEY);
                 text = ((TextMessage) jmsMessage).getText();
-                log.trace("Received xml message: " + text);
+                log.trace("Received xml message: '{}'", text);
                 jaxbHelper.validate(new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8)));
                 Message content = (Message) jaxbHelper.loadXml(
                         Class.forName("org.bitrepository.bitrepositorymessages." + type),
                         new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8)));
-                log.trace("Checking signature " + signature);
+                log.trace("Checking signature '{}'", signature);
                 SignerId signer = securityManager.authenticateMessage(text, signature);
-                securityManager.authorizeCertificateUse((content).getFrom(), text, signature);
+                securityManager.authorizeCertificateUse(content.getFrom(), text, signature);
                 if (content instanceof MessageRequest) {
                     securityManager.authorizeOperation(content.getClass().getSimpleName(), text, signature,
                             content.getCollectionID());
@@ -492,9 +492,9 @@ public class ActiveMQMessageBus implements MessageBus {
                 MessageContext messageContext = new MessageContext(certificateFingerprint);
                 receivedMessageHandler.deliver(messageListener, content, messageContext);
             } catch (SAXException e) {
-                log.error("Error validating message " + jmsMessage, e);
+                log.error("Error validating message {}", jmsMessage, e);
             } catch (Exception e) {
-                log.error("Error handling message. Received type was '" + type + "'.\n{}", text, e);
+                log.error("Error handling message. Received type was '{}'.\n{}", type, text, e);
             }
         }
     }
@@ -515,14 +515,14 @@ public class ActiveMQMessageBus implements MessageBus {
 
     @Override
     public void setComponentFilter(List<String> componentIDs) {
-        log.info("Settings component filter to: " + componentIDs);
+        log.info("Settings component filter to: {}", componentIDs);
         componentFilter.clear();
         componentFilter.addAll(componentIDs);
     }
 
     @Override
     public void setCollectionFilter(List<String> collectionIDs) {
-        log.info("Settings collection filter to: " + collectionIDs);
+        log.info("Settings collection filter to: {}", collectionIDs);
         collectionFilter.clear();
         collectionFilter.addAll(collectionIDs);
     }

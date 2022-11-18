@@ -2,7 +2,7 @@
  * #%L
  * Bitrepository Webclient
  * %%
- * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
+ * Copyright (C) 2010 - 2013 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as 
@@ -21,10 +21,16 @@
  */
 
 
-function is_int(value){
-  if((parseFloat(value) == parseInt(value)) && !isNaN(value)){
-      return true;
-  } else {
-      return false;
-  }
+function nl2br(line) {
+    return line.replace(/\n/g, '<br/>');
+}
+
+function closePopoverOnClick() {
+    $("html").on("mouseup", function (e) {
+        if (!$(e.target).closest(".popover").length) {
+            $(".popover").each(function () {
+                $(this.previousSibling).popover("hide");
+            });
+        }
+    });
 }
