@@ -35,6 +35,7 @@ import org.bitrepository.pillar.store.checksumdatabase.ChecksumStore;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedFileIDsResultSet;
 import org.bitrepository.protocol.FileExchange;
+import org.bitrepository.protocol.utils.FileExchangeResolver;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.exception.IllegalOperationException;
 import org.bitrepository.service.exception.InvalidMessageException;
@@ -58,10 +59,9 @@ public class ChecksumStorageModel extends StorageModel {
      * @param cache           The storage for the checksums.
      * @param alarmDispatcher The alarm dispatcher.
      * @param settings        The configuration to use.
-     * @param fileExchange    The file exchange.
      */
-    public ChecksumStorageModel(ChecksumStore cache, AlarmDispatcher alarmDispatcher, Settings settings, FileExchange fileExchange) {
-        super(null, cache, alarmDispatcher, settings, fileExchange);
+    public ChecksumStorageModel(ChecksumStore cache, AlarmDispatcher alarmDispatcher, Settings settings) {
+        super(null, cache, alarmDispatcher, settings);
     }
 
     @Override
@@ -75,16 +75,18 @@ public class ChecksumStorageModel extends StorageModel {
     }
 
     @Override
-    public void replaceFile(String fileID, String collectionID, String fileAddress, ChecksumDataForFileTYPE expectedChecksum)
-            throws RequestHandlerException {
-        String calculatedChecksum = retrieveChecksumFromDownloadOrVerificationData(fileID, collectionID, fileAddress, expectedChecksum);
+    public void replaceFile(String fileID, String collectionID, String fileAddress,
+            ChecksumDataForFileTYPE expectedChecksum) throws RequestHandlerException {
+        String calculatedChecksum = retrieveChecksumFromDownloadOrVerificationData(fileID, collectionID, fileAddress,
+                expectedChecksum);
         cache.insertChecksumCalculation(fileID, collectionID, calculatedChecksum, new Date());
     }
 
     @Override
-    public void putFile(String collectionID, String fileID, String fileAddress, ChecksumDataForFileTYPE expectedChecksum)
-            throws RequestHandlerException {
-        String calculatedChecksum = retrieveChecksumFromDownloadOrVerificationData(fileID, collectionID, fileAddress, expectedChecksum);
+    public void putFile(String collectionID, String fileID, String fileAddress,
+            ChecksumDataForFileTYPE expectedChecksum) throws RequestHandlerException {
+        String calculatedChecksum = retrieveChecksumFromDownloadOrVerificationData(fileID, collectionID, fileAddress,
+                expectedChecksum);
         cache.insertChecksumCalculation(fileID, collectionID, calculatedChecksum, new Date());
     }
 
@@ -99,7 +101,8 @@ public class ChecksumStorageModel extends StorageModel {
     }
 
     @Override
-    protected String getNonDefaultChecksum(String fileID, String collectionID, ChecksumSpecTYPE csType) throws RequestHandlerException {
+    protected String getNonDefaultChecksum(String fileID, String collectionID, ChecksumSpecTYPE csType)
+            throws RequestHandlerException {
         throw new InvalidMessageException(ResponseCode.REQUEST_NOT_SUPPORTED,
                 "The ChecksumPillar cannot handle a non-default checksum specification '" + csType + "'.'");
     }
@@ -112,13 +115,13 @@ public class ChecksumStorageModel extends StorageModel {
 
     @Override
     public ExtractedFileIDsResultSet getFileIDsResultSet(String fileID, XMLGregorianCalendar minTimestamp,
-                                                         XMLGregorianCalendar maxTimestamp, Long maxResults, String collectionID) {
+            XMLGregorianCalendar maxTimestamp, Long maxResults, String collectionID) {
         return cache.getFileIDs(minTimestamp, maxTimestamp, maxResults, fileID, collectionID);
     }
 
     @Override
-    protected ExtractedChecksumResultSet getNonDefaultChecksumResultSet(Long maxResults, String collectionID, ChecksumSpecTYPE csSpec)
-            throws RequestHandlerException {
+    protected ExtractedChecksumResultSet getNonDefaultChecksumResultSet(Long maxResults, String collectionID,
+            ChecksumSpecTYPE csSpec) throws RequestHandlerException {
         throw new InvalidMessageException(ResponseCode.REQUEST_NOT_SUPPORTED,
                 "This is a checksum pillar and it does not have the actual file. Only it's checksum.");
     }
@@ -141,12 +144,11 @@ public class ChecksumStorageModel extends StorageModel {
      *                         extracted from here instead.
      * @return The checksum.
      * @throws RequestHandlerException If something goes wrong with extracting the checksum, e.g. it is missing from
-     *                                 the 'expectedChecksum' part, it is not possible to download, or the downloaded file does not have
-     *                                 the expected
-     *                                 checksum.
+     *                                 the 'expectedChecksum' part, it is not possible to download,
+     *                                 or the downloaded file does not have the expected checksum.
      */
     private String retrieveChecksumFromDownloadOrVerificationData(String fileID, String collectionID, String fileAddress,
-                                                                  ChecksumDataForFileTYPE expectedChecksum) throws RequestHandlerException {
+            ChecksumDataForFileTYPE expectedChecksum) throws RequestHandlerException {
         switch (getChecksumPillarFileDownload()) {
             case ALWAYS_DOWNLOAD:
                 return downloadFileAndCalculateChecksum(fileID, collectionID, fileAddress, expectedChecksum);
@@ -201,14 +203,15 @@ public class ChecksumStorageModel extends StorageModel {
      * @throws RequestHandlerException If the operation fails.
      */
     private String downloadFileAndCalculateChecksum(String fileID, String collectionID, String fileAddress,
-                                                    ChecksumDataForFileTYPE expectedChecksum) throws RequestHandlerException {
+            ChecksumDataForFileTYPE expectedChecksum) throws RequestHandlerException {
         String calculatedChecksum = calculateChecksumForFileAtURL(fileAddress);
         if (!validChecksum(calculatedChecksum, expectedChecksum)) {
             String givenChecksum = Base16Utils.decodeBase16(expectedChecksum.getChecksumValue());
             log.error("Wrong checksum for file '{}' at '{}'! Expected: [{}], but calculated: [{}]",
                     fileID, collectionID, givenChecksum, calculatedChecksum);
             throw new IllegalOperationException(ResponseCode.NEW_FILE_CHECKSUM_FAILURE,
-                    "Expected checksums '" + givenChecksum + "' but the checksum was '" + calculatedChecksum + "'.", fileID);
+                    "Expected checksums '" + givenChecksum + "' but the checksum was '" + calculatedChecksum + "'.",
+                    fileID);
         }
 
         return calculatedChecksum;
@@ -225,7 +228,9 @@ public class ChecksumStorageModel extends StorageModel {
         log.debug("Retrieving the data from URL: '{}'", fileAddress);
 
         try {
-            return ChecksumUtils.generateChecksum(fileExchange.getFile(new URL(fileAddress)), defaultChecksumSpec);
+            URL fileURL = new URL(fileAddress);
+            FileExchange fileExchange = FileExchangeResolver.getBasicFileExchangeFromURL(fileURL);
+            return ChecksumUtils.generateChecksum(fileExchange.getFile(fileURL), defaultChecksumSpec);
         } catch (IOException e) {
             String errMsg = "Could not retrieve the file from '" + fileAddress + "'";
             log.error(errMsg, e);

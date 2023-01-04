@@ -107,7 +107,7 @@ public class AlarmServiceFactory {
                         settings.getReferenceSettings().getAlarmServiceSettings().getID());
                 MessageBus messageBus = ProtocolComponentFactory.getInstance().getMessageBus(settings,
                         securityManager);
-                ContributorMediator contributorMediator = new SimpleContributorMediator(messageBus, settings, null, null);
+                ContributorMediator contributorMediator = new SimpleContributorMediator(messageBus, settings, null);
                 AlarmDAOFactory alarmDAOFactory = new AlarmDAOFactory();
                 AlarmStore store = alarmDAOFactory.getAlarmServiceDAOInstance(
                         settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase());

@@ -78,7 +78,7 @@ public abstract class MockedPillarTest extends DefaultFixturePillarTest {
                 SettingsHelper.getPillarCollections(settingsForCUT.getComponentID(), settingsForCUT.getCollections()),
                 new ResponseDispatcher(settingsForCUT, messageBus),
                 alarmDispatcher,
-                audits, fileExchangeMock);
+                audits);
         mediator = new PillarMediator(messageBus, context, model);
         mediator.start();
 

@@ -50,7 +50,7 @@ import org.bitrepository.protocol.security.OperationAuthorizer;
 import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.service.AlarmDispatcher;
-import org.bitrepository.service.audit.AuditTrailContributerDAOFactory;
+import org.bitrepository.service.audit.AuditTrailContributorDAOFactory;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
 import org.bitrepository.service.database.DatabaseManager;
@@ -118,8 +118,7 @@ public final class PillarComponentFactory {
                 SettingsHelper.getPillarCollections(settings.getComponentID(), settings.getCollections()),
                 responseDispatcher,
                 alarmDispatcher,
-                audits,
-                ProtocolComponentFactory.getInstance().getFileExchange(settings));
+                audits);
 
         return new Pillar(messageBus, settings, pillarModel, context);
     }
@@ -142,7 +141,7 @@ public final class PillarComponentFactory {
      * @return The AuditTrailManager.
      */
     private AuditTrailManager getAuditTrailManager(Settings settings) {
-        AuditTrailContributerDAOFactory daoFactory = new AuditTrailContributerDAOFactory();
+        AuditTrailContributorDAOFactory daoFactory = new AuditTrailContributorDAOFactory();
         return daoFactory.getAuditTrailContributorDAO(
                 settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase(),
                 settings.getComponentID());
@@ -182,12 +181,10 @@ public final class PillarComponentFactory {
     private StorageModel getPillarModel(Settings settings, ChecksumStore cache, AlarmDispatcher alarmDispatcher) {
         PillarType pillarType = settings.getReferenceSettings().getPillarSettings().getPillarType();
         if (pillarType == PillarType.CHECKSUM) {
-            return new ChecksumStorageModel(cache, alarmDispatcher, settings,
-                    ProtocolComponentFactory.getInstance().getFileExchange(settings));
+            return new ChecksumStorageModel(cache, alarmDispatcher, settings);
         } else if (pillarType == PillarType.FILE) {
             FileStore archive = getFileStore(settings);
-            return new FileStorageModel(archive, cache, alarmDispatcher, settings,
-                    ProtocolComponentFactory.getInstance().getFileExchange(settings));
+            return new FileStorageModel(archive, cache, alarmDispatcher, settings);
         } else {
             throw new IllegalStateException("Cannot instantiate a pillar of type '" + pillarType + "'.");
         }

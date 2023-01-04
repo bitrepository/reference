@@ -109,7 +109,7 @@ public class ActiveMQMessageBus implements MessageBus {
      * The session for sending messages. Should not be the same as the consumer session,
      * as sessions are not thread safe. This also means the session should be used in a synchronized manor.
      * TODO Switch to use a session pool/producer poll to allow multithreaded message sending, see
-     * https://sbforge.org/jira/browse/BITMAG-357.
+     *  https://sbforge.org/jira/browse/BITMAG-357.
      */
     private final Session producerSession;
 
@@ -164,9 +164,7 @@ public class ActiveMQMessageBus implements MessageBus {
      * @param settings        The settings to use.
      * @param securityManager The security manager to use for message authentication.
      */
-    public ActiveMQMessageBus(
-            Settings settings,
-            SecurityManager securityManager) {
+    public ActiveMQMessageBus(Settings settings, SecurityManager securityManager) {
         configuration = settings.getMessageBusConfiguration();
         log.info("Initializing ActiveMQMessageBus: '{}'", configuration);
         this.securityManager = securityManager;

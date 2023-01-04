@@ -38,7 +38,9 @@ import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;
+import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.MessageContext;
+import org.bitrepository.protocol.utils.FileExchangeResolver;
 import org.bitrepository.protocol.utils.MessageUtils;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -83,7 +85,7 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
     protected void validateRequest(GetChecksumsRequest request, MessageContext requestContext)
             throws RequestHandlerException {
         validateCollectionID(request);
-        validatePillarId(request.getPillarID());
+        validatePillarID(request.getPillarID());
         getPillarModel().verifyChecksumAlgorithm(request.getChecksumRequestForExistingFile());
         if (request.getFileIDs() != null && request.getFileIDs().getFileID() != null) {
             validateFileIDFormat(request.getFileIDs().getFileID());
@@ -237,7 +239,8 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
         // Upload the file.
         log.debug("Uploading file '{}' to {}", fileToUpload.getName(), url);
         try (InputStream in = new BufferedInputStream(new FileInputStream(fileToUpload))) {
-            context.getFileExchange().putFile(in, uploadUrl);
+            FileExchange fileExchange = FileExchangeResolver.getBasicFileExchangeFromURL(uploadUrl);
+            fileExchange.putFile(in, uploadUrl);
         }
     }
 
@@ -248,8 +251,7 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
      * @param results        The results of the checksum calculations.
      * @param hasMoreEntries Whether more results can be found.
      */
-    private void sendFinalResponse(GetChecksumsRequest request, ResultingChecksums results,
-                                   boolean hasMoreEntries) {
+    private void sendFinalResponse(GetChecksumsRequest request, ResultingChecksums results, boolean hasMoreEntries) {
         GetChecksumsFinalResponse response = createFinalResponse(request);
 
         ResponseInfo fri = new ResponseInfo();

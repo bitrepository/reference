@@ -38,8 +38,6 @@ import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.pillar.store.checksumcache.MemoryCacheMock;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumStore;
 import org.bitrepository.pillar.store.filearchive.CollectionArchiveManager;
-import org.bitrepository.protocol.FileExchange;
-import org.bitrepository.protocol.LocalFileExchange;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
@@ -48,6 +46,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+
 public abstract class DefaultPillarTest extends DefaultFixturePillarTest {
     protected FileStore archives;
     protected StorageModel model;
@@ -58,6 +57,7 @@ public abstract class DefaultPillarTest extends DefaultFixturePillarTest {
     protected AlarmDispatcher alarmDispatcher;
     protected static final String EMPTY_FILE_CHECKSUM = "d41d8cd98f00b204e9800998ecf8427e";
     protected static final ChecksumDataForFileTYPE EMPTY_FILE_CHECKSUM_DATA;
+
     static {
         EMPTY_FILE_CHECKSUM_DATA = new ChecksumDataForFileTYPE();
         EMPTY_FILE_CHECKSUM_DATA.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
@@ -70,35 +70,37 @@ public abstract class DefaultPillarTest extends DefaultFixturePillarTest {
             System.err.println(e.getMessage());
         }
     }
+
     @Override
     protected void initializeCUT() {
         super.initializeCUT();
         collectionID = settingsForTestClient.getCollections().get(0).getID();
         File fileDir = new File(settingsForCUT.getReferenceSettings().getPillarSettings().getCollectionDirs().get(0).getFileDirs().get(0));
-        if(fileDir.exists()) {
+        if (fileDir.exists()) {
             FileUtils.delete(fileDir);
         }
         createReferencePillar();
     }
+
     @Override
     protected void shutdownCUT() {
         shutdownMediator();
     }
+
     protected void createReferencePillar() {
         shutdownMediator();
         csCache = new MemoryCacheMock();
         archives = new CollectionArchiveManager(settingsForCUT);
         alarmDispatcher = new AlarmDispatcher(settingsForCUT, messageBus);
         audits = new MockAuditManager();
-        FileExchange fileExchange = new LocalFileExchange("src/test/resources");
         context = new MessageHandlerContext(
                 settingsForCUT,
                 SettingsHelper.getPillarCollections(settingsForCUT.getComponentID(), settingsForCUT.getCollections()),
                 new ResponseDispatcher(settingsForCUT, messageBus),
                 new PillarAlarmDispatcher(settingsForCUT, messageBus),
-                audits,
-                fileExchange);
-        model = new FileStorageModel(archives, csCache, alarmDispatcher, settingsForCUT, fileExchange);
+                audits
+        );
+        model = new FileStorageModel(archives, csCache, alarmDispatcher, settingsForCUT);
         mediator = new PillarMediator(messageBus, context, model);
         mediator.start();
         try {
@@ -107,12 +109,14 @@ public abstract class DefaultPillarTest extends DefaultFixturePillarTest {
             throw new RuntimeException("Could not initialize the archive with an empty file.", e);
         }
     }
+
     public void shutdownMediator() {
         if(mediator != null) {
             mediator.close();
             mediator = null;
         }
     }
+
     @Override
     protected String getComponentID() {
         return "ReferencePillar-" + testMethodName;

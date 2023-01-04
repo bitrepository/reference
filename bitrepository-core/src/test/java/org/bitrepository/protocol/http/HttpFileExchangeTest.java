@@ -23,6 +23,7 @@ package org.bitrepository.protocol.http;
 
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
+import org.bitrepository.settings.referencesettings.FileExchangeSettings;
 import org.bitrepository.settings.referencesettings.ProtocolType;
 import org.jaccept.structure.ExtendedTestCase;
 import org.testng.annotations.Test;
@@ -38,12 +39,13 @@ public class HttpFileExchangeTest extends ExtendedTestCase {
     public void checkUrlEncodingOfFilenamesTest() throws MalformedURLException {
         addDescription("Tests that the filename is url-encoded correctly for a configured webdav server");
         Settings mySettings = TestSettingsProvider.reloadSettings("uploadTest");
-        mySettings.getReferenceSettings().getFileExchangeSettings().setProtocolType(ProtocolType.HTTP);
-        mySettings.getReferenceSettings().getFileExchangeSettings().setServerName("http:testserver.org");
-        mySettings.getReferenceSettings().getFileExchangeSettings().setPort(BigInteger.valueOf(8000));
-        mySettings.getReferenceSettings().getFileExchangeSettings().setPath("dav");
-        HttpFileExchange fe = new HttpFileExchange(mySettings);
-        String serverPathPrefix = mySettings.getReferenceSettings().getFileExchangeSettings().getPath() + "/";
+        FileExchangeSettings fileExchangeSettings = mySettings.getReferenceSettings().getFileExchangeSettings();
+        fileExchangeSettings.setProtocolType(ProtocolType.HTTP);
+        fileExchangeSettings.setServerName("http:testserver.org");
+        fileExchangeSettings.setPort(BigInteger.valueOf(8000));
+        fileExchangeSettings.setPath("dav");
+        HttpFileExchange fe = new HttpFileExchange(fileExchangeSettings);
+        String serverPathPrefix = fileExchangeSettings.getPath() + "/";
         
         addStep("Check plain filename (a filename that does not see any changes due to urlencoding", "The filename " +
                 "should be unmodified");

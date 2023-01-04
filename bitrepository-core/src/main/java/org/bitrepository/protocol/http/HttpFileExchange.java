@@ -35,7 +35,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.ChunkyManagedHttpClientConnectionFactory;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.StreamUtils;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.FileExchange;
@@ -63,9 +62,9 @@ public class HttpFileExchange implements FileExchange {
     private static final int HTTP_ERROR_CODE_BARRIER = 300;
     protected int HTTP_BUFFER_SIZE = 1024 * 1024;
     protected static final int HTTP_CHUNK_SIZE = 64 * 1024;
-    protected final Settings settings;
+    protected final FileExchangeSettings settings;
 
-    public HttpFileExchange(Settings settings) {
+    public HttpFileExchange(FileExchangeSettings settings) {
         this.settings = settings;
     }
 
@@ -123,14 +122,12 @@ public class HttpFileExchange implements FileExchange {
     }
 
     /**
-     * Retrieves the data from a given url and puts it onto a given
-     * output-stream. It has to be a 'HTTP' url, since the data is retrieved
-     * through a HTTP-request.
+     * Retrieves the data from a given url and puts it onto a given output-stream.
+     * It has to be a 'HTTP' url, since the data is retrieved through an HTTP-request.
      *
      * @param out The output stream to put the data.
      * @param url The url for where the data should be retrieved.
-     * @throws IOException If any problems occurs during the retrieval of the
-     *                     data.
+     * @throws IOException If any problems occurs during the retrieval of the data.
      */
     protected void performDownload(OutputStream out, URL url) throws IOException {
         if (out == null || url == null) {
@@ -171,7 +168,6 @@ public class HttpFileExchange implements FileExchange {
         ArgumentValidator.checkNotNull(in, "InputStream in");
         ArgumentValidator.checkNotNull(url, "URL url");
 
-
         try (CloseableHttpClient httpClient = getHttpClient()) {
             HttpPut httpPut = new HttpPut(url.toExternalForm());
             InputStreamEntity reqEntity = new LargeChunkedInputStreamEntity(in);
@@ -181,8 +177,7 @@ public class HttpFileExchange implements FileExchange {
 
             // HTTP code >= 300 means error!
             if (response.getStatusLine().getStatusCode() >= HTTP_ERROR_CODE_BARRIER) {
-                throw new IOException(
-                        "Could not upload file to URL '" + url.toExternalForm() + "'. got status code '" +
+                throw new IOException("Could not upload file to URL '" + url.toExternalForm() + "'. got status code '" +
                                 response.getStatusLine() + "'");
             }
             log.debug("Uploaded data-stream to url '{}' and received the response line '{}'",
@@ -193,13 +188,12 @@ public class HttpFileExchange implements FileExchange {
     @Override
     public URL getURL(String filename) throws MalformedURLException {
         ArgumentValidator.checkNotNullOrEmpty(filename, "String fileName");
-        ArgumentValidator.checkNotNull(settings.getReferenceSettings().getFileExchangeSettings(),
+        ArgumentValidator.checkNotNull(settings,
                 "The ReferenceSettings are missing the settings for the file exchange.");
-        FileExchangeSettings feSettings = settings.getReferenceSettings().getFileExchangeSettings();
         String urlEncodedFilename = URLEncoder.encode(filename, StandardCharsets.UTF_8);
 
-        return new URL(feSettings.getProtocolType().value(), feSettings.getServerName(), feSettings.getPort().intValue(),
-                feSettings.getPath() + "/" + urlEncodedFilename);
+        return new URL(settings.getProtocolType().value(), settings.getServerName(), settings.getPort().intValue(),
+                settings.getPath() + "/" + urlEncodedFilename);
     }
 
     /**

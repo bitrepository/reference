@@ -36,8 +36,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.ChunkyManagedHttpClientConnectionFactory;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.impl.conn.SystemDefaultDnsResolver;
-import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.CoordinationLayerException;
+import org.bitrepository.settings.referencesettings.FileExchangeSettings;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -51,7 +51,7 @@ import java.security.NoSuchAlgorithmException;
 public class HttpsFileExchange extends HttpFileExchange {
     private final HostnameVerifier hostnameVerifier;
 
-    public HttpsFileExchange(Settings settings) {
+    public HttpsFileExchange(FileExchangeSettings settings) {
         super(settings);
         hostnameVerifier = NoopHostnameVerifier.INSTANCE;
     }

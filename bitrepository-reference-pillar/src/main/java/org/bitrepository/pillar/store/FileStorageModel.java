@@ -41,6 +41,7 @@ import org.bitrepository.pillar.store.checksumdatabase.ChecksumStore;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedFileIDsResultSet;
 import org.bitrepository.protocol.FileExchange;
+import org.bitrepository.protocol.utils.FileExchangeResolver;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.IllegalOperationException;
@@ -71,11 +72,9 @@ public class FileStorageModel extends StorageModel {
      * @param cache           The checksum store.
      * @param alarmDispatcher The alarm dispatcher.
      * @param settings        The settings.
-     * @param fileExchange    The file exchange.
      */
-    public FileStorageModel(FileStore archives, ChecksumStore cache, AlarmDispatcher alarmDispatcher, Settings settings,
-                            FileExchange fileExchange) {
-        super(archives, cache, alarmDispatcher, settings, fileExchange);
+    public FileStorageModel(FileStore archives, ChecksumStore cache, AlarmDispatcher alarmDispatcher, Settings settings) {
+        super(archives, cache, alarmDispatcher, settings);
         log.info("Instantiating the FileStorageModel: {}", getPillarID());
     }
 
@@ -326,7 +325,9 @@ public class FileStorageModel extends StorageModel {
         log.debug("Retrieving the data to be stored from URL: '{}'", fileAddress);
 
         try {
-            fileArchive.downloadFileForValidation(fileID, collectionID, fileExchange.getFile(new URL(fileAddress)));
+            URL fileURL = new URL(fileAddress);
+            FileExchange fileExchange = FileExchangeResolver.getBasicFileExchangeFromURL(fileURL);
+            fileArchive.downloadFileForValidation(fileID, collectionID, fileExchange.getFile(fileURL));
         } catch (IOException e) {
             String errMsg = "Could not retrieve the file from '" + fileAddress + "'";
             log.error(errMsg, e);

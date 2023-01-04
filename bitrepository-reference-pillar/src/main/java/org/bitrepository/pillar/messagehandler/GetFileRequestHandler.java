@@ -35,7 +35,9 @@ import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.filestore.FileInfo;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.store.StorageModel;
+import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.MessageContext;
+import org.bitrepository.protocol.utils.FileExchangeResolver;
 import org.bitrepository.protocol.utils.MessageUtils;
 import org.bitrepository.service.exception.InvalidMessageException;
 import org.bitrepository.service.exception.RequestHandlerException;
@@ -72,7 +74,7 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
     @Override
     protected void validateRequest(GetFileRequest request, MessageContext requestContext) throws RequestHandlerException {
         validateCollectionID(request);
-        validatePillarId(request.getPillarID());
+        validatePillarID(request.getPillarID());
         validateFileIDFormat(request.getFileID());
 
         getPillarModel().verifyFileExists(request.getFileID(), request.getCollectionID());
@@ -110,6 +112,7 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
      */
     protected void uploadToClient(GetFileRequest message) throws RequestHandlerException {
         FileInfo requestedFile = getPillarModel().getFileInfoForActualFile(message.getFileID(), message.getCollectionID());
+        String fileAddress = message.getFileAddress();
 
         try {
             InputStream is;
@@ -119,13 +122,15 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
                 is = extractFilePart(requestedFile, message.getFilePart());
             }
 
-            log.info("Uploading file '{}' to {}", requestedFile.getFileID(), message.getFileAddress());
-            context.getFileExchange().putFile(is, new URL(message.getFileAddress()));
+            log.info("Uploading file '{}' to {}", requestedFile.getFileID(), fileAddress);
+            URL uploadUrl = new URL(fileAddress);
+            FileExchange fileExchange = FileExchangeResolver.getBasicFileExchangeFromURL(uploadUrl);
+            fileExchange.putFile(is, uploadUrl);
         } catch (IOException e) {
             log.warn("The file '{}' from collection '{}' could not be uploaded at '{}'",
-                    message.getFileID(), message.getCollectionID(), message.getFileAddress());
+                    message.getFileID(), message.getCollectionID(), fileAddress);
             throw new InvalidMessageException(ResponseCode.FILE_TRANSFER_FAILURE,
-                    "Could not deliver file to address '" + message.getFileAddress() + "'", e);
+                    "Could not deliver file to address '" + fileAddress + "'", e);
         }
     }
 

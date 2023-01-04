@@ -46,7 +46,7 @@ public class GeneralMessageHandlingTest extends MockedPillarTest {
     }
     
     @Test( groups = {"regressiontest", "pillartest"})
-    public void testPillarMessageHandler() throws Exception {
+    public void testPillarMessageHandler() {
         addDescription("Test the handling of the PillarMessageHandler super-class.");
         addStep("Setup", "Should be OK.");
         
@@ -124,15 +124,15 @@ public class GeneralMessageHandlingTest extends MockedPillarTest {
         }
 
         @Override
-        public void processRequest(MessageRequest request, MessageContext messageContext) throws RequestHandlerException {}
+        public void processRequest(MessageRequest request, MessageContext messageContext) {}
         
         @Override
         public MessageResponse generateFailedResponse(MessageRequest request) {
             return null;
         }
         
-        public void validatePillarID(String pillarID) throws RequestHandlerException {
-            super.validatePillarId(pillarID);
+        public void validatePillarID(String pillarID) {
+            super.validatePillarID(pillarID);
         }
         
         public void validateFileIDFormat(String fileID) throws RequestHandlerException {

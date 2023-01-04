@@ -43,8 +43,7 @@ public interface FileExchange {
      *
      * @param in  The stream from the file to upload.
      * @param url The URL where the stream is to be put.
-     * @throws IOException If any problems occurs during the transportation of
-     *                     the data.
+     * @throws IOException If any problems occurs during the transportation of the data.
      */
     void putFile(InputStream in, URL url) throws IOException;
 
@@ -52,19 +51,16 @@ public interface FileExchange {
      * Places a given file onto the file exchange
      *
      * @param file The file to be put into the file exchange.
-     * @return The url for the file, when it has been placed onto the
-     * file exchange.
+     * @return The url for the file, when it has been placed onto the file exchange.
      */
     URL putFile(File file);
 
     /**
-     * Retrieves the data from a given url and puts it onto a given
-     * output-stream.
+     * Retrieves the data from a given url and puts it onto a given output-stream.
      *
      * @param out The output stream to put the data.
      * @param url The url for where the data should be retrieved.
-     * @throws IOException If any problems occurs during the retrieval of the
-     *                     data.
+     * @throws IOException If any problems occurs during the retrieval of the data.
      */
     void getFile(OutputStream out, URL url) throws IOException;
 
@@ -73,28 +69,24 @@ public interface FileExchange {
      *
      * @param url The URL to retrieve.
      * @return The InputStream for the data at the given URL.
-     * @throws IOException If any problems occurs during the transportation of
-     *                     the data.
+     * @throws IOException If any problems occurs during the transportation of the data.
      */
     InputStream getFile(URL url) throws IOException;
 
     /**
      * Method for downloading a file at a given address.
      *
-     * @param outputFile  The file where the data at the address should be
-     *                    placed.
+     * @param outputFile  The file where the data at the address should be placed.
      * @param fileAddress The address where the data should be downloaded from.
      */
     void getFile(File outputFile, String fileAddress);
 
     /**
-     * Creates the URL based on a filename.
+     * Creates the file-exchange URL based on a filename.
      *
-     * @param filename The name of the piece of data to transfer (in the form
-     *                 of a file).
+     * @param filename The name of the piece of data to transfer (in the form of a file).
      * @return The URL containing the filename.
-     * @throws MalformedURLException If the filename prevents the creation of
-     *                               a valid URL.
+     * @throws MalformedURLException If the filename prevents the creation of a valid URL.
      */
     URL getURL(String filename) throws MalformedURLException;
 
@@ -102,7 +94,7 @@ public interface FileExchange {
      * Removes a file from the given URL.
      *
      * @param url The URL where the file should be removed from.
-     * @throws IOException        If issues occurs while removing the file.
+     * @throws IOException        If issues occur while removing the file.
      * @throws URISyntaxException If the URL is not valid.
      */
     void deleteFile(URL url) throws IOException, URISyntaxException;

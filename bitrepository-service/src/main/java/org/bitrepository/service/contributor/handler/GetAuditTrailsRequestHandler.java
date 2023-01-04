@@ -32,8 +32,10 @@ import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.ProtocolVersionLoader;
+import org.bitrepository.protocol.utils.FileExchangeResolver;
 import org.bitrepository.service.audit.AuditTrailDatabaseResults;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.contributor.ContributorContext;
@@ -175,7 +177,8 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
             URL uploadUrl = new URL(message.getResultAddress());
 
             log.debug("Uploading file '{}' to {}", fileToUpload.getName(), uploadUrl.toExternalForm());
-            getContext().getFileExchange().putFile(new FileInputStream(fileToUpload), uploadUrl);
+            FileExchange fileExchange = FileExchangeResolver.getBasicFileExchangeFromURL(uploadUrl);
+            fileExchange.putFile(new FileInputStream(fileToUpload), uploadUrl);
         } catch (Exception e) {
             throw new InvalidMessageException(ResponseCode.FILE_TRANSFER_FAILURE,
                     "Could not handle the creation and upload of the results due to: " + e.getMessage(), e);
