@@ -48,12 +48,7 @@ openshift.withCluster() {
         } catch (e) {
             currentBuild.result = 'FAILURE'
             throw e
-        } finally {
-            configFileProvider([configFile(fileId: "notifier", variable: 'notifier')]) {
-                def notifier = load notifier
-                notifier.notifyInCaseOfFailureOrImprovement(true, "#playground")
-            }
-        }
+        } 
     }
 }
 
