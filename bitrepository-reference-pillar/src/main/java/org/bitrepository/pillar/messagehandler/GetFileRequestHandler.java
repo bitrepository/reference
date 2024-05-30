@@ -127,8 +127,8 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
             FileExchange fileExchange = FileExchangeResolver.getBasicFileExchangeFromURL(uploadUrl);
             fileExchange.putFile(is, uploadUrl);
         } catch (IOException e) {
-            log.warn("The file '{}' from collection '{}' could not be uploaded at '{}'",
-                    message.getFileID(), message.getCollectionID(), fileAddress);
+            log.warn("The file '{}' from collection '{}' could not be uploaded at '{}' cause: '{}'",
+                    message.getFileID(), message.getCollectionID(), fileAddress, e.getMessage());
             throw new InvalidMessageException(ResponseCode.FILE_TRANSFER_FAILURE,
                     "Could not deliver file to address '" + fileAddress + "'", e);
         }
