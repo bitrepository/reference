@@ -72,7 +72,8 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
     }
 
     @Override
-    protected void validateRequest(GetFileRequest request, MessageContext requestContext) throws RequestHandlerException {
+    protected void validateRequest(GetFileRequest request, MessageContext requestContext)
+            throws RequestHandlerException {
         validateCollectionID(request);
         validatePillarID(request.getPillarID());
         validateFileIDFormat(request.getFileID());
@@ -81,8 +82,10 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
     }
 
     @Override
-    protected void sendProgressResponse(GetFileRequest request, MessageContext requestContext) throws RequestHandlerException {
-        FileInfo requestedFi = getPillarModel().getFileInfoForActualFile(request.getFileID(), request.getCollectionID());
+    protected void sendProgressResponse(GetFileRequest request, MessageContext requestContext)
+            throws RequestHandlerException {
+        FileInfo requestedFi = getPillarModel().getFileInfoForActualFile(request.getFileID(),
+                request.getCollectionID());
         GetFileProgressResponse response = createGetFileProgressResponse(request);
 
         response.setFileSize(BigInteger.valueOf(requestedFi.getSize()));
@@ -111,7 +114,8 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
      * @throws InvalidMessageException If the upload of the file fails.
      */
     protected void uploadToClient(GetFileRequest message) throws RequestHandlerException {
-        FileInfo requestedFile = getPillarModel().getFileInfoForActualFile(message.getFileID(), message.getCollectionID());
+        FileInfo requestedFile = getPillarModel().getFileInfoForActualFile(message.getFileID(),
+                message.getCollectionID());
         String fileAddress = message.getFileAddress();
 
         try {
@@ -130,7 +134,7 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
             log.warn("The file '{}' from collection '{}' could not be uploaded at '{}' cause: '{}'",
                     message.getFileID(), message.getCollectionID(), fileAddress, e.getMessage());
             throw new InvalidMessageException(ResponseCode.FILE_TRANSFER_FAILURE,
-                    "Could not deliver file to address '" + fileAddress + "'", e);
+                    "Could not deliver file to address '" + fileAddress + "', cause: " + e.getMessage(), e);
         }
     }
 
