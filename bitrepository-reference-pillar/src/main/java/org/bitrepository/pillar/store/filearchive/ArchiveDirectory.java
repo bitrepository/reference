@@ -23,6 +23,8 @@ package org.bitrepository.pillar.store.filearchive;
 
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.utils.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -39,6 +41,7 @@ import java.util.Objects;
  * If a file is to be deleted, then it is moved from the 'fileDir' or 'folderDir' to the 'retainDir'.
  */
 public class ArchiveDirectory {
+    private static final Logger log = LoggerFactory.getLogger(ArchiveDirectory.class);
     /**
      * Constant for the temporary directory name.
      */
@@ -103,8 +106,10 @@ public class ArchiveDirectory {
     public File retrieveFile(String fileID) {
         File res = getFile(fileID);
         if (res.isFile()) {
+            log.debug("Retrieved file '{}'", res.getPath());
             return res;
         } else {
+            log.warn("Could not retrieve file '{}', returning null object", fileID);
             return null;
         }
     }
@@ -227,7 +232,8 @@ public class ArchiveDirectory {
         File oldFile = getFile(fileID);
         if (!oldFile.isFile()) {
             throw new IllegalStateException(
-                    "Cannot locate the file to delete '" + fileID + "' from location '" + oldFile.getAbsolutePath() + "'!");
+                    "Cannot locate the file to delete '" + fileID + "' from location '" + oldFile.getAbsolutePath() +
+                            "'!");
         }
         File retainFile = new File(retainDir, fileID);
 

@@ -28,6 +28,7 @@ import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.commandline.eventhandler.CompleteEventAwaiter;
 import org.bitrepository.commandline.eventhandler.GetFileEventHandler;
+import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 
@@ -98,7 +99,12 @@ public class GetFileCmd extends CommandLineClient {
                 + cmdHandler.getOptionValue(Constants.FILE_ID_ARG) + "'"
                 + ": " + finalEvent);
         if (finalEvent.getEventType() == OperationEventType.COMPLETE) {
-            downloadFile();
+            try {
+                downloadFile();
+            } catch (CoordinationLayerException e) {
+                output.warn(e.getMessage());
+                System.exit(Constants.EXIT_OPERATION_FAILURE);
+            }
             output.resultLine(fileArg + " retrieved");
             System.exit(Constants.EXIT_SUCCESS);
         } else {

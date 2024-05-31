@@ -49,6 +49,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 
 public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest> {
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -97,13 +100,14 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
     }
 
     @Override
-    protected void performOperation(GetFileRequest request, MessageContext requestContext) throws RequestHandlerException {
+    protected void performOperation(GetFileRequest request, MessageContext requestContext)
+            throws RequestHandlerException {
         log.info("{} Performing GetFile for file '{}' on collection '{}'",
                 MessageUtils.createMessageIdentifier(request), request.getFileID(), request.getCollectionID());
         uploadToClient(request);
-        getAuditManager().addAuditEvent(request.getCollectionID(), request.getFileID(), request.getFrom(), "Failed identifying pillar.",
-                request.getAuditTrailInformation(), FileAction.GET_FILE, request.getCorrelationID(),
-                requestContext.getCertificateFingerprint());
+        getAuditManager().addAuditEvent(request.getCollectionID(), request.getFileID(), request.getFrom(),
+                "Failed identifying pillar.", request.getAuditTrailInformation(), FileAction.GET_FILE,
+                request.getCorrelationID(), requestContext.getCertificateFingerprint());
         sendFinalResponse(request);
     }
 
@@ -126,7 +130,7 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
                 is = extractFilePart(requestedFile, message.getFilePart());
             }
 
-            log.info("Uploading file '{}' to {}", requestedFile.getFileID(), fileAddress);
+            log.info("Uploading file '{}' to {}", message.getFileID(), fileAddress);
             URL uploadUrl = new URL(fileAddress);
             FileExchange fileExchange = FileExchangeResolver.getBasicFileExchangeFromURL(uploadUrl);
             fileExchange.putFile(is, uploadUrl);

@@ -65,7 +65,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
 public class FileStorageModel extends StorageModel {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final Boolean verify = settings.getReferenceSettings().getPillarSettings()
-            .isVerifyDataConsistencyOnMessage();
+                                           .isVerifyDataConsistencyOnMessage();
 
     /**
      * @param archives        The file archives.
@@ -73,7 +73,8 @@ public class FileStorageModel extends StorageModel {
      * @param alarmDispatcher The alarm dispatcher.
      * @param settings        The settings.
      */
-    public FileStorageModel(FileStore archives, ChecksumStore cache, AlarmDispatcher alarmDispatcher, Settings settings) {
+    public FileStorageModel(FileStore archives, ChecksumStore cache, AlarmDispatcher alarmDispatcher,
+                            Settings settings) {
         super(archives, cache, alarmDispatcher, settings);
         log.info("Instantiating the FileStorageModel: {}", getPillarID());
     }
@@ -100,6 +101,7 @@ public class FileStorageModel extends StorageModel {
 
     @Override
     public FileInfo getFileInfoForActualFile(String fileID, String collectionID) {
+        log.debug("Attempting to get File Info for file '{}' in '{}'", fileID, collectionID);
         return fileArchive.getFileInfo(fileID, collectionID);
     }
 

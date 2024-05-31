@@ -69,6 +69,7 @@ public class ReferenceArchive {
 
         for (ArchiveDirectory dir : directories) {
             if (dir.hasFile(fileID)) {
+                log.debug("Found file '{}' in archive '{}'", fileID, dir);
                 return dir.retrieveFile(fileID);
             }
         }

@@ -178,7 +178,7 @@ public class HttpFileExchange implements FileExchange {
             // HTTP code >= 300 means error!
             if (response.getStatusLine().getStatusCode() >= HTTP_ERROR_CODE_BARRIER) {
                 throw new IOException("Could not upload file to URL '" + url.toExternalForm() + "'. got status code '" +
-                                response.getStatusLine() + "'");
+                        response.getStatusLine() + "'");
             }
             log.debug("Uploaded data-stream to url '{}' and received the response line '{}'",
                     url, response.getStatusLine());
@@ -191,6 +191,7 @@ public class HttpFileExchange implements FileExchange {
         ArgumentValidator.checkNotNull(settings,
                 "The ReferenceSettings are missing the settings for the file exchange.");
         String urlEncodedFilename = URLEncoder.encode(filename, StandardCharsets.UTF_8);
+        log.debug("URL for file '{}' encoded to '{}'", filename, urlEncodedFilename);
 
         return new URL(settings.getProtocolType().value(), settings.getServerName(), settings.getPort().intValue(),
                 settings.getPath() + "/" + urlEncodedFilename);
@@ -221,8 +222,8 @@ public class HttpFileExchange implements FileExchange {
         PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager(
                 new ChunkyManagedHttpClientConnectionFactory(HTTP_CHUNK_SIZE));
         SocketConfig socketConfig = SocketConfig.custom()
-                .setSndBufSize(HTTP_BUFFER_SIZE)
-                .setRcvBufSize(HTTP_BUFFER_SIZE).build();
+                                                .setSndBufSize(HTTP_BUFFER_SIZE)
+                                                .setRcvBufSize(HTTP_BUFFER_SIZE).build();
         connectionManager.setDefaultSocketConfig(socketConfig);
         builder.setConnectionManager(connectionManager);
         return builder.build();
