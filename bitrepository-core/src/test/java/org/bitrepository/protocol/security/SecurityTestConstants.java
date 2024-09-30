@@ -52,10 +52,10 @@ public class SecurityTestConstants {
     // When certificate POSITIVECERT is changed, use openssl x509 -in <certificate.pem> -fingerprint to obtain new fingerprint
     private static final String FINGERPRINT = "D3:CC:F2:AE:36:4C:FB:85:F0:70:9A:59:8F:14:EF:8B:52:D4:A5:30";
 
-    private static final String POSITIVECERT_KEYFILE = "./target/test-classes/client80-certkey.pem";
+    private static final String POSITIVE_CERT_KEYFILE = "./target/test-classes/client80-certkey.pem";
 
     /* currently client80-certkey.pem */
-    private static final String POSITIVECERT = "-----BEGIN CERTIFICATE-----\n" +
+    private static final String POSITIVE_CERT = "-----BEGIN CERTIFICATE-----\n" +
             "MIIDkTCCAnmgAwIBAgIJAJ8IPxJseYAfMA0GCSqGSIb3DQEBBQUAMF8xCzAJBgNV\n" +
             "BAYTAkRLMRAwDgYDVQQIDAdEZW5tYXJrMQ8wDQYDVQQHDAZBYXJodXMxGjAYBgNV\n" +
             "BAoMEUJpdHJlcG9zaXRvcnkub3JnMREwDwYDVQQDDAhjbGllbnQ4MDAeFw0xNDA3\n" +
@@ -79,7 +79,7 @@ public class SecurityTestConstants {
             "-----END CERTIFICATE-----\n";
 
     /* currently client90-certkey.pem */
-    private static final String NEGATIVECERT = "-----BEGIN CERTIFICATE-----\n" +
+    private static final String NEGATIVE_CERT = "-----BEGIN CERTIFICATE-----\n" +
             "MIIDkTCCAnmgAwIBAgIJAK/RxZXju3LcMA0GCSqGSIb3DQEBBQUAMF8xCzAJBgNV\n" +
             "BAYTAkRLMRAwDgYDVQQIDAdEZW5tYXJrMQ8wDQYDVQQHDAZBYXJodXMxGjAYBgNV\n" +
             "BAoMEUJpdHJlcG9zaXRvcnkub3JnMREwDwYDVQQDDAhjbGllbnQ5MDAeFw0xNDA3\n" +
@@ -103,7 +103,7 @@ public class SecurityTestConstants {
             "-----END CERTIFICATE-----\n";
 
     /* currently client100-certkey.pem */
-    private static final String SIGNINGCERT =
+    private static final String SIGNING_CERT =
             "-----BEGIN CERTIFICATE-----\n" +
                     "MIIDkzCCAnugAwIBAgIJALlIlDh730tYMA0GCSqGSIb3DQEBBQUAMGAxCzAJBgNV\n" +
                     "BAYTAkRLMRAwDgYDVQQIDAdEZW5tYXJrMQ8wDQYDVQQHDAZBYXJodXMxGjAYBgNV\n" +
@@ -130,12 +130,12 @@ public class SecurityTestConstants {
 
     private static final String KEYFILE = "./target/test-classes/client100-certkey.pem";
 
-    private static final String ALLOWEDCERTIFICATEUSER = "test-component";
+    private static final String ALLOWED_CERTIFICATE_USER = "test-component";
 
-    private static final String COMPONENTID = "TEST";
+    private static final String COMPONENT_ID = "TEST";
 
     public static String getPositiveCertKeyFile() {
-        return POSITIVECERT_KEYFILE;
+        return POSITIVE_CERT_KEYFILE;
     }
 
     public static String getKeyFile() {
@@ -155,37 +155,37 @@ public class SecurityTestConstants {
     }
 
     public static String getPositiveCertificate() {
-        return POSITIVECERT;
+        return POSITIVE_CERT;
     }
 
     public static String getNegativeCertificate() {
-        return NEGATIVECERT;
+        return NEGATIVE_CERT;
     }
 
     public static String getSigningCertificate() {
-        return SIGNINGCERT;
+        return SIGNING_CERT;
     }
 
     public static String getAllowedCertificateUser() {
-        return ALLOWEDCERTIFICATEUSER;
+        return ALLOWED_CERTIFICATE_USER;
     }
 
     public static String getDisallowedCertificateUser() {
-        return ALLOWEDCERTIFICATEUSER + "-bad";
+        return ALLOWED_CERTIFICATE_USER + "-bad";
     }
 
     public static String getComponentID() {
-        return COMPONENTID;
+        return COMPONENT_ID;
     }
 
     public static PermissionSet getDefaultPermissions() {
         PermissionSet permissions = new PermissionSet();
         ComponentIDs allowedUsers = new ComponentIDs();
-        allowedUsers.getIDs().add(ALLOWEDCERTIFICATEUSER);
+        allowedUsers.getIDs().add(ALLOWED_CERTIFICATE_USER);
 
         Permission perm1 = new Permission();
         Certificate cert1 = new Certificate();
-        cert1.setCertificateData(POSITIVECERT.getBytes(StandardCharsets.UTF_8));
+        cert1.setCertificateData(POSITIVE_CERT.getBytes(StandardCharsets.UTF_8));
         cert1.setAllowedCertificateUsers(allowedUsers);
         perm1.setCertificate(cert1);
         OperationPermission opPerm = new OperationPermission();
@@ -194,7 +194,7 @@ public class SecurityTestConstants {
 
         Permission perm2 = new Permission();
         Certificate cert2 = new Certificate();
-        cert2.setCertificateData(NEGATIVECERT.getBytes(StandardCharsets.UTF_8));
+        cert2.setCertificateData(NEGATIVE_CERT.getBytes(StandardCharsets.UTF_8));
         cert2.setAllowedCertificateUsers(allowedUsers);
         perm2.setCertificate(cert2);
 
@@ -203,5 +203,4 @@ public class SecurityTestConstants {
 
         return permissions;
     }
-
 }
