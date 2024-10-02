@@ -9,7 +9,7 @@ public class SignatureGeneratorTest {
     /*
      * Test to generate new signature for SecurityTestConstants 
      */
-    @Test(enabled = false)
+    @Test
     public void generateSignature() throws MessageSigningException {
         PermissionStore permissionStore = new PermissionStore();
         MessageAuthenticator authenticator = new BasicMessageAuthenticator(permissionStore);
