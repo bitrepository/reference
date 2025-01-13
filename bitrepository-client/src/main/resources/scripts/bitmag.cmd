@@ -1,7 +1,14 @@
 @ECHO OFF
 
-set JAVA=c:\Program Files (x86)\Java\jre8\bin\java.exe
+REM Check if Java is in PATH
+for /f "delims=" %%a in ('where java') do (
+    set "JAVA=%%a"
+    goto :has_java
+)
+echo Java not found in PATH.
+exit/b
 
+:has_java
 set BASEDIR=%0%
 for %%x in (%BASEDIR%) DO set BASEDIR=%%~dpx..
 set CONFDIR=%BASEDIR%\conf
