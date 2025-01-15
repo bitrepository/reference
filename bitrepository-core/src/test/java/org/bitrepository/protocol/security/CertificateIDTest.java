@@ -46,15 +46,12 @@ public class CertificateIDTest extends ExtendedTestCase {
         addStep("Create CertificateID object based on the certificate used to sign the data", "CertificateID object not null");
         Security.addProvider(new BouncyCastleProvider());
 
-        ByteArrayInputStream bs = new ByteArrayInputStream(
-                SecurityTestConstants.getPositiveCertificate().getBytes(SecurityModuleConstants.defaultEncodingType));
-        X509Certificate myCertificate = (X509Certificate) CertificateFactory.getInstance(
-                SecurityModuleConstants.CertificateType).generateCertificate(bs);
+        X509Certificate myCertificate = TestCertProvider.loadPositiveCert();
         CertificateID certificateIDfromCertificate =
                 new CertificateID(myCertificate.getIssuerX500Principal(), myCertificate.getSerialNumber());
 
         addStep("Create CertificateID object based on signature", "Certificate object not null");
-        byte[] decodeSig = Base64.decode(SecurityTestConstants.getSignature().getBytes(StandardCharsets.UTF_8));
+        byte[] decodeSig = Base64.decode(TestCertProvider.getPositiveCertSignature().getBytes(StandardCharsets.UTF_8));
         CMSSignedData s = new CMSSignedData(new CMSProcessableByteArray(
                 SecurityTestConstants.getTestData().getBytes(SecurityModuleConstants.defaultEncodingType)), decodeSig);
         SignerInformation signer = s.getSignerInfos().getSigners().iterator().next();
@@ -70,21 +67,18 @@ public class CertificateIDTest extends ExtendedTestCase {
         addStep("Create CertificateID object based on a certificate not used for signing the data", "CertificateID object not null");
         Security.addProvider(new BouncyCastleProvider());
 
-        ByteArrayInputStream bs = new ByteArrayInputStream(
-                SecurityTestConstants.getNegativeCertificate().getBytes(SecurityModuleConstants.defaultEncodingType));
-        X509Certificate myCertificate = (X509Certificate) CertificateFactory.getInstance(
-                SecurityModuleConstants.CertificateType).generateCertificate(bs);
+        X509Certificate myCertificate = TestCertProvider.loadNegativeCert();
         CertificateID certificateIDFromCertificate =
                 new CertificateID(myCertificate.getIssuerX500Principal(), myCertificate.getSerialNumber());
 
         addStep("Create CertificateID object based on signature", "Certificate object not null");
-        byte[] decodeSig = Base64.decode(SecurityTestConstants.getSignature().getBytes(StandardCharsets.UTF_8));
+        byte[] decodeSig = Base64.decode(TestCertProvider.getPositiveCertSignature().getBytes(StandardCharsets.UTF_8));
         CMSSignedData s = new CMSSignedData(new CMSProcessableByteArray(
                 SecurityTestConstants.getTestData().getBytes(SecurityModuleConstants.defaultEncodingType)), decodeSig);
         SignerInformation signer = s.getSignerInfos().getSigners().iterator().next();
         CertificateID certificateIDFromSignature = new CertificateID(signer.getSID().getIssuer(), signer.getSID().getSerialNumber());
 
-        addStep("Assert that the two CertificateID objects are equal", "Assert succeeds");
+        addStep("Assert that the two CertificateID objects are not equal", "Assert succeeds");
         Assert.assertNotSame(certificateIDFromCertificate, certificateIDFromSignature);
     }
 
@@ -94,10 +88,7 @@ public class CertificateIDTest extends ExtendedTestCase {
         addStep("Setup", "");
         Security.addProvider(new BouncyCastleProvider());
 
-        ByteArrayInputStream bs = new ByteArrayInputStream(
-                SecurityTestConstants.getNegativeCertificate().getBytes(SecurityModuleConstants.defaultEncodingType));
-        X509Certificate myCertificate = (X509Certificate) CertificateFactory.getInstance(
-                SecurityModuleConstants.CertificateType).generateCertificate(bs);
+        X509Certificate myCertificate = TestCertProvider.loadNegativeCert();
         X500Principal issuer = myCertificate.getIssuerX500Principal();
         BigInteger serial = myCertificate.getSerialNumber();
         CertificateID certificateID1 = new CertificateID(issuer, serial);
