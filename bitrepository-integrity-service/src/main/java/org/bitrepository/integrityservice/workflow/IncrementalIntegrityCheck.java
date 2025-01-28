@@ -40,7 +40,7 @@ public class IncrementalIntegrityCheck extends IntegrityCheckWorkflow {
 
     @Override
     public String getDescription() {
-        return "Retrieves new fileIDs and checksums from all pillars and checks for all potential integrity " + "problems.";
+        return "Retrieves new fileIDs and checksums from all pillars and checks for all potential integrity problems.";
     }
 
     @Override
