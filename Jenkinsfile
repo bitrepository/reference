@@ -5,6 +5,9 @@ pipeline {
     // TODO: agent {
     //   label 'maven-agent' // Use a Jenkins node with this label
     //}
+    tools {
+        maven 'Maven' // Use the maven automatic installation configured in Jenkins
+    }
     environment {
         // TODO: Need to use settings: -s /etc/m2/settings.xml
         MVN_CMD = 'mvn --batch-mode' // Define the base Maven command
@@ -20,9 +23,7 @@ pipeline {
         }
         stage('Mvn clean package') {
             steps {
-                withMaven {
-                    sh "${env.MVN_CMD} -PallTests clean package"
-                }
+                sh "${env.MVN_CMD} -PallTests clean package"
             }
         }
         stage('Analyze build results') {
@@ -45,9 +46,7 @@ pipeline {
                 script {
                     echo "Branch name '${env.BRANCH_NAME}'"
                     if (env.BRANCH_NAME == 'master') {
-                        withMaven {
-                            sh "${env.MVN_CMD} clean deploy -DskipTests=true"
-                        }
+                        sh "${env.MVN_CMD} clean deploy -DskipTests=true"
                     } else {
                         echo "Branch '${env.BRANCH_NAME}' is not master, so no deployment to Nexus."
                     }
