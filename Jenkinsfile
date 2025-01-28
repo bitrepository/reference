@@ -20,7 +20,9 @@ pipeline {
         }
         stage('Mvn clean package') {
             steps {
-                sh "${env.MVN_CMD} -PallTests clean package"
+                withMaven {
+                    sh "${env.MVN_CMD} -PallTests clean package"
+                }
             }
         }
         stage('Analyze build results') {
@@ -43,7 +45,9 @@ pipeline {
                 script {
                     echo "Branch name '${env.BRANCH_NAME}'"
                     if (env.BRANCH_NAME == 'master') {
-                        sh "${env.MVN_CMD} clean deploy -DskipTests=true"
+                        withMaven {
+                            sh "${env.MVN_CMD} clean deploy -DskipTests=true"
+                        }
                     } else {
                         echo "Branch '${env.BRANCH_NAME}' is not master, so no deployment to Nexus."
                     }
