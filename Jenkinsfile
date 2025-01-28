@@ -1,9 +1,10 @@
 #!/usr/bin/env groovy
 
 pipeline {
-    agent {
-        label 'maven-agent' // Use a Jenkins node with this label
-    }
+    agent any
+    // TODO: agent {
+    //   label 'maven-agent' // Use a Jenkins node with this label
+    //}
     environment {
         // TODO: Need to use settings: -s /etc/m2/settings.xml
         MVN_CMD = 'mvn --batch-mode' // Define the base Maven command
