@@ -10,7 +10,7 @@ pipeline {
     }
     environment {
         // TODO: Need to use settings: -s /etc/m2/settings.xml
-        MVN_CMD = 'mvn -s ./tools/hudson.tasks.Maven_MavenInstallation/Maven/conf/settings.xml --batch-mode' // Define the base Maven command
+        MVN_CMD = 'mvn -s /etc/m2/settings.xml --batch-mode' // Define the base Maven command
     }
     options {
         disableConcurrentBuilds() // Prevent concurrent builds
