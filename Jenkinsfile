@@ -10,7 +10,7 @@ pipeline {
     }
     environment {
         // TODO: Need to use settings: -s /etc/m2/settings.xml
-        MVN_CMD = 'mvn --batch-mode' // Define the base Maven command
+        MVN_CMD = 'mvn -s ./tools/hudson.tasks.Maven_MavenInstallation/Maven/conf/settings.xml --batch-mode' // Define the base Maven command
     }
     options {
         disableConcurrentBuilds() // Prevent concurrent builds
@@ -44,11 +44,9 @@ pipeline {
         stage('Push to Nexus (if Master)') {
             steps {
                 script {
-                    echo "Branch name '${env.BRANCH_NAME}'"
+                    echo "Deploying '${env.BRANCH_NAME}' branch to Nexus"
                     if (env.BRANCH_NAME == 'master') {
                         sh "${env.MVN_CMD} clean deploy -DskipTests=true"
-                    } else {
-                        echo "Branch '${env.BRANCH_NAME}' is not master, so no deployment to Nexus."
                     }
                 }
             }
