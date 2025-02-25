@@ -1,10 +1,9 @@
 #!/usr/bin/env groovy
 
 pipeline {
-    agent any
-    // TODO: agent {
-    //   label 'maven-agent' // Use a Jenkins node with this label
-    //}
+    agent {
+        label 'maven-agent' // Use Jenkins node with this label
+    }
     tools {
         maven 'Maven' // Use the maven automatic installation configured in Jenkins
     }
