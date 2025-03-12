@@ -25,7 +25,6 @@ gencert () {
 combine () {
     ## KEYFILE CERTFILE CERTKEYFILE
     cat ${2%.pem}.pem ${1%.pem}.pem > ${3%.pem}.pem
-    openssl pkey -in ${1%.pem}.pem >> ${3%.pem}.pem
     chmod go= "${3%.pem}.pem"
 }
 
