@@ -8,8 +8,9 @@ pipeline {
         maven 'Maven' // Use the maven automatic installation configured in Jenkins
     }
     environment {
-        // TODO: Need to use settings: -s /etc/m2/settings.xml
         MVN_CMD = 'mvn -s /etc/m2/settings.xml --batch-mode' // Define the base Maven command
+        APP_NAME = 'bitrepository' // Application Name (Must match ArgoCD)
+        AUTH_TOKEN = 'TOKEN' // Authentication token for ArgoCD
     }
     options {
         disableConcurrentBuilds() // Prevent concurrent builds
@@ -43,8 +44,8 @@ pipeline {
         stage('Push to Nexus (if Master)') {
             steps {
                 script {
-                    echo "Deploying '${env.BRANCH_NAME}' branch to Nexus"
                     if (env.BRANCH_NAME == 'master') {
+                        echo "Deploying '${env.BRANCH_NAME}' branch to Nexus"
                         sh "${env.MVN_CMD} clean deploy -DskipTests=true"
                     }
                 }
@@ -53,10 +54,11 @@ pipeline {
     }
     post {
         success {
-            echo 'Build succeeded.'
+            script {
+                echo 'Build succeeded, syncing application in ArgoCD.'
+            }
         }
         failure {
-            // TODO: Notify on email (possibly just use plugin)
             echo 'Build failed, investigate errors in the console output.'
         }
     }
