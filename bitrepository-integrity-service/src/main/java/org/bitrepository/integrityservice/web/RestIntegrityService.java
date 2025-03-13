@@ -594,7 +594,7 @@ public class RestIntegrityService {
         }
         long runInterval = workflowManager.getRunInterval(workflowID);
         String intervalString;
-        if (runInterval < 1) {
+        if (runInterval <= 0) {
             intervalString = "Never";
         } else {
             intervalString = TimeUtils.millisecondsToHuman(runInterval);
