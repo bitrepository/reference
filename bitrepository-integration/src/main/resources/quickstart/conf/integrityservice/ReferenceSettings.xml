@@ -113,16 +113,19 @@
         <PillarID>checksum-pillar</PillarID>
         <PillarName>Alpha</PillarName>
         <PillarType>CHECKSUM</PillarType>
+        <PillarDeleteFileApprover>Anon Anonymoose anon@kb.dk</PillarDeleteFileApprover>
       </PillarDetails>
       <PillarDetails>
         <PillarID>file1-pillar</PillarID>
         <PillarName>Beta</PillarName>
         <PillarType>FILE</PillarType>
+        <PillarDeleteFileApprover>Anon Anonymoose anon@kb.dk</PillarDeleteFileApprover>
       </PillarDetails>
       <PillarDetails>
         <PillarID>file2-pillar</PillarID>
         <PillarName>Gamma</PillarName>
         <PillarType>FILE</PillarType>
+        <PillarDeleteFileApprover>Anon Anonymoose anon@kb.dk</PillarDeleteFileApprover>
       </PillarDetails>
     </PillarIntegrityDetails>
   </IntegrityServiceSettings>
