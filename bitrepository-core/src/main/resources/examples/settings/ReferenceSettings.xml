@@ -445,6 +445,7 @@
         <PillarID>Pillar1</PillarID>
         <PillarName>Alpha</PillarName>
         <PillarType>FILE</PillarType>
+        <PillarDeleteFileApprover>Anon Anonymoose anon@kb.dk</PillarDeleteFileApprover>
       </PillarDetails>
     </PillarIntegrityDetails>
   </IntegrityServiceSettings>
