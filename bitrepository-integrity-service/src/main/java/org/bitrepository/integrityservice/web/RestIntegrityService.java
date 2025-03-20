@@ -42,6 +42,7 @@ import org.bitrepository.service.workflow.JobID;
 import org.bitrepository.service.workflow.Workflow;
 import org.bitrepository.service.workflow.WorkflowManager;
 import org.bitrepository.service.workflow.WorkflowStatistic;
+import org.bitrepository.settings.referencesettings.PillarIntegrityDetails;
 import org.bitrepository.settings.referencesettings.PillarType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -259,6 +260,14 @@ public class RestIntegrityService {
         jg.flush();
         writer.flush();
         return writer.toString();
+    }
+
+    @GET
+    @Path("/getPillarDetails")
+    @Produces(MediaType.APPLICATION_JSON)
+    // TODO consider returning a DTO instead
+    public List<PillarIntegrityDetails.PillarDetails> getPillarDetails() {
+        return SettingsUtils.getPillarIntegrityDetails();
     }
 
     /***

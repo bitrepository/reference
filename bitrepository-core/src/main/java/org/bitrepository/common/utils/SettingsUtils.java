@@ -101,6 +101,26 @@ public class SettingsUtils {
         return name;
     }
 
+    public static IntegrityServiceSettings getIntegrityServiceSettings() {
+        return settings.getReferenceSettings().getIntegrityServiceSettings();
+    }
+
+    /**
+     * Grab all PillarDetails from the ReferenceSettings if any are defined and return them as a list.
+     * Return an empty list if not defined.
+     * @return List of all PillarDetails defined in the ReferenceSettings
+     */
+    public static List<PillarIntegrityDetails.PillarDetails> getPillarIntegrityDetails() {
+        PillarIntegrityDetails pillarIntegrityDetails = getIntegrityServiceSettings().getPillarIntegrityDetails();
+        if (pillarIntegrityDetails != null) {
+            List<PillarIntegrityDetails.PillarDetails> pillarDetails = pillarIntegrityDetails.getPillarDetails();
+            if (pillarDetails != null) {
+                return pillarDetails;
+            }
+        }
+        return new ArrayList<>();
+    }
+
     /**
      * Get the human-readable pillar name for the given pillarID from the ReferenceSettings.
      *
@@ -108,19 +128,12 @@ public class SettingsUtils {
      * @return Returns the pillar name for the given pillar ID.
      */
     public static String getPillarName(String pillarID) {
-        PillarIntegrityDetails details = settings.getReferenceSettings().getIntegrityServiceSettings().getPillarIntegrityDetails();
-        if (details != null) {
-            for (PillarIntegrityDetails.PillarDetails d : details.getPillarDetails()) {
-                if (d.getPillarID().equals(pillarID)) {
-                    return d.getPillarName();
-                }
+        for (PillarIntegrityDetails.PillarDetails d : getPillarIntegrityDetails()) {
+            if (d.getPillarID().equals(pillarID)) {
+                return d.getPillarName();
             }
         }
         return null;
-    }
-
-    public static IntegrityServiceSettings getIntegrityServiceSettings() {
-        return settings.getReferenceSettings().getIntegrityServiceSettings();
     }
 
     /**
@@ -130,12 +143,9 @@ public class SettingsUtils {
      * @return Returns the {@link PillarType} for the given pillar ID.
      */
     public static PillarType getPillarType(String pillarID) {
-        PillarIntegrityDetails details = settings.getReferenceSettings().getIntegrityServiceSettings().getPillarIntegrityDetails();
-        if (details != null) {
-            for (PillarIntegrityDetails.PillarDetails d : details.getPillarDetails()) {
-                if (d.getPillarID().equals(pillarID)) {
-                    return d.getPillarType();
-                }
+        for (PillarIntegrityDetails.PillarDetails d : getPillarIntegrityDetails()) {
+            if (d.getPillarID().equals(pillarID)) {
+                return d.getPillarType();
             }
         }
         return null;
@@ -212,5 +222,4 @@ public class SettingsUtils {
         contributors.addAll(SettingsUtils.getAllPillarIDs());
         return contributors;
     }
-
 }
