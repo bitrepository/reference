@@ -265,9 +265,15 @@ public class RestIntegrityService {
     @GET
     @Path("/getPillarDetails")
     @Produces(MediaType.APPLICATION_JSON)
-    // TODO consider returning a DTO instead
-    public List<PillarIntegrityDetails.PillarDetails> getPillarDetails() {
-        return SettingsUtils.getPillarIntegrityDetails();
+    public List<PillarDetailsDTO> getPillarDetails() {
+        List<PillarIntegrityDetails.PillarDetails> pillarDetails = SettingsUtils.getPillarIntegrityDetails();
+        List<PillarDetailsDTO> result = new ArrayList<>(pillarDetails.size());
+        for (PillarIntegrityDetails.PillarDetails details : pillarDetails) {
+            PillarDetailsDTO detailsDTO = new PillarDetailsDTO(details.getPillarID(), details.getPillarName(),
+                    details.getPillarType().value(), details.getPillarDeleteFileApprover());
+            result.add(detailsDTO);
+        }
+        return result;
     }
 
     /***
