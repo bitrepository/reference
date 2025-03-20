@@ -38,7 +38,7 @@
       <table class="table table-hover table-condensed">
         <thead>
         <tr>
-          <th class="collectionName">Collection name</th>
+          <th>Collection name</th>
           <th>Number of files</th>
           <th>Latest Ingest</th>
           <th>Collection size</th>
@@ -50,6 +50,19 @@
         </tr>
         </thead>
         <tbody id="collectionStatusBody"></tbody>
+      </table>
+    </div>
+    <div class="pillarDetails">
+      <table class="table table-hover table-condensed">
+        <thead>
+        <tr>
+          <th>Pillar ID</th>
+          <th>Pillar name</th>
+          <th>Pillar type</th>
+          <th>Deletion approver</th>
+        </tr>
+        </thead>
+        <tbody id="pillarDetailsBody"></tbody>
       </table>
     </div>
     <div id="dataSizeGraphContainer" class="dataSizeGraph">
@@ -106,6 +119,7 @@
 <script src="static/js/dashboard_components/ColorMapper.js"></script>
 <script src="static/js/CollectionNameMapper.js"></script>
 <script src="static/js/dashboard_components/collectionStatus.js"></script>
+<script src="static/js/dashboard_components/pillar-details.js"></script>
 <script src="static/js/dashboard_components/legsSizePie.js"></script>
 <script src="static/js/dashboard_components/collectionSizePie.js"></script>
 <script src="static/js/dashboard_components/DataSizeGraph.js"></script>

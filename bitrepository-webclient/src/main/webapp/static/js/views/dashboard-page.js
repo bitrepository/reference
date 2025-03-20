@@ -4,8 +4,8 @@ let nameMapper;
 let dsGraph;
 
 function init() {
-    $.get('repo/urlservice/integrityService', {}, function (url) {
-        setIntegrityServiceUrl(url);
+    $.get('repo/urlservice/integrityService', {}, function (integrityUrlBase) {
+        setIntegrityServiceUrl(integrityUrlBase);
         $.get("repo/reposervice/getRepositoryName/", {}, function (j) {
             $("#pageHeader").html("Overview of " + j);
         }, "html");
@@ -14,11 +14,11 @@ function init() {
             nameMapper = new CollectionNameMapper(collections);
             setNameMapper(nameMapper);
             initiateCollectionStatus(collections, "#collectionStatusBody", 10000);
-            let dataUrl = url + "/integrity/Statistics/getDataSizeHistory/?collectionID=";
+            let dataUrl = integrityUrlBase + "/integrity/Statistics/getDataSizeHistory/?collectionID=";
             dsGraph = new DataSizeGraph(collections, colorMapper, new FileSizeUtils(), dataUrl, "#graphType", "#dataSizeGraphPlaceholder");
             makeCollectionSelectionCheckboxes("#dataSizeGraphCollectionSelection", dsGraph, colorMapper, nameMapper);
-            drawPillarDataSizePieChart(url + "/integrity/Statistics/getLatestPillarDataSize/");
-            drawCollectionDataSizePieChart(url + "/integrity/Statistics/getLatestcollectionDataSize/", colorMapper);
+            drawPillarDataSizePieChart(integrityUrlBase + "/integrity/Statistics/getLatestPillarDataSize/");
+            drawCollectionDataSizePieChart(integrityUrlBase + "/integrity/Statistics/getLatestcollectionDataSize/", colorMapper);
             $("#graphType").on("change", function (event) {
                 event.preventDefault(); dsGraph.graphTypeChanged();
             });
@@ -26,9 +26,12 @@ function init() {
             // Update graphs every hour
             update_data_size_graph = setInterval(function () {
                 dsGraph.updateData();
-                drawPillarDataSizePieChart(url + "/integrity/Statistics/getLatestPillarDataSize/");
-                drawCollectionDataSizePieChart(url + "/integrity/Statistics/getLatestcollectionDataSize/", colorMapper);
+                drawPillarDataSizePieChart(integrityUrlBase + "/integrity/Statistics/getLatestPillarDataSize/");
+                drawCollectionDataSizePieChart(integrityUrlBase + "/integrity/Statistics/getLatestcollectionDataSize/", colorMapper);
             }, 3600000);
+        });
+        $.getJSON(integrityUrlBase + "/integrity/IntegrityService/getPillarDetails", {}, function (details) {
+            fillInPillarDetailsTable(details, "#pillarDetailsBody")
         });
     }, 'html');
 }
