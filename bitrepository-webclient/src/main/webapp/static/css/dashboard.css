@@ -4,7 +4,7 @@
     margin-top: 0.9em;
 }
 
-.collectionStatus, .dataSizeGraph, .collectionPieBox, .legPieBox {
+.collectionStatus, .pillarDetails, .dataSizeGraph, .collectionPieBox, .legPieBox {
     border: 1px solid #cccccc;
     float: left;
     margin: 0 0 2em;
@@ -15,16 +15,8 @@
     box-sizing: border-box;
 }
 
-.collectionStatus, .collectionPieBox, .legPieBox {
+.collectionStatus, .pillarDetails, .collectionPieBox, .legPieBox {
     background-color: #F9FCFF;
-}
-
-.collectionStatus td, .collectionStatus th {
-    text-align: right;
-}
-
-td.collectionName, th.collectionName {
-    text-align: left;
 }
 
 td.error {

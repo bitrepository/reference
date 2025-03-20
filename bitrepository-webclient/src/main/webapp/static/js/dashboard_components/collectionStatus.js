@@ -111,15 +111,15 @@ function makeCollectionRow(collection) {
     let id = collection.collectionID;
     let html = "";
     html += "<tr id=\"" + id + "-row\">";
-    html += "<td id=\""+ id + "-name\" class=\"collectionName\">" + id + "</div></td>";
-    html += "<td id=\""+ id + "-numFiles\"></td>";
-    html += "<td id=\""+ id + "-latestIngest\"></td>";
-    html += "<td id=\""+ id + "-collectionSize\"></td>";
-    html += "<td id=\""+ id + "-pillars\"></td>";
-    html += "<td id=\""+ id + "-latestCheck\"></td>";
-    html += "<td> <span id=\""+ id + "-numChecksumErrors\"></span></td>";
-    html += "<td> <span id=\""+ id + "-numMissingFiles\"></span></td>";
-    html += "<td id=\""+ id + "-nextCheck\"></td></tr>";
+    html += "<td id=\"" + id + "-name\">" + id + "</div></td>";
+    html += "<td id=\"" + id + "-numFiles\"></td>";
+    html += "<td id=\"" + id + "-latestIngest\"></td>";
+    html += "<td id=\"" + id + "-collectionSize\"></td>";
+    html += "<td id=\"" + id + "-pillars\"></td>";
+    html += "<td id=\"" + id + "-latestCheck\"></td>";
+    html += "<td><span id=\"" + id + "-numChecksumErrors\"></span></td>";
+    html += "<td><span id=\"" + id + "-numMissingFiles\"></span></td>";
+    html += "<td id=\"" + id + "-nextCheck\"></td></tr>";
     return html;
 }
 
