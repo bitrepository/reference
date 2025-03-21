@@ -10,8 +10,7 @@ pipeline {
     environment {
         MVN_CMD = 'mvn -s /etc/m2/settings.xml --batch-mode' // Define the base Maven command
         APP_NAME = 'bitrepository-reference' // Application Name (Must match ArgoCD)
-        AUTH_TOKEN = 'TOKEN' // Authentication token for ArgoCD
-        ARGOCD_TOKEN = credentials('ARGOCD_TOKEN') // Fetch the token from Jenkins' credentials
+        ARGOCD_SERVER = 'argocd-server.argocd.svc.cluster.local' // The argoCD server
     }
     options {
         disableConcurrentBuilds() // Prevent concurrent builds
@@ -57,8 +56,10 @@ pipeline {
         success {
             script {
                 echo 'Build succeeded, syncing application in ArgoCD.'
-                sh "argocd login argocd-server.argocd.svc.cluster.local --insecure --grpc-web --username jenkins --password ${env.ARGOCD_TOKEN}"
-                sh "argocd app sync ${env.APP_NAME}"
+                withCredentials([string(credentialsId: 'argocd-deployment-token', variable: 'ARGOCD_TOKEN')]) {
+                    sh "argocd login ${env.ARGOCD_SERVER} --insecure --grpc-web --username jenkins --password ${ARGOCD_TOKEN}"
+                    sh "argocd app sync ${env.APP_NAME}"
+                }
             }
         }
         failure {
