@@ -7,12 +7,12 @@ import java.io.IOException;
 
 import static org.testng.Assert.*;
 
-public class PillarDetailsDTOTest {
+public class PillarDetailsDtoTest {
     private final ObjectMapper objectMapper = new ObjectMapper(); // Use ObjectMapper for JSON
 
     @Test
     void testSerialization() throws IOException {
-        PillarDetailsDTO dto = new PillarDetailsDTO("id", "pillar", "TYPE", "admin");
+        PillarDetailsDto dto = new PillarDetailsDto("id", "pillar", "TYPE", "admin");
 
         String jsonOutput = objectMapper.writeValueAsString(dto);
 

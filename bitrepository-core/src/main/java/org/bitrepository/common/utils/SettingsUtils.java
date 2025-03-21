@@ -29,6 +29,7 @@ import org.bitrepository.settings.repositorysettings.Collection;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -115,10 +116,10 @@ public class SettingsUtils {
         if (pillarIntegrityDetails != null) {
             List<PillarIntegrityDetails.PillarDetails> pillarDetails = pillarIntegrityDetails.getPillarDetails();
             if (pillarDetails != null) {
-                return pillarDetails;
+                return Collections.unmodifiableList(pillarDetails);
             }
         }
-        return new ArrayList<>();
+        return List.of();
     }
 
     /**

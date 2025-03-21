@@ -2,8 +2,7 @@ package org.bitrepository.integrityservice.web;
 
 import java.io.Serializable;
 
-public class PillarDetailsDTO implements Serializable {
-
+public class PillarDetailsDto implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String pillarID;
@@ -11,17 +10,15 @@ public class PillarDetailsDTO implements Serializable {
     private String pillarType;
     private String pillarDeleteFileApprover;
 
-    // Constructors
-    public PillarDetailsDTO() {}
+    public PillarDetailsDto() {}
 
-    public PillarDetailsDTO(String pillarID, String pillarName, String pillarType, String pillarDeleteFileApprover) {
+    public PillarDetailsDto(String pillarID, String pillarName, String pillarType, String pillarDeleteFileApprover) {
         this.pillarID = pillarID;
         this.pillarName = pillarName;
         this.pillarType = pillarType;
         this.pillarDeleteFileApprover = pillarDeleteFileApprover;
     }
 
-    // Getters and Setters
     public String getPillarID() {
         return pillarID;
     }
@@ -54,7 +51,6 @@ public class PillarDetailsDTO implements Serializable {
         this.pillarDeleteFileApprover = pillarDeleteFileApprover;
     }
 
-    // toString() Method
     @Override
     public String toString() {
         return "PillarDetailsDTO{" +
