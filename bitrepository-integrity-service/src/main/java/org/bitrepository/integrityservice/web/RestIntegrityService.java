@@ -265,11 +265,11 @@ public class RestIntegrityService {
     @GET
     @Path("/getPillarDetails")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<PillarDetailsDTO> getPillarDetails() {
+    public List<PillarDetailsDto> getPillarDetails() {
         List<PillarIntegrityDetails.PillarDetails> pillarDetails = SettingsUtils.getPillarIntegrityDetails();
-        List<PillarDetailsDTO> result = new ArrayList<>(pillarDetails.size());
+        List<PillarDetailsDto> result = new ArrayList<>(pillarDetails.size());
         for (PillarIntegrityDetails.PillarDetails details : pillarDetails) {
-            PillarDetailsDTO detailsDTO = new PillarDetailsDTO(details.getPillarID(), details.getPillarName(),
+            PillarDetailsDto detailsDTO = new PillarDetailsDto(details.getPillarID(), details.getPillarName(),
                     details.getPillarType().value(), details.getPillarDeleteFileApprover());
             result.add(detailsDTO);
         }

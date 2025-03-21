@@ -401,8 +401,8 @@
               <xs:element name="PillarDeleteFileApprover" type="xs:string">
                 <xs:annotation>
                   <xs:documentation>
-                    Name/email/contact-info of the person responsible for approving any deletions on this pillar prior
-                    to running an actual DeleteFile-operation.
+                    Free text field for name/email/contact-info of the person responsible for approving any deletions
+                    on this pillar prior to running an actual DeleteFile-operation.
                   </xs:documentation>
                 </xs:annotation>
               </xs:element>
