@@ -32,7 +32,7 @@ pipeline {
             script {
                 echo 'Build succeeded, syncing application in ArgoCD.'
                 withCredentials([string(credentialsId: 'argocd-deployment-token', variable: 'ARGOCD_TOKEN')]) {
-                    sh "argocd login ${env.ARGOCD_SERVER} --insecure --grpc-web --username jenkins --password ${ARGOCD_TOKEN}"
+                    sh "argocd login ${env.ARGOCD_SERVER} --insecure --grpc-web --auth-token ${ARGOCD_TOKEN}"
                     sh "argocd app sync ${env.APP_NAME}"
                 }
             }
