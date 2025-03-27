@@ -22,6 +22,7 @@ pipeline {
             }
         }
     }
+    // TODO: Re-add the removed stages, and fix ARGOCD_SERVER to match a real argoCD server.
     post {
         success {
             script {
