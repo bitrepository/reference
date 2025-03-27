@@ -10,7 +10,7 @@ pipeline {
     environment {
         APP_NAME = 'bitrepository-reference' // Application Name (Must match ArgoCD)
         ARGOCD_SERVER = 'localhost:8080' // The argoCD server
-        // Try credentials(...)
+        ARGOCD_PASSWORD = credentials('argocd-password') // Pulling password from Jenkins secrets
     }
     options {
         disableConcurrentBuilds() // Prevent concurrent builds
@@ -26,12 +26,10 @@ pipeline {
         success {
             script {
                 echo 'Build succeeded, syncing application in ArgoCD.'
-                withCredentials([string(credentialsId: 'argocd-password', variable: 'ARGOCD_PASSWORD')]) {
-                    sh '''
-                        argocd login $ARGOCD_SERVER --insecure --grpc-web --username jenkins --password $ARGOCD_PASSWORD
-                        argocd app sync $APP_NAME
-                    '''
-                }
+                sh '''
+                    argocd login $ARGOCD_SERVER --insecure --grpc-web --username jenkins --password $ARGOCD_PASSWORD
+                    argocd app sync $APP_NAME
+                '''
             }
         }
         failure {
