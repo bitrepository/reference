@@ -8,9 +8,9 @@ pipeline {
         maven 'Maven' // Use the maven automatic installation configured in Jenkins
     }
     environment {
-        MVN_CMD = 'mvn -s /etc/m2/settings.xml --batch-mode' // Define the base Maven command
         APP_NAME = 'bitrepository-reference' // Application Name (Must match ArgoCD)
         ARGOCD_SERVER = 'localhost:8080' // The argoCD server
+        // Try credentials(...)
     }
     options {
         disableConcurrentBuilds() // Prevent concurrent builds
@@ -27,8 +27,10 @@ pipeline {
             script {
                 echo 'Build succeeded, syncing application in ArgoCD.'
                 withCredentials([string(credentialsId: 'argocd-password', variable: 'ARGOCD_PASSWORD')]) {
-                    sh "argocd login ${env.ARGOCD_SERVER} --insecure --grpc-web --username jenkins --password $ARGOCD_PASSWORD"
-                    sh "argocd app sync ${env.APP_NAME}"
+                    sh '''
+                        argocd login $ARGOCD_SERVER --insecure --grpc-web --username jenkins --password $ARGOCD_PASSWORD
+                        argocd app sync $APP_NAME
+                    '''
                 }
             }
         }
