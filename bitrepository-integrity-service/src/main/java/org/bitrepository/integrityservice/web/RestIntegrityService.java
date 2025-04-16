@@ -63,6 +63,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.nio.file.Files;
@@ -372,7 +373,7 @@ public class RestIntegrityService {
     public Response getIntegrityReportsAsZIP(@QueryParam("collectionID") String collectionID,
                                              @QueryParam("reports") List<String> reports) {
         String fileName = "IntegrityReports.zip";
-        HashMap<String, File> files = new HashMap<>();
+        Map<String, File> files = new HashMap<>();
 
         for (String report : reports) {
             String[] parts = report.split("-", 2);
@@ -380,23 +381,27 @@ public class RestIntegrityService {
         }
 
         StreamingOutput streamingOutput = output -> {
-            ZipOutputStream zipOut = new ZipOutputStream(output);
             // Add the full integrity report to the hashmap
             files.put("report", integrityReportProvider.getLatestIntegrityReportReader(collectionID).getFullReport());
 
-            // Zip each file in the files hashmap
-            files.forEach((key, value) -> {
-                try {
-                    zipOut.putNextEntry(new ZipEntry(key));
-                    zipOut.write(Files.readAllBytes(value.toPath()));
-                    zipOut.flush();
-                } catch (IOException e) {
-                    throw new WebApplicationException(status(Status.INTERNAL_SERVER_ERROR).entity(
-                            "Something went wrong when trying to zip the file " + key + ".").type(
-                            MediaType.TEXT_PLAIN).build());
-                }
-            });
-            zipOut.close();
+            try (ZipOutputStream zipOut = new ZipOutputStream(output)) {
+                // Zip each file in the files hashmap
+                files.forEach((key, value) -> {
+                    try {
+                        zipOut.putNextEntry(new ZipEntry(key));
+                        try (InputStream is = Files.newInputStream(value.toPath())) {
+                            is.transferTo(zipOut);
+                        }
+                        zipOut.flush();
+                    } catch (IOException e) {
+                        throw new WebApplicationException(
+                                status(Status.INTERNAL_SERVER_ERROR)
+                                        .entity("Internal error when trying to zip the report file " + key + ": " + e)
+                                        .type(MediaType.TEXT_PLAIN)
+                                        .build());
+                    }
+                });
+            }
         };
         ResponseBuilder response = Response.ok();
         response.type("application/zip");
