@@ -79,7 +79,7 @@ public class RestAuditTrailService {
             @FormParam("collectionID") String collectionID,
             @FormParam("fingerprint") String fingerprint,
             @FormParam("operationID") String operationID,
-            @DefaultValue("1000") @FormParam("maxAuditTrails") Integer maxResults) {
+            @FormParam("maxAuditTrails") Integer maxResults) {
         Date from = calendarUtils.makeStartDateObject(fromDate);
         Date to = calendarUtils.makeEndDateObject(toDate);
 
