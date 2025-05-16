@@ -147,8 +147,7 @@ public class AuditDatabaseExtractor {
     public AuditEventIterator extractAuditEventsByIterator() {
         String sql = createSelectString() + " FROM " + AUDIT_TRAIL_TABLE + joinWithFileTable() + joinWithActorTable()
                 + joinWithContributorTable() + createRestriction()
-                + " ORDER BY " + AUDIT_TRAIL_TABLE + "." + AUDIT_TRAIL_OPERATION_DATE
-                + " LIMIT 1000";
+                + " ORDER BY " + AUDIT_TRAIL_TABLE + "." + AUDIT_TRAIL_OPERATION_DATE + " FETCH FIRST 1000 ROWS ONLY";
         try {
             log.debug("Creating prepared statement with sql '{}' and arguments '{}' for AuditEventIterator",
                     sql, Arrays.asList(extractArgumentsFromModel()));
