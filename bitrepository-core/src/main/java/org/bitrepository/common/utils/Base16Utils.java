@@ -58,7 +58,8 @@ public class Base16Utils {
         try {
             return Hex.decodeHex(hexString);
         } catch (DecoderException e) {
-            throw new DecoderException("The string '" + hexString + "' is not a valid hex-string.");
+            throw new DecoderException(
+                    "The string '" + hexString + "' is not a valid hex-string: " + e.getMessage(), e);
         }
     }
 }
