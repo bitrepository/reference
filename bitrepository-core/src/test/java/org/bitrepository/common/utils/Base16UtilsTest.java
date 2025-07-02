@@ -33,7 +33,7 @@ public class Base16UtilsTest extends ExtendedTestCase {
     
     private final String DECODED_CHECKSUM = "ff5aca7ae8c80c9a3aeaf9173e4dfd27";
     private final byte[] ENCODED_CHECKSUM = new byte[]{-1,90,-54,122,-24,-56,12,-102,58,-22,-7,23,62,77,-3,39};
-    
+
     @Test(groups = { "regressiontest" })
     public void encodeChecksum() throws Exception {
         addDescription("Validating the encoding of the checksums.");
@@ -55,7 +55,15 @@ public class Base16UtilsTest extends ExtendedTestCase {
         String decodedChecksum = Base16Utils.decodeBase16(ENCODED_CHECKSUM);
         Assert.assertEquals(decodedChecksum, DECODED_CHECKSUM);
     }
-    
+
+    @Test
+    public void decodesNull() {
+        addDescription("Test decoding null");
+        byte[] data = null;
+        String decoded = Base16Utils.decodeBase16(data);
+        Assert.assertNull(decoded);
+    }
+
     @Test(groups = { "regressiontest" })
     public void badArgumentTest() {
         addDescription("Test bad arguments");
@@ -64,5 +72,7 @@ public class Base16UtilsTest extends ExtendedTestCase {
         addStep("Test with an odd number of characters.", "Should throw a decoder exception");
         Assert.assertThrows(DecoderException.class, () -> Base16Utils.encodeBase16("123"));
 
+        addStep("Test with a non hex digit.", "Should throw a decoder exception");
+        Assert.assertThrows(DecoderException.class, () -> Base16Utils.encodeBase16("1g"));
     }
 }
