@@ -50,22 +50,25 @@ public final class CalendarUtils {
     }
 
     /**
-     * Get an instance of CalendarUtils with a non-server default timezone
+     * Get an instance of CalendarUtils with a non-server default timeZone
      *
-     * @param timezone The TimeZone to use
-     * @return The CelandarUtils instance for the non-standard timezone
+     * @param timeZone The TimeZone to use
+     * @return The CalendarUtils instance for the non-standard timeZone
      */
-    public static CalendarUtils getInstance(TimeZone timezone) {
+    public static CalendarUtils getInstance(TimeZone timeZone) {
         CalendarUtils cu = new CalendarUtils();
-        cu.setTimeZone(timezone);
+        cu.setTimeZone(timeZone);
         return cu;
     }
 
-    private void setTimeZone(TimeZone timezone) {
-        log.info("Using timezone: '{}'", timezone);
-        this.localTimeZone = timezone;
+    private void setTimeZone(TimeZone timeZone) {
+        log.debug("Using time zone: '{}'", getTimeZoneDisplayName(timeZone));
+        this.localTimeZone = timeZone;
     }
 
+    static String getTimeZoneDisplayName(TimeZone timeZone) {
+        return timeZone.getID();
+    }
 
     /**
      * Turns a date into a XMLGregorianCalendar.

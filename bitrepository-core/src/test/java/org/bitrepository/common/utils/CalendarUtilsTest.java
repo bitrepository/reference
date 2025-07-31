@@ -28,6 +28,7 @@ import org.testng.annotations.Test;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -66,9 +67,17 @@ public class CalendarUtilsTest extends ExtendedTestCase {
         date = CalendarUtils.convertFromXMLGregorianCalendar(calendar);
         Assert.assertTrue(date.getTime() <= afterNow);
         Assert.assertTrue(date.getTime() >= beforeNow);
-        Assert.assertTrue(calendar.toGregorianCalendar().getTimeInMillis() == date.getTime());
+        Assert.assertEquals(date.getTime(), calendar.toGregorianCalendar().getTimeInMillis());
     }
-    
+
+    @Test
+    public void displaysNiceTimeZoneId() {
+        addDescription("Test that the time zone ID logged is human readable (for example Europe/Copenhagen)");
+        ZoneId zoneId = ZoneId.of("Europe/Copenhagen");
+        String displayName = CalendarUtils.getTimeZoneDisplayName(TimeZone.getTimeZone(zoneId));
+        Assert.assertEquals(displayName, "Europe/Copenhagen");
+    }
+
     @Test(groups = {"regressiontest"})
     public void startDateTest() throws ParseException {
         addDescription("Test that the start date is considered as localtime and converted into UTC.");
@@ -108,7 +117,7 @@ public class CalendarUtilsTest extends ExtendedTestCase {
         CalendarUtils cu = CalendarUtils.getInstance(TimeZone.getTimeZone("Europe/Copenhagen"));
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.ROOT);
         Date expectedStartOfDayInUTC = sdf.parse("2016-01-31T23:00:00.000Z");
-        System.out.println("expectedSTartofDayInUTC parsed: " + expectedStartOfDayInUTC.getTime());
+        System.out.println("expectedStartOfDayInUTC parsed: " + expectedStartOfDayInUTC.getTime());
         Date parsedStartOfDay = cu.makeStartDateObject("2016/02/01");
         Assert.assertEquals(parsedStartOfDay, expectedStartOfDayInUTC);
     }
@@ -129,7 +138,9 @@ public class CalendarUtilsTest extends ExtendedTestCase {
                 + "wintertime change is 25 hours (-1 millisecond).");
         CalendarUtils cu = CalendarUtils.getInstance(TimeZone.getTimeZone("Europe/Copenhagen"));
         Date startDate = cu.makeStartDateObject("2015/10/25");
+        Assert.assertNotNull(startDate);
         Date endDate = cu.makeEndDateObject("2015/10/25");
+        Assert.assertNotNull(endDate);
         long MS_PER_HOUR = 1000 * 60 * 60;
         long expectedIntervalLength = (MS_PER_HOUR * 25) - 1;
         Assert.assertEquals(endDate.getTime() - startDate.getTime(), expectedIntervalLength);
@@ -141,9 +152,12 @@ public class CalendarUtilsTest extends ExtendedTestCase {
                 + "summertime change is 23 hours (-1 millisecond).");
         CalendarUtils cu = CalendarUtils.getInstance(TimeZone.getTimeZone("Europe/Copenhagen"));
         Date startDate = cu.makeStartDateObject("2016/03/27");
+        Assert.assertNotNull(startDate);
         Date endDate = cu.makeEndDateObject("2016/03/27");
+        Assert.assertNotNull(endDate);
         long MS_PER_HOUR = 1000 * 60 * 60;
         long expectedIntervalLength = (MS_PER_HOUR * 23) - 1;
         Assert.assertEquals(endDate.getTime() - startDate.getTime(), expectedIntervalLength);
     }
+
 }
