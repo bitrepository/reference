@@ -34,6 +34,7 @@ import java.util.List;
  * Interface for the storage of audit trail information for the AuditTrailService.
  */
 public interface AuditTrailStore {
+
     /**
      * Obtain AuditEventIterator for extracting audit trails from the store.
      * When done with the iterator, the user should ensure that it is closed.
@@ -55,6 +56,29 @@ public interface AuditTrailStore {
                                                 Long minSeqNumber, Long maxSeqNumber, String actorName, FileAction operation,
                                                 Date startDate,
                                                 Date endDate, String fingerprint, String operationID);
+
+    /**
+     * Obtain AuditEventIterator for extracting audit trails from the store.
+     * When done with the iterator, the user should ensure that it is closed.
+     *
+     * @param fileID         [OPTIONAL] The id of the file for restricting the extraction.
+     * @param collectionID   [OPTIONAL] The id of the collection from which to retrieve audit trails.
+     * @param contributorID  [OPTIONAL] The id of the contributor for restricting the extraction.
+     * @param minSeqNumber   [OPTIONAL] The minimum sequence number for restricting the extraction.
+     * @param maxSeqNumber   [OPTIONAL] The maximum sequence number for restricting the extraction.
+     * @param actorName      [OPTIONAL] The name of the actor for restricting the extraction.
+     * @param operation      [OPTIONAL] The FileAction operation for restricting the extraction.
+     * @param startDate      [OPTIONAL] The earliest date for the audits for restricting the extraction.
+     * @param endDate        [OPTIONAL] The latest date for the audits for restricting the extraction.
+     * @param fingerprint    [OPTIONAL] The fingerprint of the certificate for the audits
+     * @param operationID    [OPTIONAL] The ID of the operation (conversationID) for the audits
+     * @param maxAuditTrails The max number of audit trails to fetch from database.
+     * @return The requested audit trails from the store.
+     */
+    AuditEventIterator getAuditTrailsByIterator(String fileID, String collectionID, String contributorID,
+                                                Long minSeqNumber, Long maxSeqNumber, String actorName, FileAction operation,
+                                                Date startDate,
+                                                Date endDate, String fingerprint, String operationID, int maxAuditTrails);
 
     /**
      * ingest audit trails into the store.
