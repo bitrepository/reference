@@ -134,7 +134,9 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         // getPreservationSequenceNumber should be called twice, first to 'initialize' auditpacker, and second to 
         // run the preserver/packer...
         verify(store, times(2)).getPreservationSequenceNumber(PILLAR_ID, collectionID);
-        verify(store).getAuditTrailsByIterator(null, null, PILLAR_ID, 0L, null, null, null, null, null, null, null);
+        verify(store).getAuditTrailsByIterator(
+                null, null, PILLAR_ID, 0L, null, null,
+                null, null, null, null, null);
         verify(iterator).getNextAuditTrailEvent();
         //Assert.assertEquals(store.getCallsToGetAuditTrails(), settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().size());
 

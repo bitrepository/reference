@@ -74,8 +74,7 @@ class ExtractModel {
      */
     private String operationID;
 
-    public ExtractModel() {
-    }
+    private Integer maxAuditTrails;
 
     /**
      * @return The fileID;
@@ -233,4 +232,19 @@ class ExtractModel {
     public void setOperationID(String operationID) {
         this.operationID = operationID;
     }
+
+    /**
+     * @return The max number of audit trails to fetch from database or null for unlimited
+     */
+    public Integer getMaxAuditTrails() {
+        return maxAuditTrails;
+    }
+
+    /**
+     * @param maxAuditTrails The max number of audit trails to fetch from database or null for unlimited
+     */
+    public void setMaxAuditTrails(Integer maxAuditTrails) {
+        this.maxAuditTrails = maxAuditTrails;
+    }
+
 }

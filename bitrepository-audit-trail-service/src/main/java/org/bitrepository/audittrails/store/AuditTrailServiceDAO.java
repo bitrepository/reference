@@ -50,9 +50,30 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
 
     @Override
     public AuditEventIterator getAuditTrailsByIterator(String fileID, String collectionID, String contributorID,
-                                                       Long minSeqNumber, Long maxSeqNumber, String actorName, FileAction operation,
-                                                       Date startDate,
-                                                       Date endDate, String fingerprint, String operationID) {
+                                                       Long minSeqNumber, Long maxSeqNumber, String actorName,
+                                                       FileAction operation,
+                                                       Date startDate, Date endDate, String fingerprint,
+                                                       String operationID) {
+        return getAuditEventIteratorImplementation(fileID, collectionID, contributorID, minSeqNumber, maxSeqNumber,
+                actorName, operation, startDate, endDate, fingerprint, operationID, null);
+    }
+
+    @Override
+    public AuditEventIterator getAuditTrailsByIterator(String fileID, String collectionID, String contributorID,
+                                                       Long minSeqNumber, Long maxSeqNumber, String actorName,
+                                                       FileAction operation,
+                                                       Date startDate, Date endDate, String fingerprint,
+                                                       String operationID, int maxAuditTrails) {
+        return getAuditEventIteratorImplementation(fileID, collectionID, contributorID, minSeqNumber, maxSeqNumber,
+                actorName, operation, startDate, endDate, fingerprint, operationID, maxAuditTrails);
+    }
+
+    private AuditEventIterator getAuditEventIteratorImplementation(String fileID, String collectionID,
+                                                                   String contributorID, Long minSeqNumber,
+                                                                   Long maxSeqNumber, String actorName,
+                                                                   FileAction operation, Date startDate, Date endDate,
+                                                                   String fingerprint, String operationID,
+                                                                   Integer maxAuditTrails) {
         ExtractModel model = new ExtractModel();
         model.setFileID(fileID);
         model.setCollectionID(collectionID);
@@ -65,6 +86,7 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
         model.setEndDate(endDate);
         model.setFingerprint(fingerprint);
         model.setOperationID(operationID);
+        model.setMaxAuditTrails(maxAuditTrails);
 
         AuditDatabaseExtractor extractor = new AuditDatabaseExtractor(model, dbConnector);
         return extractor.extractAuditEventsByIterator();

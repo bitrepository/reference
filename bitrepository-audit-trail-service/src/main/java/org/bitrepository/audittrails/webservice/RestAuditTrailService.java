@@ -36,7 +36,9 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.TimeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -77,14 +79,14 @@ public class RestAuditTrailService {
             @FormParam("collectionID") String collectionID,
             @FormParam("fingerprint") String fingerprint,
             @FormParam("operationID") String operationID,
-            @FormParam("maxAuditTrails") Integer maxResults) {
+            @DefaultValue("1000") @FormParam("maxAuditTrails") Integer maxResults) {
         Date from = calendarUtils.makeStartDateObject(fromDate);
         Date to = calendarUtils.makeEndDateObject(toDate);
 
         final int maxAudits = maxResults;
         final AuditEventIterator it = service.queryAuditTrailEventsByIterator(from, to, contentOrNull(fileID),
                 collectionID, contentOrNull(reportingComponent), contentOrNull(actor), filterAction(action),
-                contentOrNull(fingerprint), contentOrNull(operationID));
+                contentOrNull(fingerprint), contentOrNull(operationID), maxAudits);
         if (it != null) {
             return output -> {
                 JsonFactory jf = new JsonFactory();
@@ -93,14 +95,14 @@ public class RestAuditTrailService {
                     AuditTrailEvent event;
                     jg.writeStartArray();
                     int numAudits = 0;
-                    while ((event = it.getNextAuditTrailEvent()) != null && numAudits < maxAudits) {
+                    while ((event = it.getNextAuditTrailEvent()) != null) {
                         writeAuditResult(event, jg);
                         numAudits++;
                     }
                     jg.writeEndArray();
                     jg.flush();
                     jg.close();
-                } catch (Exception e) {
+                } catch (RuntimeException e) {
                     log.error("Caught exception trying to stream audit trails", e);
                     throw new WebApplicationException(e);
                 } finally {
@@ -114,8 +116,10 @@ public class RestAuditTrailService {
             };
         } else {
             throw new WebApplicationException(
-                    Response.status(Response.Status.NO_CONTENT).entity("Failed to get audit trails from database")
-                            .type(MediaType.TEXT_PLAIN).build());
+                    Response.status(Response.Status.NO_CONTENT)
+                            .entity("Failed to get audit trails from database: it is null")
+                            .type(MediaType.TEXT_PLAIN)
+                            .build());
         }
     }
 
