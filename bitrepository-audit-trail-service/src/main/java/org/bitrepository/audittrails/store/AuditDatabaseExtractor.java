@@ -2,7 +2,7 @@
  * #%L
  * Bitrepository Audit Trail Service
  * %%
- * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
+ * Copyright (C) 2010 - 2025 Royal Danish Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -28,9 +28,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.PreparedStatement;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.ACTOR_KEY;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.ACTOR_NAME;
@@ -64,15 +66,11 @@ import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_TA
  * As such any change in extraction model should be reflected in the AuditEventIterator.
  * For further details @see {@link org.bitrepository.audittrails.store.AuditEventIterator}
  * <p>
- * <p>
  * Order of extraction:
  * FileId, ContributorId, SequenceNumber, SeqNumber, ActorName, Operation, OperationDate,
  * AuditTrail, Information, OperationID, Certificate fingerprint
  */
 public class AuditDatabaseExtractor {
-    /**
-     * The log.
-     */
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     /**
@@ -126,12 +124,10 @@ public class AuditDatabaseExtractor {
     private final DBConnector dbConnector;
 
     /**
-     * Constructor.
-     *
      * @param model       The model for the restriction for the extraction from the database.
      * @param dbConnector The connector to the database, where the audit trails are to be extracted.
      */
-    public AuditDatabaseExtractor(ExtractModel model, DBConnector dbConnector) {
+    AuditDatabaseExtractor(ExtractModel model, DBConnector dbConnector) {
         ArgumentValidator.checkNotNull(model, "ExtractModel model");
         ArgumentValidator.checkNotNull(dbConnector, "DBConnector dbConnector");
 
@@ -145,16 +141,19 @@ public class AuditDatabaseExtractor {
      * @return {@link AuditEventIterator} Iterator for extracting the AuditTrails
      */
     public AuditEventIterator extractAuditEventsByIterator() {
-        String sql = createSelectString() + " FROM " + AUDIT_TRAIL_TABLE + joinWithFileTable() + joinWithActorTable()
-                + joinWithContributorTable() + createRestriction()
-                + " ORDER BY " + AUDIT_TRAIL_TABLE + "." + AUDIT_TRAIL_OPERATION_DATE + " FETCH FIRST 1000 ROWS ONLY";
+        String sql = createSelectString() +
+                " FROM " + AUDIT_TRAIL_TABLE + joinWithFileTable() + joinWithActorTable() + joinWithContributorTable() +
+                createRestriction() +
+                " ORDER BY " + AUDIT_TRAIL_TABLE + "." + AUDIT_TRAIL_OPERATION_DATE +
+                createRowLimit();
         try {
+            List<Object> arguments = extractArgumentsFromModel();
             log.debug("Creating prepared statement with sql '{}' and arguments '{}' for AuditEventIterator",
-                    sql, Arrays.asList(extractArgumentsFromModel()));
+                    sql, arguments);
             PreparedStatement ps = DatabaseUtils.createPreparedStatement(dbConnector.getConnection(),
-                    sql, extractArgumentsFromModel());
+                    sql, arguments.toArray());
             return new AuditEventIterator(ps);
-        } catch (Exception e) {
+        } catch (SQLException | RuntimeException e) {
             throw new IllegalStateException("Failed to retrieve the audit trails from the database", e);
         }
     }
@@ -166,21 +165,17 @@ public class AuditDatabaseExtractor {
      * @return Creates the SELECT string for the retrieval of the audit events.
      */
     private String createSelectString() {
-        StringBuilder res = new StringBuilder();
-
-        res.append("SELECT ");
-        res.append(FILE_TABLE + "." + FILE_FILE_ID + ", ");
-        res.append(CONTRIBUTOR_TABLE + "." + CONTRIBUTOR_ID + ", ");
-        res.append(AUDIT_TRAIL_TABLE + "." + AUDIT_TRAIL_SEQUENCE_NUMBER + ", ");
-        res.append(ACTOR_TABLE + "." + ACTOR_NAME + ", ");
-        res.append(AUDIT_TRAIL_TABLE + "." + AUDIT_TRAIL_OPERATION + ", ");
-        res.append(AUDIT_TRAIL_TABLE + "." + AUDIT_TRAIL_OPERATION_DATE + ", ");
-        res.append(AUDIT_TRAIL_TABLE + "." + AUDIT_TRAIL_AUDIT + ", ");
-        res.append(AUDIT_TRAIL_TABLE + "." + AUDIT_TRAIL_INFORMATION + ", ");
-        res.append(AUDIT_TRAIL_TABLE + "." + AUDIT_TRAIL_OPERATION_ID + ", ");
-        res.append(AUDIT_TRAIL_TABLE + "." + AUDIT_TRAIL_FINGERPRINT + " ");
-
-        return res.toString();
+        return "SELECT " +
+                FILE_TABLE + "." + FILE_FILE_ID + ", " +
+                CONTRIBUTOR_TABLE + "." + CONTRIBUTOR_ID + ", " +
+                AUDIT_TRAIL_TABLE + "." + AUDIT_TRAIL_SEQUENCE_NUMBER + ", " +
+                ACTOR_TABLE + "." + ACTOR_NAME + ", " +
+                AUDIT_TRAIL_TABLE + "." + AUDIT_TRAIL_OPERATION + ", " +
+                AUDIT_TRAIL_TABLE + "." + AUDIT_TRAIL_OPERATION_DATE + ", " +
+                AUDIT_TRAIL_TABLE + "." + AUDIT_TRAIL_AUDIT + ", " +
+                AUDIT_TRAIL_TABLE + "." + AUDIT_TRAIL_INFORMATION + ", " +
+                AUDIT_TRAIL_TABLE + "." + AUDIT_TRAIL_OPERATION_ID + ", " +
+                AUDIT_TRAIL_TABLE + "." + AUDIT_TRAIL_FINGERPRINT + " ";
     }
 
     /**
@@ -189,8 +184,8 @@ public class AuditDatabaseExtractor {
      * @return The sql for joining the tables.
      */
     private String joinWithFileTable() {
-        return " JOIN " + FILE_TABLE + " ON " + AUDIT_TRAIL_TABLE + "." + AUDIT_TRAIL_FILE_KEY + " = " + FILE_TABLE + "."
-                + FILE_KEY + " ";
+        return " JOIN " + FILE_TABLE +
+                " ON " + AUDIT_TRAIL_TABLE + "." + AUDIT_TRAIL_FILE_KEY + " = " + FILE_TABLE + "." + FILE_KEY + " ";
     }
 
     /**
@@ -199,8 +194,8 @@ public class AuditDatabaseExtractor {
      * @return The sql for joining the tables.
      */
     private String joinWithActorTable() {
-        return " JOIN " + ACTOR_TABLE + " ON " + AUDIT_TRAIL_TABLE + "." + AUDIT_TRAIL_ACTOR_KEY + " = " + ACTOR_TABLE
-                + "." + ACTOR_KEY + " ";
+        return " JOIN " + ACTOR_TABLE +
+                " ON " + AUDIT_TRAIL_TABLE + "." + AUDIT_TRAIL_ACTOR_KEY + " = " + ACTOR_TABLE + "." + ACTOR_KEY + " ";
     }
 
     /**
@@ -295,56 +290,26 @@ public class AuditDatabaseExtractor {
         }
     }
 
-    /**
-     * @return The list of elements in the model which are not null.
-     */
-    private Object[] extractArgumentsFromModel() {
-        List<Object> res = new ArrayList<>();
-
-        if (model.getFileID() != null) {
-            res.add(model.getFileID());
+    private String createRowLimit() {
+        if (model.getMaxAuditTrails() == null) {
+            return "";
         }
-
-        if (model.getCollectionID() != null) {
-            res.add(model.getCollectionID());
-        }
-
-        if (model.getContributorID() != null) {
-            res.add(model.getContributorID());
-        }
-
-        if (model.getMinSeqNumber() != null) {
-            res.add(model.getMinSeqNumber());
-        }
-
-        if (model.getMaxSeqNumber() != null) {
-            res.add(model.getMaxSeqNumber());
-        }
-
-        if (model.getActorName() != null) {
-            res.add(model.getActorName());
-        }
-
-        if (model.getOperation() != null) {
-            res.add(model.getOperation().toString());
-        }
-
-        if (model.getStartDate() != null) {
-            res.add(model.getStartDate().getTime());
-        }
-
-        if (model.getEndDate() != null) {
-            res.add(model.getEndDate().getTime());
-        }
-
-        if (model.getFingerprint() != null) {
-            res.add(model.getFingerprint());
-        }
-
-        if (model.getOperationID() != null) {
-            res.add(model.getOperationID());
-        }
-
-        return res.toArray();
+        return " FETCH FIRST ? ROWS ONLY";
     }
+
+    /**
+     * @return The list of elements in the model which are not null,
+     * converted to types applicable for DatabaseUtils where appropriate.
+     */
+    private List<Object> extractArgumentsFromModel() {
+        return Stream.of(model.getFileID(), model.getCollectionID(), model.getContributorID(),
+                        model.getMinSeqNumber(), model.getMaxSeqNumber(), model.getActorName(),
+                        model.getOperation() == null ? null : model.getOperation().toString(),
+                        model.getStartDate() == null ? null : model.getStartDate().getTime(),
+                        model.getEndDate() == null ? null : model.getEndDate().getTime(),
+                        model.getFingerprint(), model.getOperationID(), model.getMaxAuditTrails())
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
 }

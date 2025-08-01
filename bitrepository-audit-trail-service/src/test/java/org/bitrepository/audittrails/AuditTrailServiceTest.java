@@ -63,7 +63,7 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
 
 
     @BeforeClass(alwaysRun = true)
-    public void setup() throws Exception {
+    public void setup() {
         settings = TestSettingsProvider.reloadSettings("AuditTrailServiceUnderTest");
         Collection c = settings.getRepositorySettings().getCollections().getCollection().get(0);
         settings.getRepositorySettings().getCollections().getCollection().clear();
@@ -113,20 +113,19 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
 
         verify(store, times(1)).addAuditTrails(any(AuditTrailEvents.class), eq(TEST_COLLECTION),
                 eq(DEFAULT_CONTRIBUTOR));
-        service.queryAuditTrailEventsByIterator(null, null, null, null, null, null, null, null, null);
+        service.queryAuditTrailEventsByIterator(null, null, null, null, null, null, null, null, null, 10000);
         verify(store, times(1)).getAuditTrailsByIterator(isNull(), isNull(), isNull(), isNull(), isNull(), isNull(),
-                isNull(), isNull(), isNull(), isNull(), isNull());
-        service.queryAuditTrailEventsByIterator(null, null, null, null, null, null, FileAction.FAILURE, null, null);
+                isNull(), isNull(), isNull(), isNull(), isNull(), 10000);
+        service.queryAuditTrailEventsByIterator(null, null, null, null, null, null, FileAction.FAILURE, null, null, 100);
         verify(store, times(1)).getAuditTrailsByIterator(isNull(), isNull(), isNull(), isNull(), isNull(), isNull(),
-                eq(FileAction.FAILURE), isNull(), isNull(), isNull(), isNull());
-
+                eq(FileAction.FAILURE), isNull(), isNull(), isNull(), isNull(), 100);
 
         addStep("Shutdown", "");
         service.shutdown();
     }
 
 
-    public class CollectionRunner implements Runnable {
+    public static class CollectionRunner implements Runnable {
         private final AuditTrailService service;
         boolean finished = false;
 

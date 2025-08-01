@@ -108,14 +108,15 @@ public class AuditTrailService implements LifeCycledService {
      * @param action             Restrict the results to only be about this type of action
      * @param fingerprint        The fingerprint
      * @param operationID        Restrict the results to only this operationID
+     * @param maxAuditTrails     The max number of audit trails to fetch from database
      * @return an iterator to all AuditTrailEvents matching the criteria from the parameters
      */
     public AuditEventIterator queryAuditTrailEventsByIterator(Date fromDate, Date toDate, String fileID,
                                                               String collectionID, String reportingComponent, String actor,
                                                               FileAction action,
-                                                              String fingerprint, String operationID) {
+                                                              String fingerprint, String operationID, int maxAuditTrails) {
         return store.getAuditTrailsByIterator(fileID, collectionID, reportingComponent, null, null, actor, action,
-                fromDate, toDate, fingerprint, operationID);
+                fromDate, toDate, fingerprint, operationID, maxAuditTrails);
     }
 
     /**

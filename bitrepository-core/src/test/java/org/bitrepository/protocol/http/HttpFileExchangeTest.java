@@ -41,7 +41,7 @@ public class HttpFileExchangeTest extends ExtendedTestCase {
         Settings mySettings = TestSettingsProvider.reloadSettings("uploadTest");
         FileExchangeSettings fileExchangeSettings = mySettings.getReferenceSettings().getFileExchangeSettings();
         fileExchangeSettings.setProtocolType(ProtocolType.HTTP);
-        fileExchangeSettings.setServerName("http:testserver.org");
+        fileExchangeSettings.setServerName("testserver.org");
         fileExchangeSettings.setPort(BigInteger.valueOf(8000));
         fileExchangeSettings.setPath("dav");
         HttpFileExchange fe = new HttpFileExchange(fileExchangeSettings);
