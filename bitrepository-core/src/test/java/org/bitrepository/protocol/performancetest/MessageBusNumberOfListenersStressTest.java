@@ -39,9 +39,13 @@ import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
 import org.jaccept.structure.ExtendedTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+//import org.testng.Assert;
+//import org.testng.annotations.BeforeMethod;
+//import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -110,7 +114,7 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
     private static boolean sendMoreMessages = true;
     private Settings settings;
 
-    @BeforeMethod
+    @BeforeEach
     public void initializeSettings() {
         settings = TestSettingsProvider.getSettings(getClass().getSimpleName());
     }
@@ -121,7 +125,8 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
      *
      * @throws Exception Can possibly throw an exception.
      */
-    @Test(groups = {"StressTest"})
+    @Test
+    @Tag("StressTest")
     public void testManyListenersOnLocalMessageBus() throws Exception {
         addDescription("Tests how many messages can be handled within a given timeframe when a given number of "
                 + "listeners are receiving them.");
@@ -155,7 +160,8 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
         }
     }
 
-    @Test(groups = {"StressTest"})
+    @Test
+    @Tag("StressTest")
     public void testManyListenersOnDistributedMessageBus() throws Exception {
         addDescription("Tests how many messages can be handled within a given timeframe when a given number of "
                 + "listeners are receiving them.");

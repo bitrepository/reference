@@ -1,31 +1,5 @@
-/*
- * #%L
- * Bitrepository Common
- *
- * $Id$
- * $HeadURL$
- * %%
- * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
- * %%
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation, either version 2.1 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Lesser Public License for more details.
- *
- * You should have received a copy of the GNU General Lesser Public
- * License along with this program.  If not, see
- * <http://www.gnu.org/licenses/lgpl-2.1.html>.
- * #L%
- */
 package org.bitrepository.protocol;
 
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.core.util.StatusPrinter;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.SettingsUtils;
@@ -40,24 +14,15 @@ import org.bitrepository.protocol.messagebus.SimpleMessageBus;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.jaccept.TestEventManager;
-import org.jaccept.structure.ExtendedTestCase;
-import org.slf4j.LoggerFactory;
-import org.testng.ITestContext;
-import org.testng.ITestResult;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.AfterSuite;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.BeforeTest;
+import org.junit.jupiter.api.extension.*;
 
 import javax.jms.JMSException;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
 
-public abstract class IntegrationTest extends ExtendedTestCase {
+public class GlobalSuiteExtension implements BeforeAllCallback, AfterAllCallback {
+
+    private static boolean initialized = false;
     protected static TestEventManager testEventManager = TestEventManager.getInstance();
     public static LocalActiveMQBroker broker;
     public static EmbeddedHttpServer server;
@@ -76,30 +41,36 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     protected static String DEFAULT_DOWNLOAD_FILE_ADDRESS;
     protected static String DEFAULT_UPLOAD_FILE_ADDRESS;
     protected String DEFAULT_AUDIT_INFORMATION;
-
     protected String testMethodName;
 
-    @BeforeSuite(alwaysRun = true)
-    public void initializeSuite(ITestContext testContext) {
-        //
+    @Override
+    public void beforeAll(ExtensionContext context) {
+        if (!initialized) {
+            initialized = true;
+            settingsForCUT = loadSettings(getComponentID());
+            settingsForTestClient = loadSettings("TestSuiteInitialiser");
+            makeUserSpecificSettings(settingsForCUT);
+            makeUserSpecificSettings(settingsForTestClient);
+            httpServerConfiguration = new HttpServerConfiguration(settingsForTestClient.getReferenceSettings().getFileExchangeSettings());
+            collectionID = settingsForTestClient.getCollections().get(0).getID();
+
+            securityManager = createSecurityManager();
+            DEFAULT_FILE_ID = "DefaultFile";
+            try {
+                DEFAULT_FILE_URL = httpServerConfiguration.getURL(TestFileHelper.DEFAULT_FILE_ID);
+                DEFAULT_DOWNLOAD_FILE_ADDRESS = DEFAULT_FILE_URL.toExternalForm();
+                DEFAULT_UPLOAD_FILE_ADDRESS = DEFAULT_FILE_URL.toExternalForm() + "-" + DEFAULT_FILE_ID;
+            } catch (MalformedURLException e) {
+                throw new RuntimeException("Never happens");
+            }
+        }
     }
 
-    private void initializationMethod() {
-        settingsForCUT = loadSettings(getComponentID());
-        settingsForTestClient = loadSettings("TestSuiteInitialiser");
-        makeUserSpecificSettings(settingsForCUT);
-        makeUserSpecificSettings(settingsForTestClient);
-        httpServerConfiguration = new HttpServerConfiguration(settingsForTestClient.getReferenceSettings().getFileExchangeSettings());
-        collectionID = settingsForTestClient.getCollections().get(0).getID();
-
-        securityManager = createSecurityManager();
-        DEFAULT_FILE_ID = "DefaultFile";
-        try {
-            DEFAULT_FILE_URL = httpServerConfiguration.getURL(TestFileHelper.DEFAULT_FILE_ID);
-            DEFAULT_DOWNLOAD_FILE_ADDRESS = DEFAULT_FILE_URL.toExternalForm();
-            DEFAULT_UPLOAD_FILE_ADDRESS = DEFAULT_FILE_URL.toExternalForm() + "-" + DEFAULT_FILE_ID;
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("Never happens");
+    @Override
+    public void afterAll(ExtensionContext context) {
+        if (initialized) {
+            teardownMessageBus();
+            teardownHttpServer();
         }
     }
 
@@ -115,57 +86,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     protected void addReceiver(MessageReceiver receiver) {
         receiverManager.addReceiver(receiver);
     }
-
-    @BeforeClass(alwaysRun = true)
-    public void initMessagebus() {
-        initializationMethod();
-        setupMessageBus();
-    }
-
-    @AfterSuite(alwaysRun = true)
-    public void shutdownSuite() {
-        teardownMessageBus();
-        teardownHttpServer();
-    }
-
-    /**
-     * Defines the standard BitRepositoryCollection configuration
-     */
-    @BeforeMethod(alwaysRun = true)
-    public final void beforeMethod(Method method) {
-        testMethodName = method.getName();
-        setupSettings();
-        NON_DEFAULT_FILE_ID = TestFileHelper.createUniquePrefix(testMethodName);
-        DEFAULT_AUDIT_INFORMATION = testMethodName;
-        receiverManager = new MessageReceiverManager(messageBus);
-        registerMessageReceivers();
-        messageBus.setCollectionFilter(List.of());
-        messageBus.setComponentFilter(List.of());
-        receiverManager.startListeners();
-        initializeCUT();
-    }
-
-
     protected void initializeCUT() {}
-
-    @AfterMethod(alwaysRun = true)
-    public final void afterMethod(ITestResult testResult) {
-        if (receiverManager != null) {
-            receiverManager.stopListeners();
-        }
-        if (testResult.isSuccess()) {
-            afterMethodVerification();
-        }
-        shutdownCUT();
-    }
-
-    /**
-     * May be used by specific tests for general verification when the test method has finished. Will only be run
-     * if the test has passed (so far).
-     */
-    protected void afterMethodVerification() {
-        receiverManager.checkNoMessagesRemainInReceivers();
-    }
 
     /**
      * Purges all messages from the receivers.
@@ -202,14 +123,6 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         settings.getRepositorySettings().getProtocolSettings()
                 .setCollectionDestination(settings.getCollectionDestination() + getTopicPostfix());
         settings.getRepositorySettings().getProtocolSettings().setAlarmDestination(settings.getAlarmDestination() + getTopicPostfix());
-    }
-
-    @BeforeTest(alwaysRun = true)
-    public void writeLogStatus() {
-        if (System.getProperty("enableLogStatus", "false").equals("true")) {
-            LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
-            StatusPrinter.print(lc);
-        }
     }
 
     /**
@@ -291,4 +204,5 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     protected SecurityManager createSecurityManager() {
         return new DummySecurityManager();
     }
+
 }
