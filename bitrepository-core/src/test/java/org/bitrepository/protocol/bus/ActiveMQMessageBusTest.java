@@ -28,8 +28,8 @@ import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Assertions;
 
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -38,13 +38,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
-
-/**
- * Runs the GeneralMessageBusTest using a LocalActiveMQBroker (if useEmbeddedMessageBus is true) and a suitable
- * MessageBus based on settingsForTestClient.  Regression tests utilized that uses JAccept to generate reports.
- */
-
-public class ActiveMQMessageBusTest extends GeneralMessageBusTest {
+public class ActiveMQMessageBusTest extends GeneralMessageBusTest {  // Assuming it extends a base class
 
     @Override
     protected void setupMessageBus() {
@@ -64,7 +58,7 @@ public class ActiveMQMessageBusTest extends GeneralMessageBusTest {
                         "eg. this identify requests should be handled by everybody.",
                 "Verify that the message bus accepts this message.");
         String myCollectionID = "MyCollection";
-        messageBus.setCollectionFilter(Arrays.asList(myCollectionID));
+        messageBus.setCollectionFilter(Arrays.asList(new String[]{myCollectionID}));
         RawMessagebus rawMessagebus = new RawMessagebus(
                 settingsForTestClient.getMessageBusConfiguration(),
                 securityManager);
@@ -115,7 +109,7 @@ public class ActiveMQMessageBusTest extends GeneralMessageBusTest {
         messageToSend.setTo(receiverID);
         messageBus.sendMessage(messageToSend);
         Message receivedMessage = messageList.poll(3, TimeUnit.SECONDS);
-        Assertions.assertEquals(receiverID, receivedMessage.getStringProperty(ActiveMQMessageBus.MESSAGE_TO_KEY));
+        Assertions.assertEquals(receivedMessage.getStringProperty(ActiveMQMessageBus.MESSAGE_TO_KEY), receiverID);  // Assertion update
     }
 
     @Test
@@ -125,7 +119,7 @@ public class ActiveMQMessageBusTest extends GeneralMessageBusTest {
         addStep("Send an identify request with a undefined 'To' header property, " +
                         "eg. this identify requests should be handled by all components.",
                 "Verify that the identify request bus accepts this identify request.");
-        messageBus.setComponentFilter(Arrays.asList(settingsForTestClient.getComponentID()));
+        messageBus.setComponentFilter(Arrays.asList(new String[]{ settingsForTestClient.getComponentID() }));
         RawMessagebus rawMessagebus = new RawMessagebus(
                 settingsForTestClient.getMessageBusConfiguration(),
                 securityManager);
