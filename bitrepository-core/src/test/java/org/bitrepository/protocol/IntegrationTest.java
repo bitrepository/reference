@@ -113,6 +113,7 @@ public abstract class IntegrationTest {
     }
 
     public void initMessagebus() {
+        initializationMethod();
         setupMessageBus();
     }
 
