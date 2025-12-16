@@ -61,7 +61,7 @@ public class GlobalSuiteExtension implements BeforeAllCallback, AfterAllCallback
                 DEFAULT_DOWNLOAD_FILE_ADDRESS = DEFAULT_FILE_URL.toExternalForm();
                 DEFAULT_UPLOAD_FILE_ADDRESS = DEFAULT_FILE_URL.toExternalForm() + "-" + DEFAULT_FILE_ID;
             } catch (MalformedURLException e) {
-                throw new RuntimeException("Never happens");
+                throw new RuntimeException("Never happens", e);
             }
         }
     }
