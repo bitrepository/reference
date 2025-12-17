@@ -56,8 +56,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * message-xml, thereby also testing whether this is valid. *
  */
 public class MessageCreationTest extends ExtendedTestCase {
-    @Test
-    @Tag("regressiontest")
+    @Test @Tag("regressiontest")
     public void messageCreationTest() throws Exception {
         addDescription("Tests if we are able to create message objects from xml. The input XML is the example code " +
                 "defined in the message-xml, thereby also testing whether this is valid.");
@@ -117,7 +116,7 @@ public class MessageCreationTest extends ExtendedTestCase {
      * Needed by XPath to handle the namespaces.
      */
     private NamespaceContext getNamespaceContext() {
-        return new NamespaceContext() {
+        NamespaceContext ctx = new NamespaceContext() {
             public String getNamespaceURI(String prefix) {
                 String uri;
                 switch (prefix) {
@@ -147,5 +146,6 @@ public class MessageCreationTest extends ExtendedTestCase {
                 return null;
             }
         };
+        return ctx;
     }
 }

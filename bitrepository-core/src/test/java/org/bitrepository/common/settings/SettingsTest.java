@@ -11,7 +11,9 @@ import javax.xml.datatype.DatatypeFactory;
 import java.math.BigInteger;
 import java.time.Duration;
 
-public class SettingsTest extends ExtendedTestCase {
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+public class SettingsTest extends ExtendedTestCase  {
 
     private DatatypeFactory factory;
 
@@ -20,10 +22,9 @@ public class SettingsTest extends ExtendedTestCase {
         factory = DatatypeFactory.newInstance();
     }
 
-    @Test
-    @Tag("regressiontest")
+    @Test @Tag("regressiontest")
     public void getDurationFromXmlDurationOrMillisRequiresOneNonNullArg() {
-        Assertions.assertThrows(NullPointerException.class, () -> {
+        assertThrows(NullPointerException.class, () -> {
             addDescription("Tests that getDurationFromXmlDurationOrMillis() fails when given two nulls");
             addStep("null and null", "NPE");
 
@@ -37,16 +38,20 @@ public class SettingsTest extends ExtendedTestCase {
         addDescription("Tests conversions and selection by getDurationFromXmlDurationOrMillis()");
 
         addStep("null and some milliseconds", "Duration of millis");
-        Assertions.assertEquals(Duration.ofMillis(54321),
-                Settings.getDurationFromXmlDurationOrMillis(null, BigInteger.valueOf(54321)));
+        Assertions.assertEquals(Settings.getDurationFromXmlDurationOrMillis(null, BigInteger.valueOf(54321)),
+                Duration.ofMillis(54321));
 
         addStep("XML duration and null", "XML duration converted");
-        Assertions.assertEquals(Duration.ofMinutes(7), Settings.getDurationFromXmlDurationOrMillis(
-                factory.newDuration("PT7M"), null));
+        Assertions.assertEquals(
+                Settings.getDurationFromXmlDurationOrMillis(
+                        factory.newDuration("PT7M"), null),
+                Duration.ofMinutes(7));
 
         addStep("Conflicting XML duration and millis", "XML duration should be preferred");
-        Assertions.assertEquals(Duration.ofMinutes(2), Settings.getDurationFromXmlDurationOrMillis(
-                factory.newDuration("PT2M"), BigInteger.valueOf(13)));
+        Assertions.assertEquals(
+                Settings.getDurationFromXmlDurationOrMillis(
+                        factory.newDuration("PT2M"), BigInteger.valueOf(13)),
+                Duration.ofMinutes(2));
     }
 
 }

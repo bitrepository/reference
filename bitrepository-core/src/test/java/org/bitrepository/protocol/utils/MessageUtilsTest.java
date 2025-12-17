@@ -38,8 +38,7 @@ public class MessageUtilsTest extends ExtendedTestCase {
         ResponseInfo ri = new ResponseInfo();
         response.setResponseInfo(ri);
 
-        addStep("validate that it can see a positive identify response",
-                "Should return true for positive identify.");
+        addStep("validate that it can see a positive identify response", "Should return true for positive identify.");
         response.getResponseInfo().setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);
         Assertions.assertTrue(MessageUtils.isPositiveIdentifyResponse(response));
         response.getResponseInfo().setResponseCode(ResponseCode.IDENTIFICATION_NEGATIVE);
@@ -70,8 +69,7 @@ public class MessageUtilsTest extends ExtendedTestCase {
 
     }
 
-    @Test
-    @Tag("regressiontest")
+    @Test @Tag("regressiontest")
     public void testProgressResponse() {
         addDescription("Tests isPositiveProgressResponse method in the message utility class.");
         MessageResponse response = new MessageResponse();

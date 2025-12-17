@@ -8,12 +8,12 @@
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
@@ -43,14 +43,14 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 public class ReceivedMessageHandlerTest extends ExtendedTestCase {
 
     @Test
-    @Tag("regressiontest")
+    @Tag("regressiontest" )
     public void singleMessageDispatch() {
         addDescription("Tests that a single message is dispatched correctly");
         ReceivedMessageHandler handler = new ReceivedMessageHandler(null);
         MessageListener defaultListener = mock(MessageListener.class);
         Message testMessage = new Message();
         MessageContext testMessageContext = new MessageContext("fingerprint");
-        handler.deliver(defaultListener, testMessage, testMessageContext);
+        handler.deliver(defaultListener, testMessage,  testMessageContext);
         verify(defaultListener, timeout(100)).onMessage(testMessage, testMessageContext);
     }
 
@@ -80,7 +80,7 @@ public class ReceivedMessageHandlerTest extends ExtendedTestCase {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag("regressiontest" )
     public void manyMessageDispatch() {
         addDescription("Tests that many (50) messages can be handled in parallel in the default pool configuration.");
         addFixture("Create a ReceivedMessageHandler with a null configuration. This should create a " +
@@ -117,8 +117,7 @@ public class ReceivedMessageHandlerTest extends ExtendedTestCase {
                 createMessageThreadPool(1, null, null, null)
         ));
 
-        addStep("Dispatch messages to two listeners, the first blocking.",
-                "The second listener should be not be notified");
+        addStep("Dispatch messages to two listeners, the first blocking.", "The second listener should be not be notified");
         BlockingMessageListener blockingListener = new BlockingMessageListener(mock(MessageListener.class));
         MessageListener secondListener = mock(MessageListener.class);
         Message testMessage = new Message();
@@ -135,10 +134,10 @@ public class ReceivedMessageHandlerTest extends ExtendedTestCase {
     @Tag("regressiontest")
     public void specificMessagePools() {
         addDescription("Tests that different message types can be handled by different executors.");
-        addFixture("Create a ReceivedMessageHandler with a two pools, " +
-                "one for status requests and one for put requests. The put file pool should be limited to 1 thread.");
-        String[] statusRequestFilter = new String[]{GetStatusRequest.class.getSimpleName()};
-        String[] putRequestFilter = new String[]{PutFileRequest.class.getSimpleName()};
+        addFixture("Create a ReceivedMessageHandler with a two pools, one for status requests and one for put requests. " +
+                "The put file pool should be limited to 1 thread.");
+        String[] statusRequestFilter = new String [] {GetStatusRequest.class.getSimpleName()};
+        String[] putRequestFilter = new String [] {PutFileRequest.class.getSimpleName()};
         ReceivedMessageHandler handler = new ReceivedMessageHandler(createMessageThreadPools(
                 createMessageThreadPool(1, null, null, putRequestFilter),
                 createMessageThreadPool(null, null, null, statusRequestFilter)
@@ -166,14 +165,13 @@ public class ReceivedMessageHandlerTest extends ExtendedTestCase {
         verifyNoMoreInteractions(thirdStatusListener);
     }
 
-    @Test
-    @Tag("regressiontest")
+    @Test @Tag("regressiontest")
     public void specificMessageNamePoolAndDefaultPool() {
         addDescription("Tests it is possible to specify a pool for a specific message type, with a " +
                 "default pool for the remainder.");
         addFixture("Create a ReceivedMessageHandler with a one specific pool for put requests. " +
                 "The put file pool should be limited to 1 thread.");
-        String[] putRequestFilter = new String[]{PutFileRequest.class.getSimpleName()};
+        String[] putRequestFilter = new String [] {PutFileRequest.class.getSimpleName()};
         ReceivedMessageHandler handler = new ReceivedMessageHandler(createMessageThreadPools(
                 createMessageThreadPool(1, null, null, putRequestFilter)
         ));
@@ -201,7 +199,7 @@ public class ReceivedMessageHandlerTest extends ExtendedTestCase {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag("regressiontest" )
     public void specificMessageCategoryPoolAndDefaultPool() {
         addDescription("Tests it is possible to specify a pool for a specific message category, with a " +
                 "default pool for the remainder.");
@@ -233,8 +231,7 @@ public class ReceivedMessageHandlerTest extends ExtendedTestCase {
         verifyNoMoreInteractions(thirdStatusListener);
     }
 
-    @Test
-    @Tag("regressiontest")
+    @Test @Tag("regressiontest")
     public void specificCollectionPoolAndDefaultPool() {
         addDescription("Tests it is possible to specify a pool for a specific collection, with a " +
                 "default pool for the remainder.");
@@ -242,7 +239,7 @@ public class ReceivedMessageHandlerTest extends ExtendedTestCase {
                 "The Collection1 pool should be limited to 1 thread.");
         String collection1 = "Collection1";
         ReceivedMessageHandler handler = new ReceivedMessageHandler(createMessageThreadPools(
-                createMessageThreadPool(1, new String[]{collection1}, null, null)
+                createMessageThreadPool(1, new String[] {collection1}, null, null)
         ));
 
         addStep("Dispatch two messages for collection1, blocking on the processing of the first message.",
@@ -268,8 +265,7 @@ public class ReceivedMessageHandlerTest extends ExtendedTestCase {
         deliverAsynchronously(handler, noCollectionMessage, thirdListener);
         verify(thirdListener, timeout(100)).onMessage(noCollectionMessage, null);
 
-        addStep("Unblock the blocked collection1 listener",
-                "Both collection1 messages should now be processed.");
+        addStep("Unblock the blocked collection1 listener", "Both collection1 messages should now be processed.");
         blockingCollection1Listener.unblock();
         verify(blockingCollection1Listener.listener, timeout(100)).onMessage(collection1Message, null);
         verify(secondCollection1Listener, timeout(100)).onMessage(collection1Message, null);
@@ -283,9 +279,9 @@ public class ReceivedMessageHandlerTest extends ExtendedTestCase {
         addFixture("Create a ReceivedMessageHandler with a one specific pool for Collection1 and PutFileRequests. " +
                 "The pool should be limited to 1 thread.");
         String collection1 = "Collection1";
-        String[] putRequestFilter = new String[]{PutFileRequest.class.getSimpleName()};
+        String[] putRequestFilter = new String [] {PutFileRequest.class.getSimpleName()};
         ReceivedMessageHandler handler = new ReceivedMessageHandler(createMessageThreadPools(
-                createMessageThreadPool(1, new String[]{collection1}, null, putRequestFilter)
+                createMessageThreadPool(1, new String[] {collection1}, null, putRequestFilter)
         ));
 
         addStep("Dispatch two putFileRequests for collection1, blocking on the processing of the first message.",
@@ -311,8 +307,7 @@ public class ReceivedMessageHandlerTest extends ExtendedTestCase {
         deliverAsynchronously(handler, getStatusRequest, thirdListener);
         verify(thirdListener, timeout(100)).onMessage(getStatusRequest, null);
 
-        addStep("Unblock the blocked collection1 listener",
-                "Both collection1 putFileRequests should now be processed.");
+        addStep("Unblock the blocked collection1 listener", "Both collection1 putFileRequests should now be processed.");
         blockingCollection1Listener.unblock();
         verify(blockingCollection1Listener.listener, timeout(100)).onMessage(putFileRequest, null);
         verify(secondCollection1Listener, timeout(100)).onMessage(putFileRequest, null);
@@ -320,7 +315,7 @@ public class ReceivedMessageHandlerTest extends ExtendedTestCase {
 
     private BlockingMessageListener[] createBlockingMessageListeners(int number) {
         BlockingMessageListener[] listeners = new BlockingMessageListener[number];
-        for (int i = 0; i < number; i++) {
+        for (int i=0; i<number;i++) {
             listeners[i] = new BlockingMessageListener(mock(MessageListener.class));
         }
         return listeners;
@@ -329,13 +324,10 @@ public class ReceivedMessageHandlerTest extends ExtendedTestCase {
     private void deliverAsynchronously(
             final ReceivedMessageHandler handler, final Message message, final MessageListener... listeners) {
         for (final MessageListener listener : listeners) {
-            handler.deliver(listener, message, null);
+                    handler.deliver(listener, message, null);
         }
         //Ensure the messages have time to be distributed before the new step.
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-        }
+        try { Thread.sleep(100); } catch (InterruptedException e) {}
     }
 
 
@@ -350,8 +342,7 @@ public class ReceivedMessageHandlerTest extends ExtendedTestCase {
         public synchronized void onMessage(Message message, MessageContext messageContext) {
             try {
                 wait(5000);
-            } catch (InterruptedException e) {
-            }
+            } catch (InterruptedException e) {}
             listener.onMessage(message, messageContext);
         }
 
@@ -367,7 +358,7 @@ public class ReceivedMessageHandlerTest extends ExtendedTestCase {
     }
 
     private MessageThreadPool createMessageThreadPool(Integer poolSize,
-                                                      String[] collections, MessageCategory messageCategory, String[] messageNames) {
+                                                      String[] collections, MessageCategory messageCategory,String[] messageNames) {
         MessageThreadPool poolConfiguration = new MessageThreadPool();
         if (poolSize != null) {
             poolConfiguration.setPoolSize(BigInteger.valueOf(poolSize));

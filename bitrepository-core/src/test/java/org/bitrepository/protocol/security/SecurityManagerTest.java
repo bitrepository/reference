@@ -29,7 +29,13 @@ import org.bitrepository.protocol.security.exception.CertificateUseException;
 import org.bitrepository.protocol.security.exception.MessageAuthenticationException;
 import org.bitrepository.protocol.security.exception.MessageSigningException;
 import org.bitrepository.protocol.security.exception.OperationAuthorizationException;
-import org.bitrepository.settings.repositorysettings.*;
+import org.bitrepository.settings.repositorysettings.Certificate;
+import org.bitrepository.settings.repositorysettings.Collection;
+import org.bitrepository.settings.repositorysettings.ComponentIDs;
+import org.bitrepository.settings.repositorysettings.Operation;
+import org.bitrepository.settings.repositorysettings.OperationPermission;
+import org.bitrepository.settings.repositorysettings.Permission;
+import org.bitrepository.settings.repositorysettings.PermissionSet;
 import org.bouncycastle.util.encoders.Base64;
 import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
@@ -39,6 +45,9 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
+
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -71,13 +80,12 @@ public class SecurityManagerTest extends ExtendedTestCase {
                 SecurityTestConstants.getComponentID());
     }
 
-    @Test
-    @Tag("regressiontest")
+    @Test @Tag("regressiontest")
     public void operationAuthorizationBehaviourTest() throws Exception {
         addDescription("Tests that a signature only allows the correct requests.");
 
         List<Collection> collections = settings.getRepositorySettings().getCollections().getCollection();
-        Assertions.assertEquals(2, collections.size(),
+        Assertions.assertEquals(collections.size(), 2,
                 "There should be two collections present to test the collection limited authorization");
         settings.getRepositorySettings().setPermissionSet(getCollectionLimitedPermissionSet());
         setupSecurityManager(settings);
@@ -101,6 +109,8 @@ public class SecurityManagerTest extends ExtendedTestCase {
 
         addStep("Check that GET_FILE is only allowed for the first collection.",
                 "GET_FILE is allowed for first collection, and disallowed for the second collection (exception thrown).");
+
+
         try {
             securityManager.authorizeOperation(GetFileRequest.class.getSimpleName(),
                     SecurityTestConstants.getTestData(), TestCertProvider.getPositiveCertSignature(), collectionID1);
@@ -120,8 +130,7 @@ public class SecurityManagerTest extends ExtendedTestCase {
     @Tag("regressiontest")
     public void certificateAuthorizationBehaviourTest() throws Exception {
         addDescription("Tests that a certificate is only allowed by registered users (component).");
-        addStep("Check that the registered component is allowed.",
-                "The registered component is allowed.");
+        addStep("Check that the registered component is allowed.", "The registered component is allowed.");
 
         permissionStore.loadPermissions(getSigningCertPermission(), SecurityTestConstants.getComponentID());
 
@@ -132,8 +141,7 @@ public class SecurityManagerTest extends ExtendedTestCase {
             Assertions.fail(e.getMessage());
         }
         Assertions.assertNotNull(getSigningCertPermission().getPermission().get(0).getCertificate().getAllowedCertificateUsers());
-        addStep("Check that an unregistered component is not allowed.",
-                "The unregistered component is not allowed.");
+        addStep("Check that an unregistered component is not allowed.", "The unregistered component is not allowed.");
         try {
             securityManager.authorizeCertificateUse(SecurityTestConstants.getDisallowedCertificateUser(),
                     SecurityTestConstants.getTestData(), TestCertProvider.getPositiveCertSignature());
@@ -156,9 +164,8 @@ public class SecurityManagerTest extends ExtendedTestCase {
         }
         permissionStore.loadPermissions(getSigningCertPermission(), SecurityTestConstants.getComponentID());
 
-        String signatureString =
-                new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)),
-                        StandardCharsets.UTF_8);
+        String signatureString = new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)),
+                StandardCharsets.UTF_8);
         log.info("Signature for testdata is: {}", signatureString);
 
         addStep("Check signature matches the data ", "Signature and data matches");
@@ -169,8 +176,7 @@ public class SecurityManagerTest extends ExtendedTestCase {
         }
     }
 
-    @Test
-    @Tag("regressiontest")
+    @Test @Tag("regressiontest")
     public void negativeSigningAuthenticationRoundtripUnkonwnCertificateTest() throws Exception {
         addDescription("Tests that a roundtrip of signing a request and afterwards authenticating it fails due to " +
                 "a unknown certificate.");
@@ -181,15 +187,13 @@ public class SecurityManagerTest extends ExtendedTestCase {
         } catch (MessageSigningException e) {
             Assertions.fail("Failed signing test data!", e);
         }
-        String signatureString =
-                new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)),
-                        StandardCharsets.UTF_8);
+        String signatureString = new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)),
+                StandardCharsets.UTF_8);
         log.info("Signature for testdata is: {}", signatureString);
 
-        addStep("Check signature matches the data",
-                "Signature cant be matched as certificate is unknown.");
+        addStep("Check signature matches the data", "Signature cant be matched as certificate is unknown.");
         try {
-            securityManager.authenticateMessage(SecurityTestConstants.getTestData(), signature);
+            securityManager.authenticateMessage(SecurityTestConstants.getTestData(), signature);//signatureString);
             Assertions.fail("Authentication did not fail as expected");
         } catch (MessageAuthenticationException e) {
             log.info(e.getMessage());
@@ -211,9 +215,8 @@ public class SecurityManagerTest extends ExtendedTestCase {
         }
         permissionStore.loadPermissions(getSigningCertPermission(), SecurityTestConstants.getComponentID());
 
-        String signatureString =
-                new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)),
-                        StandardCharsets.UTF_8);
+        String signatureString = new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)),
+                StandardCharsets.UTF_8);
         log.info("Signature for testdata is: {}", signatureString);
 
         addStep("Check signature matches the data ", "Signature and data matches does not match");
