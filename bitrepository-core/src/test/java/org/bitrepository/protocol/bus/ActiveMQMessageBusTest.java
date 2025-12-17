@@ -29,7 +29,6 @@ import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assertions;
 
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -38,7 +37,15 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
-public class ActiveMQMessageBusTest extends GeneralMessageBusTest {  // Assuming it extends a base class
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+
+/**
+ * Runs the GeneralMessageBusTest using a LocalActiveMQBroker (if useEmbeddedMessageBus is true) and a suitable
+ * MessageBus based on settingsForTestClient.  Regression tests utilized that uses JAccept to generate reports.
+ */
+
+public class ActiveMQMessageBusTest extends GeneralMessageBusTest {
 
     @Override
     protected void setupMessageBus() {
@@ -85,8 +92,7 @@ public class ActiveMQMessageBusTest extends GeneralMessageBusTest {  // Assuming
         collectionReceiver.checkNoMessageIsReceived(IdentifyPillarsForDeleteFileRequest.class);
     }
 
-    @Test
-    @Tag("regressiontest")
+    @Test @Tag("regressiontest")
     public final void sendMessageToSpecificComponentTest() throws Exception {
         addDescription("Test that message bus correct uses the 'to' header property to indicated that the message " +
                 "is meant for a specific component");
@@ -112,8 +118,7 @@ public class ActiveMQMessageBusTest extends GeneralMessageBusTest {  // Assuming
         Assertions.assertEquals(receivedMessage.getStringProperty(ActiveMQMessageBus.MESSAGE_TO_KEY), receiverID);  // Assertion update
     }
 
-    @Test
-    @Tag("regressiontest")
+    @Test @Tag("regressiontest")
     public final void toFilterTest() throws Exception {
         addDescription("Test that message bus filters identify requests to other components, eg. ignores these.");
         addStep("Send an identify request with a undefined 'To' header property, " +

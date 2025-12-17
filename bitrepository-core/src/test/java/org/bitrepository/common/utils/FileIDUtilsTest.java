@@ -23,25 +23,26 @@ package org.bitrepository.common.utils;
 
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 public class FileIDUtilsTest extends ExtendedTestCase {
     String FILE_ID = "Test-File-Id";
     
-    @Test( groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void fileIDsTest() throws Exception {
         addDescription("Test the utility class for generating FileIDs");
         addStep("Test 'all file ids'", "is only AllFileIDs");
         FileIDs allFileIDs = FileIDsUtils.getAllFileIDs();
-        Assert.assertTrue(allFileIDs.isSetAllFileIDs());
-        Assert.assertFalse(allFileIDs.isSetFileID());
-        Assert.assertNull(allFileIDs.getFileID());
+        Assertions.assertTrue(allFileIDs.isSetAllFileIDs());
+        Assertions.assertFalse(allFileIDs.isSetFileID());
+        Assertions.assertNull(allFileIDs.getFileID());
         
         addStep("Test a specific file id", "Should not be AllFileIDs");
         FileIDs specificFileIDs = FileIDsUtils.getSpecificFileIDs(FILE_ID);
-        Assert.assertFalse(specificFileIDs.isSetAllFileIDs());
-        Assert.assertTrue(specificFileIDs.isSetFileID());
-        Assert.assertEquals(specificFileIDs.getFileID(), FILE_ID);
+        Assertions.assertFalse(specificFileIDs.isSetAllFileIDs());
+        Assertions.assertTrue(specificFileIDs.isSetFileID());
+        Assertions.assertEquals(specificFileIDs.getFileID(), FILE_ID);
     }
 }

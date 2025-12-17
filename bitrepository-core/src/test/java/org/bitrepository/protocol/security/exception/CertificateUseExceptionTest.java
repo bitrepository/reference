@@ -22,12 +22,15 @@
 package org.bitrepository.protocol.security.exception;
 
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 
 public class CertificateUseExceptionTest extends ExtendedTestCase {
     
-    @Test(groups = { "regressiontest" })
+    @Test
+    @Tag("regressiontest" )
     public void testCertificateUseException() throws Exception {
         addDescription("Test the instantiation of the exception");
         addStep("Setup", "");
@@ -38,20 +41,20 @@ public class CertificateUseExceptionTest extends ExtendedTestCase {
         try {
             throw new CertificateUseException(errMsg);
         } catch(Exception e) {
-            Assert.assertTrue(e instanceof CertificateUseException);
-            Assert.assertEquals(e.getMessage(), errMsg);
-            Assert.assertNull(e.getCause());
+            Assertions.assertTrue(e instanceof CertificateUseException);
+            Assertions.assertEquals(e.getMessage(), errMsg);
+            Assertions.assertNull(e.getCause());
         }
         
         addStep("Throw the exception with an embedded exception", "The embedded exception should be the same.");
         try {
             throw new CertificateUseException(errMsg, new IllegalArgumentException(causeMsg));
         } catch(Exception e) {
-            Assert.assertTrue(e instanceof CertificateUseException);
-            Assert.assertEquals(e.getMessage(), errMsg);
-            Assert.assertNotNull(e.getCause());
-            Assert.assertTrue(e.getCause() instanceof IllegalArgumentException);
-            Assert.assertEquals(e.getCause().getMessage(), causeMsg);
+            Assertions.assertTrue(e instanceof CertificateUseException);
+            Assertions.assertEquals(e.getMessage(), errMsg);
+            Assertions.assertNotNull(e.getCause());
+            Assertions.assertTrue(e.getCause() instanceof IllegalArgumentException);
+            Assertions.assertEquals(e.getCause().getMessage(), causeMsg);
         }
     }
     

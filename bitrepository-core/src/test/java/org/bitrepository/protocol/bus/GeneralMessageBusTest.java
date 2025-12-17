@@ -29,8 +29,9 @@ import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.jaccept.TestEventManager;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
@@ -47,13 +48,14 @@ public class GeneralMessageBusTest extends IntegrationTest {
         addReceiver(collectionReceiver);
     }
 
-    @AfterMethod(alwaysRun = true)
+    @AfterEach
     public void tearDown() {
         messageBus.setComponentFilter(Arrays.asList(new String[]{}));
         messageBus.setCollectionFilter(Arrays.asList(new String[]{}));
     }
 
-    @Test(groups = { "regressiontest" })
+    @Test
+    @Tag("regressiontest" )
     public final void busActivityTest() throws Exception {
         addDescription("Tests whether it is possible to create a message listener, " +
                 "and then set it to listen to the topic. Then puts a message" +
@@ -70,7 +72,8 @@ public class GeneralMessageBusTest extends IntegrationTest {
         alarmReceiver.waitForMessage(message.getClass());
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public final void twoListenersForTopicTest() throws Exception {
         addDescription("Verifies that two listeners on the same topic both receive the message");
         TestEventManager testEventManager = TestEventManager.getInstance();
@@ -94,7 +97,7 @@ public class GeneralMessageBusTest extends IntegrationTest {
         receiver2.waitForMessage(AlarmMessage.class);
     }
 
-    @Test(groups = { "specificationonly" })
+    @Test @Tag("specificationonly" )
     public final void messageBusFailoverTest() {
         addDescription("Verifies that we can switch to at second message bus " +
                 "in the middle of a conversation, if the connection is lost. " +
@@ -102,7 +105,7 @@ public class GeneralMessageBusTest extends IntegrationTest {
                 "message bus");
     }
 
-    @Test(groups = { "specificationonly" })
+    @Test @Tag("specificationonly" )
     public final void messageBusReconnectTest() {
         addDescription("Test whether we are able to reconnect to the message " +
                 "bus if the connection is lost");

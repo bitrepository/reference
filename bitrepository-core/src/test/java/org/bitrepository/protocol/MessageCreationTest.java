@@ -31,7 +31,8 @@ import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -48,12 +49,14 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 /**
  * Test whether we are able to create message objects from xml. The input XML is the example code defined in the
  * message-xml, thereby also testing whether this is valid. *
  */
 public class MessageCreationTest extends ExtendedTestCase {
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void messageCreationTest() throws Exception {
         addDescription("Tests if we are able to create message objects from xml. The input XML is the example code " +
                 "defined in the message-xml, thereby also testing whether this is valid.");
@@ -66,17 +69,21 @@ public class MessageCreationTest extends ExtendedTestCase {
         }
     }
 
-    @Test(groups = {"regressiontest"}, expectedExceptions = SAXException.class)
+    @Test
+    @Tag("regressiontest")
     public void badDateMessageTest() throws IOException, SAXException, JAXBException {
-        addDescription("Test to ensure that messages carrying dates must provide offset.");
-        String messagePath = ExampleMessageFactory.PATH_TO_EXAMPLES + "BadMessages/" +
-                "BadDateAlarmMessage" + ExampleMessageFactory.EXAMPLE_FILE_POSTFIX;
-        InputStream messageIS = Thread.currentThread().getContextClassLoader().getResourceAsStream(messagePath);
-        assert messageIS != null;
-        String message = IOUtils.toString(messageIS, StandardCharsets.UTF_8);
-        JaxbHelper jaxbHelper = new JaxbHelper(ExampleMessageFactory.PATH_TO_SCHEMA, ExampleMessageFactory.SCHEMA_NAME);
-        jaxbHelper.validate(new ByteArrayInputStream(message.getBytes(StandardCharsets.UTF_8)));
-        AlarmMessage am = jaxbHelper.loadXml(AlarmMessage.class, new ByteArrayInputStream(message.getBytes(StandardCharsets.UTF_8)));
+        assertThrows(SAXException.class, () -> {
+
+            addDescription("Test to ensure that messages carrying dates must provide offset.");
+            String messagePath = ExampleMessageFactory.PATH_TO_EXAMPLES + "BadMessages/" +
+                    "BadDateAlarmMessage" + ExampleMessageFactory.EXAMPLE_FILE_POSTFIX;
+            InputStream messageIS = Thread.currentThread().getContextClassLoader().getResourceAsStream(messagePath);
+            assert messageIS != null;
+            String message = IOUtils.toString(messageIS, StandardCharsets.UTF_8);
+            JaxbHelper jaxbHelper = new JaxbHelper(ExampleMessageFactory.PATH_TO_SCHEMA, ExampleMessageFactory.SCHEMA_NAME);
+            jaxbHelper.validate(new ByteArrayInputStream(message.getBytes(StandardCharsets.UTF_8)));
+            AlarmMessage am = jaxbHelper.loadXml(AlarmMessage.class, new ByteArrayInputStream(message.getBytes(StandardCharsets.UTF_8)));
+        });
     }
 
     /**

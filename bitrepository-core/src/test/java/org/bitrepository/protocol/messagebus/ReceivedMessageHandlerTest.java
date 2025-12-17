@@ -29,7 +29,8 @@ import org.bitrepository.settings.referencesettings.MessageCategory;
 import org.bitrepository.settings.referencesettings.MessageThreadPool;
 import org.bitrepository.settings.referencesettings.MessageThreadPools;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -41,7 +42,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class ReceivedMessageHandlerTest extends ExtendedTestCase {
 
-    @Test(groups = { "regressiontest" })
+    @Test
+    @Tag("regressiontest" )
     public void singleMessageDispatch() {
         addDescription("Tests that a single message is dispatched correctly");
         ReceivedMessageHandler handler = new ReceivedMessageHandler(null);
@@ -52,7 +54,8 @@ public class ReceivedMessageHandlerTest extends ExtendedTestCase {
         verify(defaultListener, timeout(100)).onMessage(testMessage, testMessageContext);
     }
 
-    @Test(groups = { "regressiontest" })
+    @Test
+    @Tag("regressiontest")
     public void parallelMessageDispatch() {
         addDescription("Tests that two messages can be handled in parallel in the default pool configuration.");
         addFixture("Create a ReceivedMessageHandler with a null configuration. This should create a " +
@@ -76,7 +79,8 @@ public class ReceivedMessageHandlerTest extends ExtendedTestCase {
         verifyNoMoreInteractions(secondListener);
     }
 
-    @Test(groups = { "regressiontest" })
+    @Test
+    @Tag("regressiontest" )
     public void manyMessageDispatch() {
         addDescription("Tests that many (50) messages can be handled in parallel in the default pool configuration.");
         addFixture("Create a ReceivedMessageHandler with a null configuration. This should create a " +
@@ -104,7 +108,8 @@ public class ReceivedMessageHandlerTest extends ExtendedTestCase {
         verifyNoMoreInteractions(lastListener);
     }
 
-    @Test(groups = { "regressiontest" })
+    @Test
+    @Tag("regressiontest")
     public void singleThreadMessageDispatch() {
         addDescription("Tests that two messages will be handled in sequence if a singleThreaded pool is configured.");
         addFixture("Create a ReceivedMessageHandler with a single pool of size 1.");
@@ -125,7 +130,8 @@ public class ReceivedMessageHandlerTest extends ExtendedTestCase {
         verify(secondListener, timeout(100)).onMessage(testMessage, null);
     }
 
-    @Test(groups = { "regressiontest" })
+    @Test
+    @Tag("regressiontest")
     public void specificMessagePools() {
         addDescription("Tests that different message types can be handled by different executors.");
         addFixture("Create a ReceivedMessageHandler with a two pools, one for status requests and one for put requests. " +
@@ -159,7 +165,7 @@ public class ReceivedMessageHandlerTest extends ExtendedTestCase {
         verifyNoMoreInteractions(thirdStatusListener);
     }
 
-    @Test(groups = { "regressiontest" })
+    @Test @Tag("regressiontest")
     public void specificMessageNamePoolAndDefaultPool() {
         addDescription("Tests it is possible to specify a pool for a specific message type, with a " +
                 "default pool for the remainder.");
@@ -192,7 +198,8 @@ public class ReceivedMessageHandlerTest extends ExtendedTestCase {
         verifyNoMoreInteractions(thirdStatusListener);
     }
 
-    @Test(groups = { "regressiontest" })
+    @Test
+    @Tag("regressiontest" )
     public void specificMessageCategoryPoolAndDefaultPool() {
         addDescription("Tests it is possible to specify a pool for a specific message category, with a " +
                 "default pool for the remainder.");
@@ -224,7 +231,7 @@ public class ReceivedMessageHandlerTest extends ExtendedTestCase {
         verifyNoMoreInteractions(thirdStatusListener);
     }
 
-    @Test(groups = { "regressiontest" })
+    @Test @Tag("regressiontest")
     public void specificCollectionPoolAndDefaultPool() {
         addDescription("Tests it is possible to specify a pool for a specific collection, with a " +
                 "default pool for the remainder.");
@@ -264,7 +271,8 @@ public class ReceivedMessageHandlerTest extends ExtendedTestCase {
         verify(secondCollection1Listener, timeout(100)).onMessage(collection1Message, null);
     }
 
-    @Test(groups = { "regressiontest" })
+    @Test
+    @Tag("regressiontest")
     public void specificCollectionPoolWithSpecificMessageTypePool() {
         addDescription("Tests it is possible to specify a pool for a specific collection for only a specific" +
                 "message type.");

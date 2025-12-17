@@ -23,8 +23,9 @@ package org.bitrepository.common.utils;
 
 import org.apache.activemq.util.ByteArrayInputStream;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
@@ -32,7 +33,7 @@ import java.nio.charset.StandardCharsets;
 public class StreamUtilsTest extends ExtendedTestCase {
     String DATA = "The data for the streams.";
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void streamTester() throws Exception {
         addDescription("Tests the SteamUtils class.");
         addStep("Setup variables", "");
@@ -42,22 +43,22 @@ public class StreamUtilsTest extends ExtendedTestCase {
         addStep("Test with null arguments", "Should throw exceptions");
         try {
             StreamUtils.copyInputStreamToOutputStream(null, out);
-            Assert.fail("Should throw an exception here.");
+            Assertions.fail("Should throw an exception here.");
         } catch (Exception e) {
-            Assert.assertTrue(e instanceof IllegalArgumentException);
+            Assertions.assertTrue(e instanceof IllegalArgumentException);
         }
         
         try {
             StreamUtils.copyInputStreamToOutputStream(in, null);
-            Assert.fail("Should throw an exception here.");
+            Assertions.fail("Should throw an exception here.");
         } catch (Exception e) {
-            Assert.assertTrue(e instanceof IllegalArgumentException);
+            Assertions.assertTrue(e instanceof IllegalArgumentException);
         }
         
         addStep("Test copying the input stream to the output stream.", "Should contain the same data.");
         StreamUtils.copyInputStreamToOutputStream(in, out);
         
-        Assert.assertEquals(out.toString(StandardCharsets.UTF_8), DATA);
+        Assertions.assertEquals(out.toString(StandardCharsets.UTF_8), DATA);
     }
 
 }

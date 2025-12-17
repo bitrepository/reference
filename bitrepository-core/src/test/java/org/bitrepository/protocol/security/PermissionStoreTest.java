@@ -27,25 +27,27 @@ import org.bouncycastle.cms.SignerId;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.util.encoders.Base64;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 import java.security.cert.X509Certificate;
 
-import static org.testng.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PermissionStoreTest extends ExtendedTestCase  {
     private static final String componentID = "TEST";
     private PermissionStore permissionStore;
     
-    @BeforeMethod(alwaysRun = true)
+    @BeforeEach
     public void setUp() throws Exception {
         permissionStore = new PermissionStore();
         permissionStore.loadPermissions(SecurityTestConstants.getDefaultPermissions(), componentID);
     }
     
-    @Test(groups = {"regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void positiveCertificateRetrievalTest() throws Exception {
         addDescription("Tests that a certificate can be retrieved based on the correct signerId.");
         addStep("Create signer to lookup certificate", "No exceptions");
@@ -60,7 +62,8 @@ public class PermissionStoreTest extends ExtendedTestCase  {
         assertEquals(positiveCertificate, certificateFromStore);
     }
     
-    @Test(groups = {"regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void negativeCertificateRetrievalTest() throws Exception {
         addDescription("Tests that a certificate cannot be retrieved based on the wrong signerId.");
         addStep("Create signer and modify its ID so lookup will fail", "No exceptions");
@@ -89,7 +92,7 @@ public class PermissionStoreTest extends ExtendedTestCase  {
         addDescription("Tests that a unknown certificate results in expected refusal.");
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void certificateFingerprintTest() throws Exception {
         addDescription("Tests that a certificate fingerprint can correctly be retrieved for a signer.");
         addFixture("Create signer to lookup fingerprint");
