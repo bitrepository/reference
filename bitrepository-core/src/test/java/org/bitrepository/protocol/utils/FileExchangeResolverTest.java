@@ -6,12 +6,13 @@ import org.bitrepository.protocol.http.HttpFileExchange;
 import org.bitrepository.protocol.http.HttpsFileExchange;
 import org.bitrepository.settings.referencesettings.FileExchangeSettings;
 import org.bitrepository.settings.referencesettings.ProtocolType;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import static org.testng.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class FileExchangeResolverTest {
     @Test
@@ -59,9 +60,11 @@ public class FileExchangeResolverTest {
         assertEquals(exchange.getClass(), HttpsFileExchange.class);
     }
 
-    @Test(expectedExceptions = {IllegalArgumentException.class})
+    @Test
     public void resolveBadProtocolURL() throws MalformedURLException {
-        URL badURL = new URL("ftp://some/path");
-        FileExchangeResolver.getBasicFileExchangeFromURL(badURL);
+        assertThrows(IllegalArgumentException.class, () -> {
+            URL badURL = new URL("ftp://some/path");
+            FileExchangeResolver.getBasicFileExchangeFromURL(badURL);
+        });
     }
 }

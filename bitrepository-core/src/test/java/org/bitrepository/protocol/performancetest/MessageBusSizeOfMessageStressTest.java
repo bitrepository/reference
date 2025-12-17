@@ -42,9 +42,11 @@ import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 
 import java.util.Date;
 
@@ -59,7 +61,7 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
     private final long TIME_FRAME = 60000L;
     private Settings settings;
 
-    @BeforeMethod
+    @BeforeEach
     public void initializeSettings() {
         settings = TestSettingsProvider.getSettings(getClass().getSimpleName());
     }
@@ -96,7 +98,7 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
 
             addStep("Validating messages have been sent.", "Should be OK");
             int count = listener.getCount();
-            Assert.assertTrue(count > 0, "Some message should have been sent.");
+            Assertions.assertTrue(count > 0, "Some message should have been sent.");
             System.out.println("Sent '" + count + "' messages in '" + TIME_FRAME / 1000 + "' seconds.");
         } finally {
             if (listener != null) {
@@ -109,7 +111,8 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
      * Tests the amount of messages sent through a local messagebus.
      * It should be at least 20 per second.
      */
-    @Test(groups = {"StressTest"})
+    @Test
+    @Tag("StressTest")
     public void SendLargeMessagesLocally() throws Exception {
         addDescription("Tests how many messages can be handled within a given timeframe.");
         addStep("Define constants", "This should not be possible to fail.");
@@ -117,9 +120,9 @@ public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
 
         addStep("Make configuration for the messagebus and define the local broker.", "Both should be created.");
         MessageBusConfiguration conf = MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration();
-        Assert.assertNotNull(conf);
+        Assertions.assertNotNull(conf);
         LocalActiveMQBroker broker = new LocalActiveMQBroker(conf);
-        Assert.assertNotNull(broker);
+        Assertions.assertNotNull(broker);
 
         ResendMessageListener listener = null;
 

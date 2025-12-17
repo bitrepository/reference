@@ -39,9 +39,11 @@ import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 
 import java.util.Date;
 
@@ -60,7 +62,7 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
     private static Date startSending;
     private Settings settings;
 
-    @BeforeMethod
+    @BeforeEach
     public void initializeSettings() {
         settings = TestSettingsProvider.getSettings(getClass().getSimpleName());
     }
@@ -116,7 +118,7 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
      * Tests the amount of messages sent through a local messagebus.
      * It should be at least 20 per second.
      */
-    @Test( groups = {"StressTest"} )
+    @Test @Tag("StressTest")
     public void SendManyMessagesLocally() throws Exception {
         addDescription("Tests how many messages can be handled within a given timeframe.");
         addStep("Define constants", "This should not be possible to fail.");
@@ -124,9 +126,9 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
 
         addStep("Make configuration for the messagebus and define the local broker.", "Both should be created.");
         MessageBusConfiguration conf = MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration();
-        Assert.assertNotNull(conf);
+        Assertions.assertNotNull(conf);
         LocalActiveMQBroker broker = new LocalActiveMQBroker(conf);
-        Assert.assertNotNull(broker);
+        Assertions.assertNotNull(broker);
 
         CountMessagesListener listener = null;
         SecurityManager securityManager = new DummySecurityManager();

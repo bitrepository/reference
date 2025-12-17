@@ -3,7 +3,7 @@ package org.bitrepository.protocol.security;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.protocol.security.exception.MessageSigningException;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 public class SignatureGeneratorTest {
     /*

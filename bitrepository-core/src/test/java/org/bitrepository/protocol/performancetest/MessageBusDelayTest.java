@@ -32,8 +32,10 @@ import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.jaccept.TestEventManager;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 import java.io.FileOutputStream;
 import java.nio.charset.StandardCharsets;
@@ -43,6 +45,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class MessageBusDelayTest extends ExtendedTestCase {
     private Settings settings;
     private SecurityManager securityManager;
@@ -51,17 +54,19 @@ public class MessageBusDelayTest extends ExtendedTestCase {
     private static final int NUMBER_OF_TESTS = 100;
     private static final boolean WRITE_RESULTS_TO_DISC = true;
 
-    @BeforeClass(alwaysRun = true)
+    @BeforeAll
     public void setup() {
         settings = TestSettingsProvider.reloadSettings(getClass().getSimpleName());
         securityManager = new DummySecurityManager();
     }
 
-    @Test(groups = {"StressTest"})
+    @Test
+    @Tag("StressTest")
     public void testManyTimes() {
         for (int i = 0; i < NUMBER_OF_TESTS; i++) {
             try {
                 performStatisticalAnalysisOfMessageDelay();
+                System.out.println("Test " + i + " done.");
             } catch (Exception e) {
                 System.err.println("Unknown exception caught: " + e);
             }

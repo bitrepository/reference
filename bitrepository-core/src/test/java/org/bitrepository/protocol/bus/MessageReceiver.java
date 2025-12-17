@@ -28,9 +28,9 @@ import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.jaccept.TestEventManager;
+import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.Assert;
 
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
@@ -119,7 +119,7 @@ public class MessageReceiver {
             log.debug("Read message after ({} ms): {}", waitTime, message);
         } else {
             log.info("Wait for {} message timed out ({} ms).", messageType.getSimpleName(), waitTime);
-            Assert.fail("Wait for " + messageType.getSimpleName() + " message timed out (" + waitTime + " ms).");
+            Assertions.fail("Wait for " + messageType.getSimpleName() + " message timed out (" + waitTime + " ms).");
         }
         return message;
     }
@@ -136,7 +136,7 @@ public class MessageReceiver {
             throw new RuntimeException(e); // Should never happen
         }
         if (message != null) {
-            Assert.fail("Received unexpected message " + message);
+            Assertions.fail("Received unexpected message " + message);
         }
     }
 

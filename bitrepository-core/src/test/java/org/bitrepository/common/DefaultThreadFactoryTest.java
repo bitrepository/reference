@@ -3,9 +3,10 @@ package org.bitrepository.common;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.LoggerFactory;
-import org.testng.annotations.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -21,7 +22,8 @@ public class DefaultThreadFactoryTest {
 
     private final String message = "Hey this is the message I want to see";
 
-    @Test(groups = {"regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void testUncaughtExceptionHandler() throws Exception {
         // Technique from https://dzone.com/articles/unit-testing-asserting-line
 

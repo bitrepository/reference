@@ -27,7 +27,8 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRespo
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -36,7 +37,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
-import static org.testng.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 /**
  * Runs the GeneralMessageBusTest using a LocalActiveMQBroker (if useEmbeddedMessageBus is true) and a suitable
@@ -56,7 +58,8 @@ public class ActiveMQMessageBusTest extends GeneralMessageBusTest {
 
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public final void collectionFilterTest() throws Exception {
         addDescription("Test that message bus filters identify requests to other collection, eg. ignores these.");
         addStep("Send an identify request with a undefined 'Collection' header property, " +
@@ -90,7 +93,7 @@ public class ActiveMQMessageBusTest extends GeneralMessageBusTest {
         collectionReceiver.checkNoMessageIsReceived(IdentifyPillarsForDeleteFileRequest.class);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public final void sendMessageToSpecificComponentTest() throws Exception {
         addDescription("Test that message bus correct uses the 'to' header property to indicated that the message " +
                 "is meant for a specific component");
@@ -116,7 +119,7 @@ public class ActiveMQMessageBusTest extends GeneralMessageBusTest {
         assertEquals(receivedMessage.getStringProperty(ActiveMQMessageBus.MESSAGE_TO_KEY), receiverID);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public final void toFilterTest() throws Exception {
         addDescription("Test that message bus filters identify requests to other components, eg. ignores these.");
         addStep("Send an identify request with a undefined 'To' header property, " +

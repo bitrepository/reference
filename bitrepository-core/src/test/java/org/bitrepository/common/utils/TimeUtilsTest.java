@@ -22,8 +22,10 @@
 package org.bitrepository.common.utils;
 
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -39,13 +41,13 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TimeUtilsTest extends ExtendedTestCase {
     private static final ZonedDateTime BASE = Instant.EPOCH.atZone(ZoneOffset.UTC);
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void timeTester() throws Exception {
         addDescription("Tests the TimeUtils. Pi days = 271433605 milliseconds");
         addStep("Test that milliseconds can be converted into human readable seconds", 
@@ -81,7 +83,8 @@ public class TimeUtilsTest extends ExtendedTestCase {
         assertTrue(human.contains(expectedDays), human);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test 
+    @Tag("regressiontest")
     public void printsHumanDuration() {
         assertEquals(TimeUtils.durationToHumanUsingEstimates(ChronoUnit.YEARS.getDuration()), "1y");
         assertEquals(TimeUtils.durationToHumanUsingEstimates(ChronoUnit.MONTHS.getDuration()), "1m");
@@ -97,7 +100,8 @@ public class TimeUtilsTest extends ExtendedTestCase {
         assertEquals(TimeUtils.durationToHumanUsingEstimates(Duration.ofHours(4_382_910)), "500y");
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test 
+    @Tag("regressiontest")
     public void zeroIntervalTest() throws Exception {
         addDescription("Verifies that a 0 ms interval is represented correctly");
         addStep("Call millisecondsToHuman with 0 ms", "The output should be '0 ms'");
@@ -105,7 +109,8 @@ public class TimeUtilsTest extends ExtendedTestCase {
         assertEquals(zeroTimeString, " 0 ms");
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test 
+    @Tag("regressiontest")
     public void durationsPrintHumanly() {
         addDescription("Tests durationToHuman()");
 
@@ -127,7 +132,9 @@ public class TimeUtilsTest extends ExtendedTestCase {
         Duration allUnits = Duration.parse("P3DT5H7M11.013000017S");
         assertEquals(TimeUtils.durationToHuman(allUnits), "3d 5h 7m 11s 13000017 ns");
     }
-    @Test(groups = {"regressiontest"})
+    
+    @Test 
+    @Tag("regressiontest")
     public void differencesPrintHumanly() {
         addDescription("TimeUtils.humanDifference() should return" +
                 " similar human readable strings to those from millisecondsToHuman()");
@@ -171,7 +178,8 @@ public class TimeUtilsTest extends ExtendedTestCase {
         assertEquals(oneDaySomethingString, "1d 23h 59m");
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void differencesPrintsWithAppropriatePrecision() {
         // Include hours if months are 6 or less.
         testHumanDifference("11m", Period.ofMonths(11), Duration.ofHours(23));
@@ -216,46 +224,48 @@ public class TimeUtilsTest extends ExtendedTestCase {
      * formatted to depends on the default/system timezone. At some time the use of the old java Date 
      * api should be discontinued and the new Java Time api used instead.
      */
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void shortDateTest() {
     	DateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.ROOT);
         Date date = new Date(1360069129256L);
         String shortDateString = TimeUtils.shortDate(date);
-        Assert.assertEquals(shortDateString, formatter.format(date));
+        Assertions.assertEquals(shortDateString, formatter.format(date));
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void rejectsNegativeDuration() {
-        Assert.assertThrows(IllegalArgumentException.class,
+        Assertions.assertThrows(IllegalArgumentException.class,
                 () -> TimeUtils.durationToCountAndTimeUnit(Duration.ofSeconds(Long.MIN_VALUE)));
-        Assert.assertThrows(IllegalArgumentException.class,
+        Assertions.assertThrows(IllegalArgumentException.class,
                 () -> TimeUtils.durationToCountAndTimeUnit(Duration.ofNanos(-1)));
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void convertsDurationToCountAndTimeUnit() {
         CountAndTimeUnit expectedZero = TimeUtils.durationToCountAndTimeUnit(Duration.ZERO);
-        Assert.assertEquals(expectedZero.getCount(), 0);
-        Assert.assertNotNull(expectedZero.getUnit());
+        Assertions.assertEquals(expectedZero.getCount(), 0);
+        Assertions.assertNotNull(expectedZero.getUnit());
 
-        Assert.assertEquals(TimeUtils.durationToCountAndTimeUnit(Duration.ofNanos(1)),
+        Assertions.assertEquals(TimeUtils.durationToCountAndTimeUnit(Duration.ofNanos(1)),
                 new CountAndTimeUnit(1, TimeUnit.NANOSECONDS));
-        Assert.assertEquals(TimeUtils.durationToCountAndTimeUnit(Duration.ofNanos(Long.MAX_VALUE)),
+        Assertions.assertEquals(TimeUtils.durationToCountAndTimeUnit(Duration.ofNanos(Long.MAX_VALUE)),
                 new CountAndTimeUnit(Long.MAX_VALUE, TimeUnit.NANOSECONDS));
-        Assert.assertEquals(
+        Assertions.assertEquals(
                 TimeUtils.durationToCountAndTimeUnit(Duration.of(Long.MAX_VALUE / 1000 + 1, ChronoUnit.MICROS)),
                 new CountAndTimeUnit(Long.MAX_VALUE / 1000 + 1, TimeUnit.MICROSECONDS));
-        Assert.assertEquals(TimeUtils.durationToCountAndTimeUnit(Duration.of(Long.MAX_VALUE, ChronoUnit.MICROS)),
+        Assertions.assertEquals(TimeUtils.durationToCountAndTimeUnit(Duration.of(Long.MAX_VALUE, ChronoUnit.MICROS)),
                 new CountAndTimeUnit(Long.MAX_VALUE, TimeUnit.MICROSECONDS));
-        Assert.assertEquals(
+        Assertions.assertEquals(
                 TimeUtils.durationToCountAndTimeUnit(Duration.ofMillis(Long.MAX_VALUE / 1000 + 1)),
                 new CountAndTimeUnit(Long.MAX_VALUE / 1000 + 1, TimeUnit.MILLISECONDS));
-        Assert.assertEquals(TimeUtils.durationToCountAndTimeUnit(Duration.ofMillis(Long.MAX_VALUE)),
+        Assertions.assertEquals(TimeUtils.durationToCountAndTimeUnit(Duration.ofMillis(Long.MAX_VALUE)),
                 new CountAndTimeUnit(Long.MAX_VALUE, TimeUnit.MILLISECONDS));
-        Assert.assertEquals(
+        Assertions.assertEquals(
                 TimeUtils.durationToCountAndTimeUnit(Duration.ofSeconds(Long.MAX_VALUE / 1000 + 1)),
                 new CountAndTimeUnit(Long.MAX_VALUE / 1000 + 1, TimeUnit.SECONDS));
-        Assert.assertEquals(TimeUtils.durationToCountAndTimeUnit(Duration.ofSeconds(Long.MAX_VALUE)),
+        Assertions.assertEquals(TimeUtils.durationToCountAndTimeUnit(Duration.ofSeconds(Long.MAX_VALUE)),
                 new CountAndTimeUnit(Long.MAX_VALUE, TimeUnit.SECONDS));
     }
 
