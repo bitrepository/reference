@@ -26,27 +26,27 @@ import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.encoders.Base64;
+import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+
 import javax.security.auth.x500.X500Principal;
+import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.Security;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
-import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.common.utils.AllureTestUtils.addStep;
-
-public class CertificateIDTest {
+public class CertificateIDTest extends ExtendedTestCase {
 
     @Test
     @Tag("regressiontest")
     public void positiveCertificateIdentificationTest() throws Exception {
         addDescription("Tests that a certificate can be identified based on the correct signature.");
-        addStep("Create CertificateID object based on the certificate used to sign the data",
-                "CertificateID object not null");
+        addStep("Create CertificateID object based on the certificate used to sign the data", "CertificateID object not null");
         Security.addProvider(new BouncyCastleProvider());
 
         X509Certificate myCertificate = TestCertProvider.loadPositiveCert();
@@ -68,8 +68,7 @@ public class CertificateIDTest {
     @Tag("regressiontest")
     public void negativeCertificateIdentificationTest() throws Exception {
         addDescription("Tests that a certificate is not identified based on a incorrect signature.");
-        addStep("Create CertificateID object based on a certificate not used for signing the data",
-                "CertificateID object not null");
+        addStep("Create CertificateID object based on a certificate not used for signing the data", "CertificateID object not null");
         Security.addProvider(new BouncyCastleProvider());
 
         X509Certificate myCertificate = TestCertProvider.loadNegativeCert();
@@ -100,14 +99,14 @@ public class CertificateIDTest {
         CertificateID certificateID1 = new CertificateID(issuer, serial);
 
         addStep("Validate the content of the certificateID", "Should be same as x509Certificate");
-        Assertions.assertEquals(issuer, certificateID1.getIssuer());
-        Assertions.assertEquals(serial, certificateID1.getSerial());
+        Assertions.assertEquals(certificateID1.getIssuer(), issuer);
+        Assertions.assertEquals(certificateID1.getSerial(), serial);
 
         addStep("Test whether it equals it self", "should give positive result");
         Assertions.assertEquals(certificateID1, certificateID1);
 
         addStep("Test with a null as argument", "Should give negative result");
-        Assertions.assertNotNull(certificateID1);
+        Assertions.assertNotEquals(certificateID1, null);
 
         addStep("Test with another class", "Should give negative result");
         Assertions.assertNotEquals(new Object(), certificateID1);
@@ -118,9 +117,8 @@ public class CertificateIDTest {
         addStep("Test with same serial but no issuer", "Should give negative result");
         Assertions.assertNotEquals(new CertificateID((X500Principal) null, serial), certificateID1);
 
-        addStep("Test the positive case, with both the issuer and serial ",
-                "Should give positive result");
-        Assertions.assertEquals(certificateID1, new CertificateID(issuer, serial));
+        addStep("Test the positive case, with both the issuer and serial ", "Should give positive result");
+        Assertions.assertEquals(new CertificateID(issuer, serial), certificateID1);
 
         addStep("Setup an empty certificate", "");
         CertificateID certificateID2 = new CertificateID((X500Principal) null, null);

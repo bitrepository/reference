@@ -41,17 +41,14 @@ import org.bitrepository.protocol.messagebus.MessageListener;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
+import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.util.Date;
 
-import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+import java.util.Date;
 
 /**
  * Stress testing of the messagebus.
@@ -59,7 +56,7 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
  * The size is regulated by the 'BUFFER_TEXT' and the 'NUMBER_OF_REPEATS_OF_BUFFER_TEXT'.
  * Currently, the buffer text is 100 bytes, and it is repeated 100 times, thus generating a message of size 10 kB.
  */
-public class MessageBusSizeOfMessageStressTest {
+public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
     private static String QUEUE = "TEST-QUEUE";
     private final long TIME_FRAME = 60000L;
     private Settings settings;
@@ -73,8 +70,7 @@ public class MessageBusSizeOfMessageStressTest {
      * Tests the amount of messages sent over a message bus, which is not placed locally.
      * Requires sending at least five per second.
      */
-    /* @Test
-    @Tag("StressTest"} ) */
+    /* @Test( groups = {"StressTest"} ) */
     public void SendLargeMessagesDistributed() throws Exception {
         addDescription("Tests how many messages can be handled within a given timeframe.");
         addStep("Define constants", "This should not be possible to fail.");
@@ -122,12 +118,9 @@ public class MessageBusSizeOfMessageStressTest {
         addStep("Define constants", "This should not be possible to fail.");
         QUEUE += "-" + (new Date()).getTime();
 
-        addStep("Make configuration for the messagebus and define the local broker.",
-                "Both should be created.");
-        MessageBusConfiguration conf = new MessageBusConfiguration();
-        int port = getFreePort();
-        conf.setURL("tcp://localhost:" + port);
-        settings.getRepositorySettings().getProtocolSettings().setMessageBusConfiguration(conf);
+        addStep("Make configuration for the messagebus and define the local broker.", "Both should be created.");
+        MessageBusConfiguration conf = MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration();
+        Assertions.assertNotNull(conf);
         LocalActiveMQBroker broker = new LocalActiveMQBroker(conf);
         Assertions.assertNotNull(broker);
 
@@ -160,18 +153,6 @@ public class MessageBusSizeOfMessageStressTest {
                 listener.stop();
             }
             broker.stop();
-        }
-    }
-
-    /**
-     * Finds a free port on the localhost.
-     *
-     * @return A free port number.
-     * @throws IOException If an I/O error occurs.
-     */
-    private int getFreePort() throws IOException {
-        try (ServerSocket socket = new ServerSocket(0)) {
-            return socket.getLocalPort();
         }
     }
 

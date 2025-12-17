@@ -5,36 +5,34 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation, either version 2.1 of the
+ * it under the terms of the GNU Lesser General Public License as 
+ * published by the Free Software Foundation, either version 2.1 of the 
  * License, or (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- *
- * You should have received a copy of the GNU General Lesser Public
+ * 
+ * You should have received a copy of the GNU General Lesser Public 
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
 package org.bitrepository.common;
 
+import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 
-import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.common.utils.AllureTestUtils.addStep;
-
-public class ArgumentValidatorTest {
-    @Test
-    @Tag("regressiontest")
+public class ArgumentValidatorTest extends ExtendedTestCase {
+    @Test @Tag("regressiontest")
     public void testArgumentValidatorObject() throws Exception {
         addDescription("Test the argument validator for arguments not null");
         addStep("Test not null", "Should only throw an exception when a null is given.");
@@ -46,9 +44,8 @@ public class ArgumentValidatorTest {
             // expected
         }
     }
-
-    @Test
-    @Tag("regressiontest")
+        
+    @Test @Tag("regressiontest" )
     public void testArgumentValidatorString() throws Exception {
         addDescription("Test the argument validator for arguments for strings");
         addStep("Test empty string", "Should only throw an exception when the string is null or empty");
@@ -67,8 +64,7 @@ public class ArgumentValidatorTest {
         }
     }
 
-    @Test
-    @Tag("regressiontest")
+    @Test @Tag("regressiontest" )
     public void testArgumentValidatorInteger() throws Exception {
         addDescription("Test the argument validator for arguments for integers");
         addStep("Test not negative", "Should only throw an exception if the integer is negative");
@@ -79,7 +75,7 @@ public class ArgumentValidatorTest {
         } catch (IllegalArgumentException e) {
             // expected
         }
-
+        
         addStep("Test positive", "Should only throw an exception if the integer is not positive");
         ArgumentValidator.checkPositive(1, "No exception expected.");
         try {
@@ -96,8 +92,7 @@ public class ArgumentValidatorTest {
         }
     }
 
-    @Test
-    @Tag("regressiontest")
+    @Test @Tag("regressiontest")
     public void testArgumentValidatorLong() throws Exception {
         addDescription("Test the argument validator for arguments for longs");
         addStep("Test not negative", "Should only throw an exception if the long is negative");
@@ -108,7 +103,7 @@ public class ArgumentValidatorTest {
         } catch (IllegalArgumentException e) {
             // expected
         }
-
+        
         addStep("Test positive", "Should only throw an exception if the long is not positive");
         ArgumentValidator.checkPositive(1L, "No exception expected.");
         try {
@@ -124,9 +119,8 @@ public class ArgumentValidatorTest {
             // expected
         }
     }
-
-    @Test
-    @Tag("regressiontest")
+    
+    @Test @Tag("regressiontest" )
     public void testArgumentValidatorCollection() throws Exception {
         addDescription("Test the argument validator for arguments for collections");
         addStep("Check against null or empty collection", "Should throw exception exception when non-empty collection");
@@ -142,11 +136,10 @@ public class ArgumentValidatorTest {
         } catch (IllegalArgumentException e) {
             // expected
         }
-        ArgumentValidator.checkNotNullOrEmpty(List.of("NO FAILURE"), "No exception expected.");
+        ArgumentValidator.checkNotNullOrEmpty(Arrays.asList("NO FAILURE"), "No exception expected.");
     }
-
-    @Test
-    @Tag("regressiontest")
+    
+    @Test @Tag("regressiontest" )
     public void testArgumentValidatorArrays() throws Exception {
         addDescription("Test the argument validator for arguments for arrays");
         addStep("Check against null or empty arrays", "Should throw exception exception when non-empty array");
@@ -165,8 +158,7 @@ public class ArgumentValidatorTest {
         ArgumentValidator.checkNotNullOrEmpty(new Object[]{"NO FAILURE"}, "No exception expected.");
     }
 
-    @Test
-    @Tag("regressiontest")
+    @Test @Tag("regressiontest")
     public void testArgumentValidatorBoolean() throws Exception {
         addDescription("Test the argument validator for arguments for booleans");
         addStep("validate checkTrue", "Should fail when false.");

@@ -8,12 +8,12 @@
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
@@ -27,7 +27,6 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRespo
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -38,12 +37,12 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
-import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 /**
  * Runs the GeneralMessageBusTest using a LocalActiveMQBroker (if useEmbeddedMessageBus is true) and a suitable
- * MessageBus based on settingsForTestClient.  Regression tests utilized that uses Allure to generate reports.
+ * MessageBus based on settingsForTestClient.  Regression tests utilized that uses JAccept to generate reports.
  */
 
 public class ActiveMQMessageBusTest extends GeneralMessageBusTest {
@@ -55,7 +54,7 @@ public class ActiveMQMessageBusTest extends GeneralMessageBusTest {
             broker.start();
         }
         messageBus = new MessageBusWrapper(ProtocolComponentFactory.getInstance().getMessageBus(
-                settingsForTestClient, securityManager));
+                settingsForTestClient, securityManager), testEventManager);
 
     }
 
@@ -67,7 +66,7 @@ public class ActiveMQMessageBusTest extends GeneralMessageBusTest {
                         "eg. this identify requests should be handled by everybody.",
                 "Verify that the message bus accepts this message.");
         String myCollectionID = "MyCollection";
-        messageBus.setCollectionFilter(Arrays.asList(myCollectionID));
+        messageBus.setCollectionFilter(Arrays.asList(new String[]{myCollectionID}));
         RawMessagebus rawMessagebus = new RawMessagebus(
                 settingsForTestClient.getMessageBusConfiguration(),
                 securityManager);
@@ -94,8 +93,7 @@ public class ActiveMQMessageBusTest extends GeneralMessageBusTest {
         collectionReceiver.checkNoMessageIsReceived(IdentifyPillarsForDeleteFileRequest.class);
     }
 
-    @Test
-    @Tag("regressiontest")
+    @Test @Tag("regressiontest")
     public final void sendMessageToSpecificComponentTest() throws Exception {
         addDescription("Test that message bus correct uses the 'to' header property to indicated that the message " +
                 "is meant for a specific component");
@@ -118,17 +116,16 @@ public class ActiveMQMessageBusTest extends GeneralMessageBusTest {
         messageToSend.setTo(receiverID);
         messageBus.sendMessage(messageToSend);
         Message receivedMessage = messageList.poll(3, TimeUnit.SECONDS);
-        Assertions.assertEquals(receiverID, receivedMessage.getStringProperty(ActiveMQMessageBus.MESSAGE_TO_KEY));
+        assertEquals(receivedMessage.getStringProperty(ActiveMQMessageBus.MESSAGE_TO_KEY), receiverID);
     }
 
-    @Test
-    @Tag("regressiontest")
+    @Test @Tag("regressiontest")
     public final void toFilterTest() throws Exception {
         addDescription("Test that message bus filters identify requests to other components, eg. ignores these.");
         addStep("Send an identify request with a undefined 'To' header property, " +
                         "eg. this identify requests should be handled by all components.",
                 "Verify that the identify request bus accepts this identify request.");
-        messageBus.setComponentFilter(Arrays.asList(settingsForTestClient.getComponentID()));
+        messageBus.setComponentFilter(Arrays.asList(new String[]{ settingsForTestClient.getComponentID() }));
         RawMessagebus rawMessagebus = new RawMessagebus(
                 settingsForTestClient.getMessageBusConfiguration(),
                 securityManager);
