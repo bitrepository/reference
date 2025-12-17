@@ -107,7 +107,8 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
      * Tests the amount of messages send through a local messagebus. 
      * It should be at least 20 per second. 
      */
-    @Test @Tag("StressTest")
+    @Test
+    @Tag("StressTest")
     public void SendManyMessagesLocally() throws Exception {
         addDescription("Tests how many messages can be handled within a given timeframe.");
         addStep("Define constants", "This should not be possible to fail.");
