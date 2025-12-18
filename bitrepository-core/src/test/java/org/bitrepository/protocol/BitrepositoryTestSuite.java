@@ -1,5 +1,6 @@
 package org.bitrepository.protocol;
 
+import org.bitrepository.protocol.bus.ActiveMQMessageBusTest;
 import org.junit.platform.suite.api.ExcludeTags;
 import org.junit.platform.suite.api.IncludeTags;
 import org.junit.platform.suite.api.SelectClasses;
@@ -55,7 +56,7 @@ import org.bitrepository.protocol.GlobalSuiteExtension;
  * </pre>
  */
 @Suite
-@SelectClasses({IntegrationTest.class})  // List your test classes here
+@SelectClasses({IntegrationTest.class, ActiveMQMessageBusTest.class})  // List your test classes here
 @ExtendWith(GlobalSuiteExtension.class)
 public class BitrepositoryTestSuite {
     // No need for methods here; this just groups and extends
