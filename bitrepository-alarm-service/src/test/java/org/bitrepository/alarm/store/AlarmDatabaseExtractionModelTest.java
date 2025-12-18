@@ -23,8 +23,9 @@ package org.bitrepository.alarm.store;
 
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.jaccept.structure.ExtendedTestCase;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.testng.Assert;
-import org.testng.annotations.Test;
 
 import java.util.Date;
 
@@ -33,7 +34,7 @@ import java.util.Date;
  */
 
 public class AlarmDatabaseExtractionModelTest extends ExtendedTestCase {
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void alarmExceptionTest() throws Exception {
         addDescription("Test the AlarmDatabaseExtractionModel class");
         addStep("Define constants etc.", "Should be OK");
