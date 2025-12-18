@@ -40,6 +40,7 @@ import org.bitrepository.protocol.security.SecurityManager;
 import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -109,6 +110,7 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
      */
     @Test
     @Tag("StressTest")
+//    @Disabled
     public void SendManyMessagesLocally() throws Exception {
         addDescription("Tests how many messages can be handled within a given timeframe.");
         addStep("Define constants", "This should not be possible to fail.");

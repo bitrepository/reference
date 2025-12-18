@@ -45,8 +45,14 @@ import org.junit.jupiter.api.TestInstance;
 import javax.jms.JMSException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import org.bitrepository.protocol.utils.TestWatcherExtension;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.TestWatcher;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@ExtendWith(TestWatcherExtension.class)
 public abstract class IntegrationTest extends ExtendedTestCase {
     protected static TestEventManager testEventManager = TestEventManager.getInstance();
     public static LocalActiveMQBroker broker;
@@ -113,43 +119,43 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         setupMessageBus();
     }
 
-//    @AfterAll
-//    public void shutdownSuite() {
-//        teardownMessageBus();
-//        teardownHttpServer();
-//    }
+    @AfterAll
+    public void shutdownSuite() {
+        teardownMessageBus();
+        teardownHttpServer();
+    }
 
-//    /**
-//     * Defines the standard BitRepositoryCollection configuration
-//     */
-//    @BeforeEach
-//    public final void beforeMethod(Method method) {
-//        testMethodName = method.getName();
-//        setupSettings();
-//        NON_DEFAULT_FILE_ID = TestFileHelper.createUniquePrefix(testMethodName);
-//        DEFAULT_AUDIT_INFORMATION = testMethodName;
-//        receiverManager = new MessageReceiverManager(messageBus);
-//        registerMessageReceivers();
-//        messageBus.setCollectionFilter(List.of());
-//        messageBus.setComponentFilter(List.of());
-//        receiverManager.startListeners();
-//        initializeCUT();
-//    }
-
+    /**
+     * Defines the standard BitRepositoryCollection configuration
+     */
+    @BeforeEach
+    public final void beforeMethod(TestInfo testInfo) {
+        testMethodName = testInfo.getTestMethod().get().getName();
+        setupSettings();
+        NON_DEFAULT_FILE_ID = TestFileHelper.createUniquePrefix(testMethodName);
+        DEFAULT_AUDIT_INFORMATION = testMethodName;
+        receiverManager = new MessageReceiverManager(messageBus);
+        registerMessageReceivers();
+        messageBus.setCollectionFilter(List.of());
+        messageBus.setComponentFilter(List.of());
+        receiverManager.startListeners();
+        initializeCUT();
+    }
 
     protected void initializeCUT() {}
 
-//    @AfterEach
-//    public final void afterMethod(ITestResult testResult) {
-//        if (receiverManager != null) {
-//            receiverManager.stopListeners();
-//        }
-//        if (testResult.isSuccess()) {
-//            afterMethodVerification();
-//        }
-//        shutdownCUT();
-//    }
-//
+    @AfterEach
+    public final void afterMethod() {
+        if (receiverManager != null) {
+            receiverManager.stopListeners();
+        }
+        if (TestWatcherExtension.isTestSuccessful()) {
+            afterMethodVerification();
+        }
+        shutdownCUT();
+    }
+
+
     /**
      * May be used by specific tests for general verification when the test method has finished. Will only be run
      * if the test has passed (so far).
