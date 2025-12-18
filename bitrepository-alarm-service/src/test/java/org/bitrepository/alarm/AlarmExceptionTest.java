@@ -22,29 +22,31 @@
 package org.bitrepository.alarm;
 
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 public class AlarmExceptionTest extends ExtendedTestCase {
     
-    @Test(groups = {"regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void alarmExceptionTest() throws Exception {
         addDescription("Tests that AlarmExceptions can be thrown.");
         String alarmError = "The message of the alarm exception";
         try {
             throw new AlarmException(alarmError);
         } catch (AlarmException e) {
-            Assert.assertEquals(e.getMessage(), alarmError);
-            Assert.assertNull(e.getCause());
+            Assertions.assertEquals(e.getMessage(), alarmError);
+            Assertions.assertNull(e.getCause());
         }
         
         String otherError = "This is the message of the included exception";
         try {
             throw new AlarmException(alarmError, new Exception(otherError));
         } catch (AlarmException e) {
-            Assert.assertEquals(e.getMessage(), alarmError);
-            Assert.assertNotNull(e.getCause());
-            Assert.assertEquals(e.getCause().getMessage(), otherError);
+            Assertions.assertEquals(e.getMessage(), alarmError);
+            Assertions.assertNotNull(e.getCause());
+            Assertions.assertEquals(e.getCause().getMessage(), otherError);
         }
     }
 
