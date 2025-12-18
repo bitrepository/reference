@@ -31,9 +31,10 @@ import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.bitrepository.protocol.messagebus.MessageListener;
-import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -63,7 +64,8 @@ public class MultiThreadedMessageBusTest extends IntegrationTest {
 
     }
     
-    @Test(groups = { "regressiontest" })
+    @Test 
+            @Tag("regressiontest" )
     public final void manyTheadsBeforeFinish() throws Exception {
         addDescription("Tests whether it is possible to start the handling of many threads simultaneously.");
         IdentifyPillarsForGetFileRequest content =
@@ -76,11 +78,11 @@ public class MultiThreadedMessageBusTest extends IntegrationTest {
         for(int i = 0; i < threadCount; i++) {
             messageBus.sendMessage(content);
         }
-        Assert.assertEquals(finishQueue.poll(TIME_FOR_WAIT, TimeUnit.MILLISECONDS), FINISH);
-        Assert.assertEquals(count, threadCount);
+        Assertions.assertEquals(finishQueue.poll(TIME_FOR_WAIT, TimeUnit.MILLISECONDS), FINISH);
+        Assertions.assertEquals(count, threadCount);
     }
 
-    @AfterMethod(alwaysRun = true)
+    @AfterEach
     public void removeListener() {
         messageBus.removeListener("BusActivityTest", listener);
     }
@@ -92,9 +94,9 @@ public class MultiThreadedMessageBusTest extends IntegrationTest {
         public final void onMessage(Message message, MessageContext messageContext) {
             try {
                 testIfFinished();
-                Assert.assertNotNull(queue.poll(TIME_FOR_WAIT, TimeUnit.MILLISECONDS));
+                Assertions.assertNotNull(queue.poll(TIME_FOR_WAIT, TimeUnit.MILLISECONDS));
             } catch (InterruptedException e) {
-                Assert.fail("Should not throw an exception: ", e);
+                Assertions.fail("Should not throw an exception: ", e);
             }
         }
         

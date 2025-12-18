@@ -39,13 +39,10 @@ import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
 import org.jaccept.structure.ExtendedTestCase;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.testng.Assert;
-//import org.testng.Assert;
-//import org.testng.annotations.BeforeMethod;
-//import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -126,7 +123,7 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
      * @throws Exception Can possibly throw an exception.
      */
     @Test
-    @Tag("StressTest")
+            @Tag("StressTest")
     public void testManyListenersOnLocalMessageBus() throws Exception {
         addDescription("Tests how many messages can be handled within a given timeframe when a given number of "
                 + "listeners are receiving them.");
@@ -234,12 +231,12 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
             addStep("Verifying the amount of message sent '" + idReached + "' has been received by all '"
                     + NUMBER_OF_LISTENERS + "' listeners", "Should be the same amount for each listener, and the same "
                     + "amount as the correlation ID of the message");
-            Assert.assertEquals(messageReceived, idReached * NUMBER_OF_LISTENERS,
+            Assertions.assertEquals(messageReceived, idReached * NUMBER_OF_LISTENERS,
                     "Reached message Id " + idReached + " thus each message of the " + NUMBER_OF_LISTENERS + " listener "
                             + "should have received " + idReached + " message, though they have received "
                             + messageReceived + " message all together.");
             for (NotificationMessageListener listener : listeners) {
-                Assert.assertTrue((listener.getCount() == idReached),
+                Assertions.assertTrue((listener.getCount() == idReached),
                         "Should have received " + idReached + " messages, but has received "
                                 + listener.getCount());
             }

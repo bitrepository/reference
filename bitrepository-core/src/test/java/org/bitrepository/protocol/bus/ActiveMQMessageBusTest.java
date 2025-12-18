@@ -8,12 +8,12 @@
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
@@ -29,7 +29,6 @@ import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assertions;
 
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -38,7 +37,15 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
-public class ActiveMQMessageBusTest extends GeneralMessageBusTest {  // Assuming it extends a base class
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+
+/**
+ * Runs the GeneralMessageBusTest using a LocalActiveMQBroker (if useEmbeddedMessageBus is true) and a suitable
+ * MessageBus based on settingsForTestClient.  Regression tests utilized that uses JAccept to generate reports.
+ */
+
+public class ActiveMQMessageBusTest extends GeneralMessageBusTest {
 
     @Override
     protected void setupMessageBus() {
@@ -48,6 +55,7 @@ public class ActiveMQMessageBusTest extends GeneralMessageBusTest {  // Assuming
         }
         messageBus = new MessageBusWrapper(ProtocolComponentFactory.getInstance().getMessageBus(
                 settingsForTestClient, securityManager), testEventManager);
+
     }
 
     @Test
@@ -85,8 +93,7 @@ public class ActiveMQMessageBusTest extends GeneralMessageBusTest {  // Assuming
         collectionReceiver.checkNoMessageIsReceived(IdentifyPillarsForDeleteFileRequest.class);
     }
 
-    @Test
-    @Tag("regressiontest")
+    @Test @Tag("regressiontest")
     public final void sendMessageToSpecificComponentTest() throws Exception {
         addDescription("Test that message bus correct uses the 'to' header property to indicated that the message " +
                 "is meant for a specific component");
@@ -109,11 +116,10 @@ public class ActiveMQMessageBusTest extends GeneralMessageBusTest {  // Assuming
         messageToSend.setTo(receiverID);
         messageBus.sendMessage(messageToSend);
         Message receivedMessage = messageList.poll(3, TimeUnit.SECONDS);
-        Assertions.assertEquals(receivedMessage.getStringProperty(ActiveMQMessageBus.MESSAGE_TO_KEY), receiverID);  // Assertion update
+        assertEquals(receivedMessage.getStringProperty(ActiveMQMessageBus.MESSAGE_TO_KEY), receiverID);
     }
 
-    @Test
-    @Tag("regressiontest")
+    @Test @Tag("regressiontest")
     public final void toFilterTest() throws Exception {
         addDescription("Test that message bus filters identify requests to other components, eg. ignores these.");
         addStep("Send an identify request with a undefined 'To' header property, " +

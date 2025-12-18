@@ -26,16 +26,19 @@ import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.settings.referencesettings.FileExchangeSettings;
 import org.bitrepository.settings.referencesettings.ProtocolType;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import static org.testng.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 public class HttpFileExchangeTest extends ExtendedTestCase {
-    @Test(groups = { "regressiontest" })
+    @Test
+    @Tag("regressiontest" )
     public void checkUrlEncodingOfFilenamesTest() throws MalformedURLException {
         addDescription("Tests that the filename is url-encoded correctly for a configured webdav server");
         Settings mySettings = TestSettingsProvider.reloadSettings("uploadTest");

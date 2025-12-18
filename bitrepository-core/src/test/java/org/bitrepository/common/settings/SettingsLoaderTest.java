@@ -25,8 +25,9 @@
 package org.bitrepository.common.settings;
 
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
@@ -34,19 +35,21 @@ public class SettingsLoaderTest extends ExtendedTestCase {
     private static final String PATH_TO_SETTINGS = "settings/xml/bitrepository-devel";
     private static final String PATH_TO_EXAMPLE_SETTINGS = "examples/settings";
 
-    @Test(groups = {"regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void testDevelopmentCollectionSettingsLoading() {
         SettingsProvider settingsLoader =
                 new SettingsProvider(new XMLFileSettingsLoader(PATH_TO_SETTINGS), getClass().getSimpleName());
 
         Settings settings = settingsLoader.getSettings();
         List<String> expectedPillarIDs = List.of("Pillar1", "Pillar2");
-        Assert.assertEquals(
+        Assertions.assertEquals(
                 settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID(),
                 expectedPillarIDs);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void testExampleSettingsLoading() {
         SettingsProvider settingsLoader =
                 new SettingsProvider(new XMLFileSettingsLoader(PATH_TO_EXAMPLE_SETTINGS), getClass().getSimpleName());

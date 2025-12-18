@@ -38,9 +38,12 @@ import org.bitrepository.protocol.messagebus.MessageListener;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 
 import java.util.Date;
 
@@ -52,7 +55,7 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
     private static String QUEUE = "TEST-QUEUE";
     private Settings settings;
 
-    @BeforeMethod
+    @BeforeEach
     public void initializeSettings() {
         settings = TestSettingsProvider.getSettings(getClass().getSimpleName());
     }
@@ -61,7 +64,7 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
      * Tests the amount of messages sent over a message bus, which is not placed locally.
      * Require sending at least five messages per second.
      */
-    @Test( groups = {"StressTest"} )
+    @Test @Tag("StressTest")
     public void SendManyMessagesDistributed() throws Exception {
         addDescription("Tests how many messages can be handled within a given timeframe.");
         addStep("Define constants", "This should not be possible to fail.");
@@ -89,7 +92,7 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
             addStep("Stopped sending at '" + new Date() + "'", "Should have send more than '" + messagePerSec 
                     + "' messages per sec.");
             int count = listener.getCount();
-            Assert.assertTrue(count > (messagePerSec * timeFrame/1000), "There where send '" + count 
+            Assertions.assertTrue(count > (messagePerSec * timeFrame/1000), "There where send '" + count
                     + "' messages in '" + timeFrame/1000 + "' seconds, but it is required to handle at least '" 
                     + messagePerSec + "' per second!");
             System.out.println("Sent '" + count + "' messages in '" + timeFrame/1000 + "' seconds.");
@@ -105,7 +108,9 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
      * Tests the amount of messages send through a local messagebus. 
      * It should be at least 20 per second. 
      */
-    @Test( groups = {"StressTest"} )
+    @Test
+    @Tag("StressTest")
+//    @Disabled
     public void SendManyMessagesLocally() throws Exception {
         addDescription("Tests how many messages can be handled within a given timeframe.");
         addStep("Define constants", "This should not be possible to fail.");
@@ -118,7 +123,7 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
                 MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration()
         );
         LocalActiveMQBroker broker = new LocalActiveMQBroker(settings.getMessageBusConfiguration());
-        Assert.assertNotNull(broker);
+        Assertions.assertNotNull(broker);
 
         ResendMessageListener listener = null;
 
@@ -142,7 +147,7 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
             addStep("Stopped sending at '" + new Date() + "'", "Should have send more than '" + messagePerSec 
                     + "' messages per sec.");
             int count = listener.getCount();
-            Assert.assertTrue(count > (messagePerSec * timeFrame/1000), "There where send '" + count 
+            Assertions.assertTrue(count > (messagePerSec * timeFrame/1000), "There where send '" + count 
                     + "' messages in '" + timeFrame/1000 + "' seconds, but it is required to handle at least '" 
                     + messagePerSec + "' per second!");
             System.out.println("Sent '" + count + "' messages in '" + timeFrame/1000 + "' seconds.");

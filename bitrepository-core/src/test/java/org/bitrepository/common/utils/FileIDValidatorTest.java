@@ -24,20 +24,23 @@ package org.bitrepository.common.utils;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class FileIDValidatorTest extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup.*/
     Settings settings;
 
-    @BeforeClass (alwaysRun = true)
+    @BeforeAll
     public void setup() {
         settings = TestSettingsProvider.reloadSettings(getClass().getSimpleName());
     }
     
-    @Test( groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void validatorTest() throws Exception {
         addDescription("Tests the FileIDValidator class for the input handling based on a given regex.");
         addStep("Setup the validator", "Should be ok.");
@@ -50,23 +53,24 @@ public class FileIDValidatorTest extends ExtendedTestCase {
         String tooShort = "";
         
         addStep("Test a null as argument", "The null should be ignored.");
-        Assert.assertNull(validator.validateFileID(null));
+        Assertions.assertNull(validator.validateFileID(null));
         
         addStep("Test a valid fileID", "Should be valid");
-        Assert.assertNull(validator.validateFileID(validFileID));
+        Assertions.assertNull(validator.validateFileID(validFileID));
         
         addStep("Test invalid characters", "Should be invalid");
-        Assert.assertNotNull(validator.validateFileID(invalidCharacters), "Should fail with bad characters here!");
+        Assertions.assertNotNull(validator.validateFileID(invalidCharacters), "Should fail with bad characters here!");
 
         addStep("Test invalid length", "Should be invalid");
-        Assert.assertNotNull(validator.validateFileID(tooLong), "Should fail with invalid length here!");
+        Assertions.assertNotNull(validator.validateFileID(tooLong), "Should fail with invalid length here!");
 
         addStep("Test too short", "Should be invalid");
-        Assert.assertNotNull(validator.validateFileID(tooShort),
+        Assertions.assertNotNull(validator.validateFileID(tooShort),
                 "Should fail with invalid length here!");
     }
     
-    @Test( groups = {"regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void validatorDefaultTest() throws Exception {
         addDescription("Tests the FileIDValidator class default restrictions. Only the length should fail.");
         addStep("Setup the validator, where all file ids are allowed at default.", "Should be ok.");
@@ -79,35 +83,36 @@ public class FileIDValidatorTest extends ExtendedTestCase {
         String tooShort = "";
         
         addStep("Test a null as argument", "The null should be ignored.");
-        Assert.assertNull(validator.validateFileID(null));
+        Assertions.assertNull(validator.validateFileID(null));
         
         addStep("Test a valid fileID", "Should be valid");
-        Assert.assertNull(validator.validateFileID(validFileID));
+        Assertions.assertNull(validator.validateFileID(validFileID));
         
         addStep("Test odd characters", "Should be valid");
-        Assert.assertNull(validator.validateFileID(invalidCharacters));
+        Assertions.assertNull(validator.validateFileID(invalidCharacters));
 
         addStep("Test invalid length", "Should be invalid");
-        Assert.assertNotNull(validator.validateFileID(tooLong),
+        Assertions.assertNotNull(validator.validateFileID(tooLong),
                 "Should fail with invalid length here -> too long");
         
         addStep("Test too short", "Should be invalid");
-        Assert.assertNotNull(validator.validateFileID(tooShort),
+        Assertions.assertNotNull(validator.validateFileID(tooShort),
             "Should fail with invalid length here -> too short");
     }
     
-    @Test( groups = {"regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void badRegexTest() throws Exception {
         addDescription("Tests the FileIDValidator handling of bad file id pattern.");
         addStep("Give the validator a 'null' as allowed file id pattern", "Should be a null stored as regex." );
         settings.getRepositorySettings().getProtocolSettings().setAllowedFileIDPattern(null);
         TestFileIDValidator validator = new TestFileIDValidator(settings);
-        Assert.assertNull(validator.getRegex());
+        Assertions.assertNull(validator.getRegex());
         
         addStep("Give the validator an empty string as allowed file id pattern", "Should be a null stored as regex." );
         settings.getRepositorySettings().getProtocolSettings().setAllowedFileIDPattern("");
         validator = new TestFileIDValidator(settings);
-        Assert.assertNull(validator.getRegex());
+        Assertions.assertNull(validator.getRegex());
     }
     
     private class TestFileIDValidator extends FileIDValidator {
