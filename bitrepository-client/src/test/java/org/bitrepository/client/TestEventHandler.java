@@ -32,7 +32,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import static org.testng.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 
 /** Used to listen for operation event and store them for later retrieval by a test. */
 public class TestEventHandler implements EventHandler {

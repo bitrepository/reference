@@ -24,12 +24,15 @@ package org.bitrepository.client.exception;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.client.exceptions.NegativeResponseException;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 
 public class NegativeResponseExceptionTest extends ExtendedTestCase {
 
-    @Test(groups = {"regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void testNegativeResponse() {
         addDescription("Test the instantiation of the exception");
         addStep("Setup", "");
@@ -41,10 +44,10 @@ public class NegativeResponseExceptionTest extends ExtendedTestCase {
         try {
             throw new NegativeResponseException(errMsg, responseCode);
         } catch (Exception e) {
-            Assert.assertTrue(e instanceof NegativeResponseException);
-            Assert.assertEquals(e.getMessage(), errMsg);
-            Assert.assertEquals(((NegativeResponseException) e).getErrorCode(), responseCode);
-            Assert.assertNull(e.getCause());
+            Assertions.assertTrue(e instanceof NegativeResponseException);
+            Assertions.assertEquals(e.getMessage(), errMsg);
+            Assertions.assertEquals(((NegativeResponseException) e).getErrorCode(), responseCode);
+            Assertions.assertNull(e.getCause());
         }
     }
 }

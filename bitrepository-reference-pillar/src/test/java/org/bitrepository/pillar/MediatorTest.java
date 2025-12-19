@@ -35,9 +35,9 @@ import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
 import org.bitrepository.service.contributor.handler.RequestHandler;
-import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+
+
+
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -60,7 +60,7 @@ public class MediatorTest extends DefaultFixturePillarTest {
             audits);
     }
     
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test @Tag("regressiontest", "pillartest"})
     public void testMediatorRuntimeExceptionHandling() {
         addDescription("Tests the handling of a runtime exception");
         addStep("Setup create and start the mediator.", "");
@@ -84,8 +84,8 @@ public class MediatorTest extends DefaultFixturePillarTest {
             messageBus.sendMessage(request);
             
             MessageResponse response = clientReceiver.waitForMessage(IdentifyContributorsForGetStatusResponse.class);
-            Assert.assertEquals(response.getResponseInfo().getResponseCode(), ResponseCode.FAILURE);
-            Assert.assertNotNull(alarmReceiver.waitForMessage(AlarmMessage.class));
+            Assertions.assertEquals(response.getResponseInfo().getResponseCode(), ResponseCode.FAILURE);
+            Assertions.assertNotNull(alarmReceiver.waitForMessage(AlarmMessage.class));
         } finally {
             mediator.close();
         }

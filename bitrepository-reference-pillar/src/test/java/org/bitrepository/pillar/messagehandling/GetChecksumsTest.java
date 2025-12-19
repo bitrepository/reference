@@ -41,7 +41,7 @@ import org.bitrepository.pillar.store.checksumdatabase.ChecksumEntry;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.testng.annotations.Test;
+
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.Date;
@@ -50,8 +50,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNull;
+
+
 
 /**
  * Tests the PutFile functionality on the ReferencePillar.
@@ -67,7 +67,7 @@ public class GetChecksumsTest extends MockedPillarTest {
     }
 
     @SuppressWarnings("rawtypes")
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test @Tag("regressiontest", "pillartest"})
     public void goodCaseIdentification() throws Exception {
         addDescription("Tests the identification for a GetChecksums operation on the pillar for the successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -106,7 +106,7 @@ public class GetChecksumsTest extends MockedPillarTest {
     }
     
     @SuppressWarnings("rawtypes")
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test @Tag("regressiontest", "pillartest"})
     public void badCaseIdentification() throws Exception {
         addDescription("Tests the identification for a GetChecksums operation on the pillar for the failure scenario, when the file is missing.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -145,7 +145,7 @@ public class GetChecksumsTest extends MockedPillarTest {
     }
     
     @SuppressWarnings("rawtypes")
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test @Tag("regressiontest", "pillartest"})
     public void goodCaseOperationSingleFile() throws Exception {
         addDescription("Tests the GetChecksums operation on the pillar for the successful scenario when requesting one specific file.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -193,7 +193,7 @@ public class GetChecksumsTest extends MockedPillarTest {
     }
     
     @SuppressWarnings("rawtypes")
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test @Tag("regressiontest", "pillartest"})
     public void goodCaseOperationAllFiles() throws Exception {
         addDescription("Tests the GetChecksums operation on the pillar for the successful scenario, when requesting all files.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -235,7 +235,7 @@ public class GetChecksumsTest extends MockedPillarTest {
     }
     
     @SuppressWarnings("rawtypes")
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test @Tag("regressiontest", "pillartest"})
     public void badCaseOperationNoFile() throws Exception {
         addDescription("Tests the GetChecksums functionality of the pillar for the failure scenario, where it does not have the file.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -272,7 +272,7 @@ public class GetChecksumsTest extends MockedPillarTest {
     }
 
     @SuppressWarnings("rawtypes")
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test @Tag("regressiontest", "pillartest"})
     public void testRestrictions() throws Exception {
         addDescription("Tests that the restrictions are correctly passed on to the cache.");
 

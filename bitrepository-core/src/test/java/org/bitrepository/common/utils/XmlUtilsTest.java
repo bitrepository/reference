@@ -121,7 +121,8 @@ public class XmlUtilsTest extends ExtendedTestCase {
         Assertions.assertTrue(actual.compareTo(maxExclusive) < 0);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void tooManyDecimalsAreRejected() {
         assertThrows(ArithmeticException.class, () -> {
             addDescription("Tests that xmlDurationToDuration() rejects more than 9 decimals on seconds");

@@ -32,8 +32,8 @@ import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.integration.perf.metrics.Metrics;
 import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
 import org.bitrepository.protocol.bus.MessageReceiver;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+
+
 
 public class GetFileStressIT extends PillarPerformanceTest {
     protected GetFileClient getFileClient;
@@ -45,7 +45,7 @@ public class GetFileStressIT extends PillarPerformanceTest {
         );
     }
 
-    @Test( groups = {"pillar-stress-test"})
+    @Test @Tag("pillar-stress-test"})
     public void singleGetFilePerformanceTest() throws Exception {
         final int NUMBER_OF_FILES = 1000;
         final int PART_STATISTIC_INTERVAL = 100;
@@ -64,7 +64,7 @@ public class GetFileStressIT extends PillarPerformanceTest {
         }
     }
 
-    @Test( groups = {"pillar-stress-test"})
+    @Test @Tag("pillar-stress-test"})
     public void parallelGetFilePerformanceTest() throws Exception {
         final int numberOfFiles = testConfiguration.getInt("pillarintegrationtest.GetFileStressIT.parallelGet.numberOfFiles");
         final int partStatisticsInterval = testConfiguration.getInt("pillarintegrationtest.GetFileStressIT.parallelGet.partStatisticsInterval");
@@ -89,7 +89,7 @@ public class GetFileStressIT extends PillarPerformanceTest {
         awaitAsynchronousCompletion(metrics, numberOfFiles);
     }
 
-    @Test( groups = {"pillar-stress-test"})
+    @Test @Tag("pillar-stress-test"})
     public void noIdentfyGetFilePerformanceTest() throws Exception {
         final int numberOfFiles = testConfiguration.getInt("pillarintegrationtest.GetFileStressIT.parallelGet.numberOfFiles");
         final int partStatisticsInterval = testConfiguration.getInt("pillarintegrationtest.GetFileStressIT.parallelGet.partStatisticsInterval");

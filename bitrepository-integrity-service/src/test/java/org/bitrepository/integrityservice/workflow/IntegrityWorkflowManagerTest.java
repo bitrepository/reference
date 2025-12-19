@@ -33,20 +33,22 @@ import org.bitrepository.settings.referencesettings.Schedules;
 import org.bitrepository.settings.referencesettings.WorkflowConfiguration;
 import org.bitrepository.settings.referencesettings.WorkflowSettings;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNull;
 
 public class IntegrityWorkflowManagerTest extends ExtendedTestCase {
     private Settings settings;
@@ -57,7 +59,7 @@ public class IntegrityWorkflowManagerTest extends ExtendedTestCase {
     private TestWorkflow workflow1, workflow2;
 
 
-    @BeforeMethod(alwaysRun = true)
+    @BeforeEach
     public void setup() throws DatatypeConfigurationException {
         scheduler = mock(TimerBasedScheduler.class);
         factory = DatatypeFactory.newInstance();
@@ -80,7 +82,7 @@ public class IntegrityWorkflowManagerTest extends ExtendedTestCase {
         workflow2 = new TestWorkflow(collection2ID);
     }
 
-    @Test (groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void normalWorkflowSettings() {
         addDescription("Verifies that the IntegrityWorkflowManager loads correctly for at normally defined workflow.");
 
@@ -94,7 +96,8 @@ public class IntegrityWorkflowManagerTest extends ExtendedTestCase {
         verifyNoMoreInteractions(scheduler);
     }
 
-    @Test (groups = {"regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void noWorkflowPackage() {
         addDescription("Verifies that the IntegrityWorkflowManager loads correctly for at workflow configuration with " +
                 "a workflow class name without a package scope (located in the default workflow package).");
@@ -110,7 +113,7 @@ public class IntegrityWorkflowManagerTest extends ExtendedTestCase {
         verifyNoMoreInteractions(scheduler);
     }
 
-    @Test (groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void noWorkflowSettings() {
         addDescription("Verifies that the IntegrityWorkflowManager loads correctly for missing reference settings a " +
                 "workflow settings element.");
@@ -131,7 +134,7 @@ public class IntegrityWorkflowManagerTest extends ExtendedTestCase {
         verifyNoMoreInteractions(scheduler);
     }
 
-    @Test (groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void collectionSpecificWorkflows() {
         addDescription("Verifies that the IntegrityWorkflowManager loads correctly for workflows configured for " +
                 "specific collection.");
@@ -159,7 +162,7 @@ public class IntegrityWorkflowManagerTest extends ExtendedTestCase {
         verifyNoMoreInteractions(scheduler);
     }
 
-    @Test (groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void unscheduledWorkflow() {
         addDescription("Verifies that the IntegrityWorkflowManager loads workflow correctly for workflows without a " +
                 "defined schedule meaning they are never run automatically.");
@@ -175,7 +178,7 @@ public class IntegrityWorkflowManagerTest extends ExtendedTestCase {
         assertEquals(manager.getRunInterval(workflow1.getJobID()), -1);
     }
 
-    @Test (groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void startWorkflow() {
         addDescription("Verifies that the that it is possible to manually start a workflow.");
 

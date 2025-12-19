@@ -33,11 +33,11 @@ import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.DefaultPillarIdentificationTest;
 import org.bitrepository.pillar.messagefactories.GetChecksumsMessageFactory;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
+
+
+
+
 
 public class IdentifyPillarsForGetChecksumsIT extends DefaultPillarIdentificationTest {
     protected GetChecksumsMessageFactory msgFactory;
@@ -48,7 +48,7 @@ public class IdentifyPillarsForGetChecksumsIT extends DefaultPillarIdentificatio
         clearReceivers();
     }
 
-    @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
+    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
     public void normalIdentificationTest() {
         addDescription("Verifies the normal behaviour for getChecksums identification");
         addStep("Setup for test", "2 files on the pillar");
@@ -84,7 +84,7 @@ public class IdentifyPillarsForGetChecksumsIT extends DefaultPillarIdentificatio
                 "Received unexpected 'Response' in response.");
     }
 
-    @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
+    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
     public void nonExistingFileTest() {
         addDescription("Tests that the pillar is able to reject a GetChecksums requests for a file, which it " +
                        "does not have during the identification phase.");
@@ -110,7 +110,7 @@ public class IdentifyPillarsForGetChecksumsIT extends DefaultPillarIdentificatio
                 "Received unexpected 'ResponseCode' in response.");
     }
     
-    @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
+    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
     public void allFilesTest() {
         addDescription("Tests that the pillar accepts a GetChecksums requests for all files, even though it does not have any files.");
         FileIDs fileids = FileIDsUtils.getAllFileIDs();

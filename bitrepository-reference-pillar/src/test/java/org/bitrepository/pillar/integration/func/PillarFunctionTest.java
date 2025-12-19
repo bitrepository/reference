@@ -24,7 +24,7 @@ package org.bitrepository.pillar.integration.func;
 import org.bitrepository.pillar.integration.PillarIntegrationTest;
 import org.bitrepository.pillar.messagefactories.PutFileMessageFactory;
 import org.bitrepository.protocol.bus.MessageReceiver;
-import org.testng.annotations.BeforeMethod;
+
 
 import java.lang.reflect.Method;
 import java.util.Arrays;

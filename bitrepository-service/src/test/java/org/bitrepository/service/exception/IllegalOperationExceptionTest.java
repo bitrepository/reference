@@ -23,12 +23,14 @@ package org.bitrepository.service.exception;
 
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertNull;
-import static org.testng.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 
 /**
  * Test that IllegalOperationException behaves as expected.
@@ -37,7 +39,8 @@ import static org.testng.Assert.assertTrue;
 public class IllegalOperationExceptionTest extends ExtendedTestCase {
     private final String TEST_COLLECTION_ID = "test-collection-id";
     
-    @Test(groups = { "regressiontest" })
+    @Test
+    @Tag( "regressiontest")
     public void testIdentifyContributor() throws Exception {
         addDescription("Test the instantiation of the exception");
         addStep("Setup", "");

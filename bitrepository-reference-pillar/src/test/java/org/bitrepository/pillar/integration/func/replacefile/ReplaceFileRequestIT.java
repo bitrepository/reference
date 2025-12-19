@@ -33,9 +33,9 @@ import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.DefaultPillarOperationTest;
 import org.bitrepository.pillar.messagefactories.ReplaceFileMessageFactory;
-import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+
+
+
 
 import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
@@ -56,7 +56,7 @@ public class ReplaceFileRequestIT extends DefaultPillarOperationTest {
                 null, null, null);
     }
 
-    @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
+    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
     public void normalReplaceFileTest() {
         addDescription("Tests a normal ReplaceFile sequence");
         addStep("Send a ReplaceFile request to " + testConfiguration.getPillarUnderTestID(),
@@ -69,21 +69,21 @@ public class ReplaceFileRequestIT extends DefaultPillarOperationTest {
 
         ReplaceFileProgressResponse progressResponse = clientReceiver.waitForMessage(ReplaceFileProgressResponse.class, 
                 getOperationTimeout(), TimeUnit.SECONDS);
-        Assert.assertNotNull(progressResponse);
-        Assert.assertEquals(progressResponse.getCorrelationID(), replaceRequest.getCorrelationID());
-        Assert.assertEquals(progressResponse.getFrom(), getPillarID());
-        Assert.assertEquals(progressResponse.getPillarID(), getPillarID());
-        Assert.assertEquals(progressResponse.getResponseInfo().getResponseCode(),
+        Assertions.assertNotNull(progressResponse);
+        Assertions.assertEquals(progressResponse.getCorrelationID(), replaceRequest.getCorrelationID());
+        Assertions.assertEquals(progressResponse.getFrom(), getPillarID());
+        Assertions.assertEquals(progressResponse.getPillarID(), getPillarID());
+        Assertions.assertEquals(progressResponse.getResponseInfo().getResponseCode(),
                 ResponseCode.OPERATION_ACCEPTED_PROGRESS);
 
         ReplaceFileFinalResponse finalResponse = (ReplaceFileFinalResponse) receiveResponse();
-        Assert.assertNotNull(finalResponse);
-        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
-        Assert.assertEquals(finalResponse.getCorrelationID(), replaceRequest.getCorrelationID());
-        Assert.assertEquals(finalResponse.getFrom(), getPillarID());
-        Assert.assertNull(finalResponse.getChecksumDataForExistingFile());
-        Assert.assertNull(finalResponse.getChecksumDataForNewFile());
-        Assert.assertEquals(finalResponse.getPillarID(), getPillarID());
+        Assertions.assertNotNull(finalResponse);
+        Assertions.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
+        Assertions.assertEquals(finalResponse.getCorrelationID(), replaceRequest.getCorrelationID());
+        Assertions.assertEquals(finalResponse.getFrom(), getPillarID());
+        Assertions.assertNull(finalResponse.getChecksumDataForExistingFile());
+        Assertions.assertNull(finalResponse.getChecksumDataForNewFile());
+        Assertions.assertEquals(finalResponse.getPillarID(), getPillarID());
     }
 
     @Override

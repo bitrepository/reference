@@ -27,9 +27,9 @@
 //import org.bitrepository.integrityservice.scheduler.TimerBasedScheduler;
 //import org.bitrepository.integrityservice.scheduler.workflow.Workflow;
 //import org.jaccept.structure.ExtendedTestCase;
-//import org.testng.Assert;
-//import org.testng.annotations.BeforeClass;
-//import org.testng.annotations.Test;
+//
+//
+//
 //
 ///**
 // * Test that scheduler calls triggers.
@@ -44,33 +44,33 @@
 //        settings = TestSettingsProvider.reloadSettings("IntegrityWorkflowSchedulerUnderTest");
 //    }
 //
-//    @Test(groups = {"regressiontest", "integritytest"})
+//    @Test @Tag("regressiontest", "integritytest"})
 //    public void testSchedulerContainingWorkflows() {
 //        addDescription("Test that schedulers call all workflow at the given intervals.");
 //        addStep("Setup a scheduler and validate initial state", "No errors and no workflows");
 //        TimerBasedScheduler scheduler = new TimerBasedScheduler(settings);
-//        Assert.assertEquals(scheduler.getJobs().size(), 0, "Should not be any workflows in the scheduler.");
+//        Assertions.assertEquals(scheduler.getJobs().size(), 0, "Should not be any workflows in the scheduler.");
 //        
 //        addStep("Make a new workflow, add it to the scheduler and extract it afterwards.", 
 //                "Should extract the same workflow");
 //        Workflow testWorkflow = new MockWorkflow(3600000L, "testWorkflow");
 //        scheduler.putWorkflow(testWorkflow);
-//        Assert.assertEquals(scheduler.getJobs().size(), 1, "Should only be one workflow in the scheduler.");
-//        Assert.assertEquals(scheduler.getJobs().get(0), testWorkflow, "Should be the same workflow.");
+//        Assertions.assertEquals(scheduler.getJobs().size(), 1, "Should only be one workflow in the scheduler.");
+//        Assertions.assertEquals(scheduler.getJobs().get(0), testWorkflow, "Should be the same workflow.");
 //        
 //        addStep("Add the workflow again to the scheduler", "Should still be only the one and same workflow in the scheduler");
 //        scheduler.putWorkflow(testWorkflow);
-//        Assert.assertEquals(scheduler.getJobs().size(), 1, "Should only be one workflow in the scheduler.");
-//        Assert.assertEquals(scheduler.getJobs().get(0), testWorkflow, "Should be the same workflow.");
+//        Assertions.assertEquals(scheduler.getJobs().size(), 1, "Should only be one workflow in the scheduler.");
+//        Assertions.assertEquals(scheduler.getJobs().get(0), testWorkflow, "Should be the same workflow.");
 //        
 //        addStep("Remove the workflow from the scheduler two times", 
 //                "Should not be any workflows in the scheduler, and only successfully remove workflow once.");
-//        Assert.assertTrue(scheduler.removeWorkflow(testWorkflow.getPrimitiveName()));
-//        Assert.assertEquals(scheduler.getJobs().size(), 0, "Should not be any workflows in the scheduler.");
-//        Assert.assertFalse(scheduler.removeWorkflow(testWorkflow.getPrimitiveName()));
+//        Assertions.assertTrue(scheduler.removeWorkflow(testWorkflow.getPrimitiveName()));
+//        Assertions.assertEquals(scheduler.getJobs().size(), 0, "Should not be any workflows in the scheduler.");
+//        Assertions.assertFalse(scheduler.removeWorkflow(testWorkflow.getPrimitiveName()));
 //    }
 //    
-//    @Test(groups = {"regressiontest", "integrationtest"})
+//    @Test @Tag("regressiontest", "integrationtest"})
 //    public void schedulerTester() throws Exception {
 //        addDescription("Tests that the scheduler is able make calls to the collector at given intervals.");
 //        addStep("Setup the variables and such.", "Should not be able to fail here.");
@@ -80,16 +80,16 @@
 //        
 //        addStep("Create a workflow", "Should not have been called yet been called.");
 //        MockWorkflow workflow = new MockWorkflow(INTERVAL + INTERVAL_DELAY, taskName);
-//        Assert.assertEquals(workflow.getCallsForNextRun(), 0);
-//        Assert.assertEquals(workflow.getCallsForRunWorkflow(), 0);
+//        Assertions.assertEquals(workflow.getCallsForNextRun(), 0);
+//        Assertions.assertEquals(workflow.getCallsForRunWorkflow(), 0);
 //        
 //        addStep("Add the workflow", "Validate that it initially calls the ");
 //        scheduler.putWorkflow(workflow);
 //        synchronized(this) {
 //            wait(INTERVAL_DELAY);
 //        }
-//        Assert.assertEquals(workflow.getCallsForNextRun(), 1);
-//        Assert.assertEquals(workflow.getCallsForRunWorkflow(), 1);
+//        Assertions.assertEquals(workflow.getCallsForNextRun(), 1);
+//        Assertions.assertEquals(workflow.getCallsForRunWorkflow(), 1);
 //        
 //        addStep("Wait 4 * the interval (plus delay for instantiation), stop the trigger and validate the results.", 
 //                "Should have checked the date 5 times, but only run the workflow 3 times.");
@@ -97,8 +97,8 @@
 //            wait(4*INTERVAL);
 //        }
 //        scheduler.removeWorkflow(taskName);
-//        Assert.assertEquals(workflow.getCallsForNextRun(), 5);
-//        Assert.assertEquals(workflow.getCallsForRunWorkflow(), 3);
+//        Assertions.assertEquals(workflow.getCallsForNextRun(), 5);
+//        Assertions.assertEquals(workflow.getCallsForRunWorkflow(), 3);
 //        
 //        addStep("Wait another 2 seconds and validate that the trigger has been cancled.", 
 //                "Should have made no more calls to the workflow.");
@@ -106,7 +106,7 @@
 //            wait(2*INTERVAL + INTERVAL_DELAY);
 //        }
 //        scheduler.removeWorkflow(taskName);
-//        Assert.assertEquals(workflow.getCallsForNextRun(), 5);
-//        Assert.assertEquals(workflow.getCallsForRunWorkflow(), 3);
+//        Assertions.assertEquals(workflow.getCallsForNextRun(), 5);
+//        Assertions.assertEquals(workflow.getCallsForRunWorkflow(), 3);
 //    }
 //}

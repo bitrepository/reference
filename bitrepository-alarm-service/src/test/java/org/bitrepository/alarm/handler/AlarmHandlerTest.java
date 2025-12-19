@@ -30,8 +30,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import static org.testng.AssertJUnit.assertEquals;
-
 public class AlarmHandlerTest extends IntegrationTest {
     @Test @Tag("regressiontest")
     public void alarmMediatorTest() throws Exception {

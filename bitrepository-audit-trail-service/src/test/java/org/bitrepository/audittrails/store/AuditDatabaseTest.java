@@ -30,9 +30,9 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+
+
+
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigInteger;
@@ -70,7 +70,7 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         collectionID = settings.getCollections().get(0).getID();
     }
     
-    @Test(groups = {"regressiontest", "databasetest"})
+    @Test @Tag("regressiontest", "databasetest"})
     public void AuditDatabaseExtractionTest() throws Exception {
         addDescription("Testing the connection to the audit trail service database especially with regards to "
                 + "extracting the data from it.");
@@ -83,108 +83,108 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         AuditTrailServiceDAO database = new AuditTrailServiceDAO(dm);
 
         addStep("Validate that the database is empty and then populate it.", "Should be possible.");
-        Assert.assertEquals(database.largestSequenceNumber(pillarID, collectionID), 0);
+        Assertions.assertEquals(database.largestSequenceNumber(pillarID, collectionID), 0);
         database.addAuditTrails(createEvents(), collectionID, pillarID);
-        Assert.assertEquals(database.largestSequenceNumber(pillarID, collectionID), 10);
+        Assertions.assertEquals(database.largestSequenceNumber(pillarID, collectionID), 10);
         
         addStep("Extract the audit trails", "");
         List<AuditTrailEvent> res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null, null, 
                 null, null, null, null, null, null, null));
-        Assert.assertEquals(res.size(), 2, res.toString());
+        Assertions.assertEquals(res.size(), 2, res.toString());
         
         addStep("Test the extraction of FileID", "Should be able to extract the audit of each file individually.");
         res = getEventsFromIterator(database.getAuditTrailsByIterator(fileID, null, null, null, null, null, null,
                 null, null, null, null));
-        Assert.assertEquals(res.size(), 1, res.toString());
-        Assert.assertEquals(res.get(0).getFileID(), fileID);
+        Assertions.assertEquals(res.size(), 1, res.toString());
+        Assertions.assertEquals(res.get(0).getFileID(), fileID);
         
         res = getEventsFromIterator(database.getAuditTrailsByIterator(fileID2, null, null, null, null, null, null,
                 null, null, null, null));
-        Assert.assertEquals(res.size(), 1, res.toString());
-        Assert.assertEquals(res.get(0).getFileID(), fileID2);
+        Assertions.assertEquals(res.size(), 1, res.toString());
+        Assertions.assertEquals(res.get(0).getFileID(), fileID2);
         
         addStep("Test the extraction of CollectionID", "Only results when the defined collection is used");
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, collectionID, null, null, null, null, null,
                 null, null, null, null));
-        Assert.assertEquals(res.size(), 2, res.toString());
+        Assertions.assertEquals(res.size(), 2, res.toString());
         
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, 
                 "NOT-THE-CORRECT-COLLECTION-ID" + System.currentTimeMillis(), null, null, null, null, null, 
                 null, null, null, null));
-        Assert.assertEquals(res.size(), 0, res.toString());
+        Assertions.assertEquals(res.size(), 0, res.toString());
         
         addStep("Perform extraction based on the component id.", "");
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, pillarID, null, null, null, null,
                 null, null, null, null));
-        Assert.assertEquals(res.size(), 2, res.toString());
+        Assertions.assertEquals(res.size(), 2, res.toString());
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, "NO COMPONENT", null, null, null, null, 
                 null, null, null, null));
-        Assert.assertEquals(res.size(), 0, res.toString());
+        Assertions.assertEquals(res.size(), 0, res.toString());
         
         addStep("Perform extraction based on the sequence number restriction", 
                 "Should be possible to have both lower and upper sequence number restrictions.");
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null, 5L, null, null, null, null, 
                 null, null, null));
-        Assert.assertEquals(res.size(), 1, res.toString());
-        Assert.assertEquals(res.get(0).getFileID(), fileID2);
+        Assertions.assertEquals(res.size(), 1, res.toString());
+        Assertions.assertEquals(res.get(0).getFileID(), fileID2);
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null, null, 5L, null, null, null, 
                 null, null, null));
-        Assert.assertEquals(res.size(), 1, res.toString());
-        Assert.assertEquals(res.get(0).getFileID(), fileID);
+        Assertions.assertEquals(res.size(), 1, res.toString());
+        Assertions.assertEquals(res.get(0).getFileID(), fileID);
         
         addStep("Perform extraction based on actor id restriction.", 
                 "Should be possible to restrict on the id of the actor.");
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null, null, null, actor1, null, 
                 null, null, null, null));
-        Assert.assertEquals(res.size(), 1, res.toString());
-        Assert.assertEquals(res.get(0).getActorOnFile(), actor1);
+        Assertions.assertEquals(res.size(), 1, res.toString());
+        Assertions.assertEquals(res.get(0).getActorOnFile(), actor1);
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null, null, null, actor2, null, 
                 null, null, null, null));
-        Assert.assertEquals(res.size(), 1, res.toString());
-        Assert.assertEquals(res.get(0).getActorOnFile(), actor2);
+        Assertions.assertEquals(res.size(), 1, res.toString());
+        Assertions.assertEquals(res.get(0).getActorOnFile(), actor2);
         
         addStep("Perform extraction based on operation restriction.", 
                 "Should be possible to restrict on the FileAction operation.");
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null, null, null, null, 
                 FileAction.INCONSISTENCY, null, null, null, null));
-        Assert.assertEquals(res.size(), 1, res.toString());
-        Assert.assertEquals(res.get(0).getActionOnFile(), FileAction.INCONSISTENCY);
+        Assertions.assertEquals(res.size(), 1, res.toString());
+        Assertions.assertEquals(res.get(0).getActionOnFile(), FileAction.INCONSISTENCY);
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null, null, null, null, 
                 FileAction.FAILURE, null, null, null, null));
-        Assert.assertEquals(res.size(), 1, res.toString());
-        Assert.assertEquals(res.get(0).getActionOnFile(), FileAction.FAILURE);
+        Assertions.assertEquals(res.size(), 1, res.toString());
+        Assertions.assertEquals(res.get(0).getActionOnFile(), FileAction.FAILURE);
         
         addStep("Perform extraction based on date restriction.", 
                 "Should be possible to restrict on the date of the audit.");
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null, null, null, null, null, 
                 restrictionDate, null, null, null));
-        Assert.assertEquals(res.size(), 1, res.toString());
-        Assert.assertEquals(res.get(0).getFileID(), fileID2);
+        Assertions.assertEquals(res.size(), 1, res.toString());
+        Assertions.assertEquals(res.get(0).getFileID(), fileID2);
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null, null, null, null, null, 
                 null, restrictionDate, null, null));
-        Assert.assertEquals(res.size(), 1, res.toString());
-        Assert.assertEquals(res.get(0).getFileID(), fileID);
+        Assertions.assertEquals(res.size(), 1, res.toString());
+        Assertions.assertEquals(res.get(0).getFileID(), fileID);
 
         addStep("Perform extraction based on fingerprint restriction.", 
                 "Should be possible to restrict on the fingerprint of the audit.");
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null, null, null, null, null, 
                 null, null, fingerprint1, null));
-        Assert.assertEquals(res.size(), 1, res.toString());
-        Assert.assertEquals(res.get(0).getFileID(), fileID);
-        Assert.assertEquals(res.get(0).getCertificateID(), fingerprint1);
+        Assertions.assertEquals(res.size(), 1, res.toString());
+        Assertions.assertEquals(res.get(0).getFileID(), fileID);
+        Assertions.assertEquals(res.get(0).getCertificateID(), fingerprint1);
         
         addStep("Perform extraction based on operationID restriction.", 
                 "Should be possible to restrict on the operationID of the audit.");
                 res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null, null, null, null, null, 
                 null, null, null, operationID2));
-        Assert.assertEquals(res.size(), 1, res.toString());
-        Assert.assertEquals(res.get(0).getFileID(), fileID2);
-        Assert.assertEquals(res.get(0).getOperationID(), operationID2);
+        Assertions.assertEquals(res.size(), 1, res.toString());
+        Assertions.assertEquals(res.get(0).getFileID(), fileID2);
+        Assertions.assertEquals(res.get(0).getOperationID(), operationID2);
         
         database.close();
     }
 
-    @Test(groups = {"regressiontest", "databasetest"})
+    @Test @Tag("regressiontest", "databasetest"})
     public void AuditDatabasePreservationTest() throws Exception {
         addDescription("Tests the functions related to the preservation of the database.");
         addStep("Adds the variables to the settings and instantaites the database cache", "Should be connected.");
@@ -192,25 +192,25 @@ public class AuditDatabaseTest extends ExtendedTestCase {
                 settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase());
         AuditTrailServiceDAO database = new AuditTrailServiceDAO(dm);
 
-        Assert.assertEquals(database.largestSequenceNumber(pillarID, collectionID), 0);
+        Assertions.assertEquals(database.largestSequenceNumber(pillarID, collectionID), 0);
         database.addAuditTrails(createEvents(), collectionID, pillarID);
-        Assert.assertEquals(database.largestSequenceNumber(pillarID, collectionID), 10);
+        Assertions.assertEquals(database.largestSequenceNumber(pillarID, collectionID), 10);
 
         addStep("Validate the preservation sequence number", 
                 "Should be zero, since it has not been updated yet.");
         long pindex = database.getPreservationSequenceNumber(pillarID, collectionID);
-        Assert.assertEquals(pindex, 0);
+        Assertions.assertEquals(pindex, 0);
 
         addStep("Validate the insertion of the preservation sequence number",
                 "Should be the same value extracted afterwards.");
         long givenPreservationIndex = 123456789;
         database.setPreservationSequenceNumber(pillarID, collectionID, givenPreservationIndex);
-        Assert.assertEquals(database.getPreservationSequenceNumber(pillarID, collectionID), givenPreservationIndex);
+        Assertions.assertEquals(database.getPreservationSequenceNumber(pillarID, collectionID), givenPreservationIndex);
 
         database.close();
     }
     
-    @Test(groups = {"regressiontest", "databasetest"})
+    @Test @Tag("regressiontest", "databasetest"})
     public void auditDatabaseCorrectTimestampTest() throws ParseException  {
         addDescription("Testing the correct ingest and extraction of audittrail dates");
         DatabaseManager dm = new AuditTrailDatabaseManager(
@@ -220,11 +220,11 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.ROOT);
         Date summertimeTS = sdf.parse("2015-10-25T02:59:54.000+02:00");
         Date summertimeUnix = new Date(1445734794000L);
-        Assert.assertEquals(summertimeTS, summertimeUnix);
+        Assertions.assertEquals(summertimeTS, summertimeUnix);
         
         Date wintertimeTS = sdf.parse("2015-10-25T02:59:54.000+01:00");
         Date wintertimeUnix = new Date(1445738394000L);
-        Assert.assertEquals(wintertimeTS, wintertimeUnix);
+        Assertions.assertEquals(wintertimeTS, wintertimeUnix);
         
         AuditTrailEvents events = new AuditTrailEvents();
         events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getXmlGregorianCalendar(summertimeTS), 
@@ -237,19 +237,19 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         
         List<AuditTrailEvent> res = getEventsFromIterator(database.getAuditTrailsByIterator("summertime", null, null, null, 
                 null, null, null, null, null, null, null));
-        Assert.assertEquals(res.size(), 1, res.toString());
-        Assert.assertEquals(
+        Assertions.assertEquals(res.size(), 1, res.toString());
+        Assertions.assertEquals(
                 CalendarUtils.convertFromXMLGregorianCalendar(res.get(0).getActionDateTime()), summertimeUnix);
         
         res = getEventsFromIterator(database.getAuditTrailsByIterator("wintertime", null, null, null, null, null, null, 
                 null, null, null, null));
-        Assert.assertEquals(res.size(), 1, res.toString());
-        Assert.assertEquals(
+        Assertions.assertEquals(res.size(), 1, res.toString());
+        Assertions.assertEquals(
                 CalendarUtils.convertFromXMLGregorianCalendar(res.get(0).getActionDateTime()), wintertimeUnix);
 
     }
     
-    @Test(groups = {"regressiontest", "databasetest"})
+    @Test @Tag("regressiontest", "databasetest"})
     public void AuditDatabaseIngestTest() throws Exception {
         addDescription("Testing ingest of audittrails into the database");
         addStep("Adds the variables to the settings and instantaites the database cache", "Should be connected.");
@@ -275,7 +275,7 @@ public class AuditDatabaseTest extends ExtendedTestCase {
                 "actor", "auditInfo", "fileID", "info", pillarID, new BigInteger("2"), operationID1, fingerprint1));
         try {
             database.addAuditTrails(events, collectionID, pillarID);
-            Assert.fail("Should throw an exception.");
+            Assertions.fail("Should throw an exception.");
         } catch  (IllegalArgumentException e) {
             // expected
         }
@@ -286,7 +286,7 @@ public class AuditDatabaseTest extends ExtendedTestCase {
                 "actor", "auditInfo", "fileID", "info", pillarID, new BigInteger("3"), operationID1, fingerprint1));
         try {
             database.addAuditTrails(events, collectionID, pillarID);
-            Assert.fail("Should throw an exception.");
+            Assertions.fail("Should throw an exception.");
         } catch (IllegalStateException e) {
             //expected
         }
@@ -297,7 +297,7 @@ public class AuditDatabaseTest extends ExtendedTestCase {
                 null, "auditInfo", "fileID", "info", pillarID, new BigInteger("4"), operationID1, fingerprint1));
         try {
             database.addAuditTrails(events, collectionID, pillarID);
-            Assert.fail("Should throw an exception.");
+            Assertions.fail("Should throw an exception.");
         } catch (IllegalStateException e) {
             // expected
         }
@@ -314,7 +314,7 @@ public class AuditDatabaseTest extends ExtendedTestCase {
                 "actor", "auditInfo", null, "info", pillarID, new BigInteger("6"), operationID1, fingerprint1));
         try {
             database.addAuditTrails(events, collectionID, pillarID);
-            Assert.fail("Should throw an exception.");
+            Assertions.fail("Should throw an exception.");
         } catch (IllegalStateException e) {
             // expected
         } 
@@ -331,7 +331,7 @@ public class AuditDatabaseTest extends ExtendedTestCase {
                 "actor", "auditInfo", "fileID", "info", null, new BigInteger("8"), operationID1, fingerprint1));
         try {
             database.addAuditTrails(events, collectionID, pillarID);
-            Assert.fail("Should throw an exception.");
+            Assertions.fail("Should throw an exception.");
         } catch (IllegalStateException e) {
             // expected
         }
@@ -344,7 +344,7 @@ public class AuditDatabaseTest extends ExtendedTestCase {
                 "actor", "auditInfo", "fileID", "info", pillarID, null, operationID1, fingerprint1));
         try {
             database.addAuditTrails(events, collectionID, pillarID);
-            Assert.fail("Should throw an exception.");
+            Assertions.fail("Should throw an exception.");
         } catch (IllegalStateException e) {
             // expected
         }
@@ -363,7 +363,7 @@ public class AuditDatabaseTest extends ExtendedTestCase {
     }
     
     
-    @Test(groups = {"regressiontest", "databasetest"})
+    @Test @Tag("regressiontest", "databasetest"})
     public void AuditDatabaseGoodIngestTest() throws Exception {
         addDescription("Testing good case ingest of audittrails into the database");
         addStep("Adds the variables to the settings and instantaites the database cache", "Should be connected.");

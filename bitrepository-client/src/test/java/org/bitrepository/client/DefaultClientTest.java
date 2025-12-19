@@ -27,14 +27,17 @@ import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.protocol.bus.MessageReceiver;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 
 /**
  * Tests the general client functionality. A number of abstract methods with needs to be implemented with concrete
@@ -44,12 +47,13 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
     protected final TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
     private DatatypeFactory datatypeFactory;
 
-    @BeforeMethod(alwaysRun = true)
+    @BeforeEach
     public void setUpFactory() throws DatatypeConfigurationException {
         datatypeFactory = DatatypeFactory.newInstance();
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void identificationNegativeTest() throws Exception {
         addDescription("Verify that the client works correctly when a contributor sends a negative response.");
 
@@ -91,7 +95,7 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void identificationFailureTest() throws Exception {
         addDescription("Verify that the client works correctly when a contributor sends a failure response.");
 
@@ -132,7 +136,7 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void oneContributorNotRespondingTest() throws Exception {
         addDescription("Verify that the client works correct without receiving identification responses from all " +
                 "contributors.");
@@ -173,7 +177,7 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
 
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void noContributorsRespondingTest() throws Exception {
         addDescription("Tests the the client handles lack of a IdentifyResponse gracefully. " +
                 "More concrete this means that the occurrence of a identification timeout should be handled correctly");
@@ -194,7 +198,7 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
     }
 
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void operationTimeoutTest() throws Exception {
         addDescription("Tests the the client handles lack of final responses gracefully.");
 
@@ -228,7 +232,7 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
                 OperationEventType.FAILED);
     }
     
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void collectionIDIncludedInEventsTest() throws Exception {
         addDescription("Tests the the client provides collectionID in events.");
 
@@ -279,7 +283,7 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
         assertEquals(event6.getCollectionID(), collectionID);
     }    
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void conversationTimeoutTest() throws Exception {
         addDescription("Tests the the client handles lack of IdentifyPillarResponses gracefully  ");
 

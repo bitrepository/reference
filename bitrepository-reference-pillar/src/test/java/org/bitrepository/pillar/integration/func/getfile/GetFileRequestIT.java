@@ -18,9 +18,9 @@ import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+
+
+
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,9 +30,9 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertNull;
+
+
+
 
 public class GetFileRequestIT extends PillarFunctionTest {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -57,7 +57,7 @@ public class GetFileRequestIT extends PillarFunctionTest {
         }
     }
 
-    @Test(groups = {PillarTestGroups.FULL_PILLAR_TEST})
+    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST})
     public void normalGetFileTest() throws IOException {
         addDescription("Tests a normal GetFile sequence");
         addStep("Send a getFile request to " + testConfiguration.getPillarUnderTestID(),
@@ -109,7 +109,7 @@ public class GetFileRequestIT extends PillarFunctionTest {
         }
     }
 
-    @Test(groups = {PillarTestGroups.FULL_PILLAR_TEST})
+    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST})
     public void getFileWithFilePartTest() throws IOException {
         addDescription("Tests that a pillar is able to return a specified FilePart in the final response");
         addStep("Send a getFile request to " + testConfiguration.getPillarUnderTestID() + " with a specified " +
@@ -139,7 +139,7 @@ public class GetFileRequestIT extends PillarFunctionTest {
         }
     }
 
-    @Test(groups = {PillarTestGroups.FULL_PILLAR_TEST})
+    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST})
     public void getMissingFileTest() {
         addDescription("Tests that a pillar gives an error when trying to get a non-existing file");
         addStep("Send a getFile request to " + testConfiguration.getPillarUnderTestID() + " with a " +
@@ -154,7 +154,7 @@ public class GetFileRequestIT extends PillarFunctionTest {
                 "Received unexpected 'ResponseCode' element.");
     }
 
-    @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST} )
+    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST} )
     public void missingCollectionIDTest() {
         addDescription("Verifies the a missing collectionID in the request is rejected");
         addStep("Sending a request without a collectionID.",
@@ -164,11 +164,11 @@ public class GetFileRequestIT extends PillarFunctionTest {
         messageBus.sendMessage(request);
 
         MessageResponse receivedResponse = receiveResponse();
-        Assert.assertEquals(receivedResponse.getResponseInfo().getResponseCode(),
+        Assertions.assertEquals(receivedResponse.getResponseInfo().getResponseCode(),
                 ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
     }
 
-    @Test ( groups = {PillarTestGroups.FULL_PILLAR_TEST} )
+    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST} )
     public void otherCollectionTest() {
         addDescription("Verifies identification works correctly for a second collection defined for pillar");
         addStep("Sending a identify request with a non-default collectionID (not the first collection) " +
@@ -204,7 +204,7 @@ public class GetFileRequestIT extends PillarFunctionTest {
 
     protected void assertPositivResponseIsReceived() {
         MessageResponse receivedResponse = receiveResponse();
-        Assert.assertEquals(receivedResponse.getResponseInfo().getResponseCode(),
+        Assertions.assertEquals(receivedResponse.getResponseInfo().getResponseCode(),
                 ResponseCode.OPERATION_COMPLETED);
     }
 }

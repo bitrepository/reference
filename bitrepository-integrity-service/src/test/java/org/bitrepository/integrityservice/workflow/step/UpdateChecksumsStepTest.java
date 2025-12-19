@@ -39,10 +39,13 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.service.exception.WorkflowAbortedException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+
+
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,7 +68,8 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
     public static final String TEST_FILE_1 = "test-file-1";
     public static final String DEFAULT_CHECKSUM = "0123456789";
 
-    @Test(groups = {"regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void testPositiveReply() throws WorkflowAbortedException {
         addDescription("Test the step for updating the checksums can handle COMPLETE operation event.");
         doAnswer(new Answer() {
@@ -89,7 +93,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         verifyNoMoreInteractions(alerter);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void testAbortWorkflowWhenNegativeReply() {
         addDescription("Test the step for updating the checksums will abort the workflow in case "
                 + "of FAILURE operation event and AbortOnFailedContributor = true .");
@@ -114,7 +118,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
                 settings, TEST_COLLECTION, integrityContributors);
         try {
             step.performStep();
-            Assert.fail("The step should have thrown an WorkflowAbortedException");
+            Assertions.fail("The step should have thrown an WorkflowAbortedException");
         } catch (WorkflowAbortedException e) {
             // nothing to do here
         }
@@ -124,7 +128,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         verify(alerter).integrityFailed(anyString(), eq(TEST_COLLECTION));
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void testRetryCollectionWhenNegativeReply() throws WorkflowAbortedException {
         addDescription("Test the step for updating the file ids will retry on a FAILED event");
 
@@ -168,7 +172,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
 
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void testContinueWorkflowNegativeReply() throws WorkflowAbortedException {
         addDescription("Test the step for updating the checksums will continue the workflow in case "
                 + "of FAILURE operation event and AbortOnFailedContributor = false .");
@@ -199,7 +203,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         verify(alerter).integrityFailed(anyString(), eq(TEST_COLLECTION));
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void testIngestOfResults() throws WorkflowAbortedException {
         addDescription("Test the step for updating the checksums delivers the results to the integrity model.");
         final ResultingChecksums resultingChecksums = createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1);
@@ -230,7 +234,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         verifyNoMoreInteractions(alerter);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void testCallForChangingChecksumStates() throws WorkflowAbortedException {
         addDescription("Test the step for updating the checksums delivers the results to the integrity model.");
         final ResultingChecksums resultingChecksums = createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1);
@@ -260,7 +264,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         verifyNoMoreInteractions(alerter);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void testPartialResults() throws WorkflowAbortedException {
         addDescription("Test that the number of partial is used for generating more than one request.");
         final ResultingChecksums resultingChecksums = createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1);
@@ -298,7 +302,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
                 any(ChecksumSpecTYPE.class), any(), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void testFullChecksumCollection() throws WorkflowAbortedException {
         addDescription("Test that the full list of checksums is requested.");
 
@@ -329,7 +333,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         verifyNoMoreInteractions(alerter);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void testIncrementalChecksumCollection() throws WorkflowAbortedException {
         addDescription("Test that only the list of new checksums is requested.");
 

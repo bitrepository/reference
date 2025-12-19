@@ -26,8 +26,10 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.settings.referencesettings.ServiceType;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 
 /**
  * jaccept report generating test of whether ServiceSettingsProvider actually <i>knows</i> the enum ServiceType.
@@ -36,34 +38,35 @@ public class ServiceSettingsProviderTest {
 
     private static final String PATH_TO_TEST_SETTINGS = "settings/xml/bitrepository-devel";
 
-    @Test(groups = {"regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void componentIDTest() {
         SettingsProvider settingsLoader =
                 new ServiceSettingsProvider(new XMLFileSettingsLoader(PATH_TO_TEST_SETTINGS),
                 ServiceType.ALARM_SERVICE);
         Settings settings = settingsLoader.getSettings();
-        Assert.assertEquals(
+        Assertions.assertEquals(
                 settings.getReferenceSettings().getAlarmServiceSettings().getID(), settings.getComponentID());
 
         settingsLoader =
                 new ServiceSettingsProvider(new XMLFileSettingsLoader(PATH_TO_TEST_SETTINGS),
                         ServiceType.AUDIT_TRAIL_SERVICE);
         settings = settingsLoader.getSettings();
-        Assert.assertEquals(
+        Assertions.assertEquals(
                 settings.getReferenceSettings().getAuditTrailServiceSettings().getID(), settings.getComponentID());
 
         settingsLoader =
                 new ServiceSettingsProvider(new XMLFileSettingsLoader(PATH_TO_TEST_SETTINGS),
                         ServiceType.INTEGRITY_SERVICE);
         settings = settingsLoader.getSettings();
-        Assert.assertEquals(
+        Assertions.assertEquals(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getID(), settings.getComponentID());
 
         settingsLoader =
                 new ServiceSettingsProvider(new XMLFileSettingsLoader(PATH_TO_TEST_SETTINGS),
                         ServiceType.MONITORING_SERVICE);
         settings = settingsLoader.getSettings();
-        Assert.assertEquals(
+        Assertions.assertEquals(
                 settings.getReferenceSettings().getMonitoringServiceSettings().getID(), settings.getComponentID());
 
     }

@@ -26,11 +26,15 @@ import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.integrityservice.alerter.IntegrityAlarmDispatcher;
 import org.bitrepository.integrityservice.alerter.IntegrityAlerter;
 import org.bitrepository.protocol.IntegrationTest;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 
 public class IntegrityAlerterTest extends IntegrationTest {
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test
+    @Tag("regressiontest")
+    @Tag("integritytest")
     public void testIntegrityFailed() {
         addDescription("Test the IntegrityFailed method for the IntegrityAlerter");
 
@@ -38,10 +42,12 @@ public class IntegrityAlerterTest extends IntegrationTest {
         IntegrityAlerter alerter = new IntegrityAlarmDispatcher(settingsForCUT, messageBus, null);
         alerter.integrityFailed("Testaintegrity alarm", collectionID);
         AlarmMessage alarmMessage = alarmReceiver.waitForMessage(AlarmMessage.class);
-        Assert.assertEquals(alarmMessage.getAlarm().getAlarmCode(), AlarmCode.INTEGRITY_ISSUE);
+        Assertions.assertEquals(alarmMessage.getAlarm().getAlarmCode(), AlarmCode.INTEGRITY_ISSUE);
     }
     
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test
+    @Tag("regressiontest")
+    @Tag("integritytest")
     public void testOperationFailed() {
         addDescription("Test the OperationFailed method for the IntegrityAlerter");
         
@@ -51,6 +57,6 @@ public class IntegrityAlerterTest extends IntegrationTest {
         alerter.operationFailed("Testing the ability to fail.", collectionID);
 
         AlarmMessage alarmMessage = alarmReceiver.waitForMessage(AlarmMessage.class);
-        Assert.assertEquals(alarmMessage.getAlarm().getAlarmCode(), AlarmCode.FAILED_OPERATION);
+        Assertions.assertEquals(alarmMessage.getAlarm().getAlarmCode(), AlarmCode.FAILED_OPERATION);
     }
 }

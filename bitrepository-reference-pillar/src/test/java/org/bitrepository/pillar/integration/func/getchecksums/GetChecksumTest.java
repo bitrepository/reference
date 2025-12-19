@@ -29,13 +29,13 @@ import org.bitrepository.client.exceptions.NegativeResponseException;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+
+
 
 import java.util.List;
 
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
+
+
 
 public class GetChecksumTest extends PillarFunctionTest {
 
@@ -44,7 +44,7 @@ public class GetChecksumTest extends PillarFunctionTest {
         //ToDo
     }
 
-    @Test ( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST} )
+    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST} )
     public void md5ChecksumsForAllFilesTest() throws NegativeResponseException {
         addDescription("Test the pillar support for MD5 type checksums");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
@@ -62,7 +62,7 @@ public class GetChecksumTest extends PillarFunctionTest {
         // ToDo implement this
     }
     
-    @Test ( groups = {PillarTestGroups.FULL_PILLAR_TEST} )
+    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST} )
     public void sha1ChecksumsForDefaultTest() throws NegativeResponseException {
         addDescription("Test the pillar support for SHA1 type checksums");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
@@ -76,7 +76,7 @@ public class GetChecksumTest extends PillarFunctionTest {
         assertNotNull(checksums.get(0));
     }
 
-    @Test ( groups = {PillarTestGroups.FULL_PILLAR_TEST} )
+    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST} )
     public void md5SaltChecksumsForDefaultTest() throws NegativeResponseException {
         addDescription("Test the pillar support for MD5 type checksums with a salt");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
@@ -95,7 +95,7 @@ public class GetChecksumTest extends PillarFunctionTest {
         assertNotNull(checksums.get(0));
     }
     
-    @Test ( groups = {PillarTestGroups.FULL_PILLAR_TEST} )
+    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST} )
     public void sha1SaltChecksumsForDefaultTest() throws NegativeResponseException {
         addDescription("Test the pillar support for SHA1 type checksums with a salt");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);

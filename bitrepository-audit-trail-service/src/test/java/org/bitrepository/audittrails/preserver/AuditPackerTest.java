@@ -6,8 +6,8 @@ import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.settings.referencesettings.AuditTrailPreservation;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+
+
 
 import java.io.IOException;
 import java.util.List;
@@ -18,7 +18,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.testng.Assert.assertEquals;
+
 
 public class AuditPackerTest extends ExtendedTestCase {
     private String collectionID;

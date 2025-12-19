@@ -43,9 +43,12 @@ import org.bitrepository.integrityservice.collector.IntegrityInformationCollecto
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.workflow.Workflow;
 import org.jaccept.structure.ExtendedTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+
+
 
 import java.util.Arrays;
 
@@ -75,7 +78,7 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
     protected IntegrityModel model;
     protected AuditTrailManager auditManager;
 
-    @BeforeMethod(alwaysRun = true)
+    @BeforeEach
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("IntegrityWorkflowTest");
 
@@ -93,7 +96,9 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         auditManager = mock(AuditTrailManager.class);
     }
 
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test
+    @Tag("regressiontest")
+    @Tag("integritytest")
     public void testNoFilesInCollection() {
         addDescription("Test that the workflow does nothing, when it has no files in the collection.");
         addStep("Prepare for calls to mocks", "");
@@ -116,7 +121,9 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         verifyNoMoreInteractions(model);
     }
 
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test
+    @Tag("regressiontest")
+    @Tag("integritytest")
     public void testSuccess() {
         addDescription("Test that the workflow works when both pillars deliver the same checksum.");
         addStep("Prepare for calls to mocks", "");
@@ -156,7 +163,8 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         verifyNoMoreInteractions(auditManager);
     }
 
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test
+    @Tag("regressiontest") @Tag("integritytest")
     public void testOneComponentFailureAndTwoOtherAgreeOnChecksum() {
         addDescription("Test that the workflow works when both pillars deliver the same checksum.");
         addStep("Prepare for calls to mocks", "");
@@ -199,7 +207,9 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         verifyNoMoreInteractions(auditManager);
     }
 
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test
+    @Tag("regressiontest")
+    @Tag("integritytest")
     public void testOneComponentFailureAndTwoOtherDisagreeOnChecksum() throws Exception {
         addDescription("Test that the workflow works when both pillars deliver the same checksum.");
         addStep("Prepare for calls to mocks", "");
@@ -243,7 +253,8 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         verifyNoMoreInteractions(auditManager);
     }
 
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test
+    @Tag("regressiontest") @Tag("integritytest")
     public void testInconsistentChecksums() {
         addDescription("Test that the workflow discovers and handles inconsistent checksums");
         addStep("Prepare for calls to mocks", "");
@@ -286,7 +297,9 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         verifyNoMoreInteractions(alerter);
     }
 
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test
+    @Tag("regressiontest")
+    @Tag("integritytest")
     public void testNoReceivedChecksums() {
         addDescription("Test that the workflow handles the case, when no checksums are received");
         addStep("Prepare for calls to mocks", "");

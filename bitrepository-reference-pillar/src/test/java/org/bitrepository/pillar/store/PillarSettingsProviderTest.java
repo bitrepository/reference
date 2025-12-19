@@ -25,20 +25,20 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.pillar.PillarSettingsProvider;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+
+
 
 public class PillarSettingsProviderTest {
 
     private static final String PATH_TO_TEST_SETTINGS = "settings/xml/bitrepository-devel";
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest"})
     public void componentIDTest() {
         SettingsProvider settingsLoader =
                 new PillarSettingsProvider(new XMLFileSettingsLoader(PATH_TO_TEST_SETTINGS),
                         null);
         Settings settings = settingsLoader.getSettings();
-        Assert.assertEquals(
+        Assertions.assertEquals(
                 settings.getReferenceSettings().getPillarSettings().getPillarID(), settings.getComponentID());
 
         String componentID = "testPillarID";
@@ -46,7 +46,7 @@ public class PillarSettingsProviderTest {
                 new PillarSettingsProvider(new XMLFileSettingsLoader(PATH_TO_TEST_SETTINGS),
                         "testPillarID");
         settings = settingsLoader.getSettings();
-        Assert.assertEquals(
+        Assertions.assertEquals(
                 componentID, settings.getComponentID());
     }
 }

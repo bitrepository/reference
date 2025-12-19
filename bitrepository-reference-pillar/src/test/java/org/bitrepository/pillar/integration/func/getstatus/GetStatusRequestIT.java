@@ -32,9 +32,9 @@ import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.bitrepository.pillar.messagefactories.GetStatusMessageFactory;
 import org.bitrepository.settings.referencesettings.AlarmLevel;
-import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+
+
+
 
 import java.lang.reflect.Method;
 
@@ -49,7 +49,7 @@ public class GetStatusRequestIT extends PillarFunctionTest {
         msgFactory = new GetStatusMessageFactory(null, settingsForTestClient, getPillarID(), pillarDestination);
     }
 
-    @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
+    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
     public void normalGetStatusTest() {
         addDescription("Tests the GetStatus functionality of a pillar for the successful scenario.");
 
@@ -60,13 +60,13 @@ public class GetStatusRequestIT extends PillarFunctionTest {
 
         addStep("Receive and validate the final response", "Should be sent by the pillar.");
         GetStatusFinalResponse finalResponse = clientReceiver.waitForMessage(GetStatusFinalResponse.class);
-        Assert.assertNotNull(finalResponse);
-        Assert.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
-        Assert.assertEquals(finalResponse.getCorrelationID(), request.getCorrelationID());
-        Assert.assertEquals(finalResponse.getFrom(), getPillarID());
+        Assertions.assertNotNull(finalResponse);
+        Assertions.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
+        Assertions.assertEquals(finalResponse.getCorrelationID(), request.getCorrelationID());
+        Assertions.assertEquals(finalResponse.getFrom(), getPillarID());
     }
 
-    @Test( groups = {"failing"})
+    @Test @Tag("failing"})
     public void checksumPillarGetStatusWrongContributor() {
         addDescription("Tests the GetStatus functionality of the reference pillar for the bad scenario, where a wrong "
                        + "contributor id is given.");
@@ -80,7 +80,7 @@ public class GetStatusRequestIT extends PillarFunctionTest {
         messageBus.sendMessage(request);
 
         addStep("The pillar should send an alarm.", "");
-        Assert.assertNotNull(alarmReceiver.waitForMessage(AlarmMessage.class));
+        Assertions.assertNotNull(alarmReceiver.waitForMessage(AlarmMessage.class));
     }
 
 

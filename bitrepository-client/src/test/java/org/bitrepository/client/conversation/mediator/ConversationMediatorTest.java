@@ -31,12 +31,14 @@ import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 
 /**
  * Test the general ConversationMediator functionality.
  */
-@Test
+//@Test
 public abstract class ConversationMediatorTest {
     protected Settings settings = TestSettingsProvider.getSettings(getClass().getSimpleName());
     protected SecurityManager securityManager = new DummySecurityManager();
@@ -45,7 +47,8 @@ public abstract class ConversationMediatorTest {
      * Validates the core mediator functionality of delegating messages from the message bus to the relevant 
      * conversation.
      */
-    @Test (groups = {"testfirst"})
+    @Test
+    @Tag("testfirst")
     public void messagedelegationTest() {
         ConversationMediator mediator = createMediator(settings);
 

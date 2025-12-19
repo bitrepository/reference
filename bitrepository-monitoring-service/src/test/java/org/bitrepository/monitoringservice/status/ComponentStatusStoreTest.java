@@ -28,9 +28,9 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+
+
+
 
 import java.util.HashSet;
 import java.util.Map;
@@ -44,7 +44,7 @@ public class ComponentStatusStoreTest extends ExtendedTestCase {
         settings = TestSettingsProvider.reloadSettings("ComponentStatusStoreUnderTest");
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest"})
     public void testComponentStatus() throws Exception {
         addDescription("Tests the compontent status");
         addStep("Setup", "");
@@ -55,45 +55,45 @@ public class ComponentStatusStoreTest extends ExtendedTestCase {
         
         addStep("Validate the initial content", "Should be one component with a 'new and empty' component status.");
         Map<String, ComponentStatus> statuses = store.getStatusMap();
-        Assert.assertEquals(statuses.size(), 1);
+        Assertions.assertEquals(statuses.size(), 1);
         
         ComponentStatus newStatus = new ComponentStatus();
-        Assert.assertNotNull(statuses.get(componentId));
-        Assert.assertEquals(statuses.get(componentId).getInfo(), newStatus.getInfo());
-        Assert.assertEquals(statuses.get(componentId).getNumberOfMissingReplies(), newStatus.getNumberOfMissingReplies());
-        Assert.assertEquals(statuses.get(componentId).getLastReplyDate(), newStatus.getLastReplyDate());
-        Assert.assertEquals(statuses.get(componentId).getStatus(), newStatus.getStatus());
+        Assertions.assertNotNull(statuses.get(componentId));
+        Assertions.assertEquals(statuses.get(componentId).getInfo(), newStatus.getInfo());
+        Assertions.assertEquals(statuses.get(componentId).getNumberOfMissingReplies(), newStatus.getNumberOfMissingReplies());
+        Assertions.assertEquals(statuses.get(componentId).getLastReplyDate(), newStatus.getLastReplyDate());
+        Assertions.assertEquals(statuses.get(componentId).getStatus(), newStatus.getStatus());
 
         addStep("Update the replay counts and validate ", "it should increases the 'number of missing replies' by 1");
         store.updateReplyCounts();
         statuses = store.getStatusMap();
-        Assert.assertEquals(statuses.size(), 1);
-        Assert.assertNotNull(statuses.get(componentId));
-        Assert.assertEquals(statuses.get(componentId).getInfo(), newStatus.getInfo());
-        Assert.assertEquals(statuses.get(componentId).getNumberOfMissingReplies(), 1);
-        Assert.assertEquals(statuses.get(componentId).getLastReplyDate(), newStatus.getLastReplyDate());
-        Assert.assertEquals(statuses.get(componentId).getStatus(), newStatus.getStatus());
+        Assertions.assertEquals(statuses.size(), 1);
+        Assertions.assertNotNull(statuses.get(componentId));
+        Assertions.assertEquals(statuses.get(componentId).getInfo(), newStatus.getInfo());
+        Assertions.assertEquals(statuses.get(componentId).getNumberOfMissingReplies(), 1);
+        Assertions.assertEquals(statuses.get(componentId).getLastReplyDate(), newStatus.getLastReplyDate());
+        Assertions.assertEquals(statuses.get(componentId).getStatus(), newStatus.getStatus());
         
         addStep("Test what happens when an invalid component id attempted to be updated.", "Should not affect content.");
         store.updateStatus("BAD-COMPONENT-ID", null);
         statuses = store.getStatusMap();
-        Assert.assertEquals(statuses.size(), 1);
-        Assert.assertNotNull(statuses.get(componentId));
-        Assert.assertEquals(statuses.get(componentId).getInfo(), newStatus.getInfo());
-        Assert.assertEquals(statuses.get(componentId).getNumberOfMissingReplies(), 1);
-        Assert.assertEquals(statuses.get(componentId).getLastReplyDate(), newStatus.getLastReplyDate());
-        Assert.assertEquals(statuses.get(componentId).getStatus(), newStatus.getStatus());
+        Assertions.assertEquals(statuses.size(), 1);
+        Assertions.assertNotNull(statuses.get(componentId));
+        Assertions.assertEquals(statuses.get(componentId).getInfo(), newStatus.getInfo());
+        Assertions.assertEquals(statuses.get(componentId).getNumberOfMissingReplies(), 1);
+        Assertions.assertEquals(statuses.get(componentId).getLastReplyDate(), newStatus.getLastReplyDate());
+        Assertions.assertEquals(statuses.get(componentId).getStatus(), newStatus.getStatus());
         
         addStep("Try giving it a positive status", "Should be inserted into the store.");
         ResultingStatus resStatus = createPositiveStatus();
         store.updateStatus(componentId, resStatus);
         statuses = store.getStatusMap();
-        Assert.assertEquals(statuses.size(), 1);
-        Assert.assertNotNull(statuses.get(componentId));
-        Assert.assertEquals(statuses.get(componentId).getInfo(), resStatus.getStatusInfo().getStatusText());
-        Assert.assertEquals(statuses.get(componentId).getNumberOfMissingReplies(), 0);
-        Assert.assertEquals(statuses.get(componentId).getLastReplyDate(), resStatus.getStatusTimestamp());
-        Assert.assertEquals(statuses.get(componentId).getStatus().value(), resStatus.getStatusInfo().getStatusCode().name());
+        Assertions.assertEquals(statuses.size(), 1);
+        Assertions.assertNotNull(statuses.get(componentId));
+        Assertions.assertEquals(statuses.get(componentId).getInfo(), resStatus.getStatusInfo().getStatusText());
+        Assertions.assertEquals(statuses.get(componentId).getNumberOfMissingReplies(), 0);
+        Assertions.assertEquals(statuses.get(componentId).getLastReplyDate(), resStatus.getStatusTimestamp());
+        Assertions.assertEquals(statuses.get(componentId).getStatus().value(), resStatus.getStatusInfo().getStatusCode().name());
     }
     
     private ResultingStatus createPositiveStatus() {

@@ -35,16 +35,17 @@ import org.bitrepository.integrityservice.cache.database.IntegrityDBStateExcepti
 import org.bitrepository.integrityservice.cache.database.IntegrityDBTools;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseManager;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
 
@@ -55,7 +56,7 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
     String TEST_FILE_ID = "TEST-FILE-ID";
     String TEST_COLLECTIONID;
     
-    @BeforeMethod (alwaysRun = true)
+    @BeforeEach
     @Override
     public void setup() throws Exception {
         super.setup();
@@ -83,7 +84,7 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         settings.getRepositorySettings().getCollections().getCollection().add(extraCollection);
     }
     
-    @Test(groups = {"regressiontest", "databasetest", "integritytest"})
+    @Test @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
     public void testAddCollectionSuccess() {
         addDescription("Tests that a new collection can be added to the integrity database");
         String newCollectionID = "new-collectionid";
@@ -106,7 +107,7 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         assertTrue(collections.contains(newCollectionID));
     }
     
-    @Test(groups = {"regressiontest", "databasetest", "integritytest"})
+    @Test @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
     public void testAddExistingCollection() {
         addDescription("Tests that an existing collectionID cannot be added to the integrity database.");
         DatabaseManager dm = new IntegrityDatabaseManager(
@@ -131,7 +132,9 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         assertTrue(collections.contains(EXTRA_COLLECTION));
     }
     
-    @Test(groups = {"regressiontest", "databasetest", "integritytest"})
+    @Test
+    @Tag("regressiontest")
+    @Tag("databasetest") @Tag("integritytest")
     public void testRemoveNonExistingCollection() {
         addDescription("Tests that a non existing collection can't be removed from the integrity database.");
         String nonExistingCollectionID = "non-existing-collectionid";
@@ -158,7 +161,7 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         assertTrue(collections.contains(EXTRA_COLLECTION));
     }
     
-    /*@Test(groups = {"regressiontest", "databasetest", "integritytest"})
+    /*@Test @Tag("regressiontest", "databasetest", "integritytest"})
     public void testRemoveExistingCollection() {
         addDescription("Tests the removal of an existing collection and references to it in the integrity database");
         DatabaseManager dm = new IntegrityDatabaseManager(

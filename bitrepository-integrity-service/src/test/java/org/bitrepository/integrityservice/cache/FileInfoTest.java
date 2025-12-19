@@ -23,8 +23,10 @@ package org.bitrepository.integrityservice.cache;
 
 import org.bitrepository.common.utils.CalendarUtils;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -40,37 +42,39 @@ public class FileInfoTest extends ExtendedTestCase {
     private static final String PILLAR_ID = "test-pillar";
     private static final Long FILE_SIZE = 12345L;
     
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test
+    @Tag("regressiontest")
+    @Tag("integritytest")
     public void testFileInfo() {
         addDescription("Tests the FileInfo element. Adds all data and extracts it again.");
         addStep("Setup the file info.", "Should be possible to extract all the data again.");
         FileInfo fi = new FileInfo(FILE_ID, LAST_FILE_CHECK, CHECKSUM, FILE_SIZE, LAST_CHECKSUM_CHECK, PILLAR_ID);
         
-        Assert.assertEquals(fi.getFileId(), FILE_ID);
-        Assert.assertEquals(fi.getDateForLastFileIDCheck().toGregorianCalendar().getTimeInMillis(), LAST_FILE_CHECK_MILLIS);
-        Assert.assertEquals(fi.getChecksum(), CHECKSUM);
-        Assert.assertEquals(fi.getDateForLastChecksumCheck().toGregorianCalendar().getTimeInMillis(), LAST_CHECKSUM_CHECK_MILLIS);
-        Assert.assertEquals(fi.getPillarId(), PILLAR_ID);
-        Assert.assertEquals(fi.getFileSize(), FILE_SIZE);
+        Assertions.assertEquals(fi.getFileId(), FILE_ID);
+        Assertions.assertEquals(fi.getDateForLastFileIDCheck().toGregorianCalendar().getTimeInMillis(), LAST_FILE_CHECK_MILLIS);
+        Assertions.assertEquals(fi.getChecksum(), CHECKSUM);
+        Assertions.assertEquals(fi.getDateForLastChecksumCheck().toGregorianCalendar().getTimeInMillis(), LAST_CHECKSUM_CHECK_MILLIS);
+        Assertions.assertEquals(fi.getPillarId(), PILLAR_ID);
+        Assertions.assertEquals(fi.getFileSize(), FILE_SIZE);
         
         addStep("Change the checksum", "Should be possible to extract it again.");
         String newChecksum = "NEW-CHECKSUM";
         fi.setChecksum(newChecksum);
-        Assert.assertNotEquals(newChecksum, CHECKSUM);
-        Assert.assertEquals(fi.getChecksum(), newChecksum);
+        Assertions.assertNotEquals(newChecksum, CHECKSUM);
+        Assertions.assertEquals(fi.getChecksum(), newChecksum);
 
         addStep("Change the date for last file id check", "Should be possible to extract it again.");
         long newLastFileMillis = 1234567;
         XMLGregorianCalendar newLastFileCheck = CalendarUtils.getFromMillis(newLastFileMillis);
         fi.setDateForLastFileIDCheck(newLastFileCheck);
-        Assert.assertNotEquals(DatatypeConstants.EQUAL, LAST_FILE_CHECK.compare(newLastFileCheck));
-        Assert.assertEquals(fi.getDateForLastFileIDCheck().toGregorianCalendar().getTimeInMillis(), newLastFileMillis);
+        Assertions.assertNotEquals(DatatypeConstants.EQUAL, LAST_FILE_CHECK.compare(newLastFileCheck));
+        Assertions.assertEquals(fi.getDateForLastFileIDCheck().toGregorianCalendar().getTimeInMillis(), newLastFileMillis);
         
         addStep("Change the date for last checksum check", "Should be possible to extract it again.");
         long newLastChecksumMillis = 7654321;
         XMLGregorianCalendar newLastChecksumCheck = CalendarUtils.getFromMillis(newLastChecksumMillis);
         fi.setDateForLastChecksumCheck(newLastChecksumCheck);
-        Assert.assertNotEquals(DatatypeConstants.EQUAL, LAST_CHECKSUM_CHECK.compare(newLastChecksumCheck));
-        Assert.assertEquals(fi.getDateForLastChecksumCheck().toGregorianCalendar().getTimeInMillis(), newLastChecksumMillis);
+        Assertions.assertNotEquals(DatatypeConstants.EQUAL, LAST_CHECKSUM_CHECK.compare(newLastChecksumCheck));
+        Assertions.assertEquals(fi.getDateForLastChecksumCheck().toGregorianCalendar().getTimeInMillis(), newLastChecksumMillis);
     }
 }

@@ -39,8 +39,8 @@ import org.bitrepository.service.contributor.ContributorMediator;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.jaccept.structure.ExtendedTestCase;
 import org.mockito.ArgumentCaptor;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+
+
 
 import javax.xml.datatype.DatatypeFactory;
 import java.util.concurrent.ThreadFactory;
@@ -72,7 +72,7 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
         threadFactory = new DefaultThreadFactory(this.getClass().getSimpleName(), Thread.NORM_PRIORITY);
     }
 
-    @Test(groups = {"unstable"})
+    @Test @Tag("unstable"})
     public void auditTrailServiceTest() throws Exception {
         addDescription("Test the Audit Trail Service");
         DatatypeFactory factory = DatatypeFactory.newInstance();

@@ -29,15 +29,15 @@ import org.bitrepository.pillar.store.checksumcache.MemoryCacheMock;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumStore;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.settings.referencesettings.ChecksumPillarFileDownload;
-import org.testng.annotations.Test;
+
 
 import java.util.Date;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
+
+
+
+
+
 
 public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
     ChecksumStorageModel pillarModel;
@@ -61,7 +61,7 @@ public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
         nonDefaultCsType.setChecksumSalt(new byte[]{'a', 'z'});
     }
     
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test @Tag("regressiontest", "pillartest"})
     public void testPillarModelBasicFunctionality() {
         addDescription("Test the basic functions of the full reference pillar model.");
         addStep("Check the pillar id in the pillar model", "Identical to the one from the test.");
@@ -95,7 +95,7 @@ public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
 
     }
     
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test @Tag("regressiontest", "pillartest"})
     public void testPillarModelHasFile() throws Exception {
         addDescription("Test that the file exists, when placed in the archive and cache");
         addStep("Setup", "Should place the 'existing file' in the directory.");
@@ -186,7 +186,7 @@ public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
         }
     }
     
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test @Tag("regressiontest", "pillartest"})
     public void testPillarModelNoFile() {
         addDescription("Test that the file exists, when placed in the archive and cache");
         addStep("Setup", "Should place the 'existing file' in the directory.");

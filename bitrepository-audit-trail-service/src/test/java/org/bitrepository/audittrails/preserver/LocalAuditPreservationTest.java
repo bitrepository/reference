@@ -38,8 +38,8 @@ import org.bitrepository.settings.repositorysettings.Collection;
 import org.jaccept.structure.ExtendedTestCase;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+
+
 
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
@@ -55,7 +55,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static org.testng.Assert.assertEquals;
+
 
 public class LocalAuditPreservationTest extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup. */
@@ -105,12 +105,12 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
 
         LocalAuditTrailPreserver preserver = new LocalAuditTrailPreserver(settings, store, client, fileExchangeMock);
         
-        /*Assert.assertEquals(store.getCallsToAddAuditTrails(), 0);
-        Assert.assertEquals(store.getCallsToGetAuditTrails(), 0);
-        Assert.assertEquals(store.getCallsToGetPreservationSequenceNumber(), 1);
-        Assert.assertEquals(store.getCallsToLargestSequenceNumber(), 0);
-        Assert.assertEquals(store.getCallsToSetPreservationSequenceNumber(), 0);
-        Assert.assertEquals(client.getCallsToPutFile(), 0);*/
+        /*Assertions.assertEquals(store.getCallsToAddAuditTrails(), 0);
+        Assertions.assertEquals(store.getCallsToGetAuditTrails(), 0);
+        Assertions.assertEquals(store.getCallsToGetPreservationSequenceNumber(), 1);
+        Assertions.assertEquals(store.getCallsToLargestSequenceNumber(), 0);
+        Assertions.assertEquals(store.getCallsToSetPreservationSequenceNumber(), 0);
+        Assertions.assertEquals(client.getCallsToPutFile(), 0);*/
 
         verify(store).getPreservationSequenceNumber(PILLAR_ID, collectionID);
         verifyNoMoreInteractions(store);
@@ -138,13 +138,13 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
                 null, null, PILLAR_ID, 0L, null, null,
                 null, null, null, null, null);
         verify(iterator).getNextAuditTrailEvent();
-        //Assert.assertEquals(store.getCallsToGetAuditTrails(), settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().size());
+        //Assertions.assertEquals(store.getCallsToGetAuditTrails(), settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().size());
 
-        //Assert.assertEquals(store.getCallsToGetPreservationSequenceNumber(), 2);
+        //Assertions.assertEquals(store.getCallsToGetPreservationSequenceNumber(), 2);
         assertEquals(client.getCallsToPutFile(), 1);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest"})
     @SuppressWarnings("rawtypes")
     public void auditPreservationIngestTest() throws Exception {
         addDescription("Tests the ingest of the audit trail preservation.");

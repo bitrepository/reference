@@ -36,20 +36,23 @@ import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.protocol.message.TestGetStatusMessageFactory;
 import org.bitrepository.settings.repositorysettings.GetStatusSettings;
-import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 
 import javax.xml.datatype.DatatypeFactory;
 import java.util.List;
 
-import static org.testng.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
 
         private TestGetStatusMessageFactory testMessageFactory;
 
-        @BeforeMethod(alwaysRun=true)
+        @BeforeEach
         public void beforeMethodSetup() {
             testMessageFactory = new TestGetStatusMessageFactory(settingsForTestClient.getComponentID());
 
@@ -62,16 +65,17 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
             contributors.add(PILLAR2_ID);
         }
 
-        @Test(groups = {"regressiontest"})
+        @Test @Tag("regressiontest")
         public void verifyGetStatusClientFromFactory() {
-            Assert.assertTrue(AccessComponentFactory.getInstance().createGetStatusClient(
+            Assertions.assertTrue(AccessComponentFactory.getInstance().createGetStatusClient(
                     settingsForCUT, securityManager, settingsForTestClient.getComponentID())
                     instanceof ConversationBasedGetStatusClient,
                     "The default GetStatusClient from the Access factory should be of the type '" +
                             ConversationBasedGetStatusClient.class.getName() + "'.");
         }
         
-        @Test(groups = {"regressiontest"})
+        @Test
+        @Tag("regressiontest")
         public void incompleteSetOfIdendifyResponses() throws Exception {
             addDescription("Verify that the GetStatus client works correct without receiving responses from all " +
                     "contributors.");
@@ -113,7 +117,7 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
             pillar1Receiver.waitForMessage(GetStatusRequest.class);
         }
         
-        @Test(groups = {"regressiontest"})
+        @Test @Tag("regressiontest")
         public void getAllStatuses() throws InterruptedException {
             addDescription("Tests the simplest case of getting status for all contributors.");
 

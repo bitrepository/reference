@@ -34,15 +34,15 @@ import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.DefaultPillarOperationTest;
 import org.bitrepository.pillar.messagefactories.PutFileMessageFactory;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+
+
 
 import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertNull;
+
+
+
 
 public class PutFileRequestIT extends DefaultPillarOperationTest {
     protected PutFileMessageFactory msgFactory;
@@ -54,7 +54,7 @@ public class PutFileRequestIT extends DefaultPillarOperationTest {
         msgFactory = new PutFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), pillarDestination);
     }
 
-    @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
+    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
     public void normalPutFileTest() {
         addDescription("Tests a normal PutFile sequence");
         addStep("Send a putFile request to " + testConfiguration.getPillarUnderTestID(),
@@ -102,7 +102,7 @@ public class PutFileRequestIT extends DefaultPillarOperationTest {
                 "Received unexpected 'ResponseCode' element.");
     }
 
-    @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST})
+    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST})
     public void putFileWithMD5ReturnChecksumTest() {
         addDescription("Tests that the pillar is able to return the default type checksum in the final response");
         addStep("Send a putFile request to " + testConfiguration.getPillarUnderTestID() + " with the ",
@@ -120,7 +120,7 @@ public class PutFileRequestIT extends DefaultPillarOperationTest {
                 "Return MD5 checksum was not equals to checksum for default file.");
     }
 
-    @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST,
+    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST,
             PillarTestGroups.OPERATION_ACCEPTED_PROGRESS})
     public void putFileOperationAcceptedProgressTest() {
         addDescription("Tests a that a pillar sends progress response after receiving a putFile request.");

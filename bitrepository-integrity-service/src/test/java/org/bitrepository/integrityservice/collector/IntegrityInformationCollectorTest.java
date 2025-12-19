@@ -33,7 +33,9 @@ import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 
 import java.net.URL;
 import java.util.Arrays;
@@ -56,7 +58,8 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
     public final static String collectionID = "dummy-collection";
     public final static String fileId = "FILE_ID";
     
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test
+    @Tag("regressiontest") @Tag("integritytest")
     public void testCollectorGetFileIDs() throws Exception {
         addDescription("Tests that the collector calls the GetFileClient");
         addStep("Define variables", "No errors");
@@ -86,7 +89,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         verifyNoMoreInteractions(eventHandler);
     }
 
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test @Tag("regressiontest") @Tag("integritytest")
     public void testCollectorGetChecksums() throws Exception {
         addDescription("Tests that the collector calls the GetChecksumsClient");
         addStep("Define variables", "No errors");
@@ -121,7 +124,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
 
     }
     
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test @Tag("regressiontest") @Tag("integritytest")
     public void testCollectorGetFile() throws Exception {
         addDescription("Tests that the collector calls the GetFileClient");
         addStep("Define variables", "No errors");
@@ -149,7 +152,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         verifyNoMoreInteractions(eventHandler);
     }
     
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test @Tag("regressiontest") @Tag("integritytest")
     public void testCollectorPutFile() throws Exception {
         addDescription("Tests that the collector calls the PutFileClient");
         addStep("Define variables", "No errors");
@@ -180,7 +183,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         verifyNoMoreInteractions(eventHandler);
     }
     
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test @Tag("regressiontest") @Tag("integritytest")
     public void testCollectorHandleChecksumClientFailures() throws Exception {
         addDescription("Test that the IntegrityInformationCollector works as a fault-barrier.");
         addStep("Setup variables for the test", "Should be OK");
@@ -202,7 +205,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         collector.getChecksums(collectionID, Arrays.asList(pillarID), csType, null, auditTrailInformation, contributorQueries, null);
     }
     
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test @Tag("regressiontest") @Tag("integritytest")
     public void testCollectorHandleGetFileIDsClientFailures() throws Exception {
         addDescription("Test that the IntegrityInformationCollector works as a fault-barrier.");
         addStep("Setup variables for the test", "Should be OK");
@@ -221,7 +224,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         collector.getFileIDs(collectionID, Arrays.asList(pillarID), auditTrailInformation, contributorQueries, null);
     }
     
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test @Tag("regressiontest") @Tag("integritytest")
     public void testCollectorHandleGetFileClientFailures() throws Exception {
         addDescription("Test that the IntegrityInformationCollector works as a fault-barrier.");
         addStep("Define variables", "No errors");
@@ -241,7 +244,7 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         collector.getFile(collectionID, fileId, uploadUrl, eventHandler, auditTrailInformation);
     }
     
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test @Tag("regressiontest") @Tag("integritytest")
     public void testCollectorHandlePutFileClientFailures() throws Exception {
         addDescription("Test that the IntegrityInformationCollector works as a fault-barrier.");
         addStep("Define variables", "No errors");

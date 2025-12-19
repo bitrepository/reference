@@ -25,9 +25,10 @@
 package org.bitrepository.client.conversation.mediator;
 
 import org.bitrepository.common.settings.Settings;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
-@Test
+
+//@Test
 public class CollectionBasedConversationMediatorTest extends ConversationMediatorTest {
 
     @Override

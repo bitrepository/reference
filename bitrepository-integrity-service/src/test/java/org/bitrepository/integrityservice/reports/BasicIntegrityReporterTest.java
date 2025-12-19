@@ -23,43 +23,45 @@
 package org.bitrepository.integrityservice.reports;
 
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
-import static org.testng.AssertJUnit.assertEquals;
-import static org.testng.AssertJUnit.assertFalse;
-import static org.testng.AssertJUnit.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BasicIntegrityReporterTest extends ExtendedTestCase {
     private static final String REPORT_SUMMARY_START = "The following integrity issues were found:\n";
 
-    @Test(groups = {"regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void deletedFilesTest() throws Exception {
         addDescription("Verifies that the hasIntegrityIssues() reports deleted files correctly");
         addStep("Report a delete file for a new Reporter", "hasIntegrityIssues() should return false and the summary " +
                 "report should inform that no issues where found.");
         BasicIntegrityReporter reporter = new BasicIntegrityReporter("CollectionWithIssues", "test", new File("target/"));
         reporter.reportDeletedFile("TestFile", "Pillar1");
-        assertFalse("Reporter interpreted delete file as a integrity issue", reporter.hasIntegrityIssues());
+        assertFalse(reporter.hasIntegrityIssues(), "Reporter interpreted delete file as a integrity issue");
         String expectedReport = "No integrity issues found";
         assertEquals("Reporter didn't create clean report", expectedReport, reporter.generateSummaryOfReport());
         reporter.generateReport();
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void noIntegrityIssuesTest() {
         addDescription("Verifies that missing files are reported correctly");
 
         addStep("Create a clean reporter", "hasIntegrityIssues() should return false and the summary report should " +
                 "state that no  inform of the missing file.");
         BasicIntegrityReporter reporter = new BasicIntegrityReporter("CollectionWithoutIssues", "test", new File("target/"));
-        assertFalse("Reporter interpreted delete file as a integrity issue", reporter.hasIntegrityIssues());
+        assertFalse(reporter.hasIntegrityIssues(), "Reporter interpreted delete file as a integrity issue");
         String expectedReport = "No integrity issues found";
         assertEquals("Reporter didn't create clean report", expectedReport, reporter.generateSummaryOfReport());
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void missingFilesTest()  throws Exception {
         addDescription("Verifies that missing files are reported correctly");
 
@@ -67,7 +69,7 @@ public class BasicIntegrityReporterTest extends ExtendedTestCase {
                 "correctly inform of the missing file.");
         BasicIntegrityReporter reporter = new BasicIntegrityReporter("CollectionWithIssues", "test", new File("target/"));
         reporter.reportMissingFile("TestFile", "Pillar1");
-        assertTrue("Reporter didn't interpreted missing file as a integrity issue", reporter.hasIntegrityIssues());
+        assertTrue(reporter.hasIntegrityIssues(), "Reporter didn't interpreted missing file as a integrity issue");
         String expectedReport = REPORT_SUMMARY_START + "Pillar1 is missing 1 file.";
         assertEquals("Wrong report returned on missing file", expectedReport, reporter.generateSummaryOfReport());
 
@@ -83,7 +85,7 @@ public class BasicIntegrityReporterTest extends ExtendedTestCase {
         assertEquals("Wrong report returned on missing file", expectedReport, reporter.generateSummaryOfReport());
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void checksumIssuesTest() throws Exception {
         addDescription("Verifies that missing files are reported correctly");
 
@@ -91,7 +93,7 @@ public class BasicIntegrityReporterTest extends ExtendedTestCase {
                 "correctly inform of the checksum issue.");
         BasicIntegrityReporter reporter = new BasicIntegrityReporter("CollectionWithIssues", "test", new File("target/"));
         reporter.reportChecksumIssue("TestFile", "Pillar1");
-        assertTrue("Reporter didn't interpreted checksum issue as a integrity issue", reporter.hasIntegrityIssues());
+        assertTrue(reporter.hasIntegrityIssues(), "Reporter didn't interpreted checksum issue as a integrity issue");
         String expectedReport = REPORT_SUMMARY_START + "Pillar1 has 1 potentially corrupt file.";
         assertEquals("Wrong report returned on checksum issue", expectedReport, reporter.generateSummaryOfReport());
 
@@ -109,7 +111,7 @@ public class BasicIntegrityReporterTest extends ExtendedTestCase {
         assertEquals("Wrong report returned on checksum issue", expectedReport, reporter.generateSummaryOfReport());
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void missingChecksumTest() throws Exception {
         addDescription("Verifies that missing checksums are reported correctly");
 
@@ -117,7 +119,7 @@ public class BasicIntegrityReporterTest extends ExtendedTestCase {
                 "correctly inform of the missing checksum.");
         BasicIntegrityReporter reporter = new BasicIntegrityReporter("CollectionWithIssues", "test", new File("target/"));
         reporter.reportMissingChecksum("TestChecksum", "Pillar1");
-        assertTrue("Reporter didn't interpreted missing checksum as a integrity issue", reporter.hasIntegrityIssues());
+        assertTrue(reporter.hasIntegrityIssues(), "Reporter didn't interpreted missing checksum as a integrity issue");
         String expectedReport = REPORT_SUMMARY_START + "Pillar1 is missing 1 checksum.";
         assertEquals("Wrong report returned on missing checksum", expectedReport, reporter.generateSummaryOfReport());
 
@@ -135,7 +137,7 @@ public class BasicIntegrityReporterTest extends ExtendedTestCase {
     }
 
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void obsoleteChecksumTest() throws Exception {
         addDescription("Verifies that obsolete checksums are reported correctly");
 
@@ -143,7 +145,7 @@ public class BasicIntegrityReporterTest extends ExtendedTestCase {
                 "correctly inform of the obsolete checksum.");
         BasicIntegrityReporter reporter = new BasicIntegrityReporter("CollectionWithIssues", "test", new File("target/"));
         reporter.reportObsoleteChecksum("TestChecksum", "Pillar1");
-        assertTrue("Reporter didn't interpreted obsolete checksum as a integrity issue", reporter.hasIntegrityIssues());
+        assertTrue(reporter.hasIntegrityIssues(), "Reporter didn't interpreted obsolete checksum as a integrity issue");
         String expectedReport = REPORT_SUMMARY_START + "Pillar1 has 1 obsolete checksum.";
         assertEquals("Wrong report returned on obsolete checksum", expectedReport, reporter.generateSummaryOfReport());
 

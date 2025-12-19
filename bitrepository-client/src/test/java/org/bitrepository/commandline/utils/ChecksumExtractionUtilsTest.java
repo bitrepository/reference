@@ -26,19 +26,20 @@ import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.client.DefaultFixtureClientTest;
 import org.bitrepository.commandline.Constants;
 import org.bitrepository.commandline.output.OutputHandler;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotEquals;
-import static org.testng.Assert.assertTrue;
 
 public class ChecksumExtractionUtilsTest extends DefaultFixtureClientTest {
     CommandLineArgumentsHandler cmdHandler;
     OutputHandler output;
 
-    @BeforeMethod(alwaysRun = true)
+    @BeforeEach
     public void setup() {
         cmdHandler = new CommandLineArgumentsHandler();
         cmdHandler.addOption(new Option(Constants.REQUEST_CHECKSUM_SALT_ARG, Constants.HAS_ARGUMENT, ""));
@@ -46,7 +47,7 @@ public class ChecksumExtractionUtilsTest extends DefaultFixtureClientTest {
         output = mock(OutputHandler.class);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void testDefaultChecksumSpec() throws Exception {
         addDescription("Test that the default checksum is retrieved when no arguments are given.");
         cmdHandler.parseArguments(new String[]{});
@@ -54,7 +55,8 @@ public class ChecksumExtractionUtilsTest extends DefaultFixtureClientTest {
         assertEquals(type.name(), settingsForCUT.getRepositorySettings().getProtocolSettings().getDefaultChecksumType());
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void testDefaultChecksumSpecWithSaltArgument() throws Exception {
         addDescription("Test that the HMAC version of default checksum is retrieved when the salt arguments are given.");
         cmdHandler.parseArguments(new String[]{"-" + Constants.REQUEST_CHECKSUM_SALT_ARG + "0110"});
@@ -62,7 +64,7 @@ public class ChecksumExtractionUtilsTest extends DefaultFixtureClientTest {
         assertEquals(type.name(), "HMAC_" + settingsForCUT.getRepositorySettings().getProtocolSettings().getDefaultChecksumType());
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void testNonSaltChecksumSpecWithoutSaltArgument() throws Exception {
         addDescription("Test that a non-salt checksum type is retrieved when it is given as argument, and no salt arguments are given.");
         ChecksumType enteredType = ChecksumType.SHA384;
@@ -71,7 +73,7 @@ public class ChecksumExtractionUtilsTest extends DefaultFixtureClientTest {
         assertEquals(type, enteredType);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void testNonSaltChecksumSpecWithSaltArgument() throws Exception {
         addDescription("Test that a salt checksum type is retrieved even though a non-salt checksum algorithm it is given as argument, "
                 + "but a salt argument also is given.");
@@ -83,7 +85,7 @@ public class ChecksumExtractionUtilsTest extends DefaultFixtureClientTest {
         assertEquals(type.name(), "HMAC_" + enteredType.name());
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void testSaltChecksumSpecWithoutSaltArgument() throws Exception {
         addDescription("Test that a non-salt checksum type is retrieved even though a salt checksum algorithm it is given as argument, "
                 + "but no salt argument also is given.");
@@ -95,7 +97,7 @@ public class ChecksumExtractionUtilsTest extends DefaultFixtureClientTest {
         assertEquals(type.name(), enteredType.name().replace("HMAC_", ""));
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void testSaltChecksumSpecWithSaltArgument() throws Exception {
         addDescription("Test that a salt checksum type is retrieved when the salt checksum algorithm it is given as argument, "
                 + "and a salt argument also is given.");
