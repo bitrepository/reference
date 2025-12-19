@@ -24,8 +24,7 @@ package org.bitrepository.audittrails.preserver;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.jaccept.structure.ExtendedTestCase;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,8 +40,7 @@ public class AuditPreservationEventHandlerTest extends ExtendedTestCase {
     String PILLARID = "pillarID";
     public static final String TEST_COLLECTION = "dummy-collection";
 
-    @Test
-    @Tag("regressiontest")
+    @Test @Tag("regressiontest"})
     public void auditPreservationEventHandlerTest() throws Exception {
         addDescription("Test the handling of the audit trail event handler.");
         addStep("Setup", "");

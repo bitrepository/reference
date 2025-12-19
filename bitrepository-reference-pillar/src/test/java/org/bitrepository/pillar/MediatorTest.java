@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation, either version 2.1 of the
+ * it under the terms of the GNU Lesser General Public License as 
+ * published by the Free Software Foundation, either version 2.1 of the 
  * License, or (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- *
- * You should have received a copy of the GNU General Lesser Public
+ * 
+ * You should have received a copy of the GNU General Lesser Public 
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -35,10 +35,9 @@ import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
 import org.bitrepository.service.contributor.handler.RequestHandler;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+
+
+
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -49,31 +48,29 @@ public class MediatorTest extends DefaultFixturePillarTest {
     MockAuditManager audits;
     MessageHandlerContext context;
     StorageModel model = null;
-
-    @BeforeEach
+    
+    @BeforeMethod (alwaysRun=true)
     public void initialiseTest() {
         audits = new MockAuditManager();
         context = new MessageHandlerContext(
                 settingsForCUT,
                 SettingsHelper.getPillarCollections(settingsForCUT.getComponentID(), settingsForCUT.getCollections()),
-                new ResponseDispatcher(settingsForCUT, messageBus),
-                new PillarAlarmDispatcher(settingsForCUT, messageBus),
-                audits);
+            new ResponseDispatcher(settingsForCUT, messageBus),
+            new PillarAlarmDispatcher(settingsForCUT, messageBus),
+            audits);
     }
-
-    @Test
-    @Tag("regressiontest")
-    @Tag("pillartest")
+    
+    @Test @Tag("regressiontest", "pillartest"})
     public void testMediatorRuntimeExceptionHandling() {
         addDescription("Tests the handling of a runtime exception");
         addStep("Setup create and start the mediator.", "");
-
+        
         TestMediator mediator = new TestMediator(context, model);
         try {
             mediator.start();
-
+            
             alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
-
+            
             addStep("Send a request to the mediator.", "Should be caught.");
             IdentifyContributorsForGetStatusRequest request = new IdentifyContributorsForGetStatusRequest();
             request.setAuditTrailInformation("audit");
@@ -85,9 +82,9 @@ public class MediatorTest extends DefaultFixturePillarTest {
             request.setDestination(settingsForCUT.getCollectionDestination());
             request.setVersion(BigInteger.valueOf(24L));
             messageBus.sendMessage(request);
-
+            
             MessageResponse response = clientReceiver.waitForMessage(IdentifyContributorsForGetStatusResponse.class);
-            Assertions.assertEquals(ResponseCode.FAILURE, response.getResponseInfo().getResponseCode());
+            Assertions.assertEquals(response.getResponseInfo().getResponseCode(), ResponseCode.FAILURE);
             Assertions.assertNotNull(alarmReceiver.waitForMessage(AlarmMessage.class));
         } finally {
             mediator.close();
@@ -104,7 +101,6 @@ public class MediatorTest extends DefaultFixturePillarTest {
         public TestMediator(MessageHandlerContext context, StorageModel model) {
             super(messageBus, context, model);
         }
-
         @SuppressWarnings("rawtypes")
         @Override
         protected RequestHandler[] createListOfHandlers() {
@@ -113,7 +109,7 @@ public class MediatorTest extends DefaultFixturePillarTest {
             return handlers.toArray(new RequestHandler[0]);
         }
     }
-
+    
     private static class ErroneousRequestHandler implements RequestHandler<IdentifyContributorsForGetStatusRequest> {
 
         @Override

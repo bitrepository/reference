@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation, either version 2.1 of the
+ * it under the terms of the GNU Lesser General Public License as 
+ * published by the Free Software Foundation, either version 2.1 of the 
  * License, or (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- *
- * You should have received a copy of the GNU General Lesser Public
+ * 
+ * You should have received a copy of the GNU General Lesser Public 
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -22,36 +22,43 @@
 package org.bitrepository.pillar.integration.func.putfile;
 
 import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositorymessages.*;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
+import org.bitrepository.bitrepositorymessages.MessageRequest;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.DefaultPillarOperationTest;
 import org.bitrepository.pillar.messagefactories.PutFileMessageFactory;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
 
+
+
+import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
+
+
+
+
 
 public class PutFileRequestIT extends DefaultPillarOperationTest {
     protected PutFileMessageFactory msgFactory;
     private String pillarDestination;
 
-    @BeforeEach
-    public void initialiseReferenceTest() throws Exception {
+    @BeforeMethod(alwaysRun=true)
+    public void initialiseReferenceTest(Method method) throws Exception {
         pillarDestination = lookupPutFileDestination();
         msgFactory = new PutFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), pillarDestination);
     }
 
-    @Test
-    @Tag(PillarTestGroups.FULL_PILLAR_TEST)
-    @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
+    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
     public void normalPutFileTest() {
         addDescription("Tests a normal PutFile sequence");
         addStep("Send a putFile request to " + testConfiguration.getPillarUnderTestID(),
-                "The pillar should send a final response with the following elements: <ol>" +
+                "The pillar should send a final response with the following elements: <ol>"  +
                         "<li>'CollectionID' element corresponding to the supplied value</li>" +
                         "<li>'CorrelationID' element corresponding to the supplied value</li>" +
                         "<li>'From' element corresponding to the pillars component ID</li>" +
@@ -61,63 +68,60 @@ public class PutFileRequestIT extends DefaultPillarOperationTest {
                         "<li>'ChecksumDataForNewFile' element should be null</li>" +
                         "<li>'PillarID' element corresponding to the pillars component ID</li>" +
                         "<li>'FileID' element corresponding to the supplied fileID</li>" +
-                        "<li>'FileAddress' element corresponding to the supplied FileAddress</li>" +
+                        "<li>'FileAddress' element corresponding to the supplied FileAddress</li>"  +
                         "<li>'ResponseInfo.ResponseCode' element should be OPERATION_COMPLETED</li>" +
                         "</ol>");
         PutFileRequest putRequest = msgFactory.createPutFileRequest(
-                TestFileHelper.getDefaultFileChecksum(), null, defaultDownloadFileAddress, testSpecificFileID,
+                TestFileHelper.getDefaultFileChecksum(), null, DEFAULT_DOWNLOAD_FILE_ADDRESS, testSpecificFileID,
                 DEFAULT_FILE_SIZE);
         messageBus.sendMessage(putRequest);
 
         PutFileFinalResponse finalResponse = (PutFileFinalResponse) receiveResponse();
-        Assertions.assertNotNull(finalResponse);
-        Assertions.assertEquals(putRequest.getCorrelationID(), finalResponse.getCorrelationID(),
+        assertNotNull(finalResponse);
+        assertEquals(finalResponse.getCorrelationID(), putRequest.getCorrelationID(),
                 "Received unexpected 'CorrelationID' element.");
-        Assertions.assertEquals(putRequest.getCollectionID(), finalResponse.getCollectionID(),
+        assertEquals(finalResponse.getCollectionID(), putRequest.getCollectionID(),
                 "Received unexpected 'CollectionID' element.");
-        Assertions.assertEquals(getPillarID(), finalResponse.getFrom(),
+        assertEquals(finalResponse.getFrom(), getPillarID(),
                 "Received unexpected 'From' element.");
-        Assertions.assertEquals(putRequest.getFrom(), finalResponse.getTo(),
+        assertEquals(finalResponse.getTo(), putRequest.getFrom(),
                 "Received unexpected 'To' element.");
-        Assertions.assertEquals(putRequest.getReplyTo(), finalResponse.getDestination(),
+        assertEquals(finalResponse.getDestination(), putRequest.getReplyTo(),
                 "Received unexpected 'Destination' element.");
-        Assertions.assertNull(finalResponse.getChecksumDataForExistingFile(),
+        assertNull(finalResponse.getChecksumDataForExistingFile(),
                 "Received unexpected 'ChecksumDataForExistingFile' element.");
-        Assertions.assertNull(finalResponse.getChecksumDataForNewFile(),
+        assertNull(finalResponse.getChecksumDataForNewFile(),
                 "Received unexpected 'ChecksumDataForNewFile' element.");
-        Assertions.assertEquals(putRequest.getFileID(), finalResponse.getFileID(),
+        assertEquals(finalResponse.getFileID(), putRequest.getFileID(),
                 "Received unexpected 'To' element.");
-        Assertions.assertEquals(putRequest.getFileAddress(), finalResponse.getFileAddress(),
+        assertEquals(finalResponse.getFileAddress(), putRequest.getFileAddress(),
                 "Received unexpected 'FileAddress' element.");
-        Assertions.assertEquals(getPillarID(), finalResponse.getPillarID(),
+        assertEquals(finalResponse.getPillarID(), getPillarID(),
                 "Received unexpected 'PillarID' element.");
-        Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode(),
+        assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED,
                 "Received unexpected 'ResponseCode' element.");
     }
 
-    @Test
-    @Tag(PillarTestGroups.FULL_PILLAR_TEST)
+    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST})
     public void putFileWithMD5ReturnChecksumTest() {
         addDescription("Tests that the pillar is able to return the default type checksum in the final response");
         addStep("Send a putFile request to " + testConfiguration.getPillarUnderTestID() + " with the ",
-                "The pillar should send a final response with the ChecksumRequestForNewFile elements " +
-                        "containing the MD5 checksum for the supplied file.");
+                "The pillar should send a final response with the ChecksumRequestForNewFile elements containing the MD5 " +
+                        "checksum for the supplied file.");
         PutFileRequest putRequest = msgFactory.createPutFileRequest(
-                TestFileHelper.getDefaultFileChecksum(), null, defaultDownloadFileAddress, testSpecificFileID,
+                TestFileHelper.getDefaultFileChecksum(), null, DEFAULT_DOWNLOAD_FILE_ADDRESS, testSpecificFileID,
                 DEFAULT_FILE_SIZE);
         putRequest.setChecksumRequestForNewFile(ChecksumUtils.getDefault(settingsForTestClient));
         messageBus.sendMessage(putRequest);
 
         PutFileFinalResponse finalResponse = (PutFileFinalResponse) receiveResponse();
-        Assertions.assertArrayEquals(TestFileHelper.getDefaultFileChecksum().getChecksumValue(),
+        assertEquals(TestFileHelper.getDefaultFileChecksum().getChecksumValue(),
                 finalResponse.getChecksumDataForNewFile().getChecksumValue(),
                 "Return MD5 checksum was not equals to checksum for default file.");
     }
 
-    @Test
-    @Tag(PillarTestGroups.FULL_PILLAR_TEST)
-    @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    @Tag(PillarTestGroups.OPERATION_ACCEPTED_PROGRESS)
+    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST,
+            PillarTestGroups.OPERATION_ACCEPTED_PROGRESS})
     public void putFileOperationAcceptedProgressTest() {
         addDescription("Tests a that a pillar sends progress response after receiving a putFile request.");
 
@@ -130,40 +134,40 @@ public class PutFileRequestIT extends DefaultPillarOperationTest {
                         "<li>'Destination' element should be set to the value of 'ReplyTo' from the request</li>" +
                         "<li>'PillarID' element corresponding to the pillars component ID</li>" +
                         "<li>'FileID' element corresponding to the supplied fileID</li>" +
-                        "<li>'FileAddress' element corresponding to the supplied FileAddress</li>" +
+                        "<li>'FileAddress' element corresponding to the supplied FileAddress</li>"  +
                         "<li>'ResponseInfo.ResponseCode' element should be OPERATION_ACCEPTED_PROGRESS</li>" +
                         "</ol>");
-        PutFileRequest putRequest = (PutFileRequest) createRequest();
+        PutFileRequest putRequest = (PutFileRequest)createRequest();
         messageBus.sendMessage(putRequest);
 
-        PutFileProgressResponse progressResponse = clientReceiver.waitForMessage(PutFileProgressResponse.class,
+        PutFileProgressResponse progressResponse = clientReceiver.waitForMessage(PutFileProgressResponse.class, 
                 getOperationTimeout(), TimeUnit.SECONDS);
-        Assertions.assertNotNull(progressResponse);
-        Assertions.assertEquals(putRequest.getCorrelationID(), progressResponse.getCorrelationID(),
+        assertNotNull(progressResponse);
+        assertEquals(progressResponse.getCorrelationID(), putRequest.getCorrelationID(),
                 "Received unexpected 'CorrelationID' element.");
-        Assertions.assertEquals(putRequest.getCollectionID(), progressResponse.getCollectionID(),
+        assertEquals(progressResponse.getCollectionID(), putRequest.getCollectionID(),
                 "Received unexpected 'CollectionID' element.");
-        Assertions.assertEquals(getPillarID(), progressResponse.getFrom(),
+        assertEquals(progressResponse.getFrom(), getPillarID(),
                 "Received unexpected 'From' element.");
-        Assertions.assertEquals(putRequest.getFrom(), progressResponse.getTo(),
+        assertEquals(progressResponse.getTo(), putRequest.getFrom(),
                 "Received unexpected 'To' element.");
-        Assertions.assertEquals(putRequest.getReplyTo(), progressResponse.getDestination(),
+        assertEquals(progressResponse.getDestination(), putRequest.getReplyTo(),
                 "Received unexpected 'Destination' element.");
-        Assertions.assertEquals(getPillarID(), progressResponse.getPillarID(),
+        assertEquals(progressResponse.getPillarID(), getPillarID(),
                 "Received unexpected 'PillarID' element.");
-        Assertions.assertEquals(putRequest.getFileID(), progressResponse.getFileID(),
+        assertEquals(progressResponse.getFileID(), putRequest.getFileID(),
                 "Received unexpected 'FileID' element.");
-        Assertions.assertEquals(putRequest.getFileAddress(), progressResponse.getFileAddress(),
+        assertEquals(progressResponse.getFileAddress(), putRequest.getFileAddress(),
                 "Received unexpected 'FileAddress' element.");
-        Assertions.assertEquals(ResponseCode.OPERATION_ACCEPTED_PROGRESS,
-                progressResponse.getResponseInfo().getResponseCode(),
+        assertEquals(progressResponse.getResponseInfo().getResponseCode(),
+                ResponseCode.OPERATION_ACCEPTED_PROGRESS,
                 "Received unexpected 'ResponseCode' element.");
     }
 
     @Override
     protected MessageRequest createRequest() {
         return msgFactory.createPutFileRequest(TestFileHelper.getDefaultFileChecksum(), null,
-                defaultDownloadFileAddress, nonDefaultFileId, DEFAULT_FILE_SIZE);
+                DEFAULT_DOWNLOAD_FILE_ADDRESS, NON_DEFAULT_FILE_ID, DEFAULT_FILE_SIZE);
     }
 
     @Override
@@ -177,11 +181,9 @@ public class PutFileRequestIT extends DefaultPillarOperationTest {
     }
 
     public String lookupPutFileDestination() {
-        PutFileMessageFactory pillarLookupMsgFactory = new PutFileMessageFactory(collectionID, settingsForTestClient,
-                getPillarID(), null);
-        IdentifyPillarsForPutFileRequest identifyRequest =
-                pillarLookupMsgFactory.createIdentifyPillarsForPutFileRequest(
-                        TestFileHelper.DEFAULT_FILE_ID, 0L);
+        PutFileMessageFactory pillarLookupMsgFactory = new PutFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
+        IdentifyPillarsForPutFileRequest identifyRequest = pillarLookupMsgFactory.createIdentifyPillarsForPutFileRequest(
+                TestFileHelper.DEFAULT_FILE_ID, 0L);
         messageBus.sendMessage(identifyRequest);
         return clientReceiver.waitForMessage(IdentifyPillarsForPutFileResponse.class).getReplyTo();
     }

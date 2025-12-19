@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation, either version 2.1 of the
+ * it under the terms of the GNU Lesser General Public License as 
+ * published by the Free Software Foundation, either version 2.1 of the 
  * License, or (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- *
- * You should have received a copy of the GNU General Lesser Public
+ * 
+ * You should have received a copy of the GNU General Lesser Public 
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -33,65 +33,64 @@ import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.DefaultPillarOperationTest;
 import org.bitrepository.pillar.messagefactories.ReplaceFileMessageFactory;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
 
+
+
+
+import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
 
 public class ReplaceFileRequestIT extends DefaultPillarOperationTest {
     protected ReplaceFileMessageFactory msgFactory;
     private String pillarDestination;
 
-    @BeforeEach
-    public void initialiseReferenceTest() throws Exception {
+    @BeforeMethod(alwaysRun=true)
+    public void initialiseReferenceTest(Method method) throws Exception {
         pillarDestination = lookupReplaceFileDestination();
         msgFactory = new ReplaceFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), pillarDestination);
         clientProvider.getPutClient().putFile(
-                collectionID, defaultFileUrl, testSpecificFileID, 10L, TestFileHelper.getDefaultFileChecksum(),
+                collectionID, DEFAULT_FILE_URL, testSpecificFileID, 10L, TestFileHelper.getDefaultFileChecksum(),
                 null, null, null);
         clientProvider.getPutClient().putFile(
-                nonDefaultCollectionId, defaultFileUrl, testSpecificFileID, 10L, TestFileHelper.getDefaultFileChecksum(),
+                nonDefaultCollectionId, DEFAULT_FILE_URL, testSpecificFileID, 10L, TestFileHelper.getDefaultFileChecksum(),
                 null, null, null);
     }
 
-    @Test
-    @Tag(PillarTestGroups.FULL_PILLAR_TEST)
-    @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
+    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
     public void normalReplaceFileTest() {
         addDescription("Tests a normal ReplaceFile sequence");
         addStep("Send a ReplaceFile request to " + testConfiguration.getPillarUnderTestID(),
                 "The pillar should generate a OPERATION_ACCEPTED_PROGRESS progress response followed by a " +
-                        "OPERATION_COMPLETED final response");
+                "OPERATION_COMPLETED final response");
         ReplaceFileRequest replaceRequest = msgFactory.createReplaceFileRequest(
                 TestFileHelper.getDefaultFileChecksum(), TestFileHelper.getDefaultFileChecksum(),
-                null, null, defaultDownloadFileAddress, testSpecificFileID, DEFAULT_FILE_SIZE);
+                null, null, DEFAULT_DOWNLOAD_FILE_ADDRESS, testSpecificFileID, DEFAULT_FILE_SIZE);
         messageBus.sendMessage(replaceRequest);
 
-        ReplaceFileProgressResponse progressResponse = clientReceiver.waitForMessage(ReplaceFileProgressResponse.class,
+        ReplaceFileProgressResponse progressResponse = clientReceiver.waitForMessage(ReplaceFileProgressResponse.class, 
                 getOperationTimeout(), TimeUnit.SECONDS);
         Assertions.assertNotNull(progressResponse);
-        Assertions.assertEquals(replaceRequest.getCorrelationID(), progressResponse.getCorrelationID());
-        Assertions.assertEquals(getPillarID(), progressResponse.getFrom());
-        Assertions.assertEquals(getPillarID(), progressResponse.getPillarID());
-        Assertions.assertEquals(ResponseCode.OPERATION_ACCEPTED_PROGRESS, progressResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(progressResponse.getCorrelationID(), replaceRequest.getCorrelationID());
+        Assertions.assertEquals(progressResponse.getFrom(), getPillarID());
+        Assertions.assertEquals(progressResponse.getPillarID(), getPillarID());
+        Assertions.assertEquals(progressResponse.getResponseInfo().getResponseCode(),
+                ResponseCode.OPERATION_ACCEPTED_PROGRESS);
 
         ReplaceFileFinalResponse finalResponse = (ReplaceFileFinalResponse) receiveResponse();
         Assertions.assertNotNull(finalResponse);
-        Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
-        Assertions.assertEquals(replaceRequest.getCorrelationID(), finalResponse.getCorrelationID());
-        Assertions.assertEquals(getPillarID(), finalResponse.getFrom());
+        Assertions.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
+        Assertions.assertEquals(finalResponse.getCorrelationID(), replaceRequest.getCorrelationID());
+        Assertions.assertEquals(finalResponse.getFrom(), getPillarID());
         Assertions.assertNull(finalResponse.getChecksumDataForExistingFile());
         Assertions.assertNull(finalResponse.getChecksumDataForNewFile());
-        Assertions.assertEquals(getPillarID(), finalResponse.getPillarID());
+        Assertions.assertEquals(finalResponse.getPillarID(), getPillarID());
     }
 
     @Override
     protected MessageRequest createRequest() {
         return msgFactory.createReplaceFileRequest(TestFileHelper.getDefaultFileChecksum(),
                 TestFileHelper.getDefaultFileChecksum(), null, null,
-                defaultDownloadFileAddress, defaultFileId, DEFAULT_FILE_SIZE);
+                DEFAULT_DOWNLOAD_FILE_ADDRESS, DEFAULT_FILE_ID, DEFAULT_FILE_SIZE);
     }
 
     @Override

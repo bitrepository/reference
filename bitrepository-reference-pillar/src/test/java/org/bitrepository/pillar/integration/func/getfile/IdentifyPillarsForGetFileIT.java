@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation, either version 2.1 of the
+ * it under the terms of the GNU Lesser General Public License as 
+ * published by the Free Software Foundation, either version 2.1 of the 
  * License, or (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- *
- * You should have received a copy of the GNU General Lesser Public
+ * 
+ * You should have received a copy of the GNU General Lesser Public 
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -27,68 +27,63 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
+
+
+
+public class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
     protected GetFileMessageFactory msgFactory;
 
-    @BeforeEach
-    void initialiseReferenceTest() throws Exception {
+    @BeforeMethod(alwaysRun=true)
+    public void initialiseReferenceTest() throws Exception {
         msgFactory = new GetFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
     }
 
-    @Test
-    @Tag(PillarTestGroups.FULL_PILLAR_TEST)
-    void goodCaseIdentificationIT() {
-        addDescription("Tests the general IdentifyPillarsForGetFile functionality of the pillar for the successful " +
-                "scenario.");
+    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST})
+    public void goodCaseIdentificationIT() {
+        addDescription("Tests the general IdentifyPillarsForGetFile functionality of the pillar for the successful scenario.");
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
-        IdentifyPillarsForGetFileRequest identifyRequest =
-                msgFactory.createIdentifyPillarsForGetFileRequest(defaultFileId);
+        IdentifyPillarsForGetFileRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileRequest(DEFAULT_FILE_ID);
         messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response getPillarID() the pillar.",
                 "The pillar should make a response.");
         IdentifyPillarsForGetFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetFileResponse.class);
-        assertEquals(identifyRequest.getCollectionID(), receivedIdentifyResponse.getCollectionID(),
+        assertEquals(receivedIdentifyResponse.getCollectionID(), identifyRequest.getCollectionID(),
                 "Received unexpected 'CollectionID' in response.");
-        assertEquals(identifyRequest.getCorrelationID(), receivedIdentifyResponse.getCorrelationID(),
+        assertEquals(receivedIdentifyResponse.getCorrelationID(), identifyRequest.getCorrelationID(),
                 "Received unexpected 'CorrelationID' in response.");
-        assertEquals(getPillarID(), receivedIdentifyResponse.getFrom(),
+        assertEquals(receivedIdentifyResponse.getFrom(), getPillarID(),
                 "Received unexpected 'From' in response.");
-        assertEquals(defaultFileId, receivedIdentifyResponse.getFileID(),
+        assertEquals(receivedIdentifyResponse.getFileID(), DEFAULT_FILE_ID,
                 "Received unexpected 'FileID' in response.");
-        assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID(),
+        assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID(),
                 "Received unexpected 'PillarID' in response.");
-        assertEquals(ResponseCode.IDENTIFICATION_POSITIVE, receivedIdentifyResponse.getResponseInfo().getResponseCode(),
+        assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
+                ResponseCode.IDENTIFICATION_POSITIVE,
                 "Received unexpected 'ResponseCode' in response.");
-        assertEquals(identifyRequest.getReplyTo(), receivedIdentifyResponse.getDestination(),
+        assertEquals(receivedIdentifyResponse.getDestination(), identifyRequest.getReplyTo(),
                 "Received unexpected 'ReplyTo' in response.");
     }
 
-    @Test
-    @Tag(PillarTestGroups.FULL_PILLAR_TEST)
+    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST})
     public void nonExistingFileIdentificationIT() {
-        addDescription("Tests the  IdentifyPillarsForGetFile functionality of the pillar for a " +
-                "IdentificationForGetFile " +
+        addDescription("Tests the  IdentifyPillarsForGetFile functionality of the pillar for a IdentificationForGetFile " +
                 "for a non existing file.");
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
-        IdentifyPillarsForGetFileRequest identifyRequest =
-                msgFactory.createIdentifyPillarsForGetFileRequest(nonDefaultFileId);
+        IdentifyPillarsForGetFileRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileRequest(NON_DEFAULT_FILE_ID);
         messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response getPillarID() the pillar.",
                 "The pillar should make a response.");
         IdentifyPillarsForGetFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetFileResponse.class);
-        assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE, receivedIdentifyResponse.getResponseInfo().getResponseCode());
+        assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
+                ResponseCode.FILE_NOT_FOUND_FAILURE);
     }
 }

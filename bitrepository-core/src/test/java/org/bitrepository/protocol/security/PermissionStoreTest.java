@@ -82,12 +82,12 @@ public class PermissionStoreTest extends ExtendedTestCase  {
         assertEquals(positiveCertificate, certificateFromStore);
     }
     
-    //@Test(groups = {"regressiontest"})
+    //@Test @Tag("regressiontest"})
     public void certificatePermissionCheckTest() {
         addDescription("Tests that a certificate only allows for the expected permission.");
     }
     
-    //@Test(groups = {"regressiontest"})
+    //@Test @Tag("regressiontest"})
     public void unknownCertificatePermissionCheckTest() {
         addDescription("Tests that a unknown certificate results in expected refusal.");
     }

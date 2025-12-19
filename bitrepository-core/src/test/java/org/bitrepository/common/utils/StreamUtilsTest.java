@@ -33,7 +33,8 @@ import java.nio.charset.StandardCharsets;
 public class StreamUtilsTest extends ExtendedTestCase {
     String DATA = "The data for the streams.";
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void streamTester() throws Exception {
         addDescription("Tests the SteamUtils class.");
         addStep("Setup variables", "");
