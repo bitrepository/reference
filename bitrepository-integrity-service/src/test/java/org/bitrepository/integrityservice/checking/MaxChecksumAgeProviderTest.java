@@ -23,25 +23,27 @@ package org.bitrepository.integrityservice.checking;
 
 import org.bitrepository.settings.referencesettings.ObsoleteChecksumSettings;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import java.time.Duration;
 
-import static org.testng.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MaxChecksumAgeProviderTest extends ExtendedTestCase{
 
     DatatypeFactory factory;
 
-    @BeforeMethod(alwaysRun = true)
+    @BeforeEach
     public void setUpFactory() throws DatatypeConfigurationException {
         factory = DatatypeFactory.newInstance();
     }
 
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test
+    @Tag("regressiontest") @Tag("integritytest")
     public void testNoSettings() {
         addDescription("Test the MaxChecksumAge when no settings are defined");
         addStep("Create a MaxChecksumAgeProvider with null settings and a default MaxAge of 100",
@@ -52,7 +54,9 @@ public class MaxChecksumAgeProviderTest extends ExtendedTestCase{
         assertEquals(maxChecksumAgeProvider.getMaxChecksumAge(""), defaultMaxAge);
     }
 
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test
+    @Tag("regressiontest")
+    @Tag("integritytest")
     public void testNoPillarSpecificSetting() {
         addDescription("Test the MaxChecksumAge when no settings are defined for the specific pillar");
 
@@ -66,7 +70,9 @@ public class MaxChecksumAgeProviderTest extends ExtendedTestCase{
         assertEquals(maxChecksumAgeProvider.getMaxChecksumAge(""), Duration.ofMillis(10));
     }
 
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test
+    @Tag("regressiontest")
+    @Tag("integritytest")
     public void testPillarSpecificSetting() {
         addDescription("Test the MaxChecksumAge when a value has been defined for specific pillars");
 

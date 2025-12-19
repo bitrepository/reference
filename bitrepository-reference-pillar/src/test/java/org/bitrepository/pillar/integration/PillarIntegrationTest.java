@@ -48,13 +48,6 @@ import org.bitrepository.protocol.security.OperationAuthorizer;
 import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.jaccept.TestEventManager;
-import org.testng.ITestContext;
-import org.testng.ITestResult;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.AfterSuite;
-import org.testng.annotations.BeforeClass;
-
 import javax.jms.JMSException;
 import java.io.IOException;
 import java.io.InputStream;

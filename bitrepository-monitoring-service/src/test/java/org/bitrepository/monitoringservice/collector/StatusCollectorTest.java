@@ -27,9 +27,9 @@ import org.bitrepository.monitoringservice.MockAlerter;
 import org.bitrepository.monitoringservice.MockGetStatusClient;
 import org.bitrepository.monitoringservice.MockStatusStore;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+
+
+
 
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
@@ -45,7 +45,7 @@ public class StatusCollectorTest extends ExtendedTestCase {
         settings = TestSettingsProvider.reloadSettings("StatusCollectorUnderTest");
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest"})
     public void testStatusCollector() throws Exception {
         addDescription("Tests the status collector.");
         addStep("Setup", "");
@@ -57,11 +57,11 @@ public class StatusCollectorTest extends ExtendedTestCase {
         settings.getReferenceSettings().getMonitoringServiceSettings().setCollectionInterval(intervalXmlDur);
 
         addStep("Create the collector", "");
-        Assert.assertEquals(store.getCallsForGetStatusMap(), 0);
-        Assert.assertEquals(store.getCallsForUpdateReplayCounts(), 0);
-        Assert.assertEquals(store.getCallsForUpdateStatus(), 0);
-        Assert.assertEquals(client.getCallsToGetStatus(), 0);
-        Assert.assertEquals(client.getCallsToShutdown(), 0);
+        Assertions.assertEquals(store.getCallsForGetStatusMap(), 0);
+        Assertions.assertEquals(store.getCallsForUpdateReplayCounts(), 0);
+        Assertions.assertEquals(store.getCallsForUpdateStatus(), 0);
+        Assertions.assertEquals(client.getCallsToGetStatus(), 0);
+        Assertions.assertEquals(client.getCallsToShutdown(), 0);
         StatusCollector collector = new StatusCollector(client, settings, store, alerter);
         
         addStep("Start the collector", "It should immediately call the client and store.");
@@ -69,11 +69,11 @@ public class StatusCollectorTest extends ExtendedTestCase {
         synchronized(this) {
             wait(INTERVAL_DELAY);
         }
-        Assert.assertEquals(store.getCallsForGetStatusMap(), 0);
-        Assert.assertEquals(store.getCallsForUpdateReplayCounts(), 1);
-        Assert.assertEquals(store.getCallsForUpdateStatus(), 0);
-        Assert.assertEquals(client.getCallsToGetStatus(), 1);
-        Assert.assertEquals(client.getCallsToShutdown(), 0);
+        Assertions.assertEquals(store.getCallsForGetStatusMap(), 0);
+        Assertions.assertEquals(store.getCallsForUpdateReplayCounts(), 1);
+        Assertions.assertEquals(store.getCallsForUpdateStatus(), 0);
+        Assertions.assertEquals(client.getCallsToGetStatus(), 1);
+        Assertions.assertEquals(client.getCallsToShutdown(), 0);
 
         addStep("wait 2 * the interval", "It should call the client and store two times more.");        
         synchronized(this) {
@@ -81,21 +81,21 @@ public class StatusCollectorTest extends ExtendedTestCase {
         }
         collector.stop();
         
-        Assert.assertEquals(store.getCallsForGetStatusMap(), 0);
-        Assert.assertEquals(store.getCallsForUpdateReplayCounts(), 3);
-        Assert.assertEquals(store.getCallsForUpdateStatus(), 0);
-        Assert.assertEquals(client.getCallsToGetStatus(), 3);
-        Assert.assertEquals(client.getCallsToShutdown(), 0);
+        Assertions.assertEquals(store.getCallsForGetStatusMap(), 0);
+        Assertions.assertEquals(store.getCallsForUpdateReplayCounts(), 3);
+        Assertions.assertEquals(store.getCallsForUpdateStatus(), 0);
+        Assertions.assertEquals(client.getCallsToGetStatus(), 3);
+        Assertions.assertEquals(client.getCallsToShutdown(), 0);
         
         addStep("wait the interval + delay again", "It should not have made any more calls");        
         synchronized(this) {
             wait(INTERVAL + INTERVAL_DELAY);
         }
         
-        Assert.assertEquals(store.getCallsForGetStatusMap(), 0);
-        Assert.assertEquals(store.getCallsForUpdateReplayCounts(), 3);
-        Assert.assertEquals(store.getCallsForUpdateStatus(), 0);
-        Assert.assertEquals(client.getCallsToGetStatus(), 3);
-        Assert.assertEquals(client.getCallsToShutdown(), 0);
+        Assertions.assertEquals(store.getCallsForGetStatusMap(), 0);
+        Assertions.assertEquals(store.getCallsForUpdateReplayCounts(), 3);
+        Assertions.assertEquals(store.getCallsForUpdateStatus(), 0);
+        Assertions.assertEquals(client.getCallsToGetStatus(), 3);
+        Assertions.assertEquals(client.getCallsToShutdown(), 0);
     }
 }

@@ -23,8 +23,8 @@ package org.bitrepository.pillar.store.checksumcache;
 
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumEntry;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+
+
 
 import java.util.Date;
 
@@ -33,13 +33,13 @@ public class ChecksumEntryTest extends ExtendedTestCase {
     private static final String CE_CHECKSUM = "checksum";
     private static final Date CE_DATE = new Date(1234567890);
     
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test @Tag("regressiontest", "pillartest"})
     public void testExtendedTestCase() throws Exception {
         addDescription("Test the ChecksumEntry");
         addStep("Create a ChecksumEntry", "The data should be extractable again.");
         ChecksumEntry ce = new ChecksumEntry(CE_FILE, CE_CHECKSUM, CE_DATE);
-        Assert.assertEquals(ce.getFileId(), CE_FILE);
-        Assert.assertEquals(ce.getChecksum(), CE_CHECKSUM);
-        Assert.assertEquals(ce.getCalculationDate(), CE_DATE);
+        Assertions.assertEquals(ce.getFileId(), CE_FILE);
+        Assertions.assertEquals(ce.getChecksum(), CE_CHECKSUM);
+        Assertions.assertEquals(ce.getCalculationDate(), CE_DATE);
     }
 }

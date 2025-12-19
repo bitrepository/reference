@@ -38,16 +38,19 @@ import org.bitrepository.client.TestEventHandler;
 import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.client.eventhandler.IdentificationCompleteEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
-import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import java.math.BigInteger;
 import java.net.URL;
 
-import static org.testng.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 /**
  * Test class for the 'GetFileClient'.
@@ -58,21 +61,21 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
     private DatatypeFactory datatypeFactory;
 
-    @BeforeMethod(alwaysRun = true)
+    @BeforeEach
     public void setUpFactory() throws DatatypeConfigurationException {
         datatypeFactory = DatatypeFactory.newInstance();
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void verifyGetFileClientFromFactory() {
-        Assert.assertTrue(AccessComponentFactory.getInstance().createGetFileClient(
+        Assertions.assertTrue(AccessComponentFactory.getInstance().createGetFileClient(
                 settingsForCUT, securityManager, settingsForTestClient.getComponentID())
                 instanceof ConversationBasedGetFileClient,
                 "The default GetFileClient from the Access factory should be of the type '" +
                         ConversationBasedGetFileClient.class.getName() + "'.");
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void getFileFromSpecificPillar() throws Exception {
         addDescription("Tests that the GetClient client works correctly when requesting a file from a specific pillar");
 
@@ -86,7 +89,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
                 PILLAR2_ID, testEventHandler, auditTrailInformation);
         IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(IdentifyPillarsForGetFileRequest.class);
         assertEquals(receivedIdentifyRequestMessage.getCollectionID(), collectionID);
-        Assert.assertNotNull(receivedIdentifyRequestMessage.getCorrelationID());
+        Assertions.assertNotNull(receivedIdentifyRequestMessage.getCorrelationID());
         assertEquals(receivedIdentifyRequestMessage.getReplyTo(), settingsForCUT.getReceiverDestinationID());
         assertEquals(receivedIdentifyRequestMessage.getFileID(), DEFAULT_FILE_ID);
         assertEquals(receivedIdentifyRequestMessage.getFrom(), settingsForTestClient.getComponentID());
@@ -142,7 +145,8 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPLETE);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void getFileFromSpecificPillarWithFilePart() throws Exception {
         addDescription("Tests that the GetClient client works for a single pillar " +
                 "participates. Also validate, that the 'FilePart' can be used.");
@@ -203,7 +207,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPLETE);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void chooseFastestPillarGetFileClient() throws Exception {
         addDescription("Set the GetClient to retrieve a file as fast as "
                 + "possible, where it has to choose between to pillars with "
@@ -272,7 +276,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         pillar1Receiver.waitForMessage(GetFileRequest.class);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void getFileClientWithIdentifyTimeout() throws Exception {
         addDescription("Verify that the GetFile works correct without receiving responses from all pillars.");
         addFixture("Set the identification timeout to 500ms");
@@ -320,7 +324,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void noIdentifyResponse() throws Exception {
         addDescription("Tests the the GetFileClient handles lack of IdentifyPillarResponses gracefully  ");
         addStep("Set a 500 ms timeout for identifying pillar.", "");
@@ -345,7 +349,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void conversationTimeout() throws Exception {
         addDescription("Tests the the GetFileClient handles lack of IdentifyPillarResponses gracefully  ");
         addStep("Set the number of pillars to 100ms and a 300 ms timeout for the conversation.", "");
@@ -384,7 +388,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void testNoSuchFileSpecificPillar() throws Exception {
         addDescription("Testing how a request for a non-existing file is handled on a specific pillar request.");
         addStep("Define 1 pillar.", "");
@@ -417,7 +421,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void testNoSuchFileMultiplePillars() throws Exception {
         addDescription("Testing how a request for a non-existing file is handled when all pillars miss the file.");
 
@@ -457,7 +461,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void getFileClientWithChecksumPillarInvolved() throws Exception {
         addDescription("Verify that the GetFile works correctly when a checksum pillar respond.");
 
@@ -503,7 +507,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPLETE);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void singleComponentFailureDuringIdentify() throws Exception {
         addDescription("Verify that the GetFile reports a complete (not failed), in case of a component failing " +
                 "during the identify phase.");
@@ -550,7 +554,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPLETE);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void failureDuringPerform() throws Exception {
         addDescription("Verify that the GetFile reports a failed operation, in case of a component failing " +
                 "during the performing phase.");
@@ -591,7 +595,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
     }
 
 
-    @Test(groups={"regressiontest"})
+    @Test @Tag("regressiontest")
     public void getFileFromOtherCollection() throws Exception {
         addDescription("Tests the getFiles client will correctly try to get from a second collection if required");
         addFixture("Configure collection1 to contain both pillars and collection 2 to only contain pillar2");

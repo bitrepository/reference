@@ -46,16 +46,19 @@ import org.bitrepository.client.TestEventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.protocol.bus.MessageReceiver;
-import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 
 import javax.xml.bind.JAXBException;
 import java.math.BigInteger;
 import java.net.URL;
 import java.util.Date;
 
-import static org.testng.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 /**
  * Test class for the 'GetFileIDsClient'.
@@ -68,21 +71,22 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
      * Set up the test scenario before running the tests in this class.
      * @throws javax.xml.bind.JAXBException
      */
-    @BeforeMethod(alwaysRun = true)
+    @BeforeEach
     public void setUp() throws JAXBException {
         // TODO getFileIDsFromFastestPillar settings
         messageFactory = new TestGetFileIDsMessageFactory(settingsForTestClient.getComponentID());
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void verifyGetFileIDsClientFromFactory() throws Exception {
-        Assert.assertTrue(AccessComponentFactory.getInstance().createGetFileIDsClient(settingsForCUT, securityManager,
+        Assertions.assertTrue(AccessComponentFactory.getInstance().createGetFileIDsClient(settingsForCUT, securityManager,
                 settingsForTestClient.getComponentID()) instanceof ConversationBasedGetFileIDsClient,
                 "The default GetFileClient from the Access factory should be of the type '" +
                         ConversationBasedGetFileIDsClient.class.getName() + "'.");
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void getFileIDsDeliveredAtUrl() throws Exception {
         addDescription("Tests the delivery of fileIDs from a pillar at a given URL.");
         addStep("Initialise the variables for this test.",
@@ -104,7 +108,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         IdentifyPillarsForGetFileIDsRequest receivedIdentifyRequestMessage  = collectionReceiver.waitForMessage(
                 IdentifyPillarsForGetFileIDsRequest.class);
         assertEquals(receivedIdentifyRequestMessage.getCollectionID(), collectionID);
-        Assert.assertNotNull(receivedIdentifyRequestMessage.getCorrelationID());
+        Assertions.assertNotNull(receivedIdentifyRequestMessage.getCorrelationID());
         assertEquals(receivedIdentifyRequestMessage.getReplyTo(), settingsForCUT.getReceiverDestinationID());
         assertEquals(receivedIdentifyRequestMessage.getTo(), PILLAR1_ID);
         assertEquals(receivedIdentifyRequestMessage.getFrom(), settingsForTestClient.getComponentID());
@@ -151,15 +155,15 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         FileIDsCompletePillarEvent event = (FileIDsCompletePillarEvent) testEventHandler.waitForEvent();
         assertEquals(event.getEventType(), OperationEventType.COMPONENT_COMPLETE);
         ResultingFileIDs resFileIDs = event.getFileIDs();
-        Assert.assertNotNull(resFileIDs, "The ResultingFileIDs may not be null.");
-        Assert.assertTrue(resFileIDs.getResultAddress().contains(deliveryUrl.toExternalForm()),
+        Assertions.assertNotNull(resFileIDs, "The ResultingFileIDs may not be null.");
+        Assertions.assertTrue(resFileIDs.getResultAddress().contains(deliveryUrl.toExternalForm()),
                 "The resulting address'" + resFileIDs.getResultAddress() + "' should contain the argument address: '"
                         + deliveryUrl.toExternalForm() + "'");
-        Assert.assertNull(resFileIDs.getFileIDsData(), "No FileIDsData should be returned.");
+        Assertions.assertNull(resFileIDs.getFileIDsData(), "No FileIDsData should be returned.");
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPLETE);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void getFileIDsDeliveredThroughMessage() throws Exception {
         addDescription("Tests the delivery of fileIDs from a pillar at a given URL.");
         addStep("Initialise the variables for this test.",
@@ -230,10 +234,10 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
             FileIDsCompletePillarEvent event = (FileIDsCompletePillarEvent) testEventHandler.waitForEvent();
             assertEquals(event.getEventType(), OperationEventType.COMPONENT_COMPLETE);
             ResultingFileIDs resFileIDs = event.getFileIDs();
-            Assert.assertNotNull(resFileIDs, "The ResultingFileIDs may not be null.");
-            Assert.assertNull(resFileIDs.getResultAddress(), "The results should be sent back through the message, "
+            Assertions.assertNotNull(resFileIDs, "The ResultingFileIDs may not be null.");
+            Assertions.assertNull(resFileIDs.getResultAddress(), "The results should be sent back through the message, "
                     + "and therefore no resulting address should be returned.");
-            Assert.assertNotNull(resFileIDs.getFileIDsData(), "No FileIDsData should be returned.");
+            Assertions.assertNotNull(resFileIDs.getFileIDsData(), "No FileIDsData should be returned.");
             assertEquals(resFileIDs.getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size(),
                     1, "Response should contain same amount of fileids as requested.");
         }
@@ -241,7 +245,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPLETE);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void testNoSuchFile() throws Exception {
         addDescription("Testing how a request for a non-existing file is handled.");
         addStep("Setting up variables and such.", "Should be OK.");
@@ -295,7 +299,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void testPaging() throws Exception {
         addDescription("Tests the GetFileIDs client correctly handles functionality for limiting results, either by " +
             "timestamp or result count.");
@@ -344,7 +348,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
                 "Unexpected MaxNumberOfResults in GetFileIDsRequest to pillar2.");
     }
 
-    @Test(groups={"regressiontest"})
+    @Test @Tag("regressiontest")
     public void getFileIDsFromOtherCollection() throws Exception {
         addDescription("Tests the getFileIDs client will correctly try to get from a second collection if required");
         addFixture("Configure collection1 to contain both pillars and collection 2 to only contain pillar2");

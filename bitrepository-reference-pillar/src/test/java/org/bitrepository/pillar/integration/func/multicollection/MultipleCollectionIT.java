@@ -28,7 +28,7 @@ import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.PillarIntegrationTest;
 import org.bitrepository.pillar.integration.func.Assert;
 import org.bitrepository.protocol.bus.MessageReceiver;
-import org.testng.annotations.Test;
+
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,7 +37,7 @@ public class MultipleCollectionIT extends PillarIntegrationTest {
     /** Used for receiving responses from the pillar */
     protected MessageReceiver clientReceiver;
 
-    @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
+    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
     public void fileInOtherCollectionTest() throws Exception {
         addDescription("Tests that a file is put correctly to a second collection, and that the file can be access " +
                 "with getFile, getChecksums, getFileIDs and can be replaced and deleted correctly.");
@@ -48,14 +48,14 @@ public class MultipleCollectionIT extends PillarIntegrationTest {
 
         addStep("Send a getFileIDs for the file in the second collection", "The fileID should be retrieved");
         ContributorQuery query = new ContributorQuery(getPillarID(), null, null, null);
-        Assert.assertEquals(1, clientProvider.getGetFileIDsClient().getGetFileIDs(
+        Assertions.assertEquals(1, clientProvider.getGetFileIDsClient().getGetFileIDs(
                 nonDefaultCollectionId, new ContributorQuery[] {query}, NON_DEFAULT_FILE_ID, DEFAULT_FILE_URL, null).size());
 
         addStep("Send a getFileIDs for the file in the other collections", "The file should not be found here");
         try {
             clientProvider.getGetFileIDsClient().getGetFileIDs(
                     collectionID, new ContributorQuery[] {query}, NON_DEFAULT_FILE_ID, DEFAULT_FILE_URL, null).size();
-            Assert.fail("Should have throw a NegativeResponseException as the file doesn't exist in the default " +
+            Assertions.fail("Should have throw a NegativeResponseException as the file doesn't exist in the default " +
                     "collection");
         } catch (NegativeResponseException nre){
             //Expected

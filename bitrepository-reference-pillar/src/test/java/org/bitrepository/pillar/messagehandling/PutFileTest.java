@@ -40,16 +40,16 @@ import org.bitrepository.pillar.MockedPillarTest;
 import org.bitrepository.pillar.messagefactories.PutFileMessageFactory;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.testng.annotations.Test;
+
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertNull;
+
+
+
 
 /**
  * Tests the PutFile functionality on the ReferencePillar.
@@ -66,7 +66,7 @@ public class PutFileTest extends MockedPillarTest {
     }
     
     @SuppressWarnings("rawtypes")
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test @Tag("regressiontest", "pillartest"})
     public void goodCaseIdentification() throws Exception {
         addDescription("Tests the identification for a PutFile operation on the pillar for the successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -106,7 +106,7 @@ public class PutFileTest extends MockedPillarTest {
     }
 
     @SuppressWarnings("rawtypes")
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test @Tag("regressiontest", "pillartest"})
     public void badCaseIdentification() throws Exception {
         addDescription("Tests the identification for a PutFile operation on the pillar for the failure scenario, when the file already exists.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -144,7 +144,7 @@ public class PutFileTest extends MockedPillarTest {
     }
 
     @SuppressWarnings("rawtypes")
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test @Tag("regressiontest", "pillartest"})
     public void badCaseOperationFileAlreadyExists() throws Exception {
         addDescription("Tests the PutFile operation on the pillar for the failure scenario, when the file already exists.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -182,7 +182,7 @@ public class PutFileTest extends MockedPillarTest {
     }
     
     @SuppressWarnings("rawtypes")
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test @Tag("regressiontest", "pillartest"})
     public void badCasePutOperationNoValidationChecksum() throws Exception {
         addDescription("Tests the PutFile operation on the pillar for the failure scenario, when no validation checksum is given but required.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -222,7 +222,7 @@ public class PutFileTest extends MockedPillarTest {
     }
     
     @SuppressWarnings("rawtypes")
-    //@Test( groups = {"regressiontest", "pillartest"})
+    //@Test @Tag("regressiontest", "pillartest"})
     // FAILS, when combined with other tests...
     public void goodCaseOperation() throws Exception {
         addDescription("Tests the PutFile operation on the pillar for the success scenario.");
@@ -268,7 +268,7 @@ public class PutFileTest extends MockedPillarTest {
     
     
     @SuppressWarnings("rawtypes")
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test @Tag("regressiontest", "pillartest"})
     public void goodCaseOperationWithChecksumReturn() throws Exception {
         addDescription("Tests the PutFile operation on the pillar for the success scenario, when requesting the cheksum of the file returned.");
         addStep("Set up constants and variables.", "Should not fail here!");

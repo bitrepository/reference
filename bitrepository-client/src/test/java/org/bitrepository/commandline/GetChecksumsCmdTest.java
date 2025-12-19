@@ -22,10 +22,14 @@
 package org.bitrepository.commandline;
 
 import org.bitrepository.client.DefaultFixtureClientTest;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 
 import java.util.Date;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class GetChecksumsCmdTest extends DefaultFixtureClientTest {
     private static final String SETTINGS_DIR = "settings/xml/bitrepository-devel";
@@ -33,12 +37,12 @@ public class GetChecksumsCmdTest extends DefaultFixtureClientTest {
 
     private String DEFAULT_COLLECTION_ID;
 
-    @BeforeMethod(alwaysRun = true)
+    @BeforeEach
     public void setupClient() throws Exception {
         DEFAULT_COLLECTION_ID = settingsForTestClient.getCollections().get(0).getID();
     }
 
-    @Test(groups = { "regressiontest" })
+    @Test @Tag("regressiontest")
     public void defaultSuccessScenarioTest() throws Exception {
         addDescription("Tests simplest arguments for running the CmdLineClient");
         String[] args = new String[]{"-s" + SETTINGS_DIR, 
@@ -47,16 +51,18 @@ public class GetChecksumsCmdTest extends DefaultFixtureClientTest {
         new GetChecksumsCmd(args);
     }
 
-    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
+    @Test @Tag( "regressiontest")
     public void missingCollectionArgumentTest() throws Exception {
+        assertThrows(IllegalArgumentException.class, () -> {
         addDescription("Tests the scenario, where the collection arguments is missing.");
         String[] args = new String[]{"-s" + SETTINGS_DIR, 
                 "-k" + KEY_FILE,
                 "-i" + DEFAULT_FILE_ID};
         new GetChecksumsCmd(args);
+        });
     }
 
-    @Test(groups = { "regressiontest" })
+    @Test @Tag( "regressiontest")
     public void specificPillarArgumentTest() throws Exception {
         addDescription("Test argument for a specific pillar");
         String[] args = new String[]{"-s" + SETTINGS_DIR, 
@@ -67,19 +73,21 @@ public class GetChecksumsCmdTest extends DefaultFixtureClientTest {
         new GetChecksumsCmd(args);
     }
 
-    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
+    @Test @Tag( "regressiontest")
     public void unknownPillarArgumentTest() throws Exception {
-        addDescription("Testing against a non-existing pillar id -> Should fail");
-        String[] args = new String[]{"-s" + SETTINGS_DIR, 
-                "-k" + KEY_FILE,
-                "-c" + DEFAULT_COLLECTION_ID,
-                "-p" + "Random" + (new Date()).getTime() + "pillar",
-                "-i" + DEFAULT_FILE_ID};
+        assertThrows(IllegalArgumentException.class, () -> {
+            addDescription("Testing against a non-existing pillar id -> Should fail");
+            String[] args = new String[]{"-s" + SETTINGS_DIR,
+                    "-k" + KEY_FILE,
+                    "-c" + DEFAULT_COLLECTION_ID,
+                    "-p" + "Random" + (new Date()).getTime() + "pillar",
+                    "-i" + DEFAULT_FILE_ID};
 
-        new GetChecksumsCmd(args);
+            new GetChecksumsCmd(args);
+        });
     }
 
-    @Test(groups = { "regressiontest" })
+    @Test @Tag( "regressiontest")
     public void fileArgumentTest() throws Exception {
         addDescription("Tests the argument for a specific file.");
         String[] args = new String[]{"-s" + SETTINGS_DIR, 
@@ -89,7 +97,7 @@ public class GetChecksumsCmdTest extends DefaultFixtureClientTest {
         new GetChecksumsCmd(args);
     }
 
-    @Test(groups = { "regressiontest" })
+    @Test @Tag( "regressiontest")
     public void checksumArgumentNonSaltAlgorithmWitoutSaltTest() throws Exception {
         addDescription("Test MD5 checksum without salt -> no failure");
         String[] args = new String[]{"-s" + SETTINGS_DIR, 
@@ -100,7 +108,7 @@ public class GetChecksumsCmdTest extends DefaultFixtureClientTest {
         new GetChecksumsCmd(args);
     }
 
-    @Test(groups = { "regressiontest" })
+    @Test @Tag( "regressiontest")
     public void checksumArgumentSaltAlgorithmWithSaltTest() throws Exception {
         addDescription("Test HMAC_SHA256 checksum with salt -> No failure");
         String[] args = new String[]{"-s" + SETTINGS_DIR, 

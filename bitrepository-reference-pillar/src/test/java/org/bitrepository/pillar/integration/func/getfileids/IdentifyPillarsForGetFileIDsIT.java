@@ -31,11 +31,11 @@ import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.DefaultPillarIdentificationTest;
 import org.bitrepository.pillar.messagefactories.GetFileIDsMessageFactory;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
+
+
+
+
 
 public class IdentifyPillarsForGetFileIDsIT extends DefaultPillarIdentificationTest {
     protected GetFileIDsMessageFactory msgFactory;
@@ -46,7 +46,7 @@ public class IdentifyPillarsForGetFileIDsIT extends DefaultPillarIdentificationT
         clearReceivers();
     }
 
-    @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
+    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
     public void normalIdentificationTest() {
         addDescription("Verifies the normal behaviour for getFileIDs identification");
         addStep("Setup for test", "2 files on the pillar");
@@ -82,7 +82,7 @@ public class IdentifyPillarsForGetFileIDsIT extends DefaultPillarIdentificationT
                 "Received unexpected 'Response' in response.");
     }
 
-    @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
+    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
     public void nonExistingFileTest() {
         addDescription("Tests that the pillar is able to reject a GetFileIDs requests for a file, which it " +
                        "does not have during the identification phase.");
@@ -107,7 +107,7 @@ public class IdentifyPillarsForGetFileIDsIT extends DefaultPillarIdentificationT
                 "Received unexpected 'ResponseCode' in response.");
     }
     
-    @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
+    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
     public void allFilesTest() {
         addDescription("Tests that the pillar accepts a GetFileIDs requests for all files, even though it does not have any files.");
         FileIDs fileids = FileIDsUtils.getAllFileIDs();

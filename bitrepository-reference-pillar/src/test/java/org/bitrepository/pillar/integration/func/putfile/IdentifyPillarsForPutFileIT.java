@@ -30,11 +30,11 @@ import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.DefaultPillarIdentificationTest;
 import org.bitrepository.pillar.messagefactories.PutFileMessageFactory;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
-import static org.bitrepository.pillar.integration.func.Assert.assertEquals;
-import static org.bitrepository.pillar.integration.func.Assert.assertNull;
+
+
+import static org.bitrepository.pillar.integration.func.Assertions.assertEquals;
+import static org.bitrepository.pillar.integration.func.Assertions.assertNull;
 
 public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest {
     protected PutFileMessageFactory msgFactory;
@@ -44,7 +44,7 @@ public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest
         msgFactory = new PutFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
     }
 
-    @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST})
+    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST})
     public void normalIdentificationTest() {
         addDescription("Verifies the normal behaviour for putFile identification");
         addStep("Sending a putFile identification request.",
@@ -86,7 +86,7 @@ public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest
                 "Received unexpected ReplyTo");
     }
 
-    @Test( groups = {PillarTestGroups.CHECKSUM_PILLAR_TEST})
+    @Test @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST})
     public void identificationTestForChecksumPillar() {
         addDescription("Verifies the normal behaviour for putFile identification for a checksum pillar");
         addStep("Sending a putFile identification.",
@@ -110,7 +110,7 @@ public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest
         assertEquals(receivedIdentifyResponse.getDestination(), identifyRequest.getReplyTo());
     }
 
-    @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
+    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
     public void fileExistsTest() {
         addDescription("Verifies the exists of a file with the same ID is handled correctly. " +
                 "This means that a checksum for the existing file is returned, enabling the client to continue with " +

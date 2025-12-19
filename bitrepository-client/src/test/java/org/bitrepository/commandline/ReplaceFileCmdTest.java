@@ -22,10 +22,14 @@
 package org.bitrepository.commandline;
 
 import org.bitrepository.client.DefaultFixtureClientTest;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 
 import java.util.Date;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ReplaceFileCmdTest extends DefaultFixtureClientTest {
     private static final String SETTINGS_DIR = "settings/xml/bitrepository-devel";
@@ -34,12 +38,13 @@ public class ReplaceFileCmdTest extends DefaultFixtureClientTest {
 
     private String DEFAULT_COLLECTION_ID;
 
-    @BeforeMethod(alwaysRun = true)
+    @BeforeEach
     public void setupClient() throws Exception {
         DEFAULT_COLLECTION_ID = settingsForTestClient.getCollections().get(0).getID();
     }
 
-    @Test(groups = { "regressiontest" })
+    @Test
+    @Tag( "regressiontest" )
     public void defaultSuccessScenarioTest() throws Exception {
         addDescription("Tests simplest arguments for running the CmdLineClient");
         String[] args = new String[]{"-s" + SETTINGS_DIR, 
@@ -51,7 +56,7 @@ public class ReplaceFileCmdTest extends DefaultFixtureClientTest {
         new ReplaceFileCmd(args);
     }
 
-    @Test(groups = { "regressiontest" })
+    @Test @Tag( "regressiontest")
     public void URLSuccessScenarioTest() throws Exception {
         addDescription("Tests the scenario, where a URL instead of a file is used for the replacement file.");
         String[] args = new String[]{"-s" + SETTINGS_DIR, 
@@ -65,88 +70,100 @@ public class ReplaceFileCmdTest extends DefaultFixtureClientTest {
         new ReplaceFileCmd(args);
     }
 
-    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
+    @Test @Tag( "regressiontest")
     public void missingCollectionArgumentTest() throws Exception {
-        addDescription("Tests the scenario, where the collection arguments is missing.");
-        String[] args = new String[]{"-s" + SETTINGS_DIR, 
-                "-k" + KEY_FILE,
-                "-p" + PILLAR1_ID,
-                "-u" + DEFAULT_DOWNLOAD_FILE_ADDRESS,
-                "-r" + DEFAULT_CHECKSUM,
-                "-C" + DEFAULT_CHECKSUM,
-                "-i" + DEFAULT_FILE_ID};
-        new ReplaceFileCmd(args);
+        assertThrows(IllegalArgumentException.class, () -> {
+            addDescription("Tests the scenario, where the collection arguments is missing.");
+            String[] args = new String[]{"-s" + SETTINGS_DIR,
+                    "-k" + KEY_FILE,
+                    "-p" + PILLAR1_ID,
+                    "-u" + DEFAULT_DOWNLOAD_FILE_ADDRESS,
+                    "-r" + DEFAULT_CHECKSUM,
+                    "-C" + DEFAULT_CHECKSUM,
+                    "-i" + DEFAULT_FILE_ID};
+            new ReplaceFileCmd(args);
+        });
     }
 
-    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
+    @Test @Tag( "regressiontest")
     public void missingPillarArgumentTest() throws Exception {
-        addDescription("Tests the different scenarios, with the pillar argument.");
-        String[] args = new String[]{"-s" + SETTINGS_DIR, 
-                "-k" + KEY_FILE,
-                "-u" + DEFAULT_DOWNLOAD_FILE_ADDRESS,
-                "-r" + DEFAULT_CHECKSUM,
-                "-C" + DEFAULT_CHECKSUM,
-                "-c" + DEFAULT_COLLECTION_ID,
-                "-i" + DEFAULT_FILE_ID};
-        new ReplaceFileCmd(args);
+        assertThrows(IllegalArgumentException.class, () -> {
+            addDescription("Tests the different scenarios, with the pillar argument.");
+            String[] args = new String[]{"-s" + SETTINGS_DIR,
+                    "-k" + KEY_FILE,
+                    "-u" + DEFAULT_DOWNLOAD_FILE_ADDRESS,
+                    "-r" + DEFAULT_CHECKSUM,
+                    "-C" + DEFAULT_CHECKSUM,
+                    "-c" + DEFAULT_COLLECTION_ID,
+                    "-i" + DEFAULT_FILE_ID};
+            new ReplaceFileCmd(args);
+        });
     }
 
-    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
+    @Test @Tag( "regressiontest")
     public void unknownPillarArgumentTest() throws Exception {
-        addStep("Testing against a non-existing pillar id", "Should fail");
-        String[] args = new String[]{"-s" + SETTINGS_DIR, 
-                "-k" + KEY_FILE,
-                "-u" + DEFAULT_DOWNLOAD_FILE_ADDRESS,
-                "-r" + DEFAULT_CHECKSUM,
-                "-C" + DEFAULT_CHECKSUM,
-                "-c" + DEFAULT_COLLECTION_ID,
-                "-p" + "Random" + (new Date()).getTime() + "pillar",
-                "-i" + DEFAULT_FILE_ID};
-        new ReplaceFileCmd(args);
+        assertThrows(IllegalArgumentException.class, () -> {
+            addStep("Testing against a non-existing pillar id", "Should fail");
+            String[] args = new String[]{"-s" + SETTINGS_DIR,
+                    "-k" + KEY_FILE,
+                    "-u" + DEFAULT_DOWNLOAD_FILE_ADDRESS,
+                    "-r" + DEFAULT_CHECKSUM,
+                    "-C" + DEFAULT_CHECKSUM,
+                    "-c" + DEFAULT_COLLECTION_ID,
+                    "-p" + "Random" + (new Date()).getTime() + "pillar",
+                    "-i" + DEFAULT_FILE_ID};
+            new ReplaceFileCmd(args);
+        });
     }
 
-    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
+    @Test @Tag( "regressiontest")
     public void missingFileOrURLArgumentTest() throws Exception {
-        addDescription("Tests the scenario, where no arguments for file or url is given.");
-        String[] args = new String[]{"-s" + SETTINGS_DIR, 
-                "-k" + KEY_FILE,
-                "-p" + PILLAR1_ID,
-                "-r" + DEFAULT_CHECKSUM,
-                "-c" + DEFAULT_COLLECTION_ID, 
-                "-C" + DEFAULT_CHECKSUM,
-                "-i" + DEFAULT_FILE_ID};
-        new ReplaceFileCmd(args);
+        assertThrows(IllegalArgumentException.class, () -> {
+            addDescription("Tests the scenario, where no arguments for file or url is given.");
+            String[] args = new String[]{"-s" + SETTINGS_DIR,
+                    "-k" + KEY_FILE,
+                    "-p" + PILLAR1_ID,
+                    "-r" + DEFAULT_CHECKSUM,
+                    "-c" + DEFAULT_COLLECTION_ID,
+                    "-C" + DEFAULT_CHECKSUM,
+                    "-i" + DEFAULT_FILE_ID};
+            new ReplaceFileCmd(args);
+        });
     }
     
-    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
+    @Test @Tag( "regressiontest")
     public void bothFileAndURLArgumentTest() throws Exception {
-        addDescription("Tests the scenario, where both arguments for file or url is given.");
-        String[] args = new String[]{"-s" + SETTINGS_DIR, 
-                "-k" + KEY_FILE,
-                "-p" + PILLAR1_ID,
-                "-r" + DEFAULT_CHECKSUM,
-                "-f" + DEFAULT_FILE_ID,
-                "-u" + DEFAULT_DOWNLOAD_FILE_ADDRESS,
-                "-c" + DEFAULT_COLLECTION_ID, 
-                "-C" + DEFAULT_CHECKSUM,
-                "-i" + DEFAULT_FILE_ID};
-        new ReplaceFileCmd(args);
+        assertThrows(IllegalArgumentException.class, () -> {
+            addDescription("Tests the scenario, where both arguments for file or url is given.");
+            String[] args = new String[]{"-s" + SETTINGS_DIR,
+                    "-k" + KEY_FILE,
+                    "-p" + PILLAR1_ID,
+                    "-r" + DEFAULT_CHECKSUM,
+                    "-f" + DEFAULT_FILE_ID,
+                    "-u" + DEFAULT_DOWNLOAD_FILE_ADDRESS,
+                    "-c" + DEFAULT_COLLECTION_ID,
+                    "-C" + DEFAULT_CHECKSUM,
+                    "-i" + DEFAULT_FILE_ID};
+            new ReplaceFileCmd(args);
+        });
     }
     
-    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
+    @Test @Tag( "regressiontest")
     public void missingFileIDWhenURLArgumentTest() throws Exception {
-        addDescription("Tests the scenario, where no checksum argument is given, but a URL is given.");
-        String[] args = new String[]{"-s" + SETTINGS_DIR, 
-                "-k" + KEY_FILE,
-                "-p" + PILLAR1_ID,
-                "-u" + DEFAULT_DOWNLOAD_FILE_ADDRESS,
-                "-r" + DEFAULT_CHECKSUM,
-                "-c" + DEFAULT_COLLECTION_ID, 
-                "-C" + DEFAULT_CHECKSUM};
-        new ReplaceFileCmd(args);
+        assertThrows(IllegalArgumentException.class, () -> {
+            addDescription("Tests the scenario, where no checksum argument is given, but a URL is given.");
+            String[] args = new String[]{"-s" + SETTINGS_DIR,
+                    "-k" + KEY_FILE,
+                    "-p" + PILLAR1_ID,
+                    "-u" + DEFAULT_DOWNLOAD_FILE_ADDRESS,
+                    "-r" + DEFAULT_CHECKSUM,
+                    "-c" + DEFAULT_COLLECTION_ID,
+                    "-C" + DEFAULT_CHECKSUM};
+            new ReplaceFileCmd(args);
+        });
     }
 
-    @Test(groups = { "regressiontest" })
+    @Test @Tag( "regressiontest")
     public void missingFileIDWhenFileArgumentTest() throws Exception {
         addDescription("Tests the scenario, where no checksum argument is given, but a URL is given.");
         String[] args = new String[]{"-s" + SETTINGS_DIR, 
@@ -158,20 +175,22 @@ public class ReplaceFileCmdTest extends DefaultFixtureClientTest {
         new ReplaceFileCmd(args);
     }
 
-    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
+    @Test @Tag( "regressiontest")
     public void missingChecksumForNewFileWhenUsingURLArgumentTest() throws Exception {
-        addDescription("Tests the scenario, where no checksum argument is given, but a URL is given.");
-        String[] args = new String[]{"-s" + SETTINGS_DIR, 
-                "-k" + KEY_FILE,
-                "-p" + PILLAR1_ID,
-                "-u" + DEFAULT_DOWNLOAD_FILE_ADDRESS,
-                "-C" + DEFAULT_CHECKSUM,
-                "-c" + DEFAULT_COLLECTION_ID, 
-                "-i" + DEFAULT_FILE_ID};
-        new ReplaceFileCmd(args);
+        assertThrows(IllegalArgumentException.class, () -> {
+            addDescription("Tests the scenario, where no checksum argument is given, but a URL is given.");
+            String[] args = new String[]{"-s" + SETTINGS_DIR,
+                    "-k" + KEY_FILE,
+                    "-p" + PILLAR1_ID,
+                    "-u" + DEFAULT_DOWNLOAD_FILE_ADDRESS,
+                    "-C" + DEFAULT_CHECKSUM,
+                    "-c" + DEFAULT_COLLECTION_ID,
+                    "-i" + DEFAULT_FILE_ID};
+            new ReplaceFileCmd(args);
+        });
     }
 
-    @Test(groups = { "regressiontest" })
+    @Test @Tag( "regressiontest")
     public void missingChecksumForNewFileWhenUsingFileArgumentTest() throws Exception {
         addDescription("Tests the scenario, where no checksum argument is given, but a File is given.");
         String[] args = new String[]{"-s" + SETTINGS_DIR, 
@@ -184,33 +203,37 @@ public class ReplaceFileCmdTest extends DefaultFixtureClientTest {
         new ReplaceFileCmd(args);
     }
 
-    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
+    @Test @Tag( "regressiontest")
     public void missingChecksumForExistingFileWhenUsingURLArgumentTest() throws Exception {
-        addDescription("Tests the scenario, where no checksum argument is given, but a URL is given.");
-        String[] args = new String[]{"-s" + SETTINGS_DIR, 
-                "-k" + KEY_FILE,
-                "-p" + PILLAR1_ID,
-                "-u" + DEFAULT_DOWNLOAD_FILE_ADDRESS,
-                "-r" + DEFAULT_CHECKSUM,
-                "-c" + DEFAULT_COLLECTION_ID, 
-                "-i" + DEFAULT_FILE_ID};
-        new ReplaceFileCmd(args);
+        assertThrows(IllegalArgumentException.class, () -> {
+            addDescription("Tests the scenario, where no checksum argument is given, but a URL is given.");
+            String[] args = new String[]{"-s" + SETTINGS_DIR,
+                    "-k" + KEY_FILE,
+                    "-p" + PILLAR1_ID,
+                    "-u" + DEFAULT_DOWNLOAD_FILE_ADDRESS,
+                    "-r" + DEFAULT_CHECKSUM,
+                    "-c" + DEFAULT_COLLECTION_ID,
+                    "-i" + DEFAULT_FILE_ID};
+            new ReplaceFileCmd(args);
+        });
     }
 
-    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
+    @Test @Tag( "regressiontest")
     public void missingChecksumForExistingFileWhenUsingFileArgumentTest() throws Exception {
-        addDescription("Tests the scenario, where no checksum argument is given, but a File is given.");
-        String[] args = new String[]{"-s" + SETTINGS_DIR, 
-                "-k" + KEY_FILE,
-                "-p" + PILLAR1_ID,
-                "-f" + DEFAULT_FILE_ID,
-                "-r" + DEFAULT_CHECKSUM,
-                "-c" + DEFAULT_COLLECTION_ID, 
-                "-i" + DEFAULT_FILE_ID};
-        new ReplaceFileCmd(args);
+        assertThrows(IllegalArgumentException.class, () -> {
+            addDescription("Tests the scenario, where no checksum argument is given, but a File is given.");
+            String[] args = new String[]{"-s" + SETTINGS_DIR,
+                    "-k" + KEY_FILE,
+                    "-p" + PILLAR1_ID,
+                    "-f" + DEFAULT_FILE_ID,
+                    "-r" + DEFAULT_CHECKSUM,
+                    "-c" + DEFAULT_COLLECTION_ID,
+                    "-i" + DEFAULT_FILE_ID};
+            new ReplaceFileCmd(args);
+        });
     }
     
-    @Test(groups = { "regressiontest" })
+    @Test @Tag( "regressiontest")
     public void checksumArgumentNonSaltAlgorithmWitoutSaltTest() throws Exception {
         addDescription("Test MD5 checksum without salt -> no failure");
         String[] args = new String[]{"-s" + SETTINGS_DIR, 
@@ -225,7 +248,7 @@ public class ReplaceFileCmdTest extends DefaultFixtureClientTest {
         new ReplaceFileCmd(args);
     }
 
-    @Test(groups = { "regressiontest" })
+    @Test @Tag( "regressiontest")
     public void checksumArgumentSaltAlgorithmWithSaltTest() throws Exception {
         addDescription("Test HMAC_SHA256 checksum with salt -> No failure");
         String[] args = new String[]{"-s" + SETTINGS_DIR, 

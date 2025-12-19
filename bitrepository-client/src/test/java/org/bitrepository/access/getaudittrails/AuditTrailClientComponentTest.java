@@ -42,16 +42,17 @@ import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.protocol.bus.MessageReceiver;
 import org.bitrepository.settings.repositorysettings.Collection;
-import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import java.math.BigInteger;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Test the default AuditTrailClient.
@@ -60,7 +61,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
     private GetAuditTrailsMessageFactory testMessageFactory;
     private DatatypeFactory datatypeFactory;
 
-    @BeforeMethod(alwaysRun=true)
+    @BeforeEach
     public void beforeMethodSetup() throws DatatypeConfigurationException {
         testMessageFactory = new GetAuditTrailsMessageFactory(settingsForTestClient.getComponentID());
         
@@ -78,16 +79,17 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         datatypeFactory = DatatypeFactory.newInstance();
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void verifyAuditTrailClientFromFactory() {
-        Assert.assertTrue(AccessComponentFactory.getInstance().createAuditTrailClient(
+        Assertions.assertTrue(AccessComponentFactory.getInstance().createAuditTrailClient(
                 settingsForCUT, securityManager, settingsForTestClient.getComponentID())
                 instanceof ConversationBasedAuditTrailClient,
                 "The default AuditTrailClient from the Access factory should be of the type '" +
                 ConversationBasedAuditTrailClient.class.getName() + "'.");
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void getAllAuditTrailsTest() throws InterruptedException {
         addDescription("Tests the simplest case of getting all audit trail event for all contributors.");
         
@@ -175,7 +177,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
     }
 
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void getSomeAuditTrailsTest() throws InterruptedException {
         addDescription("Tests the client maps a AuditTrail query correctly to a GetAuditTrail request.");
 
@@ -234,7 +236,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
                 OperationEvent.OperationEventType.COMPLETE);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void negativeGetAuditTrailsResponseTest() throws InterruptedException {
         addDescription("Verify that the GetAuditTrail client works correct when receiving a negative " +
         "GetAuditTrails response from one contributors.");
@@ -309,7 +311,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
                 OperationEvent.OperationEventType.FAILED);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void progressEventsTest() throws InterruptedException {
         addDescription("Tests that progress events are handled correctly.");
 
@@ -378,7 +380,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
                 OperationEvent.OperationEventType.PROGRESS);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void incompleteSetOfFinalResponsesTest() throws Exception {
         addDescription("Verify that the GetAuditTrail client works correct without receiving responses from all " +
         "contributors.");
@@ -421,7 +423,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         assertNotNull(requestPillar1);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void noFinalResponsesTest() throws Exception {
         addDescription("Tests the the AuditTrailClient handles lack of Final Responses gracefully  ");
         addStep("Set a 100 ms timeout for the operation.", "");

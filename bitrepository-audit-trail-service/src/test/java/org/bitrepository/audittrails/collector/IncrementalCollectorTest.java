@@ -40,9 +40,9 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.service.AlarmDispatcher;
 import org.jaccept.structure.ExtendedTestCase;
 import org.mockito.ArgumentCaptor;
-import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+
+
+
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigInteger;
@@ -72,7 +72,7 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
         threadFactory = new DefaultThreadFactory(this.getClass().getSimpleName(), Thread.NORM_PRIORITY, false);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest"})
     public void singleIncrementTest() throws InterruptedException {
         addDescription("Verifies the behaviour in the simplest case with just one result set ");
         AuditTrailClient client = mock(AuditTrailClient.class);
@@ -116,14 +116,14 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
         verify(store, timeout(3000).times(1))
             .addAuditTrails(any(AuditTrailEvents.class), eq(TEST_COLLECTION), eq(TEST_CONTRIBUTOR2));
         
-        Assert.assertTrue(collectionRunner.finished, "The collector should have finished after the complete event, as " +
+        Assertions.assertTrue(collectionRunner.finished, "The collector should have finished after the complete event, as " +
             "no partialResults where received");
         verifyNoMoreInteractions(store);
         verifyNoMoreInteractions(client);
         verifyNoInteractions(alarmDispatcher);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest"})
     public void multipleIncrementTest() throws Exception {
         addDescription("Verifies the behaviour in the case where the adit trails needs to be reteived in multiple " +
             "requests because of MaxNumberOfResults limits.");
@@ -166,7 +166,7 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
         verify(store, timeout(3000).times(1))
             .addAuditTrails(any(AuditTrailEvents.class), eq(TEST_COLLECTION), eq(TEST_CONTRIBUTOR2));
 
-        Assert.assertFalse(collectionRunner.finished, "The collector should not have finished after the complete " +
+        Assertions.assertFalse(collectionRunner.finished, "The collector should not have finished after the complete " +
                 "event, as partialResults where received");
 
         addStep("Send another audit trail result from the contributors, now with PartialResults set to false",
@@ -190,7 +190,7 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
             .addAuditTrails(any(AuditTrailEvents.class), eq(TEST_COLLECTION), eq(TEST_CONTRIBUTOR2));
 
         Thread.sleep(100);
-        Assert.assertTrue(collectionRunner.finished, "The collector should have finished after the complete event, as " +
+        Assertions.assertTrue(collectionRunner.finished, "The collector should have finished after the complete event, as " +
             "no partialResults where received in the second increment.");
         
         verifyNoMoreInteractions(store);
@@ -198,7 +198,7 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
         verifyNoInteractions(alarmDispatcher);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest"})
     public void contributorFailureTest() throws Exception {
         addDescription("Tests that the collector is able to collect from the remaining contributors if a " +
             "contributor fails.");
@@ -242,7 +242,7 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
             .addAuditTrails(any(AuditTrailEvents.class), eq(TEST_COLLECTION), eq(TEST_CONTRIBUTOR2));
         
         eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "", null));
-        Assert.assertFalse(collectionRunner.finished, "The collector should not have finished after the complete " +
+        Assertions.assertFalse(collectionRunner.finished, "The collector should not have finished after the complete " +
             "event, as partialResults where received");
 
         addStep("Send another audit trail result from contributor 2 with PartialResults set to false",
@@ -263,12 +263,12 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
         verify(alarmDispatcher, timeout(3000)).error(any(Alarm.class));
         
         Thread.sleep(100);
-        Assert.assertTrue(collectionRunner.finished);
+        Assertions.assertTrue(collectionRunner.finished);
         verifyNoMoreInteractions(store);
         verifyNoMoreInteractions(client);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest"})
     public void collectionIDFailureTest() throws Exception {
         addDescription("Tests what happens when a wrong collection id is received.");
         String FALSE_COLLECTION = "FalseCollection" + new Date().getTime();

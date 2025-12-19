@@ -41,15 +41,15 @@ import org.bitrepository.pillar.MockedPillarTest;
 import org.bitrepository.pillar.messagefactories.ReplaceFileMessageFactory;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.testng.annotations.Test;
+
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertNull;
+
+
+
 
 /**
  * Tests the ReplaceFile functionality on the ReferencePillar.
@@ -66,7 +66,7 @@ public class ReplaceFileTest extends MockedPillarTest {
     }
 
     @SuppressWarnings("rawtypes")
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test @Tag("regressiontest", "pillartest"})
     public void goodCaseIdentification() {
         addDescription("Tests the identification for a ReplaceFile operation on the pillar for the successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -96,7 +96,7 @@ public class ReplaceFileTest extends MockedPillarTest {
     }
 
     @SuppressWarnings("rawtypes")
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test @Tag("regressiontest", "pillartest"})
     public void badCaseIdentification() {
         addDescription("Tests the identification for a ReplaceFile operation on the pillar for the failure scenario, when the file does not exist.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -126,7 +126,7 @@ public class ReplaceFileTest extends MockedPillarTest {
     }
 
     @SuppressWarnings("rawtypes")
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test @Tag("regressiontest", "pillartest"})
     public void badCaseOperationMissingFile() {
         addDescription("Tests the ReplaceFile operation on the pillar for the failure scenario, when the file is missing.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -158,7 +158,7 @@ public class ReplaceFileTest extends MockedPillarTest {
     }
 
     @SuppressWarnings("rawtypes")
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test @Tag("regressiontest", "pillartest"})
     public void badCaseOperationNoDestructiveChecksum() {
         addDescription("Tests the ReplaceFile operation on the pillar for the failure scenario, when no validation "
                 + "checksum is given for the destructive action, but though is required.");
@@ -191,7 +191,7 @@ public class ReplaceFileTest extends MockedPillarTest {
     }
 
     @SuppressWarnings("rawtypes")
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test @Tag("regressiontest", "pillartest"})
     public void badCaseOperationNoValidationChecksum() {
         addDescription("Tests the ReplaceFile operation on the pillar for the failure scenario, when no validation "
                 + "checksum is given for the new file, but though is required.");
@@ -224,7 +224,7 @@ public class ReplaceFileTest extends MockedPillarTest {
     }
 
     @SuppressWarnings("rawtypes")
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test @Tag("regressiontest", "pillartest"})
     public void badCaseOperationWrongDestructiveChecksum() throws Exception {
         addDescription("Tests the ReplaceFile operation on the pillar for the failure scenario, when the checksum for "
                 +"the destructive action is different from the one in the cache.");
@@ -257,7 +257,7 @@ public class ReplaceFileTest extends MockedPillarTest {
     }
 
     @SuppressWarnings("rawtypes")
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test @Tag("regressiontest", "pillartest"})
     public void goodCaseOperation() throws Exception {
         addDescription("Tests the ReplaceFile operation on the pillar for the success scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -294,7 +294,7 @@ public class ReplaceFileTest extends MockedPillarTest {
     }
 
     @SuppressWarnings("rawtypes")
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test @Tag("regressiontest", "pillartest"})
     public void goodCaseOperationWithChecksumsReturn() throws Exception {
         addDescription("Tests the ReplaceFile operation on the pillar for the success scenario, when requesting both the cheksums of the file returned.");
         addStep("Set up constants and variables.", "Should not fail here!");

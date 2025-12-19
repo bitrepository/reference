@@ -37,10 +37,11 @@ import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.AssertJUnit;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
@@ -59,7 +60,7 @@ public class DatabaseStressTests extends ExtendedTestCase {
     
     protected Settings settings;
     
-    @BeforeMethod (alwaysRun = true)
+    @BeforeEach
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("IntegrityCheckingUnderTest");
 
@@ -98,18 +99,20 @@ public class DatabaseStressTests extends ExtendedTestCase {
         cache.updateFileIDs(data, PILLAR_4, collectionID);
     }
     
-    @AfterMethod (alwaysRun = true)
+    @AfterEach
     public void clearDatabase() {
         DBConnector connector = new DBConnector(settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
         DatabaseUtils.executeStatement(connector, "DELETE FROM fileinfo");
         DatabaseUtils.executeStatement(connector, "DELETE FROM pillar");
     }
     
-    @Test(groups = {"stresstest", "integritytest"})
+    @Test
+    @Tag("stresstest")
+    @Tag("integritytest")
     public void testDatabasePerformance() {
         addDescription("Testing the performance of the SQL queries to the database.");
         IntegrityDAO cache = createDAO();
-        AssertJUnit.assertNotNull(cache);
+        Assertions.assertNotNull(cache);
         
         long startTime = System.currentTimeMillis();
         populateDatabase(cache);

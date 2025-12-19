@@ -27,10 +27,10 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
-import static org.testng.Assert.assertEquals;
+
+
+
 
 public class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
     protected GetFileMessageFactory msgFactory;
@@ -40,7 +40,7 @@ public class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
         msgFactory = new GetFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
     }
 
-    @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST})
+    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST})
     public void goodCaseIdentificationIT() {
         addDescription("Tests the general IdentifyPillarsForGetFile functionality of the pillar for the successful scenario.");
         addStep("Create and send the identify request message.",
@@ -69,7 +69,7 @@ public class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
                 "Received unexpected 'ReplyTo' in response.");
     }
 
-    @Test( groups = {PillarTestGroups.FULL_PILLAR_TEST})
+    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST})
     public void nonExistingFileIdentificationIT() {
         addDescription("Tests the  IdentifyPillarsForGetFile functionality of the pillar for a IdentificationForGetFile " +
                 "for a non existing file.");

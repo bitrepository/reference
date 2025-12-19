@@ -29,7 +29,7 @@ public abstract class DefaultPillarOperationTest extends DefaultPillarMessagingT
 
     protected void assertPositivResponseIsReceived() {
         MessageResponse receivedResponse = receiveResponse();
-        Assert.assertEquals(receivedResponse.getResponseInfo().getResponseCode(),
+        Assertions.assertEquals(receivedResponse.getResponseInfo().getResponseCode(),
                 ResponseCode.OPERATION_COMPLETED);
     }
 }

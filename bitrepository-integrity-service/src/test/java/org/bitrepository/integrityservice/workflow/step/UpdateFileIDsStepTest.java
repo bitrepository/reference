@@ -35,10 +35,13 @@ import org.bitrepository.client.eventhandler.IdentificationCompleteEvent;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.service.exception.WorkflowAbortedException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+
+
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -58,7 +61,8 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
     public static final String TEST_PILLAR_1 = "test-pillar-1";
     public static final String TEST_FILE_1 = "test-file-1";
 
-    @Test(groups = {"regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void testPositiveReply() throws WorkflowAbortedException {
         addDescription("Test the step for updating the file ids can handle COMPLETE operation event.");
         doAnswer(new Answer() {
@@ -83,7 +87,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
         verifyNoMoreInteractions(alerter);
     }
     
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void testAbortWorkflowWhenNegativeReply() {
         addDescription("Test the step for updating the file ids will throw an WorkflowAbortedException"
                 + "when AbortOnFailedContributor is set to true and a FAILED event is received.");
@@ -109,7 +113,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
         
         try {
             step.performStep();
-            Assert.fail("The step should have thrown an WorkflowAbortedException");
+            Assertions.fail("The step should have thrown an WorkflowAbortedException");
         } catch (WorkflowAbortedException e) {
             // nothing to do here
         }
@@ -121,7 +125,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
         verify(alerter).integrityFailed(anyString(), anyString());
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void testRetryCollectionWhenNegativeReply() throws WorkflowAbortedException {
         addDescription("Test the step for updating the file ids will retry on a FAILED event");
         final ResultingFileIDs resultingFileIDs = createResultingFileIDs(TEST_FILE_1);
@@ -165,7 +169,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
         verify(integrityContributors).finishContributor(eq(TEST_PILLAR_1));
     }
     
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void testContinueWorkflowWhenNegativeReply() throws WorkflowAbortedException {
         addDescription("Test the step for updating the file ids will continue when getting an FAILED operation event"
                 + " when AbortOnFailedContributor is set to false");
@@ -198,7 +202,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
 
     
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void testIngestOfResults() throws WorkflowAbortedException {
         addDescription("Test the step for updating the file ids can ingest the data correctly into the store.");
         final ResultingFileIDs resultingFileIDs = createResultingFileIDs(TEST_FILE_1);
@@ -226,7 +230,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
     }
 
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void testPartialResults() throws WorkflowAbortedException {
         addDescription("Test that the number of partial is used for generating more than one request.");
         final ResultingFileIDs resultingFileIDs = createResultingFileIDs(TEST_FILE_1);

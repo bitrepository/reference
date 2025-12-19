@@ -32,15 +32,15 @@ import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTr
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.MockedPillarTest;
 import org.bitrepository.pillar.messagefactories.GetAuditTrailsMessageFactory;
-import org.testng.annotations.Test;
+
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigInteger;
 import java.util.Date;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
+
+
+
 
 public class GetAuditTrailsTest extends MockedPillarTest {
     private GetAuditTrailsMessageFactory msgFactory;
@@ -51,7 +51,7 @@ public class GetAuditTrailsTest extends MockedPillarTest {
         msgFactory = new GetAuditTrailsMessageFactory(collectionID, settingsForTestClient);
     }
 
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test @Tag("regressiontest", "pillartest"})
     public void checksumPillarGetAuditTrailsSuccessful() {
         addDescription("Tests the GetAuditTrails functionality of the pillar for the successful scenario, "
                 + "where all audit trails are requested.");
@@ -100,7 +100,7 @@ public class GetAuditTrailsTest extends MockedPillarTest {
         assertEquals(finalResponse.getResultingAuditTrails().getAuditTrailEvents().getAuditTrailEvent().size(), 1);
     }
     
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test @Tag("regressiontest", "pillartest"})
     public void checksumPillarGetAuditTrailsSpecificRequests() {
         addDescription("Tests the GetAuditTrails functionality of the pillar for the successful scenario, "
                 + "where a specific audit trail are requested.");
@@ -172,7 +172,7 @@ public class GetAuditTrailsTest extends MockedPillarTest {
         assertFalse(finalResponse.isPartialResult());
     }
     
-    @Test( groups = {"regressiontest", "pillartest"})
+    @Test @Tag("regressiontest", "pillartest"})
     public void checksumPillarGetAuditTrailsMaximumNumberOfResults() {
         addDescription("Tests the GetAuditTrails functionality of the pillar for the successful scenario, "
                 + "where a limited number of audit trails are requested.");

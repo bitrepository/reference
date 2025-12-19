@@ -25,14 +25,14 @@ package org.bitrepository.pillar.common;
 import org.bitrepository.pillar.integration.func.Assert;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.bitrepository.settings.repositorysettings.PillarIDs;
-import org.testng.annotations.Test;
+
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class SettingsHelperTest {
-    @Test( groups = {"regressiontest"})
+    @Test @Tag("regressiontest"})
     public void getPillarCollectionsTest() {
         String myPillarID = "myPillarID";
         String otherPillarID = "OtherPillar";
@@ -43,14 +43,14 @@ public class SettingsHelperTest {
         collection.add(createCollection("otherCollection", new String[] {otherPillarID}));
 
         List<String> myCollections = SettingsHelper.getPillarCollections(myPillarID, collection);
-        Assert.assertEquals(myCollections.size(), 2);
-        Assert.assertEquals("myFirstCollection", myCollections.get(0));
-        Assert.assertEquals("mySecondCollection", myCollections.get(1));
+        Assertions.assertEquals(myCollections.size(), 2);
+        Assertions.assertEquals("myFirstCollection", myCollections.get(0));
+        Assertions.assertEquals("mySecondCollection", myCollections.get(1));
 
         List<String> otherCollections = SettingsHelper.getPillarCollections(otherPillarID, collection);
-        Assert.assertEquals(otherCollections.size(), 2);
-        Assert.assertEquals("mySecondCollection", otherCollections.get(0));
-        Assert.assertEquals("otherCollection", otherCollections.get(1));
+        Assertions.assertEquals(otherCollections.size(), 2);
+        Assertions.assertEquals("mySecondCollection", otherCollections.get(0));
+        Assertions.assertEquals("otherCollection", otherCollections.get(1));
     }
 
     private Collection createCollection(String collectionID, String[] pillarIDs) {

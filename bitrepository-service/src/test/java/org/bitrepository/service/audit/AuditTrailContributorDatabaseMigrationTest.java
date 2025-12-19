@@ -29,9 +29,10 @@ import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
@@ -39,7 +40,8 @@ import static org.bitrepository.service.audit.AuditDatabaseConstants.AUDIT_TRAIL
 import static org.bitrepository.service.audit.AuditDatabaseConstants.DATABASE_VERSION_ENTRY;
 import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_FILE_ID;
 import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_TABLE;
-import static org.testng.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 /** Test database migration.  Generates jaccept reports.
  *
@@ -52,7 +54,7 @@ public class AuditTrailContributorDatabaseMigrationTest extends ExtendedTestCase
     
     static final String FILE_ID = "default-file-id";
 
-    @BeforeMethod (alwaysRun = true)
+    @BeforeEach
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("ReferencePillarTest");
         
@@ -66,12 +68,13 @@ public class AuditTrailContributorDatabaseMigrationTest extends ExtendedTestCase
         FileUtils.unzip(new File(PATH_TO_DATABASE_JAR_FILE), FileUtils.retrieveDirectory(PATH_TO_DATABASE_UNPACKED));
     }
     
-    @AfterMethod (alwaysRun = true)
+    @AfterEach
     public void cleanup() throws Exception {
         FileUtils.deleteDirIfExists(new File(PATH_TO_DATABASE_UNPACKED));
     }
     
-    @Test( groups = {"regressiontest", "databasetest"})
+    @Test
+    @Tag("regressiontest") @Tag("databasetest")
     public void testMigratingAuditContributorDatabase() {
         addDescription("Tests that the database can be migrated to latest version with the provided scripts.");
         DBConnector connector = new DBConnector(

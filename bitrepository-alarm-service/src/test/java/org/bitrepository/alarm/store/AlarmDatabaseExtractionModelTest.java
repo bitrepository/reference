@@ -25,7 +25,7 @@ import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.testng.Assert;
+
 
 import java.util.Date;
 
@@ -43,53 +43,53 @@ public class AlarmDatabaseExtractionModelTest extends ExtendedTestCase {
         addStep("Create an empty model", "Should be populated with nulls.");
         AlarmDatabaseExtractionModel model = new AlarmDatabaseExtractionModel(null, null, null, null, null, null, null, ascending);
         
-        Assert.assertNull(model.getAlarmCode());
-        Assert.assertNull(model.getComponentId());
-        Assert.assertNull(model.getEndDate());
-        Assert.assertNull(model.getFileID());
-        Assert.assertNull(model.getStartDate());
-        Assert.assertNull(model.getCollectionID());
-        Assert.assertEquals(model.getAscending(), ascending);
-        Assert.assertEquals(model.getMaxCount().intValue(), Integer.MAX_VALUE);
+        Assertions.assertNull(model.getAlarmCode());
+        Assertions.assertNull(model.getComponentId());
+        Assertions.assertNull(model.getEndDate());
+        Assertions.assertNull(model.getFileID());
+        Assertions.assertNull(model.getStartDate());
+        Assertions.assertNull(model.getCollectionID());
+        Assertions.assertEquals(model.getAscending(), ascending);
+        Assertions.assertEquals(model.getMaxCount().intValue(), Integer.MAX_VALUE);
         
         addStep("Test the AlarmCode", "Should be able to put a new one in and extract it again.");
         AlarmCode defaultAlarmCode = AlarmCode.COMPONENT_FAILURE;
         model.setAlarmCode(defaultAlarmCode);
-        Assert.assertEquals(model.getAlarmCode(), defaultAlarmCode);
+        Assertions.assertEquals(model.getAlarmCode(), defaultAlarmCode);
         
         addStep("Test the ascending", "Should be able to put a new one in and extract it again.");
         boolean defaultAscending = false;
         model.setAscending(defaultAscending);
-        Assert.assertEquals(model.getAscending(), defaultAscending);
+        Assertions.assertEquals(model.getAscending(), defaultAscending);
 
         addStep("Test the ComponentID", "Should be able to put a new one in and extract it again.");
         String defaultComponentID = "DefaultComponentID";
         model.setComponentId(defaultComponentID);
-        Assert.assertEquals(model.getComponentId(), defaultComponentID);
+        Assertions.assertEquals(model.getComponentId(), defaultComponentID);
 
         addStep("Test the EndDate", "Should be able to put a new one in and extract it again.");
         Date defaultEndDate = new Date(987654321);
         model.setEndDate(defaultEndDate);
-        Assert.assertEquals(model.getEndDate(), defaultEndDate);
+        Assertions.assertEquals(model.getEndDate(), defaultEndDate);
 
         addStep("Test the FileID", "Should be able to put a new one in and extract it again.");
         String defaultFileID = "DefaultFileID";
         model.setFileID(defaultFileID);
-        Assert.assertEquals(model.getFileID(), defaultFileID);
+        Assertions.assertEquals(model.getFileID(), defaultFileID);
 
         addStep("Test the MaxCount", "Should be able to put a new one in and extract it again.");
         Integer defaultMaxCount = 192837456;
         model.setMaxCount(defaultMaxCount);
-        Assert.assertEquals(model.getMaxCount(), defaultMaxCount);
+        Assertions.assertEquals(model.getMaxCount(), defaultMaxCount);
         
         addStep("Test the StartDate", "Should be able to put a new one in and extract it again.");
         Date defaultStartDate = new Date(123456789);
         model.setStartDate(defaultStartDate);
-        Assert.assertEquals(model.getStartDate(), defaultStartDate);
+        Assertions.assertEquals(model.getStartDate(), defaultStartDate);
         
         addStep("Test the CollectionID", "Should be able to put a new one in and extract it again.");
         String collectionID = "collection1";
         model.setCollectionID(collectionID);
-        Assert.assertEquals(model.getCollectionID(), collectionID);
+        Assertions.assertEquals(model.getCollectionID(), collectionID);
     }
 }

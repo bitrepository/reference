@@ -36,8 +36,10 @@ import org.bitrepository.integrityservice.reports.IntegrityReporter;
 import org.bitrepository.integrityservice.statistics.StatisticsCollector;
 import org.bitrepository.service.audit.AuditTrailDatabaseResults;
 import org.bitrepository.service.audit.AuditTrailManager;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -77,7 +79,8 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         auditManager = mock(AuditTrailManager.class);
     }
     
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test
+    @Tag("regressiontest") @Tag("integritytest")
     public void testNoData() throws Exception {
         addDescription("Test the checksum integrity validator without any data in the cache.");
         IntegrityModel cache = getIntegrityModel();
@@ -88,10 +91,10 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         addStep("Validate the file ids", "Should not have integrity issues.");
         step.performStep();
         
-        Assert.assertFalse(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
+        Assertions.assertFalse(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
     }
     
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test @Tag("regressiontest") @Tag("integritytest")
     public void testSimilarData() throws Exception {
         addDescription("Test the checksum integrity validator when all pillars have similar data.");
         IntegrityModel cache = getIntegrityModel();
@@ -109,17 +112,17 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         step.performStep();
 
         addStep("Validate the file ids", "Should not have integrity issues.");
-        Assert.assertFalse(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
-        Assert.assertEquals(cs.getCollectionStat().getChecksumErrors(), Long.valueOf(0));
-        Assert.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_3).getChecksumErrors(), Long.valueOf(0));
-        Assert.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors(), Long.valueOf(0));
-        Assert.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors(), Long.valueOf(0));
+        Assertions.assertFalse(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
+        Assertions.assertEquals(cs.getCollectionStat().getChecksumErrors(), Long.valueOf(0));
+        Assertions.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_3).getChecksumErrors(), Long.valueOf(0));
+        Assertions.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors(), Long.valueOf(0));
+        Assertions.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors(), Long.valueOf(0));
         for(FileInfo fi : cache.getFileInfos(FILE_1, TEST_COLLECTION)) {
-            Assert.assertEquals(fi.getChecksum(), "1234cccc4321");
+            Assertions.assertEquals(fi.getChecksum(), "1234cccc4321");
         }
     }
     
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test @Tag("regressiontest") @Tag("integritytest")
     public void testMissingAtOnePillar() throws Exception {
         addDescription("Test the checksum integrity validator when one pillar is missing the data.");
         IntegrityModel cache = getIntegrityModel();
@@ -136,10 +139,10 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         step.performStep();
 
         addStep("Validate the file ids", "No integrity issues.");
-        Assert.assertFalse(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
+        Assertions.assertFalse(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
     }
 
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test @Tag("regressiontest") @Tag("integritytest")
     public void testTwoDisagreeingChecksums() throws Exception {
         addDescription("Test the checksum integrity validator when only two pillar has data, but it it different.");
         IntegrityModel cache = getIntegrityModel();
@@ -157,16 +160,16 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         step.performStep();
 
         addStep("Validate the file ids", "Should have integrity issues. No entry should be valid.");
-        Assert.assertTrue(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
-        Assert.assertEquals(cs.getCollectionStat().getChecksumErrors(), Long.valueOf(1));
-        Assert.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors(), Long.valueOf(1));
-        Assert.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors(), Long.valueOf(1));
+        Assertions.assertTrue(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
+        Assertions.assertEquals(cs.getCollectionStat().getChecksumErrors(), Long.valueOf(1));
+        Assertions.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors(), Long.valueOf(1));
+        Assertions.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors(), Long.valueOf(1));
         /*for(FileInfo fi : cache.getFileInfos(FILE_1, TEST_COLLECTION)) {
-            Assert.assertTrue(fi.getChecksumState() != ChecksumState.VALID);
+            Assertions.assertTrue(fi.getChecksumState() != ChecksumState.VALID);
         }*/
     }
     
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test @Tag("regressiontest") @Tag("integritytest")
     public void testThreeDisagreeingChecksums() throws Exception {
         addDescription("Test the checksum integrity validator when all pillars have different checksums.");
         IntegrityModel cache = getIntegrityModel();
@@ -186,14 +189,14 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         step.performStep();
 
         addStep("Validate the file ids", "Should have integrity issues.");
-        Assert.assertTrue(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
-        Assert.assertEquals(cs.getCollectionStat().getChecksumErrors(), Long.valueOf(1));
-        Assert.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_3).getChecksumErrors(), Long.valueOf(1));
-        Assert.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors(), Long.valueOf(1));
-        Assert.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors(), Long.valueOf(1));
+        Assertions.assertTrue(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
+        Assertions.assertEquals(cs.getCollectionStat().getChecksumErrors(), Long.valueOf(1));
+        Assertions.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_3).getChecksumErrors(), Long.valueOf(1));
+        Assertions.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors(), Long.valueOf(1));
+        Assertions.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors(), Long.valueOf(1));
     }
     
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test @Tag("regressiontest") @Tag("integritytest")
     public void testChecksumMajority() throws Exception {
         addDescription("Test the checksum integrity validator when two pillars have one checksum and the last pillar "
                 + "has another checksum.");
@@ -214,14 +217,14 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         step.performStep();
 
         addStep("Validate the file ids", "Should only have integrity issues on pillar 3.");
-        Assert.assertTrue(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
-        Assert.assertEquals(cs.getCollectionStat().getChecksumErrors(), Long.valueOf(1));
-        Assert.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_3).getChecksumErrors(), Long.valueOf(1));
-        Assert.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors(), Long.valueOf(0));
-        Assert.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors(), Long.valueOf(0));
+        Assertions.assertTrue(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
+        Assertions.assertEquals(cs.getCollectionStat().getChecksumErrors(), Long.valueOf(1));
+        Assertions.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_3).getChecksumErrors(), Long.valueOf(1));
+        Assertions.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors(), Long.valueOf(0));
+        Assertions.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors(), Long.valueOf(0));
     }
 
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test @Tag("regressiontest") @Tag("integritytest")
     public void testAuditTrailsForChecksumErrors() throws Exception {
         addDescription("Test audit trails for checksum errors. Verify that a pillar with a single checksum will"
                 + " be pointed out as the possible cause.");
@@ -237,7 +240,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         insertChecksumDataForModel(cache, csData, TEST_PILLAR_2, TEST_COLLECTION);
         insertChecksumDataForModel(cache, csData, TEST_PILLAR_3, TEST_COLLECTION);
         step.performStep();
-        Assert.assertNull(auditManager.latestAuditInfo);
+        Assertions.assertNull(auditManager.latestAuditInfo);
         
         addStep("Test step on data where only two pillars have the file and they disagree about the checksum.",
                 "An audit trail with fileID and collectionID, but no pillar pointed out as cause");
@@ -247,15 +250,15 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         List<FileInfo> fis = (List<FileInfo>) cache.getFileInfos(FILE_1, TEST_COLLECTION);
         System.out.println("number of files in the collection" + cache.getNumberOfFilesInCollection(TEST_COLLECTION));
         System.out.println("number of file infos: " + fis.size());
-        Assert.assertNotNull(fis.get(0).getChecksum());
+        Assertions.assertNotNull(fis.get(0).getChecksum());
         
         step.performStep();
-        Assert.assertNotNull(auditManager.latestAuditInfo);
-        Assert.assertFalse(auditManager.latestAuditInfo.contains(TEST_PILLAR_1), auditManager.latestAuditInfo);
-        Assert.assertFalse(auditManager.latestAuditInfo.contains(TEST_PILLAR_2), auditManager.latestAuditInfo);
-        Assert.assertFalse(auditManager.latestAuditInfo.contains(TEST_PILLAR_3), auditManager.latestAuditInfo);
-        Assert.assertTrue(auditManager.latestAuditInfo.contains(FILE_2), auditManager.latestAuditInfo);
-        Assert.assertTrue(auditManager.latestAuditInfo.contains(TEST_COLLECTION), auditManager.latestAuditInfo);
+        Assertions.assertNotNull(auditManager.latestAuditInfo);
+        Assertions.assertFalse(auditManager.latestAuditInfo.contains(TEST_PILLAR_1), auditManager.latestAuditInfo);
+        Assertions.assertFalse(auditManager.latestAuditInfo.contains(TEST_PILLAR_2), auditManager.latestAuditInfo);
+        Assertions.assertFalse(auditManager.latestAuditInfo.contains(TEST_PILLAR_3), auditManager.latestAuditInfo);
+        Assertions.assertTrue(auditManager.latestAuditInfo.contains(FILE_2), auditManager.latestAuditInfo);
+        Assertions.assertTrue(auditManager.latestAuditInfo.contains(TEST_COLLECTION), auditManager.latestAuditInfo);
         
         addStep("remove the last audit info", "");
         auditManager.latestAuditInfo = null;
@@ -266,12 +269,12 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         insertChecksumDataForModel(cache, createChecksumData("cc12344321cc", FILE_2), TEST_PILLAR_2, TEST_COLLECTION);
         insertChecksumDataForModel(cache, createChecksumData("cc12344321cc", FILE_2), TEST_PILLAR_3, TEST_COLLECTION);
         step.performStep();
-        Assert.assertNotNull(auditManager.latestAuditInfo);
-        Assert.assertTrue(auditManager.latestAuditInfo.contains(TEST_PILLAR_1), auditManager.latestAuditInfo);
-        Assert.assertFalse(auditManager.latestAuditInfo.contains(TEST_PILLAR_2), auditManager.latestAuditInfo);
-        Assert.assertFalse(auditManager.latestAuditInfo.contains(TEST_PILLAR_3), auditManager.latestAuditInfo);
-        Assert.assertTrue(auditManager.latestAuditInfo.contains(FILE_2), auditManager.latestAuditInfo);
-        Assert.assertTrue(auditManager.latestAuditInfo.contains(TEST_COLLECTION), auditManager.latestAuditInfo);
+        Assertions.assertNotNull(auditManager.latestAuditInfo);
+        Assertions.assertTrue(auditManager.latestAuditInfo.contains(TEST_PILLAR_1), auditManager.latestAuditInfo);
+        Assertions.assertFalse(auditManager.latestAuditInfo.contains(TEST_PILLAR_2), auditManager.latestAuditInfo);
+        Assertions.assertFalse(auditManager.latestAuditInfo.contains(TEST_PILLAR_3), auditManager.latestAuditInfo);
+        Assertions.assertTrue(auditManager.latestAuditInfo.contains(FILE_2), auditManager.latestAuditInfo);
+        Assertions.assertTrue(auditManager.latestAuditInfo.contains(TEST_COLLECTION), auditManager.latestAuditInfo);
     }
 
     private List<ChecksumDataForChecksumSpecTYPE> createChecksumData(String checksum, String ... fileids) {

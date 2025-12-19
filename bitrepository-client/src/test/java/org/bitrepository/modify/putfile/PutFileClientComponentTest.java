@@ -40,38 +40,42 @@ import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.modify.ModifyComponentFactory;
-import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 
 import javax.xml.datatype.DatatypeFactory;
 import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
 
-import static org.testng.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 public class PutFileClientComponentTest extends DefaultFixtureClientTest {
     private TestPutFileMessageFactory messageFactory;
     private DatatypeFactory datatypeFactory;
 
-    @BeforeMethod(alwaysRun=true)
+    @BeforeEach
     public void initialise() throws Exception {
         messageFactory = new TestPutFileMessageFactory(settingsForTestClient.getComponentID());
         datatypeFactory = DatatypeFactory.newInstance();
     }
 
-    @Test(groups={"regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void verifyPutClientFromFactory() {
         addDescription("Testing the initialization through the ModifyComponentFactory.");
         addStep("Use the ModifyComponentFactory to instantiate a PutFileClient.",
                 "It should be an instance of SimplePutFileClient");
         PutFileClient pfc = ModifyComponentFactory.getInstance().retrievePutClient(
                 settingsForCUT, securityManager, settingsForTestClient.getComponentID());
-        Assert.assertTrue(pfc instanceof ConversationBasedPutFileClient, "The PutFileClient '" + pfc + "' should be instance of '"
+        Assertions.assertTrue(pfc instanceof ConversationBasedPutFileClient, "The PutFileClient '" + pfc + "' should be instance of '"
                 + ConversationBasedPutFileClient.class.getName() + "'");
     }
 
-    @Test(groups={"regressiontest"})
+    @Test @Tag("regressiontest")
     public void normalPutFile() throws Exception {
         addDescription("Tests the PutClient. Makes a whole conversation for the put client for a 'good' scenario.");
         addFixture("Initialise the number of pillars to one");
@@ -92,7 +96,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage =
                 collectionReceiver.waitForMessage(IdentifyPillarsForPutFileRequest.class);
         assertEquals(receivedIdentifyRequestMessage.getCollectionID(), collectionID);
-        Assert.assertNotNull(receivedIdentifyRequestMessage.getCorrelationID());
+        Assertions.assertNotNull(receivedIdentifyRequestMessage.getCorrelationID());
         assertEquals(receivedIdentifyRequestMessage.getReplyTo(), settingsForCUT.getReceiverDestinationID());
         assertEquals(receivedIdentifyRequestMessage.getFileID(), DEFAULT_FILE_ID);
         assertEquals(receivedIdentifyRequestMessage.getFrom(), settingsForTestClient.getComponentID());
@@ -133,14 +137,14 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
             messageBus.sendMessage(putFileFinalResponse);
         for(int i = 1; i < 2* settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().size(); i++) {
             OperationEventType eventType = testEventHandler.waitForEvent().getEventType();
-            Assert.assertTrue( (eventType == OperationEventType.COMPONENT_COMPLETE)
+            Assertions.assertTrue( (eventType == OperationEventType.COMPONENT_COMPLETE)
                     || (eventType == OperationEventType.PROGRESS),
                     "Expected either PartiallyComplete or Progress, but was: " + eventType);
         }
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPLETE);
     }
 
-    @Test(groups={"regressiontest"})
+    @Test @Tag("regressiontest")
     public void noPillarsResponding() throws Exception {
         addDescription("Tests the handling of missing identification responses from all pillar");
         addFixture("Sets the identification timeout to 100 ms.");
@@ -160,12 +164,12 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         addStep("Do not respond. Just await the timeout.",
                 "An IDENTIFY_TIMEOUT event should be generate, followed by a FAILED event.");
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_TIMEOUT);
-        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_FAILED);
-        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_FAILED);
+        assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_FAILED);
+        assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_FAILED);
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
-    @Test(groups={"regressiontest"})
+    @Test @Tag("regressiontest")
     public void onePillarRespondingWithPartialPutAllowed() throws Exception {
         addReference("<a href=https://sbforge.org/jira/browse/BITMAG-598>" +
                 "BITMAG-598 It should be possible to putFiles, even though only a subset of the pillars are available</a>");
@@ -197,7 +201,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         addStep("Await the timeout.", "An IDENTIFY_TIMEOUT events, a COMPONENT_FAILED " +
                 "event for the non-responding pillar and an IDENTIFICATION_COMPLETE event should be generated.");
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_TIMEOUT);
-        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_FAILED);
+        assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_FAILED);
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
 
         addStep("The client should proceed to send a putFileOperation request to the responding pillar.",
@@ -214,7 +218,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
-    @Test(groups={"regressiontest"})
+    @Test @Tag("regressiontest")
     public void onePillarRespondingWithPartialPutDisallowed() throws Exception {
         addDescription("Tests the handling of missing identification responses from one pillar, " +
                 "when partial put are allowed");
@@ -245,12 +249,12 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                 "event for the non-responding pillar, an IDENTIFICATION_COMPLETE and " +
                 "lastly a OperationEventType.FAILED event should be generated.");
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_TIMEOUT);
-        Assert.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_FAILED);
+        assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_FAILED);
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
 
     }
 
-    @Test(groups={"regressiontest"})
+    @Test @Tag("regressiontest")
     public void putClientOperationTimeout() throws Exception {
         addDescription("Tests the handling of a failed operation for the PutClient");
         addStep("Initialise the number of pillars and the PutClient. Sets the operation timeout to 100 ms.",
@@ -291,7 +295,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
-    @Test(groups={"regressiontest"})
+    @Test @Tag("regressiontest")
     public void putClientPillarOperationFailed() throws Exception {
         addDescription("Tests the handling of a operation failure for the PutClient. ");
         addStep("Initialise the number of pillars to one", "Should be OK.");
@@ -339,7 +343,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
-    @Test(groups={"regressiontest"})
+    @Test @Tag("regressiontest")
     public void fileExistsOnPillarNoChecksumFromPillar() throws Exception {
         addDescription("Tests that PutClient handles the presence of a file correctly, when the pillar doesn't return a " +
                 "checksum in the identification response. ");
@@ -372,7 +376,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
-    @Test(groups={"regressiontest"})
+    @Test @Tag("regressiontest")
     public void fileExistsOnPillarDifferentChecksumFromPillar() throws Exception {
         addDescription("Tests that PutClient handles the presence of a file correctly, when the pillar " +
                 "returns a checksum different from the file being put. ");
@@ -410,7 +414,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
-    @Test(groups={"regressiontest"})
+    @Test @Tag("regressiontest")
     public void sameFileExistsOnOnePillar() throws Exception {
         addDescription("Tests that PutClient handles the presence of a file correctly, when the pillar " +
                 "returns a checksum equal the file being put (idempotent).");
@@ -465,7 +469,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPLETE);
     }
 
-    @Test(groups={"regressiontest"})
+    @Test @Tag("regressiontest")
     public void fileExistsOnPillarChecksumFromPillarNoClientChecksum() throws Exception {
         addDescription("Tests that PutClient handles the presence of a file correctly, when the pillar " +
                 "returns a checksum but the putFile was called without a checksum. ");
@@ -501,7 +505,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
-    @Test(groups={"regressiontest"})
+    @Test @Tag("regressiontest")
     public void saltedReturnChecksumsWithChecksumPillar() throws Exception {
         addDescription("Tests that PutClient handles the presence of a ChecksumPillar correctly, when a salted return" +
                 " checksum (which a checksum pillar can't provide) is requested. ");
@@ -548,7 +552,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
         PutFileRequest receivedPutFileRequest1 = pillar1Receiver.waitForMessage(PutFileRequest.class);
-        Assert.assertNull(receivedPutFileRequest1.getChecksumRequestForNewFile());
+        Assertions.assertNull(receivedPutFileRequest1.getChecksumRequestForNewFile());
 
         PutFileRequest receivedPutFileRequest2 =
                 pillar2Receiver.waitForMessage(PutFileRequest.class);
@@ -556,7 +560,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
     }
 
-    @Test(groups={"regressiontest"})
+    @Test @Tag("regressiontest")
     public void defaultReturnChecksumsWithChecksumPillar() throws Exception {
         addDescription("Tests that PutClient handles the presence of a ChecksumPillar correctly, when a return" +
                 " checksum of default type is requested (which a checksum pillar can provide). ");
@@ -607,7 +611,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         assertEquals(receivedPutFileRequest2.getChecksumRequestForNewFile(), checksumSpecTYPE);
     }
 
-    @Test(groups={"regressiontest"})
+    @Test @Tag("regressiontest")
     public void noReturnChecksumsWithChecksumPillar() throws Exception {
         addDescription("Tests that PutClient handles the presence of a ChecksumPillar correctly, when no return" +
                 " checksum is requested.");
@@ -647,13 +651,13 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
         PutFileRequest receivedPutFileRequest1 = pillar1Receiver.waitForMessage(PutFileRequest.class);
-        Assert.assertNull(receivedPutFileRequest1.getChecksumRequestForNewFile());
+        Assertions.assertNull(receivedPutFileRequest1.getChecksumRequestForNewFile());
 
         PutFileRequest receivedPutFileRequest2 = pillar2Receiver.waitForMessage(PutFileRequest.class);
-        Assert.assertNull(receivedPutFileRequest2.getChecksumRequestForNewFile());
+        Assertions.assertNull(receivedPutFileRequest2.getChecksumRequestForNewFile());
     }
  
-    @Test(groups={"regressiontest"})
+    @Test @Tag("regressiontest")
     public void onePillarPutRetrySuccess() throws Exception {
         addReference("<a href=https://sbforge.org/jira/browse/BITMAG-810>" +
                 "BITMAG-810 Reference client should be able to retry failed file transfers</a>");
@@ -705,7 +709,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPLETE);
     }
 
-    @Test(groups={"regressiontest"})
+    @Test @Tag("regressiontest")
     public void onePillarPutRetryFailure() throws Exception {
         addReference("<a href=https://sbforge.org/jira/browse/BITMAG-810>" +
                 "BITMAG-810 Reference client should be able to retry failed file transfers</a>");
@@ -768,7 +772,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
-    @Test(groups={"regressiontest"})
+    @Test @Tag("regressiontest")
     public void putToOtherCollection() throws Exception {
         addReference("<a href=https://sbforge.org/jira/browse/BITMAG-925>" +
                 "BITMAG-925 Client will always try to put to the pillars defined in the first collection</a>");

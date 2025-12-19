@@ -57,9 +57,11 @@ import org.bitrepository.client.TestEventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.protocol.bus.MessageReceiver;
-import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 
 import java.math.BigInteger;
 import java.net.URL;
@@ -67,7 +69,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 
-import static org.testng.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 /**
  * Test class for the 'GetFileClient'.
@@ -82,20 +85,21 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
         DEFAULT_CHECKSUM_SPECS.setChecksumType(ChecksumType.MD5);
     }
 
-    @BeforeMethod (alwaysRun=true)
+    @BeforeEach
     public void beforeMethodSetup() throws Exception {
         messageFactory = new TestGetChecksumsMessageFactory(settingsForTestClient.getComponentID());
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void verifyGetChecksumsClientFromFactory() throws Exception {
-        Assert.assertTrue(AccessComponentFactory.getInstance().createGetChecksumsClient(settingsForCUT, securityManager,
+        Assertions.assertTrue(AccessComponentFactory.getInstance().createGetChecksumsClient(settingsForCUT, securityManager,
                 settingsForTestClient.getComponentID()) instanceof ConversationBasedGetChecksumsClient,
                 "The default GetFileClient from the Access factory should be of the type '" +
                         ConversationBasedGetChecksumsClient.class.getName() + "'.");
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void getChecksumsFromSinglePillar() throws Exception {
         addDescription("Tests that the client can retrieve checksums from a single pillar.");
 
@@ -154,7 +158,7 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPLETE);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void getChecksumsDeliveredAtUrl() throws Exception {
         addDescription("Tests the delivery of checksums from all pillars at a given URL.");
 
@@ -213,7 +217,7 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPLETE);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void testNoSuchFile() throws Exception {
         addDescription("Testing how a request for a non-existing file is handled.");
         addStep("Setting up variables and such.", "Should be OK.");
@@ -267,7 +271,7 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
     }
 
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void testPaging() throws Exception {
         addDescription("Tests the GetChecksums client correctly handles functionality for limiting results, either by " +
                 "timestamp or result count.");
@@ -317,7 +321,7 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
                 "Unexpected MaxNumberOfResults in GetChecksumsRequest to pillar2.");
     }
 
-    @Test(groups={"regressiontest"})
+    @Test @Tag("regressiontest")
     public void getChecksumsFromOtherCollection() throws Exception {
         addDescription("Tests the getChecksums client will correctly try to get from a second collection if required");
         addFixture("Configure collection1 to contain both pillars and collection 2 to only contain pillar2");

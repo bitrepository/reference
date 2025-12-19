@@ -37,10 +37,13 @@ import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.workflow.Workflow;
 import org.bitrepository.settings.referencesettings.ProtocolType;
 import org.jaccept.structure.ExtendedTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+
+
 
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
@@ -78,7 +81,7 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
     protected IntegrityModel model;
     protected AuditTrailManager auditManager;
     
-    @BeforeMethod (alwaysRun = true)
+    @BeforeEach
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("IntegrityWorkflowTest");
 
@@ -102,7 +105,8 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
         auditManager = mock(AuditTrailManager.class);
     }
 
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test
+    @Tag("regressiontest") @Tag("integritytest")
     public void testNoMissingFiles() {
         addDescription("Test that the workflow does nothing, when it has no missing files.");
         addStep("Prepare for calls to mocks", "");
@@ -125,7 +129,7 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
         verifyNoMoreInteractions(model);
     }
     
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test @Tag("regressiontest") @Tag("integritytest")
     public void testSuccessRepair() {
         addDescription("Test that the workflow makes calls to the collector, when a file is missing");
         addStep("Prepare for calls to mocks to handle a repair", "");
@@ -173,7 +177,7 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
         verifyNoMoreInteractions(model);
     }
     
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test @Tag("regressiontest") @Tag("integritytest")
     public void testFailedGetFile() {
         addDescription("Test that the workflow does not try to put a file, if it fails to get it.");
         addStep("Prepare for calls to mocks to fail when performing get-file", "");
@@ -213,7 +217,7 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
         verifyNoMoreInteractions(model);
     }
     
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test @Tag("regressiontest") @Tag("integritytest")
     public void testFailedPutFile() {
         addDescription("Test that the workflow makes calls to the collector for get and put file, even when put file fails.");
         addStep("Prepare for calls to mocks", "");

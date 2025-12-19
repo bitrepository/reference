@@ -55,8 +55,10 @@ import org.bitrepository.integrityservice.workflow.step.UpdateChecksumsStep;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.service.exception.WorkflowAbortedException;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
@@ -69,6 +71,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -77,7 +80,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static org.testng.Assert.assertEquals;
+
 
 public class MissingChecksumTests extends ExtendedTestCase {
     private static final String PILLAR_1 = "pillar1";
@@ -95,7 +98,7 @@ public class MissingChecksumTests extends ExtendedTestCase {
     
     IntegrityReporter reporter;
     
-    @BeforeMethod (alwaysRun = true)
+    @BeforeEach
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("IntegrityCheckingUnderTest");
 
@@ -124,7 +127,8 @@ public class MissingChecksumTests extends ExtendedTestCase {
         SettingsUtils.initialize(settings);
     }
 
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test
+    @Tag("regressiontest") @Tag("integritytest")
     public void testMissingChecksumAndStep() throws Exception {
         addDescription("Test that files initially are set to checksum-state unknown, and to missing in the "
                 + "missing checksum step.");
@@ -142,7 +146,7 @@ public class MissingChecksumTests extends ExtendedTestCase {
         }
     }
 
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test @Tag("regressiontest") @Tag("integritytest")
     public void testMissingChecksumForFirstGetChecksums() throws WorkflowAbortedException {
         addDescription("Test that checksums are set to missing, when not found during GetChecksum.");
         addStep("Ingest file to database", "");
@@ -187,7 +191,7 @@ public class MissingChecksumTests extends ExtendedTestCase {
         assertEquals(missingChecksumsPillar2.get(0), TEST_FILE_1);
     }
 
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test @Tag("regressiontest") @Tag("integritytest")
     public void testMissingChecksumDuringSecondIngest() throws WorkflowAbortedException {
         addDescription("Test that checksums are set to missing, when not found during GetChecksum, "
                 + "even though they have been found before.");

@@ -22,17 +22,20 @@
 package org.bitrepository.access.getaudittrails;
 
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 
 public class AuditTrailQueryTest extends ExtendedTestCase {
     private static final int DEFAULT_MAX_NUMBER_OF_RESULTS = 10000;
 
     String componentId = "componentId";
     
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void testNoSequenceNumbers() throws Exception {
         addDescription("Test that a AuditTrailQuery can be created without any sequence numbers.");
         AuditTrailQuery query = new AuditTrailQuery(componentId, null, null, DEFAULT_MAX_NUMBER_OF_RESULTS);
@@ -41,7 +44,8 @@ public class AuditTrailQueryTest extends ExtendedTestCase {
         assertNull(query.getMinSequenceNumber());
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void testOnlyMinSequenceNumber() throws Exception {
         addDescription("Test the creation of a AuditTrailQuery with only the minSequenceNumber");
         Long minSeq = 1L;
@@ -51,7 +55,7 @@ public class AuditTrailQueryTest extends ExtendedTestCase {
         assertNull(query.getMaxSequenceNumber());
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test @Tag("regressiontest")
     public void testBothSequenceNumberSuccess() throws Exception {
         addDescription("Test the creation of a AuditTrailQuery with both SequenceNumber, where max is larger than min.");
         Long minSeq = 1L;
@@ -62,11 +66,13 @@ public class AuditTrailQueryTest extends ExtendedTestCase {
         assertEquals(query.getMaxSequenceNumber(), maxSeq);
     }
     
-    @Test(groups = {"regressiontest"}, expectedExceptions=IllegalArgumentException.class)
+    @Test @Tag("regressiontest")
     public void testBothSequenceNumberFailure() throws Exception {
-        addDescription("Test the creation of a AuditTrailQuery with both SequenceNumber, where max is smalle than min.");
-        Long minSeq = 2L;
-        Long maxSeq = 1L;
-        new AuditTrailQuery(componentId, minSeq, maxSeq, DEFAULT_MAX_NUMBER_OF_RESULTS);
+        assertThrows(IllegalArgumentException.class, () -> {
+            addDescription("Test the creation of a AuditTrailQuery with both SequenceNumber, where max is smalle than min.");
+            Long minSeq = 2L;
+            Long maxSeq = 1L;
+            new AuditTrailQuery(componentId, minSeq, maxSeq, DEFAULT_MAX_NUMBER_OF_RESULTS);
+        });
     }
 }

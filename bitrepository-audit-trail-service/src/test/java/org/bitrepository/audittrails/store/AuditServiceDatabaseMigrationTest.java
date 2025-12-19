@@ -29,15 +29,15 @@ import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+
+
+
 
 import java.io.File;
 
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDIT_TRAIL_TABLE;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.DATABASE_VERSION_ENTRY;
-import static org.testng.Assert.assertEquals;
+
 
 // TODO: cannot test migration of version 1 to 2, since it requires a collection id.
 // Therefore this is only tested with version 2 of the database.
@@ -68,7 +68,7 @@ public class AuditServiceDatabaseMigrationTest extends ExtendedTestCase {
         FileUtils.deleteDirIfExists(new File(PATH_TO_DATABASE_UNPACKED));
     }
     
-    @Test( groups = {"regressiontest", "databasetest"})
+    @Test @Tag("regressiontest", "databasetest"})
     public void testMigratingAuditServiceDatabase() {
         addDescription("Tests that the database can be migrated to latest version with the provided scripts.");
         DBConnector connector = new DBConnector(
