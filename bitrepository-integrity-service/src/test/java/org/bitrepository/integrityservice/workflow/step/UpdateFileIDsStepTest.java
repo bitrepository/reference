@@ -41,12 +41,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import java.math.BigInteger;
-import java.util.HashSet;
-import java.util.List;
 
-import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+
+import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.HashSet;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -76,7 +76,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
                 any(EventHandler.class));
 
         when(integrityContributors.getActiveContributors())
-            .thenReturn(new HashSet<>(List.of(TEST_PILLAR_1))).thenReturn(new HashSet<>());
+            .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1))).thenReturn(new HashSet<>());
         
         UpdateFileIDsStep step = new FullUpdateFileIDsStep(collector, model, alerter, settings, TEST_COLLECTION, 
                 integrityContributors);
@@ -87,8 +87,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
         verifyNoMoreInteractions(alerter);
     }
     
-    @Test
-    @Tag("regressiontest")
+    @Test @Tag("regressiontest")
     public void testAbortWorkflowWhenNegativeReply() {
         addDescription("Test the step for updating the file ids will throw an WorkflowAbortedException"
                 + "when AbortOnFailedContributor is set to true and a FAILED event is received.");
@@ -104,9 +103,9 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
                 any(EventHandler.class));
         
         when(integrityContributors.getActiveContributors())
-            .thenReturn(new HashSet<>(List.of(TEST_PILLAR_1)))
+            .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1)))
             .thenReturn(new HashSet<>());
-        when(integrityContributors.getFailedContributors()).thenReturn(new HashSet<>(List.of(TEST_PILLAR_1)));
+        when(integrityContributors.getFailedContributors()).thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1)));
                 
         settings.getReferenceSettings().getIntegrityServiceSettings().setAbortOnFailedContributor(true);
         UpdateFileIDsStep step = new FullUpdateFileIDsStep(collector, model, alerter, settings, TEST_COLLECTION, 
@@ -126,8 +125,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
         verify(alerter).integrityFailed(anyString(), anyString());
     }
 
-    @Test
-    @Tag("regressiontest")
+    @Test @Tag("regressiontest")
     public void testRetryCollectionWhenNegativeReply() throws WorkflowAbortedException {
         addDescription("Test the step for updating the file ids will retry on a FAILED event");
         final ResultingFileIDs resultingFileIDs = createResultingFileIDs(TEST_FILE_1);
@@ -140,7 +138,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
                     eventHandler.handleEvent(new ContributorFailedEvent(TEST_PILLAR_1, TEST_COLLECTION, ResponseCode.FAILURE));
                     eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "Operation failed", null));
                 } else {
-                    eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, List.of(TEST_PILLAR_1)));
+                    eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(TEST_PILLAR_1)));
                     eventHandler.handleEvent(new FileIDsCompletePillarEvent(
                             TEST_PILLAR_1, TEST_COLLECTION, resultingFileIDs, false));
                     eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
@@ -153,8 +151,8 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
                 any(EventHandler.class));
         
         when(integrityContributors.getActiveContributors())
-            .thenReturn(new HashSet<>(List.of(TEST_PILLAR_1)))
-            .thenReturn(new HashSet<>(List.of(TEST_PILLAR_1)))
+            .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1)))
+            .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1)))
             .thenReturn(new HashSet<>());
         when(integrityContributors.getFailedContributors()).thenReturn(new HashSet<>());
                 
@@ -171,8 +169,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
         verify(integrityContributors).finishContributor(eq(TEST_PILLAR_1));
     }
     
-    @Test
-    @Tag("regressiontest")
+    @Test @Tag("regressiontest")
     public void testContinueWorkflowWhenNegativeReply() throws WorkflowAbortedException {
         addDescription("Test the step for updating the file ids will continue when getting an FAILED operation event"
                 + " when AbortOnFailedContributor is set to false");
@@ -188,8 +185,8 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
                 any(EventHandler.class));
         
         when(integrityContributors.getActiveContributors())
-            .thenReturn(new HashSet<>(List.of(TEST_PILLAR_1))).thenReturn(new HashSet<>());
-        when(integrityContributors.getFailedContributors()).thenReturn(new HashSet<>(List.of(TEST_PILLAR_1)));
+            .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1))).thenReturn(new HashSet<>());
+        when(integrityContributors.getFailedContributors()).thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1)));
         
         settings.getReferenceSettings().getIntegrityServiceSettings().setAbortOnFailedContributor(false);
         UpdateFileIDsStep step = new FullUpdateFileIDsStep(collector, model, alerter, settings, TEST_COLLECTION, 
@@ -205,15 +202,14 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
 
     
 
-    @Test
-    @Tag("regressiontest")
+    @Test @Tag("regressiontest")
     public void testIngestOfResults() throws WorkflowAbortedException {
         addDescription("Test the step for updating the file ids can ingest the data correctly into the store.");
         final ResultingFileIDs resultingFileIDs = createResultingFileIDs(TEST_FILE_1);
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[4];
-                eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, List.of(TEST_PILLAR_1)));
+                eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(TEST_PILLAR_1)));
                 eventHandler.handleEvent(new FileIDsCompletePillarEvent(
                         TEST_PILLAR_1, TEST_COLLECTION, resultingFileIDs, false));
                 eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
@@ -224,7 +220,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
                 any(EventHandler.class));
         
         when(integrityContributors.getActiveContributors())
-            .thenReturn(new HashSet<>(List.of(TEST_PILLAR_1))).thenReturn(new HashSet<>());
+            .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1))).thenReturn(new HashSet<>());
 
         UpdateFileIDsStep step = new FullUpdateFileIDsStep(collector, model, alerter, settings, TEST_COLLECTION, 
                 integrityContributors);
@@ -234,8 +230,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
     }
 
 
-    @Test
-    @Tag("regressiontest")
+    @Test @Tag("regressiontest")
     public void testPartialResults() throws WorkflowAbortedException {
         addDescription("Test that the number of partial is used for generating more than one request.");
         final ResultingFileIDs resultingFileIDs = createResultingFileIDs(TEST_FILE_1);
@@ -247,7 +242,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
             boolean firstPage = true;
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[4];
-                eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, List.of(TEST_PILLAR_1)));
+                eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(TEST_PILLAR_1)));
                 eventHandler.handleEvent(
                         new FileIDsCompletePillarEvent(TEST_PILLAR_1, TEST_COLLECTION, resultingFileIDs, firstPage));
                 firstPage = false;
@@ -261,8 +256,8 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
                 any(EventHandler.class));
 
         when(integrityContributors.getActiveContributors())
-            .thenReturn(new HashSet<>(List.of(TEST_PILLAR_1)))
-            .thenReturn(new HashSet<>(List.of(TEST_PILLAR_1)))
+            .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1)))
+            .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1)))
             .thenReturn(new HashSet<>());
 
         UpdateFileIDsStep step = new FullUpdateFileIDsStep(collector, model, alerter, settings, TEST_COLLECTION, 

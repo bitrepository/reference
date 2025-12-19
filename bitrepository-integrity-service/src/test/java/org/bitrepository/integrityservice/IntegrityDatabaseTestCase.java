@@ -33,14 +33,16 @@ import org.bitrepository.integrityservice.cache.database.IntegrityDatabaseCreato
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
+import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import java.math.BigInteger;
 import java.util.List;
 
-public abstract class IntegrityDatabaseTestCase {
+public abstract class IntegrityDatabaseTestCase extends ExtendedTestCase {
     protected Settings settings;
     
     @BeforeEach
@@ -58,13 +60,13 @@ public abstract class IntegrityDatabaseTestCase {
     @AfterEach
     public void clearDatabase() throws Exception {
         DBConnector connector = new DBConnector(settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
-        DatabaseUtils.executeStatement(connector, "DELETE FROM fileinfo");
-        DatabaseUtils.executeStatement(connector, "DELETE FROM collection_progress");
-        DatabaseUtils.executeStatement(connector, "DELETE FROM pillarstats");
-        DatabaseUtils.executeStatement(connector, "DELETE FROM collectionstats");
-        DatabaseUtils.executeStatement(connector, "DELETE FROM stats");
-        DatabaseUtils.executeStatement(connector, "DELETE FROM pillar");
-        DatabaseUtils.executeStatement(connector, "DELETE FROM collections");
+        DatabaseUtils.executeStatement(connector, "DELETE FROM fileinfo", new Object[0]);
+        DatabaseUtils.executeStatement(connector, "DELETE FROM collection_progress", new Object[0]);
+        DatabaseUtils.executeStatement(connector, "DELETE FROM pillarstats", new Object[0]);
+        DatabaseUtils.executeStatement(connector, "DELETE FROM collectionstats", new Object[0]);
+        DatabaseUtils.executeStatement(connector, "DELETE FROM stats", new Object[0]);
+        DatabaseUtils.executeStatement(connector, "DELETE FROM pillar", new Object[0]);
+        DatabaseUtils.executeStatement(connector, "DELETE FROM collections", new Object[0]);
     }
     
     /**

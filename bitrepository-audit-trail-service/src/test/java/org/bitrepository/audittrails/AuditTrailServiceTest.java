@@ -26,7 +26,6 @@ import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
 import org.bitrepository.audittrails.collector.AuditTrailCollector;
 import org.bitrepository.audittrails.store.AuditTrailStore;
-import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.ResultingAuditTrails;
@@ -35,18 +34,15 @@ import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.DefaultThreadFactory;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
-import org.bitrepository.common.utils.AllureTestUtils;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.contributor.ContributorMediator;
 import org.bitrepository.settings.repositorysettings.Collection;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.jaccept.structure.ExtendedTestCase;
 import org.mockito.ArgumentCaptor;
 
+
+
 import javax.xml.datatype.DatatypeFactory;
-import java.math.BigInteger;
 import java.util.concurrent.ThreadFactory;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -57,8 +53,7 @@ import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class AuditTrailServiceTest {
+public class AuditTrailServiceTest extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup. */
     Settings settings;
 
@@ -66,7 +61,8 @@ public class AuditTrailServiceTest {
     public static final String DEFAULT_CONTRIBUTOR = "Contributor1";
     private ThreadFactory threadFactory;
 
-    @BeforeAll
+
+    @BeforeClass(alwaysRun = true)
     public void setup() {
         settings = TestSettingsProvider.reloadSettings("AuditTrailServiceUnderTest");
         Collection c = settings.getRepositorySettings().getCollections().getCollection().get(0);
@@ -76,10 +72,9 @@ public class AuditTrailServiceTest {
         threadFactory = new DefaultThreadFactory(this.getClass().getSimpleName(), Thread.NORM_PRIORITY);
     }
 
-    @Test
-    @Tag("unstable")
+    @Test @Tag("unstable"})
     public void auditTrailServiceTest() throws Exception {
-        AllureTestUtils.addDescription("Test the Audit Trail Service");
+        addDescription("Test the Audit Trail Service");
         DatatypeFactory factory = DatatypeFactory.newInstance();
         settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().clear();
         settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs()
@@ -96,11 +91,11 @@ public class AuditTrailServiceTest {
         ContributorMediator mediator = mock(ContributorMediator.class);
         AuditTrailCollector collector = new AuditTrailCollector(settings, client, store, alarmDispatcher);
 
-        AllureTestUtils.addStep("Instantiate the service.", "Should work.");
+        addStep("Instantiate the service.", "Should work.");
         AuditTrailService service = new AuditTrailService(store, collector, mediator, settings);
         service.start();
 
-        AllureTestUtils.addStep("Try to collect audit trails.", "Should make a call to the client.");
+        addStep("Try to collect audit trails.", "Should make a call to the client.");
         CollectionRunner collectionRunner = new CollectionRunner(service);
         Thread t = threadFactory.newThread(collectionRunner);
         t.start();
@@ -109,33 +104,26 @@ public class AuditTrailServiceTest {
         verify(client, timeout(3000).times(1)).getAuditTrails(eq(TEST_COLLECTION), any(AuditTrailQuery[].class),
                 isNull(), isNull(), eventHandlerCaptor.capture(), any(String.class));
 
-        ResultingAuditTrails resultingAuditTrails = new ResultingAuditTrails();
-        AuditTrailEvents events = new AuditTrailEvents();
-        AuditTrailEvent auditEvent = new AuditTrailEvent();
-        auditEvent.setSequenceNumber(BigInteger.ONE);
-        events.getAuditTrailEvent().add(auditEvent);
-        resultingAuditTrails.setAuditTrailEvents(events);
-        AuditTrailResult event = new AuditTrailResult(DEFAULT_CONTRIBUTOR, TEST_COLLECTION, resultingAuditTrails,
+        AuditTrailResult event = new AuditTrailResult(DEFAULT_CONTRIBUTOR, TEST_COLLECTION, new ResultingAuditTrails(),
                 false);
         eventHandlerCaptor.getValue().handleEvent(event);
         eventHandlerCaptor.getValue().handleEvent(new CompleteEvent(TEST_COLLECTION, null));
 
-        AllureTestUtils.addStep("Retrieve audit trails with and without an action", "Should work.");
+        addStep("Retrieve audit trails with and without an action", "Should work.");
 
         verify(store, times(1)).addAuditTrails(any(AuditTrailEvents.class), eq(TEST_COLLECTION),
                 eq(DEFAULT_CONTRIBUTOR));
-        service.queryAuditTrailEventsByIterator(null, null, null, null,
-                null, null, null, null, null, 10000);
-        verify(store, times(1)).getAuditTrailsByIterator(isNull(), isNull(), isNull(), isNull(),
-                isNull(), isNull(), isNull(), isNull(), isNull(), isNull(), isNull(), eq(10000));
-        service.queryAuditTrailEventsByIterator(null, null, null, null,
-                null, null, FileAction.FAILURE, null, null, 100);
-        verify(store, times(1)).getAuditTrailsByIterator(isNull(), isNull(), isNull(), isNull(),
-                isNull(), isNull(), eq(FileAction.FAILURE), isNull(), isNull(), isNull(), isNull(), eq(100));
+        service.queryAuditTrailEventsByIterator(null, null, null, null, null, null, null, null, null, 10000);
+        verify(store, times(1)).getAuditTrailsByIterator(isNull(), isNull(), isNull(), isNull(), isNull(), isNull(),
+                isNull(), isNull(), isNull(), isNull(), isNull(), 10000);
+        service.queryAuditTrailEventsByIterator(null, null, null, null, null, null, FileAction.FAILURE, null, null, 100);
+        verify(store, times(1)).getAuditTrailsByIterator(isNull(), isNull(), isNull(), isNull(), isNull(), isNull(),
+                eq(FileAction.FAILURE), isNull(), isNull(), isNull(), isNull(), 100);
 
-        AllureTestUtils.addStep("Shutdown", "");
+        addStep("Shutdown", "");
         service.shutdown();
     }
+
 
     public static class CollectionRunner implements Runnable {
         private final AuditTrailService service;

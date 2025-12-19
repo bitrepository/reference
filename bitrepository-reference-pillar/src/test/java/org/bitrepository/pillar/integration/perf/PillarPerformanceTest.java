@@ -37,7 +37,6 @@ import org.bitrepository.protocol.bus.MessageReceiver;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -47,6 +46,13 @@ public class PillarPerformanceTest extends PillarIntegrationTest {
     protected final Logger log = LoggerFactory.getLogger(getClass());
     protected List<MetricAppender> metricAppenders = new LinkedList<>();
     protected String[] existingFiles;
+
+    @BeforeSuite
+    @Override
+    public void initializeSuite(ITestContext testContext) {
+        super.initializeSuite(testContext);
+        defineMetricAppenders();
+    }
 
     private void defineMetricAppenders() {
         MetricAppender consoleAppender = new ConsoleMetricAppender();

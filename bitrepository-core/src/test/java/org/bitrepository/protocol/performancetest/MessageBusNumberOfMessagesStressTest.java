@@ -64,7 +64,8 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
      * Tests the amount of messages sent over a message bus, which is not placed locally.
      * Require sending at least five messages per second.
      */
-    @Test @Tag("StressTest")
+    @Test
+    @Tag("StressTest")
     public void SendManyMessagesDistributed() throws Exception {
         addDescription("Tests how many messages can be handled within a given timeframe.");
         addStep("Define constants", "This should not be possible to fail.");

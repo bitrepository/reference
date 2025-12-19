@@ -27,7 +27,11 @@ import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResultingChecksums;
-import org.bitrepository.client.eventhandler.*;
+import org.bitrepository.client.eventhandler.CompleteEvent;
+import org.bitrepository.client.eventhandler.ContributorEvent;
+import org.bitrepository.client.eventhandler.ContributorFailedEvent;
+import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.Base16Utils;
@@ -38,15 +42,16 @@ import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.workflow.Workflow;
+import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
 
+
+
 import java.util.Arrays;
 
-import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -58,7 +63,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-public class SaltedChecksumWorkflowTest {
+public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
 
     private static final String PILLAR_1 = "pillar1";
     private static final String PILLAR_2 = "pillar2";
@@ -159,8 +164,7 @@ public class SaltedChecksumWorkflowTest {
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("integritytest")
+    @Tag("regressiontest") @Tag("integritytest")
     public void testOneComponentFailureAndTwoOtherAgreeOnChecksum() {
         addDescription("Test that the workflow works when both pillars deliver the same checksum.");
         addStep("Prepare for calls to mocks", "");
@@ -224,8 +228,7 @@ public class SaltedChecksumWorkflowTest {
             eventHandler.handleEvent(e1);
             eventHandler.handleEvent(e2);
             eventHandler.handleEvent(e3);
-            eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "COMPONENT FAILED",
-                    Arrays.asList(e1, e2, e3)));
+            eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "COMPONENT FAILED", Arrays.asList(e1, e2, e3)));
             return null;
         }).when(collector).getChecksums(anyString(), any(), any(), anyString(), anyString(), any(), any(EventHandler.class));
 
@@ -246,14 +249,12 @@ public class SaltedChecksumWorkflowTest {
         verify(model).getFileIDAtPosition(eq(TEST_COLLECTION), eq(0L));
         verifyNoMoreInteractions(model);
 
-        verify(auditManager).addAuditEvent(eq(TEST_COLLECTION), anyString(), anyString(), anyString(), anyString(),
-                any(), any(), any());
+        verify(auditManager).addAuditEvent(eq(TEST_COLLECTION), anyString(), anyString(), anyString(), anyString(), any(), any(), any());
         verifyNoMoreInteractions(auditManager);
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("integritytest")
+    @Tag("regressiontest") @Tag("integritytest")
     public void testInconsistentChecksums() {
         addDescription("Test that the workflow discovers and handles inconsistent checksums");
         addStep("Prepare for calls to mocks", "");
@@ -281,8 +282,7 @@ public class SaltedChecksumWorkflowTest {
         workflow.initialise(context, TEST_COLLECTION);
         workflow.start();
 
-        verify(collector).getChecksums(eq(TEST_COLLECTION), any(), any(), anyString(), anyString(), any(),
-                any(EventHandler.class));
+        verify(collector).getChecksums(eq(TEST_COLLECTION), any(), any(), anyString(), anyString(), any(), any(EventHandler.class));
         verifyNoMoreInteractions(collector);
 
         verify(model).getNumberOfFilesInCollection(eq(TEST_COLLECTION));
@@ -310,8 +310,7 @@ public class SaltedChecksumWorkflowTest {
             EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
             eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "", null));
             return null;
-        }).when(collector).getChecksums(anyString(), any(), any(), anyString(), anyString(), any(),
-                any(EventHandler.class));
+        }).when(collector).getChecksums(anyString(), any(), any(), anyString(), anyString(), any(), any(EventHandler.class));
 
         addStep("Run workflow for checking salted checksum.", "Should send alarm about failure");
 
@@ -320,8 +319,7 @@ public class SaltedChecksumWorkflowTest {
         workflow.initialise(context, TEST_COLLECTION);
         workflow.start();
 
-        verify(collector).getChecksums(eq(TEST_COLLECTION), any(), any(), anyString(), anyString(), any(),
-                any(EventHandler.class));
+        verify(collector).getChecksums(eq(TEST_COLLECTION), any(), any(), anyString(), anyString(), any(), any(EventHandler.class));
         verifyNoMoreInteractions(collector);
 
         verify(model).getNumberOfFilesInCollection(eq(TEST_COLLECTION));

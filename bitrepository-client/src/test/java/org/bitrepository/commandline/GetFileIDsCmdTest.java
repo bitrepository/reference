@@ -5,35 +5,32 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation, either version 2.1 of the
+ * it under the terms of the GNU Lesser General Public License as 
+ * published by the Free Software Foundation, either version 2.1 of the 
  * License, or (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- *
- * You should have received a copy of the GNU General Lesser Public
+ * 
+ * You should have received a copy of the GNU General Lesser Public 
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
 package org.bitrepository.commandline;
 
-import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.client.DefaultFixtureClientTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+
 
 import java.util.Date;
 
-import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@ExtendWith(SuiteInfoParameterResolver.class)
 public class GetFileIDsCmdTest extends DefaultFixtureClientTest {
     private static final String SETTINGS_DIR = "settings/xml/bitrepository-devel";
     private static final String KEY_FILE = "KeyFile";
@@ -46,18 +43,17 @@ public class GetFileIDsCmdTest extends DefaultFixtureClientTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag( "regressiontest")
     public void defaultSuccessScenarioTest() throws Exception {
         addDescription("Tests simplest arguments for running the CmdLineClient");
-        String[] args = new String[]{"-s" + SETTINGS_DIR,
+        String[] args = new String[]{"-s" + SETTINGS_DIR, 
                 "-k" + KEY_FILE,
                 "-c" + DEFAULT_COLLECTION_ID};
         new GetFileIDsCmd(args);
     }
 
 
-    @Test
-    @Tag("regressiontest")
+    @Test @Tag( "regressiontest")
     public void missingCollectionArgumentTest() throws Exception {
         assertThrows(IllegalArgumentException.class, () -> {
             addDescription("Tests the scenario, where the collection arguments is missing.");
@@ -68,11 +64,10 @@ public class GetFileIDsCmdTest extends DefaultFixtureClientTest {
         });
     }
 
-    @Test
-    @Tag("regressiontest")
+    @Test @Tag( "regressiontest")
     public void specificPillarArgumentTest() throws Exception {
         addDescription("Test argument for a specific pillar");
-        String[] args = new String[]{"-s" + SETTINGS_DIR,
+        String[] args = new String[]{"-s" + SETTINGS_DIR, 
                 "-k" + KEY_FILE,
                 "-c" + DEFAULT_COLLECTION_ID,
                 "-p" + PILLAR1_ID,
@@ -80,8 +75,7 @@ public class GetFileIDsCmdTest extends DefaultFixtureClientTest {
         new GetFileIDsCmd(args);
     }
 
-    @Test
-    @Tag("regressiontest")
+    @Test @Tag( "regressiontest")
     public void unknownPillarArgumentTest() throws Exception {
         assertThrows(IllegalArgumentException.class, () -> {
             addDescription("Testing against a non-existing pillar id -> Should fail");
@@ -94,11 +88,10 @@ public class GetFileIDsCmdTest extends DefaultFixtureClientTest {
         });
     }
 
-    @Test
-    @Tag("regressiontest")
+    @Test @Tag( "regressiontest")
     public void fileArgumentTest() throws Exception {
         addDescription("Tests the argument for a specific file.");
-        String[] args = new String[]{"-s" + SETTINGS_DIR,
+        String[] args = new String[]{"-s" + SETTINGS_DIR, 
                 "-k" + KEY_FILE,
                 "-c" + DEFAULT_COLLECTION_ID,
                 "-i" + DEFAULT_FILE_ID};

@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation, either version 2.1 of the
+ * it under the terms of the GNU Lesser General Public License as 
+ * published by the Free Software Foundation, either version 2.1 of the 
  * License, or (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- *
- * You should have received a copy of the GNU General Lesser Public
+ * 
+ * You should have received a copy of the GNU General Lesser Public 
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -37,68 +37,63 @@ import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.DefaultPillarOperationTest;
 import org.bitrepository.pillar.messagefactories.DeleteFileMessageFactory;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
 
+
+
+
+import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
 
-import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.common.utils.AllureTestUtils.addStep;
-
-class DeleteFileRequestIT extends DefaultPillarOperationTest {
+public class DeleteFileRequestIT extends DefaultPillarOperationTest {
     protected DeleteFileMessageFactory msgFactory;
     private String pillarDestination;
 
-    @BeforeEach
-    void initialiseReferenceTest() throws Exception {
+    @BeforeMethod(alwaysRun=true)
+    public void initialiseReferenceTest(Method method) throws Exception {
         pillarDestination = lookupDeleteFileDestination();
         msgFactory = new DeleteFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), pillarDestination);
         clientProvider.getPutClient().putFile(
-                collectionID, defaultFileUrl, testSpecificFileID, 10L, TestFileHelper.getDefaultFileChecksum(),
+                collectionID, DEFAULT_FILE_URL, testSpecificFileID, 10L, TestFileHelper.getDefaultFileChecksum(),
                 null, null, null);
         clientProvider.getPutClient().putFile(
-                nonDefaultCollectionId, defaultFileUrl, testSpecificFileID, 10L, TestFileHelper.getDefaultFileChecksum(),
+                nonDefaultCollectionId, DEFAULT_FILE_URL, testSpecificFileID, 10L, TestFileHelper.getDefaultFileChecksum(),
                 null, null, null);
     }
 
-    @Test
-    @Tag(PillarTestGroups.FULL_PILLAR_TEST)
-    @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    void normalDeleteFileTest() {
+    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
+    public void normalDeleteFileTest() {
         addDescription("Tests a normal DeleteFile sequence");
         addStep("Send a DeleteFile request to " + testConfiguration.getPillarUnderTestID(),
                 "The pillar should generate a OPERATION_ACCEPTED_PROGRESS progress response followed by a " +
-                        "OPERATION_COMPLETED final response");
+                "OPERATION_COMPLETED final response");
         DeleteFileRequest deleteRequest = (DeleteFileRequest) createRequest();
         deleteRequest.setFileID(testSpecificFileID);
         messageBus.sendMessage(deleteRequest);
 
-        DeleteFileProgressResponse progressResponse =
-                clientReceiver.waitForMessage(DeleteFileProgressResponse.class, getOperationTimeout(), TimeUnit.SECONDS);
+        DeleteFileProgressResponse progressResponse = clientReceiver.waitForMessage(DeleteFileProgressResponse.class, getOperationTimeout(),
+                TimeUnit.SECONDS);
         Assertions.assertNotNull(progressResponse);
-        Assertions.assertEquals(deleteRequest.getCorrelationID(), progressResponse.getCorrelationID());
-        Assertions.assertEquals(getPillarID(), progressResponse.getFrom());
-        Assertions.assertEquals(getPillarID(), progressResponse.getPillarID());
-        Assertions.assertEquals(ResponseCode.OPERATION_ACCEPTED_PROGRESS, progressResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(progressResponse.getCorrelationID(), deleteRequest.getCorrelationID());
+        Assertions.assertEquals(progressResponse.getFrom(), getPillarID());
+        Assertions.assertEquals(progressResponse.getPillarID(), getPillarID());
+        Assertions.assertEquals(progressResponse.getResponseInfo().getResponseCode(),
+                ResponseCode.OPERATION_ACCEPTED_PROGRESS);
 
         DeleteFileFinalResponse finalResponse = (DeleteFileFinalResponse) receiveResponse();
         Assertions.assertNotNull(finalResponse);
-        Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
-        Assertions.assertEquals(deleteRequest.getCorrelationID(), finalResponse.getCorrelationID());
-        Assertions.assertEquals(getPillarID(), finalResponse.getFrom());
-        Assertions.assertEquals(getPillarID(), finalResponse.getPillarID());
+        Assertions.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
+        Assertions.assertEquals(finalResponse.getCorrelationID(), deleteRequest.getCorrelationID());
+        Assertions.assertEquals(finalResponse.getFrom(), getPillarID());
+        Assertions.assertEquals(finalResponse.getPillarID(), getPillarID());
     }
-
-    @Test
-    @Tag(PillarTestGroups.FULL_PILLAR_TEST)
-    void requestNewChecksumDeleteFileTest() {
+    
+    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST})
+    public void requestNewChecksumDeleteFileTest() {
         addDescription("Tests a normal DeleteFile sequence");
         addStep("Send a DeleteFile request to " + testConfiguration.getPillarUnderTestID(),
                 "The pillar should generate a OPERATION_ACCEPTED_PROGRESS progress response followed by a " +
-                        "OPERATION_COMPLETED final response");
-
+                "OPERATION_COMPLETED final response");
+        
         ChecksumSpecTYPE requestedChecksumSpec = new ChecksumSpecTYPE();
         requestedChecksumSpec.setChecksumType(ChecksumType.HMAC_MD5);
         try {
@@ -111,33 +106,29 @@ class DeleteFileRequestIT extends DefaultPillarOperationTest {
                 TestFileHelper.getDefaultFileChecksum(), requestedChecksumSpec, testSpecificFileID);
         messageBus.sendMessage(deleteRequest);
 
-        DeleteFileProgressResponse progressResponse = clientReceiver.waitForMessage(DeleteFileProgressResponse.class,
-                getOperationTimeout(), TimeUnit.SECONDS);
+        DeleteFileProgressResponse progressResponse = clientReceiver.waitForMessage(DeleteFileProgressResponse.class, getOperationTimeout(),
+                TimeUnit.SECONDS);
         Assertions.assertNotNull(progressResponse);
-        Assertions.assertEquals(deleteRequest.getCorrelationID(), progressResponse.getCorrelationID());
-        Assertions.assertEquals(getPillarID(), progressResponse.getFrom());
-        Assertions.assertEquals(getPillarID(), progressResponse.getPillarID());
-        Assertions.assertEquals(ResponseCode.OPERATION_ACCEPTED_PROGRESS, progressResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(progressResponse.getCorrelationID(), deleteRequest.getCorrelationID());
+        Assertions.assertEquals(progressResponse.getFrom(), getPillarID());
+        Assertions.assertEquals(progressResponse.getPillarID(), getPillarID());
+        Assertions.assertEquals(progressResponse.getResponseInfo().getResponseCode(),
+                ResponseCode.OPERATION_ACCEPTED_PROGRESS);
 
         DeleteFileFinalResponse finalResponse = (DeleteFileFinalResponse) receiveResponse();
         Assertions.assertNotNull(finalResponse);
-        Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
-        Assertions.assertEquals(deleteRequest.getCorrelationID(), finalResponse.getCorrelationID());
-        Assertions.assertEquals(getPillarID(), finalResponse.getFrom());
+        Assertions.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
+        Assertions.assertEquals(finalResponse.getCorrelationID(), deleteRequest.getCorrelationID());
+        Assertions.assertEquals(finalResponse.getFrom(), getPillarID());
         Assertions.assertNotNull(finalResponse.getChecksumDataForExistingFile());
-        Assertions.assertEquals(requestedChecksumSpec, finalResponse.getChecksumDataForExistingFile().getChecksumSpec());
-        Assertions.assertNotNull(finalResponse);
-        Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
-        Assertions.assertEquals(deleteRequest.getCorrelationID(), finalResponse.getCorrelationID());
-        Assertions.assertEquals(getPillarID(), finalResponse.getFrom());
-        Assertions.assertNotNull(finalResponse.getChecksumDataForExistingFile());
-        Assertions.assertEquals(requestedChecksumSpec, finalResponse.getChecksumDataForExistingFile().getChecksumSpec());
-        Assertions.assertEquals(getPillarID(), finalResponse.getPillarID());
+        Assertions.assertEquals(finalResponse.getChecksumDataForExistingFile().getChecksumSpec(), 
+                requestedChecksumSpec);
+        Assertions.assertEquals(finalResponse.getPillarID(), getPillarID());
     }
 
     @Override
     protected MessageRequest createRequest() {
-        return msgFactory.createDeleteFileRequest(TestFileHelper.getDefaultFileChecksum(), null, defaultFileId);
+        return msgFactory.createDeleteFileRequest(TestFileHelper.getDefaultFileChecksum(), null, DEFAULT_FILE_ID);
     }
 
     @Override

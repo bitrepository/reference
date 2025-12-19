@@ -26,14 +26,15 @@
 //import org.bitrepository.integrityservice.mocks.MockWorkflow;
 //import org.bitrepository.integrityservice.scheduler.TimerBasedScheduler;
 //import org.bitrepository.integrityservice.scheduler.workflow.Workflow;
-////
+//import org.jaccept.structure.ExtendedTestCase;
+//
 //
 //
 //
 ///**
 // * Test that scheduler calls triggers.
 // */
-//public class IntegrityWorkflowSchedulerTest {
+//public class IntegrityWorkflowSchedulerTest extends ExtendedTestCase {
 //    Settings settings;
 //    private final Long INTERVAL = 500L;
 //    private final Long INTERVAL_DELAY = 250L;
@@ -43,8 +44,7 @@
 //        settings = TestSettingsProvider.reloadSettings("IntegrityWorkflowSchedulerUnderTest");
 //    }
 //
-//    @Test
-//    @Tag("regressiontest", "integritytest"})
+//    @Test @Tag("regressiontest", "integritytest"})
 //    public void testSchedulerContainingWorkflows() {
 //        addDescription("Test that schedulers call all workflow at the given intervals.");
 //        addStep("Setup a scheduler and validate initial state", "No errors and no workflows");
@@ -70,8 +70,7 @@
 //        Assertions.assertFalse(scheduler.removeWorkflow(testWorkflow.getPrimitiveName()));
 //    }
 //    
-//    @Test
-//    @Tag("regressiontest", "integrationtest"})
+//    @Test @Tag("regressiontest", "integrationtest"})
 //    public void schedulerTester() throws Exception {
 //        addDescription("Tests that the scheduler is able make calls to the collector at given intervals.");
 //        addStep("Setup the variables and such.", "Should not be able to fail here.");
