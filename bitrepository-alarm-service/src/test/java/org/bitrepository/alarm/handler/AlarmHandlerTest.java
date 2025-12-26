@@ -30,6 +30,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class AlarmHandlerTest extends IntegrationTest {
     @Test @Tag("regressiontest")
     public void alarmMediatorTest() throws Exception {
@@ -38,25 +40,25 @@ public class AlarmHandlerTest extends IntegrationTest {
         AlarmMediator mediator = new AlarmMediator(messageBus, alarmDestinationID);
         MockAlarmHandler alarmHandler = new MockAlarmHandler();
         mediator.addHandler(alarmHandler);
-        Assertions.assertEquals(alarmHandler.getCallsForClose(), 0);
-        Assertions.assertEquals(alarmHandler.getCallsForHandleAlarm(), 0);
+        assertEquals(0, alarmHandler.getCallsForClose());
+        assertEquals(0, alarmHandler.getCallsForHandleAlarm());
         
         addStep("Try giving it a non-alarm message", "Should not call the alarm handler.");
         Message msg = new Message();
         mediator.onMessage(msg, null);
-        assertEquals(alarmHandler.getCallsForClose(), 0);
-        Assertions.assertEquals(alarmHandler.getCallsForHandleAlarm(), 0);
+        assertEquals(0, alarmHandler.getCallsForClose());
+        assertEquals(0, alarmHandler.getCallsForHandleAlarm());
         
         addStep("Giv the mediator an AlarmMessage", "Should be sent to the alarm handler");
         AlarmMessage alarmMsg = new AlarmMessage();
         mediator.onMessage(alarmMsg, null);
-        Assertions.assertEquals(alarmHandler.getCallsForClose(), 0);
-        Assertions.assertEquals(alarmHandler.getCallsForHandleAlarm(), 1);
+        assertEquals(0, alarmHandler.getCallsForClose());
+        assertEquals(1, alarmHandler.getCallsForHandleAlarm());
         
         addStep("Close the mediator.", "Should also close the alarm handler.");
         mediator.close();
-        Assertions.assertEquals(alarmHandler.getCallsForClose(), 1);
-        Assertions.assertEquals(alarmHandler.getCallsForHandleAlarm(), 1);
+        assertEquals(1, alarmHandler.getCallsForClose());
+        assertEquals(1, alarmHandler.getCallsForHandleAlarm());
     }
 
     protected class MockAlarmHandler implements AlarmHandler {

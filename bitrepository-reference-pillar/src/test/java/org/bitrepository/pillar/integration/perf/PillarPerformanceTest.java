@@ -47,13 +47,6 @@ public class PillarPerformanceTest extends PillarIntegrationTest {
     protected List<MetricAppender> metricAppenders = new LinkedList<>();
     protected String[] existingFiles;
 
-    @BeforeSuite
-    @Override
-    public void initializeSuite(ITestContext testContext) {
-        super.initializeSuite(testContext);
-        defineMetricAppenders();
-    }
-
     private void defineMetricAppenders() {
         MetricAppender consoleAppender = new ConsoleMetricAppender();
         consoleAppender.disableSingleMeasurement(true);

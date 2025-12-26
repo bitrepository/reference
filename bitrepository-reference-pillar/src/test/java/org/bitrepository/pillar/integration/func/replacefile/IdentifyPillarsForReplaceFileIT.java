@@ -31,19 +31,23 @@ import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.Assert;
 import org.bitrepository.pillar.integration.func.DefaultPillarIdentificationTest;
 import org.bitrepository.pillar.messagefactories.ReplaceFileMessageFactory;
-
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 
 public class IdentifyPillarsForReplaceFileIT extends DefaultPillarIdentificationTest {
     protected ReplaceFileMessageFactory msgFactory;
 
-    @BeforeMethod(alwaysRun=true)
+    @BeforeEach
     public void initialiseReferenceTest() throws Exception {
         msgFactory = new ReplaceFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
 
     }
 
-    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST})
+    @Test
+    @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     public void normalIdentificationTest() {
         addDescription("Verifies the normal behaviour for replaceFile identification");
         addStep("Sending a replaceFile identification.",
@@ -60,12 +64,13 @@ public class IdentifyPillarsForReplaceFileIT extends DefaultPillarIdentification
         Assertions.assertEquals(receivedIdentifyResponse.getFileID(), DEFAULT_FILE_ID);
         Assertions.assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
         Assertions.assertNull(receivedIdentifyResponse.getPillarChecksumSpec());
-        Assertions.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.IDENTIFICATION_POSITIVE);
+        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode());
         Assertions.assertEquals(receivedIdentifyResponse.getDestination(), identifyRequest.getReplyTo());
     }
 
-    @Test @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST})
+    @Test
+    @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
     public void identificationTestForChecksumPillar() {
         addDescription("Verifies the normal behaviour for replaceFile identification for a checksum pillar");
         addStep("Sending a replaceFile identification.",
@@ -83,12 +88,13 @@ public class IdentifyPillarsForReplaceFileIT extends DefaultPillarIdentification
         Assertions.assertEquals(receivedIdentifyResponse.getPillarChecksumSpec().getChecksumType(),
                 ChecksumUtils.getDefault(settingsForCUT).getChecksumType());
         Assertions.assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
-        Assertions.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.IDENTIFICATION_POSITIVE);
+        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode());
         Assertions.assertEquals(receivedIdentifyResponse.getDestination(), identifyRequest.getReplyTo());
     }
 
-    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
+    @Test
+    @Tag(PillarTestGroups.FULL_PILLAR_TEST) @Tag( PillarTestGroups.CHECKSUM_PILLAR_TEST)
     public void fileDoesNotExistsTest() {
         addDescription("Verifies that a request for a non-existing file is handled correctly");
         addStep("Sending a replaceFile identification for a file not in the pillar.",
@@ -99,8 +105,8 @@ public class IdentifyPillarsForReplaceFileIT extends DefaultPillarIdentification
 
         IdentifyPillarsForReplaceFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForReplaceFileResponse.class);
-        Assertions.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.FILE_NOT_FOUND_FAILURE);
+        Assertions.assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode());
     }
 
     @Override

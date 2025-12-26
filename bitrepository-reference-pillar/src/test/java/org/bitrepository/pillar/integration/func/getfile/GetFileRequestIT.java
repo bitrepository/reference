@@ -16,12 +16,14 @@ import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-
-
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -30,9 +32,9 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
-
-
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class GetFileRequestIT extends PillarFunctionTest {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -40,24 +42,26 @@ public class GetFileRequestIT extends PillarFunctionTest {
     protected URL testFileURL = null;
     protected FileExchange fe = null;
 
-    @BeforeMethod(alwaysRun=true)
-    public void initialiseReferenceTest(Method method) throws Exception {
+    @BeforeEach
+    public void initialiseReferenceTest() throws Exception {
         String pillarDestination = lookupGetFileDestination();
         msgFactory = new GetFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), pillarDestination);
         testFileURL = new URL(DEFAULT_FILE_URL.toExternalForm() + System.currentTimeMillis());
         fe = ProtocolComponentFactory.getInstance().getFileExchange(settingsForCUT);
     }
 
-    @AfterMethod(alwaysRun=true)
-    public void cleanUp(Method method) {
+    @AfterEach
+    public void cleanUp(TestInfo testInfo) {
         try {
             fe.deleteFile(testFileURL);
         } catch (Exception e) {
-            log.warn("Could not clean up file '{}' after method '{}'", testFileURL, method.getName());
+            log.warn("Could not clean up file '{}' after method '{}'", testFileURL,
+                    testInfo.getTestMethod().get().getName());
         }
     }
 
-    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST})
+    @Test
+    @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     public void normalGetFileTest() throws IOException {
         addDescription("Tests a normal GetFile sequence");
         addStep("Send a getFile request to " + testConfiguration.getPillarUnderTestID(),
@@ -97,7 +101,7 @@ public class GetFileRequestIT extends PillarFunctionTest {
                 "Received unexpected 'FileAddress' element.");
         assertEquals(finalResponse.getPillarID(), getPillarID(),
                 "Received unexpected 'PillarID' element.");
-        assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED,
+        assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode(),
                 "Received unexpected 'ResponseCode' element.");
 
         try (InputStream localFileIS = TestFileHelper.getDefaultFile();
@@ -109,7 +113,8 @@ public class GetFileRequestIT extends PillarFunctionTest {
         }
     }
 
-    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST})
+    @Test
+    @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     public void getFileWithFilePartTest() throws IOException {
         addDescription("Tests that a pillar is able to return a specified FilePart in the final response");
         addStep("Send a getFile request to " + testConfiguration.getPillarUnderTestID() + " with a specified " +
@@ -139,7 +144,8 @@ public class GetFileRequestIT extends PillarFunctionTest {
         }
     }
 
-    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST})
+    @Test
+    @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     public void getMissingFileTest() {
         addDescription("Tests that a pillar gives an error when trying to get a non-existing file");
         addStep("Send a getFile request to " + testConfiguration.getPillarUnderTestID() + " with a " +
@@ -150,11 +156,12 @@ public class GetFileRequestIT extends PillarFunctionTest {
         messageBus.sendMessage(getRequest);
 
         GetFileFinalResponse finalResponse = (GetFileFinalResponse) receiveResponse();
-        assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.FILE_NOT_FOUND_FAILURE,
+        assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE, finalResponse.getResponseInfo().getResponseCode(),
                 "Received unexpected 'ResponseCode' element.");
     }
 
-    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST} )
+    @Test
+    @Tag(PillarTestGroups.FULL_PILLAR_TEST )
     public void missingCollectionIDTest() {
         addDescription("Verifies the a missing collectionID in the request is rejected");
         addStep("Sending a request without a collectionID.",
@@ -164,11 +171,12 @@ public class GetFileRequestIT extends PillarFunctionTest {
         messageBus.sendMessage(request);
 
         MessageResponse receivedResponse = receiveResponse();
-        Assertions.assertEquals(receivedResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
+        Assertions.assertEquals(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE,
+                receivedResponse.getResponseInfo().getResponseCode());
     }
 
-    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST} )
+    @Test
+    @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     public void otherCollectionTest() {
         addDescription("Verifies identification works correctly for a second collection defined for pillar");
         addStep("Sending a identify request with a non-default collectionID (not the first collection) " +
@@ -204,7 +212,7 @@ public class GetFileRequestIT extends PillarFunctionTest {
 
     protected void assertPositivResponseIsReceived() {
         MessageResponse receivedResponse = receiveResponse();
-        Assertions.assertEquals(receivedResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.OPERATION_COMPLETED);
+        Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED,
+                receivedResponse.getResponseInfo().getResponseCode());
     }
 }

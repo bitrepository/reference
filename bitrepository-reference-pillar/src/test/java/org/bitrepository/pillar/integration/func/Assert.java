@@ -24,6 +24,8 @@ package org.bitrepository.pillar.integration.func;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 public class Assert extends org.junit.jupiter.api.Assertions {
 
     public static void assertEmpty(List<?> list2Test, String message) {

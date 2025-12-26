@@ -32,15 +32,15 @@ import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTr
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.MockedPillarTest;
 import org.bitrepository.pillar.messagefactories.GetAuditTrailsMessageFactory;
-
-
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigInteger;
 import java.util.Date;
 
-
-
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GetAuditTrailsTest extends MockedPillarTest {
     private GetAuditTrailsMessageFactory msgFactory;
@@ -51,7 +51,9 @@ public class GetAuditTrailsTest extends MockedPillarTest {
         msgFactory = new GetAuditTrailsMessageFactory(collectionID, settingsForTestClient);
     }
 
-    @Test @Tag("regressiontest", "pillartest"})
+    @Test
+    @Tag("regressiontest")
+    @Tag("pillartest")
     public void checksumPillarGetAuditTrailsSuccessful() {
         addDescription("Tests the GetAuditTrails functionality of the pillar for the successful scenario, "
                 + "where all audit trails are requested.");
@@ -71,8 +73,8 @@ public class GetAuditTrailsTest extends MockedPillarTest {
         assertEquals(receivedIdentifyResponse.getCorrelationID(), identifyRequest.getCorrelationID());
         assertEquals(receivedIdentifyResponse.getFrom(), settingsForCUT.getComponentID());
         assertEquals(receivedIdentifyResponse.getDestination(), identifyRequest.getReplyTo());
-        assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.IDENTIFICATION_POSITIVE);
+        assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode());
 
         addStep("Make and send the request for the actual GetAuditTrails operation", 
                 "Should be caught and handled by the pillar.");
@@ -87,8 +89,8 @@ public class GetAuditTrailsTest extends MockedPillarTest {
         assertEquals(progressResponse.getCorrelationID(), identifyRequest.getCorrelationID());
         assertEquals(progressResponse.getFrom(), settingsForCUT.getComponentID());
         assertEquals(receivedIdentifyResponse.getDestination(), identifyRequest.getReplyTo());
-        assertEquals(progressResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.OPERATION_ACCEPTED_PROGRESS);
+        assertEquals(ResponseCode.OPERATION_ACCEPTED_PROGRESS,
+                progressResponse.getResponseInfo().getResponseCode());
         
         addStep("Receive and validate the final response", "Should be sent by the pillar.");
         GetAuditTrailsFinalResponse finalResponse = clientReceiver.waitForMessage(GetAuditTrailsFinalResponse.class);
@@ -96,11 +98,13 @@ public class GetAuditTrailsTest extends MockedPillarTest {
         assertEquals(receivedIdentifyResponse.getCorrelationID(), identifyRequest.getCorrelationID());
         assertEquals(receivedIdentifyResponse.getFrom(), settingsForCUT.getComponentID());
         assertEquals(receivedIdentifyResponse.getDestination(), identifyRequest.getReplyTo());
-        assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
-        assertEquals(finalResponse.getResultingAuditTrails().getAuditTrailEvents().getAuditTrailEvent().size(), 1);
+        assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
+        assertEquals(1, finalResponse.getResultingAuditTrails().getAuditTrailEvents().getAuditTrailEvent().size());
     }
     
-    @Test @Tag("regressiontest", "pillartest"})
+    @Test
+    @Tag("regressiontest")
+    @Tag("pillartest")
     public void checksumPillarGetAuditTrailsSpecificRequests() {
         addDescription("Tests the GetAuditTrails functionality of the pillar for the successful scenario, "
                 + "where a specific audit trail are requested.");
@@ -128,8 +132,8 @@ public class GetAuditTrailsTest extends MockedPillarTest {
         addStep("Retrieve and validate the response.", "Should be a positive response.");
         IdentifyContributorsForGetAuditTrailsResponse identifyResponse = clientReceiver.waitForMessage(
                 IdentifyContributorsForGetAuditTrailsResponse.class);
-        assertEquals(identifyResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.IDENTIFICATION_POSITIVE);
+        assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
+                identifyResponse.getResponseInfo().getResponseCode());
 
         addStep("Make and send the request for the actual GetAuditTrails operation", 
                 "Should be caught and handled by the pillar.");
@@ -140,19 +144,19 @@ public class GetAuditTrailsTest extends MockedPillarTest {
         
         addStep("Receive and validate the progress response.", "Should be sent by the pillar.");
         GetAuditTrailsProgressResponse progressResponse = clientReceiver.waitForMessage(GetAuditTrailsProgressResponse.class);
-        assertEquals(progressResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.OPERATION_ACCEPTED_PROGRESS);
+        assertEquals(ResponseCode.OPERATION_ACCEPTED_PROGRESS,
+                progressResponse.getResponseInfo().getResponseCode());
         
         addStep("Receive and validate the final response", "Should be sent by the pillar.");
         GetAuditTrailsFinalResponse finalResponse = clientReceiver.waitForMessage(GetAuditTrailsFinalResponse.class);
-        assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
-        assertEquals(finalResponse.getResultingAuditTrails().getAuditTrailEvents().getAuditTrailEvent().size(), 1);
+        assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
+        assertEquals(1, finalResponse.getResultingAuditTrails().getAuditTrailEvents().getAuditTrailEvent().size());
         AuditTrailEvent event = finalResponse.getResultingAuditTrails().getAuditTrailEvents().getAuditTrailEvent().get(0);
-        assertEquals(event.getActorOnFile(), ACTOR);
-        assertEquals(event.getAuditTrailInformation(), AUDITTRAIL);
+        assertEquals(ACTOR, event.getActorOnFile());
+        assertEquals(AUDITTRAIL, event.getAuditTrailInformation());
         assertEquals(event.getFileID(), FILE_ID);
-        assertEquals(event.getInfo(), INFO);
-        assertEquals(event.getSequenceNumber(), BigInteger.ONE);
+        assertEquals(INFO, event.getInfo());
+        assertEquals(BigInteger.ONE, event.getSequenceNumber());
         
         addStep("Make another request, where both ingested audit trails is requested", 
                 "Should be handled by the pillar.");
@@ -162,17 +166,19 @@ public class GetAuditTrailsTest extends MockedPillarTest {
         
         addStep("Receive and validate the progress response.", "Should be sent by the pillar.");
         progressResponse = clientReceiver.waitForMessage(GetAuditTrailsProgressResponse.class);
-        assertEquals(progressResponse.getResponseInfo().getResponseCode(), 
-                ResponseCode.OPERATION_ACCEPTED_PROGRESS);
+        assertEquals(ResponseCode.OPERATION_ACCEPTED_PROGRESS,
+                progressResponse.getResponseInfo().getResponseCode());
         
         addStep("Receive and validate the final response", "Should be sent by the pillar.");
         finalResponse = clientReceiver.waitForMessage(GetAuditTrailsFinalResponse.class);
-        assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
-        assertEquals(finalResponse.getResultingAuditTrails().getAuditTrailEvents().getAuditTrailEvent().size(), 2);
+        assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
+        assertEquals(2, finalResponse.getResultingAuditTrails().getAuditTrailEvents().getAuditTrailEvent().size());
         assertFalse(finalResponse.isPartialResult());
     }
     
-    @Test @Tag("regressiontest", "pillartest"})
+    @Test
+    @Tag("regressiontest")
+    @Tag("pillartest")
     public void checksumPillarGetAuditTrailsMaximumNumberOfResults() {
         addDescription("Tests the GetAuditTrails functionality of the pillar for the successful scenario, "
                 + "where a limited number of audit trails are requested.");
@@ -219,13 +225,13 @@ public class GetAuditTrailsTest extends MockedPillarTest {
         
         GetAuditTrailsProgressResponse progressResponse = clientReceiver.waitForMessage(GetAuditTrailsProgressResponse.class);
         assertEquals(progressResponse.getCollectionID(), collectionID);
-        assertEquals(progressResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_ACCEPTED_PROGRESS);
+        assertEquals(ResponseCode.OPERATION_ACCEPTED_PROGRESS, progressResponse.getResponseInfo().getResponseCode());
         
         addStep("Validate the final response", "Contains OPERATION_COMPLETE, with only the requested amount of audits, "
                 + "and acknowledges that it is only a partial result set.");
         GetAuditTrailsFinalResponse finalResponse = clientReceiver.waitForMessage(GetAuditTrailsFinalResponse.class);
-        assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
-        assertEquals(finalResponse.getResultingAuditTrails().getAuditTrailEvents().getAuditTrailEvent().size(), maxNumberOfResults);
+        assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
+        assertEquals(maxNumberOfResults, finalResponse.getResultingAuditTrails().getAuditTrailEvents().getAuditTrailEvent().size());
         assertTrue(finalResponse.isSetPartialResult());
     }
 }

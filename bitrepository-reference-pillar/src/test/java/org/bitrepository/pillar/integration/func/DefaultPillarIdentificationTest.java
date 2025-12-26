@@ -26,11 +26,16 @@ import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.pillar.PillarTestGroups;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 
 public abstract class DefaultPillarIdentificationTest extends DefaultPillarMessagingTest {
 
-    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
+    @Test
+    @Tag(PillarTestGroups.FULL_PILLAR_TEST)
+    @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
     public void irrelevantCollectionTest() {
         addDescription("Verifies identification works correctly for a collection not defined for the pillar");
         addStep("Sending a putFile identification with a irrelevant collectionID. eg. the " +
@@ -44,7 +49,7 @@ public abstract class DefaultPillarIdentificationTest extends DefaultPillarMessa
 
     protected void assertPositivResponseIsReceived() {
         MessageResponse receivedResponse = receiveResponse();
-        Assertions.assertEquals(receivedResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.IDENTIFICATION_POSITIVE);
+        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
+                receivedResponse.getResponseInfo().getResponseCode());
     }
 }

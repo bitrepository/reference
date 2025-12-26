@@ -48,6 +48,12 @@ import org.bitrepository.protocol.security.OperationAuthorizer;
 import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.jaccept.TestEventManager;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.TestInstance;
+
 import javax.jms.JMSException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -59,6 +65,7 @@ import java.util.Arrays;
  * Note That no setup/teardown is possible in this test of external pillars, so tests need to be written
  * to be invariant against the initial pillar state.
  */
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class PillarIntegrationTest extends IntegrationTest {
     /** The path to the directory containing the integration test configuration files */
     protected static final String PATH_TO_CONFIG_DIR = System.getProperty(
@@ -88,23 +95,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
         clientEventHandler = new ClientEventLogger(testEventManager);
     }
 
-    @BeforeClass(alwaysRun = true)
-    @Override
-    public void initializeSuite(ITestContext testContext) {
-        testConfiguration =
-                new PillarIntegrationTestConfiguration(PATH_TO_TESTPROPS_DIR + "/" + TEST_CONFIGURATION_FILE_NAME);
-        super.initializeSuite(testContext);
-        //MessageBusManager.injectCustomMessageBus(MessageBusManager.DEFAULT_MESSAGE_BUS, messageBus);
-        setupRealMessageBus();
-        startEmbeddedPillar(testContext);
-        reloadMessageBus();
-        clientProvider = new ClientProvider(securityManager, settingsForTestClient, testEventManager);
-        nonDefaultCollectionId = settingsForTestClient.getCollections().get(1).getID();
-        irrelevantCollectionId = settingsForTestClient.getCollections().get(2).getID();
-        putDefaultFile();
-    }
-
-    @AfterClass(alwaysRun = true)
+    @AfterAll
     public void shutdownRealMessageBus() {
         if(!useEmbeddedMessageBus()) {
             MessageBusManager.clear();
@@ -119,15 +110,8 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
         }
     }
     
-    @AfterSuite(alwaysRun = true)
-    @Override
-    public void shutdownSuite() {
-        stopEmbeddedReferencePillar();
-        super.shutdownSuite();
-    }
-
-    @AfterMethod(alwaysRun = true)
-    public void addFailureContextInfo(ITestResult result) {
+    @AfterEach
+    public void addFailureContextInfo() {
     }
 
     protected void setupRealMessageBus() {
@@ -156,12 +140,12 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
      * The type of pillar (full or checksum) is baed on the test group used, eg. if the group is
      * <code>checksumPillarTest</code> a checksum pillar is started, else a normal 'full' reference pillar is started.
      * </p>
-     * @param testContext
+     * @param testInfo
      */
-    protected void startEmbeddedPillar(ITestContext testContext) {
+    protected void startEmbeddedPillar(TestInfo testInfo) {
         if (testConfiguration.useEmbeddedPillar()) {
             SettingsUtils.initialize(settingsForCUT);
-            if (Arrays.asList(testContext.getIncludedGroups()).contains(PillarTestGroups.CHECKSUM_PILLAR_TEST)) {
+            if (testInfo.getTags().contains(PillarTestGroups.CHECKSUM_PILLAR_TEST)) {
                 embeddedPillar = EmbeddedPillar.createChecksumPillar(settingsForCUT);
             } else {
                 embeddedPillar = EmbeddedPillar.createReferencePillar(settingsForCUT);
