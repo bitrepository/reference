@@ -28,7 +28,9 @@ import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.putfile.BlockingPutFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.pillar.integration.perf.metrics.Metrics;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 
 import java.util.concurrent.BlockingQueue;
@@ -37,14 +39,16 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class PutFileStressIT extends PillarPerformanceTest {
     protected PutFileClient putClient;
 
-    @BeforeMethod(alwaysRun=true)
+    @BeforeEach
     public void initialiseReferenceTest() throws Exception {
         putClient = ModifyComponentFactory.getInstance().retrievePutClient(
                 settingsForTestClient, createSecurityManager(), settingsForTestClient.getComponentID()
         );
     }
 
-    @Test @Tag("pillar-stress-test", "stress-test-pillar-population"})
+    @Test
+    @Tag("pillar-stress-test")
+    @Tag("stress-test-pillar-population")
     public void singleTreadedPut() throws Exception {
         final int NUMBER_OF_FILES = 10;
         final int PART_STATISTIC_INTERVAL = 2;
@@ -65,7 +69,8 @@ public class PutFileStressIT extends PillarPerformanceTest {
         //ToDo assert that the files are present
     }
 
-    @Test @Tag("pillar-stress-test"})
+    @Test
+    @Tag("pillar-stress-test")
     public void parallelPut() throws Exception {
         final int numberOfFiles = testConfiguration.getInt("pillarintegrationtest.PutFileStressIT.parallelPut.numberOfFiles");
         final int  partStatisticsInterval = testConfiguration.getInt("pillarintegrationtest.PutFileStressIT.parallelPut.partStatisticsInterval");

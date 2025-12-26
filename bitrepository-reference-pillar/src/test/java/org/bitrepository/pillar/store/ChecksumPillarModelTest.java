@@ -29,14 +29,15 @@ import org.bitrepository.pillar.store.checksumcache.MemoryCacheMock;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumStore;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.settings.referencesettings.ChecksumPillarFileDownload;
-
-
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import java.util.Date;
 
-
-
-
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 
 public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
@@ -61,7 +62,9 @@ public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
         nonDefaultCsType.setChecksumSalt(new byte[]{'a', 'z'});
     }
     
-    @Test @Tag("regressiontest", "pillartest"})
+    @Test
+    @Tag("regressiontest")
+    @Tag("pillartest")
     public void testPillarModelBasicFunctionality() {
         addDescription("Test the basic functions of the full reference pillar model.");
         addStep("Check the pillar id in the pillar model", "Identical to the one from the test.");
@@ -83,19 +86,21 @@ public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
                 "It should say as it is in settings, or return default");
         settingsForCUT.getReferenceSettings().getPillarSettings().setChecksumPillarFileDownload(
                 ChecksumPillarFileDownload.ALWAYS_DOWNLOAD);
-        assertEquals(pillarModel.getChecksumPillarFileDownload(), 
-                ChecksumPillarFileDownload.ALWAYS_DOWNLOAD);
+        assertEquals(ChecksumPillarFileDownload.ALWAYS_DOWNLOAD,
+                pillarModel.getChecksumPillarFileDownload());
         settingsForCUT.getReferenceSettings().getPillarSettings().setChecksumPillarFileDownload(
                 ChecksumPillarFileDownload.NEVER_DOWNLOAD);
-        assertEquals(pillarModel.getChecksumPillarFileDownload(), 
-                ChecksumPillarFileDownload.NEVER_DOWNLOAD);
+        assertEquals(ChecksumPillarFileDownload.NEVER_DOWNLOAD,
+                pillarModel.getChecksumPillarFileDownload());
         settingsForCUT.getReferenceSettings().getPillarSettings().setChecksumPillarFileDownload(null);
-        assertEquals(pillarModel.getChecksumPillarFileDownload(), 
-                ChecksumPillarFileDownload.DOWNLOAD_WHEN_MISSING_FROM_MESSAGE);
+        assertEquals(ChecksumPillarFileDownload.DOWNLOAD_WHEN_MISSING_FROM_MESSAGE,
+                pillarModel.getChecksumPillarFileDownload());
 
     }
     
-    @Test @Tag("regressiontest", "pillartest"})
+    @Test
+    @Tag("regressiontest")
+    @Tag("pillartest")
     public void testPillarModelHasFile() throws Exception {
         addDescription("Test that the file exists, when placed in the archive and cache");
         addStep("Setup", "Should place the 'existing file' in the directory.");
@@ -186,7 +191,9 @@ public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
         }
     }
     
-    @Test @Tag("regressiontest", "pillartest"})
+    @Test
+    @Tag("regressiontest")
+    @Tag("pillartest")
     public void testPillarModelNoFile() {
         addDescription("Test that the file exists, when placed in the archive and cache");
         addStep("Setup", "Should place the 'existing file' in the directory.");

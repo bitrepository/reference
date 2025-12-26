@@ -32,24 +32,25 @@ import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.bitrepository.pillar.messagefactories.GetStatusMessageFactory;
 import org.bitrepository.settings.referencesettings.AlarmLevel;
-
-
-
-
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import java.lang.reflect.Method;
 
 public class GetStatusRequestIT extends PillarFunctionTest {
     protected GetStatusMessageFactory msgFactory;
     private String pillarDestination;
 
-    @BeforeMethod(alwaysRun=true)
-    public void initialiseReferenceTest(Method method) throws Exception {
+    @BeforeEach
+    public void initialiseReferenceTest() throws Exception {
         msgFactory = new GetStatusMessageFactory(null, settingsForTestClient, getPillarID(), null);
         pillarDestination = lookupPillarDestination();
         msgFactory = new GetStatusMessageFactory(null, settingsForTestClient, getPillarID(), pillarDestination);
     }
 
-    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
+    @Test
+    @Tag(PillarTestGroups.FULL_PILLAR_TEST) @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
     public void normalGetStatusTest() {
         addDescription("Tests the GetStatus functionality of a pillar for the successful scenario.");
 
@@ -61,12 +62,13 @@ public class GetStatusRequestIT extends PillarFunctionTest {
         addStep("Receive and validate the final response", "Should be sent by the pillar.");
         GetStatusFinalResponse finalResponse = clientReceiver.waitForMessage(GetStatusFinalResponse.class);
         Assertions.assertNotNull(finalResponse);
-        Assertions.assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
+        Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
         Assertions.assertEquals(finalResponse.getCorrelationID(), request.getCorrelationID());
         Assertions.assertEquals(finalResponse.getFrom(), getPillarID());
     }
 
-    @Test @Tag("failing"})
+    @Test
+    @Tag("failing")
     public void checksumPillarGetStatusWrongContributor() {
         addDescription("Tests the GetStatus functionality of the reference pillar for the bad scenario, where a wrong "
                        + "contributor id is given.");

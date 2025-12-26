@@ -28,22 +28,25 @@ import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusR
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.bitrepository.pillar.messagefactories.GetStatusMessageFactory;
-
-
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import java.lang.reflect.Method;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 public class IdentifyContributorsForGetStatusIT extends PillarFunctionTest {
     protected GetStatusMessageFactory msgFactory;
 
-    @BeforeMethod(alwaysRun=true)
-    public void initialiseReferenceTest(Method method) throws Exception {
+    @BeforeEach
+    public void initialiseReferenceTest() throws Exception {
         msgFactory = new GetStatusMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
     }
 
-    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
+    @Test
+    @Tag(PillarTestGroups.FULL_PILLAR_TEST)
+    @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
     public void normalGetStatusTest() {
         addDescription("Tests the GetStatus functionality of a pillar for the successful scenario.");
 
@@ -61,8 +64,8 @@ public class IdentifyContributorsForGetStatusIT extends PillarFunctionTest {
                 "Received unexpected 'CorrelationID' in response.");
         assertEquals(receivedIdentifyResponse.getFrom(), getPillarID(),
                 "Received unexpected 'PillarID' in response.");
-        assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.IDENTIFICATION_POSITIVE,
+        assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode(),
                 "Received unexpected 'ResponseCode' in response.");
         assertEquals(receivedIdentifyResponse.getDestination(), identifyRequest.getReplyTo(),
                 "Received unexpected 'To' in response.");

@@ -30,21 +30,22 @@ import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.DefaultPillarIdentificationTest;
 import org.bitrepository.pillar.messagefactories.PutFileMessageFactory;
-
-
-
-import static org.bitrepository.pillar.integration.func.Assertions.assertEquals;
-import static org.bitrepository.pillar.integration.func.Assertions.assertNull;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest {
     protected PutFileMessageFactory msgFactory;
 
-    @BeforeMethod(alwaysRun=true)
+    @BeforeEach
     public void initialiseReferenceTest() throws Exception {
         msgFactory = new PutFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
     }
 
-    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST})
+    @Test
+    @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     public void normalIdentificationTest() {
         addDescription("Verifies the normal behaviour for putFile identification");
         addStep("Sending a putFile identification request.",
@@ -79,14 +80,15 @@ public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest
                 "Received unexpected PillarChecksumSpec");
         assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID(),
                 "Unexpected 'From' element in the received response:\n" + receivedIdentifyResponse + "\n");
-        assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.IDENTIFICATION_POSITIVE,
+        assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode(),
                 "Received unexpected ResponseCode");
         assertEquals(receivedIdentifyResponse.getDestination(), identifyRequest.getReplyTo(),
                 "Received unexpected ReplyTo");
     }
 
-    @Test @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST})
+    @Test
+    @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
     public void identificationTestForChecksumPillar() {
         addDescription("Verifies the normal behaviour for putFile identification for a checksum pillar");
         addStep("Sending a putFile identification.",
@@ -110,7 +112,8 @@ public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest
         assertEquals(receivedIdentifyResponse.getDestination(), identifyRequest.getReplyTo());
     }
 
-    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
+    @Test
+    @Tag(PillarTestGroups.FULL_PILLAR_TEST) @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
     public void fileExistsTest() {
         addDescription("Verifies the exists of a file with the same ID is handled correctly. " +
                 "This means that a checksum for the existing file is returned, enabling the client to continue with " +
@@ -125,8 +128,8 @@ public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest
 
         IdentifyPillarsForPutFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForPutFileResponse.class);
-        assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.DUPLICATE_FILE_FAILURE);
+        assertEquals(ResponseCode.DUPLICATE_FILE_FAILURE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode());
     }
 
     @Override

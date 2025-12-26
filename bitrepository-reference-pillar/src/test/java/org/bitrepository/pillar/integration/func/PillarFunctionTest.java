@@ -24,6 +24,8 @@ package org.bitrepository.pillar.integration.func;
 import org.bitrepository.pillar.integration.PillarIntegrationTest;
 import org.bitrepository.pillar.messagefactories.PutFileMessageFactory;
 import org.bitrepository.protocol.bus.MessageReceiver;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.TestInfo;
 
 
 import java.lang.reflect.Method;
@@ -41,9 +43,9 @@ public abstract class PillarFunctionTest extends PillarIntegrationTest {
     /** Used for receiving responses from the pillar */
     protected MessageReceiver clientReceiver;
 
-    @BeforeMethod(alwaysRun=true)
-    public void generalMethodSetup(Method method) throws Exception {
-        testSpecificFileID = method.getName() + "File-" + createDate();
+    @BeforeEach
+    public void generalMethodSetup(TestInfo testInfo) throws Exception {
+        testSpecificFileID = testInfo.getTestMethod().get() + "File-" + createDate();
     }
 
     @Override

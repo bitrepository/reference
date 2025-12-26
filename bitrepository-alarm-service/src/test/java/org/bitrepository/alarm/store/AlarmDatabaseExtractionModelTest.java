@@ -23,10 +23,9 @@ package org.bitrepository.alarm.store;
 
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.jaccept.structure.ExtendedTestCase;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-
-
 import java.util.Date;
 
 /**
@@ -50,7 +49,7 @@ public class AlarmDatabaseExtractionModelTest extends ExtendedTestCase {
         Assertions.assertNull(model.getStartDate());
         Assertions.assertNull(model.getCollectionID());
         Assertions.assertEquals(model.getAscending(), ascending);
-        Assertions.assertEquals(model.getMaxCount().intValue(), Integer.MAX_VALUE);
+        Assertions.assertEquals(Integer.MAX_VALUE, model.getMaxCount().intValue());
         
         addStep("Test the AlarmCode", "Should be able to put a new one in and extract it again.");
         AlarmCode defaultAlarmCode = AlarmCode.COMPONENT_FAILURE;

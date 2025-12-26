@@ -34,27 +34,31 @@ import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.DefaultPillarOperationTest;
 import org.bitrepository.pillar.messagefactories.PutFileMessageFactory;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 
 import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
 
-
-
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class PutFileRequestIT extends DefaultPillarOperationTest {
     protected PutFileMessageFactory msgFactory;
     private String pillarDestination;
 
-    @BeforeMethod(alwaysRun=true)
-    public void initialiseReferenceTest(Method method) throws Exception {
+    @BeforeEach
+    public void initialiseReferenceTest() throws Exception {
         pillarDestination = lookupPutFileDestination();
         msgFactory = new PutFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), pillarDestination);
     }
 
-    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
+    @Test
+    @Tag(PillarTestGroups.FULL_PILLAR_TEST)
+    @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
     public void normalPutFileTest() {
         addDescription("Tests a normal PutFile sequence");
         addStep("Send a putFile request to " + testConfiguration.getPillarUnderTestID(),
@@ -98,11 +102,12 @@ public class PutFileRequestIT extends DefaultPillarOperationTest {
                 "Received unexpected 'FileAddress' element.");
         assertEquals(finalResponse.getPillarID(), getPillarID(),
                 "Received unexpected 'PillarID' element.");
-        assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED,
+        assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode(),
                 "Received unexpected 'ResponseCode' element.");
     }
 
-    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST})
+    @Test
+    @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     public void putFileWithMD5ReturnChecksumTest() {
         addDescription("Tests that the pillar is able to return the default type checksum in the final response");
         addStep("Send a putFile request to " + testConfiguration.getPillarUnderTestID() + " with the ",
@@ -120,8 +125,10 @@ public class PutFileRequestIT extends DefaultPillarOperationTest {
                 "Return MD5 checksum was not equals to checksum for default file.");
     }
 
-    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST,
-            PillarTestGroups.OPERATION_ACCEPTED_PROGRESS})
+    @Test
+    @Tag(PillarTestGroups.FULL_PILLAR_TEST)
+    @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
+    @Tag(PillarTestGroups.OPERATION_ACCEPTED_PROGRESS)
     public void putFileOperationAcceptedProgressTest() {
         addDescription("Tests a that a pillar sends progress response after receiving a putFile request.");
 
@@ -159,8 +166,8 @@ public class PutFileRequestIT extends DefaultPillarOperationTest {
                 "Received unexpected 'FileID' element.");
         assertEquals(progressResponse.getFileAddress(), putRequest.getFileAddress(),
                 "Received unexpected 'FileAddress' element.");
-        assertEquals(progressResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.OPERATION_ACCEPTED_PROGRESS,
+        assertEquals(ResponseCode.OPERATION_ACCEPTED_PROGRESS,
+                progressResponse.getResponseInfo().getResponseCode(),
                 "Received unexpected 'ResponseCode' element.");
     }
 

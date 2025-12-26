@@ -23,8 +23,10 @@ package org.bitrepository.pillar.schedulablejobs;
 
 import org.bitrepository.pillar.DefaultPillarTest;
 import org.bitrepository.service.workflow.SchedulableJob;
-
-
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -35,17 +37,19 @@ public class RecalculateChecksumWorkflowTest extends DefaultPillarTest {
 
     DatatypeFactory factory;
 
-    @BeforeMethod(alwaysRun = true)
+    @BeforeEach
     public void setUpFactory() throws DatatypeConfigurationException {
         factory = DatatypeFactory.newInstance();
     }
 
-    @Test @Tag("regressiontest", "pillartest"})
+    @Test
+    @Tag("regressiontest")
+    @Tag("pillartest")
     public void testWorkflowRecalculatesChecksum() throws Exception {
         addDescription("Test that the workflow recalculates the workflows, when the maximum age has been met.");
         Date beforeWorkflowDate = csCache.getCalculationDate(DEFAULT_FILE_ID, collectionID);
-        Assertions.assertEquals(csCache.getAllFileIDs(collectionID).size(), 1);
-        Assertions.assertEquals(archives.getAllFileIds(collectionID).size(), 1);
+        Assertions.assertEquals(1, csCache.getAllFileIDs(collectionID).size());
+        Assertions.assertEquals(1, archives.getAllFileIds(collectionID).size());
         settingsForCUT.getReferenceSettings().getPillarSettings().setMaxAgeForChecksums(factory.newDuration(0));
         
         synchronized(this) {
@@ -61,13 +65,14 @@ public class RecalculateChecksumWorkflowTest extends DefaultPillarTest {
                 beforeWorkflowDate.getTime() + " < "+ afterWorkflowDate.getTime());
     }
     
-    @Test @Tag("regressiontest", "pillartest"})
+    @Test @Tag("regressiontest")
+    @Tag("pillartest")
     public void testWorkflowDoesNotRecalculateWhenNotNeeded() throws Exception {
         addDescription("Test that the workflow does not recalculates the workflows, when the maximum age has "
                 + "not yet been met.");
         Date beforeWorkflowDate = csCache.getCalculationDate(DEFAULT_FILE_ID, collectionID);
-        Assertions.assertEquals(csCache.getAllFileIDs(collectionID).size(), 1);
-        Assertions.assertEquals(archives.getAllFileIds(collectionID).size(), 1);
+        Assertions.assertEquals(1, csCache.getAllFileIDs(collectionID).size());
+        Assertions.assertEquals(1, archives.getAllFileIds(collectionID).size());
         settingsForCUT.getReferenceSettings().getPillarSettings()
                 .setMaxAgeForChecksums(factory.newDuration(Long.MAX_VALUE));
         
