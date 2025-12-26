@@ -31,7 +31,9 @@ import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.messagehandler.PillarMediator;
 import org.bitrepository.pillar.store.filearchive.ReferenceArchive;
 import org.bitrepository.service.audit.MockAuditManager;
-
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 
 import java.io.File;
@@ -62,7 +64,9 @@ public class ReferenceArchiveTest extends DefaultPillarTest {
         super.shutdownCUT();
     }
 
-    @Test @Tag("regressiontest", "pillartest"})
+    @Test
+    @Tag("regressiontest")
+    @Tag("pillartest")
     public void testReferenceArchive() throws Exception {
         addDescription("Test the ReferenceArchive.");
         addStep("Setup", "Should be OK.");

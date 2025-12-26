@@ -25,25 +25,54 @@ import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getaudittrails.AuditTrailClient;
 import org.bitrepository.access.getaudittrails.BlockingAuditTrailClient;
 import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.common.utils.TestFileHelper;
+import org.bitrepository.modify.ModifyComponentFactory;
+import org.bitrepository.modify.putfile.BlockingPutFileClient;
+import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.pillar.integration.perf.metrics.Metrics;
 import org.bitrepository.protocol.security.DummySecurityManager;
-
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 public class GetAuditTrailsFileStressIT extends PillarPerformanceTest {
     protected AuditTrailClient auditTrailClient;
+    PutFileClient putClient;
 
-    @BeforeMethod(alwaysRun=true)
+    @BeforeEach
     public void initialiseReferenceTest() throws Exception {
+        putClient = ModifyComponentFactory.getInstance().retrievePutClient(
+                settingsForTestClient, createSecurityManager(), settingsForTestClient.getComponentID() );
         auditTrailClient = AccessComponentFactory.getInstance().createAuditTrailClient(
-                settingsForCUT, new DummySecurityManager(), settingsForCUT.getComponentID()
-        );
+                settingsForCUT, new DummySecurityManager(), settingsForCUT.getComponentID());
     }
 
-    @Test @Tag("pillar-stress-test"}, dependsOnGroups={"stress-test-pillar-population"})
+    private void singleTreadedPut() throws Exception {
+        final int NUMBER_OF_FILES = 10;
+        final int PART_STATISTIC_INTERVAL = 2;
+        addDescription("Attempt to put " + NUMBER_OF_FILES + " files into the pillar, one at a time.");
+        BlockingPutFileClient blockingPutFileClient = new BlockingPutFileClient(putClient);
+        String[] fileIDs = TestFileHelper.createFileIDs(NUMBER_OF_FILES, "singleTreadedPutTest");
+        Metrics metrics = new Metrics("put", NUMBER_OF_FILES, PART_STATISTIC_INTERVAL);
+        metrics.addAppenders(metricAppenders);
+        metrics.start();
+        addStep("Add " + NUMBER_OF_FILES + " files", "Not errors should occur");
+        for (String fileID:fileIDs) {
+            blockingPutFileClient.putFile(collectionID, httpServerConfiguration.getURL(TestFileHelper.DEFAULT_FILE_ID), fileID, 10L,
+                    TestFileHelper.getDefaultFileChecksum(), null, null, "singleTreadedPut stress test file");
+            metrics.mark(fileID);
+        }
+
+        addStep("Check that the files are now present on the pillar(s)", "No missing files should be found.");
+        //ToDo assert that the files are present
+    }
+
+    @Test
+    @Tag("pillar-stress-test")
     public void singleTreadedGetAuditTrails() throws Exception {
         final int NUMBER_OF_AUDITS = 100;
         final int PART_STATISTIC_INTERVAL = NUMBER_OF_AUDITS/5;
+        singleTreadedPut();
         addDescription("Attempt to request " + NUMBER_OF_AUDITS + " full audit trails one at a time.");
 
         BlockingAuditTrailClient blockingAuditTrailFileClient = new BlockingAuditTrailClient(auditTrailClient);
@@ -58,7 +87,8 @@ public class GetAuditTrailsFileStressIT extends PillarPerformanceTest {
         }
     }
 
-    @Test @Tag("pillar-stress-test"})
+    @Test
+    @Tag("pillar-stress-test")
     public void parallelGetAuditTrails() throws Exception {
         final int  NUMBER_OF_AUDITS = 10;
         final int  PART_STATISTIC_INTERVAL = NUMBER_OF_AUDITS/5;

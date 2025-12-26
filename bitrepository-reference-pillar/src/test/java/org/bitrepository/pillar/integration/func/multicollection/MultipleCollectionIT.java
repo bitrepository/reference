@@ -28,6 +28,9 @@ import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.PillarIntegrationTest;
 import org.bitrepository.pillar.integration.func.Assert;
 import org.bitrepository.protocol.bus.MessageReceiver;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 
 import java.util.Arrays;
@@ -37,7 +40,9 @@ public class MultipleCollectionIT extends PillarIntegrationTest {
     /** Used for receiving responses from the pillar */
     protected MessageReceiver clientReceiver;
 
-    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
+    @Test
+    @Tag(PillarTestGroups.FULL_PILLAR_TEST)
+    @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
     public void fileInOtherCollectionTest() throws Exception {
         addDescription("Tests that a file is put correctly to a second collection, and that the file can be access " +
                 "with getFile, getChecksums, getFileIDs and can be replaced and deleted correctly.");

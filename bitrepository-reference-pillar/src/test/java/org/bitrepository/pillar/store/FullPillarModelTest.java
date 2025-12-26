@@ -32,16 +32,16 @@ import org.bitrepository.pillar.store.checksumdatabase.ChecksumStore;
 import org.bitrepository.pillar.store.filearchive.CollectionArchiveManager;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.exception.RequestHandlerException;
-
-
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-
-
-
-
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class FullPillarModelTest extends DefaultFixturePillarTest {
     FileStorageModel pillarModel;
@@ -68,7 +68,9 @@ public class FullPillarModelTest extends DefaultFixturePillarTest {
         nonDefaultCsType.setChecksumSalt(new byte[]{'a', 'z'});
     }
     
-    @Test @Tag("regressiontest", "pillartest"})
+    @Test
+    @Tag("regressiontest")
+    @Tag("pillartest")
     public void testPillarModelBasicFunctionality() throws Exception {
         addDescription("Test the basic functions of the full reference pillar model.");
         addStep("Check the pillar id in the pillar model", "Identical to the one from the test.");
@@ -92,7 +94,9 @@ public class FullPillarModelTest extends DefaultFixturePillarTest {
         assertNull(pillarModel.getChecksumPillarSpec());
     }
     
-    @Test @Tag("regressiontest", "pillartest"})
+    @Test
+    @Tag("regressiontest")
+    @Tag("pillartest")
     public void testPillarModelHasFile() throws Exception {
         addDescription("Test that the file exists, when placed in the archive and cache");
         addStep("Setup", "Should place the 'existing file' in the directory.");
@@ -101,7 +105,7 @@ public class FullPillarModelTest extends DefaultFixturePillarTest {
         addStep("Check whether file exists and retrieve it.", "Should be the empty file.");
         assertTrue(pillarModel.hasFileID(DEFAULT_FILE_ID, collectionID));
         FileInfo fileInfo = pillarModel.getFileInfoForActualFile(DEFAULT_FILE_ID, collectionID);
-        assertEquals(fileInfo.getSize(), 0L);
+        assertEquals(0L, fileInfo.getSize());
         assertEquals(fileInfo.getFileID(), DEFAULT_FILE_ID);
         
         addStep("Verify that no exceptions are thrown when verifying file existance.", "Should exist.");
@@ -114,7 +118,9 @@ public class FullPillarModelTest extends DefaultFixturePillarTest {
         assertEquals(EMPTY_HMAC_SHA385_CHECKSUM, otherChecksum);
     }
     
-    @Test @Tag("regressiontest", "pillartest"})
+    @Test
+    @Tag("regressiontest")
+    @Tag("pillartest")
     public void testPillarModelNoFile() throws Exception {
         addDescription("Test that the file exists, when placed in the archive and cache");
         addStep("Setup", "Should place the 'existing file' in the directory.");

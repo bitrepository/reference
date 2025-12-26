@@ -29,14 +29,15 @@ import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 import org.jaccept.structure.ExtendedTestCase;
-
-
-
-
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import java.io.File;
 
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDIT_TRAIL_TABLE;
 import static org.bitrepository.audittrails.store.AuditDatabaseConstants.DATABASE_VERSION_ENTRY;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 // TODO: cannot test migration of version 1 to 2, since it requires a collection id.
@@ -49,7 +50,7 @@ public class AuditServiceDatabaseMigrationTest extends ExtendedTestCase {
     
     static final String FILE_ID = "default-file-id";
 
-    @BeforeMethod (alwaysRun = true)
+    @BeforeEach
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("ReferencePillarTest");
         
@@ -63,12 +64,14 @@ public class AuditServiceDatabaseMigrationTest extends ExtendedTestCase {
         FileUtils.unzip(new File(PATH_TO_DATABASE_JAR_FILE), FileUtils.retrieveDirectory(PATH_TO_DATABASE_UNPACKED));
     }
     
-    @AfterMethod (alwaysRun = true)
+    @AfterEach
     public void cleanup() throws Exception {
         FileUtils.deleteDirIfExists(new File(PATH_TO_DATABASE_UNPACKED));
     }
     
-    @Test @Tag("regressiontest", "databasetest"})
+    @Test
+    @Tag("regressiontest")
+    @Tag("databasetest")
     public void testMigratingAuditServiceDatabase() {
         addDescription("Tests that the database can be migrated to latest version with the provided scripts.");
         DBConnector connector = new DBConnector(
@@ -77,16 +80,16 @@ public class AuditServiceDatabaseMigrationTest extends ExtendedTestCase {
         addStep("Validate setup", "audit table has version 2 and database version 2");
         String extractVersionSql = "SELECT version FROM tableversions WHERE tablename = ?";
         int auditTableVersionBefore = DatabaseUtils.selectIntValue(connector, extractVersionSql, AUDIT_TRAIL_TABLE);
-        assertEquals(auditTableVersionBefore, 2, "Table version before migration");
+        assertEquals(2, auditTableVersionBefore, "Table version before migration");
         int dbTableVersionBefore = DatabaseUtils.selectIntValue(connector, extractVersionSql, DATABASE_VERSION_ENTRY);
-        assertEquals(dbTableVersionBefore, 2, "Table version before migration");
+        assertEquals(2, dbTableVersionBefore, "Table version before migration");
         
         addStep("Perform migration", "audit table version 5 and database-version is 6");
         AuditTrailServiceDatabaseMigrator migrator = new AuditTrailServiceDatabaseMigrator(connector);
         migrator.migrate();
         int auditTableVersionAfter = DatabaseUtils.selectIntValue(connector, extractVersionSql, AUDIT_TRAIL_TABLE);
-        assertEquals(auditTableVersionAfter, 5, "Table version after migration");
+        assertEquals(5, auditTableVersionAfter, "Table version after migration");
         int dbTableVersionAfter = DatabaseUtils.selectIntValue(connector, extractVersionSql, DATABASE_VERSION_ENTRY);
-        assertEquals(dbTableVersionAfter, 6, "Table version after migration");
+        assertEquals(6, dbTableVersionAfter, "Table version after migration");
     }
 }

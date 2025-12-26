@@ -32,20 +32,24 @@ import org.bitrepository.pillar.messagehandler.PillarMessageHandler;
 import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.exception.RequestHandlerException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
-
-
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class GeneralMessageHandlingTest extends MockedPillarTest {
     
     MockRequestHandler requestHandler;
     
-    @BeforeMethod(alwaysRun = true)
+    @BeforeEach
     public void setup() {
         this.requestHandler = new MockRequestHandler(context, model);
     }
     
-    @Test @Tag("regressiontest", "pillartest"})
+    @Test
+    @Tag("regressiontest") @Tag("pillartest")
     public void testPillarMessageHandler() {
         addDescription("Test the handling of the PillarMessageHandler super-class.");
         addStep("Setup", "Should be OK.");
@@ -60,56 +64,84 @@ public class GeneralMessageHandlingTest extends MockedPillarTest {
         }
     }
     
-    @Test @Tag("regressiontest", "pillartest"})
+    @Test
+    @Tag("regressiontest")
+    @Tag("pillartest")
     public void testPillarMessageHandlerValidateFileIDFormatDefaultFileId() throws Exception {
         addDescription("Test the validation of file id formats of the PillarMessageHandler super-class on the default file id");
         requestHandler.validateFileIDFormat(DEFAULT_FILE_ID);
     }
         
-    @Test @Tag("regressiontest", "pillartest"})
+    @Test
+    @Tag("regressiontest")
+    @Tag("pillartest")
     public void testPillarMessageHandlerValidateFileIDFormatFolderFileId() throws Exception {
         addDescription("Test the validation of file id formats of the PillarMessageHandler super-class on a file id with directory path");
         requestHandler.validateFileIDFormat("path/" + DEFAULT_FILE_ID);
     }
     
-    @Test @Tag("regressiontest", "pillartest"}, expectedExceptions = RequestHandlerException.class)
+    @Test
+    @Tag("regressiontest")
+    @Tag("pillartest")
     public void testPillarMessageHandlerValidateFileIDFormatParentFolderFileId() throws Exception {
-        addDescription("Test the validation of file id formats of the PillarMessageHandler super-class on a file id containing path to a parent directory");
-        requestHandler.validateFileIDFormat("../../OTHER_COLLECTION/folderDir/test.txt");
+        assertThrows(RequestHandlerException.class, () -> {
+            addDescription("Test the validation of file id formats of the PillarMessageHandler super-class on a file id containing path to a parent directory");
+            requestHandler.validateFileIDFormat("../../OTHER_COLLECTION/folderDir/test.txt");
+        });
     }
     
-    @Test @Tag("regressiontest", "pillartest"}, expectedExceptions = RequestHandlerException.class)
+    @Test
+    @Tag("regressiontest")
+    @Tag("pillartest")
     public void testPillarMessageHandlerValidateFileIDFormatRootPathFileId() throws Exception {
-        addDescription("Test the validation of file id formats of the PillarMessageHandler super-class on a file id containing path from the root folder");
-        requestHandler.validateFileIDFormat("/usr/local/bin/execute.sh");
+        assertThrows(RequestHandlerException.class, () -> {
+            addDescription("Test the validation of file id formats of the PillarMessageHandler super-class on a file id containing path from the root folder");
+            requestHandler.validateFileIDFormat("/usr/local/bin/execute.sh");
+        });
     }
     
-    @Test @Tag("regressiontest", "pillartest"}, expectedExceptions = RequestHandlerException.class)
+    @Test
+    @Tag("regressiontest")
+    @Tag("pillartest")
     public void testPillarMessageHandlerValidateFileIDFormatSubFolderToParentFolderFileId() throws Exception {
-        addDescription("Test the validation of file id formats of the PillarMessageHandler super-class on a file id containing path to a parent directory, but starting with a sub-folder");
-        requestHandler.validateFileIDFormat("OTHER_COLLECTION/../../folderDir/test.txt");
+        assertThrows(RequestHandlerException.class, () -> {
+            addDescription("Test the validation of file id formats of the PillarMessageHandler super-class on a file id containing path to a parent directory, but starting with a sub-folder");
+            requestHandler.validateFileIDFormat("OTHER_COLLECTION/../../folderDir/test.txt");
+        });
     }
     
-    @Test @Tag("regressiontest", "pillartest"}, expectedExceptions = RequestHandlerException.class)
+    @Test
+    @Tag("regressiontest")
+    @Tag("pillartest")
     public void testPillarMessageHandlerValidateFileIDFormatEnvHomePathFileId() throws Exception {
-        addDescription("Test the validation of file id formats of the PillarMessageHandler super-class on a file id containing path relative paths from the environment variable home folder");
-        requestHandler.validateFileIDFormat("$HOME/bin/execute.sh");
+        assertThrows(RequestHandlerException.class, () -> {
+            addDescription("Test the validation of file id formats of the PillarMessageHandler super-class on a file id containing path relative paths from the environment variable home folder");
+            requestHandler.validateFileIDFormat("$HOME/bin/execute.sh");
+        });
     }
     
-    @Test @Tag("regressiontest", "pillartest"}, expectedExceptions = RequestHandlerException.class)
+    @Test
+    @Tag("regressiontest")
+    @Tag("pillartest")
     public void testPillarMessageHandlerValidateFileIDFormatTildeHomePathFileId() throws Exception {
-        addDescription("Test the validation of file id formats of the PillarMessageHandler super-class on a file id containing path relative paths from the tilde home folder");
-        requestHandler.validateFileIDFormat("~/bin/execute.sh");
+        assertThrows(RequestHandlerException.class, () -> {
+            addDescription("Test the validation of file id formats of the PillarMessageHandler super-class on a file id containing path relative paths from the tilde home folder");
+            requestHandler.validateFileIDFormat("~/bin/execute.sh");
+        });
     }
     
-    @Test @Tag("regressiontest", "pillartest"}, expectedExceptions = RequestHandlerException.class)
+    @Test
+    @Tag("regressiontest")
+    @Tag("pillartest")
     public void testPillarMessageHandlerValidateFileIDFormatTooLong() throws Exception {
-        addDescription("Test the validation of file id formats of the PillarMessageHandler super-class on a file id which has more characters than required");
-        String fileId = "";
-        for(int i = 0; i < 300; i++) {
-            fileId += Integer.toString(i);
-        }
-        requestHandler.validateFileIDFormat(fileId);
+        assertThrows(RequestHandlerException.class, () -> {
+            addDescription("Test the validation of file id formats of the PillarMessageHandler super-class on a file id which has more characters than required");
+            String fileId = "";
+            for (int i = 0; i < 300; i++) {
+                fileId += Integer.toString(i);
+            }
+            requestHandler.validateFileIDFormat(fileId);
+        });
     }
     
     private class MockRequestHandler extends PillarMessageHandler<MessageRequest> {

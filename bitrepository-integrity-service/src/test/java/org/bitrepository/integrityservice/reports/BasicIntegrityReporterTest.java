@@ -45,7 +45,7 @@ public class BasicIntegrityReporterTest extends ExtendedTestCase {
         reporter.reportDeletedFile("TestFile", "Pillar1");
         assertFalse(reporter.hasIntegrityIssues(), "Reporter interpreted delete file as a integrity issue");
         String expectedReport = "No integrity issues found";
-        assertEquals("Reporter didn't create clean report", expectedReport, reporter.generateSummaryOfReport());
+        assertEquals(expectedReport, reporter.generateSummaryOfReport());
         reporter.generateReport();
     }
 
@@ -58,7 +58,7 @@ public class BasicIntegrityReporterTest extends ExtendedTestCase {
         BasicIntegrityReporter reporter = new BasicIntegrityReporter("CollectionWithoutIssues", "test", new File("target/"));
         assertFalse(reporter.hasIntegrityIssues(), "Reporter interpreted delete file as a integrity issue");
         String expectedReport = "No integrity issues found";
-        assertEquals("Reporter didn't create clean report", expectedReport, reporter.generateSummaryOfReport());
+        assertEquals(expectedReport, reporter.generateSummaryOfReport());
     }
 
     @Test @Tag("regressiontest")
@@ -71,21 +71,22 @@ public class BasicIntegrityReporterTest extends ExtendedTestCase {
         reporter.reportMissingFile("TestFile", "Pillar1");
         assertTrue(reporter.hasIntegrityIssues(), "Reporter didn't interpreted missing file as a integrity issue");
         String expectedReport = REPORT_SUMMARY_START + "Pillar1 is missing 1 file.";
-        assertEquals("Wrong report returned on missing file", expectedReport, reporter.generateSummaryOfReport());
+        assertEquals(expectedReport, reporter.generateSummaryOfReport());
 
         addStep("Report another missing file on the same pillar", "The summary report should be update with the additional missing file.");
         reporter.reportMissingFile("TestFile2", "Pillar1");
         expectedReport = REPORT_SUMMARY_START + "Pillar1 is missing 2 files.";
-        assertEquals("Wrong report returned on missing file", expectedReport, reporter.generateSummaryOfReport());
+        assertEquals(expectedReport, reporter.generateSummaryOfReport());
 
         addStep("Report a missing file on another pillar",
                 "The summary report should be update with the new pillar problem.");
         reporter.reportMissingFile("TestFile3", "Pillar2");
         expectedReport = REPORT_SUMMARY_START + "Pillar1 is missing 2 files." + "\nPillar2 is missing 1 file.";
-        assertEquals("Wrong report returned on missing file", expectedReport, reporter.generateSummaryOfReport());
+        assertEquals(expectedReport, reporter.generateSummaryOfReport());
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void checksumIssuesTest() throws Exception {
         addDescription("Verifies that missing files are reported correctly");
 
@@ -95,20 +96,20 @@ public class BasicIntegrityReporterTest extends ExtendedTestCase {
         reporter.reportChecksumIssue("TestFile", "Pillar1");
         assertTrue(reporter.hasIntegrityIssues(), "Reporter didn't interpreted checksum issue as a integrity issue");
         String expectedReport = REPORT_SUMMARY_START + "Pillar1 has 1 potentially corrupt file.";
-        assertEquals("Wrong report returned on checksum issue", expectedReport, reporter.generateSummaryOfReport());
+        assertEquals(expectedReport, reporter.generateSummaryOfReport());
 
         addStep("Report another checksum issue on the same pillar", "The summary report should be update with the " +
                 "additional checksum issue.");
         reporter.reportChecksumIssue("TestFile2", "Pillar1");
         expectedReport = REPORT_SUMMARY_START + "Pillar1 has 2 potentially corrupt files.";
-        assertEquals("Wrong report returned on checksum issue", expectedReport, reporter.generateSummaryOfReport());
+        assertEquals(expectedReport, reporter.generateSummaryOfReport());
 
         addStep("Report a checksum issue on another pillar",
                 "The summary report should be update with the new pillar problem.");
         reporter.reportChecksumIssue("TestFile3", "Pillar2");
         expectedReport = REPORT_SUMMARY_START + "Pillar1 has 2 potentially corrupt files." + "\nPillar2 has 1 " +
                 "potentially corrupt file.";
-        assertEquals("Wrong report returned on checksum issue", expectedReport, reporter.generateSummaryOfReport());
+        assertEquals(expectedReport, reporter.generateSummaryOfReport());
     }
 
     @Test @Tag("regressiontest")
@@ -121,19 +122,19 @@ public class BasicIntegrityReporterTest extends ExtendedTestCase {
         reporter.reportMissingChecksum("TestChecksum", "Pillar1");
         assertTrue(reporter.hasIntegrityIssues(), "Reporter didn't interpreted missing checksum as a integrity issue");
         String expectedReport = REPORT_SUMMARY_START + "Pillar1 is missing 1 checksum.";
-        assertEquals("Wrong report returned on missing checksum", expectedReport, reporter.generateSummaryOfReport());
+        assertEquals(expectedReport, reporter.generateSummaryOfReport());
 
         addStep("Report another missing checksum on the same pillar", "The summary report should be update with the " +
                 "additional missing checksum.");
         reporter.reportMissingChecksum("TestChecksum2", "Pillar1");
         expectedReport = REPORT_SUMMARY_START + "Pillar1 is missing 2 checksums.";
-        assertEquals("Wrong report returned on missing checksum", expectedReport, reporter.generateSummaryOfReport());
+        assertEquals(expectedReport, reporter.generateSummaryOfReport());
 
         addStep("Report a missing checksum on another pillar",
                 "The summary report should be update with the new pillar problem.");
         reporter.reportMissingChecksum("TestChecksum3", "Pillar2");
         expectedReport = REPORT_SUMMARY_START + "Pillar1 is missing 2 checksums." + "\nPillar2 is missing 1 checksum.";
-        assertEquals("Wrong report returned on missing checksum", expectedReport, reporter.generateSummaryOfReport());
+        assertEquals(expectedReport, reporter.generateSummaryOfReport());
     }
 
 
@@ -147,18 +148,18 @@ public class BasicIntegrityReporterTest extends ExtendedTestCase {
         reporter.reportObsoleteChecksum("TestChecksum", "Pillar1");
         assertTrue(reporter.hasIntegrityIssues(), "Reporter didn't interpreted obsolete checksum as a integrity issue");
         String expectedReport = REPORT_SUMMARY_START + "Pillar1 has 1 obsolete checksum.";
-        assertEquals("Wrong report returned on obsolete checksum", expectedReport, reporter.generateSummaryOfReport());
+        assertEquals(expectedReport, reporter.generateSummaryOfReport());
 
         addStep("Report another obsolete checksum on the same pillar", "The summary report should be update with the " +
                 "additional obsolete checksum.");
         reporter.reportObsoleteChecksum("TestChecksum2", "Pillar1");
         expectedReport = REPORT_SUMMARY_START + "Pillar1 has 2 obsolete checksums.";
-        assertEquals("Wrong report returned on obsolete checksum", expectedReport, reporter.generateSummaryOfReport());
+        assertEquals(expectedReport, reporter.generateSummaryOfReport());
 
         addStep("Report a obsolete checksum on another pillar",
                 "The summary report should be update with the new pillar problem.");
         reporter.reportObsoleteChecksum("TestChecksum3", "Pillar2");
         expectedReport = REPORT_SUMMARY_START + "Pillar1 has 2 obsolete checksums." + "\nPillar2 has 1 obsolete checksum.";
-        assertEquals("Wrong report returned on obsolete checksum", expectedReport, reporter.generateSummaryOfReport());
+        assertEquals(expectedReport, reporter.generateSummaryOfReport());
     }
 }
