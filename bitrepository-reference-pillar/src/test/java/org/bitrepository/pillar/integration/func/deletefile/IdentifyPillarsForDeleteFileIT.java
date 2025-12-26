@@ -31,19 +31,23 @@ import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.Assert;
 import org.bitrepository.pillar.integration.func.DefaultPillarIdentificationTest;
 import org.bitrepository.pillar.messagefactories.DeleteFileMessageFactory;
-
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 
 public class IdentifyPillarsForDeleteFileIT extends DefaultPillarIdentificationTest {
     protected DeleteFileMessageFactory msgFactory;
 
-    @BeforeMethod(alwaysRun=true)
+    @BeforeEach
     public void initialiseReferenceTest() throws Exception {
         msgFactory = new DeleteFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
 
     }
 
-    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST})
+    @Test
+    @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     public void normalIdentificationTest() {
         addDescription("Verifies the normal behaviour for deleteFile identification");
         addStep("Sending a deleteFile identification.",
@@ -59,12 +63,13 @@ public class IdentifyPillarsForDeleteFileIT extends DefaultPillarIdentificationT
         Assertions.assertEquals(receivedIdentifyResponse.getFileID(), DEFAULT_FILE_ID);
         Assertions.assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
         Assertions.assertNull(receivedIdentifyResponse.getPillarChecksumSpec());
-        Assertions.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.IDENTIFICATION_POSITIVE);
+        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode());
         Assertions.assertEquals(receivedIdentifyResponse.getDestination(), identifyRequest.getReplyTo());
     }
 
-    @Test @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST})
+    @Test
+    @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
     public void identificationTestForChecksumPillar() {
         addDescription("Verifies the normal behaviour for deleteFile identification for a checksum pillar");
         addStep("Sending a deleteFile identification.",
@@ -81,12 +86,13 @@ public class IdentifyPillarsForDeleteFileIT extends DefaultPillarIdentificationT
         Assertions.assertEquals(receivedIdentifyResponse.getPillarChecksumSpec().getChecksumType(),
                 ChecksumUtils.getDefault(settingsForCUT).getChecksumType());
         Assertions.assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
-        Assertions.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.IDENTIFICATION_POSITIVE);
+        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode());
         Assertions.assertEquals(receivedIdentifyResponse.getDestination(), identifyRequest.getReplyTo());
     }
 
-    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST})
+    @Test
+    @Tag(PillarTestGroups.FULL_PILLAR_TEST) @Tag( PillarTestGroups.CHECKSUM_PILLAR_TEST)
     public void fileDoesNotExistsTest() {
         addDescription("Verifies that a request for a non-existing file is handled correctly");
         addStep("Sending a deleteFile identification for a file not in the pillar.",
@@ -97,8 +103,8 @@ public class IdentifyPillarsForDeleteFileIT extends DefaultPillarIdentificationT
 
         IdentifyPillarsForDeleteFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForDeleteFileResponse.class);
-        Assertions.assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.FILE_NOT_FOUND_FAILURE);
+        Assertions.assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode());
     }
 
     @Override

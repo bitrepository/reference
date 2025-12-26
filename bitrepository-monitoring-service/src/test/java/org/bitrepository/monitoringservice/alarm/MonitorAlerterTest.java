@@ -31,7 +31,9 @@ import org.bitrepository.monitoringservice.status.ComponentStatus;
 import org.bitrepository.monitoringservice.status.ComponentStatusCode;
 import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.settings.referencesettings.AlarmLevel;
-
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 
 import java.math.BigInteger;
@@ -40,7 +42,8 @@ import java.util.Map;
 
 public class MonitorAlerterTest extends IntegrationTest {
     
-    @Test @Tag("regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void testMonitorAlerter() throws Exception {
         addDescription("Tests the " + BasicMonitoringServiceAlerter.class.getName());
         addStep("Setup", "");
@@ -52,12 +55,12 @@ public class MonitorAlerterTest extends IntegrationTest {
         BasicMonitoringServiceAlerter alerter = new BasicMonitoringServiceAlerter(
             settingsForCUT, messageBus, AlarmLevel.ERROR, store);
         
-        Assertions.assertEquals(store.getCallsForGetStatusMap(), 0);
+        Assertions.assertEquals(0, store.getCallsForGetStatusMap());
         
         addStep("Check statuses with an empty map.", "Should only make a call for GetStatusMap");
         store.statuses = new HashMap<>();
         alerter.checkStatuses();
-        Assertions.assertEquals(store.getCallsForGetStatusMap(), 1);
+        Assertions.assertEquals(1, store.getCallsForGetStatusMap());
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
         
         addStep("Check the status when a positive entry exists.", "Should make another call for the GetStatusMap");
@@ -65,7 +68,7 @@ public class MonitorAlerterTest extends IntegrationTest {
         cs.updateStatus(createPositiveStatus());
         store.statuses.put(componentID, cs);
         alerter.checkStatuses();
-        Assertions.assertEquals(store.getCallsForGetStatusMap(), 2);
+        Assertions.assertEquals(2, store.getCallsForGetStatusMap());
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
         
         addStep("Check the status when a negative entry exists.", 
@@ -73,10 +76,10 @@ public class MonitorAlerterTest extends IntegrationTest {
         cs.updateReplies();
         store.statuses.put(componentID, cs);
         alerter.checkStatuses();
-        Assertions.assertEquals(store.getCallsForGetStatusMap(), 3);
+        Assertions.assertEquals(3, store.getCallsForGetStatusMap());
         alarmReceiver.waitForMessage(AlarmMessage.class);
         
-        Assertions.assertEquals(cs.getStatus(), ComponentStatusCode.UNRESPONSIVE);
+        Assertions.assertEquals(ComponentStatusCode.UNRESPONSIVE, cs.getStatus());
     }
     
     private ResultingStatus createPositiveStatus() {

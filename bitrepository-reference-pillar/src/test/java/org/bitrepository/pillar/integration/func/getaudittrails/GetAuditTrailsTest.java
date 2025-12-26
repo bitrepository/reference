@@ -27,11 +27,12 @@ import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.client.exceptions.NegativeResponseException;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
-
-
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import java.util.List;
 
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public class GetAuditTrailsTest extends PillarFunctionTest {
@@ -41,7 +42,9 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
         settingsForTestClient.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().clear();
     }
     
-    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST} )
+    @Test
+    @Tag(PillarTestGroups.FULL_PILLAR_TEST)
+    @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
     public void     eventSortingTest() throws NegativeResponseException{
         addDescription("Test whether the audit trails are sorted based on sequence numbers, with the largest " +
                 "sequence number last..");
@@ -62,7 +65,9 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
         }
     }
 
-    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST} )
+    @Test
+    @Tag(PillarTestGroups.FULL_PILLAR_TEST)
+    @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
     public void maxNumberOfResultTest() {
         addDescription("Verifies the size of the result set can be limited by setting the maxNumberOfResult parameter.");
         addFixture("Ensure at least two files are present on the pillar");
@@ -79,12 +84,14 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
                         "audit event in the full list.");
         AuditTrailQuery singleEventQuery = new AuditTrailQuery(getPillarID(), null, null, 1);
         List<AuditTrailEvent> singleEventList = getAuditTrails(singleEventQuery, null);
-        assertEquals(singleEventList.size(), 1, "The result didn't contain a single event");
+        assertEquals(1, singleEventList.size(), "The result didn't contain a single event");
         assertEquals(singleEventList.get(0), originalAuditTrailEventList.get(0),
                 "The returned event wasn't equal to the first event");
     }
     
-    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST} )
+    @Test
+    @Tag(PillarTestGroups.FULL_PILLAR_TEST)
+    @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
     public void minSequenceNumberTest() {
         addDescription("Test the pillar support for only retrieving events with sequence number higher than the " +
                 "provided MinSequenceNumber" +
@@ -119,7 +126,9 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
                 "First event in second page different from last element in first page");
     }
     
-    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST, PillarTestGroups.CHECKSUM_PILLAR_TEST} )
+    @Test
+    @Tag(PillarTestGroups.FULL_PILLAR_TEST)
+    @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
     public void maxSequenceNumberTest() {
         addDescription("Test the pillar support for only retrieving audit event with SequenceNumbers lower than " +
                 "MaxSequenceNumber.");
@@ -148,7 +157,7 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
         AuditTrailQuery firstSequenceNumberQuery = new AuditTrailQuery(getPillarID(),
                 null, smallestSequenceNumber, null);
         limitedEventList = getAuditTrails(firstSequenceNumberQuery, null);
-        assertEquals(limitedEventList.size(), 1, "Received list with size of " + limitedEventList.size() + " " +
+        assertEquals(1, limitedEventList.size(), "Received list with size of " + limitedEventList.size() + " " +
                 "when requesting audit trail with MaxSequenceNumber set to first event (expected 1 event)");
         assertEquals(limitedEventList.get(0),
                 originalAuditTrailEventList.get(0),

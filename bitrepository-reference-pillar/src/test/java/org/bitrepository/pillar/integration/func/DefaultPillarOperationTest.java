@@ -24,12 +24,13 @@ package org.bitrepository.pillar.integration.func;
 
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.junit.jupiter.api.Assertions;
 
 public abstract class DefaultPillarOperationTest extends DefaultPillarMessagingTest {
 
     protected void assertPositivResponseIsReceived() {
         MessageResponse receivedResponse = receiveResponse();
-        Assertions.assertEquals(receivedResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.OPERATION_COMPLETED);
+        Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED,
+                receivedResponse.getResponseInfo().getResponseCode());
     }
 }

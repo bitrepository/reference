@@ -27,25 +27,30 @@ import org.bitrepository.monitoringservice.MockAlerter;
 import org.bitrepository.monitoringservice.MockGetStatusClient;
 import org.bitrepository.monitoringservice.MockStatusStore;
 import org.jaccept.structure.ExtendedTestCase;
-
-
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class StatusCollectorTest extends ExtendedTestCase {
     Settings settings;
     
     private int INTERVAL = 500;
     private int INTERVAL_DELAY = 250;
     
-    @BeforeClass (alwaysRun = true)
+    @BeforeAll
     public void setup() {
         settings = TestSettingsProvider.reloadSettings("StatusCollectorUnderTest");
     }
 
-    @Test @Tag("regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void testStatusCollector() throws Exception {
         addDescription("Tests the status collector.");
         addStep("Setup", "");
@@ -57,11 +62,11 @@ public class StatusCollectorTest extends ExtendedTestCase {
         settings.getReferenceSettings().getMonitoringServiceSettings().setCollectionInterval(intervalXmlDur);
 
         addStep("Create the collector", "");
-        Assertions.assertEquals(store.getCallsForGetStatusMap(), 0);
-        Assertions.assertEquals(store.getCallsForUpdateReplayCounts(), 0);
-        Assertions.assertEquals(store.getCallsForUpdateStatus(), 0);
-        Assertions.assertEquals(client.getCallsToGetStatus(), 0);
-        Assertions.assertEquals(client.getCallsToShutdown(), 0);
+        Assertions.assertEquals(0, store.getCallsForGetStatusMap());
+        Assertions.assertEquals(0, store.getCallsForUpdateReplayCounts());
+        Assertions.assertEquals(0, store.getCallsForUpdateStatus());
+        Assertions.assertEquals(0, client.getCallsToGetStatus());
+        Assertions.assertEquals(0, client.getCallsToShutdown());
         StatusCollector collector = new StatusCollector(client, settings, store, alerter);
         
         addStep("Start the collector", "It should immediately call the client and store.");
@@ -69,11 +74,11 @@ public class StatusCollectorTest extends ExtendedTestCase {
         synchronized(this) {
             wait(INTERVAL_DELAY);
         }
-        Assertions.assertEquals(store.getCallsForGetStatusMap(), 0);
-        Assertions.assertEquals(store.getCallsForUpdateReplayCounts(), 1);
-        Assertions.assertEquals(store.getCallsForUpdateStatus(), 0);
-        Assertions.assertEquals(client.getCallsToGetStatus(), 1);
-        Assertions.assertEquals(client.getCallsToShutdown(), 0);
+        Assertions.assertEquals(0, store.getCallsForGetStatusMap());
+        Assertions.assertEquals(1, store.getCallsForUpdateReplayCounts());
+        Assertions.assertEquals(0, store.getCallsForUpdateStatus());
+        Assertions.assertEquals(1, client.getCallsToGetStatus());
+        Assertions.assertEquals(0, client.getCallsToShutdown());
 
         addStep("wait 2 * the interval", "It should call the client and store two times more.");        
         synchronized(this) {
@@ -81,21 +86,21 @@ public class StatusCollectorTest extends ExtendedTestCase {
         }
         collector.stop();
         
-        Assertions.assertEquals(store.getCallsForGetStatusMap(), 0);
-        Assertions.assertEquals(store.getCallsForUpdateReplayCounts(), 3);
-        Assertions.assertEquals(store.getCallsForUpdateStatus(), 0);
-        Assertions.assertEquals(client.getCallsToGetStatus(), 3);
-        Assertions.assertEquals(client.getCallsToShutdown(), 0);
+        Assertions.assertEquals(0, store.getCallsForGetStatusMap());
+        Assertions.assertEquals(3, store.getCallsForUpdateReplayCounts());
+        Assertions.assertEquals(0, store.getCallsForUpdateStatus());
+        Assertions.assertEquals(3, client.getCallsToGetStatus());
+        Assertions.assertEquals(0, client.getCallsToShutdown());
         
         addStep("wait the interval + delay again", "It should not have made any more calls");        
         synchronized(this) {
             wait(INTERVAL + INTERVAL_DELAY);
         }
         
-        Assertions.assertEquals(store.getCallsForGetStatusMap(), 0);
-        Assertions.assertEquals(store.getCallsForUpdateReplayCounts(), 3);
-        Assertions.assertEquals(store.getCallsForUpdateStatus(), 0);
-        Assertions.assertEquals(client.getCallsToGetStatus(), 3);
-        Assertions.assertEquals(client.getCallsToShutdown(), 0);
+        Assertions.assertEquals(0, store.getCallsForGetStatusMap());
+        Assertions.assertEquals(3, store.getCallsForUpdateReplayCounts());
+        Assertions.assertEquals(0, store.getCallsForUpdateStatus());
+        Assertions.assertEquals(3, client.getCallsToGetStatus());
+        Assertions.assertEquals(0, client.getCallsToShutdown());
     }
 }

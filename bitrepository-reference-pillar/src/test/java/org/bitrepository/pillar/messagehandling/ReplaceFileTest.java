@@ -39,10 +39,15 @@ import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.MockedPillarTest;
 import org.bitrepository.pillar.messagefactories.ReplaceFileMessageFactory;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -66,7 +71,9 @@ public class ReplaceFileTest extends MockedPillarTest {
     }
 
     @SuppressWarnings("rawtypes")
-    @Test @Tag("regressiontest", "pillartest"})
+    @Test
+    @Tag("regressiontest")
+    @Tag("pillartest")
     public void goodCaseIdentification() {
         addDescription("Tests the identification for a ReplaceFile operation on the pillar for the successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -86,17 +93,18 @@ public class ReplaceFileTest extends MockedPillarTest {
                 "The pillar should make a response.");
         IdentifyPillarsForReplaceFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForReplaceFileResponse.class);
-        assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.IDENTIFICATION_POSITIVE);
+        assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode());
         assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
         assertEquals(receivedIdentifyResponse.getFileID(), FILE_ID);
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
-        assertEquals(audits.getCallsForAuditEvent(), 0, "Should not deliver audits");
+        assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
     }
 
     @SuppressWarnings("rawtypes")
-    @Test @Tag("regressiontest", "pillartest"})
+    @Test @Tag("regressiontest")
+    @Tag("pillartest")
     public void badCaseIdentification() {
         addDescription("Tests the identification for a ReplaceFile operation on the pillar for the failure scenario, when the file does not exist.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -116,17 +124,18 @@ public class ReplaceFileTest extends MockedPillarTest {
                 "The pillar should make a response.");
         IdentifyPillarsForReplaceFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForReplaceFileResponse.class);
-        assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.FILE_NOT_FOUND_FAILURE);
+        assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode());
         assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
         assertEquals(receivedIdentifyResponse.getFileID(), FILE_ID);
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
-        assertEquals(audits.getCallsForAuditEvent(), 0, "Should not deliver audits");
+        assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
     }
 
     @SuppressWarnings("rawtypes")
-    @Test @Tag("regressiontest", "pillartest"})
+    @Test @Tag("regressiontest")
+    @Tag("pillartest")
     public void badCaseOperationMissingFile() {
         addDescription("Tests the ReplaceFile operation on the pillar for the failure scenario, when the file is missing.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -149,16 +158,17 @@ public class ReplaceFileTest extends MockedPillarTest {
         addStep("Retrieve the FinalResponse for the ReplaceFile request",
                 "The final response should give file not found failure.");
         ReplaceFileFinalResponse finalResponse = clientReceiver.waitForMessage(ReplaceFileFinalResponse.class);
-        assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.FILE_NOT_FOUND_FAILURE);
+        assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE, finalResponse.getResponseInfo().getResponseCode());
         assertEquals(finalResponse.getPillarID(), getPillarID());
         assertEquals(finalResponse.getFileID(), FILE_ID);
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
-        assertEquals(audits.getCallsForAuditEvent(), 0, "Should not deliver audits");
+        assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
     }
 
     @SuppressWarnings("rawtypes")
-    @Test @Tag("regressiontest", "pillartest"})
+    @Test @Tag("regressiontest")
+    @Tag("pillartest")
     public void badCaseOperationNoDestructiveChecksum() {
         addDescription("Tests the ReplaceFile operation on the pillar for the failure scenario, when no validation "
                 + "checksum is given for the destructive action, but though is required.");
@@ -179,7 +189,7 @@ public class ReplaceFileTest extends MockedPillarTest {
         addStep("Retrieve the FinalResponse for the ReplaceFile request",
                 "The final response should give existing checksum failure.");
         ReplaceFileFinalResponse finalResponse = clientReceiver.waitForMessage(ReplaceFileFinalResponse.class);
-        assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
+        assertEquals(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE, finalResponse.getResponseInfo().getResponseCode());
         assertEquals(finalResponse.getPillarID(), getPillarID());
         assertEquals(finalResponse.getFileID(), FILE_ID);
 
@@ -187,11 +197,12 @@ public class ReplaceFileTest extends MockedPillarTest {
         AlarmMessage alarm = alarmReceiver.waitForMessage(AlarmMessage.class);
         assertEquals(alarm.getAlarm().getFileID(), FILE_ID);
         assertEquals(alarm.getAlarm().getAlarmRaiser(), getPillarID());
-        assertEquals(alarm.getAlarm().getAlarmCode(), AlarmCode.CHECKSUM_ALARM);
+        assertEquals(AlarmCode.CHECKSUM_ALARM, alarm.getAlarm().getAlarmCode());
     }
 
     @SuppressWarnings("rawtypes")
-    @Test @Tag("regressiontest", "pillartest"})
+    @Test @Tag("regressiontest")
+    @Tag("pillartest")
     public void badCaseOperationNoValidationChecksum() {
         addDescription("Tests the ReplaceFile operation on the pillar for the failure scenario, when no validation "
                 + "checksum is given for the new file, but though is required.");
@@ -212,7 +223,7 @@ public class ReplaceFileTest extends MockedPillarTest {
         addStep("Retrieve the FinalResponse for the ReplaceFile request",
                 "The final response should give new file checksum failure.");
         ReplaceFileFinalResponse finalResponse = clientReceiver.waitForMessage(ReplaceFileFinalResponse.class);
-        assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.NEW_FILE_CHECKSUM_FAILURE);
+        assertEquals(ResponseCode.NEW_FILE_CHECKSUM_FAILURE, finalResponse.getResponseInfo().getResponseCode());
         assertEquals(finalResponse.getPillarID(), getPillarID());
         assertEquals(finalResponse.getFileID(), FILE_ID);
 
@@ -220,11 +231,12 @@ public class ReplaceFileTest extends MockedPillarTest {
         AlarmMessage alarm = alarmReceiver.waitForMessage(AlarmMessage.class);
         assertEquals(alarm.getAlarm().getFileID(), FILE_ID);
         assertEquals(alarm.getAlarm().getAlarmRaiser(), getPillarID());
-        assertEquals(alarm.getAlarm().getAlarmCode(), AlarmCode.CHECKSUM_ALARM);
+        assertEquals(AlarmCode.CHECKSUM_ALARM, alarm.getAlarm().getAlarmCode());
     }
 
     @SuppressWarnings("rawtypes")
-    @Test @Tag("regressiontest", "pillartest"})
+    @Test @Tag("regressiontest")
+    @Tag("pillartest")
     public void badCaseOperationWrongDestructiveChecksum() throws Exception {
         addDescription("Tests the ReplaceFile operation on the pillar for the failure scenario, when the checksum for "
                 +"the destructive action is different from the one in the cache.");
@@ -245,7 +257,7 @@ public class ReplaceFileTest extends MockedPillarTest {
         addStep("Retrieve the FinalResponse for the ReplaceFile request",
                 "The final response should give existing file checksum failure.");
         ReplaceFileFinalResponse finalResponse = clientReceiver.waitForMessage(ReplaceFileFinalResponse.class);
-        assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
+        assertEquals(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE, finalResponse.getResponseInfo().getResponseCode());
         assertEquals(finalResponse.getPillarID(), getPillarID());
         assertEquals(finalResponse.getFileID(), FILE_ID);
 
@@ -253,11 +265,12 @@ public class ReplaceFileTest extends MockedPillarTest {
         AlarmMessage alarm = alarmReceiver.waitForMessage(AlarmMessage.class);
         assertEquals(alarm.getAlarm().getFileID(), FILE_ID);
         assertEquals(alarm.getAlarm().getAlarmRaiser(), getPillarID());
-        assertEquals(alarm.getAlarm().getAlarmCode(), AlarmCode.CHECKSUM_ALARM);
+        assertEquals(AlarmCode.CHECKSUM_ALARM, alarm.getAlarm().getAlarmCode());
     }
 
     @SuppressWarnings("rawtypes")
-    @Test @Tag("regressiontest", "pillartest"})
+    @Test @Tag("regressiontest")
+    @Tag("pillartest")
     public void goodCaseOperation() throws Exception {
         addDescription("Tests the ReplaceFile operation on the pillar for the success scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -290,11 +303,12 @@ public class ReplaceFileTest extends MockedPillarTest {
         assertNull(finalResponse.getChecksumDataForExistingFile());
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
-        assertEquals(audits.getCallsForAuditEvent(), 1, "Should make 1 put-file audit trail");
+        assertEquals(1, audits.getCallsForAuditEvent(), "Should make 1 put-file audit trail");
     }
 
     @SuppressWarnings("rawtypes")
-    @Test @Tag("regressiontest", "pillartest"})
+    @Test @Tag("regressiontest")
+    @Tag("pillartest")
     public void goodCaseOperationWithChecksumsReturn() throws Exception {
         addDescription("Tests the ReplaceFile operation on the pillar for the success scenario, when requesting both the cheksums of the file returned.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -341,7 +355,7 @@ public class ReplaceFileTest extends MockedPillarTest {
         addStep("Retrieve the FinalResponse for the ReplaceFile request",
                 "The final response should say 'operation_complete', and give the requested data.");
         ReplaceFileFinalResponse finalResponse = clientReceiver.waitForMessage(ReplaceFileFinalResponse.class);
-        assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
+        assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
         assertEquals(finalResponse.getPillarID(), getPillarID());
         assertEquals(finalResponse.getFileID(), FILE_ID);
         assertNotNull(finalResponse.getChecksumDataForNewFile());
@@ -350,6 +364,6 @@ public class ReplaceFileTest extends MockedPillarTest {
         assertEquals(finalResponse.getChecksumDataForExistingFile().getChecksumSpec(), existingRequestChecksumSpec);
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
-        assertEquals(audits.getCallsForAuditEvent(), 1, "Should make 1 put-file audit trail");
+        assertEquals(1, audits.getCallsForAuditEvent(), "Should make 1 put-file audit trail");
     }
 }

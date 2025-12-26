@@ -38,10 +38,11 @@ import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.contributor.ContributorMediator;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.jaccept.structure.ExtendedTestCase;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.mockito.ArgumentCaptor;
-
-
-
 import javax.xml.datatype.DatatypeFactory;
 import java.util.concurrent.ThreadFactory;
 
@@ -53,6 +54,7 @@ import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class AuditTrailServiceTest extends ExtendedTestCase {
     /** The settings for the tests. Should be instantiated in the setup. */
     Settings settings;
@@ -61,8 +63,7 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
     public static final String DEFAULT_CONTRIBUTOR = "Contributor1";
     private ThreadFactory threadFactory;
 
-
-    @BeforeClass(alwaysRun = true)
+    @BeforeAll
     public void setup() {
         settings = TestSettingsProvider.reloadSettings("AuditTrailServiceUnderTest");
         Collection c = settings.getRepositorySettings().getCollections().getCollection().get(0);
@@ -72,7 +73,8 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
         threadFactory = new DefaultThreadFactory(this.getClass().getSimpleName(), Thread.NORM_PRIORITY);
     }
 
-    @Test @Tag("unstable"})
+    @Test
+    @Tag("unstable")
     public void auditTrailServiceTest() throws Exception {
         addDescription("Test the Audit Trail Service");
         DatatypeFactory factory = DatatypeFactory.newInstance();
@@ -123,7 +125,6 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
         addStep("Shutdown", "");
         service.shutdown();
     }
-
 
     public static class CollectionRunner implements Runnable {
         private final AuditTrailService service;

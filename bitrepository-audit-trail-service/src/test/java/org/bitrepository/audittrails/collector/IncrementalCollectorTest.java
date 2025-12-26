@@ -39,6 +39,11 @@ import org.bitrepository.common.DefaultThreadFactory;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.service.AlarmDispatcher;
 import org.jaccept.structure.ExtendedTestCase;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.mockito.ArgumentCaptor;
 
 
@@ -60,6 +65,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class IncrementalCollectorTest extends ExtendedTestCase{
     
     public static final String TEST_COLLECTION = "dummy-collection";
@@ -67,12 +73,13 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
     public static final String TEST_CONTRIBUTOR2 = "Contributor2";
     private DefaultThreadFactory threadFactory;
 
-    @BeforeClass(alwaysRun = true)
+    @BeforeAll
     public void setup() throws Exception {
         threadFactory = new DefaultThreadFactory(this.getClass().getSimpleName(), Thread.NORM_PRIORITY, false);
     }
 
-    @Test @Tag("regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void singleIncrementTest() throws InterruptedException {
         addDescription("Verifies the behaviour in the simplest case with just one result set ");
         AuditTrailClient client = mock(AuditTrailClient.class);
@@ -123,7 +130,8 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
         verifyNoInteractions(alarmDispatcher);
     }
 
-    @Test @Tag("regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void multipleIncrementTest() throws Exception {
         addDescription("Verifies the behaviour in the case where the adit trails needs to be reteived in multiple " +
             "requests because of MaxNumberOfResults limits.");
@@ -198,7 +206,8 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
         verifyNoInteractions(alarmDispatcher);
     }
 
-    @Test @Tag("regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void contributorFailureTest() throws Exception {
         addDescription("Tests that the collector is able to collect from the remaining contributors if a " +
             "contributor fails.");
@@ -268,7 +277,8 @@ public class IncrementalCollectorTest extends ExtendedTestCase{
         verifyNoMoreInteractions(client);
     }
 
-    @Test @Tag("regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void collectionIDFailureTest() throws Exception {
         addDescription("Tests what happens when a wrong collection id is received.");
         String FALSE_COLLECTION = "FalseCollection" + new Date().getTime();

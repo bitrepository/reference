@@ -39,19 +39,19 @@ import org.bitrepository.pillar.MockedPillarTest;
 import org.bitrepository.pillar.messagefactories.GetChecksumsMessageFactory;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumEntry;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-
-
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.Date;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
-
-
 
 /**
  * Tests the PutFile functionality on the ReferencePillar.
@@ -67,7 +67,9 @@ public class GetChecksumsTest extends MockedPillarTest {
     }
 
     @SuppressWarnings("rawtypes")
-    @Test @Tag("regressiontest", "pillartest"})
+    @Test
+    @Tag("regressiontest")
+    @Tag("pillartest")
     public void goodCaseIdentification() throws Exception {
         addDescription("Tests the identification for a GetChecksums operation on the pillar for the successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -96,17 +98,18 @@ public class GetChecksumsTest extends MockedPillarTest {
                 "The pillar should make a response.");
         IdentifyPillarsForGetChecksumsResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetChecksumsResponse.class);
-        assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.IDENTIFICATION_POSITIVE);
+        assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode());
         assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
         assertEquals(receivedIdentifyResponse.getFileIDs(), fileids);
         
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
-        assertEquals(audits.getCallsForAuditEvent(), 0, "Should not deliver audits");
+        assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
     }
     
     @SuppressWarnings("rawtypes")
-    @Test @Tag("regressiontest", "pillartest"})
+    @Test
+    @Tag("regressiontest") @Tag("pillartest")
     public void badCaseIdentification() throws Exception {
         addDescription("Tests the identification for a GetChecksums operation on the pillar for the failure scenario, when the file is missing.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -135,17 +138,19 @@ public class GetChecksumsTest extends MockedPillarTest {
                 "The pillar should make a response.");
         IdentifyPillarsForGetChecksumsResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetChecksumsResponse.class);
-        assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.FILE_NOT_FOUND_FAILURE);
+        assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode());
         assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
         assertEquals(receivedIdentifyResponse.getFileIDs(), fileids);
         
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
-        assertEquals(audits.getCallsForAuditEvent(), 0, "Should not deliver audits");
+        assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
     }
     
     @SuppressWarnings("rawtypes")
-    @Test @Tag("regressiontest", "pillartest"})
+    @Test
+    @Tag("regressiontest")
+    @Tag("pillartest")
     public void goodCaseOperationSingleFile() throws Exception {
         addDescription("Tests the GetChecksums operation on the pillar for the successful scenario when requesting one specific file.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -186,14 +191,16 @@ public class GetChecksumsTest extends MockedPillarTest {
         addStep("Retrieve the FinalResponse for the GetChecksums request",
                 "The final response should say 'operation_complete', and give the requested data.");
         GetChecksumsFinalResponse finalResponse = clientReceiver.waitForMessage(GetChecksumsFinalResponse.class);
-        assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
+        assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
         assertEquals(finalResponse.getPillarID(), getPillarID());
-        assertEquals(finalResponse.getResultingChecksums().getChecksumDataItems().size(), 1);
+        assertEquals(1, finalResponse.getResultingChecksums().getChecksumDataItems().size());
         assertEquals(finalResponse.getResultingChecksums().getChecksumDataItems().get(0).getFileID(), FILE_ID);
     }
     
     @SuppressWarnings("rawtypes")
-    @Test @Tag("regressiontest", "pillartest"})
+    @Test
+    @Tag("regressiontest")
+    @Tag("pillartest")
     public void goodCaseOperationAllFiles() throws Exception {
         addDescription("Tests the GetChecksums operation on the pillar for the successful scenario, when requesting all files.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -229,13 +236,15 @@ public class GetChecksumsTest extends MockedPillarTest {
         addStep("Retrieve the FinalResponse for the GetChecksums request",
                 "The final response should say 'operation_complete', and give the requested data.");
         GetChecksumsFinalResponse finalResponse = clientReceiver.waitForMessage(GetChecksumsFinalResponse.class);
-        assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
+        assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
         assertEquals(finalResponse.getPillarID(), getPillarID());
-        assertEquals(finalResponse.getResultingChecksums().getChecksumDataItems().size(), 2);
+        assertEquals(2, finalResponse.getResultingChecksums().getChecksumDataItems().size());
     }
     
     @SuppressWarnings("rawtypes")
-    @Test @Tag("regressiontest", "pillartest"})
+    @Test
+    @Tag("regressiontest")
+    @Tag("pillartest")
     public void badCaseOperationNoFile() throws Exception {
         addDescription("Tests the GetChecksums functionality of the pillar for the failure scenario, where it does not have the file.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -263,16 +272,18 @@ public class GetChecksumsTest extends MockedPillarTest {
         addStep("Retrieve the FinalResponse for the GetChecksums request",
                 "The final response should tell about the error, and not contain the file.");
         GetChecksumsFinalResponse finalResponse = clientReceiver.waitForMessage(GetChecksumsFinalResponse.class);
-        assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.FILE_NOT_FOUND_FAILURE);
+        assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE, finalResponse.getResponseInfo().getResponseCode());
         assertEquals(finalResponse.getPillarID(), getPillarID());
         assertNull(finalResponse.getResultingChecksums());
         
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
-        assertEquals(audits.getCallsForAuditEvent(), 0, "Should not deliver audits");
+        assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
     }
 
     @SuppressWarnings("rawtypes")
-    @Test @Tag("regressiontest", "pillartest"})
+    @Test
+    @Tag("regressiontest")
+    @Tag("pillartest")
     public void testRestrictions() throws Exception {
         addDescription("Tests that the restrictions are correctly passed on to the cache.");
 
@@ -312,9 +323,9 @@ public class GetChecksumsTest extends MockedPillarTest {
         addStep("Retrieve the FinalResponse for the GetChecksums request",
                 "The final response should say 'operation_complete', and give the requested data.");
         GetChecksumsFinalResponse finalResponse = clientReceiver.waitForMessage(GetChecksumsFinalResponse.class);
-        assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
+        assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
         assertEquals(finalResponse.getPillarID(), getPillarID());
-        assertEquals(finalResponse.getResultingChecksums().getChecksumDataItems().size(), 1);
+        assertEquals(1, finalResponse.getResultingChecksums().getChecksumDataItems().size());
         assertEquals(finalResponse.getResultingChecksums().getChecksumDataItems().get(0).getFileID(), DEFAULT_FILE_ID);
     }
 }
