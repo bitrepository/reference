@@ -186,12 +186,6 @@
       <scope>test</scope>
     </dependency>
 
-<!--    <dependency>-->
-<!--      <groupId>org.testng</groupId>-->
-<!--      <artifactId>testng</artifactId>-->
-<!--      <version>7.1.0</version>-->
-<!--      <scope>test</scope>-->
-<!--    </dependency>-->
       <dependency>
           <groupId>org.junit.platform</groupId>
           <artifactId>junit-platform-suite-engine</artifactId>
@@ -459,7 +453,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
-        <version>3.28.0</version>
+        <version>3.26.0</version>
       </plugin>
     </plugins>
   </reporting>
