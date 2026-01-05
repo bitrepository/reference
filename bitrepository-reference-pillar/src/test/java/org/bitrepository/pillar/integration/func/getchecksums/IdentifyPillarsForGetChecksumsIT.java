@@ -51,7 +51,8 @@ public class IdentifyPillarsForGetChecksumsIT extends DefaultPillarIdentificatio
     }
 
     @Test
-    @Tag(PillarTestGroups.FULL_PILLAR_TEST) @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
+    @Tag(PillarTestGroups.FULL_PILLAR_TEST)
+    @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
     public void normalIdentificationTest() {
         addDescription("Verifies the normal behaviour for getChecksums identification");
         addStep("Setup for test", "2 files on the pillar");

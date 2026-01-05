@@ -1,8 +1,5 @@
 package org.bitrepository.pillar;
 
-import org.bitrepository.protocol.GlobalSuiteExtension;
-import org.bitrepository.protocol.IntegrationTest;
-import org.bitrepository.protocol.bus.ActiveMQMessageBusTest;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.suite.api.ExcludeTags;
 import org.junit.platform.suite.api.IncludeTags;
@@ -58,10 +55,10 @@ import org.junit.platform.suite.api.SuiteDisplayName;
  * </pre>
  */
 @Suite
-@SuiteDisplayName("Full Pillar Acceptance Test")
+@SuiteDisplayName("Checksum Pillar Acceptance Test")
 // Select the package(s) where the tests are located
 @SelectPackages("org.bitrepository.pillar.integration.func")
 // Filter to only run methods that have the specific @Tag
-@IncludeTags(PillarTestGroups.FULL_PILLAR_TEST)
-public class BitrepositoryPillarTestSuite {
+@IncludeTags(PillarTestGroups.CHECKSUM_PILLAR_TEST)
+public class BitrepositoryChecksumPillarTestSuite {
 }
