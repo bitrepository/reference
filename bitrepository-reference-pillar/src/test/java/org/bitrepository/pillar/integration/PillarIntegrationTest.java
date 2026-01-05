@@ -95,7 +95,17 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
         clientEventHandler = new ClientEventLogger(testEventManager);
     }
 
-    @AfterAll
+    @BeforeAll
+    public void setupPillarIntegrationTest(TestInfo testInfo) {
+        if (testConfiguration == null) {
+            testConfiguration = new PillarIntegrationTestConfiguration(PATH_TO_TESTPROPS_DIR + "/" + TEST_CONFIGURATION_FILE_NAME);
+        }
+
+        super.initMessagebus();
+        startEmbeddedPillar(testInfo);
+    }
+
+    // @AfterAll
     public void shutdownRealMessageBus() {
         if(!useEmbeddedMessageBus()) {
             MessageBusManager.clear();
@@ -127,6 +137,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     protected void setupMessageBus() {
         //Shortcircuit this so the messagebus is NOT INITIALISED BEFORE THE CONFIGURATION
         //super.setupMessageBus();
+        setupRealMessageBus();
     }
 
     @Override
