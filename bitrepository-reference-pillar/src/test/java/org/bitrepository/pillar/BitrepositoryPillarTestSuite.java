@@ -9,6 +9,7 @@ import org.junit.platform.suite.api.IncludeTags;
 import org.junit.platform.suite.api.SelectClasses;
 import org.junit.platform.suite.api.SelectPackages;
 import org.junit.platform.suite.api.Suite;
+import org.junit.platform.suite.api.SuiteDisplayName;
 
 /**
  * BitrepositoryPillarTestSuite is a JUnit 5 suite class that groups and configures multiple test classes
@@ -57,7 +58,10 @@ import org.junit.platform.suite.api.Suite;
  * </pre>
  */
 @Suite
-@SelectClasses({IntegrationTest.class, ActiveMQMessageBusTest.class})  // List your test classes here
-@ExtendWith(GlobalSuiteExtension.class)
+@SuiteDisplayName("Full Pillar Acceptance Test")
+// Select the package(s) where the tests are located
+@SelectPackages("org.bitrepository.pillar.integration.func")
+// Filter to only run methods that have the specific @Tag
+@IncludeTags(PillarTestGroups.FULL_PILLAR_TEST)
 public class BitrepositoryPillarTestSuite {
 }
