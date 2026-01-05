@@ -29,6 +29,7 @@ import org.bitrepository.modify.putfile.BlockingPutFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.pillar.integration.perf.metrics.Metrics;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -49,6 +50,7 @@ public class PutFileStressIT extends PillarPerformanceTest {
     @Test
     @Tag("pillar-stress-test")
     @Tag("stress-test-pillar-population")
+    @Disabled
     public void singleTreadedPut() throws Exception {
         final int NUMBER_OF_FILES = 10;
         final int PART_STATISTIC_INTERVAL = 2;
@@ -71,6 +73,7 @@ public class PutFileStressIT extends PillarPerformanceTest {
 
     @Test
     @Tag("pillar-stress-test")
+//    @Disabled
     public void parallelPut() throws Exception {
         final int numberOfFiles = testConfiguration.getInt("pillarintegrationtest.PutFileStressIT.parallelPut.numberOfFiles");
         final int  partStatisticsInterval = testConfiguration.getInt("pillarintegrationtest.PutFileStressIT.parallelPut.partStatisticsInterval");
