@@ -59,9 +59,9 @@ import org.junit.platform.suite.api.SuiteDisplayName;
  */
 @Suite
 @SuiteDisplayName("Full Pillar Acceptance Test")
-// Select the package(s) where the tests are located
+// Use SelectPackages with the exact base package
 @SelectPackages("org.bitrepository.pillar.integration.func")
-// Filter to only run methods that have the specific @Tag
-@IncludeTags(PillarTestGroups.FULL_PILLAR_TEST)
+// For debugging: Comment out the Tag filter to see if it finds ANY tests in that package
+// @IncludeTags(PillarTestGroups.FULL_PILLAR_TEST)
 public class BitrepositoryPillarTestSuite {
 }
