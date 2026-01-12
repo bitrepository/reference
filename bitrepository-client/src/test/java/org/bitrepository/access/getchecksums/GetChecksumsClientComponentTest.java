@@ -103,7 +103,7 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
     public void getChecksumsFromSinglePillar() throws Exception {
         addDescription("Tests that the client can retrieve checksums from a single pillar.");
 
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         GetChecksumsClient getChecksumsClient = createGetChecksumsClient();
 
         addStep("Request the delivery of the checksum of a file from pillar1.",
@@ -164,7 +164,7 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
 
         String deliveryFilename = "TEST-CHECKSUM-DELIVERY.xml";
 
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         GetChecksumsClient getChecksumsClient = createGetChecksumsClient();
 
         addStep("Ensure the delivery file isn't already present on the http server",
@@ -224,7 +224,7 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
 
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         GetChecksumsClient getChecksumsClient = createGetChecksumsClient();
 
         addStep("Request the delivery of the checksum of a file from the pillar(s). A callback listener should be supplied.",
@@ -332,7 +332,7 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(1).getPillarIDs().getPillarID().clear();
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(1).getPillarIDs().getPillarID().add(PILLAR2_ID);
         String otherCollection =  settingsForCUT.getRepositorySettings().getCollections().getCollection().get(1).getID();
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         GetChecksumsClient client = createGetChecksumsClient();
 
         addStep("Request the putting of a file through the PutClient for collection2",
@@ -374,7 +374,7 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
      */
     private GetChecksumsClient createGetChecksumsClient() {
         return new GetChecksumsClientTestWrapper(new ConversationBasedGetChecksumsClient(
-                messageBus, conversationMediator, settingsForCUT, settingsForTestClient.getComponentID()), testEventManager);
+                messageBus, conversationMediator, settingsForCUT, settingsForTestClient.getComponentID()));
     }
 
 

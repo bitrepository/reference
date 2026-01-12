@@ -44,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * functionality by the test for the specific operations.
  */
 public abstract class DefaultClientTest extends DefaultFixtureClientTest {
-    protected final TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+    protected final TestEventHandler testEventHandler = new TestEventHandler();
     private DatatypeFactory datatypeFactory;
 
     @BeforeEach

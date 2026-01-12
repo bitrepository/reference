@@ -63,15 +63,15 @@ public abstract class DefaultFixtureClientTest extends IntegrationTest {
     protected void registerMessageReceivers() {
         super.registerMessageReceivers();
 
-        collectionReceiver = new MessageReceiver(settingsForCUT.getCollectionDestination(), testEventManager);
+        collectionReceiver = new MessageReceiver(settingsForCUT.getCollectionDestination());
         addReceiver(collectionReceiver);
 
         pillar1DestinationId = "Pillar1_topic" + getTopicPostfix();
-        pillar1Receiver = new MessageReceiver(pillar1DestinationId, testEventManager);
+        pillar1Receiver = new MessageReceiver(pillar1DestinationId);
         addReceiver(pillar1Receiver);
 
         pillar2DestinationId = "Pillar2_topic" + getTopicPostfix();
-        pillar2Receiver = new MessageReceiver(pillar2DestinationId, testEventManager);
+        pillar2Receiver = new MessageReceiver(pillar2DestinationId);
         addReceiver(pillar2Receiver);
     }
 

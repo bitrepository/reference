@@ -13,7 +13,7 @@ import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.messagebus.SimpleMessageBus;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
-import org.jaccept.TestEventManager;
+
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -25,7 +25,7 @@ import java.net.URL;
 public class GlobalSuiteExtension implements BeforeAllCallback, AfterAllCallback {
 
     private static boolean initialized = false;
-    protected static TestEventManager testEventManager = TestEventManager.getInstance();
+    
     public static LocalActiveMQBroker broker;
     public static EmbeddedHttpServer server;
     public static HttpServerConfiguration httpServerConfiguration;
@@ -81,7 +81,7 @@ public class GlobalSuiteExtension implements BeforeAllCallback, AfterAllCallback
      * <code>super.registerReceivers()</code> when overriding
      */
     protected void registerMessageReceivers() {
-        alarmReceiver = new MessageReceiver(settingsForCUT.getAlarmDestination(), testEventManager);
+        alarmReceiver = new MessageReceiver(settingsForCUT.getAlarmDestination());
         addReceiver(alarmReceiver);
     }
 

@@ -21,7 +21,6 @@
  */
 package org.bitrepository.common.utils;
 
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -33,8 +32,13 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
+import org.bitrepository.protocol.utils.AllureTestUtils;
 
-public class CalendarUtilsTest extends ExtendedTestCase {
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+
+
+public class CalendarUtilsTest {
     long DATE_IN_MILLIS = 123456789L;
     
     @Test

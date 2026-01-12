@@ -26,7 +26,7 @@ package org.bitrepository.access.getfile;
 
 import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.jaccept.TestEventManager;
+
 
 import java.net.URL;
 
@@ -34,31 +34,45 @@ import java.net.URL;
  * Wraps the <code>GetFileClient</code> adding test event logging and functionality for handling blocking calls.
  */
 public class GetFileClientTestWrapper implements GetFileClient {
-    private final GetFileClient createGetFileClient;
-    private final TestEventManager testEventManager;
+    private GetFileClient createGetFileClient;
 
-    public GetFileClientTestWrapper(GetFileClient createGetFileClient,
-            TestEventManager testEventManager) {
+    public GetFileClientTestWrapper(GetFileClient createGetFileClient) {
         this.createGetFileClient = createGetFileClient;
-        this.testEventManager = testEventManager;
+        
     }
 
     @Override
-    public void getFileFromFastestPillar(String collectionID,String fileID, FilePart filePart, URL uploadUrl,
+    public void getFileFromFastestPillar(String collectionID, String fileID, FilePart filePart, URL uploadUrl,
                                          EventHandler eventHandler,
                                          String auditTrailInformation) {
-        testEventManager.addStimuli("Calling getFileFromFastestPillar(" + fileID + ", " + uploadUrl + ")");
-        createGetFileClient.getFileFromFastestPillar(collectionID,
-                fileID, filePart, uploadUrl, eventHandler, auditTrailInformation);
+        String stepName = "Calling getFileFromFastestPillar for: " + fileID;
+        String details = "Collection: " + collectionID + "\n"
+                + "FilePart: " + filePart + "\n"
+                + "Upload URL: " + uploadUrl + "\n"
+                + "Audit Info: " + auditTrailInformation;
+
+        io.qameta.allure.Allure.step(stepName, () -> {
+            io.qameta.allure.Allure.addAttachment("Request Parameters", details);
+            createGetFileClient.getFileFromFastestPillar(collectionID,
+                    fileID, filePart, uploadUrl, eventHandler, auditTrailInformation);
+        });
     }
 
     @Override
-    public void getFileFromSpecificPillar(String collectionID,String fileID, FilePart filePart, URL uploadUrl,
+    public void getFileFromSpecificPillar(String collectionID, String fileID, FilePart filePart, URL uploadUrl,
                                           String pillarID,
                                           EventHandler eventHandler, String auditTrailInformation) {
-        testEventManager.addStimuli("Calling getFileFromSpecificPillar(" + 
-                fileID + ", " + uploadUrl + ", " + pillarID + ")");
-        createGetFileClient.getFileFromSpecificPillar(collectionID,
-                fileID, filePart, uploadUrl, pillarID, eventHandler, auditTrailInformation);
+        String stepName = "Calling getFileFromSpecificPillar for: " + fileID + " on " + pillarID;
+        String details = "Collection: " + collectionID + "\n"
+                + "FilePart: " + filePart + "\n"
+                + "Upload URL: " + uploadUrl + "\n"
+                + "Pillar: " + pillarID + "\n"
+                + "Audit Info: " + auditTrailInformation;
+
+        io.qameta.allure.Allure.step(stepName, () -> {
+            io.qameta.allure.Allure.addAttachment("Request Parameters", details);
+            createGetFileClient.getFileFromSpecificPillar(collectionID,
+                    fileID, filePart, uploadUrl, pillarID, eventHandler, auditTrailInformation);
+        });
     }
 }

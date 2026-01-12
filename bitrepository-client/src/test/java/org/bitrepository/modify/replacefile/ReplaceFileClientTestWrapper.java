@@ -24,10 +24,11 @@
  */
 package org.bitrepository.modify.replacefile;
 
+import io.qameta.allure.Allure;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.jaccept.TestEventManager;
+
 
 import java.net.URL;
 
@@ -37,31 +38,34 @@ import java.net.URL;
 public class ReplaceFileClientTestWrapper implements ReplaceFileClient {
     /** The PutClient to wrap. */
     private final ReplaceFileClient wrappedReplaceClient;
-    /** The manager to monitor the operations.*/
-    private final TestEventManager testEventManager;
 
     /**
      * @param putClientInstance The instance to wrap and monitor.
-     * @param eventManager The manager to monitor the operations.
      */
-    public ReplaceFileClientTestWrapper(ReplaceFileClient putClientInstance, TestEventManager eventManager) {
+    public ReplaceFileClientTestWrapper(ReplaceFileClient putClientInstance) {
         this.wrappedReplaceClient = putClientInstance;
-        this.testEventManager = eventManager;
     }
 
     @Override
     public void replaceFile(String collectionID, String fileID, String pillarID,
                             ChecksumDataForFileTYPE checksumForDeleteAtPillar,
-            ChecksumSpecTYPE checksumRequestedForDeletedFile, URL url, long sizeOfNewFile,
-            ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar, ChecksumSpecTYPE checksumRequestsForNewFile,
-            EventHandler eventHandler, String auditTrailInformation) {
-        testEventManager.addStimuli("replaceFile(" + fileID + ", " + pillarID + ", " + checksumForDeleteAtPillar + ", "
-                + checksumRequestedForDeletedFile + ", " + url + ", " + sizeOfNewFile + ", " 
-                + checksumForNewFileValidationAtPillar + ", " + checksumRequestsForNewFile + ", " + eventHandler + ", "
-                + auditTrailInformation);
-        wrappedReplaceClient.replaceFile(collectionID, fileID, pillarID, checksumForDeleteAtPillar,
-                checksumRequestedForDeletedFile,
-                url, sizeOfNewFile, checksumForNewFileValidationAtPillar, checksumRequestsForNewFile, eventHandler, 
-                auditTrailInformation);
+                            ChecksumSpecTYPE checksumRequestedForDeletedFile, URL url, long sizeOfNewFile,
+                            ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar, ChecksumSpecTYPE checksumRequestsForNewFile,
+                            EventHandler eventHandler, String auditTrailInformation) {
+        String stepName = "Calling replaceFile for: " + fileID;
+        StringBuilder details = new StringBuilder();
+        details.append("Collection: ").append(collectionID).append("\n")
+                .append("Pillar: ").append(pillarID).append("\n")
+                .append("URL: ").append(url).append("\n")
+                .append("New Size: ").append(sizeOfNewFile).append("\n")
+                .append("Audit Info: ").append(auditTrailInformation);
+
+        Allure.step(stepName, () -> {
+            Allure.addAttachment("Replace Request Parameters", details.toString());
+            wrappedReplaceClient.replaceFile(collectionID, fileID, pillarID, checksumForDeleteAtPillar,
+                    checksumRequestedForDeletedFile,
+                    url, sizeOfNewFile, checksumForNewFileValidationAtPillar, checksumRequestsForNewFile, eventHandler,
+                    auditTrailInformation);
+        });
     }
 }

@@ -26,7 +26,6 @@ import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerId;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.util.encoders.Base64;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -34,9 +33,12 @@ import org.junit.jupiter.api.Test;
 import java.math.BigInteger;
 import java.security.cert.X509Certificate;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addFixture;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class PermissionStoreTest extends ExtendedTestCase  {
+public class PermissionStoreTest  {
     private static final String componentID = "TEST";
     private PermissionStore permissionStore;
     

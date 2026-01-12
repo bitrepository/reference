@@ -26,15 +26,14 @@
 //import org.bitrepository.integrityservice.mocks.MockWorkflow;
 //import org.bitrepository.integrityservice.scheduler.TimerBasedScheduler;
 //import org.bitrepository.integrityservice.scheduler.workflow.Workflow;
-//import org.jaccept.structure.ExtendedTestCase;
-//
+////
 //
 //
 //
 ///**
 // * Test that scheduler calls triggers.
 // */
-//public class IntegrityWorkflowSchedulerTest extends ExtendedTestCase {
+//public class IntegrityWorkflowSchedulerTest {
 //    Settings settings;
 //    private final Long INTERVAL = 500L;
 //    private final Long INTERVAL_DELAY = 250L;

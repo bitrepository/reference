@@ -47,7 +47,7 @@ import org.bitrepository.protocol.security.MessageSigner;
 import org.bitrepository.protocol.security.OperationAuthorizer;
 import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
-import org.jaccept.TestEventManager;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -89,10 +89,10 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     protected void initializeCUT() {
         super.initializeCUT();
         reloadMessageBus();
-        clientProvider = new ClientProvider(securityManager, settingsForTestClient, testEventManager);
+        clientProvider = new ClientProvider(securityManager, settingsForTestClient);
         pillarFileManager = new PillarFileManager(collectionID,
-            getPillarID(), settingsForTestClient, clientProvider, testEventManager, httpServerConfiguration);
-        clientEventHandler = new ClientEventLogger(testEventManager);
+            getPillarID(), settingsForTestClient, clientProvider, httpServerConfiguration);
+        clientEventHandler = new ClientEventLogger();
     }
 
     @BeforeAll
@@ -261,20 +261,20 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     public class ClientEventLogger implements EventHandler {
 
         /** The <code>TestEventManager</code> used to manage the event for the associated test. */
-        private final TestEventManager testEventManager;
+        
 
         /** The constructor.
-         *
-         * @param testEventManager The <code>TestEventManager</code> used to manage the event for the associated test.
          */
-        public ClientEventLogger(TestEventManager testEventManager) {
+        public ClientEventLogger() {
             super();
-            this.testEventManager = testEventManager;
+            
         }
 
         @Override
         public void handleEvent(OperationEvent event) {
-            testEventManager.addResult("Received event: "+ event);
+            io.qameta.allure.Allure.step("Received event: " + event.getEventType(), () -> {
+                io.qameta.allure.Allure.addAttachment("Event Details", event.toString());
+            });
         }
     }
 }

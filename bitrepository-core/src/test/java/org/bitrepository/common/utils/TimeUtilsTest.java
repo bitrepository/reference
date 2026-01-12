@@ -21,7 +21,6 @@
  */
 package org.bitrepository.common.utils;
 
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -41,10 +40,12 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class TimeUtilsTest extends ExtendedTestCase {
+public class TimeUtilsTest {
     private static final ZonedDateTime BASE = Instant.EPOCH.atZone(ZoneOffset.UTC);
 
     @Test @Tag("regressiontest")

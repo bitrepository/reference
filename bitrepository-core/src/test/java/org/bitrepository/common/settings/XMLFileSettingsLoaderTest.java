@@ -25,12 +25,11 @@
 package org.bitrepository.common.settings;
 
 import org.bitrepository.settings.repositorysettings.RepositorySettings;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-public class XMLFileSettingsLoaderTest extends ExtendedTestCase{
+public class XMLFileSettingsLoaderTest{
     private static final String PATH_TO_SETTINGS = "settings/xml/bitrepository-devel";
     
     @Test

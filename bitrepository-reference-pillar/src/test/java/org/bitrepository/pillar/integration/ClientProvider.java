@@ -35,7 +35,7 @@ import org.bitrepository.modify.putfile.BlockingPutFileClient;
 import org.bitrepository.modify.putfile.PutFileClientTestWrapper;
 import org.bitrepository.modify.replacefile.BlockingReplaceFileClient;
 import org.bitrepository.modify.replacefile.ReplaceFileClientTestWrapper;
-import org.jaccept.TestEventManager;
+
 
 /**
  * Provides (blocking) reference client instances.
@@ -43,7 +43,6 @@ import org.jaccept.TestEventManager;
 public class ClientProvider {
     private final org.bitrepository.protocol.security.SecurityManager securityManager;
     private final Settings settings;
-    private final TestEventManager eventManager;
 
     private BlockingPutFileClient putFileClient;
     private BlockingReplaceFileClient replaceFileClient;
@@ -55,15 +54,12 @@ public class ClientProvider {
     /**
      * @param securityManager The security manager to use for the clients.
      * @param settings The settings to use for the clients.
-     * @param eventManager
      */
     public ClientProvider(
         org.bitrepository.protocol.security.SecurityManager securityManager,
-        Settings settings,
-        TestEventManager eventManager) {
+        Settings settings) {
         this.securityManager = securityManager;
         this.settings = settings;
-        this.eventManager = eventManager;
 
     }
 
@@ -73,7 +69,7 @@ public class ClientProvider {
                 new PutFileClientTestWrapper(
                     ModifyComponentFactory.getInstance().retrievePutClient(
                         settings, securityManager, settings.getComponentID()
-                    ), eventManager
+                    )
                 )
             );
         }
@@ -86,7 +82,7 @@ public class ClientProvider {
                     new ReplaceFileClientTestWrapper(
                             ModifyComponentFactory.getInstance().retrieveReplaceFileClient(
                                     settings, securityManager, settings.getComponentID()
-                            ), eventManager
+                            )
                     )
             );
         }
@@ -99,7 +95,7 @@ public class ClientProvider {
                 new DeleteFileClientTestWrapper(
                     ModifyComponentFactory.getInstance().retrieveDeleteFileClient(
                         settings, securityManager, settings.getComponentID()
-                    ), eventManager
+                    )
                 )
             );
         }
@@ -112,7 +108,7 @@ public class ClientProvider {
                 new GetChecksumsClientTestWrapper(
                     AccessComponentFactory.getInstance().createGetChecksumsClient(
                         settings, securityManager, settings.getComponentID()
-                    ), eventManager
+                    )
                 )
             );
         }
@@ -125,7 +121,7 @@ public class ClientProvider {
                 new GetFileIDsClientTestWrapper(
                     AccessComponentFactory.getInstance().createGetFileIDsClient(
                         settings, securityManager, settings.getComponentID()
-                    ), eventManager
+                    )
                 )
             );
         }
@@ -139,7 +135,7 @@ public class ClientProvider {
                     new AuditTrailClientTestWrapper(
                             AccessComponentFactory.getInstance().createAuditTrailClient(
                                     settings, securityManager, settings.getComponentID()
-                            ), eventManager
+                            )
                     )
             );
         }

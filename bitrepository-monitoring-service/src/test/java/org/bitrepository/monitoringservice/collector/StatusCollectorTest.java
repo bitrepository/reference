@@ -26,7 +26,6 @@ import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.monitoringservice.MockAlerter;
 import org.bitrepository.monitoringservice.MockGetStatusClient;
 import org.bitrepository.monitoringservice.MockStatusStore;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
@@ -37,8 +36,11 @@ import org.junit.jupiter.api.TestInstance;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class StatusCollectorTest extends ExtendedTestCase {
+public class StatusCollectorTest {
     Settings settings;
     
     private int INTERVAL = 500;

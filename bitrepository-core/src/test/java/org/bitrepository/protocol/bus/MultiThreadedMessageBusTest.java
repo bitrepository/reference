@@ -60,7 +60,7 @@ public class MultiThreadedMessageBusTest extends IntegrationTest {
             broker.start();
         }
         messageBus = new MessageBusWrapper(ProtocolComponentFactory.getInstance().getMessageBus(
-                settingsForTestClient, securityManager), testEventManager);
+                settingsForTestClient, securityManager));
 
     }
     

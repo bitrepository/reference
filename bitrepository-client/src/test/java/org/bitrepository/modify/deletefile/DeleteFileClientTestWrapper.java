@@ -27,35 +27,39 @@ package org.bitrepository.modify.deletefile;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.jaccept.TestEventManager;
+
+import io.qameta.allure.Allure;
 
 /**
  * Wrapper class for a DeleteFileClient adding testmanager logging.
  */
 public class DeleteFileClientTestWrapper implements DeleteFileClient {
     /** The PutClient to wrap. */
-    private final DeleteFileClient wrappedDeleteClient;
-    /** The manager to monitor the operations.*/
-    private final TestEventManager testEventManager;
+    private DeleteFileClient wrappedDeleteClient;
 
     /**
      * Constructor.
      * @param deleteClientInstance The instance to wrap and monitor.
-     * @param eventManager The manager to monitor the operations.
      */
-    public DeleteFileClientTestWrapper(DeleteFileClient deleteClientInstance, TestEventManager eventManager) {
+    public DeleteFileClientTestWrapper(DeleteFileClient deleteClientInstance) {
         this.wrappedDeleteClient = deleteClientInstance;
-        this.testEventManager = eventManager;
     }
 
     @Override
     public void deleteFile(String collectionID, String fileID, String pillarID,
                            ChecksumDataForFileTYPE checksumForPillar,
-            ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation) {
-        testEventManager.addStimuli("Calling deleteFile(" + fileID + ", " + pillarID + ", " + checksumForPillar + ", "
-            + checksumRequested + ", eventHandler, " + auditTrailInformation + ")");
-        wrappedDeleteClient.deleteFile(collectionID, fileID, pillarID, checksumForPillar, checksumRequested,
-                eventHandler,
-                auditTrailInformation);        
+                           ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation) {
+        String stepName = "Calling deleteFile for file: " + fileID;
+        String details = "Collection: " + collectionID + "\n"
+                + "Pillar: " + pillarID + "\n"
+                + "Checksum: " + checksumForPillar + "\n"
+                + "Audit Info: " + auditTrailInformation;
+
+        Allure.step(stepName, () -> {
+            Allure.addAttachment("Delete Request Parameters", details);
+            wrappedDeleteClient.deleteFile(collectionID, fileID, pillarID, checksumForPillar, checksumRequested,
+                    eventHandler,
+                    auditTrailInformation);
+        });
     }
 }

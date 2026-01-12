@@ -79,7 +79,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
     public void getFileFromSpecificPillar() throws Exception {
         addDescription("Tests that the GetClient client works correctly when requesting a file from a specific pillar");
 
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         GetFileClient client = createGetFileClient();
 
         addStep("Request the delivery of a file from pillar2.",
@@ -159,7 +159,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         filePart.setPartLength(BigInteger.TEN);
         filePart.setPartOffSet(BigInteger.ONE);
 
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         GetFileClient client = createGetFileClient();
 
         String chosenPillar = settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().get(0);
@@ -223,7 +223,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(fastPillarID);
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(slowPillarID);
         GetFileClient client = createGetFileClient();
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
 
         addStep("Defining the variables for the GetFileClient and defining them in the configuration",
                 "It should be possible to change the values of the configurations.");
@@ -287,7 +287,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         addStep("Call getFile form fastest pillar.",
                 "A IDENTIFY_REQUEST_SENT should be generate and an identification request should be sent.");
         GetFileClient client = createGetFileClient();
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         client.getFileFromFastestPillar(collectionID, DEFAULT_FILE_ID, NO_FILE_PART,
                 httpServerConfiguration.getURL(DEFAULT_FILE_ID),
                 testEventHandler, null);
@@ -335,7 +335,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
         addStep("Make the GetClient ask for fastest pillar.",
                 "It should send message to identify which pillar can respond fastest.");
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         client.getFileFromFastestPillar(collectionID, DEFAULT_FILE_ID, NO_FILE_PART,
                 httpServerConfiguration.getURL(DEFAULT_FILE_ID),
                 testEventHandler, null);
@@ -362,7 +362,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
         addStep("Request the delivery of a file from a specific pillar. A callback listener should be supplied.",
                 "A IdentifyPillarsForGetFileRequest will be sent to the pillar.");
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         client.getFileFromSpecificPillar(collectionID, DEFAULT_FILE_ID, NO_FILE_PART,
                 httpServerConfiguration.getURL(DEFAULT_FILE_ID),
                 PILLAR1_ID, testEventHandler, null);
@@ -395,7 +395,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
         String fileName = "ERROR-NO-SUCH-FILE-ERROR";
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         URL url = httpServerConfiguration.getURL(DEFAULT_FILE_ID);
 
         addStep("Call getFileFromSpecificPillar.",
@@ -427,7 +427,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
         String fileName = "ERROR-NO-SUCH-FILE-ERROR";
         GetFileClient client = createGetFileClient();
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         URL url = httpServerConfiguration.getURL(DEFAULT_FILE_ID);
 
         addStep("Use the default 2 pillars.", "");
@@ -468,7 +468,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         addStep("Call getFile form fastest pillar.",
                 "A IDENTIFY_REQUEST_SENT should be generate and an identification request should be sent.");
         GetFileClient client = createGetFileClient();
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         client.getFileFromFastestPillar(collectionID, DEFAULT_FILE_ID, NO_FILE_PART,
                 httpServerConfiguration.getURL(DEFAULT_FILE_ID),
                 testEventHandler, null);
@@ -515,7 +515,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         addStep("Call getFile from the fastest pillar.",
                 "A IDENTIFY_REQUEST_SENT should be generate and an identification request should be sent.");
         GetFileClient client = createGetFileClient();
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         client.getFileFromFastestPillar(collectionID, DEFAULT_FILE_ID, NO_FILE_PART,
                 httpServerConfiguration.getURL(DEFAULT_FILE_ID),
                 testEventHandler, null);
@@ -562,7 +562,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         addStep("Request a getFile from the fastest pillar.",
                 "A IDENTIFY_REQUEST_SENT should be generate and an identification request should be sent.");
         GetFileClient client = createGetFileClient();
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         client.getFileFromFastestPillar(collectionID, DEFAULT_FILE_ID, NO_FILE_PART,
                 httpServerConfiguration.getURL(DEFAULT_FILE_ID),
                 testEventHandler, null);
@@ -606,7 +606,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(1).getPillarIDs().getPillarID().clear();
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(1).getPillarIDs().getPillarID().add(PILLAR2_ID);
         String otherCollection =  settingsForCUT.getRepositorySettings().getCollections().getCollection().get(1).getID();
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         GetFileClient client = createGetFileClient();
 
         addStep("Request the getting of a file through the client for collection2",
@@ -650,7 +650,6 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
     private GetFileClient createGetFileClient() {
         return new GetFileClientTestWrapper(
                 new ConversationBasedGetFileClient(messageBus, conversationMediator, settingsForCUT,
-                        settingsForTestClient.getComponentID()),
-                testEventManager);
+                        settingsForTestClient.getComponentID()));
     }
 }

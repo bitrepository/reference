@@ -28,7 +28,7 @@ import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
-import org.jaccept.TestEventManager;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -44,7 +44,7 @@ public class GeneralMessageBusTest extends IntegrationTest {
     @Override
     protected void registerMessageReceivers() {
         super.registerMessageReceivers();
-        collectionReceiver = new MessageReceiver(settingsForCUT.getCollectionDestination(), testEventManager);
+        collectionReceiver = new MessageReceiver(settingsForCUT.getCollectionDestination());
         addReceiver(collectionReceiver);
     }
 
@@ -76,13 +76,12 @@ public class GeneralMessageBusTest extends IntegrationTest {
     @Tag("regressiontest")
     public final void twoListenersForTopicTest() throws Exception {
         addDescription("Verifies that two listeners on the same topic both receive the message");
-        TestEventManager testEventManager = TestEventManager.getInstance();
 
         addStep("Make a connection to the message bus and add two listeners", "No exceptions should be thrown");
-        MessageReceiver receiver1 = new MessageReceiver(alarmDestinationID, testEventManager);
+        MessageReceiver receiver1 = new MessageReceiver(alarmDestinationID);
         addReceiver(receiver1);
         messageBus.addListener(receiver1.getDestination(), receiver1.getMessageListener());
-        MessageReceiver receiver2 = new MessageReceiver(alarmDestinationID, testEventManager);
+        MessageReceiver receiver2 = new MessageReceiver(alarmDestinationID);
         addReceiver(receiver2);
         messageBus.addListener(receiver2.getDestination(), receiver2.getMessageListener());
 

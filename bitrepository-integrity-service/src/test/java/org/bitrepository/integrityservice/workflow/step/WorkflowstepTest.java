@@ -30,7 +30,6 @@ import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
 import org.bitrepository.integrityservice.workflow.IntegrityContributors;
 import org.bitrepository.service.audit.AuditTrailManager;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.BeforeEach;
 
 
@@ -39,7 +38,7 @@ import javax.xml.datatype.DatatypeFactory;
 
 import static org.mockito.Mockito.mock;
 
-public class WorkflowstepTest extends ExtendedTestCase {
+public class WorkflowstepTest {
     protected Settings settings;
 
     public static final String TEST_PILLAR_1 = "test-pillar-1";

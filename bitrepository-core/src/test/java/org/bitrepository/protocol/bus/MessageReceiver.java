@@ -27,7 +27,7 @@ package org.bitrepository.protocol.bus;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.messagebus.MessageListener;
-import org.jaccept.TestEventManager;
+
 import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,15 +65,14 @@ public class MessageReceiver {
     private final MessageModel messageModel = new MessageModel();
     private final String destination;
     private final MessageListener messageListener;
-    private final TestEventManager testEventManager;
+    
 
     /**
      * @param destination The destination to use for the receiver. Primarily used for logging purposes.
-     * @param testEventManager The test event manager to use for
      */
-    public MessageReceiver(String destination, TestEventManager testEventManager) {
+    public MessageReceiver(String destination) {
         this.destination = destination;
-        this.testEventManager = testEventManager;
+        
         messageListener = new TestMessageHandler();
     }
 
@@ -153,7 +152,6 @@ public class MessageReceiver {
             }
             if (outstandingMessages.length() > 0 ) {
                 String info = "The following messages haven't been handled by the testcase: " + outstandingMessages;
-                testEventManager.addResult(info);
                 log.warn(info);
             }
         }
@@ -176,9 +174,6 @@ public class MessageReceiver {
 
         private <T> void addMessage(T message) {
             if (pillarFilter != null && !pillarFilter.contains(((Message)message).getFrom())) return;
-            if(testEventManager != null) {
-                testEventManager.addResult("Received message on " + getDestination() + " : " + message);
-            }
             @SuppressWarnings("unchecked")
             BlockingQueue<T> queue = (BlockingQueue<T>)getMessageQueue(message.getClass());
             queue.add(message);

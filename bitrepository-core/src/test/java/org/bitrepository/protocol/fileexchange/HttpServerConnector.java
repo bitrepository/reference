@@ -24,7 +24,7 @@
  */
 package org.bitrepository.protocol.fileexchange;
 
-import org.jaccept.TestEventManager;
+
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -41,7 +41,7 @@ public class HttpServerConnector {
 
     /** The configuration for the file exchange.*/
     private final HttpServerConfiguration config; 
-    private final TestEventManager testEventManager;
+    
     public static final String TEMP_DOWNLOADED_FILES_ROOT = "target/temp-download-dir";
     private final String tempDownloadedFilesDir;
 
@@ -50,9 +50,9 @@ public class HttpServerConnector {
      *
      * @param config The configuration for file exchange.
      */
-    public HttpServerConnector(HttpServerConfiguration config, TestEventManager testEventManager) {
+    public HttpServerConnector(HttpServerConfiguration config) {
         this.config = config;
-        this.testEventManager = testEventManager;
+        
         tempDownloadedFilesDir = TEMP_DOWNLOADED_FILES_ROOT + File.separator + config.getHttpServerName();
         File tempDownloadedFilesDirHandle = new File(tempDownloadedFilesDir);
         tempDownloadedFilesDirHandle.delete();

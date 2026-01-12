@@ -21,12 +21,13 @@
  */
 package org.bitrepository.alarm;
 
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-public class AlarmExceptionTest extends ExtendedTestCase {
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+
+public class AlarmExceptionTest {
     
     @Test
     @Tag("regressiontest")

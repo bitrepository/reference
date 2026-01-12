@@ -22,7 +22,6 @@
 package org.bitrepository.common.utils;
 
 import org.apache.activemq.util.ByteArrayInputStream;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,7 +31,10 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 
-public class FileUtilsTest extends ExtendedTestCase {
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+
+public class FileUtilsTest {
     String DIR = "test-directory";
     String SUB_DIR = "sub-directory";
     String TEST_FILE_NAME = "test.file.name";
