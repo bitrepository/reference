@@ -37,7 +37,6 @@ import org.bitrepository.settings.repositorysettings.OperationPermission;
 import org.bitrepository.settings.repositorysettings.Permission;
 import org.bitrepository.settings.repositorysettings.PermissionSet;
 import org.bouncycastle.util.encoders.Base64;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -51,7 +50,10 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-public class SecurityManagerTest extends ExtendedTestCase {
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+
+public class SecurityManagerTest {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private org.bitrepository.protocol.security.SecurityManager securityManager;
     private PermissionStore permissionStore;

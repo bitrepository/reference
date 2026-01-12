@@ -25,10 +25,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
 
 public class AlarmExceptionTest {
-
+    
     @Test
     @Tag("regressiontest")
     public void alarmExceptionTest() throws Exception {
@@ -37,17 +37,17 @@ public class AlarmExceptionTest {
         try {
             throw new AlarmException(alarmError);
         } catch (AlarmException e) {
-            Assertions.assertEquals(alarmError, e.getMessage());
+            Assertions.assertEquals(e.getMessage(), alarmError);
             Assertions.assertNull(e.getCause());
         }
-
+        
         String otherError = "This is the message of the included exception";
         try {
             throw new AlarmException(alarmError, new Exception(otherError));
         } catch (AlarmException e) {
-            Assertions.assertEquals(alarmError, e.getMessage());
+            Assertions.assertEquals(e.getMessage(), alarmError);
             Assertions.assertNotNull(e.getCause());
-            Assertions.assertEquals(otherError, e.getCause().getMessage());
+            Assertions.assertEquals(e.getCause().getMessage(), otherError);
         }
     }
 

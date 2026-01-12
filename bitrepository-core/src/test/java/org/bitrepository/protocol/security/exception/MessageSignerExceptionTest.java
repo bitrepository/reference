@@ -21,12 +21,16 @@
  */
 package org.bitrepository.protocol.security.exception;
 
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.bitrepository.protocol.utils.AllureTestUtils;
 
-public class MessageSignerExceptionTest extends ExtendedTestCase {
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+
+
+public class MessageSignerExceptionTest {
     
     @Test
     @Tag("regressiontest")

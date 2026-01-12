@@ -22,7 +22,7 @@
 
 package org.bitrepository.integrityservice.reports;
 
-import org.jaccept.structure.ExtendedTestCase;
+import org.bitrepository.protocol.IntegrationTest;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class BasicIntegrityReporterTest extends ExtendedTestCase {
+public class BasicIntegrityReporterTest extends IntegrationTest {
     private static final String REPORT_SUMMARY_START = "The following integrity issues were found:\n";
 
     @Test

@@ -23,16 +23,18 @@ package org.bitrepository.service.exception;
 
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 
 
 /**
  * Test that InvalidMessageException works as expected.
  */
-public class InvalidMessageExceptionTest extends ExtendedTestCase {
+public class InvalidMessageExceptionTest {
     private final String TEST_COLLECTION_ID = "test-collection-id";
     
     @Test

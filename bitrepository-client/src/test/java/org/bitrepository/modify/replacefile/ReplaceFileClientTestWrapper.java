@@ -29,8 +29,8 @@ import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.eventhandler.EventHandler;
 
+
 import java.net.URL;
-import java.util.Locale;
 
 /**
  * Wrapper class for a PutFileClient.
@@ -52,15 +52,20 @@ public class ReplaceFileClientTestWrapper implements ReplaceFileClient {
                             ChecksumSpecTYPE checksumRequestedForDeletedFile, URL url, long sizeOfNewFile,
                             ChecksumDataForFileTYPE checksumForNewFileValidationAtPillar, ChecksumSpecTYPE checksumRequestsForNewFile,
                             EventHandler eventHandler, String auditTrailInformation) {
-        String stepName = String.format(Locale.ROOT, "Calling replaceFile for: %s", fileID);
-        String details = String.format(Locale.ROOT, "Collection: %s%nPillar: %s%nURL: %s%nNew Size: %d%nAudit Info: %s",
-                collectionID, pillarID, url, sizeOfNewFile, auditTrailInformation);
+        String stepName = "Calling replaceFile for: " + fileID;
+        StringBuilder details = new StringBuilder();
+        details.append("Collection: ").append(collectionID).append("\n")
+                .append("Pillar: ").append(pillarID).append("\n")
+                .append("URL: ").append(url).append("\n")
+                .append("New Size: ").append(sizeOfNewFile).append("\n")
+                .append("Audit Info: ").append(auditTrailInformation);
 
         Allure.step(stepName, () -> {
-            Allure.addAttachment("Replace Request Parameters", details);
+            Allure.addAttachment("Replace Request Parameters", details.toString());
             wrappedReplaceClient.replaceFile(collectionID, fileID, pillarID, checksumForDeleteAtPillar,
-                    checksumRequestedForDeletedFile, url, sizeOfNewFile, checksumForNewFileValidationAtPillar,
-                    checksumRequestsForNewFile, eventHandler, auditTrailInformation);
+                    checksumRequestedForDeletedFile,
+                    url, sizeOfNewFile, checksumForNewFileValidationAtPillar, checksumRequestsForNewFile, eventHandler,
+                    auditTrailInformation);
         });
     }
 }

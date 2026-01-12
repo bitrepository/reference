@@ -42,7 +42,6 @@ import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.workflow.Workflow;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -52,6 +51,8 @@ import org.mockito.stubbing.Answer;
 
 import java.util.Arrays;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -63,7 +64,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
+public class SaltedChecksumWorkflowTest {
 
     private static final String PILLAR_1 = "pillar1";
     private static final String PILLAR_2 = "pillar2";

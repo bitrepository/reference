@@ -37,7 +37,6 @@ import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.contributor.ContributorMediator;
 import org.bitrepository.settings.repositorysettings.Collection;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -46,6 +45,8 @@ import org.mockito.ArgumentCaptor;
 import javax.xml.datatype.DatatypeFactory;
 import java.util.concurrent.ThreadFactory;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -55,7 +56,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class AuditTrailServiceTest extends ExtendedTestCase {
+public class AuditTrailServiceTest {
     /** The settings for the tests. Should be instantiated in the setup. */
     Settings settings;
 

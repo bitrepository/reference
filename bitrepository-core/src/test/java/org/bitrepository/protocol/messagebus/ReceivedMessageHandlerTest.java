@@ -28,19 +28,23 @@ import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.settings.referencesettings.MessageCategory;
 import org.bitrepository.settings.referencesettings.MessageThreadPool;
 import org.bitrepository.settings.referencesettings.MessageThreadPools;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 import java.util.Arrays;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addFixture;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import org.bitrepository.protocol.utils.AllureTestUtils;
 
-public class ReceivedMessageHandlerTest extends ExtendedTestCase {
+
+public class ReceivedMessageHandlerTest {
 
     @Test
     @Tag("regressiontest" )

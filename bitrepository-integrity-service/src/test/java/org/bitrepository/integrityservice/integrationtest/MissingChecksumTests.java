@@ -54,7 +54,6 @@ import org.bitrepository.integrityservice.workflow.step.HandleMissingChecksumsSt
 import org.bitrepository.integrityservice.workflow.step.UpdateChecksumsStep;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.service.exception.WorkflowAbortedException;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -71,6 +70,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -82,7 +83,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 
-public class MissingChecksumTests extends ExtendedTestCase {
+public class MissingChecksumTests {
     private static final String PILLAR_1 = "pillar1";
     private static final String PILLAR_2 = "pillar2";
     

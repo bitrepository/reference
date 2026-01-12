@@ -38,7 +38,6 @@ import org.bitrepository.protocol.messagebus.MessageListener;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -49,6 +48,9 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 
 /**
  * Stress testing of the messagebus.
@@ -64,7 +66,7 @@ import java.util.List;
  * This is controlled through the variables 'WRITE_RESULTS_TO_FILE', which deternimes whether to write to the file, and
  * 'OUTPUT_FILE_NAME' which is the name of the file to write the output results.
  */
-public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
+public class MessageBusNumberOfListenersStressTest {
     /**
      * The queue name.
      */

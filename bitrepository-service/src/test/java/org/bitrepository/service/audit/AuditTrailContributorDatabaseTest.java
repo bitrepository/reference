@@ -29,7 +29,6 @@ import org.bitrepository.service.database.DatabaseCreator;
 import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -41,9 +40,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+
 /** Run audit trail contributor database test using Derby.  Generates jaccept reports. */
 
-public class AuditTrailContributorDatabaseTest extends ExtendedTestCase {
+public class AuditTrailContributorDatabaseTest {
     private Settings settings;
     private DatabaseSpecifics databaseSpecifics;
     private String firstCollectionID;

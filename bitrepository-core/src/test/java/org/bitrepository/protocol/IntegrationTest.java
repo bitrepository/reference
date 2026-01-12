@@ -1,29 +1,7 @@
-/*
- * #%L
- * Bitrepository Common
- *
- * $Id$
- * $HeadURL$
- * %%
- * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
- * %%
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation, either version 2.1 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Lesser Public License for more details.
- *
- * You should have received a copy of the GNU General Lesser Public
- * License along with this program.  If not, see
- * <http://www.gnu.org/licenses/lgpl-2.1.html>.
- * #L%
- */
 package org.bitrepository.protocol;
 
+import io.qameta.allure.Allure;
+import io.qameta.allure.Step;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.SettingsUtils;
@@ -37,9 +15,9 @@ import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.messagebus.SimpleMessageBus;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.protocol.utils.AllureTestUtils;
 import org.bitrepository.protocol.utils.TestWatcherExtension;
-import org.jaccept.TestEventManager;
-import org.jaccept.structure.ExtendedTestCase;
+import org.bitrepository.protocol.utils.AllureEventLogger; // NEW
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -47,7 +25,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.TestWatcher;
 
 import javax.jms.JMSException;
 import java.net.MalformedURLException;
@@ -56,8 +33,7 @@ import java.util.List;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(TestWatcherExtension.class)
-public abstract class IntegrationTest extends ExtendedTestCase {
-    protected static TestEventManager testEventManager = TestEventManager.getInstance();
+public abstract class IntegrationTest {
     public static LocalActiveMQBroker broker;
     public static EmbeddedHttpServer server;
     public static HttpServerConfiguration httpServerConfiguration;
@@ -77,6 +53,22 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     protected String DEFAULT_AUDIT_INFORMATION;
 
     protected String testMethodName;
+
+    protected void addDescription(String description) {
+        AllureTestUtils.addDescription(description);
+    }
+
+    protected void addStep(String stepDescription, String expectedResult) {
+        AllureTestUtils.addStep(stepDescription, expectedResult);
+    }
+
+    protected void addFixture(String fixtureDescription) {
+        AllureTestUtils.addFixture(fixtureDescription);
+    }
+
+    protected void addReference(String reference) {
+        AllureTestUtils.addReference(reference);
+    }
 
     private void initializationMethod() {
         settingsForCUT = loadSettings(getComponentID());
@@ -101,8 +93,9 @@ public abstract class IntegrationTest extends ExtendedTestCase {
      * May be extended by subclasses needing to have their receivers managed. Remember to still call
      * <code>super.registerReceivers()</code> when overriding
      */
+    @Step("Register message receivers")
     protected void registerMessageReceivers() {
-        alarmReceiver = new MessageReceiver(settingsForCUT.getAlarmDestination(), testEventManager);
+        alarmReceiver = new MessageReceiver(settingsForCUT.getAlarmDestination());
         addReceiver(alarmReceiver);
     }
 
@@ -112,14 +105,18 @@ public abstract class IntegrationTest extends ExtendedTestCase {
 
     @BeforeAll
     public void initMessagebus() {
-        initializationMethod();
-        setupMessageBus();
+        Allure.step("Initialize message bus", () -> {
+            initializationMethod();
+            setupMessageBus();
+        });
     }
 
     @AfterAll
     public void shutdownSuite() {
-        teardownMessageBus();
-        teardownHttpServer();
+        Allure.step("Shutdown test suite", () -> {
+            teardownMessageBus();
+            teardownHttpServer();
+        });
     }
 
     /**
@@ -128,35 +125,40 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     @BeforeEach
     public final void beforeMethod(TestInfo testInfo) {
         testMethodName = testInfo.getTestMethod().get().getName();
-        setupSettings();
-        NON_DEFAULT_FILE_ID = TestFileHelper.createUniquePrefix(testMethodName);
-        DEFAULT_AUDIT_INFORMATION = testMethodName;
-        receiverManager = new MessageReceiverManager(messageBus);
-        registerMessageReceivers();
-        messageBus.setCollectionFilter(List.of());
-        messageBus.setComponentFilter(List.of());
-        receiverManager.startListeners();
-        initializeCUT();
+
+        Allure.step("Setup test: " + testMethodName, () -> {
+            setupSettings();
+            NON_DEFAULT_FILE_ID = TestFileHelper.createUniquePrefix(testMethodName);
+            DEFAULT_AUDIT_INFORMATION = testMethodName;
+            receiverManager = new MessageReceiverManager(messageBus);
+            registerMessageReceivers();
+            messageBus.setCollectionFilter(List.of());
+            messageBus.setComponentFilter(List.of());
+            receiverManager.startListeners();
+            initializeCUT();
+        });
     }
 
     protected void initializeCUT() {}
 
     @AfterEach
     public final void afterMethod() {
-        if (receiverManager != null) {
-            receiverManager.stopListeners();
-        }
-        if (TestWatcherExtension.isTestSuccessful()) {
-            afterMethodVerification();
-        }
-        shutdownCUT();
+        Allure.step("Teardown test: " + testMethodName, () -> {
+            if (receiverManager != null) {
+                receiverManager.stopListeners();
+            }
+            if (TestWatcherExtension.isTestSuccessful()) {
+                afterMethodVerification();
+            }
+            shutdownCUT();
+        });
     }
-
 
     /**
      * May be used by specific tests for general verification when the test method has finished. Will only be run
      * if the test has passed (so far).
      */
+    @Step("Verify no messages remain in receivers")
     protected void afterMethodVerification() {
         receiverManager.checkNoMessagesRemainInReceivers();
     }
@@ -164,6 +166,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     /**
      * Purges all messages from the receivers.
      */
+    @Step("Clear all receivers")
     protected void clearReceivers() {
         receiverManager.clearMessagesInReceivers();
     }
@@ -176,6 +179,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     /**
      * Initializes the settings. Will postfix the alarm and collection topics with '-${user.name}
      */
+    @Step("Setup settings")
     protected void setupSettings() {
         settingsForCUT = loadSettings(getComponentID());
         makeUserSpecificSettings(settingsForCUT);
@@ -186,7 +190,6 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         settingsForTestClient = loadSettings(testMethodName);
         makeUserSpecificSettings(settingsForTestClient);
     }
-
 
     protected Settings loadSettings(String componentID) {
         return TestSettingsProvider.reloadSettings(componentID);

@@ -30,8 +30,7 @@ import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
-import org.jaccept.TestEventManager;
-import org.jaccept.structure.ExtendedTestCase;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -45,11 +44,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class MessageBusDelayTest extends ExtendedTestCase {
+public class MessageBusDelayTest {
     private Settings settings;
     private SecurityManager securityManager;
-    protected TestEventManager testEventManager = TestEventManager.getInstance();
     private static final int PERFORMANCE_COUNT = 1000;
     private static final int NUMBER_OF_TESTS = 100;
     private static final boolean WRITE_RESULTS_TO_DISC = true;
@@ -80,7 +81,7 @@ public class MessageBusDelayTest extends ExtendedTestCase {
         MessageBus messageBus = MessageBusManager.getMessageBus(settings, securityManager);
         MessageReceiver destinationReceiver;
         String destination = "DelayPerformanceTestDestination-" + new Date().getTime();
-        destinationReceiver = new MessageReceiver("Performance test topic receiver", null);
+        destinationReceiver = new MessageReceiver("Performance test topic receiver");
         messageBus.addListener(destination, destinationReceiver.getMessageListener());
 
         List<Long> delayList = new ArrayList<>(PERFORMANCE_COUNT);

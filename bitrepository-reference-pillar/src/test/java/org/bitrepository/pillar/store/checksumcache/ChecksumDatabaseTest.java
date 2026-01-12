@@ -35,7 +35,6 @@ import org.bitrepository.pillar.store.checksumdatabase.ExtractedFileIDsResultSet
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 import org.bitrepository.settings.repositorysettings.PillarIDs;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -44,7 +43,10 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
-public class ChecksumDatabaseTest extends ExtendedTestCase {
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+
+public class ChecksumDatabaseTest {
     private String collectionID;
     protected Settings settings;
 

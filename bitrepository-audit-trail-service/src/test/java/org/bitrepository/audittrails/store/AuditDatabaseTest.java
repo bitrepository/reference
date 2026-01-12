@@ -29,7 +29,6 @@ import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -43,7 +42,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class AuditDatabaseTest extends ExtendedTestCase {
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+
+public class AuditDatabaseTest {
     /** The settings for the tests. Should be instantiated in the setup.*/
     Settings settings;
     String fileID = "TEST-FILE-ID-" + new Date().getTime();

@@ -23,17 +23,18 @@ package org.bitrepository.commandline;
 
 import org.apache.commons.cli.Option;
 import org.bitrepository.commandline.utils.CommandLineArgumentsHandler;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
-public class CommandLineTest extends ExtendedTestCase {
+public class CommandLineTest {
     private static final String SETTINGS_DIR = "SettingsDir";
     private static final String KEY_FILE = "KeyFile";
     private static final String DUMMY_DATA = "DummyData";
