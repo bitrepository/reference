@@ -36,7 +36,7 @@ import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.integration.ClientProvider;
 import org.bitrepository.protocol.fileexchange.HttpServerConfiguration;
-import org.jaccept.TestEventManager;
+
 
 import java.util.List;
 
@@ -46,7 +46,7 @@ public class PillarFileManager {
     private final Settings mySettings;
     private final ClientProvider clientProvider;
     @SuppressWarnings("unused")
-    private final TestEventManager testEventManager;
+    
     private final HttpServerConfiguration httpServerConfiguration;
     private int knownNumberOfFilesOnPillar = -1;
 
@@ -55,14 +55,13 @@ public class PillarFileManager {
             String pillarID,
             Settings mySettings,
             ClientProvider clientProvider,
-            TestEventManager testEventManager,
             HttpServerConfiguration httpServerConfiguration) {
         this.collectionID = collectionID;
         this.pillarID = pillarID;
         this.mySettings = mySettings;
         this.clientProvider = clientProvider;
         this.httpServerConfiguration = httpServerConfiguration;
-        this.testEventManager = testEventManager;
+        
     }
 
     /**

@@ -22,15 +22,19 @@
 package org.bitrepository.common.utils;
 
 import org.apache.activemq.util.ByteArrayInputStream;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.bitrepository.protocol.utils.AllureTestUtils;
+
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 
-public class StreamUtilsTest extends ExtendedTestCase {
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+
+public class StreamUtilsTest {
     String DATA = "The data for the streams.";
 
     @Test

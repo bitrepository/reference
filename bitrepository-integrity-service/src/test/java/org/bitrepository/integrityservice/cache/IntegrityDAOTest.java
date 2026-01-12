@@ -54,6 +54,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+
 public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
     String TEST_PILLAR_1 = "MY-TEST-PILLAR-1";
     String TEST_PILLAR_2 = "MY-TEST-PILLAR-2";

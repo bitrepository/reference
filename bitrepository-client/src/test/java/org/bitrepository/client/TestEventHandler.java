@@ -26,7 +26,7 @@ package org.bitrepository.client;
 
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
-import org.jaccept.TestEventManager;
+
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 public class TestEventHandler implements EventHandler {
 
     /** The <code>TestEventManager</code> used to manage the event for the associated test. */
-    private final TestEventManager testEventManager;
+    
     /** The queue used to store the received operation events. */
     private final BlockingQueue<OperationEvent> eventQueue = new LinkedBlockingQueue<>();
 
@@ -47,18 +47,17 @@ public class TestEventHandler implements EventHandler {
     private static final long DEFAULT_WAIT_SECONDS = 3;
 
     /** The constructor.
-     * 
-     * @param testEventManager The <code>TestEventManager</code> used to manage the event for the associated test.
      */
-    public TestEventHandler(TestEventManager testEventManager) {
+    public TestEventHandler() {
         super();
-        this.testEventManager = testEventManager;
+        
     }
 
     @Override
     public void handleEvent(OperationEvent event) {
-        testEventManager.addResult("Received event: "+ event);
-        eventQueue.add(event);
+        io.qameta.allure.Allure.step("Received event: " + event, () -> {
+            eventQueue.add(event);
+        });
     }
 
     /**

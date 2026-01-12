@@ -22,14 +22,16 @@ package org.bitrepository.pillar.store.checksumcache;
  */
 
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumEntry;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 
-public class ChecksumEntryTest extends ExtendedTestCase {
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+
+public class ChecksumEntryTest {
     private static final String CE_FILE = "file";
     private static final String CE_CHECKSUM = "checksum";
     private static final Date CE_DATE = new Date(1234567890);

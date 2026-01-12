@@ -23,13 +23,15 @@ package org.bitrepository.common.utils;
 
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 
-public class ResponseInfoUtilsTest extends ExtendedTestCase {
+
+public class ResponseInfoUtilsTest {
     @Test
             @Tag("regressiontest")
     public void responseInfoTester() throws Exception {

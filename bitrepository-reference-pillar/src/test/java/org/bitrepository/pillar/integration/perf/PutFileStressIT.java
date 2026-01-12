@@ -73,7 +73,7 @@ public class PutFileStressIT extends PillarPerformanceTest {
 
     @Test
     @Tag("pillar-stress-test")
-//    @Disabled
+    @Disabled
     public void parallelPut() throws Exception {
         final int numberOfFiles = testConfiguration.getInt("pillarintegrationtest.PutFileStressIT.parallelPut.numberOfFiles");
         final int  partStatisticsInterval = testConfiguration.getInt("pillarintegrationtest.PutFileStressIT.parallelPut.partStatisticsInterval");

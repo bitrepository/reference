@@ -23,7 +23,7 @@ package org.bitrepository.access;
 
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocol.messagebus.MessageSender;
-import org.jaccept.TestEventManager;
+
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -32,22 +32,24 @@ import java.util.concurrent.TimeUnit;
 public class MessageSenderStub implements MessageSender {
 
     /** The <code>TestEventManager</code> used to manage the event for the associated test. */
-    private final TestEventManager testEventManager;
+    
     /** The queue used to store the received messages. */
     private final BlockingQueue<Message> messageQueue = new LinkedBlockingQueue<>();
     /** The default time to wait for messages */
     private static final long DEFAULT_WAIT_SECONDS = 10;  
     
-    public MessageSenderStub(TestEventManager testEventManager) {
-        this.testEventManager = testEventManager;
+    public MessageSenderStub() {
+        
     }
-    
+
     @Override
     public void sendMessage(Message content) {
-       testEventManager.addStimuli("Sent message: " + content);
-       messageQueue.add(content);
+        io.qameta.allure.Allure.step("Sent message: " + content.getClass().getSimpleName(), () -> {
+            io.qameta.allure.Allure.addAttachment("Message Content", content.toString());
+            messageQueue.add(content);
+        });
     }
-    
+
     public void clearMessages() {
         messageQueue.clear();
     }

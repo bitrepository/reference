@@ -5,7 +5,6 @@ import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.LocalFileExchange;
 import org.bitrepository.settings.referencesettings.FileExchangeSettings;
 import org.fusesource.hawtbuf.ByteArrayInputStream;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
@@ -27,7 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class LocalFileExchangeTest extends ExtendedTestCase  {
+public class LocalFileExchangeTest  {
     final static String BASE_FILE_EXCHANGE_DIR = "target/fileexchange/";
     private FileExchange exchange;
 

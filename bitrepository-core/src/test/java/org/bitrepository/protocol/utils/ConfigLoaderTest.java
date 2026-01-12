@@ -22,16 +22,20 @@
 package org.bitrepository.protocol.utils;
 
 import org.bitrepository.common.utils.FileUtils;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.bitrepository.protocol.utils.AllureTestUtils;
+
 
 import java.io.File;
 
-public class ConfigLoaderTest extends ExtendedTestCase {
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+
+public class ConfigLoaderTest {
     String GOOD_FILE_PATH = "logback-test.xml";
 
     @BeforeEach

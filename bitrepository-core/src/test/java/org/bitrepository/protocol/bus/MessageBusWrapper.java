@@ -27,24 +27,23 @@ package org.bitrepository.protocol.bus;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageListener;
-import org.jaccept.TestEventManager;
+
 
 import javax.jms.JMSException;
 import java.util.List;
 
 public class MessageBusWrapper implements MessageBus {
     private final MessageBus messageBus;
-    private final TestEventManager testEventManager;
+    
        
-    public MessageBusWrapper(MessageBus messageBus, TestEventManager testEventManager) {
+    public MessageBusWrapper(MessageBus messageBus) {
         super();
         this.messageBus = messageBus;
-        this.testEventManager = testEventManager;
     }
 
     @Override
     public void sendMessage(Message content) {
-        testEventManager.addStimuli("Sending message: " + content);
+//        testEventManager.addStimuli("Sending message: " + content);
         messageBus.sendMessage(content);
     }
     

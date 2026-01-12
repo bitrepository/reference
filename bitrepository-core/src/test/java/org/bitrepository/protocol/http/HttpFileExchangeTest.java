@@ -25,7 +25,6 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.settings.referencesettings.FileExchangeSettings;
 import org.bitrepository.settings.referencesettings.ProtocolType;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -33,10 +32,12 @@ import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-public class HttpFileExchangeTest extends ExtendedTestCase {
+public class HttpFileExchangeTest {
     @Test
     @Tag("regressiontest" )
     public void checkUrlEncodingOfFilenamesTest() throws MalformedURLException {

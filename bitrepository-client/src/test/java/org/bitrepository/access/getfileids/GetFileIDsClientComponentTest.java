@@ -359,7 +359,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(1).getPillarIDs().getPillarID().clear();
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(1).getPillarIDs().getPillarID().add(PILLAR2_ID);
         String otherCollection =  settingsForCUT.getRepositorySettings().getCollections().getCollection().get(1).getID();
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         GetFileIDsClient client = createGetFileIDsClient();
 
         addStep("Request the putting of a file through the PutClient for collection2",
@@ -399,7 +399,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
      */
     private GetFileIDsClient createGetFileIDsClient() {
         return new GetFileIDsClientTestWrapper(new ConversationBasedGetFileIDsClient(
-                messageBus, conversationMediator, settingsForCUT, settingsForTestClient.getComponentID()), testEventManager);
+                messageBus, conversationMediator, settingsForCUT, settingsForTestClient.getComponentID()));
     }
 
     @Override

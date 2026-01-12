@@ -21,7 +21,6 @@
  */
 package org.bitrepository.common;
 
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -30,8 +29,13 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import org.bitrepository.protocol.utils.AllureTestUtils;
 
-public class ArgumentValidatorTest extends ExtendedTestCase {
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+
+
+public class ArgumentValidatorTest {
     @Test @Tag("regressiontest")
     public void testArgumentValidatorObject() throws Exception {
         addDescription("Test the argument validator for arguments not null");

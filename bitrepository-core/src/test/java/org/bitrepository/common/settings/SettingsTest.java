@@ -1,6 +1,5 @@
 package org.bitrepository.common.settings;
 
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -11,9 +10,11 @@ import javax.xml.datatype.DatatypeFactory;
 import java.math.BigInteger;
 import java.time.Duration;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class SettingsTest extends ExtendedTestCase  {
+public class SettingsTest  {
 
     private DatatypeFactory factory;
 

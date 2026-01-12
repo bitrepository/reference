@@ -123,7 +123,7 @@ public class GetFileStressIT extends PillarPerformanceTest {
     }
 
     public String lookupGetFileDestination() {
-        MessageReceiver clientReceiver = new MessageReceiver(settingsForTestClient.getReceiverDestinationID(), testEventManager);
+        MessageReceiver clientReceiver = new MessageReceiver(settingsForTestClient.getReceiverDestinationID());
         messageBus.addListener(clientReceiver.getDestination(), clientReceiver.getMessageListener());;
         GetFileMessageFactory pillarLookupmMsgFactory =
                 new GetFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);

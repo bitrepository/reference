@@ -22,7 +22,6 @@
 package org.bitrepository.integrityservice.cache;
 
 import org.bitrepository.common.utils.CalendarUtils;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -31,7 +30,10 @@ import org.junit.jupiter.api.Test;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-public class FileInfoTest extends ExtendedTestCase {
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+
+public class FileInfoTest {
     
     private static final String FILE_ID = "TEST-FILE"; 
     private static final long LAST_FILE_CHECK_MILLIS = 1000000;

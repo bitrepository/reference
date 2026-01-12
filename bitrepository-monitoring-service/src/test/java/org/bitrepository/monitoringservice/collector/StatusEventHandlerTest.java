@@ -29,13 +29,15 @@ import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.monitoringservice.MockAlerter;
 import org.bitrepository.monitoringservice.MockStatusStore;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 
-public class StatusEventHandlerTest extends ExtendedTestCase {
+
+public class StatusEventHandlerTest {
     
     public static final String TEST_COLLECTION = "collection1";
     

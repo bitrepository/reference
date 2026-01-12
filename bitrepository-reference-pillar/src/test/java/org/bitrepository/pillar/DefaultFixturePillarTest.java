@@ -54,7 +54,7 @@ public abstract class DefaultFixturePillarTest extends IntegrationTest {
         super.registerMessageReceivers();
 
         clientDestinationId = settingsForTestClient.getReceiverDestinationID();
-        clientReceiver = new MessageReceiver(clientDestinationId, testEventManager);
+        clientReceiver = new MessageReceiver(clientDestinationId);
         addReceiver(clientReceiver);
 
         pillarDestinationId = settingsForCUT.getContributorDestinationID();

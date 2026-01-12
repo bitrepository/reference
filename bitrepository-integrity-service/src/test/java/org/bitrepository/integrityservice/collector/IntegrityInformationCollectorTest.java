@@ -32,7 +32,6 @@ import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.modify.putfile.PutFileClient;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -40,6 +39,8 @@ import org.junit.jupiter.api.Test;
 import java.net.URL;
 import java.util.Arrays;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -53,7 +54,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 /**
  * Test that collecting integrity information has the desired effect.
  */
-public class IntegrityInformationCollectorTest extends ExtendedTestCase {
+public class IntegrityInformationCollectorTest {
 
     public final static String collectionID = "dummy-collection";
     public final static String fileId = "FILE_ID";

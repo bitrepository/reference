@@ -22,12 +22,14 @@
 package org.bitrepository.common.utils;
 
 import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-public class FileIDUtilsTest extends ExtendedTestCase {
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+
+public class FileIDUtilsTest {
     String FILE_ID = "Test-File-Id";
     
     @Test @Tag("regressiontest")

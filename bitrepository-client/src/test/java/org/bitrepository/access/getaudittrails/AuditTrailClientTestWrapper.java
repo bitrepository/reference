@@ -22,30 +22,35 @@
 package org.bitrepository.access.getaudittrails;
 
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.jaccept.TestEventManager;
+
 
 import java.util.Arrays;
 
 public class AuditTrailClientTestWrapper implements AuditTrailClient {
     private AuditTrailClient auditTrailClient;
-    private TestEventManager testEventManager;
 
 
-    public AuditTrailClientTestWrapper(AuditTrailClient auditTrailClient,
-                                    TestEventManager testEventManager) {
+    public AuditTrailClientTestWrapper(AuditTrailClient auditTrailClient) {
         this.auditTrailClient = auditTrailClient;
-        this.testEventManager = testEventManager;
+        
     }
+
     @Override
     public void getAuditTrails(String collectionID, AuditTrailQuery[] componentQueries, String fileID,
                                String urlForResult,
-            EventHandler eventHandler, String auditTrailInformation) {
-        testEventManager.addStimuli(
-                "Calling getAuditTrails(" +
-                        (componentQueries == null ? "null" : Arrays.asList(componentQueries)) +
-                        ", " + fileID + ", " +
-                        "" + urlForResult + ")");
-        auditTrailClient.getAuditTrails(collectionID, componentQueries, fileID, urlForResult, eventHandler,
-                auditTrailInformation);
+                               EventHandler eventHandler, String auditTrailInformation) {
+        String stepName = "Calling getAuditTrails for: " + (fileID != null ? fileID : "all files");
+
+        StringBuilder details = new StringBuilder();
+        details.append("Collection: ").append(collectionID).append("\n")
+                .append("Component Queries: ").append(componentQueries == null ? "null" : Arrays.asList(componentQueries)).append("\n")
+                .append("URL for Result: ").append(urlForResult).append("\n")
+                .append("Audit Info: ").append(auditTrailInformation);
+
+        io.qameta.allure.Allure.step(stepName, () -> {
+            io.qameta.allure.Allure.addAttachment("AuditTrails Request Parameters", details.toString());
+            auditTrailClient.getAuditTrails(collectionID, componentQueries, fileID, urlForResult, eventHandler,
+                    auditTrailInformation);
+        });
     }
 }

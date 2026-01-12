@@ -29,7 +29,6 @@ import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,8 +45,10 @@ import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.
 import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_COLLECTION_ID;
 import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_DATE;
 import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_FILE_ID;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 
-public class ChecksumDatabaseMigrationTest extends ExtendedTestCase {
+public class ChecksumDatabaseMigrationTest {
     protected Settings settings;
     
     static final String PATH_TO_DATABASE_UNPACKED = "target/test/referencepillar/checksumdb-for-migration";

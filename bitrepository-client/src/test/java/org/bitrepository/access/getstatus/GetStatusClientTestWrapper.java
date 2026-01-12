@@ -22,20 +22,20 @@
 package org.bitrepository.access.getstatus;
 
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.jaccept.TestEventManager;
+
 
 public class GetStatusClientTestWrapper implements GetStatusClient {
     private GetStatusClient getStatusClient;
-    private TestEventManager testEventManager;
 
-    public GetStatusClientTestWrapper(GetStatusClient getStatusClient,
-                                    TestEventManager testEventManager) {
+    public GetStatusClientTestWrapper(GetStatusClient getStatusClient) {
         this.getStatusClient = getStatusClient;
-        this.testEventManager = testEventManager;
+        
     }
+
     @Override
     public void getStatus(EventHandler eventHandler) {
-        testEventManager.addStimuli("Calling getAuditTrails()");
-        getStatusClient.getStatus(eventHandler);
+        io.qameta.allure.Allure.step("Calling getStatus", () -> {
+            getStatusClient.getStatus(eventHandler);
+        });
     }
 }

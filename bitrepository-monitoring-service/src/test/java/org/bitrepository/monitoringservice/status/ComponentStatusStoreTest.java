@@ -27,7 +27,6 @@ import org.bitrepository.bitrepositoryelements.StatusInfo;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
@@ -37,8 +36,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class ComponentStatusStoreTest extends ExtendedTestCase {
+public class ComponentStatusStoreTest {
     Settings settings;
     
     @BeforeAll
