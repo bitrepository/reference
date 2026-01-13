@@ -50,7 +50,7 @@ public class PutFileStressIT extends PillarPerformanceTest {
     @Test
     @Tag("pillar-stress-test")
     @Tag("stress-test-pillar-population")
-    @Disabled
+//    @Disabled
     public void singleTreadedPut() throws Exception {
         final int NUMBER_OF_FILES = 10;
         final int PART_STATISTIC_INTERVAL = 2;
