@@ -30,10 +30,9 @@ public class AllureTestUtils {
     }
 
     /**
-     * Add a reference (typically to JIRA issues)
+     * Add a reference
      */
     public static void addReference(String reference) {
-        // Extract JIRA issue if present
         if (reference.contains("BITMAG-")) {
             int startIdx = reference.indexOf("BITMAG-");
             int endIdx = reference.indexOf(">", startIdx);

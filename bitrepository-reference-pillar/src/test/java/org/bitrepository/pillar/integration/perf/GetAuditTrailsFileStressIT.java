@@ -70,7 +70,7 @@ public class GetAuditTrailsFileStressIT extends PillarPerformanceTest {
 
     @Test
     @Tag("pillar-stress-test")
-    @Disabled
+//    @Disabled
     public void singleTreadedGetAuditTrails() throws Exception {
         final int NUMBER_OF_AUDITS = 100;
         final int PART_STATISTIC_INTERVAL = NUMBER_OF_AUDITS/5;
@@ -91,7 +91,7 @@ public class GetAuditTrailsFileStressIT extends PillarPerformanceTest {
 
     @Test
     @Tag("pillar-stress-test")
-    @Disabled
+//    @Disabled
     public void parallelGetAuditTrails() throws Exception {
         final int  NUMBER_OF_AUDITS = 10;
         final int  PART_STATISTIC_INTERVAL = NUMBER_OF_AUDITS/5;
