@@ -24,6 +24,8 @@
  */
 package org.bitrepository.protocol;
 
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.core.util.StatusPrinter;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.SettingsUtils;
@@ -48,6 +50,7 @@ import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.TestWatcher;
+import org.slf4j.LoggerFactory;
 
 import javax.jms.JMSException;
 import java.net.MalformedURLException;
@@ -114,6 +117,10 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     public void initMessagebus() {
         initializationMethod();
         setupMessageBus();
+        if (System.getProperty("enableLogStatus", "false").equals("true")) {
+            LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+            StatusPrinter.print(lc);
+        }
     }
 
     @AfterAll

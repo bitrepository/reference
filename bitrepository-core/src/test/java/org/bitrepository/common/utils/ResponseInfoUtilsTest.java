@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 
 public class ResponseInfoUtilsTest extends ExtendedTestCase {
     @Test
-            @Tag("regressiontest")
+    @Tag("regressiontest")
     public void responseInfoTester() throws Exception {
         addDescription("Test the response info.");
         addStep("Validate the positive identification response", "Should be 'IDENTIFICATION_POSITIVE'");

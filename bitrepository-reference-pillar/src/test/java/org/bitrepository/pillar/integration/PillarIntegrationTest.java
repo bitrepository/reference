@@ -105,7 +105,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
         startEmbeddedPillar(testInfo);
     }
 
-    // @AfterAll
+    @AfterAll
     public void shutdownRealMessageBus() {
         if(!useEmbeddedMessageBus()) {
             MessageBusManager.clear();
