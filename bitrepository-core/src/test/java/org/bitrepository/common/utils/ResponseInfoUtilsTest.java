@@ -33,7 +33,7 @@ import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 
 public class ResponseInfoUtilsTest {
     @Test
-            @Tag("regressiontest")
+    @Tag("regressiontest")
     public void responseInfoTester() throws Exception {
         addDescription("Test the response info.");
         addStep("Validate the positive identification response", "Should be 'IDENTIFICATION_POSITIVE'");

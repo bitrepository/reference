@@ -38,7 +38,6 @@ import org.junit.jupiter.api.Test;
 /**
  * Test the general ConversationMediator functionality.
  */
-//@Test
 public abstract class ConversationMediatorTest {
     protected Settings settings = TestSettingsProvider.getSettings(getClass().getSimpleName());
     protected SecurityManager securityManager = new DummySecurityManager();

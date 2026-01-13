@@ -47,7 +47,7 @@ import org.bitrepository.protocol.security.MessageSigner;
 import org.bitrepository.protocol.security.OperationAuthorizer;
 import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
-
+import org.jaccept.TestEventManager;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -89,10 +89,20 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     protected void initializeCUT() {
         super.initializeCUT();
         reloadMessageBus();
-        clientProvider = new ClientProvider(securityManager, settingsForTestClient);
+        clientProvider = new ClientProvider(securityManager, settingsForTestClient, testEventManager);
         pillarFileManager = new PillarFileManager(collectionID,
-            getPillarID(), settingsForTestClient, clientProvider, httpServerConfiguration);
-        clientEventHandler = new ClientEventLogger();
+            getPillarID(), settingsForTestClient, clientProvider, testEventManager, httpServerConfiguration);
+        clientEventHandler = new ClientEventLogger(testEventManager);
+    }
+
+    @BeforeAll
+    public void setupPillarIntegrationTest(TestInfo testInfo) {
+        if (testConfiguration == null) {
+            testConfiguration = new PillarIntegrationTestConfiguration(PATH_TO_TESTPROPS_DIR + "/" + TEST_CONFIGURATION_FILE_NAME);
+        }
+
+        super.initMessagebus();
+        startEmbeddedPillar(testInfo);
     }
 
     @AfterAll
@@ -127,6 +137,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     protected void setupMessageBus() {
         //Shortcircuit this so the messagebus is NOT INITIALISED BEFORE THE CONFIGURATION
         //super.setupMessageBus();
+        setupRealMessageBus();
     }
 
     @Override
@@ -250,20 +261,20 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     public class ClientEventLogger implements EventHandler {
 
         /** The <code>TestEventManager</code> used to manage the event for the associated test. */
-        
+        private final TestEventManager testEventManager;
 
         /** The constructor.
+         *
+         * @param testEventManager The <code>TestEventManager</code> used to manage the event for the associated test.
          */
-        public ClientEventLogger() {
+        public ClientEventLogger(TestEventManager testEventManager) {
             super();
-            
+            this.testEventManager = testEventManager;
         }
 
         @Override
         public void handleEvent(OperationEvent event) {
-            io.qameta.allure.Allure.step("Received event: " + event.getEventType(), () -> {
-                io.qameta.allure.Allure.addAttachment("Event Details", event.toString());
-            });
+            testEventManager.addResult("Received event: "+ event);
         }
     }
 }
