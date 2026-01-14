@@ -125,7 +125,7 @@ public class MessageBusNumberOfListenersStressTest {
      * @throws Exception Can possibly throw an exception.
      */
     @Test
-            @Tag("StressTest")
+    @Tag("StressTest")
     public void testManyListenersOnLocalMessageBus() throws Exception {
         addDescription("Tests how many messages can be handled within a given timeframe when a given number of "
                 + "listeners are receiving them.");

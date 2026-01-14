@@ -65,7 +65,7 @@ public class MultiThreadedMessageBusTest extends IntegrationTest {
     }
     
     @Test 
-            @Tag("regressiontest" )
+    @Tag("regressiontest" )
     public final void manyTheadsBeforeFinish() throws Exception {
         addDescription("Tests whether it is possible to start the handling of many threads simultaneously.");
         IdentifyPillarsForGetFileRequest content =
