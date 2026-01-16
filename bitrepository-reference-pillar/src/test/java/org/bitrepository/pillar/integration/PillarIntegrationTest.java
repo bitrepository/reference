@@ -48,6 +48,7 @@ import org.bitrepository.protocol.security.OperationAuthorizer;
 import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
 
+import org.bitrepository.protocol.utils.BitrepositoryEvent;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -58,6 +59,8 @@ import javax.jms.JMSException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Super class for all tests which should test functionality on a single pillar.
@@ -129,6 +132,9 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
             MessageBusManager.clear();
             messageBus = MessageBusManager.getMessageBus(settingsForCUT, securityManager);
         } else {
+            if (messageBus == null) {
+                messageBus = new org.bitrepository.protocol.messagebus.SimpleMessageBus();
+            }
             MessageBusManager.injectCustomMessageBus(MessageBusManager.DEFAULT_MESSAGE_BUS, messageBus);    
         }
     }
@@ -260,9 +266,6 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     /** Used to listen for operation event and log this. */
     public class ClientEventLogger implements EventHandler {
 
-        /** The <code>TestEventManager</code> used to manage the event for the associated test. */
-        
-
         /** The constructor.
          */
         public ClientEventLogger() {
@@ -272,9 +275,16 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
 
         @Override
         public void handleEvent(OperationEvent event) {
-            io.qameta.allure.Allure.step("Received event: " + event.getEventType(), () -> {
-                io.qameta.allure.Allure.addAttachment("Event Details", event.toString());
-            });
+            Map<String, Object> eventData = new HashMap<>();
+            eventData.put("info", event.getInfo());
+            eventData.put("fileID", event.getFileID());
+            eventData.put("collectionID", event.getCollectionID());
+            eventData.put("conversationID", event.getConversationID());
+
+            eventLogger.logEvent(new BitrepositoryEvent(
+                    event.getEventType().name(),
+                    eventData
+            ));
         }
     }
 }

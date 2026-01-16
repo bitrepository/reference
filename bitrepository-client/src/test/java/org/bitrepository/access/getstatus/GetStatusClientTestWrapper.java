@@ -34,8 +34,12 @@ public class GetStatusClientTestWrapper implements GetStatusClient {
 
     @Override
     public void getStatus(EventHandler eventHandler) {
-        io.qameta.allure.Allure.step("Calling getStatus", () -> {
+        if (io.qameta.allure.Allure.getLifecycle().getCurrentTestCase().isPresent()) {
+            io.qameta.allure.Allure.step("Calling getStatus", () -> {
+                getStatusClient.getStatus(eventHandler);
+            });
+        } else {
             getStatusClient.getStatus(eventHandler);
-        });
+        }
     }
 }
