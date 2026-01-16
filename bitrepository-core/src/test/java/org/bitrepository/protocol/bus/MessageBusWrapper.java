@@ -43,8 +43,14 @@ public class MessageBusWrapper implements MessageBus {
 
     @Override
     public void sendMessage(Message content) {
-//        testEventManager.addStimuli("Sending message: " + content);
-        messageBus.sendMessage(content);
+        if (io.qameta.allure.Allure.getLifecycle().getCurrentTestCase().isPresent()) {
+            io.qameta.allure.Allure.step("Sending message: " + content.getClass().getSimpleName(), () -> {
+                io.qameta.allure.Allure.addAttachment("Message Content", content.toString());
+                messageBus.sendMessage(content);
+            });
+        } else {
+            messageBus.sendMessage(content);
+        }
     }
     
     @Override

@@ -35,22 +35,28 @@ public class AuditTrailClientTestWrapper implements AuditTrailClient {
         
     }
 
+
     @Override
     public void getAuditTrails(String collectionID, AuditTrailQuery[] componentQueries, String fileID,
                                String urlForResult,
                                EventHandler eventHandler, String auditTrailInformation) {
-        String stepName = "Calling getAuditTrails for: " + (fileID != null ? fileID : "all files");
+        if (io.qameta.allure.Allure.getLifecycle().getCurrentTestCase().isPresent()) {
+            String stepName = "Calling getAuditTrails for: " + (fileID != null ? fileID : "all files");
 
-        StringBuilder details = new StringBuilder();
-        details.append("Collection: ").append(collectionID).append("\n")
-                .append("Component Queries: ").append(componentQueries == null ? "null" : Arrays.asList(componentQueries)).append("\n")
-                .append("URL for Result: ").append(urlForResult).append("\n")
-                .append("Audit Info: ").append(auditTrailInformation);
+            StringBuilder details = new StringBuilder();
+            details.append("Collection: ").append(collectionID).append("\n")
+                    .append("Component Queries: ").append(componentQueries == null ? "null" : Arrays.asList(componentQueries)).append("\n")
+                    .append("URL for Result: ").append(urlForResult).append("\n")
+                    .append("Audit Info: ").append(auditTrailInformation);
 
-        io.qameta.allure.Allure.step(stepName, () -> {
-            io.qameta.allure.Allure.addAttachment("AuditTrails Request Parameters", details.toString());
+            io.qameta.allure.Allure.step(stepName, () -> {
+                io.qameta.allure.Allure.addAttachment("AuditTrails Request Parameters", details.toString());
+                auditTrailClient.getAuditTrails(collectionID, componentQueries, fileID, urlForResult, eventHandler,
+                        auditTrailInformation);
+            });
+        } else {
             auditTrailClient.getAuditTrails(collectionID, componentQueries, fileID, urlForResult, eventHandler,
                     auditTrailInformation);
-        });
+        }
     }
 }
