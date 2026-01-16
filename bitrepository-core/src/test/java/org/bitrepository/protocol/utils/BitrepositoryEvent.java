@@ -9,10 +9,6 @@ public class BitrepositoryEvent {
     private final Instant timestamp;
     private final Map<String, Object> data;
 
-    public BitrepositoryEvent(String type) {
-        this(type, new HashMap<>());
-    }
-
     public BitrepositoryEvent(String type, Map<String, Object> data) {
         this.type = type;
         this.timestamp = Instant.now();
