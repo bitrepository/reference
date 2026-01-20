@@ -49,6 +49,7 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.protocol.bus.MessageReceiver;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -92,6 +93,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
 
     @Test
     @Tag("regressiontest")
+    @DisplayName("Test that the GetFileIDsClient can be created from the AccessComponentFactory.")
     public void getFileIDsDeliveredAtUrl() throws Exception {
         addDescription("Tests the delivery of fileIDs from a pillar at a given URL.");
         addStep("Initialise the variables for this test.",
