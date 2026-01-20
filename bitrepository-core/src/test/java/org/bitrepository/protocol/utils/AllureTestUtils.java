@@ -1,14 +1,18 @@
 package org.bitrepository.protocol.utils;
 
+import ch.qos.logback.classic.Logger;
 import io.qameta.allure.Allure;
 import io.qameta.allure.Step;
+import org.slf4j.LoggerFactory;
 
 public class AllureTestUtils {
+    private static final Logger logger = (Logger) LoggerFactory.getLogger(AllureTestUtils.class);
     /**
      * Add a description to the current test
      */
     public static void addDescription(String description) {
         Allure.description(description);
+        logger.info("Test description: {}", description);
     }
 
     /**
@@ -17,6 +21,8 @@ public class AllureTestUtils {
     @Step("{stepDescription}")
     public static void addStep(String stepDescription, String expectedResult) {
         Allure.step(stepDescription, () -> {
+            logger.info("Step: {}", stepDescription);
+            logger.info("Expected Result: {}", expectedResult);
             Allure.addAttachment("Expected Result", "text/plain", expectedResult);
         });
     }

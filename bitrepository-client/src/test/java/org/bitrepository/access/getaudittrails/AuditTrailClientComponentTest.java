@@ -44,6 +44,7 @@ import org.bitrepository.protocol.bus.MessageReceiver;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -81,6 +82,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
 
     @Test
     @Tag("regressiontest")
+    @DisplayName("Tests that the AuditTrailClient can be created from the AccessComponentFactory.")
     public void verifyAuditTrailClientFromFactory() {
         Assertions.assertTrue(AccessComponentFactory.getInstance().createAuditTrailClient(
                 settingsForCUT, securityManager, settingsForTestClient.getComponentID())
@@ -90,6 +92,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
     }
 
     @Test @Tag("regressiontest")
+    @DisplayName("Tests that the AuditTrailClient can be created from the AccessComponentFactory.")
     public void getAllAuditTrailsTest() throws InterruptedException {
         addDescription("Tests the simplest case of getting all audit trail event for all contributors.");
         
@@ -101,8 +104,8 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
                 "This should be interpreted as a request for all audit trails from all the collection settings " +
         "defined contributors.");
         client.getAuditTrails(collectionID, null, DEFAULT_FILE_ID, null, testEventHandler, null);
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
+        assertEquals(OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT,
+                testEventHandler.waitForEvent().getEventType());
         IdentifyContributorsForGetAuditTrailsRequest receivedIdentifyRequest =
             collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
         assertEquals(receivedIdentifyRequest.getCollectionID(), collectionID);
@@ -119,25 +122,25 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
             testMessageFactory.createIdentifyContributorsForGetAuditTrailsResponse(receivedIdentifyRequest,
                     PILLAR1_ID, pillar1DestinationId);
         messageBus.sendMessage(responsePillar1);
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
+        assertEquals(OperationEvent.OperationEventType.COMPONENT_IDENTIFIED,
+                testEventHandler.waitForEvent().getEventType());
 
         IdentifyContributorsForGetAuditTrailsResponse responsePillar2 =
             testMessageFactory.createIdentifyContributorsForGetAuditTrailsResponse(receivedIdentifyRequest,
                     PILLAR2_ID, pillar2DestinationId);
         messageBus.sendMessage(responsePillar2);
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE);
+        assertEquals(OperationEvent.OperationEventType.COMPONENT_IDENTIFIED,
+                testEventHandler.waitForEvent().getEventType());
+        assertEquals(OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE,
+                testEventHandler.waitForEvent().getEventType());
 
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.REQUEST_SENT);
+        assertEquals(OperationEvent.OperationEventType.REQUEST_SENT,
+                testEventHandler.waitForEvent().getEventType());
         GetAuditTrailsRequest requestPillar1 = pillar1Receiver.waitForMessage(GetAuditTrailsRequest.class);
         assertEquals(requestPillar1.getCollectionID(), collectionID);
         assertEquals(requestPillar1.getCorrelationID(), receivedIdentifyRequest.getCorrelationID());
         assertEquals(requestPillar1.getReplyTo(), settingsForCUT.getReceiverDestinationID());
-        assertEquals(requestPillar1.getFileID(), DEFAULT_FILE_ID);
+        assertEquals(DEFAULT_FILE_ID, requestPillar1.getFileID());
         assertEquals(requestPillar1.getFrom(), settingsForTestClient.getComponentID());
         assertEquals(requestPillar1.getDestination(), pillar1DestinationId);
 
@@ -145,7 +148,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         assertEquals(requestPillar2.getCollectionID(), collectionID);
         assertEquals(requestPillar2.getCorrelationID(), receivedIdentifyRequest.getCorrelationID());
         assertEquals(requestPillar2.getReplyTo(), settingsForCUT.getReceiverDestinationID());
-        assertEquals(requestPillar2.getFileID(), DEFAULT_FILE_ID);
+        assertEquals(DEFAULT_FILE_ID, requestPillar2.getFileID());
         assertEquals(requestPillar2.getFrom(), settingsForTestClient.getComponentID());
         assertEquals(requestPillar2.getDestination(), pillar2DestinationId);
 
@@ -157,7 +160,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
                     PILLAR1_ID, pillar1DestinationId, result1);
         messageBus.sendMessage(resultPillar1);
         AuditTrailResult result1Event = (AuditTrailResult)testEventHandler.waitForEvent();
-        assertEquals(result1Event.getEventType(), OperationEvent.OperationEventType.COMPONENT_COMPLETE);
+        assertEquals(OperationEvent.OperationEventType.COMPONENT_COMPLETE, result1Event.getEventType());
         assertEquals(result1Event.getAuditTrailEvents(), result1);
 
         addStep("Send a final response from pillar 2",
@@ -170,10 +173,10 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         messageBus.sendMessage(resultPillar2);
 
         AuditTrailResult result2Event = (AuditTrailResult)testEventHandler.waitForEvent();
-        assertEquals(result2Event.getEventType(), OperationEvent.OperationEventType.COMPONENT_COMPLETE);
+        assertEquals(OperationEvent.OperationEventType.COMPONENT_COMPLETE, result2Event.getEventType());
         assertEquals(result2Event.getAuditTrailEvents(), result2);
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.COMPLETE);
+        assertEquals(OperationEvent.OperationEventType.COMPLETE,
+                testEventHandler.waitForEvent().getEventType());
     }
 
 
@@ -190,8 +193,8 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         client.getAuditTrails(collectionID, new AuditTrailQuery[] { query1 }, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
             collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
+        assertEquals(OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT,
+                testEventHandler.waitForEvent().getEventType());
 
         addStep("Send a identifyResponse from pillar1",
                 "A COMPONENT_IDENTIFIED event and a IDENTIFICATION_COMPLETE event should be received." +
@@ -206,17 +209,17 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
                     PILLAR2_ID, pillar2DestinationId);
         messageBus.sendMessage(responsePillar2);
 
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE);
+        assertEquals(OperationEvent.OperationEventType.COMPONENT_IDENTIFIED,
+                testEventHandler.waitForEvent().getEventType());
+        assertEquals(OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE,
+                testEventHandler.waitForEvent().getEventType());
 
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.REQUEST_SENT);
+        assertEquals(OperationEvent.OperationEventType.REQUEST_SENT,
+                testEventHandler.waitForEvent().getEventType());
         GetAuditTrailsRequest requestPillar1 = pillar1Receiver.waitForMessage(GetAuditTrailsRequest.class);
-        assertEquals(requestPillar1.getMaxNumberOfResults().intValue(), 10000);
-        assertEquals(requestPillar1.getMinSequenceNumber().intValue(), 1);
-        assertEquals(requestPillar1.getMaxSequenceNumber().intValue(), 3);
+        assertEquals(10000, requestPillar1.getMaxNumberOfResults().intValue());
+        assertEquals(1, requestPillar1.getMinSequenceNumber().intValue());
+        assertEquals(3, requestPillar1.getMaxSequenceNumber().intValue());
 
         addStep("Verify no request is sent to pillar2", "");
         pillar2Receiver.checkNoMessageIsReceived(GetAuditTrailsRequest.class);
@@ -230,10 +233,10 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
                     PILLAR1_ID, pillar1DestinationId, result);
         messageBus.sendMessage(resultResponse);
         AuditTrailResult resultEvent = (AuditTrailResult)testEventHandler.waitForEvent();
-        assertEquals(resultEvent.getEventType(), OperationEvent.OperationEventType.COMPONENT_COMPLETE);
+        assertEquals(OperationEvent.OperationEventType.COMPONENT_COMPLETE, resultEvent.getEventType());
         assertEquals(resultEvent.getAuditTrailEvents(), result);
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.COMPLETE);
+        assertEquals(OperationEvent.OperationEventType.COMPLETE,
+                testEventHandler.waitForEvent().getEventType());
     }
 
     @Test @Tag("regressiontest")
@@ -251,8 +254,8 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         client.getAuditTrails(collectionID, null, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
             collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
+        assertEquals(OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT,
+                testEventHandler.waitForEvent().getEventType());
 
         addStep("Send a identifyResponse from each of the two pillars",
                 "COMPONENT_IDENTIFIED events and a IDENTIFICATION_COMPLETE event should be received." +
@@ -267,15 +270,15 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
                     PILLAR2_ID, pillar2DestinationId);
         messageBus.sendMessage(responsePillar2);
 
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE);
+        assertEquals(OperationEvent.OperationEventType.COMPONENT_IDENTIFIED,
+                testEventHandler.waitForEvent().getEventType());
+        assertEquals(OperationEvent.OperationEventType.COMPONENT_IDENTIFIED,
+                testEventHandler.waitForEvent().getEventType());
+        assertEquals(OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE,
+                testEventHandler.waitForEvent().getEventType());
 
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.REQUEST_SENT);
+        assertEquals(OperationEvent.OperationEventType.REQUEST_SENT,
+                testEventHandler.waitForEvent().getEventType());
         GetAuditTrailsRequest requestPillar1 = pillar1Receiver.waitForMessage(GetAuditTrailsRequest.class);
         assertNotNull(requestPillar1);
         GetAuditTrailsRequest requestPillar2 = pillar2Receiver.waitForMessage(GetAuditTrailsRequest.class);
@@ -292,8 +295,8 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         failedInfo.setResponseCode(ResponseCode.FAILURE);
         failedResponsePillar1.setResponseInfo(failedInfo);
         messageBus.sendMessage(failedResponsePillar1);
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.COMPONENT_FAILED);
+        assertEquals(OperationEvent.OperationEventType.COMPONENT_FAILED,
+                testEventHandler.waitForEvent().getEventType());
 
         addStep("Send a final response from pillar 2",
                 "A COMPONENT_COMPLETE event should be generated with the audit trail results." +
@@ -305,10 +308,10 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         messageBus.sendMessage(resultPillar2);
 
         AuditTrailResult result2Event = (AuditTrailResult)testEventHandler.waitForEvent();
-        assertEquals(result2Event.getEventType(), OperationEvent.OperationEventType.COMPONENT_COMPLETE);
+        assertEquals(OperationEvent.OperationEventType.COMPONENT_COMPLETE, result2Event.getEventType());
         assertEquals(result2Event.getAuditTrailEvents(), result2);
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.FAILED);
+        assertEquals(OperationEvent.OperationEventType.FAILED,
+                testEventHandler.waitForEvent().getEventType());
     }
 
     @Test @Tag("regressiontest")
@@ -325,8 +328,8 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         client.getAuditTrails(collectionID, null, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
             collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
+        assertEquals(OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT,
+                testEventHandler.waitForEvent().getEventType());
 
         addStep("Send a identifyResponse from each of the two pillars",
                 "COMPONENT_IDENTIFIED events and a IDENTIFICATION_COMPLETE event should be received." +
@@ -341,15 +344,15 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
                     PILLAR2_ID, pillar2DestinationId);
         messageBus.sendMessage(responsePillar2);
 
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE);
+        assertEquals(OperationEvent.OperationEventType.COMPONENT_IDENTIFIED,
+                testEventHandler.waitForEvent().getEventType());
+        assertEquals(OperationEvent.OperationEventType.COMPONENT_IDENTIFIED,
+                testEventHandler.waitForEvent().getEventType());
+        assertEquals(OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE,
+                testEventHandler.waitForEvent().getEventType());
 
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.REQUEST_SENT);
+        assertEquals(OperationEvent.OperationEventType.REQUEST_SENT,
+                testEventHandler.waitForEvent().getEventType());
         GetAuditTrailsRequest requestPillar1 = pillar1Receiver.waitForMessage(GetAuditTrailsRequest.class);
         GetAuditTrailsRequest requestPillar2 = pillar2Receiver.waitForMessage(GetAuditTrailsRequest.class);
 
@@ -363,8 +366,8 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         progressInfo1.setResponseCode(ResponseCode.OPERATION_ACCEPTED_PROGRESS);
         progressResponse1.setResponseInfo(progressInfo1);
         messageBus.sendMessage(progressResponse1);
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.PROGRESS);
+        assertEquals(OperationEvent.OperationEventType.PROGRESS,
+                testEventHandler.waitForEvent().getEventType());
 
         addStep("Send a general progress response from pillar 2",
         "A PROGRESS event should be generated with the audit trail results.");
@@ -376,8 +379,8 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         progressInfo2.setResponseCode(ResponseCode.OPERATION_PROGRESS);
         progressResponse2.setResponseInfo(progressInfo2);
         messageBus.sendMessage(progressResponse2);
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.PROGRESS);
+        assertEquals(OperationEvent.OperationEventType.PROGRESS,
+                testEventHandler.waitForEvent().getEventType());
     }
 
     @Test @Tag("regressiontest")
@@ -394,8 +397,8 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         client.getAuditTrails(collectionID, null, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
             collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
+        assertEquals(OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT,
+                testEventHandler.waitForEvent().getEventType());
 
         addStep("Send a identifyResponse from each of the two pillars",
                 "COMPONENT_IDENTIFIED events and a IDENTIFICATION_COMPLETE event should be received." +
@@ -410,15 +413,15 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
                     PILLAR2_ID, pillar2DestinationId);
         messageBus.sendMessage(responsePillar2);
 
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE);
+        assertEquals(OperationEvent.OperationEventType.COMPONENT_IDENTIFIED,
+                testEventHandler.waitForEvent().getEventType());
+        assertEquals(OperationEvent.OperationEventType.COMPONENT_IDENTIFIED,
+                testEventHandler.waitForEvent().getEventType());
+        assertEquals(OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE,
+                testEventHandler.waitForEvent().getEventType());
 
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.REQUEST_SENT);
+        assertEquals(OperationEvent.OperationEventType.REQUEST_SENT,
+                testEventHandler.waitForEvent().getEventType());
         GetAuditTrailsRequest requestPillar1 = pillar1Receiver.waitForMessage(GetAuditTrailsRequest.class);
         assertNotNull(requestPillar1);
     }
@@ -437,8 +440,8 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         client.getAuditTrails(collectionID, null, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
             collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
+        assertEquals(OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT,
+                testEventHandler.waitForEvent().getEventType());
 
         addStep("Send a identifyResponse from each of the two pillars",
                 "COMPONENT_IDENTIFIED events and a IDENTIFICATION_COMPLETE event should be received." +
@@ -452,19 +455,19 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
                     PILLAR2_ID, pillar2DestinationId);
         messageBus.sendMessage(responsePillar2);
 
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.COMPONENT_IDENTIFIED);
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE);
+        assertEquals(OperationEvent.OperationEventType.COMPONENT_IDENTIFIED,
+                testEventHandler.waitForEvent().getEventType());
+        assertEquals(OperationEvent.OperationEventType.COMPONENT_IDENTIFIED,
+                testEventHandler.waitForEvent().getEventType());
+        assertEquals(OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE,
+                testEventHandler.waitForEvent().getEventType());
 
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.REQUEST_SENT);
+        assertEquals(OperationEvent.OperationEventType.REQUEST_SENT,
+                testEventHandler.waitForEvent().getEventType());
 
         addStep("Wait for 1 second", "An failed event should be received");
-        assertEquals(testEventHandler.waitForEvent().getEventType(),
-                OperationEvent.OperationEventType.FAILED);
+        assertEquals(OperationEvent.OperationEventType.FAILED,
+                testEventHandler.waitForEvent().getEventType());
     }
 
     /**

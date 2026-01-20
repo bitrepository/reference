@@ -40,6 +40,15 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>io.qameta.allure</groupId>
+        <artifactId>allure-maven</artifactId>
+        <version>2.12.0</version>
+        <configuration>
+          <resultsDirectory>${project.basedir}/allure-results</resultsDirectory>
+          <reportDirectory>${project.basedir}/allure-report</reportDirectory>
+        </configuration>
+      </plugin>
+      <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
           <tarLongFileMode>posix</tarLongFileMode>
