@@ -14,7 +14,9 @@ import org.bitrepository.protocol.messagebus.SimpleMessageBus;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.jaccept.TestEventManager;
-import org.junit.jupiter.api.extension.*;
+import org.junit.jupiter.api.extension.AfterAllCallback;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
 import javax.jms.JMSException;
 import java.net.MalformedURLException;

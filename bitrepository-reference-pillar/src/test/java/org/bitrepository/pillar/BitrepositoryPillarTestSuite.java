@@ -1,8 +1,5 @@
 package org.bitrepository.pillar;
 
-import org.bitrepository.protocol.GlobalSuiteExtension;
-import org.bitrepository.protocol.IntegrationTest;
-import org.bitrepository.protocol.bus.ActiveMQMessageBusTest;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.suite.api.ExcludeTags;
 import org.junit.platform.suite.api.IncludeTags;

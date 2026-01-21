@@ -34,8 +34,8 @@ import java.net.URL;
  * Wraps the <code>GetFileClient</code> adding test event logging and functionality for handling blocking calls.
  */
 public class GetFileClientTestWrapper implements GetFileClient {
-    private GetFileClient createGetFileClient;
-    private TestEventManager testEventManager;
+    private final GetFileClient createGetFileClient;
+    private final TestEventManager testEventManager;
 
     public GetFileClientTestWrapper(GetFileClient createGetFileClient,
             TestEventManager testEventManager) {

@@ -51,7 +51,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-
 import javax.xml.bind.JAXBException;
 import java.math.BigInteger;
 import java.net.URL;
@@ -80,10 +79,9 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
     @Test
     @Tag("regressiontest")
     public void verifyGetFileIDsClientFromFactory() throws Exception {
-        Assertions.assertTrue(AccessComponentFactory.getInstance().createGetFileIDsClient(settingsForCUT, securityManager,
-                settingsForTestClient.getComponentID()) instanceof ConversationBasedGetFileIDsClient,
-                "The default GetFileClient from the Access factory should be of the type '" +
-                        ConversationBasedGetFileIDsClient.class.getName() + "'.");
+        Assertions.assertInstanceOf(ConversationBasedGetFileIDsClient.class, AccessComponentFactory.getInstance().createGetFileIDsClient(settingsForCUT, securityManager,
+                settingsForTestClient.getComponentID()), "The default GetFileClient from the Access factory should be of the type '" +
+                ConversationBasedGetFileIDsClient.class.getName() + "'.");
     }
 
     @Test

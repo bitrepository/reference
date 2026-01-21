@@ -41,11 +41,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-
-
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -76,7 +74,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
                 any(EventHandler.class));
 
         when(integrityContributors.getActiveContributors())
-            .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1))).thenReturn(new HashSet<>());
+            .thenReturn(new HashSet<>(List.of(TEST_PILLAR_1))).thenReturn(new HashSet<>());
         
         UpdateFileIDsStep step = new FullUpdateFileIDsStep(collector, model, alerter, settings, TEST_COLLECTION, 
                 integrityContributors);
@@ -104,9 +102,9 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
                 any(EventHandler.class));
         
         when(integrityContributors.getActiveContributors())
-            .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1)))
+            .thenReturn(new HashSet<>(List.of(TEST_PILLAR_1)))
             .thenReturn(new HashSet<>());
-        when(integrityContributors.getFailedContributors()).thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1)));
+        when(integrityContributors.getFailedContributors()).thenReturn(new HashSet<>(List.of(TEST_PILLAR_1)));
                 
         settings.getReferenceSettings().getIntegrityServiceSettings().setAbortOnFailedContributor(true);
         UpdateFileIDsStep step = new FullUpdateFileIDsStep(collector, model, alerter, settings, TEST_COLLECTION, 
@@ -140,7 +138,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
                     eventHandler.handleEvent(new ContributorFailedEvent(TEST_PILLAR_1, TEST_COLLECTION, ResponseCode.FAILURE));
                     eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "Operation failed", null));
                 } else {
-                    eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(TEST_PILLAR_1)));
+                    eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, List.of(TEST_PILLAR_1)));
                     eventHandler.handleEvent(new FileIDsCompletePillarEvent(
                             TEST_PILLAR_1, TEST_COLLECTION, resultingFileIDs, false));
                     eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
@@ -153,8 +151,8 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
                 any(EventHandler.class));
         
         when(integrityContributors.getActiveContributors())
-            .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1)))
-            .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1)))
+            .thenReturn(new HashSet<>(List.of(TEST_PILLAR_1)))
+            .thenReturn(new HashSet<>(List.of(TEST_PILLAR_1)))
             .thenReturn(new HashSet<>());
         when(integrityContributors.getFailedContributors()).thenReturn(new HashSet<>());
                 
@@ -188,8 +186,8 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
                 any(EventHandler.class));
         
         when(integrityContributors.getActiveContributors())
-            .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1))).thenReturn(new HashSet<>());
-        when(integrityContributors.getFailedContributors()).thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1)));
+            .thenReturn(new HashSet<>(List.of(TEST_PILLAR_1))).thenReturn(new HashSet<>());
+        when(integrityContributors.getFailedContributors()).thenReturn(new HashSet<>(List.of(TEST_PILLAR_1)));
         
         settings.getReferenceSettings().getIntegrityServiceSettings().setAbortOnFailedContributor(false);
         UpdateFileIDsStep step = new FullUpdateFileIDsStep(collector, model, alerter, settings, TEST_COLLECTION, 
@@ -213,7 +211,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[4];
-                eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(TEST_PILLAR_1)));
+                eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, List.of(TEST_PILLAR_1)));
                 eventHandler.handleEvent(new FileIDsCompletePillarEvent(
                         TEST_PILLAR_1, TEST_COLLECTION, resultingFileIDs, false));
                 eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
@@ -224,7 +222,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
                 any(EventHandler.class));
         
         when(integrityContributors.getActiveContributors())
-            .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1))).thenReturn(new HashSet<>());
+            .thenReturn(new HashSet<>(List.of(TEST_PILLAR_1))).thenReturn(new HashSet<>());
 
         UpdateFileIDsStep step = new FullUpdateFileIDsStep(collector, model, alerter, settings, TEST_COLLECTION, 
                 integrityContributors);
@@ -247,7 +245,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
             boolean firstPage = true;
             public Void answer(InvocationOnMock invocation) {
                 EventHandler eventHandler = (EventHandler) invocation.getArguments()[4];
-                eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(TEST_PILLAR_1)));
+                eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, List.of(TEST_PILLAR_1)));
                 eventHandler.handleEvent(
                         new FileIDsCompletePillarEvent(TEST_PILLAR_1, TEST_COLLECTION, resultingFileIDs, firstPage));
                 firstPage = false;
@@ -261,8 +259,8 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
                 any(EventHandler.class));
 
         when(integrityContributors.getActiveContributors())
-            .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1)))
-            .thenReturn(new HashSet<>(Arrays.asList(TEST_PILLAR_1)))
+            .thenReturn(new HashSet<>(List.of(TEST_PILLAR_1)))
+            .thenReturn(new HashSet<>(List.of(TEST_PILLAR_1)))
             .thenReturn(new HashSet<>());
 
         UpdateFileIDsStep step = new FullUpdateFileIDsStep(collector, model, alerter, settings, TEST_COLLECTION, 

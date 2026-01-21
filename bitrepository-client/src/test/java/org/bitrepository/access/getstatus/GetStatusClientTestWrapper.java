@@ -25,8 +25,8 @@ import org.bitrepository.client.eventhandler.EventHandler;
 import org.jaccept.TestEventManager;
 
 public class GetStatusClientTestWrapper implements GetStatusClient {
-    private GetStatusClient getStatusClient;
-    private TestEventManager testEventManager;
+    private final GetStatusClient getStatusClient;
+    private final TestEventManager testEventManager;
 
     public GetStatusClientTestWrapper(GetStatusClient getStatusClient,
                                     TestEventManager testEventManager) {

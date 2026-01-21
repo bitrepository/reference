@@ -45,7 +45,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-
 import javax.xml.datatype.DatatypeFactory;
 import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
@@ -71,7 +70,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                 "It should be an instance of SimplePutFileClient");
         PutFileClient pfc = ModifyComponentFactory.getInstance().retrievePutClient(
                 settingsForCUT, securityManager, settingsForTestClient.getComponentID());
-        Assertions.assertTrue(pfc instanceof ConversationBasedPutFileClient, "The PutFileClient '" + pfc + "' should be instance of '"
+        Assertions.assertInstanceOf(ConversationBasedPutFileClient.class, pfc, "The PutFileClient '" + pfc + "' should be instance of '"
                 + ConversationBasedPutFileClient.class.getName() + "'");
     }
 

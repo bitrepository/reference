@@ -33,7 +33,6 @@ import org.bitrepository.service.audit.AuditTrailManager;
 import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.BeforeEach;
 
-
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 

@@ -31,7 +31,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-
 import java.net.URL;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;

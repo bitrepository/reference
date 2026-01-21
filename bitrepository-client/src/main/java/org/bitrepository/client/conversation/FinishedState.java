@@ -25,7 +25,6 @@
 package org.bitrepository.client.conversation;
 
 import org.bitrepository.bitrepositorymessages.MessageResponse;
-import org.bitrepository.common.exceptions.UnableToFinishException;
 
 import java.time.Duration;
 import java.util.LinkedList;

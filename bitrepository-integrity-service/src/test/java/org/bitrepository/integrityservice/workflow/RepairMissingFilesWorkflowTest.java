@@ -43,8 +43,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-
-
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 import java.math.BigInteger;
@@ -273,7 +271,7 @@ public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
     
     private IntegrityIssueIterator createMockIterator(String ...strings) {
         return new IntegrityIssueIterator(null) {
-            Iterator<String> results = Arrays.asList(strings).iterator();
+            final Iterator<String> results = Arrays.asList(strings).iterator();
             @Override
             public void close() {
                 // TODO Auto-generated method stub

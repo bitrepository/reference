@@ -26,10 +26,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 public class ArgumentValidatorTest extends ExtendedTestCase {
     @Test
@@ -141,7 +140,7 @@ public class ArgumentValidatorTest extends ExtendedTestCase {
         } catch (IllegalArgumentException e) {
             // expected
         }
-        ArgumentValidator.checkNotNullOrEmpty(Arrays.asList("NO FAILURE"), "No exception expected.");
+        ArgumentValidator.checkNotNullOrEmpty(List.of("NO FAILURE"), "No exception expected.");
     }
     
     @Test

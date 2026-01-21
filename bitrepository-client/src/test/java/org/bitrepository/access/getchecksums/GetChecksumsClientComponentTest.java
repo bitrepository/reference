@@ -62,7 +62,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-
 import java.math.BigInteger;
 import java.net.URL;
 import java.util.Collection;
@@ -91,10 +90,9 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
     @Test
     @Tag("regressiontest")
     public void verifyGetChecksumsClientFromFactory() throws Exception {
-        Assertions.assertTrue(AccessComponentFactory.getInstance().createGetChecksumsClient(settingsForCUT, securityManager,
-                settingsForTestClient.getComponentID()) instanceof ConversationBasedGetChecksumsClient,
-                "The default GetFileClient from the Access factory should be of the type '" +
-                        ConversationBasedGetChecksumsClient.class.getName() + "'.");
+        Assertions.assertInstanceOf(ConversationBasedGetChecksumsClient.class, AccessComponentFactory.getInstance().createGetChecksumsClient(settingsForCUT, securityManager,
+                settingsForTestClient.getComponentID()), "The default GetFileClient from the Access factory should be of the type '" +
+                ConversationBasedGetChecksumsClient.class.getName() + "'.");
     }
 
     @Test

@@ -35,8 +35,8 @@ import java.net.URL;
  * Wrapper class for a PutFileClient adding test event logging.
  */
 public class PutFileClientTestWrapper implements PutFileClient {
-    private PutFileClient wrappedPutClient;
-    private TestEventManager testEventManager;
+    private final PutFileClient wrappedPutClient;
+    private final TestEventManager testEventManager;
 
     /**
      * Constructor.

@@ -29,21 +29,21 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public class ArchiveDirectoryTest extends ExtendedTestCase {
-    private static String DIR_NAME = "archive-directory";
-    private static String FILE_DIR_NAME = DIR_NAME + "/fileDir";
-    private static String FOLDER_DIR_NAME = DIR_NAME + "/" + ArchiveDirectory.FOLDER_DIR;
+    private static final String DIR_NAME = "archive-directory";
+    private static final String FILE_DIR_NAME = DIR_NAME + "/fileDir";
+    private static final String FOLDER_DIR_NAME = DIR_NAME + "/" + ArchiveDirectory.FOLDER_DIR;
     
-    private static String FILE_ID = "file1";
-    private static String FOLDER_FILE_ID = "folder1/folder2/file1";
+    private static final String FILE_ID = "file1";
+    private static final String FOLDER_FILE_ID = "folder1/folder2/file1";
     
     @AfterEach
     public void shutdownTests() throws Exception {
@@ -66,7 +66,7 @@ public class ArchiveDirectoryTest extends ExtendedTestCase {
         addStep("Validate the existence of the file", "Should exist and be retrievable.");
         Assertions.assertTrue(directory.hasFile(FILE_ID));
         Assertions.assertNotNull(directory.retrieveFile(FILE_ID));
-        Assertions.assertEquals(directory.getFileIds(), Arrays.asList(FILE_ID));
+        Assertions.assertEquals(directory.getFileIds(), Collections.singletonList(FILE_ID));
         
         addStep("Delete the file.", "Should not be extractable.");
         directory.removeFileFromArchive(FILE_ID);
@@ -86,7 +86,7 @@ public class ArchiveDirectoryTest extends ExtendedTestCase {
         addStep("Validate the existence of the file", "Should exist and be retrievable.");
         Assertions.assertFalse(directory.hasFile(FILE_ID));
         Assertions.assertNull(directory.retrieveFile(FILE_ID));
-        Assertions.assertEquals(directory.getFileIds(), Arrays.asList());
+        Assertions.assertEquals(directory.getFileIds(), List.of());
         
         addStep("Delete the file.", "exception since the file does not exist.");
         try {
@@ -228,7 +228,7 @@ public class ArchiveDirectoryTest extends ExtendedTestCase {
         addStep("Validate the existence of the file", "Should exist and be retrievable.");
         Assertions.assertTrue(directory.hasFile(FOLDER_FILE_ID));
         Assertions.assertNotNull(directory.retrieveFile(FOLDER_FILE_ID));
-        Assertions.assertEquals(directory.getFileIds(), Arrays.asList(FOLDER_FILE_ID));
+        Assertions.assertEquals(directory.getFileIds(), Collections.singletonList(FOLDER_FILE_ID));
         
         addStep("Delete the file.", "Should not be retrievable.");
         directory.removeFileFromArchive(FOLDER_FILE_ID);

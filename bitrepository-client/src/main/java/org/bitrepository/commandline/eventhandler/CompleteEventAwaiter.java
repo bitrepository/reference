@@ -32,7 +32,6 @@ import org.bitrepository.common.utils.TimeUtils;
 import java.time.Duration;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 /**
  * EventHandler for awaiting an operation to be complete.

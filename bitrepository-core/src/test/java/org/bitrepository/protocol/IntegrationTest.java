@@ -49,7 +49,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.TestWatcher;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.JMSException;

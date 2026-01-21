@@ -46,7 +46,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-
 import javax.xml.datatype.DatatypeFactory;
 import java.nio.charset.StandardCharsets;
 
@@ -68,7 +67,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
                 "It should be an instance of SimplePutFileClient");
         DeleteFileClient dfc = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(
                 settingsForCUT, securityManager, settingsForTestClient.getComponentID());
-        Assertions.assertTrue(dfc instanceof ConversationBasedDeleteFileClient, "The DeleteFileClient '" + dfc
+        Assertions.assertInstanceOf(ConversationBasedDeleteFileClient.class, dfc, "The DeleteFileClient '" + dfc
                 + "' should be instance of '" + ConversationBasedDeleteFileClient.class.getName() + "'");
     }
 

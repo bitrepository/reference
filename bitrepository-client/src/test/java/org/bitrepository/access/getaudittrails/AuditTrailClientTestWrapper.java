@@ -27,8 +27,8 @@ import org.jaccept.TestEventManager;
 import java.util.Arrays;
 
 public class AuditTrailClientTestWrapper implements AuditTrailClient {
-    private AuditTrailClient auditTrailClient;
-    private TestEventManager testEventManager;
+    private final AuditTrailClient auditTrailClient;
+    private final TestEventManager testEventManager;
 
 
     public AuditTrailClientTestWrapper(AuditTrailClient auditTrailClient,
@@ -43,8 +43,7 @@ public class AuditTrailClientTestWrapper implements AuditTrailClient {
         testEventManager.addStimuli(
                 "Calling getAuditTrails(" +
                         (componentQueries == null ? "null" : Arrays.asList(componentQueries)) +
-                        ", " + fileID + ", " +
-                        "" + urlForResult + ")");
+                        ", " + fileID + ", " + urlForResult + ")");
         auditTrailClient.getAuditTrails(collectionID, componentQueries, fileID, urlForResult, eventHandler,
                 auditTrailInformation);
     }

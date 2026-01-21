@@ -29,10 +29,8 @@ import org.bitrepository.modify.putfile.BlockingPutFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.pillar.integration.perf.metrics.Metrics;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;

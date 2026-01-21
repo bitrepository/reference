@@ -35,7 +35,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -49,11 +48,11 @@ public class ReferenceArchiveTest extends DefaultPillarTest {
     protected MockAuditManager audits;
     protected MessageHandlerContext context;
 
-    private static String DIR_NAME = "archive-directory";
-    private static String FILE_DIR_NAME = DIR_NAME + "/fileDir";
+    private static final String DIR_NAME = "archive-directory";
+    private static final String FILE_DIR_NAME = DIR_NAME + "/fileDir";
 
-    private static String EXISTING_FILE = "file1";
-    private static String MISSING_FILE = "Missing-filE";
+    private static final String EXISTING_FILE = "file1";
+    private static final String MISSING_FILE = "Missing-filE";
 
     @Override
     protected void shutdownCUT() {
