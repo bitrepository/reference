@@ -47,8 +47,7 @@ import org.bitrepository.protocol.security.MessageSigner;
 import org.bitrepository.protocol.security.OperationAuthorizer;
 import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
-
-import org.bitrepository.protocol.utils.BitrepositoryEvent;
+import org.jaccept.TestEventManager;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -58,9 +57,6 @@ import org.junit.jupiter.api.TestInstance;
 import javax.jms.JMSException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Super class for all tests which should test functionality on a single pillar.
@@ -92,10 +88,10 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     protected void initializeCUT() {
         super.initializeCUT();
         reloadMessageBus();
-        clientProvider = new ClientProvider(securityManager, settingsForTestClient);
+        clientProvider = new ClientProvider(securityManager, settingsForTestClient, testEventManager);
         pillarFileManager = new PillarFileManager(collectionID,
-            getPillarID(), settingsForTestClient, clientProvider, httpServerConfiguration);
-        clientEventHandler = new ClientEventLogger();
+            getPillarID(), settingsForTestClient, clientProvider, testEventManager, httpServerConfiguration);
+        clientEventHandler = new ClientEventLogger(testEventManager);
     }
 
     @BeforeAll
@@ -132,9 +128,6 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
             MessageBusManager.clear();
             messageBus = MessageBusManager.getMessageBus(settingsForCUT, securityManager);
         } else {
-            if (messageBus == null) {
-                messageBus = new org.bitrepository.protocol.messagebus.SimpleMessageBus();
-            }
             MessageBusManager.injectCustomMessageBus(MessageBusManager.DEFAULT_MESSAGE_BUS, messageBus);    
         }
     }
@@ -266,25 +259,21 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     /** Used to listen for operation event and log this. */
     public class ClientEventLogger implements EventHandler {
 
+        /** The <code>TestEventManager</code> used to manage the event for the associated test. */
+        private final TestEventManager testEventManager;
+
         /** The constructor.
+         *
+         * @param testEventManager The <code>TestEventManager</code> used to manage the event for the associated test.
          */
-        public ClientEventLogger() {
+        public ClientEventLogger(TestEventManager testEventManager) {
             super();
-            
+            this.testEventManager = testEventManager;
         }
 
         @Override
         public void handleEvent(OperationEvent event) {
-            Map<String, Object> eventData = new HashMap<>();
-            eventData.put("info", event.getInfo());
-            eventData.put("fileID", event.getFileID());
-            eventData.put("collectionID", event.getCollectionID());
-            eventData.put("conversationID", event.getConversationID());
-
-            eventLogger.logEvent(new BitrepositoryEvent(
-                    event.getEventType().name(),
-                    eventData
-            ));
+            testEventManager.addResult("Received event: "+ event);
         }
     }
 }

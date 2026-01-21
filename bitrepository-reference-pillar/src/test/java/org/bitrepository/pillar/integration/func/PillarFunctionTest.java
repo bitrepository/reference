@@ -27,10 +27,8 @@ import org.bitrepository.protocol.bus.MessageReceiver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInfo;
 
-
-import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * The parent class for pillar acceptance tests. The tests can be run in a multi pillar collection has the tests will
@@ -55,7 +53,7 @@ public abstract class PillarFunctionTest extends PillarIntegrationTest {
         clientReceiver = new MessageReceiver(settingsForTestClient.getReceiverDestinationID());
         addReceiver(clientReceiver);
 
-        Collection<String> pillarFilter = Arrays.asList(testConfiguration.getPillarUnderTestID());
+        Collection<String> pillarFilter = Collections.singletonList(testConfiguration.getPillarUnderTestID());
         clientReceiver.setFromFilter(pillarFilter);
         alarmReceiver.setFromFilter(pillarFilter);
     }

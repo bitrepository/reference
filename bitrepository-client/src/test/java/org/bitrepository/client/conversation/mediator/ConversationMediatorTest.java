@@ -59,9 +59,9 @@ public abstract class ConversationMediatorTest {
     @SuppressWarnings("unused")
     private class ConversationStub extends StateBasedConversation {
         private boolean hasStarted = false;
-        private boolean hasFailed = false;
-        private boolean hasEnded = false;
-        private Object result = null;
+        private final boolean hasFailed = false;
+        private final boolean hasEnded = false;
+        private final Object result = null;
 
         public ConversationStub() {
             super(null);

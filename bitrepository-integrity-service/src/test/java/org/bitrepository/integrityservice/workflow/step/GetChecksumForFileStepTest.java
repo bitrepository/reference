@@ -42,9 +42,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
 
-
-
-
 import javax.xml.datatype.DatatypeConfigurationException;
 import java.util.Arrays;
 

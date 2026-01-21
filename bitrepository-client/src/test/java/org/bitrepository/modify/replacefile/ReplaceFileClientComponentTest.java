@@ -46,7 +46,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import java.net.URL;
@@ -76,7 +75,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
                 "It should be an instance of ConversationBasedReplaceFileClient");
         ReplaceFileClient rfc = ModifyComponentFactory.getInstance().retrieveReplaceFileClient(
                 settingsForCUT, securityManager, settingsForTestClient.getComponentID());
-        Assertions.assertTrue(rfc instanceof ConversationBasedReplaceFileClient, "The ReplaceFileClient '" + rfc
+        Assertions.assertInstanceOf(ConversationBasedReplaceFileClient.class, rfc, "The ReplaceFileClient '" + rfc
                 + "' should be instance of '" + ConversationBasedReplaceFileClient.class.getName() + "'");
     }
 

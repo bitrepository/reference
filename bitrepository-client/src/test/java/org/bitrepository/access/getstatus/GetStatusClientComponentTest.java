@@ -41,7 +41,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-
 import javax.xml.datatype.DatatypeFactory;
 import java.util.List;
 
@@ -68,11 +67,9 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
         @Test
     @Tag("regressiontest")
         public void verifyGetStatusClientFromFactory() {
-            Assertions.assertTrue(AccessComponentFactory.getInstance().createGetStatusClient(
-                    settingsForCUT, securityManager, settingsForTestClient.getComponentID())
-                    instanceof ConversationBasedGetStatusClient,
-                    "The default GetStatusClient from the Access factory should be of the type '" +
-                            ConversationBasedGetStatusClient.class.getName() + "'.");
+            Assertions.assertInstanceOf(ConversationBasedGetStatusClient.class, AccessComponentFactory.getInstance().createGetStatusClient(
+                    settingsForCUT, securityManager, settingsForTestClient.getComponentID()), "The default GetStatusClient from the Access factory should be of the type '" +
+                    ConversationBasedGetStatusClient.class.getName() + "'.");
         }
         
         @Test

@@ -49,7 +49,7 @@ public class IdentifyContributorExceptionTest {
         try {
             throw new IdentifyContributorException(errCode, errMsg);
         } catch(Exception e) {
-            Assertions.assertTrue(e instanceof IdentifyContributorException);
+            Assertions.assertInstanceOf(IdentifyContributorException.class, e);
             Assertions.assertEquals(e.getMessage(), errMsg);
             Assertions.assertEquals(((IdentifyContributorException) e).getResponseInfo().getResponseCode(), errCode);
             Assertions.assertEquals(((IdentifyContributorException) e).getResponseInfo().getResponseText(), errMsg);
@@ -60,12 +60,12 @@ public class IdentifyContributorExceptionTest {
         try {
             throw new IdentifyContributorException(errCode, errMsg, new IllegalArgumentException(causeMsg));
         } catch(Exception e) {
-            Assertions.assertTrue(e instanceof IdentifyContributorException);
+            Assertions.assertInstanceOf(IdentifyContributorException.class, e);
             Assertions.assertEquals(e.getMessage(), errMsg);
             Assertions.assertEquals(((IdentifyContributorException) e).getResponseInfo().getResponseCode(), errCode);
             Assertions.assertEquals(((IdentifyContributorException) e).getResponseInfo().getResponseText(), errMsg);
             Assertions.assertNotNull(e.getCause());
-            Assertions.assertTrue(e.getCause() instanceof IllegalArgumentException);
+            Assertions.assertInstanceOf(IllegalArgumentException.class, e.getCause());
             Assertions.assertEquals(e.getCause().getMessage(), causeMsg);
         }
     }    

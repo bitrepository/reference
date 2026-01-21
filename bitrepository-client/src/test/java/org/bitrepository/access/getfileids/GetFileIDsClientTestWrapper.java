@@ -24,10 +24,9 @@
  */
 package org.bitrepository.access.getfileids;
 
-import io.qameta.allure.Allure;
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.client.eventhandler.EventHandler;
-
+import org.jaccept.TestEventManager;
 
 import java.net.URL;
 import java.util.Arrays;
@@ -38,29 +37,26 @@ import java.util.Arrays;
 public class GetFileIDsClientTestWrapper implements GetFileIDsClient {
     /** The actual GetFileIDsClient to perform the operations.*/
     private final GetFileIDsClient client;
-
+    /** The EventManager to manage the events.*/
+    private final TestEventManager eventManager;
+    
     /**
-     * Constructor.
+     * Constructor. 
      * @param client The actual GetFileIDsClient.
+     * @param eventManager The EventManager to notify about the operations performed by this wrapper.
      */
-    public GetFileIDsClientTestWrapper(GetFileIDsClient client) {
+    public GetFileIDsClientTestWrapper(GetFileIDsClient client, TestEventManager eventManager) {
         this.client = client;
+        this.eventManager = eventManager;
     }
 
     @Override
     public void getFileIDs(String collectionID, ContributorQuery[] contributorQueries, String fileID,
                            URL addressForResult, EventHandler eventHandler) {
-        String stepName = "Calling getFileIDs for: " + (fileID != null ? fileID : "all files");
-
-        StringBuilder details = new StringBuilder();
-        details.append("Collection: ").append(collectionID).append("\n")
-                .append("Contributor Queries: ").append(contributorQueries == null ? "null" : Arrays.asList(contributorQueries)).append("\n")
-                .append("Address for Result: ").append(addressForResult).append("\n")
-                .append("EventHandler: ").append(eventHandler);
-
-        Allure.step(stepName, () -> {
-            Allure.addAttachment("GetFileIDs Request Parameters", details.toString());
-            client.getFileIDs(collectionID, contributorQueries, fileID, addressForResult, eventHandler);
-        });
+        eventManager.addStimuli("Calling getFileIDs(" +
+                (contributorQueries == null ? "null" : Arrays.asList(contributorQueries)) +
+                ", " + fileID + ", " + addressForResult + ", "
+                + eventHandler + ")");
+        client.getFileIDs(collectionID, contributorQueries, fileID, addressForResult, eventHandler);
     }
 }

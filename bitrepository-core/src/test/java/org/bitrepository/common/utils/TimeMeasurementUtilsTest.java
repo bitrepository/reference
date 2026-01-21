@@ -31,7 +31,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-
 import java.math.BigInteger;
 
 /**
@@ -58,7 +57,7 @@ public class TimeMeasurementUtilsTest extends ExtendedTestCase {
                 " should be larger than " + compareTime);
         
         compareTime.setTimeMeasureValue(new BigInteger("2"));
-        Assertions.assertTrue(TimeMeasurementUtils.compare(referenceTime, compareTime) == 0, referenceTime + 
+        Assertions.assertEquals(0, TimeMeasurementUtils.compare(referenceTime, compareTime), referenceTime +
                 " should be same as " + compareTime);
     }
 
@@ -83,7 +82,7 @@ public class TimeMeasurementUtilsTest extends ExtendedTestCase {
                 " should be larger than " + compareTime);
         
         compareTime.setTimeMeasureValue(new BigInteger("2"));
-        Assertions.assertTrue(TimeMeasurementUtils.compare(referenceTime, compareTime) == 0, referenceTime + 
+        Assertions.assertEquals(0, TimeMeasurementUtils.compare(referenceTime, compareTime), referenceTime +
                 " should be same as " + compareTime);
         
         Assertions.assertEquals(TimeMeasurementUtils.getTimeMeasureInLong(referenceTime), millis);
