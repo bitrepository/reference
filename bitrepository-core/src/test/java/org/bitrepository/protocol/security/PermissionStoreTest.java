@@ -84,17 +84,20 @@ public class PermissionStoreTest  {
         assertEquals(positiveCertificate, certificateFromStore);
     }
     
-    //@Test @Tag("regressiontest"})
+    //@Test
+//    @Tag("regressiontest"})
     public void certificatePermissionCheckTest() {
         addDescription("Tests that a certificate only allows for the expected permission.");
     }
     
-    //@Test @Tag("regressiontest"})
+    //@Test
+//    @Tag("regressiontest"})
     public void unknownCertificatePermissionCheckTest() {
         addDescription("Tests that a unknown certificate results in expected refusal.");
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void certificateFingerprintTest() throws Exception {
         addDescription("Tests that a certificate fingerprint can correctly be retrieved for a signer.");
         addFixture("Create signer to lookup fingerprint");

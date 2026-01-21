@@ -206,7 +206,8 @@ public class FileUtilsTest {
         Assertions.assertEquals(dir.listFiles().length, 2);
     }
     
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void cleanupEmptyDirectoriesTester() throws Exception {
         addDescription("Test the cleanup of empty directories.");
         File dir = FileUtils.retrieveDirectory(DIR);

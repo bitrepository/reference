@@ -22,20 +22,19 @@
 package org.bitrepository.alarm.store;
 
 import org.bitrepository.bitrepositoryelements.AlarmCode;
+import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import java.util.Date;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
-
 /**
  * Runs ExtendedTestCase with a regression test.
  */
 
-public class AlarmDatabaseExtractionModelTest {
-    @Test @Tag("regressiontest")
+public class AlarmDatabaseExtractionModelTest extends ExtendedTestCase {
+    @Test
+    @Tag("regressiontest")
     public void alarmExceptionTest() throws Exception {
         addDescription("Test the AlarmDatabaseExtractionModel class");
         addStep("Define constants etc.", "Should be OK");

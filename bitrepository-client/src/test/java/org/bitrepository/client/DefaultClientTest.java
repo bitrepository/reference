@@ -95,7 +95,8 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void identificationFailureTest() throws Exception {
         addDescription("Verify that the client works correctly when a contributor sends a failure response.");
 
@@ -136,7 +137,8 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void oneContributorNotRespondingTest() throws Exception {
         addDescription("Verify that the client works correct without receiving identification responses from all " +
                 "contributors.");
@@ -177,7 +179,8 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
 
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void noContributorsRespondingTest() throws Exception {
         addDescription("Tests the the client handles lack of a IdentifyResponse gracefully. " +
                 "More concrete this means that the occurrence of a identification timeout should be handled correctly");
@@ -198,7 +201,8 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
     }
 
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void operationTimeoutTest() throws Exception {
         addDescription("Tests the the client handles lack of final responses gracefully.");
 
@@ -232,7 +236,8 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
                 OperationEventType.FAILED);
     }
     
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void collectionIDIncludedInEventsTest() throws Exception {
         addDescription("Tests the the client provides collectionID in events.");
 
@@ -283,7 +288,8 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
         assertEquals(event6.getCollectionID(), collectionID);
     }    
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void conversationTimeoutTest() throws Exception {
         addDescription("Tests the the client handles lack of IdentifyPillarResponses gracefully  ");
 

@@ -53,7 +53,8 @@ public class GetFileIDsCmdTest extends DefaultFixtureClientTest {
     }
 
 
-    @Test @Tag( "regressiontest")
+    @Test
+    @Tag( "regressiontest")
     public void missingCollectionArgumentTest() throws Exception {
         assertThrows(IllegalArgumentException.class, () -> {
             addDescription("Tests the scenario, where the collection arguments is missing.");
@@ -64,7 +65,8 @@ public class GetFileIDsCmdTest extends DefaultFixtureClientTest {
         });
     }
 
-    @Test @Tag( "regressiontest")
+    @Test
+    @Tag( "regressiontest")
     public void specificPillarArgumentTest() throws Exception {
         addDescription("Test argument for a specific pillar");
         String[] args = new String[]{"-s" + SETTINGS_DIR, 
@@ -75,7 +77,8 @@ public class GetFileIDsCmdTest extends DefaultFixtureClientTest {
         new GetFileIDsCmd(args);
     }
 
-    @Test @Tag( "regressiontest")
+    @Test
+    @Tag( "regressiontest")
     public void unknownPillarArgumentTest() throws Exception {
         assertThrows(IllegalArgumentException.class, () -> {
             addDescription("Testing against a non-existing pillar id -> Should fail");
@@ -88,7 +91,8 @@ public class GetFileIDsCmdTest extends DefaultFixtureClientTest {
         });
     }
 
-    @Test @Tag( "regressiontest")
+    @Test
+    @Tag( "regressiontest")
     public void fileArgumentTest() throws Exception {
         addDescription("Tests the argument for a specific file.");
         String[] args = new String[]{"-s" + SETTINGS_DIR, 

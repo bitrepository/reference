@@ -31,7 +31,8 @@ import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 
 public class MessageAuthenticationExceptionTest {
     
-    @Test @Tag("regressiontest" )
+    @Test
+    @Tag("regressiontest" )
     public void testMessageAuthenticationException() throws Exception {
         addDescription("Test the instantiation of the exception");
         addStep("Setup", "");

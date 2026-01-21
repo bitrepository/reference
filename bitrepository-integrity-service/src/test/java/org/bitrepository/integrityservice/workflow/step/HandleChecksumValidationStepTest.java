@@ -96,7 +96,8 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         Assertions.assertFalse(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
     }
     
-    @Test @Tag("regressiontest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest") @Tag("integritytest")
     public void testSimilarData() throws Exception {
         addDescription("Test the checksum integrity validator when all pillars have similar data.");
         IntegrityModel cache = getIntegrityModel();
@@ -124,7 +125,8 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         }
     }
     
-    @Test @Tag("regressiontest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest") @Tag("integritytest")
     public void testMissingAtOnePillar() throws Exception {
         addDescription("Test the checksum integrity validator when one pillar is missing the data.");
         IntegrityModel cache = getIntegrityModel();
@@ -144,7 +146,8 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         Assertions.assertFalse(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
     }
 
-    @Test @Tag("regressiontest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest") @Tag("integritytest")
     public void testTwoDisagreeingChecksums() throws Exception {
         addDescription("Test the checksum integrity validator when only two pillar has data, but it it different.");
         IntegrityModel cache = getIntegrityModel();
@@ -171,7 +174,8 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         }*/
     }
     
-    @Test @Tag("regressiontest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest") @Tag("integritytest")
     public void testThreeDisagreeingChecksums() throws Exception {
         addDescription("Test the checksum integrity validator when all pillars have different checksums.");
         IntegrityModel cache = getIntegrityModel();
@@ -198,7 +202,8 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         Assertions.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors(), Long.valueOf(1));
     }
     
-    @Test @Tag("regressiontest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest") @Tag("integritytest")
     public void testChecksumMajority() throws Exception {
         addDescription("Test the checksum integrity validator when two pillars have one checksum and the last pillar "
                 + "has another checksum.");
@@ -226,7 +231,8 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         Assertions.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors(), Long.valueOf(0));
     }
 
-    @Test @Tag("regressiontest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest") @Tag("integritytest")
     public void testAuditTrailsForChecksumErrors() throws Exception {
         addDescription("Test audit trails for checksum errors. Verify that a pillar with a single checksum will"
                 + " be pointed out as the possible cause.");

@@ -33,7 +33,8 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AlarmHandlerTest extends IntegrationTest {
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void alarmMediatorTest() throws Exception {
         addDescription("Test the mediator handling of alarm messages.");
         addStep("Setup mediator and create alarm handler.", "Should be ok.");

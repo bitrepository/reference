@@ -151,7 +151,8 @@ public class GetFileIDsTest extends MockedPillarTest {
     }
     
     @SuppressWarnings("rawtypes")
-    //@Test @Tag("regressiontest", "pillartest"})
+    //@Test
+//    @Tag("regressiontest", "pillartest"})
     // FAILS, when combined with other tests...
     public void goodCaseOperationSingleFile() throws Exception {
         addDescription("Tests the GetFileIDs operation on the pillar for the successful scenario when requesting one specific file.");
@@ -200,7 +201,8 @@ public class GetFileIDsTest extends MockedPillarTest {
     }
     
     @SuppressWarnings("rawtypes")
-    //@Test @Tag("regressiontest", "pillartest"})
+    //@Test
+//    @Tag("regressiontest", "pillartest"})
     // FAILS, when combined with other tests...
     public void goodCaseOperationAllFiles() throws Exception {
         addDescription("Tests the GetFileIDs operation on the pillar for the successful scenario, when requesting all files.");
@@ -290,7 +292,8 @@ public class GetFileIDsTest extends MockedPillarTest {
     }
 
     @SuppressWarnings("rawtypes")
-    //@Test @Tag("regressiontest", "pillartest"})
+    //@Test
+//    @Tag("regressiontest", "pillartest"})
     // FAILS, when combined with other tests...
     public void testRestrictions() throws Exception {
         addDescription("Tests that the restrictions are correctly passed on to the cache.");

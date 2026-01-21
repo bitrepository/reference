@@ -75,7 +75,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                 + ConversationBasedPutFileClient.class.getName() + "'");
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void normalPutFile() throws Exception {
         addDescription("Tests the PutClient. Makes a whole conversation for the put client for a 'good' scenario.");
         addFixture("Initialise the number of pillars to one");
@@ -144,7 +145,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPLETE);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void noPillarsResponding() throws Exception {
         addDescription("Tests the handling of missing identification responses from all pillar");
         addFixture("Sets the identification timeout to 100 ms.");
@@ -169,7 +171,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void onePillarRespondingWithPartialPutAllowed() throws Exception {
         addReference("<a href=https://sbforge.org/jira/browse/BITMAG-598>" +
                 "BITMAG-598 It should be possible to putFiles, even though only a subset of the pillars are available</a>");
@@ -218,7 +221,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void onePillarRespondingWithPartialPutDisallowed() throws Exception {
         addDescription("Tests the handling of missing identification responses from one pillar, " +
                 "when partial put are allowed");
@@ -254,7 +258,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void putClientOperationTimeout() throws Exception {
         addDescription("Tests the handling of a failed operation for the PutClient");
         addStep("Initialise the number of pillars and the PutClient. Sets the operation timeout to 100 ms.",
@@ -295,7 +300,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void putClientPillarOperationFailed() throws Exception {
         addDescription("Tests the handling of a operation failure for the PutClient. ");
         addStep("Initialise the number of pillars to one", "Should be OK.");
@@ -343,7 +349,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void fileExistsOnPillarNoChecksumFromPillar() throws Exception {
         addDescription("Tests that PutClient handles the presence of a file correctly, when the pillar doesn't return a " +
                 "checksum in the identification response. ");
@@ -376,7 +383,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void fileExistsOnPillarDifferentChecksumFromPillar() throws Exception {
         addDescription("Tests that PutClient handles the presence of a file correctly, when the pillar " +
                 "returns a checksum different from the file being put. ");
@@ -414,7 +422,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void sameFileExistsOnOnePillar() throws Exception {
         addDescription("Tests that PutClient handles the presence of a file correctly, when the pillar " +
                 "returns a checksum equal the file being put (idempotent).");
@@ -469,7 +478,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPLETE);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void fileExistsOnPillarChecksumFromPillarNoClientChecksum() throws Exception {
         addDescription("Tests that PutClient handles the presence of a file correctly, when the pillar " +
                 "returns a checksum but the putFile was called without a checksum. ");
@@ -505,7 +515,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void saltedReturnChecksumsWithChecksumPillar() throws Exception {
         addDescription("Tests that PutClient handles the presence of a ChecksumPillar correctly, when a salted return" +
                 " checksum (which a checksum pillar can't provide) is requested. ");
@@ -560,7 +571,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void defaultReturnChecksumsWithChecksumPillar() throws Exception {
         addDescription("Tests that PutClient handles the presence of a ChecksumPillar correctly, when a return" +
                 " checksum of default type is requested (which a checksum pillar can provide). ");
@@ -611,7 +623,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         assertEquals(receivedPutFileRequest2.getChecksumRequestForNewFile(), checksumSpecTYPE);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void noReturnChecksumsWithChecksumPillar() throws Exception {
         addDescription("Tests that PutClient handles the presence of a ChecksumPillar correctly, when no return" +
                 " checksum is requested.");
@@ -657,7 +670,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         Assertions.assertNull(receivedPutFileRequest2.getChecksumRequestForNewFile());
     }
  
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void onePillarPutRetrySuccess() throws Exception {
         addReference("<a href=https://sbforge.org/jira/browse/BITMAG-810>" +
                 "BITMAG-810 Reference client should be able to retry failed file transfers</a>");
@@ -709,7 +723,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPLETE);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void onePillarPutRetryFailure() throws Exception {
         addReference("<a href=https://sbforge.org/jira/browse/BITMAG-810>" +
                 "BITMAG-810 Reference client should be able to retry failed file transfers</a>");
@@ -772,7 +787,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void putToOtherCollection() throws Exception {
         addReference("<a href=https://sbforge.org/jira/browse/BITMAG-925>" +
                 "BITMAG-925 Client will always try to put to the pillars defined in the first collection</a>");

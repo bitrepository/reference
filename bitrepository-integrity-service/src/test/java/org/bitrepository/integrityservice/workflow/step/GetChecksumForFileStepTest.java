@@ -110,7 +110,8 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
         verifyNoMoreInteractions(collector);
     }
 
-    @Test @Tag("regressiontest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest") @Tag("integritytest")
     public void testFullData() throws Exception {
         addDescription("Test step for retrieving the checksum of a single file, when all three pillars deliver results.");
         ChecksumSpecTYPE checksumType = ChecksumUtils.getDefault(settings);
@@ -152,7 +153,8 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
         verifyNoMoreInteractions(collector);
     }
 
-    @Test @Tag("regressiontest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest") @Tag("integritytest")
     public void testComponentFailure() throws Exception {
         addDescription("Test step for retrieving the checksum of a single file, when one pillar fails.");
         ChecksumSpecTYPE checksumType = ChecksumUtils.getDefault(settings);

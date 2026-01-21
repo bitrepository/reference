@@ -222,7 +222,8 @@ public class DeleteFileTest extends MockedPillarTest {
     }
     
     @SuppressWarnings("rawtypes")
-    //@Test @Tag("regressiontest", "pillartest"})
+    //@Test
+//    @Tag("regressiontest", "pillartest"})
     // FAILS, when combined with other tests...
     public void goodCaseOperation() throws Exception {
         addDescription("Tests the DeleteFile functionality of the pillar for the success scenario, where the file is uploaded.");

@@ -49,7 +49,8 @@ public class BasicIntegrityReporterTest extends IntegrationTest {
         reporter.generateReport();
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void noIntegrityIssuesTest() {
         addDescription("Verifies that missing files are reported correctly");
 
@@ -61,7 +62,8 @@ public class BasicIntegrityReporterTest extends IntegrationTest {
         assertEquals(expectedReport, reporter.generateSummaryOfReport());
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void missingFilesTest()  throws Exception {
         addDescription("Verifies that missing files are reported correctly");
 
@@ -112,7 +114,8 @@ public class BasicIntegrityReporterTest extends IntegrationTest {
         assertEquals(expectedReport, reporter.generateSummaryOfReport());
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void missingChecksumTest() throws Exception {
         addDescription("Verifies that missing checksums are reported correctly");
 
@@ -138,7 +141,8 @@ public class BasicIntegrityReporterTest extends IntegrationTest {
     }
 
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void obsoleteChecksumTest() throws Exception {
         addDescription("Verifies that obsolete checksums are reported correctly");
 

@@ -130,7 +130,8 @@ public class RepairMissingFilesWorkflowTest {
         verifyNoMoreInteractions(model);
     }
     
-    @Test @Tag("regressiontest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest") @Tag("integritytest")
     public void testSuccessRepair() {
         addDescription("Test that the workflow makes calls to the collector, when a file is missing");
         addStep("Prepare for calls to mocks to handle a repair", "");
@@ -178,7 +179,8 @@ public class RepairMissingFilesWorkflowTest {
         verifyNoMoreInteractions(model);
     }
     
-    @Test @Tag("regressiontest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest") @Tag("integritytest")
     public void testFailedGetFile() {
         addDescription("Test that the workflow does not try to put a file, if it fails to get it.");
         addStep("Prepare for calls to mocks to fail when performing get-file", "");
@@ -218,7 +220,8 @@ public class RepairMissingFilesWorkflowTest {
         verifyNoMoreInteractions(model);
     }
     
-    @Test @Tag("regressiontest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest") @Tag("integritytest")
     public void testFailedPutFile() {
         addDescription("Test that the workflow makes calls to the collector for get and put file, even when put file fails.");
         addStep("Prepare for calls to mocks", "");

@@ -32,7 +32,8 @@ import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 public class FileIDUtilsTest {
     String FILE_ID = "Test-File-Id";
     
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void fileIDsTest() throws Exception {
         addDescription("Test the utility class for generating FileIDs");
         addStep("Test 'all file ids'", "is only AllFileIDs");

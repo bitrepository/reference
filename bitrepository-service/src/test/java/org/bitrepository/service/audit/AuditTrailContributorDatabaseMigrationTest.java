@@ -75,7 +75,8 @@ public class AuditTrailContributorDatabaseMigrationTest {
     }
     
     @Test
-    @Tag("regressiontest") @Tag("databasetest")
+    @Tag("regressiontest")
+    @Tag("databasetest")
     public void testMigratingAuditContributorDatabase() {
         addDescription("Tests that the database can be migrated to latest version with the provided scripts.");
         DBConnector connector = new DBConnector(

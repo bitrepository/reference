@@ -65,7 +65,8 @@ public class RecalculateChecksumWorkflowTest extends DefaultPillarTest {
                 beforeWorkflowDate.getTime() + " < "+ afterWorkflowDate.getTime());
     }
     
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     @Tag("pillartest")
     public void testWorkflowDoesNotRecalculateWhenNotNeeded() throws Exception {
         addDescription("Test that the workflow does not recalculates the workflows, when the maximum age has "

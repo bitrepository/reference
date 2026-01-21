@@ -30,7 +30,8 @@ import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 
 public class SecurityExceptionTest {
     
-    @Test @Tag("regressiontest" )
+    @Test
+    @Tag("regressiontest" )
     public void testSecurityException() throws Exception {
         addDescription("Test the instantiation of the exception");
         addStep("Setup", "");
