@@ -89,7 +89,8 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
                 ConversationBasedAuditTrailClient.class.getName() + "'.");
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void getAllAuditTrailsTest() throws InterruptedException {
         addDescription("Tests the simplest case of getting all audit trail event for all contributors.");
         
@@ -177,7 +178,8 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
     }
 
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void getSomeAuditTrailsTest() throws InterruptedException {
         addDescription("Tests the client maps a AuditTrail query correctly to a GetAuditTrail request.");
 
@@ -236,7 +238,8 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
                 OperationEvent.OperationEventType.COMPLETE);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void negativeGetAuditTrailsResponseTest() throws InterruptedException {
         addDescription("Verify that the GetAuditTrail client works correct when receiving a negative " +
         "GetAuditTrails response from one contributors.");
@@ -311,7 +314,8 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
                 OperationEvent.OperationEventType.FAILED);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void progressEventsTest() throws InterruptedException {
         addDescription("Tests that progress events are handled correctly.");
 
@@ -380,7 +384,8 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
                 OperationEvent.OperationEventType.PROGRESS);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void incompleteSetOfFinalResponsesTest() throws Exception {
         addDescription("Verify that the GetAuditTrail client works correct without receiving responses from all " +
         "contributors.");
@@ -423,7 +428,8 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         assertNotNull(requestPillar1);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void noFinalResponsesTest() throws Exception {
         addDescription("Tests the the AuditTrailClient handles lack of Final Responses gracefully  ");
         addStep("Set a 100 ms timeout for the operation.", "");

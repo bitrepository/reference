@@ -80,7 +80,8 @@ public class SecurityManagerTest extends ExtendedTestCase {
                 SecurityTestConstants.getComponentID());
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void operationAuthorizationBehaviourTest() throws Exception {
         addDescription("Tests that a signature only allows the correct requests.");
 
@@ -176,7 +177,8 @@ public class SecurityManagerTest extends ExtendedTestCase {
         }
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void negativeSigningAuthenticationRoundtripUnkonwnCertificateTest() throws Exception {
         addDescription("Tests that a roundtrip of signing a request and afterwards authenticating it fails due to " +
                 "a unknown certificate.");

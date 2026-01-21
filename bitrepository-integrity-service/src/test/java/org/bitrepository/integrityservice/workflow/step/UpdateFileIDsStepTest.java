@@ -87,7 +87,8 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
         verifyNoMoreInteractions(alerter);
     }
     
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void testAbortWorkflowWhenNegativeReply() {
         addDescription("Test the step for updating the file ids will throw an WorkflowAbortedException"
                 + "when AbortOnFailedContributor is set to true and a FAILED event is received.");
@@ -125,7 +126,8 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
         verify(alerter).integrityFailed(anyString(), anyString());
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void testRetryCollectionWhenNegativeReply() throws WorkflowAbortedException {
         addDescription("Test the step for updating the file ids will retry on a FAILED event");
         final ResultingFileIDs resultingFileIDs = createResultingFileIDs(TEST_FILE_1);
@@ -169,7 +171,8 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
         verify(integrityContributors).finishContributor(eq(TEST_PILLAR_1));
     }
     
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void testContinueWorkflowWhenNegativeReply() throws WorkflowAbortedException {
         addDescription("Test the step for updating the file ids will continue when getting an FAILED operation event"
                 + " when AbortOnFailedContributor is set to false");
@@ -202,7 +205,8 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
 
     
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void testIngestOfResults() throws WorkflowAbortedException {
         addDescription("Test the step for updating the file ids can ingest the data correctly into the store.");
         final ResultingFileIDs resultingFileIDs = createResultingFileIDs(TEST_FILE_1);
@@ -230,7 +234,8 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
     }
 
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void testPartialResults() throws WorkflowAbortedException {
         addDescription("Test that the number of partial is used for generating more than one request.");
         final ResultingFileIDs resultingFileIDs = createResultingFileIDs(TEST_FILE_1);

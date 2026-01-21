@@ -81,7 +81,8 @@ public class ChecksumDatabaseMigrationTest extends ExtendedTestCase {
         }
     }
     
-//    @Test @Tag("regressiontest", "pillartest"})
+//    @Test
+//    @Tag("regressiontest", "pillartest"})
     public void testMigratingChecksumDatabaseFromV1ToV2() throws Exception {
         addDescription("Tests that the checksums table can be migrated from version 1 to 2, e.g. getting the column "
                 + "collectionid, which should be set to the default in settings.");

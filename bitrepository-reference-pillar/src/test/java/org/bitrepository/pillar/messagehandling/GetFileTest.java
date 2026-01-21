@@ -98,7 +98,8 @@ public class GetFileTest extends MockedPillarTest {
     }
 
     @SuppressWarnings("rawtypes")
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     @Tag("pillartest")
     public void badCaseIdentification() throws Exception {
         addDescription("Tests the identification for a GetFile operation on the checksum pillar for the failure scenario, when the file is missing.");
@@ -137,7 +138,8 @@ public class GetFileTest extends MockedPillarTest {
     }
 
     @SuppressWarnings("rawtypes")
-    //@Test @Tag("regressiontest", "pillartest"})
+    //@Test
+//    @Tag("regressiontest", "pillartest"})
     // FAILS, when combined with other tests...
     public void badCaseOperationNoFile() throws Exception {
         addDescription("Tests the GetFile functionality of the pillar for the failure scenario, where it does not have the file.");
@@ -175,7 +177,8 @@ public class GetFileTest extends MockedPillarTest {
     }
 
     @SuppressWarnings("rawtypes")
-    //@Test @Tag("regressiontest", "pillartest"})
+    //@Test
+//    @Tag("regressiontest", "pillartest"})
     // FAILS, when combined with other tests...
     public void goodCaseOperation() throws Exception {
         addDescription("Tests the GetFile functionality of the pillar for the success scenario, where the file is uploaded.");

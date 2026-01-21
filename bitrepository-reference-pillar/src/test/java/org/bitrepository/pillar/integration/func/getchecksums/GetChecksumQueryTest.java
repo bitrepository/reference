@@ -134,7 +134,8 @@ public class GetChecksumQueryTest extends PillarFunctionTest {
                         CalendarUtils.getXmlGregorianCalendar(newerThanNewestTimestamp) + ") query");
     }
     
-    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST) @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
+    @Test
+    @Tag(PillarTestGroups.FULL_PILLAR_TEST) @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
     public void maxTimeStampTest() {
         addDescription("Test the pillar support for only retrieving checksums older than a given time. " +
                 "Note that this test assumes there is at least 2 checksums with different timestamps. " +

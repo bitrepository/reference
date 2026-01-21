@@ -47,7 +47,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class TimeUtilsTest extends ExtendedTestCase {
     private static final ZonedDateTime BASE = Instant.EPOCH.atZone(ZoneOffset.UTC);
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void timeTester() throws Exception {
         addDescription("Tests the TimeUtils. Pi days = 271433605 milliseconds");
         addStep("Test that milliseconds can be converted into human readable seconds", 
@@ -224,7 +225,8 @@ public class TimeUtilsTest extends ExtendedTestCase {
      * formatted to depends on the default/system timezone. At some time the use of the old java Date 
      * api should be discontinued and the new Java Time api used instead.
      */
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void shortDateTest() {
     	DateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.ROOT);
         Date date = new Date(1360069129256L);

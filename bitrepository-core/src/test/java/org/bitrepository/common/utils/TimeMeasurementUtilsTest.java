@@ -38,7 +38,8 @@ import java.math.BigInteger;
  * Tests the <code>TimeMeasureComparator</code> class.
  */
 public class TimeMeasurementUtilsTest extends ExtendedTestCase {
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void testCompareMilliSeconds() {
         addDescription("Test the comparison between TimeMeasure units.");
         TimeMeasureTYPE referenceTime = new TimeMeasureTYPE();
@@ -61,7 +62,8 @@ public class TimeMeasurementUtilsTest extends ExtendedTestCase {
                 " should be same as " + compareTime);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void testCompareMilliSecondsToHours() {
         addDescription("Test the comparison between milliseconds and hours.");
         long millis = 7200000L;
@@ -87,7 +89,8 @@ public class TimeMeasurementUtilsTest extends ExtendedTestCase {
         Assertions.assertEquals(TimeMeasurementUtils.getTimeMeasureInLong(referenceTime), millis);
     }
 
-    @Test @Tag("regressiontest" )
+    @Test
+    @Tag("regressiontest" )
     public void testMaxValue() {
         addDescription("Test the Maximum value");
         TimeMeasureTYPE time = TimeMeasurementUtils.getMaximumTime();

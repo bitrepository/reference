@@ -28,7 +28,8 @@ import org.junit.jupiter.api.Test;
 
 public class SecurityExceptionTest extends ExtendedTestCase {
     
-    @Test @Tag("regressiontest" )
+    @Test
+    @Tag("regressiontest" )
     public void testSecurityException() throws Exception {
         addDescription("Test the instantiation of the exception");
         addStep("Setup", "");

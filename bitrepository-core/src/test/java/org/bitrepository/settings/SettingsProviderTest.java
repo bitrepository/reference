@@ -42,7 +42,8 @@ public class SettingsProviderTest {
         Assertions.assertEquals(settings.getComponentID(), myComponentID);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void reloadTest() {
         String myComponentID = "TestComponentID";
         SettingsProvider settingsLoader =

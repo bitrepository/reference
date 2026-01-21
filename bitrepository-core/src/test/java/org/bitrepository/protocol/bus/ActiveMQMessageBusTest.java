@@ -93,7 +93,8 @@ public class ActiveMQMessageBusTest extends GeneralMessageBusTest {
         collectionReceiver.checkNoMessageIsReceived(IdentifyPillarsForDeleteFileRequest.class);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public final void sendMessageToSpecificComponentTest() throws Exception {
         addDescription("Test that message bus correct uses the 'to' header property to indicated that the message " +
                 "is meant for a specific component");
@@ -119,7 +120,8 @@ public class ActiveMQMessageBusTest extends GeneralMessageBusTest {
         assertEquals(receivedMessage.getStringProperty(ActiveMQMessageBus.MESSAGE_TO_KEY), receiverID);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public final void toFilterTest() throws Exception {
         addDescription("Test that message bus filters identify requests to other components, eg. ignores these.");
         addStep("Send an identify request with a undefined 'To' header property, " +

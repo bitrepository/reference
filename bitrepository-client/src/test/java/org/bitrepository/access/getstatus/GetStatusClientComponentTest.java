@@ -65,7 +65,8 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
             contributors.add(PILLAR2_ID);
         }
 
-        @Test @Tag("regressiontest")
+        @Test
+    @Tag("regressiontest")
         public void verifyGetStatusClientFromFactory() {
             Assertions.assertTrue(AccessComponentFactory.getInstance().createGetStatusClient(
                     settingsForCUT, securityManager, settingsForTestClient.getComponentID())
@@ -117,7 +118,8 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
             pillar1Receiver.waitForMessage(GetStatusRequest.class);
         }
         
-        @Test @Tag("regressiontest")
+        @Test
+    @Tag("regressiontest")
         public void getAllStatuses() throws InterruptedException {
             addDescription("Tests the simplest case of getting status for all contributors.");
 

@@ -35,7 +35,8 @@ public class AuditTrailQueryTest extends ExtendedTestCase {
 
     String componentId = "componentId";
     
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void testNoSequenceNumbers() throws Exception {
         addDescription("Test that a AuditTrailQuery can be created without any sequence numbers.");
         AuditTrailQuery query = new AuditTrailQuery(componentId, null, null, DEFAULT_MAX_NUMBER_OF_RESULTS);
@@ -55,7 +56,8 @@ public class AuditTrailQueryTest extends ExtendedTestCase {
         assertNull(query.getMaxSequenceNumber());
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void testBothSequenceNumberSuccess() throws Exception {
         addDescription("Test the creation of a AuditTrailQuery with both SequenceNumber, where max is larger than min.");
         Long minSeq = 1L;
@@ -66,7 +68,8 @@ public class AuditTrailQueryTest extends ExtendedTestCase {
         assertEquals(query.getMaxSequenceNumber(), maxSeq);
     }
     
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void testBothSequenceNumberFailure() throws Exception {
         assertThrows(IllegalArgumentException.class, () -> {
             addDescription("Test the creation of a AuditTrailQuery with both SequenceNumber, where max is smalle than min.");

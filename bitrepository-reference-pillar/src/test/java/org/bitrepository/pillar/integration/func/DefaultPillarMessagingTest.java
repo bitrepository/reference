@@ -38,7 +38,9 @@ import org.junit.jupiter.api.Test;
  */
 public abstract class DefaultPillarMessagingTest extends PillarFunctionTest {
 
-    @Test @Tag(PillarTestGroups.FULL_PILLAR_TEST) @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
+    @Test
+    @Tag(PillarTestGroups.FULL_PILLAR_TEST)
+    @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
     public void missingCollectionIDTest() {
         addDescription("Verifies the a missing collectionID in the request is rejected");
         addStep("Sending a request without a collectionID.",
