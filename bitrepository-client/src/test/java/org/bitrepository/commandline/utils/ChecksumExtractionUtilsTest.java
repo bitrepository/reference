@@ -51,7 +51,7 @@ public class ChecksumExtractionUtilsTest extends DefaultFixtureClientTest {
     @Tag("regressiontest")
     public void testDefaultChecksumSpec() throws Exception {
         addDescription("Test that the default checksum is retrieved when no arguments are given.");
-        cmdHandler.parseArguments(new String[]{});
+        cmdHandler.parseArguments();
         ChecksumType type = ChecksumExtractionUtils.extractChecksumType(cmdHandler, settingsForCUT, output);
         assertEquals(type.name(), settingsForCUT.getRepositorySettings().getProtocolSettings().getDefaultChecksumType());
     }
@@ -60,7 +60,7 @@ public class ChecksumExtractionUtilsTest extends DefaultFixtureClientTest {
     @Tag("regressiontest")
     public void testDefaultChecksumSpecWithSaltArgument() throws Exception {
         addDescription("Test that the HMAC version of default checksum is retrieved when the salt arguments are given.");
-        cmdHandler.parseArguments(new String[]{"-" + Constants.REQUEST_CHECKSUM_SALT_ARG + "0110"});
+        cmdHandler.parseArguments("-" + Constants.REQUEST_CHECKSUM_SALT_ARG + "0110");
         ChecksumType type = ChecksumExtractionUtils.extractChecksumType(cmdHandler, settingsForCUT, output);
         assertEquals(type.name(), "HMAC_" + settingsForCUT.getRepositorySettings().getProtocolSettings().getDefaultChecksumType());
     }
@@ -70,7 +70,7 @@ public class ChecksumExtractionUtilsTest extends DefaultFixtureClientTest {
     public void testNonSaltChecksumSpecWithoutSaltArgument() throws Exception {
         addDescription("Test that a non-salt checksum type is retrieved when it is given as argument, and no salt arguments are given.");
         ChecksumType enteredType = ChecksumType.SHA384;
-        cmdHandler.parseArguments(new String[]{"-" + Constants.REQUEST_CHECKSUM_TYPE_ARG + enteredType});
+        cmdHandler.parseArguments("-" + Constants.REQUEST_CHECKSUM_TYPE_ARG + enteredType);
         ChecksumType type = ChecksumExtractionUtils.extractChecksumType(cmdHandler, settingsForCUT, output);
         assertEquals(type, enteredType);
     }

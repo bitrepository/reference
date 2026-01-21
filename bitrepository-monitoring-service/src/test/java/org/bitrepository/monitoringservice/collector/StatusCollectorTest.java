@@ -32,7 +32,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
-
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 
@@ -43,8 +42,8 @@ import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 public class StatusCollectorTest {
     Settings settings;
     
-    private int INTERVAL = 500;
-    private int INTERVAL_DELAY = 250;
+    private final int INTERVAL = 500;
+    private final int INTERVAL_DELAY = 250;
     
     @BeforeAll
     public void setup() {
@@ -84,7 +83,7 @@ public class StatusCollectorTest {
 
         addStep("wait 2 * the interval", "It should call the client and store two times more.");        
         synchronized(this) {
-            wait(2 * INTERVAL);
+            wait(2L * INTERVAL);
         }
         collector.stop();
         

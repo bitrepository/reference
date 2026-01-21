@@ -247,7 +247,7 @@ public class MessageBusNumberOfListenersStressTest {
             // the console output (due to shutdown 'warnings'). Thus write the results in a file.
             if (WRITE_RESULTS_TO_FILE) {
                 FileOutputStream out = new FileOutputStream(new File(OUTPUT_FILE_NAME), true);
-                out.write(new String("idReached: " + idReached + ", NumberOfListeners: " + NUMBER_OF_LISTENERS
+                out.write(("idReached: " + idReached + ", NumberOfListeners: " + NUMBER_OF_LISTENERS
                         + ", messagesReceived: " + messageReceived + " on bus "
                         + conf.getURL() + "\n").getBytes());
                 out.flush();

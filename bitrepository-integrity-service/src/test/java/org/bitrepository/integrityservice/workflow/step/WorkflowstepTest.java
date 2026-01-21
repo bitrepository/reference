@@ -32,7 +32,6 @@ import org.bitrepository.integrityservice.workflow.IntegrityContributors;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.junit.jupiter.api.BeforeEach;
 
-
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 

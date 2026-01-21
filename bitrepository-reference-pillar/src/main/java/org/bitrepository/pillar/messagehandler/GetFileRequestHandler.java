@@ -49,9 +49,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.net.URL;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.util.UUID;
 
 public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest> {
     private final Logger log = LoggerFactory.getLogger(getClass());

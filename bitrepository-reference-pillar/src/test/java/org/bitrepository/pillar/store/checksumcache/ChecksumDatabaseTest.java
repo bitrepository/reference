@@ -39,6 +39,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
@@ -143,8 +144,8 @@ public class ChecksumDatabaseTest {
         ChecksumEntry newEntry = cache.getEntry(DEFAULT_FILE_ID, collectionID);
         Assertions.assertEquals(DEFAULT_FILE_ID, newEntry.getFileId());
         Assertions.assertEquals(newChecksum, newEntry.getChecksum());
-        Assertions.assertFalse(oldEntry.getChecksum().equals(newEntry.getChecksum()));
-        Assertions.assertFalse(oldEntry.getCalculationDate().getTime() == newEntry.getCalculationDate().getTime());
+        Assertions.assertNotEquals(oldEntry.getChecksum(), newEntry.getChecksum());
+        Assertions.assertNotEquals(oldEntry.getCalculationDate().getTime(), newEntry.getCalculationDate().getTime());
     }
 
     @Test

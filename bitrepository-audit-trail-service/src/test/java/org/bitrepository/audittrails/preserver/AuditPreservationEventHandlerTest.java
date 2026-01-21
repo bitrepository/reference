@@ -25,6 +25,7 @@ import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+
 import java.util.HashMap;
 import java.util.Map;
 

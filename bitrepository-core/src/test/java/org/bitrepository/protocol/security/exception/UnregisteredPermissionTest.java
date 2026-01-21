@@ -43,7 +43,7 @@ public class UnregisteredPermissionTest {
         try {
             throw new UnregisteredPermissionException(errMsg);
         } catch(Exception e) {
-            Assertions.assertTrue(e instanceof UnregisteredPermissionException);
+            Assertions.assertInstanceOf(UnregisteredPermissionException.class, e);
             Assertions.assertEquals(e.getMessage(), errMsg);
             Assertions.assertNull(e.getCause());
         }
@@ -52,10 +52,10 @@ public class UnregisteredPermissionTest {
         try {
             throw new UnregisteredPermissionException(errMsg, new IllegalArgumentException(causeMsg));
         } catch(Exception e) {
-            Assertions.assertTrue(e instanceof UnregisteredPermissionException);
+            Assertions.assertInstanceOf(UnregisteredPermissionException.class, e);
             Assertions.assertEquals(e.getMessage(), errMsg);
             Assertions.assertNotNull(e.getCause());
-            Assertions.assertTrue(e.getCause() instanceof IllegalArgumentException);
+            Assertions.assertInstanceOf(IllegalArgumentException.class, e.getCause());
             Assertions.assertEquals(e.getCause().getMessage(), causeMsg);
         }
     }

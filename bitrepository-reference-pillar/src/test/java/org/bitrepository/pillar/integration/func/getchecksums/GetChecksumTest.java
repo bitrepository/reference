@@ -30,10 +30,10 @@ import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
