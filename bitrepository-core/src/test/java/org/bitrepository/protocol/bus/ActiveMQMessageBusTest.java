@@ -65,7 +65,7 @@ public class ActiveMQMessageBusTest extends GeneralMessageBusTest {
                         "eg. this identify requests should be handled by everybody.",
                 "Verify that the message bus accepts this message.");
         String myCollectionID = "MyCollection";
-        messageBus.setCollectionFilter(Arrays.asList(new String[]{myCollectionID}));
+        messageBus.setCollectionFilter(Arrays.asList(myCollectionID));
         RawMessagebus rawMessagebus = new RawMessagebus(
                 settingsForTestClient.getMessageBusConfiguration(),
                 securityManager);
@@ -126,7 +126,7 @@ public class ActiveMQMessageBusTest extends GeneralMessageBusTest {
         addStep("Send an identify request with a undefined 'To' header property, " +
                         "eg. this identify requests should be handled by all components.",
                 "Verify that the identify request bus accepts this identify request.");
-        messageBus.setComponentFilter(Arrays.asList(new String[]{ settingsForTestClient.getComponentID() }));
+        messageBus.setComponentFilter(Arrays.asList(settingsForTestClient.getComponentID()));
         RawMessagebus rawMessagebus = new RawMessagebus(
                 settingsForTestClient.getMessageBusConfiguration(),
                 securityManager);

@@ -27,9 +27,9 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 /**
@@ -53,7 +53,7 @@ public class IllegalOperationExceptionTest extends ExtendedTestCase {
         try {
             throw new IllegalOperationException(errCode, errMsg, FileID);
         } catch(Exception e) {
-            assertTrue(e instanceof IllegalOperationException);
+            assertInstanceOf(IllegalOperationException.class, e);
             assertEquals(e.getMessage(), errMsg);
             assertEquals(((IllegalOperationException) e).getResponseInfo().getResponseCode(), errCode);
             assertEquals(((IllegalOperationException) e).getResponseInfo().getResponseText(), errMsg);
@@ -65,15 +65,15 @@ public class IllegalOperationExceptionTest extends ExtendedTestCase {
         try {
             throw new IllegalOperationException(errCode, errMsg, FileID, new IllegalArgumentException(causeMsg));
         } catch(Exception e) {
-            assertTrue(e instanceof IllegalOperationException);
-            assertTrue(e instanceof RequestHandlerException);
+            assertInstanceOf(IllegalOperationException.class, e);
+            assertInstanceOf(RequestHandlerException.class, e);
             assertEquals(e.getMessage(), errMsg);
             assertEquals(((IllegalOperationException) e).getResponseInfo().getResponseCode(), errCode);
             assertEquals(((IllegalOperationException) e).getResponseInfo().getResponseText(), errMsg);
             assertNotNull(e.getCause());
-            assertTrue(e.getCause() instanceof IllegalArgumentException);
+            assertInstanceOf(IllegalArgumentException.class, e.getCause());
             assertEquals(e.getCause().getMessage(), causeMsg);
-            assertNotNull(((RequestHandlerException) e).toString());
+            assertNotNull(e.toString());
             assertEquals(((IllegalOperationException) e).getFileId(), FileID);
         }
     }

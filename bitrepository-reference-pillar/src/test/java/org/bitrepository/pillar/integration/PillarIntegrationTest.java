@@ -57,7 +57,6 @@ import org.junit.jupiter.api.TestInstance;
 import javax.jms.JMSException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 
 /**
  * Super class for all tests which should test functionality on a single pillar.

@@ -42,7 +42,7 @@ public class UnexpectedResponseExceptionTest extends ExtendedTestCase {
         try {
             throw new UnexpectedResponseException(errMsg);
         } catch(Exception e) {
-            Assertions.assertTrue(e instanceof UnexpectedResponseException);
+            Assertions.assertInstanceOf(UnexpectedResponseException.class, e);
             Assertions.assertEquals(e.getMessage(), errMsg);
             Assertions.assertNull(e.getCause());
         }
@@ -51,10 +51,10 @@ public class UnexpectedResponseExceptionTest extends ExtendedTestCase {
         try {
             throw new UnexpectedResponseException(errMsg, new IllegalArgumentException(causeMsg));
         } catch(Exception e) {
-            Assertions.assertTrue(e instanceof UnexpectedResponseException);
+            Assertions.assertInstanceOf(UnexpectedResponseException.class, e);
             Assertions.assertEquals(e.getMessage(), errMsg);
             Assertions.assertNotNull(e.getCause());
-            Assertions.assertTrue(e.getCause() instanceof IllegalArgumentException);
+            Assertions.assertInstanceOf(IllegalArgumentException.class, e.getCause());
             Assertions.assertEquals(e.getCause().getMessage(), causeMsg);
         }
     }

@@ -11,7 +11,6 @@ import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.PillarTestGroups;
-import org.bitrepository.pillar.integration.func.Assert;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
 import org.bitrepository.protocol.FileExchange;
@@ -24,9 +23,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;

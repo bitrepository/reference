@@ -31,7 +31,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class LogbackConfigLoader {
-    private Logger log = LoggerFactory.getLogger(LogbackConfigLoader.class);
+    private final Logger log = LoggerFactory.getLogger(LogbackConfigLoader.class);
 
     public LogbackConfigLoader(String configFileLocation) throws IOException, JoranException{
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();

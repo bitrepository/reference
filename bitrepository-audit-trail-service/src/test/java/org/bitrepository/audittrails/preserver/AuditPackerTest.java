@@ -7,9 +7,9 @@ import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.settings.referencesettings.AuditTrailPreservation;
 import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +40,7 @@ public class AuditPackerTest extends ExtendedTestCase {
     public void testCreateNewPackage() throws IOException {
         AuditPacker packer = new AuditPacker(store, preservationSettings, collectionID);
         Map<String, Long> seqNumsReached = packer.getSequenceNumbersReached();
-        assertEquals(3, seqNumsReached.entrySet().size());
+        assertEquals(3, seqNumsReached.size());
         assertEquals(0, packer.getPackedAuditCount());
 
         // Create a stubbed event iterator for each expected contributor containing only one event.

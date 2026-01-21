@@ -22,13 +22,11 @@
 
 package org.bitrepository.pillar.common;
 
-import org.bitrepository.pillar.integration.func.Assert;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.bitrepository.settings.repositorysettings.PillarIDs;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -48,7 +48,7 @@ public class InvalidMessageExceptionTest extends ExtendedTestCase {
         try {
             throw new InvalidMessageException(errCode, errMsg);
         } catch(Exception e) {
-            Assertions.assertTrue(e instanceof InvalidMessageException);
+            Assertions.assertInstanceOf(InvalidMessageException.class, e);
             Assertions.assertEquals(e.getMessage(), errMsg);
             Assertions.assertEquals(((InvalidMessageException) e).getResponseInfo().getResponseCode(), errCode);
             Assertions.assertEquals(((InvalidMessageException) e).getResponseInfo().getResponseText(), errMsg);
@@ -59,15 +59,15 @@ public class InvalidMessageExceptionTest extends ExtendedTestCase {
         try {
             throw new InvalidMessageException(errCode, errMsg, new IllegalArgumentException(causeMsg));
         } catch(Exception e) {
-            Assertions.assertTrue(e instanceof InvalidMessageException);
-            Assertions.assertTrue(e instanceof RequestHandlerException);
+            Assertions.assertInstanceOf(InvalidMessageException.class, e);
+            Assertions.assertInstanceOf(RequestHandlerException.class, e);
             Assertions.assertEquals(e.getMessage(), errMsg);
             Assertions.assertEquals(((InvalidMessageException) e).getResponseInfo().getResponseCode(), errCode);
             Assertions.assertEquals(((InvalidMessageException) e).getResponseInfo().getResponseText(), errMsg);
             Assertions.assertNotNull(e.getCause());
-            Assertions.assertTrue(e.getCause() instanceof IllegalArgumentException);
+            Assertions.assertInstanceOf(IllegalArgumentException.class, e.getCause());
             Assertions.assertEquals(e.getCause().getMessage(), causeMsg);
-            Assertions.assertNotNull(((RequestHandlerException) e).toString());
+            Assertions.assertNotNull(e.toString());
         }
         
         addStep("Throw the exception with a ResponseInfo", "Should be caught and validated");
@@ -77,7 +77,7 @@ public class InvalidMessageExceptionTest extends ExtendedTestCase {
             ri.setResponseText(errMsg);
             throw new InvalidMessageException(ri);
         } catch(Exception e) {
-            Assertions.assertTrue(e instanceof InvalidMessageException);
+            Assertions.assertInstanceOf(InvalidMessageException.class, e);
             Assertions.assertEquals(e.getMessage(), errMsg);
             Assertions.assertEquals(((InvalidMessageException) e).getResponseInfo().getResponseCode(), errCode);
             Assertions.assertEquals(((InvalidMessageException) e).getResponseInfo().getResponseText(), errMsg);

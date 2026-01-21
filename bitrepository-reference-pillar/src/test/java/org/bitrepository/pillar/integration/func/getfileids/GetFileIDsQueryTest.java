@@ -28,6 +28,7 @@ import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -119,10 +120,8 @@ public class GetFileIDsQueryTest extends PillarFunctionTest {
         query = new ContributorQuery(getPillarID(),
                 newestTimestamp.toGregorianCalendar().getTime(), null, null);
         limitedFileIDsList = pillarFileManager.getFileIDs(query);
-        assertTrue(!limitedFileIDsList.isEmpty(),
-                "Empty list returned when when minTimestamp is set to newest calculated checksum timestamp");
-        assertTrue(limitedFileIDsList.get(0).getLastModificationTime().compare(newestTimestamp) == 0,
-                "Different timestamps in the set of newest file ids." + limitedFileIDsList);
+        assertFalse(limitedFileIDsList.isEmpty(), "Empty list returned when when minTimestamp is set to newest calculated checksum timestamp");
+        assertEquals(0, limitedFileIDsList.get(0).getLastModificationTime().compare(newestTimestamp), "Different timestamps in the set of newest file ids." + limitedFileIDsList);
 
         addStep("Request file ids with MinTimeStamp set to the timestamp of the newest file id + 10 ms",
                 "No file ids are returned.");
@@ -169,8 +168,7 @@ public class GetFileIDsQueryTest extends PillarFunctionTest {
         limitedFileIDsList = pillarFileManager.getFileIDs(query);
         assertFalse(limitedFileIDsList.isEmpty(), "At least one file id with the oldest timestamp should be " +
                 "returned. The folliwing fileIDs where received: ");
-        assertTrue(limitedFileIDsList.get(0).getLastModificationTime().compare(oldestTimestamp) == 0,
-                "Different timestamps in the set of oldest file ids." + limitedFileIDsList);
+        assertEquals(0, limitedFileIDsList.get(0).getLastModificationTime().compare(oldestTimestamp), "Different timestamps in the set of oldest file ids." + limitedFileIDsList);
 
         addStep("Request file ids with MaxTimeStamp set to the timestamp of the oldest file id - 10 ms",
                 "No file ids are returned.");

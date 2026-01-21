@@ -27,13 +27,12 @@ package org.bitrepository.protocol.bus;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
-import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.jaccept.TestEventManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
+import java.util.List;
 
 /**
  * Class for testing the interface with the message bus.
@@ -50,8 +49,8 @@ public class GeneralMessageBusTest extends IntegrationTest {
 
     @AfterEach
     public void tearDown() {
-        messageBus.setComponentFilter(Arrays.asList(new String[]{}));
-        messageBus.setCollectionFilter(Arrays.asList(new String[]{}));
+        messageBus.setComponentFilter(List.of());
+        messageBus.setCollectionFilter(List.of());
     }
 
     @Test

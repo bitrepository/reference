@@ -41,7 +41,7 @@ public class PermissionStoreExceptionTest extends ExtendedTestCase {
         try {
             throw new PermissionStoreException(errMsg);
         } catch(Exception e) {
-            Assertions.assertTrue(e instanceof PermissionStoreException);
+            Assertions.assertInstanceOf(PermissionStoreException.class, e);
             Assertions.assertEquals(e.getMessage(), errMsg);
             Assertions.assertNull(e.getCause());
         }
@@ -50,10 +50,10 @@ public class PermissionStoreExceptionTest extends ExtendedTestCase {
         try {
             throw new PermissionStoreException(errMsg, new IllegalArgumentException(causeMsg));
         } catch(Exception e) {
-            Assertions.assertTrue(e instanceof PermissionStoreException);
+            Assertions.assertInstanceOf(PermissionStoreException.class, e);
             Assertions.assertEquals(e.getMessage(), errMsg);
             Assertions.assertNotNull(e.getCause());
-            Assertions.assertTrue(e.getCause() instanceof IllegalArgumentException);
+            Assertions.assertInstanceOf(IllegalArgumentException.class, e.getCause());
             Assertions.assertEquals(e.getCause().getMessage(), causeMsg);
         }
     }

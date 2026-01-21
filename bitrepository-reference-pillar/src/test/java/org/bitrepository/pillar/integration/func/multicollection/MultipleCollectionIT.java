@@ -26,15 +26,13 @@ import org.bitrepository.client.exceptions.NegativeResponseException;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.PillarIntegrationTest;
-import org.bitrepository.pillar.integration.func.Assert;
 import org.bitrepository.protocol.bus.MessageReceiver;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 public class MultipleCollectionIT extends PillarIntegrationTest {
     /** Used for receiving responses from the pillar */
@@ -74,7 +72,7 @@ public class MultipleCollectionIT extends PillarIntegrationTest {
         clientReceiver = new MessageReceiver(settingsForTestClient.getReceiverDestinationID(), testEventManager);
         addReceiver(clientReceiver);
 
-        Collection<String> pillarFilter = Arrays.asList(testConfiguration.getPillarUnderTestID());
+        Collection<String> pillarFilter = Collections.singletonList(testConfiguration.getPillarUnderTestID());
         clientReceiver.setFromFilter(pillarFilter);
         alarmReceiver.setFromFilter(pillarFilter);
     }

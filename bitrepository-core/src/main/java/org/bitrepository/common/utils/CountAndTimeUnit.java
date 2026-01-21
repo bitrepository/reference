@@ -1,6 +1,6 @@
 package org.bitrepository.common.utils;
 
-import java.util.*;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class CountAndTimeUnit {

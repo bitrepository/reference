@@ -43,7 +43,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
@@ -121,11 +120,7 @@ public final class JaxbHelper {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         JAXBContext.newInstance(object.getClass()).createMarshaller().marshal(object, baos);
         String baosContent;
-        try {
-            baosContent = baos.toString(StandardCharsets.UTF_8.name());
-        } catch (UnsupportedEncodingException e) {
-            throw new AssertionError("UTF-8 not supported");
-        }
+        baosContent = baos.toString(StandardCharsets.UTF_8);
         return baosContent;
     }
 

@@ -45,7 +45,7 @@ public class MemoryCacheMock implements ChecksumStore {
     /**
      * The checksum mapping between the file ids and their checksum.
      */
-    private Map<String, ChecksumEntry> checksumMap = new HashMap<>();
+    private final Map<String, ChecksumEntry> checksumMap = new HashMap<>();
     
     public MemoryCacheMock() {}
     

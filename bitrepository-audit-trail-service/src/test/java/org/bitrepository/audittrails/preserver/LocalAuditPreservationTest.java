@@ -37,14 +37,11 @@ import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-
-
 
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;

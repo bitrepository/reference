@@ -43,7 +43,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import java.math.BigInteger;
@@ -69,11 +68,9 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
     @Test
     @Tag("regressiontest")
     public void verifyGetFileClientFromFactory() {
-        Assertions.assertTrue(AccessComponentFactory.getInstance().createGetFileClient(
-                settingsForCUT, securityManager, settingsForTestClient.getComponentID())
-                instanceof ConversationBasedGetFileClient,
-                "The default GetFileClient from the Access factory should be of the type '" +
-                        ConversationBasedGetFileClient.class.getName() + "'.");
+        Assertions.assertInstanceOf(ConversationBasedGetFileClient.class, AccessComponentFactory.getInstance().createGetFileClient(
+                settingsForCUT, securityManager, settingsForTestClient.getComponentID()), "The default GetFileClient from the Access factory should be of the type '" +
+                ConversationBasedGetFileClient.class.getName() + "'.");
     }
 
     @Test
