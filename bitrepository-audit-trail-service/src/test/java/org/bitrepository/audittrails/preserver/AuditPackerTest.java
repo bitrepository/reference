@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -55,11 +56,11 @@ public class AuditPackerTest extends ExtendedTestCase {
         packer.createNewPackage();
         Long[] expectedSeqNums = {1L, 1L, 1L};
         assertEquals(3, packer.getPackedAuditCount());
-        assertEquals(packer.getSequenceNumbersReached().values().toArray(new Long[0]), expectedSeqNums);
+        assertArrayEquals(expectedSeqNums, packer.getSequenceNumbersReached().values().toArray(new Long[0]));
 
         // As the iterators have no new audits there should be no newly packed audits on a new call.
         packer.createNewPackage();
         assertEquals(0, packer.getPackedAuditCount());
-        assertEquals(packer.getSequenceNumbersReached().values().toArray(new Long[0]), expectedSeqNums);
+        assertArrayEquals(expectedSeqNums, packer.getSequenceNumbersReached().values().toArray(new Long[0]));
     }
 }
