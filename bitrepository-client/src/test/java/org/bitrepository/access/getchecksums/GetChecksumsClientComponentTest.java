@@ -97,7 +97,8 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
                         ConversationBasedGetChecksumsClient.class.getName() + "'.");
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void getChecksumsFromSinglePillar() throws Exception {
         addDescription("Tests that the client can retrieve checksums from a single pillar.");
 
@@ -156,7 +157,8 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
         Assertions.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPLETE);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void getChecksumsDeliveredAtUrl() throws Exception {
         addDescription("Tests the delivery of checksums from all pillars at a given URL.");
 
@@ -215,7 +217,8 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
         Assertions.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPLETE);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void testNoSuchFile() throws Exception {
         addDescription("Testing how a request for a non-existing file is handled.");
         addStep("Setting up variables and such.", "Should be OK.");
@@ -269,7 +272,8 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
     }
 
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void testPaging() throws Exception {
         addDescription("Tests the GetChecksums client correctly handles functionality for limiting results, either by " +
                 "timestamp or result count.");
@@ -319,7 +323,8 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
                 "Unexpected MaxNumberOfResults in GetChecksumsRequest to pillar2.");
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void getChecksumsFromOtherCollection() throws Exception {
         addDescription("Tests the getChecksums client will correctly try to get from a second collection if required");
         addFixture("Configure collection1 to contain both pillars and collection 2 to only contain pillar2");

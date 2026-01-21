@@ -29,7 +29,8 @@ import org.junit.jupiter.api.Test;
 
 public class PermissionStoreExceptionTest extends ExtendedTestCase {
     
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void testPermissionStoreException() throws Exception {
         addDescription("Test the instantiation of the exception");
         addStep("Setup", "");

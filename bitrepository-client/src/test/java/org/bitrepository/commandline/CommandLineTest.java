@@ -52,7 +52,8 @@ public class CommandLineTest extends ExtendedTestCase {
         });
     }
 
-    @Test @Tag( "regressiontest")
+    @Test
+    @Tag( "regressiontest")
     public void argumentsTesterWrongArgument() throws Exception {
         assertThrows(Exception.class, () -> {
             addDescription("Test the handling of arguments by the CommandLineArgumentHandler.");
@@ -71,7 +72,8 @@ public class CommandLineTest extends ExtendedTestCase {
         });
     }
 
-    @Test @Tag( "regressiontest")
+    @Test
+    @Tag( "regressiontest")
     public void newArgumentTester() throws Exception {
         addDescription("Test the handling of a new argument.");
         CommandLineArgumentsHandler clah = new CommandLineArgumentsHandler();

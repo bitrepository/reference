@@ -54,7 +54,8 @@ public class PutFileCmdTest extends DefaultFixtureClientTest {
         new PutFileCmd(args);
     }
 
-    @Test @Tag( "regressiontest")
+    @Test
+    @Tag( "regressiontest")
     public void urlSuccessScenarioTest() throws Exception {
         addDescription("Tests arguments for putting a file on a given URL");
         String[] args = new String[]{"-s" + SETTINGS_DIR, 
@@ -66,7 +67,8 @@ public class PutFileCmdTest extends DefaultFixtureClientTest {
         new PutFileCmd(args);
     }
 
-    @Test @Tag( "regressiontest")
+    @Test
+    @Tag( "regressiontest")
     public void missingCollectionArgumentTest() throws Exception {
         assertThrows(IllegalArgumentException.class, () -> {
             addDescription("Tests the scenario, where the collection arguments is missing.");
@@ -79,7 +81,8 @@ public class PutFileCmdTest extends DefaultFixtureClientTest {
         });
     }
 
-    @Test @Tag( "regressiontest")
+    @Test
+    @Tag( "regressiontest")
     public void missingFileOrURLArgumentTest() throws Exception {
         assertThrows(IllegalArgumentException.class, () -> {
             addDescription("Tests the scenario, where no arguments for file or url is given.");
@@ -92,7 +95,8 @@ public class PutFileCmdTest extends DefaultFixtureClientTest {
         });
     }
 
-    @Test @Tag( "regressiontest")
+    @Test
+    @Tag( "regressiontest")
     public void missingChecksumWhenURLArgumentTest() throws Exception {
         assertThrows(IllegalArgumentException.class, () -> {
             addDescription("Tests the scenario, where no checksum argument is given, but a URL is given.");
@@ -105,7 +109,8 @@ public class PutFileCmdTest extends DefaultFixtureClientTest {
         });
     }
 
-    @Test @Tag( "regressiontest")
+    @Test
+    @Tag( "regressiontest")
     public void missingChecksumWhenFileArgumentTest() throws Exception {
         addDescription("Tests the scenario, where no checksum argument is given, but a file is given.");
         String[] args = new String[]{"-s" + SETTINGS_DIR, 
@@ -116,7 +121,8 @@ public class PutFileCmdTest extends DefaultFixtureClientTest {
         new PutFileCmd(args);
     }
 
-    @Test @Tag( "regressiontest")
+    @Test
+    @Tag( "regressiontest")
     public void missingFileIDWhenURLArgumentTest() throws Exception {
         assertThrows(IllegalArgumentException.class, () -> {
             addDescription("Tests the scenario, where no checksum argument is given, but a URL is given.");
@@ -129,7 +135,8 @@ public class PutFileCmdTest extends DefaultFixtureClientTest {
         });
     }
 
-    @Test @Tag( "regressiontest")
+    @Test
+    @Tag( "regressiontest")
     public void missingFileIDWhenFileArgumentTest() throws Exception {
         addDescription("Tests the scenario, where no checksum argument is given, but a URL is given.");
         String[] args = new String[]{"-s" + SETTINGS_DIR, 
@@ -140,7 +147,8 @@ public class PutFileCmdTest extends DefaultFixtureClientTest {
         new PutFileCmd(args);
     }
 
-    @Test @Tag( "regressiontest")
+    @Test
+    @Tag( "regressiontest")
     public void checksumArgumentNonSaltAlgorithmWitoutSaltTest() throws Exception {
         addDescription("Test MD5 checksum without salt -> no failure");
         String[] args = new String[]{"-s" + SETTINGS_DIR, 
@@ -153,7 +161,8 @@ public class PutFileCmdTest extends DefaultFixtureClientTest {
         new PutFileCmd(args);
     }
 
-    @Test @Tag( "regressiontest")
+    @Test
+    @Tag( "regressiontest")
     public void checksumArgumentSaltAlgorithmWithSaltTest() throws Exception {
         addDescription("Test HMAC_SHA256 checksum with salt -> No failure");
         String[] args = new String[]{"-s" + SETTINGS_DIR, 

@@ -79,7 +79,8 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         settings.getRepositorySettings().getCollections().getCollection().add(c0);
     }
 
-    @Test @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
     public void instantiationTest() {
         addDescription("Tests that the connection can be instantaited.");
         IntegrityDatabase integrityCache = new IntegrityDatabase(settings);
@@ -125,7 +126,8 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         Assertions.assertTrue(metrics.isEmpty());
     }
     
-    @Test @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
     public void testIngestOfFileIDsData() {
         addDescription("Tests the ingesting of file ids data");
         IntegrityModel model = new IntegrityDatabase(settings);
@@ -146,7 +148,8 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         }
     }
 
-    @Test @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
     public void testIngestOfChecksumsData() {
         addDescription("Tests the ingesting of checksums data");
         IntegrityModel model = new IntegrityDatabase(settings);
@@ -166,7 +169,8 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         }
     }
     
-    @Test @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
     public void testDeletingEntry() {
         addDescription("Tests the deletion of an FileID entry.");
         IntegrityModel model = new IntegrityDatabase(settings);

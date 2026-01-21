@@ -113,7 +113,8 @@ public class PutFileTest extends MockedPillarTest {
     }
 
     @SuppressWarnings("rawtypes")
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     @Tag("pillartest")
     public void badCaseIdentification() throws Exception {
         addDescription("Tests the identification for a PutFile operation on the pillar for the failure scenario, when the file already exists.");
@@ -152,7 +153,8 @@ public class PutFileTest extends MockedPillarTest {
     }
 
     @SuppressWarnings("rawtypes")
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     @Tag("pillartest")
     public void badCaseOperationFileAlreadyExists() throws Exception {
         addDescription("Tests the PutFile operation on the pillar for the failure scenario, when the file already exists.");
@@ -191,7 +193,8 @@ public class PutFileTest extends MockedPillarTest {
     }
     
     @SuppressWarnings("rawtypes")
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     @Tag("pillartest")
     public void badCasePutOperationNoValidationChecksum() throws Exception {
         addDescription("Tests the PutFile operation on the pillar for the failure scenario, when no validation checksum is given but required.");
@@ -232,7 +235,8 @@ public class PutFileTest extends MockedPillarTest {
     }
     
     @SuppressWarnings("rawtypes")
-    //@Test @Tag("regressiontest", "pillartest"})
+    //@Test
+//    @Tag("regressiontest", "pillartest"})
     // FAILS, when combined with other tests...
     public void goodCaseOperation() throws Exception {
         addDescription("Tests the PutFile operation on the pillar for the success scenario.");
@@ -278,7 +282,8 @@ public class PutFileTest extends MockedPillarTest {
     
     
     @SuppressWarnings("rawtypes")
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     @Tag("pillartest")
     public void goodCaseOperationWithChecksumReturn() throws Exception {
         addDescription("Tests the PutFile operation on the pillar for the success scenario, when requesting the cheksum of the file returned.");

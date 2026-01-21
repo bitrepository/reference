@@ -84,7 +84,8 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         settings.getRepositorySettings().getCollections().getCollection().add(extraCollection);
     }
     
-    @Test @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
     public void testAddCollectionSuccess() {
         addDescription("Tests that a new collection can be added to the integrity database");
         String newCollectionID = "new-collectionid";
@@ -107,7 +108,8 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         assertTrue(collections.contains(newCollectionID));
     }
     
-    @Test @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
     public void testAddExistingCollection() {
         addDescription("Tests that an existing collectionID cannot be added to the integrity database.");
         DatabaseManager dm = new IntegrityDatabaseManager(
@@ -161,7 +163,8 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         assertTrue(collections.contains(EXTRA_COLLECTION));
     }
     
-    /*@Test @Tag("regressiontest", "databasetest", "integritytest"})
+    /*@Test
+    @Tag("regressiontest", "databasetest", "integritytest"})
     public void testRemoveExistingCollection() {
         addDescription("Tests the removal of an existing collection and references to it in the integrity database");
         DatabaseManager dm = new IntegrityDatabaseManager(

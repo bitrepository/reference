@@ -69,7 +69,8 @@ public class MessageUtilsTest extends ExtendedTestCase {
 
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void testProgressResponse() {
         addDescription("Tests isPositiveProgressResponse method in the message utility class.");
         MessageResponse response = new MessageResponse();

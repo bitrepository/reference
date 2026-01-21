@@ -77,7 +77,8 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         messageFactory = new TestGetFileIDsMessageFactory(settingsForTestClient.getComponentID());
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void verifyGetFileIDsClientFromFactory() throws Exception {
         Assertions.assertTrue(AccessComponentFactory.getInstance().createGetFileIDsClient(settingsForCUT, securityManager,
                 settingsForTestClient.getComponentID()) instanceof ConversationBasedGetFileIDsClient,
@@ -163,7 +164,8 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPLETE);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void getFileIDsDeliveredThroughMessage() throws Exception {
         addDescription("Tests the delivery of fileIDs from a pillar at a given URL.");
         addStep("Initialise the variables for this test.",
@@ -245,7 +247,8 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPLETE);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void testNoSuchFile() throws Exception {
         addDescription("Testing how a request for a non-existing file is handled.");
         addStep("Setting up variables and such.", "Should be OK.");
@@ -299,7 +302,8 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void testPaging() throws Exception {
         addDescription("Tests the GetFileIDs client correctly handles functionality for limiting results, either by " +
             "timestamp or result count.");
@@ -348,7 +352,8 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
                 "Unexpected MaxNumberOfResults in GetFileIDsRequest to pillar2.");
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void getFileIDsFromOtherCollection() throws Exception {
         addDescription("Tests the getFileIDs client will correctly try to get from a second collection if required");
         addFixture("Configure collection1 to contain both pillars and collection 2 to only contain pillar2");

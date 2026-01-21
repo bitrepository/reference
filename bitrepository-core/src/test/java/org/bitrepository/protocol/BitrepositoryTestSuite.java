@@ -49,10 +49,6 @@ import org.bitrepository.protocol.GlobalSuiteExtension;
  * @IncludeTags("integration")  // List your include tags here
  * @ExcludeTags("slow")  // List your exclude tags here
  * @ExtendWith(GlobalSuiteExtension.class)
- * public class BitrepositoryTestSuite {
- *     // No need for methods here; this just groups and extends
- * }
- * }
  * </pre>
  */
 @Suite
@@ -61,4 +57,3 @@ import org.bitrepository.protocol.GlobalSuiteExtension;
 public class BitrepositoryTestSuite {
     // No need for methods here; this just groups and extends
 }
-
