@@ -72,7 +72,8 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
                 + "' should be instance of '" + ConversationBasedDeleteFileClient.class.getName() + "'");
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void deleteClientTester() throws Exception {
         addDescription("Tests the DeleteClient. Makes a whole conversation for the delete client for a 'good' scenario.");
         addStep("Initialise the number of pillars to one", "Should be OK.");
@@ -153,7 +154,8 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         Assertions.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPLETE);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void fileAlreadyDeletedFromPillar() throws Exception {
         addDescription("Test that a delete on a pillar completes successfully when the file is missing " +
                 "(has already been deleted). This is a test of the Idempotent behaviour of the delete client");
@@ -189,7 +191,8 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         testEventHandler.verifyNoEventsAreReceived();
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void deleteClientIdentificationTimeout() throws Exception {
         addDescription("Tests the handling of a failed identification for the DeleteClient");
         addStep("Initialise the number of pillars and the DeleteClient. Sets the identification timeout to 1 sec.",
@@ -228,7 +231,8 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         Assertions.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void deleteClientOperationTimeout() throws Exception {
         addDescription("Tests the handling of a failed operation for the DeleteClient");
         addStep("Initialise the number of pillars and the DeleteClient. Sets the operation timeout to 100 ms.",
@@ -281,7 +285,8 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         Assertions.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void deleteClientPillarFailedDuringPerform() throws Exception {
         addDescription("Tests the handling of a operation failure for the DeleteClient. ");
         addStep("Initialise the number of pillars to one", "Should be OK.");
@@ -339,7 +344,8 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         Assertions.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void deleteClientSpecifiedPillarFailedDuringIdentification() throws Exception {
         addDescription("Tests the handling of a identification failure for a pillar for the DeleteClient. ");
         TestEventHandler testEventHandler = new TestEventHandler();
@@ -367,7 +373,8 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         Assertions.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void deleteClientOtherPillarFailedDuringIdentification() throws Exception {
         addDescription("Tests the handling of a identification failure for a pillar for the DeleteClient. ");
         TestEventHandler testEventHandler = new TestEventHandler();
@@ -411,7 +418,8 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         Assertions.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPLETE);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void deleteOnChecksumPillar() throws Exception {
         addDescription("Verify that the DeleteClient works correctly when a checksum pillar is present. ");
         TestEventHandler testEventHandler = new TestEventHandler();
@@ -452,7 +460,8 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         pillar2Receiver.checkNoMessageIsReceived(DeleteFileRequest.class);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void deleteOnChecksumPillarWithDefaultReturnChecksumType() throws Exception {
         addDescription("Verify that the DeleteClient works correctly when a return checksum of the default type" +
                 "is requested. ");
@@ -490,7 +499,8 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         Assertions.assertEquals(receivedPutFileRequest1.getChecksumRequestForExistingFile(), checksumSpecTYPE);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void deleteOnChecksumPillarWithSaltedReturnChecksumType() throws Exception {
         addDescription("Verify that the DeleteClient works correctly when a return checksum with a salt " +
                 "is requested. ");

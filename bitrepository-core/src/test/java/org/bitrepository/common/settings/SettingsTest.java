@@ -23,7 +23,8 @@ public class SettingsTest  {
         factory = DatatypeFactory.newInstance();
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void getDurationFromXmlDurationOrMillisRequiresOneNonNullArg() {
         assertThrows(NullPointerException.class, () -> {
             addDescription("Tests that getDurationFromXmlDurationOrMillis() fails when given two nulls");

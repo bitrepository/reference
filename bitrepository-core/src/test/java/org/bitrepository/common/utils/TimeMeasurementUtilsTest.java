@@ -26,6 +26,7 @@ package org.bitrepository.common.utils;
 
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositoryelements.TimeMeasureUnit;
+import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -33,13 +34,12 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-
 /**
  * Tests the <code>TimeMeasureComparator</code> class.
  */
-public class TimeMeasurementUtilsTest {
-    @Test @Tag("regressiontest")
+public class TimeMeasurementUtilsTest extends ExtendedTestCase {
+    @Test
+    @Tag("regressiontest")
     public void testCompareMilliSeconds() {
         addDescription("Test the comparison between TimeMeasure units.");
         TimeMeasureTYPE referenceTime = new TimeMeasureTYPE();
@@ -62,7 +62,8 @@ public class TimeMeasurementUtilsTest {
                 " should be same as " + compareTime);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void testCompareMilliSecondsToHours() {
         addDescription("Test the comparison between milliseconds and hours.");
         long millis = 7200000L;
@@ -88,7 +89,8 @@ public class TimeMeasurementUtilsTest {
         Assertions.assertEquals(TimeMeasurementUtils.getTimeMeasureInLong(referenceTime), millis);
     }
 
-    @Test @Tag("regressiontest" )
+    @Test
+    @Tag("regressiontest" )
     public void testMaxValue() {
         addDescription("Test the Maximum value");
         TimeMeasureTYPE time = TimeMeasurementUtils.getMaximumTime();

@@ -96,14 +96,20 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         settings.getRepositorySettings().getCollections().getCollection().add(extraCollection);
     }
 
-    @Test @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest")
+    @Tag("databasetest")
+    @Tag("integritytest")
     public void instantiationTest() throws Exception {
         addDescription("Testing the connection to the integrity database.");
         IntegrityDAO cache = createDAO();
         Assertions.assertNotNull(cache);
     }
 
-    @Test @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest")
+    @Tag("databasetest")
+    @Tag("integritytest")
     public void reinitialiseDatabaseTest() throws Exception {
         addDescription("Testing the connection to the integrity database.");
         addStep("Setup manually.", "Should be created.");
@@ -127,7 +133,8 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         cache = new DerbyIntegrityDAO(newdm.getConnector());
     }
     
-    @Test @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
     public void initialStateExtractionTest() throws Exception {
         addDescription("Tests the initial state of the IntegrityModel. Should not contain any data.");
         IntegrityDAO cache = createDAO();
@@ -294,7 +301,8 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Assertions.assertEquals(fileinfos.size(), 2);
     }
 
-    @Test @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
     public void testDeletingNonExistingEntry() throws Exception {
         addDescription("Tests the deletion of an nonexisting FileID entry.");
         IntegrityDAO cache = createDAO();
@@ -322,7 +330,8 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Assertions.assertEquals(fileinfos.size(), 2);
     }
     
-    @Test @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
     public void testFindOrphanFiles() throws Exception {
         addDescription("Tests the ability to find orphan files.");
         IntegrityDAO cache = createDAO();
@@ -352,7 +361,8 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Assertions.assertEquals(orphanFilesPillar2.size(), 1);
     }
     
-    @Test @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
     public void testFindInconsistentChecksum() throws Exception {
         addDescription("Testing the localization of inconsistent checksums");
         IntegrityDAO cache = createDAO();
@@ -388,7 +398,8 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Assertions.assertEquals(filesWithChecksumError, Arrays.asList(BAD_FILE_ID_1, BAD_FILE_ID_2));
     }
 
-    @Test @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
     public void testNoChecksums() throws Exception {
         addDescription("Testing the checksum validation, when no checksums exists.");
         IntegrityDAO cache = createDAO();
@@ -405,7 +416,8 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Assertions.assertEquals(filesWithChecksumError, Collections.emptyList());
     }
 
-    @Test @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
     public void testMissingChecksums() throws Exception {
         addDescription("Testing the checksum validation, when only one pillar has a checksum for a file.");
         IntegrityDAO cache = createDAO();
@@ -430,7 +442,8 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Assertions.assertEquals(fileWithMissingChecksumPillar2, Collections.singletonList(TEST_FILE_ID));
     }
     
-    @Test @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
     public void testMissingChecksumsChecksumNotUpdated() throws Exception {
         addDescription("Testing the checksum validation, when only one pillar has a checksum for a file.");
         IntegrityDAO cache = createDAO();
@@ -473,7 +486,8 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
     }
     
     
-    @Test @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
     public void testOutdatedChecksums() throws Exception {
         addDescription("Testing the checksum validation, when only one pillar has a checksum for a file.");
         IntegrityDAO cache = createDAO();
@@ -504,7 +518,8 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Assertions.assertEquals(fileWithOutdatedChecksumPillar2, Collections.singletonList(TEST_FILE_ID));
     }    
     
-    @Test @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
     public void testExtractingAllKnownFilesForPillars() throws Exception {
         addDescription("Tests that known files can be extracted for specific pillars.");
         IntegrityDAO cache = createDAO();
@@ -538,7 +553,8 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Assertions.assertTrue(fileIDs.isEmpty());
     }
     
-    @Test @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
     public void testExtractingAllKnownFilesForPillarsLimits() throws Exception {
         addDescription("Tests the limits for extracting files for specific pillars.");
         IntegrityDAO cache = createDAO();
@@ -560,7 +576,8 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Assertions.assertTrue(fileIDs.contains(file2));
     }
 
-    @Test @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
     public void testExtractingAllMissingFiles() throws Exception {
         addDescription("Tests that missing files can be extracted.");
         IntegrityDAO cache = createDAO();
@@ -585,7 +602,8 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Assertions.assertEquals(missingFiles, Collections.singletonList(file2));
     }
     
-    @Test @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
     public void testExtractingAllMissingFilesForPillarsLimits() throws Exception {
         addDescription("Tests the limits for extracting missing files for specific pillars.");
         IntegrityDAO cache = createDAO();
@@ -610,7 +628,8 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Assertions.assertTrue(fileIDs.contains(file3));
     }
 
-    @Test @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
     public void testGetLatestFileDateEntryForCollection() throws Exception {
         addDescription("Tests that checksum date entries can be retrieved and manipulated.");
         IntegrityDAO cache = createDAO();
@@ -642,7 +661,8 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Assertions.assertNull(cache.getLatestFileDate(TEST_COLLECTIONID, TEST_PILLAR_2));
     }
     
-    @Test @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
     public void testGetLatestChecksumDateEntryForCollection() throws Exception {
         addDescription("Tests that checksum date entries can be retrieved and manipulated.");
         IntegrityDAO cache = createDAO();
@@ -664,7 +684,8 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Assertions.assertNull(cache.getLatestChecksumDate(TEST_COLLECTIONID, TEST_PILLAR_2));
     }
    
-    @Test @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
     public void testExtractCollectionFileSize() throws Exception {
         addDescription("Tests that the accumulated size of the collection can be extracted");
         IntegrityDAO cache = createDAO();
@@ -696,7 +717,8 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Assertions.assertEquals(cache.getCollectionSize(TEST_COLLECTIONID), collectionSize);   
     }
     
-    @Test @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
     public void testGetFileIDAtIndex() throws Exception {
         addDescription("Tests that a fileID at a given index can be extracted.");
         IntegrityDAO cache = createDAO();

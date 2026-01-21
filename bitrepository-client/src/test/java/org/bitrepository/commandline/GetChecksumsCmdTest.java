@@ -42,7 +42,8 @@ public class GetChecksumsCmdTest extends DefaultFixtureClientTest {
         DEFAULT_COLLECTION_ID = settingsForTestClient.getCollections().get(0).getID();
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void defaultSuccessScenarioTest() throws Exception {
         addDescription("Tests simplest arguments for running the CmdLineClient");
         String[] args = new String[]{"-s" + SETTINGS_DIR, 
@@ -51,7 +52,8 @@ public class GetChecksumsCmdTest extends DefaultFixtureClientTest {
         new GetChecksumsCmd(args);
     }
 
-    @Test @Tag( "regressiontest")
+    @Test
+    @Tag( "regressiontest")
     public void missingCollectionArgumentTest() throws Exception {
         assertThrows(IllegalArgumentException.class, () -> {
         addDescription("Tests the scenario, where the collection arguments is missing.");
@@ -62,7 +64,8 @@ public class GetChecksumsCmdTest extends DefaultFixtureClientTest {
         });
     }
 
-    @Test @Tag( "regressiontest")
+    @Test
+    @Tag( "regressiontest")
     public void specificPillarArgumentTest() throws Exception {
         addDescription("Test argument for a specific pillar");
         String[] args = new String[]{"-s" + SETTINGS_DIR, 
@@ -73,7 +76,8 @@ public class GetChecksumsCmdTest extends DefaultFixtureClientTest {
         new GetChecksumsCmd(args);
     }
 
-    @Test @Tag( "regressiontest")
+    @Test
+    @Tag( "regressiontest")
     public void unknownPillarArgumentTest() throws Exception {
         assertThrows(IllegalArgumentException.class, () -> {
             addDescription("Testing against a non-existing pillar id -> Should fail");
@@ -87,7 +91,8 @@ public class GetChecksumsCmdTest extends DefaultFixtureClientTest {
         });
     }
 
-    @Test @Tag( "regressiontest")
+    @Test
+    @Tag( "regressiontest")
     public void fileArgumentTest() throws Exception {
         addDescription("Tests the argument for a specific file.");
         String[] args = new String[]{"-s" + SETTINGS_DIR, 
@@ -97,7 +102,8 @@ public class GetChecksumsCmdTest extends DefaultFixtureClientTest {
         new GetChecksumsCmd(args);
     }
 
-    @Test @Tag( "regressiontest")
+    @Test
+    @Tag( "regressiontest")
     public void checksumArgumentNonSaltAlgorithmWitoutSaltTest() throws Exception {
         addDescription("Test MD5 checksum without salt -> no failure");
         String[] args = new String[]{"-s" + SETTINGS_DIR, 
@@ -108,7 +114,8 @@ public class GetChecksumsCmdTest extends DefaultFixtureClientTest {
         new GetChecksumsCmd(args);
     }
 
-    @Test @Tag( "regressiontest")
+    @Test
+    @Tag( "regressiontest")
     public void checksumArgumentSaltAlgorithmWithSaltTest() throws Exception {
         addDescription("Test HMAC_SHA256 checksum with salt -> No failure");
         String[] args = new String[]{"-s" + SETTINGS_DIR, 

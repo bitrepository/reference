@@ -131,40 +131,17 @@
     <tag>HEAD</tag>
   </scm>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>io.qameta.allure</groupId>
-        <artifactId>allure-bom</artifactId>
-        <version>2.32.0</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <version>2.0.17</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
   <dependencies>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>2.0.17</version>
+      <version>${slf4j.version}</version>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>1.5.22</version>
+      <version>1.2.3</version>
     </dependency>
-    <!-- Logback Core -->
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-core</artifactId>
-      <version>1.5.22</version>
-    </dependency>
-
     <!-- Updating org.jvnet jaxb2 dependencies to 0.12.0 causes problems for the jaxb2-maven-plugin
           when trying to use toString, hashCode etc.
           (sort of described here: https://github.com/highsource/jaxb2-basics/issues/95)
@@ -208,13 +185,19 @@
       <version>5.10.3</version>
       <scope>test</scope>
     </dependency>
-
-      <dependency>
-          <groupId>org.junit.platform</groupId>
-          <artifactId>junit-platform-suite-engine</artifactId>
-          <version>1.10.3</version>  <!-- Match your JUnit version -->
-          <scope>test</scope>
-      </dependency>    <dependency>
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>7.1.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.junit.platform</groupId>
+        <artifactId>junit-platform-suite-engine</artifactId>
+        <version>1.10.3</version>  <!-- Match your JUnit version -->
+        <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
       <version>3.3.3</version>
@@ -236,40 +219,16 @@
       <artifactId>jcl-over-slf4j</artifactId>
       <version>${slf4j.version}</version>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/io.qameta.allure/allure-junit5 -->
     <dependency>
-      <groupId>io.qameta.allure</groupId>
-      <artifactId>allure-junit5</artifactId>
-      <version>2.32.0</version>
+      <groupId>org.jaccept</groupId>
+      <artifactId>jaccept-core</artifactId>
+      <version>0.4</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>com.google.code.gson</groupId>
-      <artifactId>gson</artifactId>
-      <version>2.10.1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>aspectjweaver</artifactId>
-      <version>1.9.22</version>
-    </dependency>
-
   </dependencies>
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>io.qameta.allure</groupId>
-        <artifactId>allure-maven</artifactId>
-        <version>${allure.version}</version>
-        <configuration>
-          <reportVersion>2.20.1</reportVersion>
-          <reportDirectory>${project.basedir}/site/allure-maven-plugin</reportDirectory>
-          <resultsDirectory>${project.basedir}/allure-results</resultsDirectory>
-<!--          <resultsDirectory>${project.build.directory}/allure-results</resultsDirectory>-->
-        </configuration>
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
@@ -484,17 +443,6 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.5.4</version>
-        <configuration>
-          <argLine>
-            -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
-          </argLine>
-        </configuration>
-      </plugin>
-
-      <plugin>
         <groupId>com.github.spotbugs</groupId>
         <artifactId>spotbugs-maven-plugin</artifactId>
         <version>4.0.0</version>
@@ -576,10 +524,8 @@
     <jakarta.ws.rs.version>2.1.6</jakarta.ws.rs.version>
     <javaee.web.version>8.0.1</javaee.web.version>
     <javax.servlet.version>4.0.1</javax.servlet.version>
-    <slf4j.version>1.7.36</slf4j.version>
+    <slf4j.version>1.7.30</slf4j.version>
     <project.site.location>dav:https://sbforge.org/maven/bitrepository/sites/reference/${project.version}</project.site.location>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <aspectj.version>1.9.7</aspectj.version>
-    <allure.version>2.17.0</allure.version>
   </properties>
 </project>

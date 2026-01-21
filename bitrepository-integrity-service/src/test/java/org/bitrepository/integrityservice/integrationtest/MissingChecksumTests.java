@@ -147,7 +147,8 @@ public class MissingChecksumTests {
         }
     }
 
-    @Test @Tag("regressiontest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest") @Tag("integritytest")
     public void testMissingChecksumForFirstGetChecksums() throws WorkflowAbortedException {
         addDescription("Test that checksums are set to missing, when not found during GetChecksum.");
         addStep("Ingest file to database", "");
@@ -192,7 +193,8 @@ public class MissingChecksumTests {
         assertEquals(missingChecksumsPillar2.get(0), TEST_FILE_1);
     }
 
-    @Test @Tag("regressiontest") @Tag("integritytest")
+    @Test
+    @Tag("regressiontest") @Tag("integritytest")
     public void testMissingChecksumDuringSecondIngest() throws WorkflowAbortedException {
         addDescription("Test that checksums are set to missing, when not found during GetChecksum, "
                 + "even though they have been found before.");

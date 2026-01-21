@@ -73,7 +73,8 @@ public class AuditTrailContributorDatabaseTest {
         firstCollectionID = settings.getCollections().get(0).getID();
     }
 
-    @Test @Tag("regressiontest") @Tag("databasetest")
+    @Test
+    @Tag("regressiontest") @Tag("databasetest")
     public void testAuditTrailDatabaseExtraction() throws Exception {
         addDescription("Testing the basic functions of the audit trail database interface.");
         addStep("Setup varibles and the database connection.", "No errors.");
@@ -201,7 +202,8 @@ public class AuditTrailContributorDatabaseTest {
         
     }
     
-    @Test @Tag("regressiontest") @Tag("databasetest")
+    @Test
+    @Tag("regressiontest") @Tag("databasetest")
     public void testAuditTrailDatabaseIngest() throws Exception {
         addDescription("Testing the ingest of data.");
         addStep("Setup varibles and the database connection.", "No errors.");

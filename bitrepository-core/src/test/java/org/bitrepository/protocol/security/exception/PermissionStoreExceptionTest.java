@@ -31,7 +31,8 @@ import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 
 public class PermissionStoreExceptionTest {
     
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void testPermissionStoreException() throws Exception {
         addDescription("Test the instantiation of the exception");
         addStep("Setup", "");

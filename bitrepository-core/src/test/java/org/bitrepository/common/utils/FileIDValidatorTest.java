@@ -43,7 +43,8 @@ public class FileIDValidatorTest {
         settings = TestSettingsProvider.reloadSettings(getClass().getSimpleName());
     }
     
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void validatorTest() throws Exception {
         addDescription("Tests the FileIDValidator class for the input handling based on a given regex.");
         addStep("Setup the validator", "Should be ok.");

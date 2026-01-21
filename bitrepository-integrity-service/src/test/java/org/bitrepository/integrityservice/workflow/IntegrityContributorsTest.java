@@ -37,7 +37,8 @@ public class IntegrityContributorsTest {
     private final static String PILLAR1 = "pillar1";
     private final static String PILLAR2 = "pillar2";
     
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void testConstructor() {
         IntegrityContributors ic = new IntegrityContributors(Arrays.asList(PILLAR1, PILLAR2), 3);
         Set<String> activeContributors = ic.getActiveContributors();
@@ -57,7 +58,8 @@ public class IntegrityContributorsTest {
         Assertions.assertTrue(ic.getFinishedContributors().isEmpty());
     }
     
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void testRetry() {
         IntegrityContributors ic = new IntegrityContributors(Arrays.asList(PILLAR1, PILLAR2), 3);
         ic.failContributor(PILLAR1);
@@ -71,7 +73,8 @@ public class IntegrityContributorsTest {
         Assertions.assertTrue(ic.getFailedContributors().contains(PILLAR1));
     }
     
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void testSucceed() {
         IntegrityContributors ic = new IntegrityContributors(Arrays.asList(PILLAR1, PILLAR2), 2);
         ic.failContributor(PILLAR1);
@@ -85,7 +88,8 @@ public class IntegrityContributorsTest {
         
     }
     
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void testFinishContributor() {
         IntegrityContributors ic = new IntegrityContributors(Arrays.asList(PILLAR1, PILLAR2), 3);
         ic.finishContributor(PILLAR1);
@@ -94,7 +98,8 @@ public class IntegrityContributorsTest {
         Assertions.assertTrue(ic.getFailedContributors().isEmpty());
     }
     
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void testReloadContributors() {
         IntegrityContributors ic = new IntegrityContributors(Arrays.asList(PILLAR1, PILLAR2), 1);
         ic.finishContributor(PILLAR1);

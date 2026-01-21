@@ -83,7 +83,8 @@ public class IntegrityWorkflowManagerTest {
         workflow2 = new TestWorkflow(collection2ID);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void normalWorkflowSettings() {
         addDescription("Verifies that the IntegrityWorkflowManager loads correctly for at normally defined workflow.");
 
@@ -114,7 +115,8 @@ public class IntegrityWorkflowManagerTest {
         verifyNoMoreInteractions(scheduler);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void noWorkflowSettings() {
         addDescription("Verifies that the IntegrityWorkflowManager loads correctly for missing reference settings a " +
                 "workflow settings element.");
@@ -135,7 +137,8 @@ public class IntegrityWorkflowManagerTest {
         verifyNoMoreInteractions(scheduler);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void collectionSpecificWorkflows() {
         addDescription("Verifies that the IntegrityWorkflowManager loads correctly for workflows configured for " +
                 "specific collection.");
@@ -163,7 +166,8 @@ public class IntegrityWorkflowManagerTest {
         verifyNoMoreInteractions(scheduler);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void unscheduledWorkflow() {
         addDescription("Verifies that the IntegrityWorkflowManager loads workflow correctly for workflows without a " +
                 "defined schedule meaning they are never run automatically.");
@@ -179,7 +183,8 @@ public class IntegrityWorkflowManagerTest {
         assertEquals(manager.getRunInterval(workflow1.getJobID()), -1);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void startWorkflow() {
         addDescription("Verifies that the that it is possible to manually start a workflow.");
 

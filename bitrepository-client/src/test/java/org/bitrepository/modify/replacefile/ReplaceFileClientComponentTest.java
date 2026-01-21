@@ -296,7 +296,8 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
         Assertions.assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.FAILED);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void saltedReturnChecksumsForNewFileWithChecksumPillar() throws Exception {
         addDescription("Tests that the ReplaceClient handles the presence of a ChecksumPillar correctly, " +
                 "when a salted return checksum (which a checksum pillar can't provide) is requested for the new file.");
