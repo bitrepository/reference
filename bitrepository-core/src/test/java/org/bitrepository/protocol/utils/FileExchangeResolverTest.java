@@ -20,7 +20,7 @@ public class FileExchangeResolverTest {
         FileExchangeSettings settings = new FileExchangeSettings();
         settings.setProtocolType(ProtocolType.FILE);
         FileExchange exchange = FileExchangeResolver.getFileExchange(settings);
-        assertEquals(exchange.getClass(), LocalFileExchange.class);
+        assertEquals(LocalFileExchange.class, exchange.getClass());
     }
 
     @Test
@@ -28,7 +28,7 @@ public class FileExchangeResolverTest {
         FileExchangeSettings settings = new FileExchangeSettings();
         settings.setProtocolType(ProtocolType.HTTP);
         FileExchange exchange = FileExchangeResolver.getFileExchange(settings);
-        assertEquals(exchange.getClass(), HttpFileExchange.class);
+        assertEquals(HttpFileExchange.class, exchange.getClass());
     }
 
     @Test
@@ -36,28 +36,28 @@ public class FileExchangeResolverTest {
         FileExchangeSettings settings = new FileExchangeSettings();
         settings.setProtocolType(ProtocolType.HTTPS);
         FileExchange exchange = FileExchangeResolver.getFileExchange(settings);
-        assertEquals(exchange.getClass(), HttpsFileExchange.class);
+        assertEquals(HttpsFileExchange.class, exchange.getClass());
     }
 
     @Test
     public void resolveFileProtocolURL() throws MalformedURLException {
         URL url = new URL("file:///home/user/Desktop/my-cool-file.txt");
         FileExchange exchange = FileExchangeResolver.getBasicFileExchangeFromURL(url);
-        assertEquals(exchange.getClass(), LocalFileExchange.class);
+        assertEquals(LocalFileExchange.class, exchange.getClass());
     }
 
     @Test
     public void resolveHttpProtocolURL() throws MalformedURLException {
         URL url = new URL("http://localhost:80/myfile.txt");
         FileExchange exchange = FileExchangeResolver.getBasicFileExchangeFromURL(url);
-        assertEquals(exchange.getClass(), HttpFileExchange.class);
+        assertEquals(HttpFileExchange.class, exchange.getClass());
     }
 
     @Test
     public void resolveHttpsProtocolURL() throws MalformedURLException {
         URL url = new URL("https://localhost:443/myfile.txt");
         FileExchange exchange = FileExchangeResolver.getBasicFileExchangeFromURL(url);
-        assertEquals(exchange.getClass(), HttpsFileExchange.class);
+        assertEquals(HttpsFileExchange.class, exchange.getClass());
     }
 
     @Test

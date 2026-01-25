@@ -26,9 +26,6 @@ package org.bitrepository.protocol;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.util.StatusPrinter;
-import io.qameta.allure.Allure;
-import io.qameta.allure.Step;
-import io.qameta.allure.junit5.AllureJunit5;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.SettingsUtils;
@@ -42,9 +39,9 @@ import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.messagebus.SimpleMessageBus;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
-import org.bitrepository.protocol.utils.AllureTestUtils;
 import org.bitrepository.protocol.utils.TestWatcherExtension;
-import org.bitrepository.protocol.utils.AllureEventLogger;
+import org.jaccept.TestEventManager;
+import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -52,6 +49,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.JMSException;
@@ -61,8 +59,8 @@ import java.util.List;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(TestWatcherExtension.class)
-@ExtendWith(AllureJunit5.class)
-public abstract class IntegrationTest {
+public abstract class IntegrationTest extends ExtendedTestCase {
+    protected static TestEventManager testEventManager = TestEventManager.getInstance();
     public static LocalActiveMQBroker broker;
     public static EmbeddedHttpServer server;
     public static HttpServerConfiguration httpServerConfiguration;
@@ -74,7 +72,6 @@ public abstract class IntegrationTest {
     protected static Settings settingsForCUT;
     protected static Settings settingsForTestClient;
     protected static String collectionID;
-    protected AllureEventLogger eventLogger;
     protected String NON_DEFAULT_FILE_ID;
     protected static String DEFAULT_FILE_ID;
     protected static URL DEFAULT_FILE_URL;
@@ -82,23 +79,9 @@ public abstract class IntegrationTest {
     protected static String DEFAULT_UPLOAD_FILE_ADDRESS;
     protected String DEFAULT_AUDIT_INFORMATION;
 
+    @RegisterExtension
+    TestWatcherExtension testWatcher = new TestWatcherExtension();
     protected String testMethodName;
-
-    protected void addDescription(String description) {
-        AllureTestUtils.addDescription(description);
-    }
-
-    protected void addStep(String stepDescription, String expectedResult) {
-        AllureTestUtils.addStep(stepDescription, expectedResult);
-    }
-
-    protected void addFixture(String fixtureDescription) {
-        AllureTestUtils.addFixture(fixtureDescription);
-    }
-
-    protected void addReference(String reference) {
-        AllureTestUtils.addReference(reference);
-    }
 
     private void initializationMethod() {
         settingsForCUT = loadSettings(getComponentID());
@@ -107,7 +90,6 @@ public abstract class IntegrationTest {
         makeUserSpecificSettings(settingsForTestClient);
         httpServerConfiguration = new HttpServerConfiguration(settingsForTestClient.getReferenceSettings().getFileExchangeSettings());
         collectionID = settingsForTestClient.getCollections().get(0).getID();
-        eventLogger = new AllureEventLogger(getComponentID());
 
         securityManager = createSecurityManager();
         DEFAULT_FILE_ID = "DefaultFile";
@@ -124,9 +106,8 @@ public abstract class IntegrationTest {
      * May be extended by subclasses needing to have their receivers managed. Remember to still call
      * <code>super.registerReceivers()</code> when overriding
      */
-    @Step("Register message receivers")
     protected void registerMessageReceivers() {
-        alarmReceiver = new MessageReceiver(settingsForCUT.getAlarmDestination());
+        alarmReceiver = new MessageReceiver(settingsForCUT.getAlarmDestination(), testEventManager);
         addReceiver(alarmReceiver);
     }
 
@@ -136,10 +117,8 @@ public abstract class IntegrationTest {
 
     @BeforeAll
     public void initMessagebus() {
-        Allure.step("Initialize message bus", () -> {
-            initializationMethod();
-            setupMessageBus();
-        });
+        initializationMethod();
+        setupMessageBus();
         if (System.getProperty("enableLogStatus", "false").equals("true")) {
             LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
             StatusPrinter.print(lc);
@@ -148,10 +127,8 @@ public abstract class IntegrationTest {
 
     @AfterAll
     public void shutdownSuite() {
-        Allure.step("Shutdown test suite", () -> {
-            teardownMessageBus();
-            teardownHttpServer();
-        });
+        teardownMessageBus();
+        teardownHttpServer();
     }
 
     /**
@@ -160,40 +137,36 @@ public abstract class IntegrationTest {
     @BeforeEach
     public final void beforeMethod(TestInfo testInfo) {
         testMethodName = testInfo.getTestMethod().get().getName();
-
-        Allure.step("Setup test: " + testMethodName, () -> {
-            setupSettings();
-            NON_DEFAULT_FILE_ID = TestFileHelper.createUniquePrefix(testMethodName);
-            DEFAULT_AUDIT_INFORMATION = testMethodName;
-            receiverManager = new MessageReceiverManager(messageBus);
-            registerMessageReceivers();
-            messageBus.setCollectionFilter(List.of());
-            messageBus.setComponentFilter(List.of());
-            receiverManager.startListeners();
-            initializeCUT();
-        });
+        setupSettings();
+        NON_DEFAULT_FILE_ID = TestFileHelper.createUniquePrefix(testMethodName);
+        DEFAULT_AUDIT_INFORMATION = testMethodName;
+        receiverManager = new MessageReceiverManager(messageBus);
+        registerMessageReceivers();
+        messageBus.setCollectionFilter(List.of());
+        messageBus.setComponentFilter(List.of());
+        receiverManager.startListeners();
+        initializeCUT();
     }
 
-    protected void initializeCUT() {}
+    protected void initializeCUT() {
+    }
 
     @AfterEach
     public final void afterMethod() {
-        Allure.step("Teardown test: " + testMethodName, () -> {
-            if (receiverManager != null) {
-                receiverManager.stopListeners();
-            }
-            if (TestWatcherExtension.isTestSuccessful()) {
-                afterMethodVerification();
-            }
-            shutdownCUT();
-        });
+        if (receiverManager != null) {
+            receiverManager.stopListeners();
+        }
+        if (testWatcher.isTestSuccessful()) {
+            afterMethodVerification();
+        }
+        shutdownCUT();
     }
+
 
     /**
      * May be used by specific tests for general verification when the test method has finished. Will only be run
      * if the test has passed (so far).
      */
-    @Step("Verify no messages remain in receivers")
     protected void afterMethodVerification() {
         receiverManager.checkNoMessagesRemainInReceivers();
     }
@@ -201,7 +174,6 @@ public abstract class IntegrationTest {
     /**
      * Purges all messages from the receivers.
      */
-    @Step("Clear all receivers")
     protected void clearReceivers() {
         receiverManager.clearMessagesInReceivers();
     }
@@ -209,12 +181,12 @@ public abstract class IntegrationTest {
     /**
      * May be overridden by specific tests wishing to do stuff. Remember to call super if this is overridden.
      */
-    protected void shutdownCUT() {}
+    protected void shutdownCUT() {
+    }
 
     /**
      * Initializes the settings. Will postfix the alarm and collection topics with '-${user.name}
      */
-    @Step("Setup settings")
     protected void setupSettings() {
         settingsForCUT = loadSettings(getComponentID());
         makeUserSpecificSettings(settingsForCUT);
@@ -225,6 +197,7 @@ public abstract class IntegrationTest {
         settingsForTestClient = loadSettings(testMethodName);
         makeUserSpecificSettings(settingsForTestClient);
     }
+
 
     protected Settings loadSettings(String componentID) {
         return TestSettingsProvider.reloadSettings(componentID);
@@ -265,13 +238,14 @@ public abstract class IntegrationTest {
      * Shutdown the message bus.
      */
     private void teardownMessageBus() {
-        try {
-            if (messageBus != null) {MessageBusManager.clear();
+        MessageBusManager.clear();
+        if (messageBus != null) {
+            try {
                 messageBus.close();
                 messageBus = null;
+            } catch (JMSException e) {
+                throw new RuntimeException(e);
             }
-        } catch (JMSException e) {
-            throw new RuntimeException(e);
         }
 
         if (broker != null) {

@@ -85,7 +85,7 @@ public class SecurityManagerTest {
         addDescription("Tests that a signature only allows the correct requests.");
 
         List<Collection> collections = settings.getRepositorySettings().getCollections().getCollection();
-        Assertions.assertEquals(collections.size(), 2,
+        Assertions.assertEquals(2, collections.size(),
                 "There should be two collections present to test the collection limited authorization");
         settings.getRepositorySettings().setPermissionSet(getCollectionLimitedPermissionSet());
         setupSecurityManager(settings);

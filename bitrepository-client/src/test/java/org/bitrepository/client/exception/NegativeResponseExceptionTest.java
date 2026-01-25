@@ -47,8 +47,8 @@ public class NegativeResponseExceptionTest {
             throw new NegativeResponseException(errMsg, responseCode);
         } catch (Exception e) {
             Assertions.assertInstanceOf(NegativeResponseException.class, e);
-            Assertions.assertEquals(e.getMessage(), errMsg);
-            Assertions.assertEquals(((NegativeResponseException) e).getErrorCode(), responseCode);
+            Assertions.assertEquals(errMsg, e.getMessage());
+            Assertions.assertEquals(responseCode, ((NegativeResponseException) e).getErrorCode());
             Assertions.assertNull(e.getCause());
         }
     }

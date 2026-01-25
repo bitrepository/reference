@@ -147,7 +147,7 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         //Assertions.assertEquals(store.getCallsToGetAuditTrails(), settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().size());
 
         //Assertions.assertEquals(store.getCallsToGetPreservationSequenceNumber(), 2);
-        assertEquals(client.getCallsToPutFile(), 1);
+        assertEquals(1, client.getCallsToPutFile());
     }
 
     @Test
@@ -195,7 +195,7 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         verify(store).getAuditTrailsByIterator(null, collectionID, PILLAR_ID, 1L, null, null, null, null, null, null,
                 null);
 
-        assertEquals(client.getCallsToPutFile(), 1);
+        assertEquals(1, client.getCallsToPutFile());
 
         verify(fileExchange).putFile(any(FileInputStream.class), any(URL.class));
     }

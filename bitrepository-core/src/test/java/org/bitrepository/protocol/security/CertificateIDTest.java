@@ -105,7 +105,7 @@ public class CertificateIDTest {
         Assertions.assertEquals(certificateID1, certificateID1);
 
         addStep("Test with a null as argument", "Should give negative result");
-        Assertions.assertNotEquals(certificateID1, null);
+        Assertions.assertNotEquals(null, certificateID1);
 
         addStep("Test with another class", "Should give negative result");
         Assertions.assertNotEquals(new Object(), certificateID1);

@@ -1,23 +1,23 @@
 /*
  * #%L
  * Bitrepository Common
- * 
+ *
  * $Id$
  * $HeadURL$
  * %%
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -62,12 +62,12 @@ public class ChecksumUtilsTest {
         addStep("Test with no text and no key for HMAC_MD5, HMAC_SHA1, and HMAC_SHA256",
                 "Should give expected results.");
         InputStream data1 = new ByteArrayInputStream(new byte[0]);
-        Assertions.assertEquals(ChecksumUtils.generateChecksum(data1, csHmacMD5),
-                "74e6f7298a9c2d168935f58c001bad88");
-        Assertions.assertEquals(ChecksumUtils.generateChecksum(data1, csHmacSHA1),
-                "fbdb1d1b18aa6c08324b7d64b71fb76370690e1d");
-        Assertions.assertEquals(ChecksumUtils.generateChecksum(data1, csHmacSHA256),
-                "b613679a0814d9ec772f95d778c35fc5ff1697c493715653c6c712144292c5ad");
+        Assertions.assertEquals("74e6f7298a9c2d168935f58c001bad88",
+                ChecksumUtils.generateChecksum(data1, csHmacMD5));
+        Assertions.assertEquals("fbdb1d1b18aa6c08324b7d64b71fb76370690e1d",
+                ChecksumUtils.generateChecksum(data1, csHmacSHA1));
+        Assertions.assertEquals("b613679a0814d9ec772f95d778c35fc5ff1697c493715653c6c712144292c5ad",
+                ChecksumUtils.generateChecksum(data1, csHmacSHA256));
 
         String message = "The quick brown fox jumps over the lazy dog";
         InputStream data2 = new ByteArrayInputStream(message.getBytes(StandardCharsets.UTF_8));
@@ -78,14 +78,14 @@ public class ChecksumUtilsTest {
 
         addStep("Test with the text '" + message + "' and key '" + key + "' for MD5, SHA1, and SHA256",
                 "Should give expected results.");
-        Assertions.assertEquals(ChecksumUtils.generateChecksum(data2, csHmacMD5),
-                "80070713463e7749b90c2dc24911e275");
+        Assertions.assertEquals("80070713463e7749b90c2dc24911e275",
+                ChecksumUtils.generateChecksum(data2, csHmacMD5));
         data2.reset();
-        Assertions.assertEquals(ChecksumUtils.generateChecksum(data2, csHmacSHA1),
-                "de7c9b85b8b78aa6bc8a7a36f70a90701c9db4d9");
+        Assertions.assertEquals("de7c9b85b8b78aa6bc8a7a36f70a90701c9db4d9",
+                ChecksumUtils.generateChecksum(data2, csHmacSHA1));
         data2.reset();
-        Assertions.assertEquals(ChecksumUtils.generateChecksum(data2, csHmacSHA256),
-                "f7bc83f430538424b13298e6aa6fb143ef4d59a14946175997479dbc2d1a3cd8");
+        Assertions.assertEquals("f7bc83f430538424b13298e6aa6fb143ef4d59a14946175997479dbc2d1a3cd8",
+                ChecksumUtils.generateChecksum(data2, csHmacSHA256));
         data2.reset();
 
         addStep("Try calculating HMAC with a null salt", "Should throw NoSuchAlgorithmException");
@@ -93,7 +93,7 @@ public class ChecksumUtilsTest {
         try {
             ChecksumUtils.generateChecksum(data2, csHmacMD5);
             Assertions.fail("Should throw an IllegalArgumentException here!");
-        }  catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // expected
         }
     }
@@ -114,24 +114,24 @@ public class ChecksumUtilsTest {
         addStep("Test with no text and no key for MD5, SHA1, and SHA256",
                 "Should give expected results.");
         InputStream data1 = new ByteArrayInputStream(new byte[0]);
-        Assertions.assertEquals(ChecksumUtils.generateChecksum(data1, csMD5),
-                "d41d8cd98f00b204e9800998ecf8427e");
-        Assertions.assertEquals(ChecksumUtils.generateChecksum(data1, csSHA1),
-                "da39a3ee5e6b4b0d3255bfef95601890afd80709");
-        Assertions.assertEquals(ChecksumUtils.generateChecksum(data1, csSHA256),
-                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
+        Assertions.assertEquals("d41d8cd98f00b204e9800998ecf8427e",
+                ChecksumUtils.generateChecksum(data1, csMD5));
+        Assertions.assertEquals("da39a3ee5e6b4b0d3255bfef95601890afd80709",
+                ChecksumUtils.generateChecksum(data1, csSHA1));
+        Assertions.assertEquals("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                ChecksumUtils.generateChecksum(data1, csSHA256));
 
         addStep("Test with text ", "Should giver different checksums");
         String message = "The quick brown fox jumps over the lazy dog";
         InputStream data2 = new ByteArrayInputStream(message.getBytes(StandardCharsets.UTF_8));
-        Assertions.assertEquals(ChecksumUtils.generateChecksum(data2, csMD5),
-                "9e107d9d372bb6826bd81d3542a419d6");
+        Assertions.assertEquals("9e107d9d372bb6826bd81d3542a419d6",
+                ChecksumUtils.generateChecksum(data2, csMD5));
         data2.reset();
-        Assertions.assertEquals(ChecksumUtils.generateChecksum(data2, csSHA1),
-                "2fd4e1c67a2d28fced849ee1bb76e7391b93eb12");
+        Assertions.assertEquals("2fd4e1c67a2d28fced849ee1bb76e7391b93eb12",
+                ChecksumUtils.generateChecksum(data2, csSHA1));
         data2.reset();
-        Assertions.assertEquals(ChecksumUtils.generateChecksum(data2, csSHA256),
-                "d7a8fbb307d7809469ca9abcb0082e4f8d5651e46d3cdb762d02d0bf37c9e592");
+        Assertions.assertEquals("d7a8fbb307d7809469ca9abcb0082e4f8d5651e46d3cdb762d02d0bf37c9e592",
+                ChecksumUtils.generateChecksum(data2, csSHA256));
         data2.reset();
 
         addStep("add a salt to the checksum", "Should throw an exception");
@@ -139,7 +139,7 @@ public class ChecksumUtilsTest {
         try {
             ChecksumUtils.generateChecksum(data1, csMD5);
             Assertions.fail("Should throw an IllegalArgumentException here!");
-        }  catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // expected
         }
     }
@@ -172,9 +172,9 @@ public class ChecksumUtilsTest {
     public void testChecksumAlgorithmValidation() throws Exception {
         addDescription("Test the algorithm validation for every single possible checksum algorithm.");
         for (ChecksumType csType : ChecksumType.values()) {
-            if(csType == ChecksumType.OTHER) {
+            if (csType == ChecksumType.OTHER) {
                 validateOtherChecksumType(csType);
-            } else if(csType.name().startsWith("HMAC")) {
+            } else if (csType.name().startsWith("HMAC")) {
                 validateHmac(csType);
             } else {
                 validateMessageDigest(csType);
@@ -195,7 +195,7 @@ public class ChecksumUtilsTest {
         }
 
         try {
-        	ChecksumUtils.requiresSalt(algorithm);
+            ChecksumUtils.requiresSalt(algorithm);
             Assertions.fail("The 'OTHER' algorithms should be invalid no matter the salt: '" + csType);
         } catch (NoSuchAlgorithmException e) {
             // expected
@@ -268,7 +268,7 @@ public class ChecksumUtilsTest {
         addDescription("Test the extraction of the default checksum from settings.");
         addStep("Setup the settings", "Loading the test settings");
         Settings settings = TestSettingsProvider.reloadSettings("ChecksumUtils");
-        
+
         addStep("Use utils to extract default checksum spec", "Should be the one defined in Settings.");
         ChecksumSpecTYPE csType = ChecksumUtils.getDefault(settings);
         Assertions.assertEquals(csType.getChecksumType().name(),

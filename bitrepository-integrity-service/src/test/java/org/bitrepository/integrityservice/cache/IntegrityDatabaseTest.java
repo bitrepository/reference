@@ -1,23 +1,23 @@
 /*
  * #%L
  * Bitrepository Integrity Client
- * 
+ *
  * $Id$
  * $HeadURL$
  * %%
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -55,12 +55,12 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     AuditTrailManager auditManager;
     String TEST_PILLAR_1 = "MY-TEST-PILLAR-1";
     String TEST_PILLAR_2 = "MY-TEST-PILLAR-2";
-    
+
     String TEST_FILE_ID = "TEST-FILE-ID";
     String TEST_CHECKSUM = "1234cccc4321";
-    
+
     String TEST_COLLECTIONID;
-    
+
     @BeforeEach
     @Override
     public void setup() throws Exception {
@@ -68,10 +68,10 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         TEST_COLLECTIONID = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
         auditManager = mock(AuditTrailManager.class);
     }
-    
-    @Override 
+
+    @Override
     protected void customizeSettings() {
-        org.bitrepository.settings.repositorysettings.Collection c0 = 
+        org.bitrepository.settings.repositorysettings.Collection c0 =
                 settings.getRepositorySettings().getCollections().getCollection().get(0);
         c0.getPillarIDs().getPillarID().clear();
         c0.getPillarIDs().getPillarID().add(TEST_PILLAR_1);
@@ -81,7 +81,9 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     }
 
     @Test
-    @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
+    @Tag("regressiontest")
+    @Tag("databasetest")
+    @Tag("integritytest")
     public void instantiationTest() {
         addDescription("Tests that the connection can be instantaited.");
         IntegrityDatabase integrityCache = new IntegrityDatabase(settings);
@@ -89,59 +91,63 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     }
 
     @Test
-    @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
+    @Tag("regressiontest")
+    @Tag("databasetest")
+    @Tag("integritytest")
     public void initialStateExtractionTest() {
         addDescription("Tests the initial state of the IntegrityModel. Should not contain any data.");
         IntegrityModel model = new IntegrityDatabase(settings);
-        
+
         addStep("Test the 'findChecksumsOlderThan'", "Should deliver an empty collection");
         Collection<String> oldChecksums = getIssuesFromIterator(model.findChecksumsOlderThan(
-            new Date(0), TEST_PILLAR_1, TEST_COLLECTIONID));
+                new Date(0), TEST_PILLAR_1, TEST_COLLECTIONID));
         Assertions.assertNotNull(oldChecksums);
-        Assertions.assertEquals(oldChecksums.size(), 0);
-        
+        Assertions.assertEquals(0, oldChecksums.size());
+
         addStep("Test the 'findMissingChecksums'", "Should deliver an empty collection");
-        for(String pillar : SettingsUtils.getPillarIDsForCollection(TEST_COLLECTIONID)) {
-            Collection<String> missingChecksums 
-                = getIssuesFromIterator(model.findFilesWithMissingChecksum(TEST_COLLECTIONID, pillar, new Date(0)));
+        for (String pillar : SettingsUtils.getPillarIDsForCollection(TEST_COLLECTIONID)) {
+            Collection<String> missingChecksums
+                    = getIssuesFromIterator(model.findFilesWithMissingChecksum(TEST_COLLECTIONID, pillar, new Date(0)));
             Assertions.assertNotNull(missingChecksums);
-            Assertions.assertEquals(missingChecksums.size(), 0);    
+            Assertions.assertEquals(0, missingChecksums.size());
         }
-        
+
         addStep("Test the 'findMissingFiles'", "Should deliver an empty collection");
-        Collection<String> missingFiles = getIssuesFromIterator(model.findFilesWithMissingCopies(TEST_COLLECTIONID, 
+        Collection<String> missingFiles = getIssuesFromIterator(model.findFilesWithMissingCopies(TEST_COLLECTIONID,
                 SettingsUtils.getPillarIDsForCollection(TEST_COLLECTIONID).size(), 0L, Long.MAX_VALUE));
         Assertions.assertNotNull(missingFiles);
-        Assertions.assertEquals(missingFiles.size(), 0);    
+        Assertions.assertEquals(0, missingFiles.size());
 
         addStep("Test the 'getAllFileIDs'", "Should deliver an empty collection");
-        Assertions.assertEquals(model.getNumberOfFilesInCollection(TEST_COLLECTIONID), 0);
-        
+        Assertions.assertEquals(0, model.getNumberOfFilesInCollection(TEST_COLLECTIONID));
+
         addStep("Test the 'getFileInfos'", "Should deliver an empty collection");
         Collection<FileInfo> fileInfos = model.getFileInfos(TEST_FILE_ID, TEST_COLLECTIONID);
         Assertions.assertNotNull(fileInfos);
-        Assertions.assertEquals(fileInfos.size(), 0);
-        
+        Assertions.assertEquals(0, fileInfos.size());
+
         addStep("Test the 'getPillarCollectionMetrics'", "The set of metrics should be empty.");
         Map<String, PillarCollectionMetric> metrics = model.getPillarCollectionMetrics(TEST_COLLECTIONID);
         Assertions.assertTrue(metrics.isEmpty());
     }
-    
+
     @Test
-    @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
+    @Tag("regressiontest")
+    @Tag("databasetest")
+    @Tag("integritytest")
     public void testIngestOfFileIDsData() {
         addDescription("Tests the ingesting of file ids data");
         IntegrityModel model = new IntegrityDatabase(settings);
-        
+
         addStep("Create data", "Should be ingested into the database");
         FileIDsData data1 = getFileIDsData(TEST_FILE_ID);
         model.addFileIDs(data1, TEST_PILLAR_1, TEST_COLLECTIONID);
         model.addFileIDs(data1, TEST_PILLAR_2, TEST_COLLECTIONID);
-        
+
         addStep("Extract the data", "Should be identical to the ingested data");
         Collection<FileInfo> fileinfos = model.getFileInfos(TEST_FILE_ID, TEST_COLLECTIONID);
         Assertions.assertNotNull(fileinfos);
-        for(FileInfo fi : fileinfos) {
+        for (FileInfo fi : fileinfos) {
             Assertions.assertEquals(fi.getFileId(), TEST_FILE_ID);
             Assertions.assertNull(fi.getChecksum());
             Assertions.assertEquals(fi.getDateForLastChecksumCheck(), CalendarUtils.getEpoch());
@@ -150,28 +156,32 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     }
 
     @Test
-    @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
+    @Tag("regressiontest")
+    @Tag("databasetest")
+    @Tag("integritytest")
     public void testIngestOfChecksumsData() {
         addDescription("Tests the ingesting of checksums data");
         IntegrityModel model = new IntegrityDatabase(settings);
-        
+
         addStep("Create data", "Should be ingested into the database");
         List<ChecksumDataForChecksumSpecTYPE> csData = getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM);
         insertChecksumDataForModel(model, csData, TEST_PILLAR_1, TEST_COLLECTIONID);
         insertChecksumDataForModel(model, csData, TEST_PILLAR_2, TEST_COLLECTIONID);
-        
+
         addStep("Extract the data", "Should be identical to the ingested data");
         Collection<FileInfo> fileinfos = model.getFileInfos(TEST_FILE_ID, TEST_COLLECTIONID);
         Assertions.assertNotNull(fileinfos);
-        for(FileInfo fi : fileinfos) {
+        for (FileInfo fi : fileinfos) {
             Assertions.assertEquals(fi.getFileId(), TEST_FILE_ID);
             Assertions.assertEquals(fi.getChecksum(), TEST_CHECKSUM);
             Assertions.assertEquals(fi.getDateForLastChecksumCheck(), csData.get(0).getCalculationTimestamp());
         }
     }
-    
+
     @Test
-    @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
+    @Tag("regressiontest")
+    @Tag("databasetest")
+    @Tag("integritytest")
     public void testDeletingEntry() {
         addDescription("Tests the deletion of an FileID entry.");
         IntegrityModel model = new IntegrityDatabase(settings);
@@ -180,25 +190,25 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         FileIDsData data1 = getFileIDsData(TEST_FILE_ID);
         model.addFileIDs(data1, TEST_PILLAR_1, TEST_COLLECTIONID);
         model.addFileIDs(data1, TEST_PILLAR_2, TEST_COLLECTIONID);
-        
+
         Collection<FileInfo> fileinfos = model.getFileInfos(TEST_FILE_ID, TEST_COLLECTIONID);
         Assertions.assertNotNull(fileinfos);
-        Assertions.assertEquals(fileinfos.size(), 2);
-        
+        Assertions.assertEquals(2, fileinfos.size());
+
         addStep("Delete the entry", "No fileinfos should be extracted.");
         model.deleteFileIdEntry(TEST_COLLECTIONID, TEST_PILLAR_1, TEST_FILE_ID);
         fileinfos = model.getFileInfos(TEST_FILE_ID, TEST_COLLECTIONID);
         Assertions.assertNotNull(fileinfos);
-        Assertions.assertEquals(fileinfos.size(), 1);
+        Assertions.assertEquals(1, fileinfos.size());
         model.deleteFileIdEntry(TEST_COLLECTIONID, TEST_PILLAR_2, TEST_FILE_ID);
         fileinfos = model.getFileInfos(TEST_FILE_ID, TEST_COLLECTIONID);
         Assertions.assertNotNull(fileinfos);
-        Assertions.assertEquals(fileinfos.size(), 0);
+        Assertions.assertEquals(0, fileinfos.size());
     }
-    
+
     private List<ChecksumDataForChecksumSpecTYPE> getChecksumResults(String fileID, String checksum) {
         List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<>();
-        
+
         ChecksumDataForChecksumSpecTYPE csData = new ChecksumDataForChecksumSpecTYPE();
         try {
             csData.setChecksumValue(Base16Utils.encodeBase16(checksum));
@@ -210,34 +220,34 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         res.add(csData);
         return res;
     }
-    
+
     private FileIDsData getFileIDsData(String... fileIDs) {
         FileIDsData res = new FileIDsData();
         FileIDsDataItems items = new FileIDsDataItems();
-        
-        for(String fileID : fileIDs) {
+
+        for (String fileID : fileIDs) {
             FileIDsDataItem dataItem = new FileIDsDataItem();
             dataItem.setFileID(fileID);
             dataItem.setFileSize(BigInteger.valueOf(items.getFileIDsDataItem().size() + 1));
             dataItem.setLastModificationTime(CalendarUtils.getNow());
             items.getFileIDsDataItem().add(dataItem);
-        } 
-        
+        }
+
         res.setFileIDsDataItems(items);
         return res;
     }
-    
+
     /**
-     * This is not the way to handle the iterators, as the lists might grow really long. 
-     * It's here to make the tests simple, and can be done as there's only small amounts of test data in the tests. 
+     * This is not the way to handle the iterators, as the lists might grow really long.
+     * It's here to make the tests simple, and can be done as there's only small amounts of test data in the tests.
      */
     private List<String> getIssuesFromIterator(IntegrityIssueIterator it) {
         List<String> issues = new ArrayList<>();
         String issue;
-        while((issue = it.getNextIntegrityIssue()) != null) {
+        while ((issue = it.getNextIntegrityIssue()) != null) {
             issues.add(issue);
         }
-        
+
         return issues;
     }
 }
