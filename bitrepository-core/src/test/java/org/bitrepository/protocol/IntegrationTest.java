@@ -49,6 +49,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.JMSException;
@@ -78,6 +79,8 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     protected static String DEFAULT_UPLOAD_FILE_ADDRESS;
     protected String DEFAULT_AUDIT_INFORMATION;
 
+    @RegisterExtension
+    TestWatcherExtension testWatcher = new TestWatcherExtension();
     protected String testMethodName;
 
     private void initializationMethod() {
@@ -145,14 +148,15 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         initializeCUT();
     }
 
-    protected void initializeCUT() {}
+    protected void initializeCUT() {
+    }
 
     @AfterEach
     public final void afterMethod() {
         if (receiverManager != null) {
             receiverManager.stopListeners();
         }
-        if (TestWatcherExtension.isTestSuccessful()) {
+        if (testWatcher.isTestSuccessful()) {
             afterMethodVerification();
         }
         shutdownCUT();
@@ -177,7 +181,8 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     /**
      * May be overridden by specific tests wishing to do stuff. Remember to call super if this is overridden.
      */
-    protected void shutdownCUT() {}
+    protected void shutdownCUT() {
+    }
 
     /**
      * Initializes the settings. Will postfix the alarm and collection topics with '-${user.name}

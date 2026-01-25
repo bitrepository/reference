@@ -1,23 +1,23 @@
 /*
  * #%L
  * Bitrepository Reference Pillar
- * 
+ *
  * $Id: PutFileOnReferencePillarTest.java 589 2011-12-01 15:34:42Z jolf $
  * $HeadURL: https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk/bitrepository-reference-pillar/src/test/java/org/bitrepository/pillar/PutFileOnReferencePillarTest.java $
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -53,8 +53,6 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
 
-
-
 /**
  * Tests the PutFile functionality on the ReferencePillar.
  */
@@ -68,7 +66,7 @@ public class PutFileTest extends MockedPillarTest {
         msgFactory = new PutFileMessageFactory(collectionID, settingsForTestClient, getPillarID(),
                 pillarDestinationId);
     }
-    
+
     @SuppressWarnings("rawtypes")
     @Test
     @Tag("regressiontest")
@@ -78,7 +76,7 @@ public class PutFileTest extends MockedPillarTest {
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = DEFAULT_FILE_ID + testMethodName;
 
-        addStep("Setup for not already having the file and delivering pillar id", 
+        addStep("Setup for not already having the file and delivering pillar id",
                 "Should return false, when requesting file-id existence.");
         doAnswer(new Answer() {
             @Override
@@ -120,7 +118,7 @@ public class PutFileTest extends MockedPillarTest {
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = DEFAULT_FILE_ID + testMethodName;
 
-        addStep("Setup for already having the file and delivering pillar id", 
+        addStep("Setup for already having the file and delivering pillar id",
                 "Should return true, when requesting file-id existence.");
         doAnswer(new Answer() {
             public Boolean answer(InvocationOnMock invocation) {
@@ -160,7 +158,7 @@ public class PutFileTest extends MockedPillarTest {
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = DEFAULT_FILE_ID + testMethodName;
 
-        addStep("Setup for already having the file and delivering pillar id", 
+        addStep("Setup for already having the file and delivering pillar id",
                 "Should return true, when requesting file-id existence.");
         doAnswer(new Answer() {
             public Boolean answer(InvocationOnMock invocation) {
@@ -179,18 +177,18 @@ public class PutFileTest extends MockedPillarTest {
         messageBus.sendMessage(request);
 
         // Does not send a progress response.
-        
+
         addStep("Retrieve the FinalResponse for the PutFile request",
                 "The final response should say 'operation_complete', and give the requested data.");
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
         assertEquals(ResponseCode.DUPLICATE_FILE_FAILURE, finalResponse.getResponseInfo().getResponseCode());
         assertEquals(finalResponse.getPillarID(), getPillarID());
         assertEquals(finalResponse.getFileID(), FILE_ID);
-        
+
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
         assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
     }
-    
+
     @SuppressWarnings("rawtypes")
     @Test
     @Tag("regressiontest")
@@ -201,7 +199,7 @@ public class PutFileTest extends MockedPillarTest {
         String FILE_ID = DEFAULT_FILE_ID + testMethodName;
         settingsForCUT.getRepositorySettings().getProtocolSettings().setRequireChecksumForNewFileRequests(true);
 
-        addStep("Setup for not already having the file and delivering pillar id", 
+        addStep("Setup for not already having the file and delivering pillar id",
                 "Should return false, when requesting file-id existence.");
         doAnswer(new Answer() {
             public Boolean answer(InvocationOnMock invocation) {
@@ -225,14 +223,14 @@ public class PutFileTest extends MockedPillarTest {
         assertEquals(ResponseCode.NEW_FILE_CHECKSUM_FAILURE, finalResponse.getResponseInfo().getResponseCode());
         assertEquals(finalResponse.getPillarID(), getPillarID());
         assertEquals(finalResponse.getFileID(), FILE_ID);
-        
+
         addStep("Pillar should have sent an alarm", "Alarm contains information about the missing verification checksum");
         AlarmMessage alarm = alarmReceiver.waitForMessage(AlarmMessage.class);
         assertEquals(alarm.getAlarm().getFileID(), FILE_ID);
         assertEquals(alarm.getAlarm().getAlarmRaiser(), getPillarID());
-        assertEquals(alarm.getAlarm().getAlarmCode(), AlarmCode.CHECKSUM_ALARM);
+        assertEquals(AlarmCode.CHECKSUM_ALARM, alarm.getAlarm().getAlarmCode());
     }
-    
+
     @SuppressWarnings("rawtypes")
     //@Test
 //    @Tag("regressiontest", "pillartest"})
@@ -242,7 +240,7 @@ public class PutFileTest extends MockedPillarTest {
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = DEFAULT_FILE_ID + testMethodName;
 
-        addStep("Setup for not already having the file and delivering pillar id", 
+        addStep("Setup for not already having the file and delivering pillar id",
                 "Should return false, when requesting file-id existence.");
         doAnswer(new Answer() {
             public Boolean answer(InvocationOnMock invocation) {
@@ -265,7 +263,7 @@ public class PutFileTest extends MockedPillarTest {
         PutFileProgressResponse progressResponse = clientReceiver.waitForMessage(PutFileProgressResponse.class);
         assertEquals(progressResponse.getFileID(), FILE_ID);
         assertEquals(progressResponse.getPillarID(), getPillarID());
-        
+
         addStep("Retrieve the FinalResponse for the PutFile request",
                 "The final response should say 'operation_complete', and give the requested data.");
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
@@ -274,12 +272,12 @@ public class PutFileTest extends MockedPillarTest {
         assertEquals(finalResponse.getFileID(), FILE_ID);
         assertNull(finalResponse.getChecksumDataForNewFile());
         assertNull(finalResponse.getChecksumDataForExistingFile());
-        
+
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
         assertEquals(1, audits.getCallsForAuditEvent(), "Should make 1 put-file audit trail");
     }
-    
-    
+
+
     @SuppressWarnings("rawtypes")
     @Test
     @Tag("regressiontest")
@@ -289,7 +287,7 @@ public class PutFileTest extends MockedPillarTest {
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = DEFAULT_FILE_ID + testMethodName;
 
-        addStep("Setup for not already having the file and delivering pillar id, and delivering an answer for the checksum request", 
+        addStep("Setup for not already having the file and delivering pillar id, and delivering an answer for the checksum request",
                 "Should return false, when requesting file-id existence.");
         when(model.hasFileID(eq(FILE_ID), anyString())).thenReturn(false);
         when(model.getPillarID()).thenReturn(settingsForCUT.getComponentID());
@@ -311,7 +309,7 @@ public class PutFileTest extends MockedPillarTest {
         PutFileProgressResponse progressResponse = clientReceiver.waitForMessage(PutFileProgressResponse.class);
         assertEquals(progressResponse.getFileID(), FILE_ID);
         assertEquals(progressResponse.getPillarID(), getPillarID());
-        
+
         addStep("Retrieve the FinalResponse for the PutFile request",
                 "The final response should say 'operation_complete', and give the requested data.");
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);

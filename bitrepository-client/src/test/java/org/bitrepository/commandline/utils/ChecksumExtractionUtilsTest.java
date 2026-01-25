@@ -72,7 +72,7 @@ public class ChecksumExtractionUtilsTest extends DefaultFixtureClientTest {
         ChecksumType enteredType = ChecksumType.SHA384;
         cmdHandler.parseArguments("-" + Constants.REQUEST_CHECKSUM_TYPE_ARG + enteredType);
         ChecksumType type = ChecksumExtractionUtils.extractChecksumType(cmdHandler, settingsForCUT, output);
-        assertEquals(type, enteredType);
+        assertEquals(enteredType, type);
     }
 
     @Test
@@ -84,7 +84,7 @@ public class ChecksumExtractionUtilsTest extends DefaultFixtureClientTest {
         cmdHandler.parseArguments("-" + Constants.REQUEST_CHECKSUM_TYPE_ARG + enteredType,
                 "-" + Constants.REQUEST_CHECKSUM_SALT_ARG + "0110");
         ChecksumType type = ChecksumExtractionUtils.extractChecksumType(cmdHandler, settingsForCUT, output);
-        assertNotEquals(type, enteredType);
+        assertNotEquals(enteredType, type);
         assertEquals(type.name(), "HMAC_" + enteredType.name());
     }
 
@@ -96,7 +96,7 @@ public class ChecksumExtractionUtilsTest extends DefaultFixtureClientTest {
         ChecksumType enteredType = ChecksumType.HMAC_SHA256;
         cmdHandler.parseArguments("-" + Constants.REQUEST_CHECKSUM_TYPE_ARG + enteredType);
         ChecksumType type = ChecksumExtractionUtils.extractChecksumType(cmdHandler, settingsForCUT, output);
-        assertNotEquals(type, enteredType);
+        assertNotEquals(enteredType, type);
         assertTrue(enteredType.name().contains("HMAC"));
         assertEquals(type.name(), enteredType.name().replace("HMAC_", ""));
     }
@@ -110,6 +110,6 @@ public class ChecksumExtractionUtilsTest extends DefaultFixtureClientTest {
         cmdHandler.parseArguments("-" + Constants.REQUEST_CHECKSUM_TYPE_ARG + enteredType,
                 "-" + Constants.REQUEST_CHECKSUM_SALT_ARG + "0110");
         ChecksumType type = ChecksumExtractionUtils.extractChecksumType(cmdHandler, settingsForCUT, output);
-        assertEquals(type, enteredType);
+        assertEquals(enteredType, type);
     }
 }

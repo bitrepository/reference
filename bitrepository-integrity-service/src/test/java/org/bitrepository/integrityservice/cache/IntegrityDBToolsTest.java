@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -49,43 +49,44 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
 
-    String TEST_PILLAR_1 = "MY-TEST-PILLAR-1";
-    String TEST_PILLAR_2 = "MY-TEST-PILLAR-2";
-    String EXTRA_PILLAR = "MY-EXTRA-PILLAR";
-    String EXTRA_COLLECTION = "extra-collection";
-    String TEST_FILE_ID = "TEST-FILE-ID";
-    String TEST_COLLECTIONID;
-    
+    String testPillar1 = "MY-TEST-PILLAR-1";
+    String testPillar2 = "MY-TEST-PILLAR-2";
+    String extraCollectionId = "extra-collection";
+    String testFileId = "TEST-FILE-ID";
+    String testCollectionid;
+
     @BeforeEach
     @Override
     public void setup() throws Exception {
         super.setup();
-        TEST_COLLECTIONID = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
+        testCollectionid = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
     }
-    
-    @Override 
+
+    @Override
     protected void customizeSettings() {
-        org.bitrepository.settings.repositorysettings.Collection c0 = 
+        org.bitrepository.settings.repositorysettings.Collection c0 =
                 settings.getRepositorySettings().getCollections().getCollection().get(0);
         c0.getPillarIDs().getPillarID().clear();
-        c0.getPillarIDs().getPillarID().add(TEST_PILLAR_1);
-        c0.getPillarIDs().getPillarID().add(TEST_PILLAR_2);
+        c0.getPillarIDs().getPillarID().add(testPillar1);
+        c0.getPillarIDs().getPillarID().add(testPillar2);
         settings.getRepositorySettings().getCollections().getCollection().clear();
         settings.getRepositorySettings().getCollections().getCollection().add(c0);
-        
-        org.bitrepository.settings.repositorysettings.Collection extraCollection = 
+
+        org.bitrepository.settings.repositorysettings.Collection extraCollection =
                 new org.bitrepository.settings.repositorysettings.Collection();
-        extraCollection.setID(EXTRA_COLLECTION);
-        org.bitrepository.settings.repositorysettings.PillarIDs pids 
-            = new org.bitrepository.settings.repositorysettings.PillarIDs();
-        pids.getPillarID().add(TEST_PILLAR_1);
-        pids.getPillarID().add(TEST_PILLAR_2);
+        extraCollection.setID(extraCollectionId);
+        org.bitrepository.settings.repositorysettings.PillarIDs pids
+                = new org.bitrepository.settings.repositorysettings.PillarIDs();
+        pids.getPillarID().add(testPillar1);
+        pids.getPillarID().add(testPillar2);
         extraCollection.setPillarIDs(pids);
         settings.getRepositorySettings().getCollections().getCollection().add(extraCollection);
     }
-    
+
     @Test
-    @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
+    @Tag("regressiontest")
+    @Tag("databasetest")
+    @Tag("integritytest")
     public void testAddCollectionSuccess() {
         addDescription("Tests that a new collection can be added to the integrity database");
         String newCollectionID = "new-collectionid";
@@ -96,20 +97,22 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         IntegrityDBTools tool = new IntegrityDBTools(dbCon);
         List<String> collections = integrityDAO.getCollections();
         addStep("Extract initial list of collections", "The list contains the expected collections");
-        assertTrue(collections.contains(TEST_COLLECTIONID));
-        assertTrue(collections.contains(EXTRA_COLLECTION));
+        assertTrue(collections.contains(testCollectionid));
+        assertTrue(collections.contains(extraCollectionId));
         assertFalse(collections.contains(newCollectionID));
-        
+
         addStep("Add the new collection", "The new collection is found in the list of collections");
         tool.addCollection(newCollectionID);
         collections = integrityDAO.getCollections();
-        assertTrue(collections.contains(TEST_COLLECTIONID));
-        assertTrue(collections.contains(EXTRA_COLLECTION));
+        assertTrue(collections.contains(testCollectionid));
+        assertTrue(collections.contains(extraCollectionId));
         assertTrue(collections.contains(newCollectionID));
     }
-    
+
     @Test
-    @Tag("regressiontest") @Tag("databasetest") @Tag("integritytest")
+    @Tag("regressiontest")
+    @Tag("databasetest")
+    @Tag("integritytest")
     public void testAddExistingCollection() {
         addDescription("Tests that an existing collectionID cannot be added to the integrity database.");
         DatabaseManager dm = new IntegrityDatabaseManager(
@@ -119,24 +122,25 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         IntegrityDBTools tool = new IntegrityDBTools(dbCon);
         List<String> collections = integrityDAO.getCollections();
         addStep("Extract initial list of collections.", "The list contains the expected collections.");
-        assertTrue(collections.contains(TEST_COLLECTIONID));
-        assertTrue(collections.contains(EXTRA_COLLECTION));
-        
+        assertTrue(collections.contains(testCollectionid));
+        assertTrue(collections.contains(extraCollectionId));
+
         addStep("Attempt to add the new collection.", "An exception is thrown, and the collection list is uneffected.");
         try {
-            tool.addCollection(TEST_COLLECTIONID);
+            tool.addCollection(testCollectionid);
             fail("addCollection did not fail as expected");
-        } catch(IntegrityDBStateException e) {
-            
+        } catch (IntegrityDBStateException e) {
+
         }
         collections = integrityDAO.getCollections();
-        assertTrue(collections.contains(TEST_COLLECTIONID));
-        assertTrue(collections.contains(EXTRA_COLLECTION));
+        assertTrue(collections.contains(testCollectionid));
+        assertTrue(collections.contains(extraCollectionId));
     }
-    
+
     @Test
     @Tag("regressiontest")
-    @Tag("databasetest") @Tag("integritytest")
+    @Tag("databasetest")
+    @Tag("integritytest")
     public void testRemoveNonExistingCollection() {
         addDescription("Tests that a non existing collection can't be removed from the integrity database.");
         String nonExistingCollectionID = "non-existing-collectionid";
@@ -147,8 +151,8 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         IntegrityDBTools tool = new IntegrityDBTools(dbCon);
         List<String> collections = integrityDAO.getCollections();
         addStep("Extract initial list of collections.", "The list contains the expected collections.");
-        assertTrue(collections.contains(TEST_COLLECTIONID));
-        assertTrue(collections.contains(EXTRA_COLLECTION));
+        assertTrue(collections.contains(testCollectionid));
+        assertTrue(collections.contains(extraCollectionId));
         assertFalse(collections.contains(nonExistingCollectionID));
 
         addStep("Attempt to remove the non-existing collection.", "An exception is thrown, the collection list is uneffected.");
@@ -156,15 +160,17 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
             tool.removeCollection(nonExistingCollectionID);
             fail("removeCollection did not fail as expected");
         } catch (IntegrityDBStateException e) {
-            
+
         }
         collections = integrityDAO.getCollections();
-        assertTrue(collections.contains(TEST_COLLECTIONID));
-        assertTrue(collections.contains(EXTRA_COLLECTION));
+        assertTrue(collections.contains(testCollectionid));
+        assertTrue(collections.contains(extraCollectionId));
     }
     
     /*@Test
-    @Tag("regressiontest", "databasetest", "integritytest"})
+    @Tag("regressiontest")
+    @Tag("databasetest")
+    @Tag("integritytest")
     public void testRemoveExistingCollection() {
         addDescription("Tests the removal of an existing collection and references to it in the integrity database");
         DatabaseManager dm = new IntegrityDatabaseManager(
@@ -222,12 +228,12 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         assertNotNull(integrityDAO.getLatestCollectionStats(EXTRA_COLLECTION, 1L));
         assertFalse(integrityDAO.getLatestCollectionStats(EXTRA_COLLECTION, 1L).isEmpty());
     }*/
-    
+
     private void populateCollection(IntegrityDAO dao, String collectionID) {
-        String file2 = TEST_FILE_ID + "-2";
-        String file3 = TEST_FILE_ID + "-3";
-        String file4 = TEST_FILE_ID + "-4";
-        String file5 = TEST_FILE_ID + "-5";
+        String file2 = testFileId + "-2";
+        String file3 = testFileId + "-3";
+        String file4 = testFileId + "-4";
+        String file5 = testFileId + "-5";
         Long size1 = 100L;
         Long size2 = 200L;
         Long size3 = 300L;
@@ -239,12 +245,12 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         String checksum3bad = "baad";
         String checksum4 = "ccaa";
         String checksum5 = "ddaa";
-        FileIDsData data1 = makeFileIDsDataWithGivenFileSize(TEST_FILE_ID, size1);
+        FileIDsData data1 = makeFileIDsDataWithGivenFileSize(testFileId, size1);
         FileIDsData data2 = makeFileIDsDataWithGivenFileSize(file2, size2);
         FileIDsData data3 = makeFileIDsDataWithGivenFileSize(file3, size3);
         FileIDsData data4 = makeFileIDsDataWithGivenFileSize(file4, size4);
         FileIDsData data5 = makeFileIDsDataWithGivenFileSize(file5, size5);
-        List<ChecksumDataForChecksumSpecTYPE> csData1 = getChecksumResults(TEST_FILE_ID, checksum1);
+        List<ChecksumDataForChecksumSpecTYPE> csData1 = getChecksumResults(testFileId, checksum1);
         List<ChecksumDataForChecksumSpecTYPE> csData2 = getChecksumResults(file2, checksum2);
         List<ChecksumDataForChecksumSpecTYPE> csData3 = getChecksumResults(file3, checksum3);
         List<ChecksumDataForChecksumSpecTYPE> csData3bad = getChecksumResults(file3, checksum3bad);
@@ -261,20 +267,20 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         csDataPillar2.addAll(csData2);
         csDataPillar2.addAll(csData3);
         csDataPillar2.addAll(csData4);
-        dao.updateFileIDs(data1, TEST_PILLAR_1, collectionID);
-        dao.updateFileIDs(data3, TEST_PILLAR_1, collectionID);
-        dao.updateFileIDs(data4, TEST_PILLAR_1, collectionID);
-        dao.updateFileIDs(data5, TEST_PILLAR_1, collectionID);
-        dao.updateFileIDs(data1, TEST_PILLAR_2, collectionID);
-        dao.updateFileIDs(data2, TEST_PILLAR_2, collectionID);
-        dao.updateFileIDs(data3, TEST_PILLAR_2, collectionID);
-        dao.updateFileIDs(data4, TEST_PILLAR_2, collectionID);
+        dao.updateFileIDs(data1, testPillar1, collectionID);
+        dao.updateFileIDs(data3, testPillar1, collectionID);
+        dao.updateFileIDs(data4, testPillar1, collectionID);
+        dao.updateFileIDs(data5, testPillar1, collectionID);
+        dao.updateFileIDs(data1, testPillar2, collectionID);
+        dao.updateFileIDs(data2, testPillar2, collectionID);
+        dao.updateFileIDs(data3, testPillar2, collectionID);
+        dao.updateFileIDs(data4, testPillar2, collectionID);
 
-        dao.updateChecksums(csDataPillar1, TEST_PILLAR_1, collectionID);
-        dao.updateChecksums(csDataPillar2, TEST_PILLAR_2, collectionID);
-        
+        dao.updateChecksums(csDataPillar1, testPillar1, collectionID);
+        dao.updateChecksums(csDataPillar2, testPillar2, collectionID);
+
     }
-    
+
     private FileIDsData makeFileIDsDataWithGivenFileSize(String fileID, Long size) {
         FileIDsData res = new FileIDsData();
         FileIDsDataItems items = new FileIDsDataItems();
@@ -286,10 +292,10 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         res.setFileIDsDataItems(items);
         return res;
     }
-    
+
     private List<ChecksumDataForChecksumSpecTYPE> getChecksumResults(String fileID, String checksum) {
         List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<>();
-        
+
         ChecksumDataForChecksumSpecTYPE csData = new ChecksumDataForChecksumSpecTYPE();
         try {
             csData.setChecksumValue(Base16Utils.encodeBase16(checksum));
