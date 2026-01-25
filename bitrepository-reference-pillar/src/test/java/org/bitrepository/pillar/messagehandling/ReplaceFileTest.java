@@ -1,23 +1,23 @@
 /*
  * #%L
  * Bitrepository Reference Pillar
- * 
+ *
  * $Id: ReplaceFileOnReferencePillarTest.java 589 2011-12-01 15:34:42Z jolf $
  * $HeadURL: https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk/bitrepository-reference-pillar/src/test/java/org/bitrepository/pillar/ReplaceFileOnReferencePillarTest.java $
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -53,8 +53,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 
 
-
-
 /**
  * Tests the ReplaceFile functionality on the ReferencePillar.
  */
@@ -78,7 +76,7 @@ public class ReplaceFileTest extends MockedPillarTest {
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = DEFAULT_FILE_ID;
 
-        addStep("Setup for having the file and delivering pillar id", 
+        addStep("Setup for having the file and delivering pillar id",
                 "Should return true, when requesting file-id existence.");
         doAnswer(invocation -> true).when(model).hasFileID(eq(FILE_ID), anyString());
         doAnswer(invocation -> settingsForCUT.getComponentID()).when(model).getPillarID();
@@ -110,7 +108,7 @@ public class ReplaceFileTest extends MockedPillarTest {
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = DEFAULT_FILE_ID;
 
-        addStep("Setup for not having the file and delivering pillar id", 
+        addStep("Setup for not having the file and delivering pillar id",
                 "Should return false, when requesting file-id existence.");
         doAnswer(invocation -> false).when(model).hasFileID(eq(FILE_ID), anyString());
         doAnswer(invocation -> settingsForCUT.getComponentID()).when(model).getPillarID();
@@ -142,7 +140,7 @@ public class ReplaceFileTest extends MockedPillarTest {
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = DEFAULT_FILE_ID;
 
-        addStep("Setup for not having the file and delivering pillar id", 
+        addStep("Setup for not having the file and delivering pillar id",
                 "Should return false, when requesting file-id existence.");
         doAnswer(invocation -> false).when(model).hasFileID(eq(FILE_ID), anyString());
         doAnswer(new Answer() {
@@ -178,7 +176,7 @@ public class ReplaceFileTest extends MockedPillarTest {
         String FILE_ID = DEFAULT_FILE_ID;
         settingsForCUT.getRepositorySettings().getProtocolSettings().setRequireChecksumForDestructiveRequests(true);
 
-        addStep("Setup for having the file and delivering pillar id", 
+        addStep("Setup for having the file and delivering pillar id",
                 "Should return true, when requesting file-id existence.");
         doAnswer(invocation -> true).when(model).hasFileID(eq(FILE_ID), anyString());
         doAnswer(invocation -> settingsForCUT.getComponentID()).when(model).getPillarID();
@@ -213,7 +211,7 @@ public class ReplaceFileTest extends MockedPillarTest {
         String FILE_ID = DEFAULT_FILE_ID;
         settingsForCUT.getRepositorySettings().getProtocolSettings().setRequireChecksumForNewFileRequests(true);
 
-        addStep("Setup for having the file and delivering pillar id", 
+        addStep("Setup for having the file and delivering pillar id",
                 "Should return true, when requesting file-id existence.");
         doAnswer(invocation -> true).when(model).hasFileID(eq(FILE_ID), anyString());
         doAnswer(invocation -> settingsForCUT.getComponentID()).when(model).getPillarID();
@@ -243,11 +241,11 @@ public class ReplaceFileTest extends MockedPillarTest {
     @Tag("pillartest")
     public void badCaseOperationWrongDestructiveChecksum() throws Exception {
         addDescription("Tests the ReplaceFile operation on the pillar for the failure scenario, when the checksum for "
-                +"the destructive action is different from the one in the cache.");
+                + "the destructive action is different from the one in the cache.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = DEFAULT_FILE_ID;
 
-        addStep("Setup for having the file and delivering pillar id", 
+        addStep("Setup for having the file and delivering pillar id",
                 "Should return true, when requesting file-id existence.");
         doAnswer(invocation -> true).when(model).hasFileID(eq(FILE_ID), anyString());
         doAnswer(invocation -> settingsForCUT.getComponentID()).when(model).getPillarID();
@@ -281,7 +279,7 @@ public class ReplaceFileTest extends MockedPillarTest {
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = DEFAULT_FILE_ID;
 
-        addStep("Setup for already having the file and delivering pillar id", 
+        addStep("Setup for already having the file and delivering pillar id",
                 "Should return true, when requesting file-id existence.");
         doAnswer(invocation -> true).when(model).hasFileID(eq(FILE_ID), anyString());
         doAnswer(invocation -> settingsForCUT.getComponentID()).when(model).getPillarID();
@@ -301,7 +299,7 @@ public class ReplaceFileTest extends MockedPillarTest {
         addStep("Retrieve the FinalResponse for the ReplaceFile request",
                 "The final response should say 'operation_complete', and give the requested data.");
         ReplaceFileFinalResponse finalResponse = clientReceiver.waitForMessage(ReplaceFileFinalResponse.class);
-        assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.OPERATION_COMPLETED);
+        assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
         assertEquals(finalResponse.getPillarID(), getPillarID());
         assertEquals(finalResponse.getFileID(), FILE_ID);
         assertNull(finalResponse.getChecksumDataForNewFile());
@@ -323,7 +321,7 @@ public class ReplaceFileTest extends MockedPillarTest {
         ChecksumSpecTYPE existingRequestChecksumSpec = otherCsSpec;
         ChecksumSpecTYPE newRequestChecksumSpec = csSpec;
 
-        addStep("Setup for already having the file and delivering pillar id", 
+        addStep("Setup for already having the file and delivering pillar id",
                 "Should return true, when requesting file-id existence.");
         doAnswer(invocation -> true).when(model).hasFileID(eq(FILE_ID), anyString());
         doAnswer(invocation -> settingsForCUT.getComponentID()).when(model).getPillarID();

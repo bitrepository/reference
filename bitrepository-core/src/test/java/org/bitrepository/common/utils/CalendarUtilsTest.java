@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -36,7 +36,7 @@ import java.util.TimeZone;
 
 public class CalendarUtilsTest extends ExtendedTestCase {
     long DATE_IN_MILLIS = 123456789L;
-    
+
     @Test
     @Tag("regressiontest")
     public void calendarTester() throws Exception {
@@ -47,24 +47,24 @@ public class CalendarUtilsTest extends ExtendedTestCase {
         Assertions.assertEquals(calendar.toGregorianCalendar().getTimeInMillis(), DATE_IN_MILLIS);
 
         addStep("Test that a 'null' date is equivalent to epoch", "Should be date '0'");
-        calendar = CalendarUtils.getXmlGregorianCalendar((Date)null);
-        Assertions.assertEquals(calendar.toGregorianCalendar().getTimeInMillis(), 0);
-        
+        calendar = CalendarUtils.getXmlGregorianCalendar((Date) null);
+        Assertions.assertEquals(0, calendar.toGregorianCalendar().getTimeInMillis());
+
         addStep("Test epoch", "Should be date '0'");
         calendar = CalendarUtils.getEpoch();
-        Assertions.assertEquals(calendar.toGregorianCalendar().getTimeInMillis(), 0);
-        
+        Assertions.assertEquals(0, calendar.toGregorianCalendar().getTimeInMillis());
+
         addStep("Test that a given time in millis is extractable in millis", "Should be same value");
         calendar = CalendarUtils.getFromMillis(DATE_IN_MILLIS);
         Assertions.assertEquals(calendar.toGregorianCalendar().getTimeInMillis(), DATE_IN_MILLIS);
-        
+
         addStep("Test the 'getNow' function", "Should give a value very close to System.currentTimeInMillis");
         long beforeNow = System.currentTimeMillis();
         calendar = CalendarUtils.getNow();
         long afterNow = System.currentTimeMillis();
         Assertions.assertTrue(calendar.toGregorianCalendar().getTimeInMillis() <= afterNow);
         Assertions.assertTrue(calendar.toGregorianCalendar().getTimeInMillis() >= beforeNow);
-        
+
         addStep("Test the reverse conversion, from XMLCalendar to Date", "Should give the same value");
         date = CalendarUtils.convertFromXMLGregorianCalendar(calendar);
         Assertions.assertTrue(date.getTime() <= afterNow);
@@ -77,7 +77,7 @@ public class CalendarUtilsTest extends ExtendedTestCase {
         addDescription("Test that the time zone ID logged is human readable (for example Europe/Copenhagen)");
         ZoneId zoneId = ZoneId.of("Europe/Copenhagen");
         String displayName = CalendarUtils.getTimeZoneDisplayName(TimeZone.getTimeZone(zoneId));
-        Assertions.assertEquals(displayName, "Europe/Copenhagen");
+        Assertions.assertEquals("Europe/Copenhagen", displayName);
     }
 
     @Test
@@ -87,11 +87,11 @@ public class CalendarUtilsTest extends ExtendedTestCase {
         CalendarUtils cu = CalendarUtils.getInstance(TimeZone.getTimeZone("Europe/Copenhagen"));
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.ROOT);
         Date expectedStartOfDay = sdf.parse("2015-02-25T23:00:00.000Z");
-        
+
         Date parsedStartOfDay = cu.makeStartDateObject("2015/02/26");
         Assertions.assertEquals(parsedStartOfDay, expectedStartOfDay);
     }
-    
+
     @Test
     @Tag("regressiontest")
     public void endDateTest() throws ParseException {
@@ -99,11 +99,11 @@ public class CalendarUtilsTest extends ExtendedTestCase {
         CalendarUtils cu = CalendarUtils.getInstance(TimeZone.getTimeZone("Europe/Copenhagen"));
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.ROOT);
         Date expectedStartOfDay = sdf.parse("2015-02-26T22:59:59.999Z");
-        
+
         Date parsedStartOfDay = cu.makeEndDateObject("2015/02/26");
         Assertions.assertEquals(parsedStartOfDay, expectedStartOfDay);
     }
-    
+
     @Test
     @Tag("regressiontest")
     public void endDateRolloverTest() throws ParseException {
@@ -111,11 +111,11 @@ public class CalendarUtilsTest extends ExtendedTestCase {
         CalendarUtils cu = CalendarUtils.getInstance(TimeZone.getTimeZone("Europe/Copenhagen"));
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.ROOT);
         Date expectedStartOfDay = sdf.parse("2016-01-01T22:59:59.999Z");
-        
+
         Date parsedStartOfDay = cu.makeEndDateObject("2015/12/32");
         Assertions.assertEquals(parsedStartOfDay, expectedStartOfDay);
     }
-    
+
     @Test
     @Tag("regressiontest")
     public void testBeginningOfDay() throws ParseException {
@@ -127,7 +127,7 @@ public class CalendarUtilsTest extends ExtendedTestCase {
         Date parsedStartOfDay = cu.makeStartDateObject("2016/02/01");
         Assertions.assertEquals(parsedStartOfDay, expectedStartOfDayInUTC);
     }
-    
+
     @Test
     @Tag("regressiontest")
     public void testEndOfDay() throws ParseException {
@@ -138,7 +138,7 @@ public class CalendarUtilsTest extends ExtendedTestCase {
         Date parsedEndOfDay = cu.makeEndDateObject("2016/02/01");
         Assertions.assertEquals(parsedEndOfDay, expectedEndOfDayInUTC);
     }
-    
+
     @Test
     @Tag("regressiontest")
     public void testSummerWinterTimeChange() {
@@ -153,7 +153,7 @@ public class CalendarUtilsTest extends ExtendedTestCase {
         long expectedIntervalLength = (MS_PER_HOUR * 25) - 1;
         Assertions.assertEquals(endDate.getTime() - startDate.getTime(), expectedIntervalLength);
     }
-    
+
     @Test
     @Tag("regressiontest")
     public void testWinterSummerTimeChange() {

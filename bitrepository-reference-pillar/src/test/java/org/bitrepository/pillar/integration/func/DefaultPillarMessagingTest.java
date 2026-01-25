@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -50,8 +50,8 @@ public abstract class DefaultPillarMessagingTest extends PillarFunctionTest {
         messageBus.sendMessage(request);
 
         MessageResponse receivedResponse = receiveResponse();
-        Assertions.assertEquals(receivedResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
+        Assertions.assertEquals(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE,
+                receivedResponse.getResponseInfo().getResponseCode());
     }
 
     @Test
@@ -60,7 +60,7 @@ public abstract class DefaultPillarMessagingTest extends PillarFunctionTest {
     public void otherCollectionTest() {
         addDescription("Verifies identification works correctly for a second collection defined for pillar");
         addStep("Sending a identify request with a non-default collectionID (not the first collection) " +
-                "the pillar is part of",
+                        "the pillar is part of",
                 "The pillar under test should make a positive response");
         MessageRequest request = createRequest();
         request.setCollectionID(nonDefaultCollectionId);
@@ -69,7 +69,10 @@ public abstract class DefaultPillarMessagingTest extends PillarFunctionTest {
     }
 
     protected abstract MessageRequest createRequest();
+
     protected abstract MessageResponse receiveResponse();
+
     protected abstract void assertPositivResponseIsReceived();
+
     protected abstract void assertNoResponseIsReceived();
 }
