@@ -88,7 +88,9 @@ public class GlobalSuiteExtension implements BeforeAllCallback, AfterAllCallback
     protected void addReceiver(MessageReceiver receiver) {
         receiverManager.addReceiver(receiver);
     }
-    protected void initializeCUT() {}
+
+    protected void initializeCUT() {
+    }
 
     /**
      * Purges all messages from the receivers.
@@ -100,7 +102,8 @@ public class GlobalSuiteExtension implements BeforeAllCallback, AfterAllCallback
     /**
      * May be overridden by specific tests wishing to do stuff. Remember to call super if this is overridden.
      */
-    protected void shutdownCUT() {}
+    protected void shutdownCUT() {
+    }
 
     /**
      * Initializes the settings. Will postfix the alarm and collection topics with '-${user.name}
@@ -121,7 +124,7 @@ public class GlobalSuiteExtension implements BeforeAllCallback, AfterAllCallback
         return TestSettingsProvider.reloadSettings(componentID);
     }
 
-    private void makeUserSpecificSettings(Settings settings) {
+    protected void makeUserSpecificSettings(Settings settings) {
         settings.getRepositorySettings().getProtocolSettings()
                 .setCollectionDestination(settings.getCollectionDestination() + getTopicPostfix());
         settings.getRepositorySettings().getProtocolSettings().setAlarmDestination(settings.getAlarmDestination() + getTopicPostfix());
