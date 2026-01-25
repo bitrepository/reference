@@ -39,7 +39,7 @@ public class SettingsProviderTest {
                 new SettingsProvider(new XMLFileSettingsLoader(PATH_TO_TEST_SETTINGS), myComponentID);
 
         Settings settings = settingsLoader.getSettings();
-        Assertions.assertEquals(settings.getComponentID(), myComponentID);
+        Assertions.assertEquals(myComponentID, settings.getComponentID());
     }
 
     @Test
@@ -54,9 +54,9 @@ public class SettingsProviderTest {
 
         String newCollectionID = "newCollectionID";
         settings.getRepositorySettings().getCollections().getCollection().get(0).setID(newCollectionID);
-        Assertions.assertEquals(settings.getRepositorySettings().getCollections().getCollection().get(0).getID(),
-                newCollectionID);
-        Assertions.assertEquals(settings.getCollections().get(0).getID(), newCollectionID);
+        Assertions.assertEquals(newCollectionID,
+                settings.getRepositorySettings().getCollections().getCollection().get(0).getID());
+        Assertions.assertEquals(newCollectionID, settings.getCollections().get(0).getID());
 
         settingsLoader.reloadSettings();
         settings = settingsLoader.getSettings();
