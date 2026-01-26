@@ -80,7 +80,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
             "testprops");
     public static final String TEST_CONFIGURATION_FILE_NAME = "pillar-integration-test.properties";
     protected static PillarIntegrationTestConfiguration testConfiguration;
-    private EmbeddedPillar embeddedPillar;
+    protected EmbeddedPillar embeddedPillar;
 
     protected PillarFileManager pillarFileManager;
     protected static ClientProvider clientProvider;
