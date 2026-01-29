@@ -2,7 +2,6 @@ package org.bitrepository.protocol;
 
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
-import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.protocol.bus.LocalActiveMQBroker;
 import org.bitrepository.protocol.bus.MessageReceiver;
@@ -37,7 +36,7 @@ public class GlobalSuiteExtension implements BeforeAllCallback, AfterAllCallback
     protected static Settings settingsForCUT;
     protected static Settings settingsForTestClient;
     protected static String collectionID;
-    protected String NON_DEFAULT_FILE_ID;
+    protected String nonDefaultFileId;
     protected static String DEFAULT_FILE_ID;
     protected static URL DEFAULT_FILE_URL;
     protected static String DEFAULT_DOWNLOAD_FILE_ADDRESS;
@@ -76,69 +75,26 @@ public class GlobalSuiteExtension implements BeforeAllCallback, AfterAllCallback
         }
     }
 
-    /**
-     * May be extended by subclasses needing to have their receivers managed. Remember to still call
-     * <code>super.registerReceivers()</code> when overriding
-     */
-    protected void registerMessageReceivers() {
-        alarmReceiver = new MessageReceiver(settingsForCUT.getAlarmDestination(), testEventManager);
-        addReceiver(alarmReceiver);
-    }
-
-    protected void addReceiver(MessageReceiver receiver) {
-        receiverManager.addReceiver(receiver);
-    }
-    protected void initializeCUT() {}
-
-    /**
-     * Purges all messages from the receivers.
-     */
-    protected void clearReceivers() {
-        receiverManager.clearMessagesInReceivers();
-    }
-
-    /**
-     * May be overridden by specific tests wishing to do stuff. Remember to call super if this is overridden.
-     */
-    protected void shutdownCUT() {}
-
-    /**
-     * Initializes the settings. Will postfix the alarm and collection topics with '-${user.name}
-     */
-    protected void setupSettings() {
-        settingsForCUT = loadSettings(getComponentID());
-        makeUserSpecificSettings(settingsForCUT);
-        SettingsUtils.initialize(settingsForCUT);
-
-        alarmDestinationID = settingsForCUT.getRepositorySettings().getProtocolSettings().getAlarmDestination();
-
-        settingsForTestClient = loadSettings(testMethodName);
-        makeUserSpecificSettings(settingsForTestClient);
-    }
-
-
     protected Settings loadSettings(String componentID) {
         return TestSettingsProvider.reloadSettings(componentID);
     }
 
-    private void makeUserSpecificSettings(Settings settings) {
+    protected void makeUserSpecificSettings(Settings settings) {
         settings.getRepositorySettings().getProtocolSettings()
                 .setCollectionDestination(settings.getCollectionDestination() + getTopicPostfix());
         settings.getRepositorySettings().getProtocolSettings().setAlarmDestination(settings.getAlarmDestination() + getTopicPostfix());
     }
 
-    /**
-     * Indicated whether an embedded active MQ should be started and used
-     */
-    public boolean useEmbeddedMessageBus() {
-        return System.getProperty("useEmbeddedMessageBus", "true").equals("true");
+    protected String getTopicPostfix() {
+        return "-" + System.getProperty("user.name");
     }
 
-    /**
-     * Indicated whether an embedded http server should be started and used
-     */
-    public boolean useEmbeddedHttpServer() {
-        return System.getProperty("useEmbeddedHttpServer", "false").equals("true");
+    protected String getComponentID() {
+        return getClass().getSimpleName();
+    }
+
+    protected SecurityManager createSecurityManager() {
+        return new DummySecurityManager();
     }
 
     /**
@@ -152,10 +108,7 @@ public class GlobalSuiteExtension implements BeforeAllCallback, AfterAllCallback
         }
     }
 
-    /**
-     * Shutdown the message bus.
-     */
-    private void teardownMessageBus() {
+    protected void teardownMessageBus() {
         MessageBusManager.clear();
         if (messageBus != null) {
             try {
@@ -185,26 +138,11 @@ public class GlobalSuiteExtension implements BeforeAllCallback, AfterAllCallback
         }
     }
 
-    /**
-     * Returns the postfix string to use when accessing user specific topics, which is the mechanism we use in the
-     * bit repository tests.
-     *
-     * @return The string to postfix all topix names with.
-     */
-    protected String getTopicPostfix() {
-        return "-" + System.getProperty("user.name");
+    public boolean useEmbeddedMessageBus() {
+        return System.getProperty("useEmbeddedMessageBus", "true").equals("true");
     }
 
-    protected String getComponentID() {
-        return getClass().getSimpleName();
+    public boolean useEmbeddedHttpServer() {
+        return System.getProperty("useEmbeddedHttpServer", "false").equals("true");
     }
-
-    protected String createDate() {
-        return Long.toString(System.currentTimeMillis());
-    }
-
-    protected SecurityManager createSecurityManager() {
-        return new DummySecurityManager();
-    }
-
 }

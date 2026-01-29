@@ -62,7 +62,7 @@ public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest
                         "<li>'ResponseInfo.ResponseCode' element should be IDENTIFICATION_POSITIVE</li>" +
                         "</ol>");
         IdentifyPillarsForPutFileRequest identifyRequest = msgFactory.createIdentifyPillarsForPutFileRequest(
-                NON_DEFAULT_FILE_ID, 0L);
+                nonDefaultFileId, 0L);
         messageBus.sendMessage(identifyRequest);
 
         IdentifyPillarsForPutFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
@@ -96,7 +96,7 @@ public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest
                 "The pillar under test should make a response with the correct elements. The only different from a " +
                         "full pillar is that the checksum pillar will respond with the default checksum spec.");
         IdentifyPillarsForPutFileRequest identifyRequest = msgFactory.createIdentifyPillarsForPutFileRequest(
-                NON_DEFAULT_FILE_ID, 0L);
+                nonDefaultFileId, 0L);
         messageBus.sendMessage(identifyRequest);
 
         IdentifyPillarsForPutFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
@@ -125,7 +125,7 @@ public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest
                 "The pillar under test should send a DUPLICATE_FILE_FAILURE response with the (default type) checksum " +
                         "of the existing file.");
         IdentifyPillarsForPutFileRequest identifyRequest = msgFactory.createIdentifyPillarsForPutFileRequest(
-                DEFAULT_FILE_ID, 0L);
+                defaultFileId, 0L);
         messageBus.sendMessage(identifyRequest);
 
         IdentifyPillarsForPutFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
@@ -137,7 +137,7 @@ public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest
     @Override
     protected MessageRequest createRequest() {
         return msgFactory.createIdentifyPillarsForPutFileRequest(
-                NON_DEFAULT_FILE_ID, 0L);
+                nonDefaultFileId, 0L);
     }
 
     @Override

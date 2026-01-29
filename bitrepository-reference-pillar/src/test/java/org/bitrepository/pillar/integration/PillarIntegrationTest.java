@@ -220,11 +220,9 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
             MessageAuthenticator authenticator = new BasicMessageAuthenticator(permissionStore);
             MessageSigner signer = new BasicMessageSigner();
             OperationAuthorizer authorizer = new BasicOperationAuthorizer(permissionStore);
-            org.bitrepository.protocol.security.SecurityManager securityManager =
-                    new BasicSecurityManager(settingsForTestClient.getRepositorySettings(),
-                            testConfiguration.getPrivateKeyFileLocation(),
-                            authenticator, signer, authorizer, permissionStore, settingsForTestClient.getComponentID());
-            return securityManager;
+            return new BasicSecurityManager(settingsForTestClient.getRepositorySettings(),
+                    testConfiguration.getPrivateKeyFileLocation(),
+                    authenticator, signer, authorizer, permissionStore, settingsForTestClient.getComponentID());
         }
     }
 
@@ -248,7 +246,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
         try {
             FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(settingsForCUT);
             try (InputStream fis = getClass().getClassLoader().getResourceAsStream("default-test-file.txt")) {
-                fe.putFile(fis, DEFAULT_FILE_URL);
+                fe.putFile(fis, defaultFileUrl);
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -256,10 +254,10 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
 
 
             clientProvider.getPutClient().putFile(
-                    collectionID, DEFAULT_FILE_URL, DEFAULT_FILE_ID, 10L, TestFileHelper.getDefaultFileChecksum(),
+                    collectionID, defaultFileUrl, defaultFileId, 10L, TestFileHelper.getDefaultFileChecksum(),
                     null, clientEventHandler, null);
             clientProvider.getPutClient().putFile(
-                    nonDefaultCollectionId, DEFAULT_FILE_URL, DEFAULT_FILE_ID, 10L, TestFileHelper.getDefaultFileChecksum(),
+                    nonDefaultCollectionId, defaultFileUrl, defaultFileId, 10L, TestFileHelper.getDefaultFileChecksum(),
                     null, clientEventHandler, null);
         } catch (OperationFailedException e) {
             throw new RuntimeException(e);

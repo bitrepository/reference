@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -67,14 +67,14 @@ public class GetFileIDsTest extends DefaultPillarOperationTest {
 
         addStep("Create and send a GetFileIDsRequest to the pillar.",
                 "A GetFileIDsProgressResponse should be sent to the client with correct attributes follow by " +
-                "a GetFileIDsFinalResponse.");
+                        "a GetFileIDsFinalResponse.");
         GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(
                 FileIDsUtils.getAllFileIDs(), null);
         messageBus.sendMessage(getFileIDsRequest);
 
         addStep("Retrieve the ProgressResponse for the GetFileIDs request",
                 "A GetFileIDs progress response should be sent to the client with correct attributes.");
-        GetFileIDsProgressResponse progressResponse = clientReceiver.waitForMessage(GetFileIDsProgressResponse.class, 
+        GetFileIDsProgressResponse progressResponse = clientReceiver.waitForMessage(GetFileIDsProgressResponse.class,
                 getOperationTimeout(), TimeUnit.SECONDS);
         assertNotNull(progressResponse);
         assertEquals(progressResponse.getCorrelationID(), getFileIDsRequest.getCorrelationID());
@@ -96,7 +96,7 @@ public class GetFileIDsTest extends DefaultPillarOperationTest {
         assertEquals(finalResponse.getPillarID(), getPillarID());
         assertEquals(finalResponse.getReplyTo(), pillarDestination);
         assertNull(finalResponse.getResultingFileIDs().getResultAddress());
-        assertTrue(finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size() >= 2, 
+        assertTrue(finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size() >= 2,
                 "Should be at least 2 files, but found: " + finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size());
     }
 
@@ -105,8 +105,8 @@ public class GetFileIDsTest extends DefaultPillarOperationTest {
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
     public void pillarGetFileIDsTestFailedNoSuchFileInOperation() throws Exception {
         addDescription("Tests that the pillar is able to handle requests for a non-existing file correctly during " +
-                       "the operation phase.");
-        FileIDs fileids = FileIDsUtils.createFileIDs(NON_DEFAULT_FILE_ID);
+                "the operation phase.");
+        FileIDs fileids = FileIDsUtils.createFileIDs(nonDefaultFileId);
 
         addStep("Send a GetFileIDs request for a non-existing file.",
                 "A FILE_NOT_FOUND_FAILURE response should be generated.");
@@ -121,23 +121,23 @@ public class GetFileIDsTest extends DefaultPillarOperationTest {
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
     public void pillarGetFileIDsSpecificFileIDRequest() throws Exception {
         addDescription("Tests that the pillar is able to handle requests for a non-existing file correctly during " +
-                       "the operation phase.");
-        FileIDs fileids = FileIDsUtils.createFileIDs(DEFAULT_FILE_ID);
+                "the operation phase.");
+        FileIDs fileids = FileIDsUtils.createFileIDs(defaultFileId);
 
         addStep("Create and send a GetFileIDsRequest to the pillar.",
                 "A GetFileIDsProgressResponse should be sent to the client with correct attributes follow by " +
-                "a GetFileIDsFinalResponse.");
+                        "a GetFileIDsFinalResponse.");
         GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(fileids, null);
         messageBus.sendMessage(getFileIDsRequest);
-        
+
         addStep("Retrieve the FinalResponse for the GetFileIDs request.",
                 "A OPERATION_COMPLETE final response only containing the requested file-id.");
         GetFileIDsFinalResponse finalResponse = (GetFileIDsFinalResponse) receiveResponse();
         assertEquals(1, finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size());
-        assertEquals(finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID(), DEFAULT_FILE_ID);
+        assertEquals(finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID(), defaultFileId);
         assertFalse(finalResponse.isSetPartialResult() && finalResponse.isPartialResult());
     }
-    
+
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
@@ -162,7 +162,7 @@ public class GetFileIDsTest extends DefaultPillarOperationTest {
     public void pillarGetFileIDsTestDeliveryThroughUpload() throws Exception {
         addDescription("Test the case when the results should be delivered through the message .");
         GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(
-                FileIDsUtils.getAllFileIDs(), DEFAULT_UPLOAD_FILE_ADDRESS);
+                FileIDsUtils.getAllFileIDs(), defaultUploadFileAddress);
         messageBus.sendMessage(getFileIDsRequest);
 
         addStep("Retrieve the FinalResponse for the GetFileIDs request.",
@@ -170,7 +170,7 @@ public class GetFileIDsTest extends DefaultPillarOperationTest {
         GetFileIDsFinalResponse finalResponse = (GetFileIDsFinalResponse) receiveResponse();
         assertEquals(ResponseCode.OPERATION_COMPLETED,
                 finalResponse.getResponseInfo().getResponseCode());
-        assertEquals(finalResponse.getResultingFileIDs().getResultAddress(), DEFAULT_UPLOAD_FILE_ADDRESS);
+        assertEquals(finalResponse.getResultingFileIDs().getResultAddress(), defaultUploadFileAddress);
     }
 
     @Override
