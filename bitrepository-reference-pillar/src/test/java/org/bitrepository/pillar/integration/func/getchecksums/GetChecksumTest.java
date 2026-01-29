@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -55,7 +55,7 @@ public class GetChecksumTest extends PillarFunctionTest {
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
         addStep("Request MD5 checksums for all files on the pillar",
-            "A list (at least 2 long) of MD5 checksums should be returned.");
+                "A list (at least 2 long) of MD5 checksums should be returned.");
         ChecksumSpecTYPE checksumSpec = new ChecksumSpecTYPE();
         checksumSpec.setChecksumType(ChecksumType.MD5);
         List<ChecksumDataForChecksumSpecTYPE> checksums = pillarFileManager.getChecksums(checksumSpec,
@@ -63,10 +63,10 @@ public class GetChecksumTest extends PillarFunctionTest {
         assertTrue(checksums.size() >= 2, "The length of the returned checksums were less that 2");
 
         addStep("Retrieve the first two files and verify that the checksums are correct",
-            "Not implemented");
+                "Not implemented");
         // ToDo implement this
     }
-    
+
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     public void sha1ChecksumsForDefaultTest() throws NegativeResponseException {
@@ -74,11 +74,11 @@ public class GetChecksumTest extends PillarFunctionTest {
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
         addStep("Request SHA1 checksums for the DefaultFile on the pillar",
-            "The SHA1 checksum for the default file should be returned should be returned (Not checked yet).");
+                "The SHA1 checksum for the default file should be returned should be returned (Not checked yet).");
         ChecksumSpecTYPE checksumSpec = new ChecksumSpecTYPE();
         checksumSpec.setChecksumType(ChecksumType.SHA1);
         List<ChecksumDataForChecksumSpecTYPE> checksums = pillarFileManager.getChecksums(
-                checksumSpec, null, DEFAULT_FILE_ID);
+                checksumSpec, null, defaultFileId);
         assertNotNull(checksums.get(0));
     }
 
@@ -89,7 +89,7 @@ public class GetChecksumTest extends PillarFunctionTest {
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
         addStep("Request salted MD5 checksums for the default on the pillar",
-            "The correct of SHA1 checksum should be returned (Not checked yet).");
+                "The correct of SHA1 checksum should be returned (Not checked yet).");
         ChecksumSpecTYPE checksumSpec = new ChecksumSpecTYPE();
         checksumSpec.setChecksumType(ChecksumType.HMAC_MD5);
         try {
@@ -98,10 +98,10 @@ public class GetChecksumTest extends PillarFunctionTest {
             System.err.println(e.getMessage());
         }
         List<ChecksumDataForChecksumSpecTYPE> checksums = pillarFileManager.getChecksums(
-                checksumSpec, null, DEFAULT_FILE_ID);
+                checksumSpec, null, defaultFileId);
         assertNotNull(checksums.get(0));
     }
-    
+
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     public void sha1SaltChecksumsForDefaultTest() throws NegativeResponseException {
@@ -109,7 +109,7 @@ public class GetChecksumTest extends PillarFunctionTest {
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
         addStep("Request salted SHA1 checksums for the default on the pillar",
-            "The correct of SHA1 checksum should be returned (Not checked yet).");
+                "The correct of SHA1 checksum should be returned (Not checked yet).");
         ChecksumSpecTYPE checksumSpec = new ChecksumSpecTYPE();
         checksumSpec.setChecksumType(ChecksumType.HMAC_SHA1);
         try {
@@ -118,7 +118,7 @@ public class GetChecksumTest extends PillarFunctionTest {
             System.err.println(e.getMessage());
         }
         List<ChecksumDataForChecksumSpecTYPE> checksums = pillarFileManager.getChecksums(
-                checksumSpec, null, DEFAULT_FILE_ID);
+                checksumSpec, null, defaultFileId);
         assertNotNull(checksums.get(0));
-    }    
+    }
 }

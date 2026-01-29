@@ -74,7 +74,7 @@ public class ReplaceFileTest extends MockedPillarTest {
     public void goodCaseIdentification() {
         addDescription("Tests the identification for a ReplaceFile operation on the pillar for the successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String FILE_ID = DEFAULT_FILE_ID;
+        String FILE_ID = defaultFileId;
 
         addStep("Setup for having the file and delivering pillar id",
                 "Should return true, when requesting file-id existence.");
@@ -106,7 +106,7 @@ public class ReplaceFileTest extends MockedPillarTest {
     public void badCaseIdentification() {
         addDescription("Tests the identification for a ReplaceFile operation on the pillar for the failure scenario, when the file does not exist.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String FILE_ID = DEFAULT_FILE_ID;
+        String FILE_ID = defaultFileId;
 
         addStep("Setup for not having the file and delivering pillar id",
                 "Should return false, when requesting file-id existence.");
@@ -138,7 +138,7 @@ public class ReplaceFileTest extends MockedPillarTest {
     public void badCaseOperationMissingFile() {
         addDescription("Tests the ReplaceFile operation on the pillar for the failure scenario, when the file is missing.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String FILE_ID = DEFAULT_FILE_ID;
+        String FILE_ID = defaultFileId;
 
         addStep("Setup for not having the file and delivering pillar id",
                 "Should return false, when requesting file-id existence.");
@@ -151,7 +151,7 @@ public class ReplaceFileTest extends MockedPillarTest {
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
-        ReplaceFileRequest request = msgFactory.createReplaceFileRequest(csData, csData, null, null, DEFAULT_DOWNLOAD_FILE_ADDRESS, FILE_ID, FILE_SIZE);
+        ReplaceFileRequest request = msgFactory.createReplaceFileRequest(csData, csData, null, null, defaultDownloadFileAddress, FILE_ID, FILE_SIZE);
         messageBus.sendMessage(request);
 
         addStep("Retrieve the FinalResponse for the ReplaceFile request",
@@ -173,7 +173,7 @@ public class ReplaceFileTest extends MockedPillarTest {
         addDescription("Tests the ReplaceFile operation on the pillar for the failure scenario, when no validation "
                 + "checksum is given for the destructive action, but though is required.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String FILE_ID = DEFAULT_FILE_ID;
+        String FILE_ID = defaultFileId;
         settingsForCUT.getRepositorySettings().getProtocolSettings().setRequireChecksumForDestructiveRequests(true);
 
         addStep("Setup for having the file and delivering pillar id",
@@ -183,7 +183,7 @@ public class ReplaceFileTest extends MockedPillarTest {
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
-        ReplaceFileRequest request = msgFactory.createReplaceFileRequest(null, csData, null, null, DEFAULT_DOWNLOAD_FILE_ADDRESS, FILE_ID, FILE_SIZE);
+        ReplaceFileRequest request = msgFactory.createReplaceFileRequest(null, csData, null, null, defaultDownloadFileAddress, FILE_ID, FILE_SIZE);
         messageBus.sendMessage(request);
 
         addStep("Retrieve the FinalResponse for the ReplaceFile request",
@@ -208,7 +208,7 @@ public class ReplaceFileTest extends MockedPillarTest {
         addDescription("Tests the ReplaceFile operation on the pillar for the failure scenario, when no validation "
                 + "checksum is given for the new file, but though is required.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String FILE_ID = DEFAULT_FILE_ID;
+        String FILE_ID = defaultFileId;
         settingsForCUT.getRepositorySettings().getProtocolSettings().setRequireChecksumForNewFileRequests(true);
 
         addStep("Setup for having the file and delivering pillar id",
@@ -218,7 +218,7 @@ public class ReplaceFileTest extends MockedPillarTest {
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
-        ReplaceFileRequest request = msgFactory.createReplaceFileRequest(csData, null, null, null, DEFAULT_DOWNLOAD_FILE_ADDRESS, FILE_ID, FILE_SIZE);
+        ReplaceFileRequest request = msgFactory.createReplaceFileRequest(csData, null, null, null, defaultDownloadFileAddress, FILE_ID, FILE_SIZE);
         messageBus.sendMessage(request);
 
         addStep("Retrieve the FinalResponse for the ReplaceFile request",
@@ -243,7 +243,7 @@ public class ReplaceFileTest extends MockedPillarTest {
         addDescription("Tests the ReplaceFile operation on the pillar for the failure scenario, when the checksum for "
                 + "the destructive action is different from the one in the cache.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String FILE_ID = DEFAULT_FILE_ID;
+        String FILE_ID = defaultFileId;
 
         addStep("Setup for having the file and delivering pillar id",
                 "Should return true, when requesting file-id existence.");
@@ -253,7 +253,7 @@ public class ReplaceFileTest extends MockedPillarTest {
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
-        ReplaceFileRequest request = msgFactory.createReplaceFileRequest(csData, csData, null, null, DEFAULT_DOWNLOAD_FILE_ADDRESS, FILE_ID, FILE_SIZE);
+        ReplaceFileRequest request = msgFactory.createReplaceFileRequest(csData, csData, null, null, defaultDownloadFileAddress, FILE_ID, FILE_SIZE);
         messageBus.sendMessage(request);
 
         addStep("Retrieve the FinalResponse for the ReplaceFile request",
@@ -277,7 +277,7 @@ public class ReplaceFileTest extends MockedPillarTest {
     public void goodCaseOperation() throws Exception {
         addDescription("Tests the ReplaceFile operation on the pillar for the success scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String FILE_ID = DEFAULT_FILE_ID;
+        String FILE_ID = defaultFileId;
 
         addStep("Setup for already having the file and delivering pillar id",
                 "Should return true, when requesting file-id existence.");
@@ -287,7 +287,7 @@ public class ReplaceFileTest extends MockedPillarTest {
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
-        ReplaceFileRequest request = msgFactory.createReplaceFileRequest(csData, csData, null, null, DEFAULT_DOWNLOAD_FILE_ADDRESS, FILE_ID, FILE_SIZE);
+        ReplaceFileRequest request = msgFactory.createReplaceFileRequest(csData, csData, null, null, defaultDownloadFileAddress, FILE_ID, FILE_SIZE);
         messageBus.sendMessage(request);
 
         addStep("Retrieve the ProgressResponse for the GetFileIDs request",
@@ -316,7 +316,7 @@ public class ReplaceFileTest extends MockedPillarTest {
     public void goodCaseOperationWithChecksumsReturn() throws Exception {
         addDescription("Tests the ReplaceFile operation on the pillar for the success scenario, when requesting both the cheksums of the file returned.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        String FILE_ID = DEFAULT_FILE_ID;
+        String FILE_ID = defaultFileId;
 
         ChecksumSpecTYPE existingRequestChecksumSpec = otherCsSpec;
         ChecksumSpecTYPE newRequestChecksumSpec = csSpec;
@@ -347,7 +347,7 @@ public class ReplaceFileTest extends MockedPillarTest {
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
-        ReplaceFileRequest request = msgFactory.createReplaceFileRequest(csData, csData, existingRequestChecksumSpec, newRequestChecksumSpec, DEFAULT_DOWNLOAD_FILE_ADDRESS, FILE_ID, FILE_SIZE);
+        ReplaceFileRequest request = msgFactory.createReplaceFileRequest(csData, csData, existingRequestChecksumSpec, newRequestChecksumSpec, defaultDownloadFileAddress, FILE_ID, FILE_SIZE);
         messageBus.sendMessage(request);
 
         addStep("Retrieve the ProgressResponse for the GetFileIDs request",

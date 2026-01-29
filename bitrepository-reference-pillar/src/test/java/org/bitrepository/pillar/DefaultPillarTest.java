@@ -8,12 +8,12 @@
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
@@ -111,7 +111,7 @@ public abstract class DefaultPillarTest extends DefaultFixturePillarTest {
     }
 
     public void shutdownMediator() {
-        if(mediator != null) {
+        if (mediator != null) {
             mediator.close();
             mediator = null;
         }
@@ -121,11 +121,12 @@ public abstract class DefaultPillarTest extends DefaultFixturePillarTest {
     protected String getComponentID() {
         return "ReferencePillar-" + testMethodName;
     }
+
     private void initializeArchiveWithEmptyFile() throws IOException {
         addFixture("Initialize the Reference pillar cache with an empty file in default collection " +
                 collectionID);
-        archives.downloadFileForValidation(DEFAULT_FILE_ID, collectionID, new ByteArrayInputStream(new byte[0]));
-        archives.moveToArchive(DEFAULT_FILE_ID, collectionID);
-        csCache.insertChecksumCalculation(DEFAULT_FILE_ID, collectionID, EMPTY_FILE_CHECKSUM, new Date());
+        archives.downloadFileForValidation(defaultFileId, collectionID, new ByteArrayInputStream(new byte[0]));
+        archives.moveToArchive(defaultFileId, collectionID);
+        csCache.insertChecksumCalculation(defaultFileId, collectionID, EMPTY_FILE_CHECKSUM, new Date());
     }
 }
