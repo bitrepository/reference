@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -50,8 +50,8 @@ public class IdentifyPillarsForDeleteFileIT extends DefaultPillarIdentificationT
     public void normalIdentificationTest() {
         addDescription("Verifies the normal behaviour for deleteFile identification");
         addStep("Sending a deleteFile identification.",
-            "The pillar under test should make a response with the correct elements.");
-        IdentifyPillarsForDeleteFileRequest identifyRequest = (IdentifyPillarsForDeleteFileRequest) createRequest(); 
+                "The pillar under test should make a response with the correct elements.");
+        IdentifyPillarsForDeleteFileRequest identifyRequest = (IdentifyPillarsForDeleteFileRequest) createRequest();
         messageBus.sendMessage(identifyRequest);
 
         IdentifyPillarsForDeleteFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
@@ -59,7 +59,7 @@ public class IdentifyPillarsForDeleteFileIT extends DefaultPillarIdentificationT
         Assertions.assertEquals(receivedIdentifyResponse.getCollectionID(), identifyRequest.getCollectionID());
         Assertions.assertEquals(receivedIdentifyResponse.getCorrelationID(), identifyRequest.getCorrelationID());
         Assertions.assertEquals(receivedIdentifyResponse.getFrom(), getPillarID());
-        Assertions.assertEquals(receivedIdentifyResponse.getFileID(), DEFAULT_FILE_ID);
+        Assertions.assertEquals(receivedIdentifyResponse.getFileID(), defaultFileId);
         Assertions.assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
         Assertions.assertNull(receivedIdentifyResponse.getPillarChecksumSpec());
         Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
@@ -73,7 +73,7 @@ public class IdentifyPillarsForDeleteFileIT extends DefaultPillarIdentificationT
         addDescription("Verifies the normal behaviour for deleteFile identification for a checksum pillar");
         addStep("Sending a deleteFile identification.",
                 "The pillar under test should make a response with the correct elements. The only different from a " +
-                "full pillar is that the checksum pillar will respond with the default checksum spec.");
+                        "full pillar is that the checksum pillar will respond with the default checksum spec.");
         IdentifyPillarsForDeleteFileRequest identifyRequest = (IdentifyPillarsForDeleteFileRequest) createRequest();
         messageBus.sendMessage(identifyRequest);
 
@@ -91,13 +91,14 @@ public class IdentifyPillarsForDeleteFileIT extends DefaultPillarIdentificationT
     }
 
     @Test
-    @Tag(PillarTestGroups.FULL_PILLAR_TEST) @Tag( PillarTestGroups.CHECKSUM_PILLAR_TEST)
+    @Tag(PillarTestGroups.FULL_PILLAR_TEST)
+    @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
     public void fileDoesNotExistsTest() {
         addDescription("Verifies that a request for a non-existing file is handled correctly");
         addStep("Sending a deleteFile identification for a file not in the pillar.",
                 "The pillar under test should send a FILE_NOT_FOUND_FAILURE response.");
         IdentifyPillarsForDeleteFileRequest identifyRequest = msgFactory.createIdentifyPillarsForDeleteFileRequest(
-                NON_DEFAULT_FILE_ID);
+                nonDefaultFileId);
         messageBus.sendMessage(identifyRequest);
 
         IdentifyPillarsForDeleteFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
@@ -108,7 +109,7 @@ public class IdentifyPillarsForDeleteFileIT extends DefaultPillarIdentificationT
 
     @Override
     protected MessageRequest createRequest() {
-        return msgFactory.createIdentifyPillarsForDeleteFileRequest(DEFAULT_FILE_ID);
+        return msgFactory.createIdentifyPillarsForDeleteFileRequest(defaultFileId);
     }
 
     @Override

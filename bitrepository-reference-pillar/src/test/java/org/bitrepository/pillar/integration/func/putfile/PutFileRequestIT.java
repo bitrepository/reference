@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -60,7 +60,7 @@ public class PutFileRequestIT extends DefaultPillarOperationTest {
     public void normalPutFileTest() {
         addDescription("Tests a normal PutFile sequence");
         addStep("Send a putFile request to " + testConfiguration.getPillarUnderTestID(),
-                "The pillar should send a final response with the following elements: <ol>"  +
+                "The pillar should send a final response with the following elements: <ol>" +
                         "<li>'CollectionID' element corresponding to the supplied value</li>" +
                         "<li>'CorrelationID' element corresponding to the supplied value</li>" +
                         "<li>'From' element corresponding to the pillars component ID</li>" +
@@ -70,11 +70,11 @@ public class PutFileRequestIT extends DefaultPillarOperationTest {
                         "<li>'ChecksumDataForNewFile' element should be null</li>" +
                         "<li>'PillarID' element corresponding to the pillars component ID</li>" +
                         "<li>'FileID' element corresponding to the supplied fileID</li>" +
-                        "<li>'FileAddress' element corresponding to the supplied FileAddress</li>"  +
+                        "<li>'FileAddress' element corresponding to the supplied FileAddress</li>" +
                         "<li>'ResponseInfo.ResponseCode' element should be OPERATION_COMPLETED</li>" +
                         "</ol>");
         PutFileRequest putRequest = msgFactory.createPutFileRequest(
-                TestFileHelper.getDefaultFileChecksum(), null, DEFAULT_DOWNLOAD_FILE_ADDRESS, testSpecificFileID,
+                TestFileHelper.getDefaultFileChecksum(), null, defaultDownloadFileAddress, testSpecificFileID,
                 DEFAULT_FILE_SIZE);
         messageBus.sendMessage(putRequest);
 
@@ -112,7 +112,7 @@ public class PutFileRequestIT extends DefaultPillarOperationTest {
                 "The pillar should send a final response with the ChecksumRequestForNewFile elements containing the MD5 " +
                         "checksum for the supplied file.");
         PutFileRequest putRequest = msgFactory.createPutFileRequest(
-                TestFileHelper.getDefaultFileChecksum(), null, DEFAULT_DOWNLOAD_FILE_ADDRESS, testSpecificFileID,
+                TestFileHelper.getDefaultFileChecksum(), null, defaultDownloadFileAddress, testSpecificFileID,
                 DEFAULT_FILE_SIZE);
         putRequest.setChecksumRequestForNewFile(ChecksumUtils.getDefault(settingsForTestClient));
         messageBus.sendMessage(putRequest);
@@ -139,13 +139,13 @@ public class PutFileRequestIT extends DefaultPillarOperationTest {
                         "<li>'Destination' element should be set to the value of 'ReplyTo' from the request</li>" +
                         "<li>'PillarID' element corresponding to the pillars component ID</li>" +
                         "<li>'FileID' element corresponding to the supplied fileID</li>" +
-                        "<li>'FileAddress' element corresponding to the supplied FileAddress</li>"  +
+                        "<li>'FileAddress' element corresponding to the supplied FileAddress</li>" +
                         "<li>'ResponseInfo.ResponseCode' element should be OPERATION_ACCEPTED_PROGRESS</li>" +
                         "</ol>");
-        PutFileRequest putRequest = (PutFileRequest)createRequest();
+        PutFileRequest putRequest = (PutFileRequest) createRequest();
         messageBus.sendMessage(putRequest);
 
-        PutFileProgressResponse progressResponse = clientReceiver.waitForMessage(PutFileProgressResponse.class, 
+        PutFileProgressResponse progressResponse = clientReceiver.waitForMessage(PutFileProgressResponse.class,
                 getOperationTimeout(), TimeUnit.SECONDS);
         assertNotNull(progressResponse);
         assertEquals(progressResponse.getCorrelationID(), putRequest.getCorrelationID(),
@@ -172,7 +172,7 @@ public class PutFileRequestIT extends DefaultPillarOperationTest {
     @Override
     protected MessageRequest createRequest() {
         return msgFactory.createPutFileRequest(TestFileHelper.getDefaultFileChecksum(), null,
-                DEFAULT_DOWNLOAD_FILE_ADDRESS, NON_DEFAULT_FILE_ID, DEFAULT_FILE_SIZE);
+                defaultDownloadFileAddress, nonDefaultFileId, DEFAULT_FILE_SIZE);
     }
 
     @Override
