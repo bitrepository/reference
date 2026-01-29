@@ -45,7 +45,7 @@ public class GetFileRequestIT extends PillarFunctionTest {
     public void initialiseReferenceTest() throws Exception {
         String pillarDestination = lookupGetFileDestination();
         msgFactory = new GetFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), pillarDestination);
-        testFileURL = new URL(DEFAULT_FILE_URL.toExternalForm() + System.currentTimeMillis());
+        testFileURL = new URL(defaultFileUrl.toExternalForm() + System.currentTimeMillis());
         fe = ProtocolComponentFactory.getInstance().getFileExchange(settingsForCUT);
     }
 
@@ -64,7 +64,7 @@ public class GetFileRequestIT extends PillarFunctionTest {
     public void normalGetFileTest() throws IOException {
         addDescription("Tests a normal GetFile sequence");
         addStep("Send a getFile request to " + testConfiguration.getPillarUnderTestID(),
-                "The pillar should send a final response with the following elements: <ol>"  +
+                "The pillar should send a final response with the following elements: <ol>" +
                         "<li>'CollectionID' element corresponding to the supplied value</li>" +
                         "<li>'CorrelationID' element corresponding to the supplied value</li>" +
                         "<li>'From' element corresponding to the pillars component ID</li>" +
@@ -73,7 +73,7 @@ public class GetFileRequestIT extends PillarFunctionTest {
                         "<li>'FilePart' element should be null</li>" +
                         "<li>'PillarID' element corresponding to the pillars component ID</li>" +
                         "<li>'FileID' element corresponding to the supplied fileID</li>" +
-                        "<li>'FileAddress' element corresponding to the supplied FileAddress</li>"  +
+                        "<li>'FileAddress' element corresponding to the supplied FileAddress</li>" +
                         "<li>'ResponseInfo.ResponseCode' element should be OPERATION_COMPLETED</li>" +
                         "</ol>");
 
@@ -160,7 +160,7 @@ public class GetFileRequestIT extends PillarFunctionTest {
     }
 
     @Test
-    @Tag(PillarTestGroups.FULL_PILLAR_TEST )
+    @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     public void missingCollectionIDTest() {
         addDescription("Verifies the a missing collectionID in the request is rejected");
         addStep("Sending a request without a collectionID.",
@@ -188,7 +188,7 @@ public class GetFileRequestIT extends PillarFunctionTest {
     }
 
     protected MessageRequest createRequest() {
-        return msgFactory.createGetFileRequest(testFileURL.toExternalForm(), DEFAULT_FILE_ID);
+        return msgFactory.createGetFileRequest(testFileURL.toExternalForm(), defaultFileId);
     }
 
     protected MessageResponse receiveResponse() {

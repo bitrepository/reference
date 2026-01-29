@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -47,7 +47,7 @@ public class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
         addDescription("Tests the general IdentifyPillarsForGetFile functionality of the pillar for the successful scenario.");
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
-        IdentifyPillarsForGetFileRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileRequest(DEFAULT_FILE_ID);
+        IdentifyPillarsForGetFileRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileRequest(defaultFileId);
         messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response getPillarID() the pillar.",
@@ -60,7 +60,7 @@ public class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
                 "Received unexpected 'CorrelationID' in response.");
         assertEquals(receivedIdentifyResponse.getFrom(), getPillarID(),
                 "Received unexpected 'From' in response.");
-        assertEquals(receivedIdentifyResponse.getFileID(), DEFAULT_FILE_ID,
+        assertEquals(receivedIdentifyResponse.getFileID(), defaultFileId,
                 "Received unexpected 'FileID' in response.");
         assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID(),
                 "Received unexpected 'PillarID' in response.");
@@ -79,7 +79,7 @@ public class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
-        IdentifyPillarsForGetFileRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileRequest(NON_DEFAULT_FILE_ID);
+        IdentifyPillarsForGetFileRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileRequest(nonDefaultFileId);
         messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response getPillarID() the pillar.",
