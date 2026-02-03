@@ -37,6 +37,8 @@
     <PillarID>EmbeddedReferencePillar</PillarID>
     <PillarType>FILE</PillarType>
     <CollectionDirs>
+      <CollectionID>DefaultCollection</CollectionID>
+      <CollectionID>NonDefaultCollection</CollectionID>
       <FileDirs>target/reference1pillar/test-archive</FileDirs>
     </CollectionDirs>
     <MinimumSizeLeft>1000000000</MinimumSizeLeft>

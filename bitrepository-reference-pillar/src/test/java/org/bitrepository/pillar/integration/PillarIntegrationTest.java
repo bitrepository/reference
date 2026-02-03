@@ -92,6 +92,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     @Override
     protected void initializeCUT() {
         super.initializeCUT();
+        System.out.println("DEBUG: PillarIntegrationTest.initializeCUT - messageBus@" + System.identityHashCode(messageBus));
         reloadMessageBus();
         clientProvider = new ClientProvider(securityManager, settingsForTestClient, testEventManager);
         pillarFileManager = new PillarFileManager(collectionID,
@@ -133,6 +134,10 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
             MessageBusManager.clear();
             messageBus = MessageBusManager.getMessageBus(settingsForCUT, securityManager);
         } else {
+            // Initialize embedded message bus if not already done
+            if (messageBus == null) {
+                messageBus = new org.bitrepository.protocol.messagebus.SimpleMessageBus();
+            }
             MessageBusManager.injectCustomMessageBus(MessageBusManager.DEFAULT_MESSAGE_BUS, messageBus);
         }
     }
@@ -147,7 +152,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     @Override
     public void initMessagebus() {
         //Shortcircuit this so the messagebus is NOT INITIALISED BEFORE THE CONFIGURATION
-        //super.initMessagebus();
+        //Note: initialization is done in setupPillarIntegrationTest via super.initMessagebus()
     }
 
     /**
@@ -159,11 +164,15 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
      * @param testInfo
      */
     protected void startEmbeddedPillar(TestInfo testInfo) {
+        System.out.println("DEBUG: startEmbeddedPillar - useEmbeddedPillar=" + testConfiguration.useEmbeddedPillar());
+        System.out.println("DEBUG: startEmbeddedPillar - tags=" + testInfo.getTags());
         if (testConfiguration.useEmbeddedPillar()) {
             SettingsUtils.initialize(settingsForCUT);
             if (testInfo.getTags().contains(PillarTestGroups.CHECKSUM_PILLAR_TEST)) {
+                System.out.println("DEBUG: Creating CHECKSUM pillar");
                 embeddedPillar = EmbeddedPillar.createChecksumPillar(settingsForCUT);
             } else {
+                System.out.println("DEBUG: Creating REFERENCE pillar");
                 embeddedPillar = EmbeddedPillar.createReferencePillar(settingsForCUT);
             }
         }

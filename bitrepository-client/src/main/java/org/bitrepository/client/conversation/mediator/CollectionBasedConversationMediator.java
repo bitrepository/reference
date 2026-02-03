@@ -130,9 +130,12 @@ public class CollectionBasedConversationMediator implements ConversationMediator
 
     @Override
     public void onMessage(Message message, MessageContext messageContext) {
+        System.out.println("DEBUG: ConversationMediator.onMessage - messageType: " + message.getClass().getSimpleName() + ", correlationID: " + message.getCorrelationID() + ", from: " + message.getFrom());
+        System.out.println("DEBUG: ConversationMediator - Active conversations: " + conversations.keySet());
         String messageCorrelationID = message.getCorrelationID();
         Conversation conversation = conversations.get(messageCorrelationID);
         if (conversation != null) {
+            System.out.println("DEBUG: ConversationMediator - Delivering message to conversation: " + messageCorrelationID);
             conversation.onMessage(message, messageContext);
         } else {
             handleUnknownConversation(message);

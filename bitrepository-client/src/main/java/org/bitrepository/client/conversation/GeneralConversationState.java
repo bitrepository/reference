@@ -72,6 +72,7 @@ public abstract class GeneralConversationState implements ConversationState {
      */
     public void start() {
         try {
+            System.out.println("DEBUG: " + getClass().getSimpleName() + ".start() - Expected contributors: " + responseStatus.getComponentsWhichShouldRespond());
             if (!responseStatus.getOutstandingComponents().isEmpty()) {
                 if (getTimeoutValue().compareTo(Duration.ZERO) > 0) { // TODO From Java 18 use: getTimeoutValue().isPositive()
                     CountAndTimeUnit delay = TimeUtils.durationToCountAndTimeUnit(getTimeoutValue());
@@ -110,8 +111,11 @@ public abstract class GeneralConversationState implements ConversationState {
         }
 
         try {
+            System.out.println("DEBUG: " + getClass().getSimpleName() + " processMessage from: " + message.getFrom());
             if (processMessage(response)) {
                 responseStatus.responseReceived(response);
+                System.out.println("DEBUG: Outstanding components: " + responseStatus.getOutstandingComponents());
+                System.out.println("DEBUG: Have all responded: " + responseStatus.haveAllComponentsResponded(response));
                 if (responseStatus.haveAllComponentsResponded(response)) {
                     scheduledTimeout.cancel(true);
                     changeState();

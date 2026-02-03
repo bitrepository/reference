@@ -50,7 +50,6 @@ import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.platform.suite.api.Suite;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.JMSException;
@@ -58,10 +57,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
-@Suite
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(TestWatcherExtension.class)
-@ExtendWith(GlobalSuiteExtension.class)
+//@ExtendWith(GlobalSuiteExtension.class)
 public class IntegrationTest extends ExtendedTestCase {
     protected static TestEventManager testEventManager = TestEventManager.getInstance();
     public static LocalActiveMQBroker broker;

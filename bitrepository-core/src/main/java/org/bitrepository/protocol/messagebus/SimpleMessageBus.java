@@ -38,6 +38,7 @@ public class SimpleMessageBus implements MessageBus {
 
     @Override
     public void addListener(String destinationId, MessageListener listener) {
+        System.out.println("DEBUG: SimpleMessageBus@" + System.identityHashCode(this) + " adding listener for destination: " + destinationId);
         getListeners(destinationId).add(listener);
     }
 
@@ -69,8 +70,17 @@ public class SimpleMessageBus implements MessageBus {
 
     @Override
     public void sendMessage(Message content) {
-        if (filterMessage(content)) {
-            getListeners(content.getDestination()).forEach(listener -> listener.onMessage(content, new MessageContext(null)));
+        System.out.println("DEBUG: SimpleMessageBus@" + System.identityHashCode(this) + " sendMessage to destination: " + content.getDestination() + ", collectionID: " + content.getCollectionID() + ", messageType: " + content.getClass().getSimpleName());
+        System.out.println("DEBUG: Current filters - collection: " + collectionFilter + ", component: " + componentFilter);
+        boolean filtered = filterMessage(content);
+        System.out.println("DEBUG: Message filtered: " + !filtered);
+        if (filtered) {
+            Set<MessageListener> messageListeners = getListeners(content.getDestination());
+            System.out.println("DEBUG: Found " + messageListeners.size() + " listeners for destination: " + content.getDestination());
+            messageListeners.forEach(listener -> {
+                System.out.println("DEBUG: Delivering message to listener: " + listener.getClass().getSimpleName());
+                listener.onMessage(content, new MessageContext(null));
+            });
         }
     }
 
