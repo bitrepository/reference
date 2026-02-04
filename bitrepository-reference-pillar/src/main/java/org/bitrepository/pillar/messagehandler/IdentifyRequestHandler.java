@@ -50,8 +50,9 @@ public abstract class IdentifyRequestHandler<T extends MessageRequest> extends P
     @Override
     public void processRequest(T request, MessageContext requestContext)
             throws RequestHandlerException {
-        validateRequest(request, requestContext);
-        sendPositiveResponse(request, requestContext);
+        if (validateRequest(request, requestContext)) {
+            sendPositiveResponse(request, requestContext);
+        }
     }
 
     /**
@@ -61,7 +62,7 @@ public abstract class IdentifyRequestHandler<T extends MessageRequest> extends P
      * @param requestContext The context for the request.
      * @throws RequestHandlerException If something in the request is inconsistent with the possibilities of the pillar.
      */
-    protected abstract void validateRequest(T request, MessageContext requestContext)
+    protected abstract boolean validateRequest(T request, MessageContext requestContext)
             throws RequestHandlerException;
 
     /**
