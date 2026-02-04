@@ -43,13 +43,12 @@ import org.bitrepository.protocol.utils.TestWatcherExtension;
 import org.jaccept.TestEventManager;
 import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.platform.suite.api.Suite;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.JMSException;
@@ -57,9 +56,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
+@Suite
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(TestWatcherExtension.class)
-public abstract class IntegrationTest extends ExtendedTestCase {
+@ExtendWith(GlobalSuiteExtension.class)
+public class IntegrationTest extends ExtendedTestCase {
     protected static TestEventManager testEventManager = TestEventManager.getInstance();
     public static LocalActiveMQBroker broker;
     public static EmbeddedHttpServer server;
@@ -72,12 +73,12 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     protected static Settings settingsForCUT;
     protected static Settings settingsForTestClient;
     protected static String collectionID;
-    protected String NON_DEFAULT_FILE_ID;
-    protected static String DEFAULT_FILE_ID;
-    protected static URL DEFAULT_FILE_URL;
-    protected static String DEFAULT_DOWNLOAD_FILE_ADDRESS;
-    protected static String DEFAULT_UPLOAD_FILE_ADDRESS;
-    protected String DEFAULT_AUDIT_INFORMATION;
+    protected String nonDefaultFileId;
+    protected static String defaultFileId;
+    protected static URL defaultFileUrl;
+    protected static String defaultDownloadFileAddress;
+    protected static String defaultUploadFileAddress;
+    protected String defaultAuditInformation;
 
     @RegisterExtension
     TestWatcherExtension testWatcher = new TestWatcherExtension();
@@ -92,11 +93,11 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         collectionID = settingsForTestClient.getCollections().get(0).getID();
 
         securityManager = createSecurityManager();
-        DEFAULT_FILE_ID = "DefaultFile";
+        defaultFileId = "DefaultFile";
         try {
-            DEFAULT_FILE_URL = httpServerConfiguration.getURL(TestFileHelper.DEFAULT_FILE_ID);
-            DEFAULT_DOWNLOAD_FILE_ADDRESS = DEFAULT_FILE_URL.toExternalForm();
-            DEFAULT_UPLOAD_FILE_ADDRESS = DEFAULT_FILE_URL.toExternalForm() + "-" + DEFAULT_FILE_ID;
+            defaultFileUrl = httpServerConfiguration.getURL(TestFileHelper.DEFAULT_FILE_ID);
+            defaultDownloadFileAddress = defaultFileUrl.toExternalForm();
+            defaultUploadFileAddress = defaultFileUrl.toExternalForm() + "-" + defaultFileId;
         } catch (MalformedURLException e) {
             throw new RuntimeException("Never happens");
         }
@@ -115,7 +116,6 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         receiverManager.addReceiver(receiver);
     }
 
-    @BeforeAll
     public void initMessagebus() {
         initializationMethod();
         setupMessageBus();
@@ -138,8 +138,9 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     public final void beforeMethod(TestInfo testInfo) {
         testMethodName = testInfo.getTestMethod().get().getName();
         setupSettings();
-        NON_DEFAULT_FILE_ID = TestFileHelper.createUniquePrefix(testMethodName);
-        DEFAULT_AUDIT_INFORMATION = testMethodName;
+        nonDefaultFileId = TestFileHelper.createUniquePrefix(testMethodName);
+        defaultAuditInformation = testMethodName;
+        initMessagebus();
         receiverManager = new MessageReceiverManager(messageBus);
         registerMessageReceivers();
         messageBus.setCollectionFilter(List.of());
@@ -151,7 +152,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     protected void initializeCUT() {
     }
 
-    @AfterEach
+    //    @AfterEach
     public final void afterMethod() {
         if (receiverManager != null) {
             receiverManager.stopListeners();
@@ -161,7 +162,6 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         }
         shutdownCUT();
     }
-
 
     /**
      * May be used by specific tests for general verification when the test method has finished. Will only be run
@@ -203,7 +203,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         return TestSettingsProvider.reloadSettings(componentID);
     }
 
-    private void makeUserSpecificSettings(Settings settings) {
+    protected void makeUserSpecificSettings(Settings settings) {
         settings.getRepositorySettings().getProtocolSettings()
                 .setCollectionDestination(settings.getCollectionDestination() + getTopicPostfix());
         settings.getRepositorySettings().getProtocolSettings().setAlarmDestination(settings.getAlarmDestination() + getTopicPostfix());
@@ -237,7 +237,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     /**
      * Shutdown the message bus.
      */
-    private void teardownMessageBus() {
+    public void teardownMessageBus() {
         MessageBusManager.clear();
         if (messageBus != null) {
             try {
@@ -261,7 +261,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     /**
      * Shutdown the embedded http server if any.
      */
-    protected void teardownHttpServer() {
+    public void teardownHttpServer() {
         if (useEmbeddedHttpServer()) {
             server.stop();
         }
