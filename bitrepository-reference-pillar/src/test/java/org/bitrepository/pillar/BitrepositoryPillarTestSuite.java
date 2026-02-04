@@ -1,7 +1,6 @@
 package org.bitrepository.pillar;
 
-import org.bitrepository.pillar.integration.func.deletefile.DeleteFileRequestIT;
-import org.bitrepository.pillar.integration.func.getchecksums.GetChecksumQueryTest;
+import org.bitrepository.pillar.integration.PillarSuiteExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.suite.api.ExcludeTags;
 import org.junit.platform.suite.api.IncludeTags;
@@ -58,10 +57,11 @@ import org.junit.platform.suite.api.SuiteDisplayName;
  */
 @Suite
 @SuiteDisplayName("Full Pillar Acceptance Test")
-// Use SelectPackages with the exact base package
-@SelectPackages("org.bitrepository.pillar.integration")
-@SelectClasses({DeleteFileRequestIT.class, GetChecksumQueryTest.class})
-// For debugging: Comment out the Tag filter to see if it finds ANY tests in that package
-// @IncludeTags(PillarTestGroups.FULL_PILLAR_TEST)
+@SelectPackages({
+        "org.bitrepository.pillar.messagehandling",
+        "org.bitrepository.pillar.integration"
+})
+@IncludeTags({"regressiontest", PillarTestGroups.CHECKSUM_PILLAR_TEST})
+@ExtendWith(PillarSuiteExtension.class)
 public class BitrepositoryPillarTestSuite {
 }
