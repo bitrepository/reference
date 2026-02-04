@@ -50,8 +50,8 @@ public class MessageReceiverManager {
     }
 
     public void stopListeners() {
-        if (messageBus != null) {
-            for (MessageReceiver receiver : messageReceivers) {
+        for (MessageReceiver receiver : messageReceivers) {
+            if (messageBus != null) {
                 messageBus.removeListener(receiver.getDestination(), receiver.getMessageListener());
             }
         }

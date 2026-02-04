@@ -1,5 +1,6 @@
 package org.bitrepository.pillar;
 
+import org.bitrepository.pillar.integration.PillarSuiteExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.suite.api.ExcludeTags;
 import org.junit.platform.suite.api.IncludeTags;
@@ -43,10 +44,10 @@ import org.junit.platform.suite.api.SuiteDisplayName;
  * <pre>
  * {@code
  * @Suite
- * @SelectClasses({BitrepositoryPillarTest.class})  // List your test classes here
- * @SelectPackages("org.bitrepository.pillar")  // List your test packages here
- * @IncludeTags("integration")  // List your include tags here
- * @ExcludeTags("slow")  // List your exclude tags here
+ * @SelectClasses({BitrepositoryPillarTest.class}) // List your test classes here
+ * @SelectPackages("org.bitrepository.pillar") // List your test packages here
+ * @IncludeTags("integration") // List your include tags here
+ * @ExcludeTags("slow") // List your exclude tags here
  * @ExtendWith(GlobalSuiteExtension.class)
  * public class BitrepositoryTestSuite {
  *     // No need for methods here; this just groups and extends
@@ -56,9 +57,11 @@ import org.junit.platform.suite.api.SuiteDisplayName;
  */
 @Suite
 @SuiteDisplayName("Checksum Pillar Acceptance Test")
-// Select the package(s) where the tests are located
-@SelectPackages("org.bitrepository.pillar.integration.func")
-// Filter to only run methods that have the specific @Tag
-@IncludeTags(PillarTestGroups.CHECKSUM_PILLAR_TEST)
+@SelectPackages({
+        "org.bitrepository.pillar.messagehandling",
+        "org.bitrepository.pillar.integration"
+})
+@IncludeTags({/*"regressiontest", */PillarTestGroups.CHECKSUM_PILLAR_TEST})
+@ExtendWith(PillarSuiteExtension.class)
 public class BitrepositoryChecksumPillarTestSuite {
 }
