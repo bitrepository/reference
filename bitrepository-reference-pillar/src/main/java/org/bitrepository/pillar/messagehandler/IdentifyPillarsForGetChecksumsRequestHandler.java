@@ -64,14 +64,19 @@ public class IdentifyPillarsForGetChecksumsRequestHandler extends IdentifyReques
     }
 
     @Override
-    protected void validateRequest(IdentifyPillarsForGetChecksumsRequest request, MessageContext messageContext)
+    protected boolean validateRequest(IdentifyPillarsForGetChecksumsRequest request, MessageContext messageContext)
             throws RequestHandlerException {
         validateCollectionID(request);
+        validateCollectionID(request);
+        if (!this.context.getPillarCollections().contains(request.getCollectionID())) {
+            return false;
+        }
         getPillarModel().verifyChecksumAlgorithm(request.getChecksumRequestForExistingFile());
         if (request.getFileIDs() != null && request.getFileIDs().getFileID() != null) {
             validateFileIDFormat(request.getFileIDs().getFileID());
             checkThatAllRequestedFilesAreAvailable(request);
         }
+        return true;
     }
 
     @Override

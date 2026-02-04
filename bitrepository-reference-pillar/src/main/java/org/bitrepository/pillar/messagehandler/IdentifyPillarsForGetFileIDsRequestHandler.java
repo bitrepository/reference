@@ -62,13 +62,17 @@ public class IdentifyPillarsForGetFileIDsRequestHandler extends IdentifyRequestH
     }
 
     @Override
-    protected void validateRequest(IdentifyPillarsForGetFileIDsRequest request, MessageContext messageContext)
+    protected boolean validateRequest(IdentifyPillarsForGetFileIDsRequest request, MessageContext messageContext)
             throws RequestHandlerException {
         validateCollectionID(request);
+        if (!this.context.getPillarCollections().contains(request.getCollectionID())) {
+            return false;
+        }
         if (request.getFileIDs() != null && request.getFileIDs().getFileID() != null) {
             validateFileIDFormat(request.getFileIDs().getFileID());
             verifyFileIDExistence(request.getFileIDs(), request.getCollectionID());
         }
+        return true;
     }
 
     @Override
