@@ -41,8 +41,10 @@ import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.jaccept.TestEventManager;
 import org.jaccept.structure.ExtendedTestCase;
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.platform.suite.api.Suite;
@@ -123,7 +125,6 @@ public class IntegrationTest extends ExtendedTestCase {
         receiverManager.addReceiver(receiver);
     }
 
-    @BeforeAll
     public void initMessagebus() {
         initializationMethod();
         setupMessageBus();
@@ -148,6 +149,7 @@ public class IntegrationTest extends ExtendedTestCase {
         setupSettings();
         nonDefaultFileId = TestFileHelper.createUniquePrefix(testMethodName);
         defaultAuditInformation = testMethodName;
+        initMessagebus();
         receiverManager = new MessageReceiverManager(messageBus);
         registerMessageReceivers();
         messageBus.setCollectionFilter(List.of());
@@ -159,7 +161,7 @@ public class IntegrationTest extends ExtendedTestCase {
     protected void initializeCUT() {
     }
 
-    @AfterEach
+    //    @AfterEach
     public final void afterMethod() {
         if (receiverManager != null) {
             receiverManager.stopListeners();
