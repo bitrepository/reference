@@ -111,7 +111,7 @@ public abstract class DefaultPillarTest extends DefaultFixturePillarTest {
     }
 
     public void shutdownMediator() {
-        if (mediator != null) {
+        if(mediator != null) {
             mediator.close();
             mediator = null;
         }
@@ -121,7 +121,6 @@ public abstract class DefaultPillarTest extends DefaultFixturePillarTest {
     protected String getComponentID() {
         return "ReferencePillar-" + testMethodName;
     }
-
     private void initializeArchiveWithEmptyFile() throws IOException {
         addFixture("Initialize the Reference pillar cache with an empty file in default collection " +
                 collectionID);

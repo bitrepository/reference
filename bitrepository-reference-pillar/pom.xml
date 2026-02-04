@@ -17,12 +17,12 @@
             <artifactId>bitrepository-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <version>7.11.0</version>
             <scope>test</scope>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.bitrepository.reference</groupId>
             <artifactId>bitrepository-service</artifactId>
@@ -98,7 +98,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.5.4</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.junit.jupiter</groupId>
@@ -173,10 +172,9 @@
                     <plugin>
                         <artifactId>maven-failsafe-plugin</artifactId>
                         <configuration>
-                            <suiteXmlFiles>
-                                <suiteXmlFile>src/test/resources/testprops/full-pillar-test.xml</suiteXmlFile>
-                                <suiteXmlFile>src/test/resources/testprops/checksum-pillar-test.xml</suiteXmlFile>
-                            </suiteXmlFiles>
+                            <test>BitrepositoryPillarTestSuite</test>
+                            <test>BitrepositoryChecksumPillarTestSuite</test>
+                            <failIfNoTests>true</failIfNoTests>
                         </configuration>
                         <executions>
                             <execution>

@@ -35,7 +35,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-
+@Tag(PillarTestGroups.FULL_PILLAR_TEST)
+@Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
 public class GetAuditTrailsTest extends PillarFunctionTest {
     @Override
     protected void initializeCUT() {
