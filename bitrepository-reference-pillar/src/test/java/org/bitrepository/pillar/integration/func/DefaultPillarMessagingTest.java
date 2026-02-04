@@ -60,7 +60,7 @@ public abstract class DefaultPillarMessagingTest extends PillarFunctionTest {
     public void otherCollectionTest() {
         addDescription("Verifies identification works correctly for a second collection defined for pillar");
         addStep("Sending a identify request with a non-default collectionID (not the first collection) " +
-                        "the pillar is part of",
+                "the pillar is part of",
                 "The pillar under test should make a positive response");
         MessageRequest request = createRequest();
         request.setCollectionID(nonDefaultCollectionId);
@@ -69,10 +69,7 @@ public abstract class DefaultPillarMessagingTest extends PillarFunctionTest {
     }
 
     protected abstract MessageRequest createRequest();
-
     protected abstract MessageResponse receiveResponse();
-
     protected abstract void assertPositivResponseIsReceived();
-
     protected abstract void assertNoResponseIsReceived();
 }
