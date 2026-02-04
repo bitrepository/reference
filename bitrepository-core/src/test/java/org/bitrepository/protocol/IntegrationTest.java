@@ -26,6 +26,8 @@ package org.bitrepository.protocol;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.util.StatusPrinter;
+import org.bitrepository.ExtentedTestInfoParameterResolver;
+import org.bitrepository.SuiteInfo;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.SettingsUtils;
@@ -44,15 +46,11 @@ import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestReporter;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.suite.api.AfterSuite;
-import org.junit.platform.suite.api.BeforeSuite;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.JMSException;
@@ -66,6 +64,7 @@ import org.junit.jupiter.api.extension.TestWatcher;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(TestWatcherExtension.class)
+@ExtendWith(ExtentedTestInfoParameterResolver.class)
 public abstract class IntegrationTest extends ExtendedTestCase {
     protected static TestEventManager testEventManager = TestEventManager.getInstance();
     public static LocalActiveMQBroker broker;
@@ -91,7 +90,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     protected String testMethodName;
 
     @BeforeAll
-    public void initializeSuite(TestInfo testInfo) {
+    public void initializeSuite(SuiteInfo testInfo) {
         settingsForCUT = loadSettings(getComponentID());
         settingsForTestClient = loadSettings("TestSuiteInitialiser");
         makeUserSpecificSettings(settingsForCUT);
