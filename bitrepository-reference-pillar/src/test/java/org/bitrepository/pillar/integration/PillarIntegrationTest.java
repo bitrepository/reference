@@ -21,6 +21,8 @@
  */
 package org.bitrepository.pillar.integration;
 
+import org.bitrepository.ExtentedTestInfoParameterResolver;
+import org.bitrepository.SuiteInfo;
 import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
 import org.bitrepository.client.conversation.mediator.ConversationMediatorManager;
 import org.bitrepository.client.eventhandler.EventHandler;
@@ -32,7 +34,6 @@ import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.PillarSettingsProvider;
-import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.model.PillarFileManager;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.IntegrationTest;
@@ -51,11 +52,9 @@ import org.jaccept.TestEventManager;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestReporter;
-import org.junit.platform.engine.ExecutionRequest;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.suite.api.AfterSuite;
 
 import javax.jms.JMSException;
@@ -69,6 +68,7 @@ import java.io.InputStream;
  * to be invariant against the initial pillar state.
  */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@ExtendWith(ExtentedTestInfoParameterResolver.class)
 public abstract class PillarIntegrationTest extends IntegrationTest {
     /** The path to the directory containing the integration test configuration files */
     protected static final String PATH_TO_CONFIG_DIR = System.getProperty(
@@ -100,7 +100,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
 
     @Override
     @BeforeAll
-    public void initializeSuite(TestInfo testInfo) {
+    public void initializeSuite(SuiteInfo testInfo) {
         if (testConfiguration == null) {
             testConfiguration = new PillarIntegrationTestConfiguration(PATH_TO_TESTPROPS_DIR + "/" + TEST_CONFIGURATION_FILE_NAME);
         }
@@ -172,12 +172,12 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
      * </p>
      * @param testInfo
      */
-    protected void startEmbeddedPillar(TestInfo testInfo) {
+    protected void startEmbeddedPillar(SuiteInfo testInfo) {
         if (testConfiguration.useEmbeddedPillar()) {
             SettingsUtils.initialize(settingsForCUT);
             //TODO the tags are for the tags on the class, not the method
             // And they are not the tags from Suite, so you will not get the behaivour you want...
-            if (testInfo.getTags().contains(PillarTestGroups.CHECKSUM_PILLAR_TEST)) {
+            if (testInfo.getPillarType().filter(pillarType -> pillarType.equals("Checksum")).isPresent()){
                 embeddedPillar = EmbeddedPillar.createChecksumPillar(settingsForCUT);
             } else {
                 embeddedPillar = EmbeddedPillar.createReferencePillar(settingsForCUT);

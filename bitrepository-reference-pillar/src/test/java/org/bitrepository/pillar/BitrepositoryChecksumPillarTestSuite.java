@@ -63,5 +63,6 @@ import org.junit.platform.suite.api.SuiteDisplayName;
 })
 @IncludeTags({PillarTestGroups.CHECKSUM_PILLAR_TEST})
 @IncludeClassNamePatterns(value = "^(Test.*|.+[.$]Test.*|.*Tests?|.*IT)$")
+@ConfigurationParameter(key = "pillarType", value = "Checksum")
 public class BitrepositoryChecksumPillarTestSuite {
 }
