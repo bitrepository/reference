@@ -55,7 +55,6 @@ public class MultiThreadedMessageBusTest extends IntegrationTest {
     private final BlockingQueue<String> finishQueue = new LinkedBlockingQueue<>(1);
     MultiMessageListener listener;
 
-    @Override
     protected void setupMessageBus() {
         if (useEmbeddedMessageBus() && broker == null) {
             broker = new LocalActiveMQBroker(settingsForTestClient.getMessageBusConfiguration());

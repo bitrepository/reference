@@ -53,7 +53,6 @@ import org.junit.platform.suite.api.Suite;
 //@SelectClasses({IntegrationTest.class, ActiveMQMessageBusTest.class})  // List your test classes here
 @SelectPackages("org.bitrepository.protocol")
 @IncludeTags("regressiontest")
-@ExtendWith(GlobalSuiteExtension.class)
 public class BitrepositoryTestSuite {
     // No need for methods here; this just groups and extends
 }

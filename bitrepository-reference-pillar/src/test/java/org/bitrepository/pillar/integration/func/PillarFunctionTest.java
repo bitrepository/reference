@@ -38,9 +38,7 @@ public abstract class PillarFunctionTest extends PillarIntegrationTest {
     protected static final Long DEFAULT_FILE_SIZE = 10L;
     protected PutFileMessageFactory msgFactory;
     protected String testSpecificFileID;
-    /**
-     * Used for receiving responses from the pillar
-     */
+    /** Used for receiving responses from the pillar */
     protected MessageReceiver clientReceiver;
 
     @BeforeEach

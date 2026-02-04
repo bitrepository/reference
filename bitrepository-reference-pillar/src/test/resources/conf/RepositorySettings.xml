@@ -25,41 +25,48 @@
   -->
 
 <RepositorySettings xmlns="http://bitrepository.org/settings/RepositorySettings.xsd">
-  <Name>EmbeddedReferencePillarTest</Name>
-  <Collections>
-    <Collection><ID>DefaultCollection</ID>
-      <PillarIDs><PillarID>EmbeddedReferencePillar</PillarID></PillarIDs>
-    </Collection>
-    <Collection><ID>NonDefaultCollection</ID>
-      <PillarIDs><PillarID>EmbeddedReferencePillar</PillarID></PillarIDs>
-    </Collection>
-    <Collection><ID>IrrelevantCollection</ID>
-      <PillarIDs><PillarID>OtherPillar</PillarID></PillarIDs>
-    </Collection>
-  </Collections>
-  <ProtocolSettings>
-    <DefaultChecksumType>MD5</DefaultChecksumType>
-    <AllowedFileIDPattern>^[^ \./\p{Cntrl}][^\p{Cntrl}]{0,199}[^\s\p{Cntrl}]$</AllowedFileIDPattern>
-    <RequireMessageAuthentication>false</RequireMessageAuthentication>
-    <RequireOperationAuthorization>false</RequireOperationAuthorization>
-    <RequireChecksumForDestructiveRequests>true</RequireChecksumForDestructiveRequests>
-    <RequireChecksumForNewFileRequests>false</RequireChecksumForNewFileRequests>
-    <CollectionDestination>PILLAR-TEST-TOPIC</CollectionDestination>
-    <AlarmDestination>PILLAR-TEST-ALARM-TOPIC</AlarmDestination>
-    <MessageBusConfiguration>
-      <Name>PillarIntegrationTestMessageBus</Name>
-      <!--
-      <URL>failover://(tcp://sandkasse-01.kb.dk:61616?keepAlive=true)?timeout=10000</URL>
-      -->
-      <URL>tcp://localhost:9999</URL>
-    </MessageBusConfiguration>
-  </ProtocolSettings>
+    <Name>EmbeddedReferencePillarTest</Name>
+    <Collections>
+        <Collection>
+            <ID>DefaultCollection</ID>
+            <PillarIDs>
+                <PillarID>EmbeddedReferencePillar</PillarID>
+            </PillarIDs>
+        </Collection>
+        <Collection>
+            <ID>NonDefaultCollection</ID>
+            <PillarIDs>
+                <PillarID>EmbeddedReferencePillar</PillarID>
+            </PillarIDs>
+        </Collection>
+        <Collection>
+            <ID>IrrelevantCollection</ID>
+            <PillarIDs>
+                <PillarID>OtherPillar</PillarID>
+            </PillarIDs>
+        </Collection>
+    </Collections>
+    <ProtocolSettings>
+        <DefaultChecksumType>MD5</DefaultChecksumType>
+        <AllowedFileIDPattern>^[^ \./\p{Cntrl}][^\p{Cntrl}]{0,199}[^\s\p{Cntrl}]$</AllowedFileIDPattern>
+        <RequireMessageAuthentication>false</RequireMessageAuthentication>
+        <RequireOperationAuthorization>false</RequireOperationAuthorization>
+        <RequireChecksumForDestructiveRequests>true</RequireChecksumForDestructiveRequests>
+        <RequireChecksumForNewFileRequests>false</RequireChecksumForNewFileRequests>
+        <CollectionDestination>PILLAR-TEST-TOPIC</CollectionDestination>
+        <AlarmDestination>PILLAR-TEST-ALARM-TOPIC</AlarmDestination>
+        <MessageBusConfiguration>
+            <Name>PillarIntegrationTestMessageBus</Name>
+<!--            <URL>failover://(tcp://sandkasse-01.kb.dk:61616?keepAlive=true)?timeout=10000</URL>-->
+            <URL>tcp://localhost:61616</URL>
+        </MessageBusConfiguration>
+    </ProtocolSettings>
 
-  <ClientSettings>
-    <IdentificationTimeoutDuration>PT16M40S</IdentificationTimeoutDuration>
-    <OperationTimeoutDuration>PT2H46M40S</OperationTimeoutDuration>
-  </ClientSettings>
+    <ClientSettings>
+        <IdentificationTimeoutDuration>PT16M40S</IdentificationTimeoutDuration>
+        <OperationTimeoutDuration>PT2H46M40S</OperationTimeoutDuration>
+    </ClientSettings>
 
-  <GetAuditTrailSettings>
-  </GetAuditTrailSettings>
+    <GetAuditTrailSettings>
+    </GetAuditTrailSettings>
 </RepositorySettings>

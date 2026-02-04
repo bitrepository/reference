@@ -1,8 +1,9 @@
 package org.bitrepository.pillar;
 
-import org.bitrepository.pillar.integration.PillarSuiteExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.platform.suite.api.ConfigurationParameter;
 import org.junit.platform.suite.api.ExcludeTags;
+import org.junit.platform.suite.api.IncludeClassNamePatterns;
 import org.junit.platform.suite.api.IncludeTags;
 import org.junit.platform.suite.api.SelectClasses;
 import org.junit.platform.suite.api.SelectPackages;
@@ -55,13 +56,12 @@ import org.junit.platform.suite.api.SuiteDisplayName;
  * }
  * </pre>
  */
-@Suite
+@Suite(failIfNoTests = true)
 @SuiteDisplayName("Checksum Pillar Acceptance Test")
 @SelectPackages({
-        "org.bitrepository.pillar.messagehandling",
-        "org.bitrepository.pillar.integration"
+        "org.bitrepository.pillar.integration.func"
 })
-@IncludeTags({/*"regressiontest", */PillarTestGroups.CHECKSUM_PILLAR_TEST})
-@ExtendWith(PillarSuiteExtension.class)
+@IncludeTags({PillarTestGroups.CHECKSUM_PILLAR_TEST})
+@IncludeClassNamePatterns(value = "^(Test.*|.+[.$]Test.*|.*Tests?|.*IT)$")
 public class BitrepositoryChecksumPillarTestSuite {
 }
