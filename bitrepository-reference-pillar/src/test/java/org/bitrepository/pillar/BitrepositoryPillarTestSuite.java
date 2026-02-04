@@ -1,6 +1,7 @@
 package org.bitrepository.pillar;
 
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.platform.suite.api.ConfigurationParameter;
 import org.junit.platform.suite.api.ExcludeTags;
 import org.junit.platform.suite.api.IncludeClassNamePatterns;
 import org.junit.platform.suite.api.IncludeTags;
@@ -62,5 +63,6 @@ import org.junit.platform.suite.api.SuiteDisplayName;
 })
 @IncludeClassNamePatterns(value = "^(Test.*|.+[.$]Test.*|.*Tests?|.*IT)$")
 @IncludeTags({PillarTestGroups.FULL_PILLAR_TEST})
+@ConfigurationParameter(key = "pillarType", value = "File")
 public class BitrepositoryPillarTestSuite {
 }
