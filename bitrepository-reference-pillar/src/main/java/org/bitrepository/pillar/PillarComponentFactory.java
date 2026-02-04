@@ -57,6 +57,7 @@ import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.settings.referencesettings.PillarType;
 
 import java.lang.reflect.Constructor;
+import java.util.List;
 
 /**
  * Component factory for this module.
@@ -113,9 +114,11 @@ public final class PillarComponentFactory {
 
         StorageModel pillarModel = getPillarModel(settings, cache, alarmDispatcher);
 
+        List<String> pillarCollections = SettingsHelper.getPillarCollections(settings.getComponentID(),
+                                                                             settings.getCollections());
         MessageHandlerContext context = new MessageHandlerContext(
                 settings,
-                SettingsHelper.getPillarCollections(settings.getComponentID(), settings.getCollections()),
+                pillarCollections,
                 responseDispatcher,
                 alarmDispatcher,
                 audits);

@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TestLogger {	
-    private final Logger log;
+    private Logger log;
 
     public TestLogger(Class<?> logHandle) {
         log = LoggerFactory.getLogger(logHandle);

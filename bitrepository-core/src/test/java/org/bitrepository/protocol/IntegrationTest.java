@@ -41,13 +41,18 @@ import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.jaccept.TestEventManager;
 import org.jaccept.structure.ExtendedTestCase;
-import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestReporter;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.platform.suite.api.Suite;
+import org.junit.platform.engine.ExecutionRequest;
+import org.junit.platform.suite.api.AfterSuite;
+import org.junit.platform.suite.api.BeforeSuite;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.JMSException;
@@ -59,11 +64,9 @@ import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.TestWatcher;
 
-@Suite
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(TestWatcherExtension.class)
-@ExtendWith(GlobalSuiteExtension.class)
-public class IntegrationTest extends ExtendedTestCase {
+public abstract class IntegrationTest extends ExtendedTestCase {
     protected static TestEventManager testEventManager = TestEventManager.getInstance();
     public static LocalActiveMQBroker broker;
     public static EmbeddedHttpServer server;
@@ -87,13 +90,8 @@ public class IntegrationTest extends ExtendedTestCase {
     TestWatcherExtension testWatcher = new TestWatcherExtension();
     protected String testMethodName;
 
-    private void initializationMethod() {
-    @BeforeSuite(alwaysRun = true)
-    public void initializeSuite(ITestContext testContext) {
-        //
-    }
-
-    private void initializationMethod() {
+    @BeforeAll
+    public void initializeSuite(TestInfo testInfo) {
         settingsForCUT = loadSettings(getComponentID());
         settingsForTestClient = loadSettings("TestSuiteInitialiser");
         makeUserSpecificSettings(settingsForCUT);
@@ -125,16 +123,12 @@ public class IntegrationTest extends ExtendedTestCase {
         receiverManager.addReceiver(receiver);
     }
 
+    @BeforeAll
     public void initMessagebus() {
-        initializationMethod();
         setupMessageBus();
-        if (System.getProperty("enableLogStatus", "false").equals("true")) {
-            LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
-            StatusPrinter.print(lc);
-        }
     }
 
-    @AfterAll
+    @AfterSuite
     public void shutdownSuite() {
         teardownMessageBus();
         teardownHttpServer();
@@ -149,7 +143,6 @@ public class IntegrationTest extends ExtendedTestCase {
         setupSettings();
         nonDefaultFileId = TestFileHelper.createUniquePrefix(testMethodName);
         defaultAuditInformation = testMethodName;
-        initMessagebus();
         receiverManager = new MessageReceiverManager(messageBus);
         registerMessageReceivers();
         messageBus.setCollectionFilter(List.of());
@@ -158,10 +151,10 @@ public class IntegrationTest extends ExtendedTestCase {
         initializeCUT();
     }
 
-    protected void initializeCUT() {
-    }
 
-    //    @AfterEach
+    protected void initializeCUT() {}
+
+    @AfterEach
     public final void afterMethod() {
         if (receiverManager != null) {
             receiverManager.stopListeners();
@@ -190,8 +183,7 @@ public class IntegrationTest extends ExtendedTestCase {
     /**
      * May be overridden by specific tests wishing to do stuff. Remember to call super if this is overridden.
      */
-    protected void shutdownCUT() {
-    }
+    protected void shutdownCUT() {}
 
     /**
      * Initializes the settings. Will postfix the alarm and collection topics with '-${user.name}
@@ -212,10 +204,18 @@ public class IntegrationTest extends ExtendedTestCase {
         return TestSettingsProvider.reloadSettings(componentID);
     }
 
-    protected void makeUserSpecificSettings(Settings settings) {
+    private void makeUserSpecificSettings(Settings settings) {
         settings.getRepositorySettings().getProtocolSettings()
                 .setCollectionDestination(settings.getCollectionDestination() + getTopicPostfix());
         settings.getRepositorySettings().getProtocolSettings().setAlarmDestination(settings.getAlarmDestination() + getTopicPostfix());
+    }
+
+    @BeforeEach
+    public void writeLogStatus() {
+        if (System.getProperty("enableLogStatus", "false").equals("true")) {
+            LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+            StatusPrinter.print(lc);
+        }
     }
 
     /**
@@ -246,7 +246,7 @@ public class IntegrationTest extends ExtendedTestCase {
     /**
      * Shutdown the message bus.
      */
-    public void teardownMessageBus() {
+    private void teardownMessageBus() {
         MessageBusManager.clear();
         if (messageBus != null) {
             try {
@@ -270,7 +270,7 @@ public class IntegrationTest extends ExtendedTestCase {
     /**
      * Shutdown the embedded http server if any.
      */
-    public void teardownHttpServer() {
+    protected void teardownHttpServer() {
         if (useEmbeddedHttpServer()) {
             server.stop();
         }
