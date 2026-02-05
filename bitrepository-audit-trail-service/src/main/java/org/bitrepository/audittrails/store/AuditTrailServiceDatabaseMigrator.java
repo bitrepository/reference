@@ -127,10 +127,6 @@ public class AuditTrailServiceDatabaseMigrator extends DatabaseMigrator {
                     + "' table as required.");
         }
 
-        if (versions.get(DATABASE_VERSION_ENTRY) < currentVersion) {
-            return true;
-        } else {
-            return false;
-        }
+        return versions.get(DATABASE_VERSION_ENTRY) < currentVersion;
     }
 }

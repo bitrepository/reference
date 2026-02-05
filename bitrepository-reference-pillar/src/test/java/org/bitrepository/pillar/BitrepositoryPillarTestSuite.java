@@ -1,10 +1,9 @@
 package org.bitrepository.pillar;
 
-import org.bitrepository.protocol.GlobalSuiteExtension;
-import org.bitrepository.protocol.IntegrationTest;
-import org.bitrepository.protocol.bus.ActiveMQMessageBusTest;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.platform.suite.api.ConfigurationParameter;
 import org.junit.platform.suite.api.ExcludeTags;
+import org.junit.platform.suite.api.IncludeClassNamePatterns;
 import org.junit.platform.suite.api.IncludeTags;
 import org.junit.platform.suite.api.SelectClasses;
 import org.junit.platform.suite.api.SelectPackages;
@@ -46,10 +45,10 @@ import org.junit.platform.suite.api.SuiteDisplayName;
  * <pre>
  * {@code
  * @Suite
- * @SelectClasses({BitrepositoryPillarTest.class})  // List your test classes here
- * @SelectPackages("org.bitrepository.pillar")  // List your test packages here
- * @IncludeTags("integration")  // List your include tags here
- * @ExcludeTags("slow")  // List your exclude tags here
+ * @SelectClasses({BitrepositoryPillarTest.class}) // List your test classes here
+ * @SelectPackages("org.bitrepository.pillar") // List your test packages here
+ * @IncludeTags("integration") // List your include tags here
+ * @ExcludeTags("slow") // List your exclude tags here
  * @ExtendWith(GlobalSuiteExtension.class)
  * public class BitrepositoryTestSuite {
  *     // No need for methods here; this just groups and extends
@@ -59,9 +58,11 @@ import org.junit.platform.suite.api.SuiteDisplayName;
  */
 @Suite
 @SuiteDisplayName("Full Pillar Acceptance Test")
-// Use SelectPackages with the exact base package
-@SelectPackages("org.bitrepository.pillar.integration.func")
-// For debugging: Comment out the Tag filter to see if it finds ANY tests in that package
-// @IncludeTags(PillarTestGroups.FULL_PILLAR_TEST)
+@SelectPackages({
+        "org.bitrepository.pillar.integration.func"
+})
+@IncludeClassNamePatterns(value = "^(Test.*|.+[.$]Test.*|.*Tests?|.*IT)$")
+@IncludeTags({PillarTestGroups.FULL_PILLAR_TEST})
+@ConfigurationParameter(key = "pillarType", value = "File")
 public class BitrepositoryPillarTestSuite {
 }

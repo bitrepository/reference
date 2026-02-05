@@ -31,7 +31,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-
 import java.net.URL;
 
 import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
@@ -49,7 +48,8 @@ public class PutFileStepTest extends WorkflowstepTest {
     public static final String TEST_FILE_1 = "test-file-1";
     public static final String TEST_CHECKSUM = "1234567890abba0987654321";
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void testPositiveReply() throws Exception {
         addDescription("Test the step for getting the file can handle COMPLETE operation event.");
         doAnswer(new Answer() {

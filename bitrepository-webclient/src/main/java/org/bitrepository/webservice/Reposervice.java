@@ -22,7 +22,6 @@
 package org.bitrepository.webservice;
 
 import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import org.bitrepository.BasicClient;
 import org.bitrepository.BasicClientFactory;
@@ -47,7 +46,7 @@ import java.util.stream.Collectors;
 @Path("/reposervice")
 public class Reposervice {
 
-    private BasicClient client;
+    private final BasicClient client;
 
 
     public Reposervice() {
@@ -99,7 +98,7 @@ public class Reposervice {
         return writer.toString();
     }
     
-    private void writeCollectionsArray(JsonGenerator jg) throws JsonGenerationException, IOException {
+    private void writeCollectionsArray(JsonGenerator jg) throws IOException {
         List<Collection> collections = client.getSettings().getRepositorySettings().getCollections().getCollection();
         jg.writeArrayFieldStart("collections");
         for(Collection c : collections) {
@@ -117,7 +116,7 @@ public class Reposervice {
         jg.writeEndArray();
     } 
     
-    private void writeProtocolSettingsObj(JsonGenerator jg) throws JsonGenerationException, IOException {
+    private void writeProtocolSettingsObj(JsonGenerator jg) throws IOException {
         ProtocolSettings protocolSettings = client.getSettings().getRepositorySettings().getProtocolSettings();
         jg.writeObjectFieldStart("protocolSettings");
         jg.writeObjectField("Allowed fileID pattern", protocolSettings.getAllowedFileIDPattern());

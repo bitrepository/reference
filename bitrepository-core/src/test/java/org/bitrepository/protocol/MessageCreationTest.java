@@ -57,7 +57,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * message-xml, thereby also testing whether this is valid. *
  */
 public class MessageCreationTest {
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void messageCreationTest() throws Exception {
         addDescription("Tests if we are able to create message objects from xml. The input XML is the example code " +
                 "defined in the message-xml, thereby also testing whether this is valid.");

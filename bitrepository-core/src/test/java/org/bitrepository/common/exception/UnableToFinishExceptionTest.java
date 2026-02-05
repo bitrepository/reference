@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -32,33 +32,33 @@ import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 
 public class UnableToFinishExceptionTest {
-    
-    @Test 
+
+    @Test
     @Tag("regressiontest")
     public void testUnableToFinish() throws Exception {
         addDescription("Test the instantiation of the exception");
         addStep("Setup", "");
         String errMsg = "TEST-ERROR";
         String causeMsg = "CAUSE-EXCEPTION";
-        
+
         addStep("Try to throw such an exception", "Should be able to be caught and validated");
         try {
             throw new UnableToFinishException(errMsg);
-        } catch(Exception e) {
-            Assertions.assertTrue(e instanceof UnableToFinishException);
-            Assertions.assertEquals(e.getMessage(), errMsg);
+        } catch (Exception e) {
+            Assertions.assertInstanceOf(UnableToFinishException.class, e);
+            Assertions.assertEquals(errMsg, e.getMessage());
             Assertions.assertNull(e.getCause());
         }
-        
+
         addStep("Throw the exception with an embedded exception", "The embedded exception should be the same.");
         try {
             throw new UnableToFinishException(errMsg, new IllegalArgumentException(causeMsg));
-        } catch(Exception e) {
-            Assertions.assertTrue(e instanceof UnableToFinishException);
-            Assertions.assertEquals(e.getMessage(), errMsg);
+        } catch (Exception e) {
+            Assertions.assertInstanceOf(UnableToFinishException.class, e);
+            Assertions.assertEquals(errMsg, e.getMessage());
             Assertions.assertNotNull(e.getCause());
-            Assertions.assertTrue(e.getCause() instanceof IllegalArgumentException);
-            Assertions.assertEquals(e.getCause().getMessage(), causeMsg);
+            Assertions.assertInstanceOf(IllegalArgumentException.class, e.getCause());
+            Assertions.assertEquals(causeMsg, e.getCause().getMessage());
         }
     }
 }

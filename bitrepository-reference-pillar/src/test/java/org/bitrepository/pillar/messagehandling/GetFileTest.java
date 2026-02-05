@@ -1,23 +1,23 @@
 /*
  * #%L
  * Bitrepository Reference Pillar
- * 
+ *
  * $Id: PutFileOnReferencePillarTest.java 589 2011-12-01 15:34:42Z jolf $
  * $HeadURL: https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk/bitrepository-reference-pillar/src/test/java/org/bitrepository/pillar/PutFileOnReferencePillarTest.java $
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -42,6 +42,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+
 import java.io.ByteArrayInputStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -69,9 +70,9 @@ public class GetFileTest extends MockedPillarTest {
     public void goodCaseIdentification() throws Exception {
         addDescription("Tests the identification for a GetFile operation on the pillar for the successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        final String FILE_ID = DEFAULT_FILE_ID + testMethodName;
+        final String FILE_ID = defaultFileId + testMethodName;
 
-        addStep("Setup for having the file and delivering pillar id", 
+        addStep("Setup for having the file and delivering pillar id",
                 "Not throw an exception when calling the verifyFileExists method.");
         doAnswer(new Answer() {
             public String answer(InvocationOnMock invocation) {
@@ -98,14 +99,15 @@ public class GetFileTest extends MockedPillarTest {
     }
 
     @SuppressWarnings("rawtypes")
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     @Tag("pillartest")
     public void badCaseIdentification() throws Exception {
         addDescription("Tests the identification for a GetFile operation on the checksum pillar for the failure scenario, when the file is missing.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        final String FILE_ID = DEFAULT_FILE_ID + testMethodName;
+        final String FILE_ID = defaultFileId + testMethodName;
 
-        addStep("Setup for throwing an exception when asked to verify file existence", 
+        addStep("Setup for throwing an exception when asked to verify file existence",
                 "Should cause the FILE_NOT_FOUND_FAILURE later.");
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) throws RequestHandlerException {
@@ -137,14 +139,15 @@ public class GetFileTest extends MockedPillarTest {
     }
 
     @SuppressWarnings("rawtypes")
-    //@Test @Tag("regressiontest", "pillartest"})
+    //@Test
+//    @Tag("regressiontest", "pillartest"})
     // FAILS, when combined with other tests...
     public void badCaseOperationNoFile() throws Exception {
         addDescription("Tests the GetFile functionality of the pillar for the failure scenario, where it does not have the file.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        final String FILE_ID = DEFAULT_FILE_ID + testMethodName;
+        final String FILE_ID = defaultFileId + testMethodName;
 
-        addStep("Setup for throwing an exception when asked to verify file existence", 
+        addStep("Setup for throwing an exception when asked to verify file existence",
                 "Should cause the FILE_NOT_FOUND_FAILURE later.");
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) throws RequestHandlerException {
@@ -159,7 +162,7 @@ public class GetFileTest extends MockedPillarTest {
 
         addStep("Create and send the actual GetFile message to the pillar.",
                 "Should be received and handled by the pillar.");
-        GetFileRequest getFileRequest = msgFactory.createGetFileRequest(DEFAULT_DOWNLOAD_FILE_ADDRESS, FILE_ID);
+        GetFileRequest getFileRequest = msgFactory.createGetFileRequest(defaultDownloadFileAddress, FILE_ID);
         messageBus.sendMessage(getFileRequest);
 
         // No response, since failure
@@ -175,14 +178,15 @@ public class GetFileTest extends MockedPillarTest {
     }
 
     @SuppressWarnings("rawtypes")
-    //@Test @Tag("regressiontest", "pillartest"})
+    //@Test
+//    @Tag("regressiontest", "pillartest"})
     // FAILS, when combined with other tests...
     public void goodCaseOperation() throws Exception {
         addDescription("Tests the GetFile functionality of the pillar for the success scenario, where the file is uploaded.");
         addStep("Set up constants and variables.", "Should not fail here!");
-        final String FILE_ID = DEFAULT_FILE_ID + testMethodName;
+        final String FILE_ID = defaultFileId + testMethodName;
 
-        addStep("Setup for having the file and delevering a mock file.", 
+        addStep("Setup for having the file and delevering a mock file.",
                 "Should make it possible to perform the whole operation without any exceptions.");
         doAnswer(new Answer() {
             public FileInfo answer(InvocationOnMock invocation) throws InvalidMessageException {
@@ -198,7 +202,7 @@ public class GetFileTest extends MockedPillarTest {
 
         addStep("Create and send the actual GetFile message to the pillar.",
                 "Should be received and handled by the pillar.");
-        GetFileRequest getFileRequest = msgFactory.createGetFileRequest(DEFAULT_DOWNLOAD_FILE_ADDRESS, FILE_ID);
+        GetFileRequest getFileRequest = msgFactory.createGetFileRequest(defaultDownloadFileAddress, FILE_ID);
         messageBus.sendMessage(getFileRequest);
 
         addStep("Retrieve the ProgressResponse for the GetFile request",

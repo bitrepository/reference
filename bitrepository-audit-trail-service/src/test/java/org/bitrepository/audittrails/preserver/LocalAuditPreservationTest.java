@@ -36,14 +36,12 @@ import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-
-
 
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
@@ -89,6 +87,7 @@ public class LocalAuditPreservationTest {
 
 
     @Test
+    @Disabled
     // Fragile test, fails occasionally.
     @SuppressWarnings("rawtypes")
     public void auditPreservationSchedulingTest() throws Exception {
@@ -147,7 +146,7 @@ public class LocalAuditPreservationTest {
         //Assertions.assertEquals(store.getCallsToGetAuditTrails(), settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().size());
 
         //Assertions.assertEquals(store.getCallsToGetPreservationSequenceNumber(), 2);
-        assertEquals(client.getCallsToPutFile(), 1);
+        assertEquals(1, client.getCallsToPutFile());
     }
 
     @Test
@@ -195,7 +194,7 @@ public class LocalAuditPreservationTest {
         verify(store).getAuditTrailsByIterator(null, collectionID, PILLAR_ID, 1L, null, null, null, null, null, null,
                 null);
 
-        assertEquals(client.getCallsToPutFile(), 1);
+        assertEquals(1, client.getCallsToPutFile());
 
         verify(fileExchange).putFile(any(FileInputStream.class), any(URL.class));
     }

@@ -37,17 +37,17 @@ public class AlarmExceptionTest {
         try {
             throw new AlarmException(alarmError);
         } catch (AlarmException e) {
-            Assertions.assertEquals(e.getMessage(), alarmError);
+            Assertions.assertEquals(alarmError, e.getMessage());
             Assertions.assertNull(e.getCause());
         }
-        
+
         String otherError = "This is the message of the included exception";
         try {
             throw new AlarmException(alarmError, new Exception(otherError));
         } catch (AlarmException e) {
-            Assertions.assertEquals(e.getMessage(), alarmError);
+            Assertions.assertEquals(alarmError, e.getMessage());
             Assertions.assertNotNull(e.getCause());
-            Assertions.assertEquals(e.getCause().getMessage(), otherError);
+            Assertions.assertEquals(otherError, e.getCause().getMessage());
         }
     }
 

@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -39,17 +39,21 @@ public class BasicIntegrityReporterTest extends IntegrationTest {
     @Tag("regressiontest")
     public void deletedFilesTest() throws Exception {
         addDescription("Verifies that the hasIntegrityIssues() reports deleted files correctly");
-        addStep("Report a delete file for a new Reporter", "hasIntegrityIssues() should return false and the summary " +
-                "report should inform that no issues where found.");
-        BasicIntegrityReporter reporter = new BasicIntegrityReporter("CollectionWithIssues", "test", new File("target/"));
+        addStep("Report a delete file for a new Reporter",
+                "hasIntegrityIssues() should return false and the summary " +
+                        "report should inform that no issues where found.");
+        BasicIntegrityReporter reporter = new BasicIntegrityReporter(
+                "CollectionWithIssues", "test", new File("target/"));
         reporter.reportDeletedFile("TestFile", "Pillar1");
         assertFalse(reporter.hasIntegrityIssues(), "Reporter interpreted delete file as a integrity issue");
         String expectedReport = "No integrity issues found";
-        assertEquals(expectedReport, reporter.generateSummaryOfReport());
+        assertEquals(expectedReport, reporter.generateSummaryOfReport(),
+                "Reporter didn't create clean report");
         reporter.generateReport();
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void noIntegrityIssuesTest() {
         addDescription("Verifies that missing files are reported correctly");
 
@@ -61,8 +65,9 @@ public class BasicIntegrityReporterTest extends IntegrationTest {
         assertEquals(expectedReport, reporter.generateSummaryOfReport());
     }
 
-    @Test @Tag("regressiontest")
-    public void missingFilesTest()  throws Exception {
+    @Test
+    @Tag("regressiontest")
+    public void missingFilesTest() throws Exception {
         addDescription("Verifies that missing files are reported correctly");
 
         addStep("Report a missing file", "hasIntegrityIssues() should return true and the summary report should " +
@@ -112,7 +117,8 @@ public class BasicIntegrityReporterTest extends IntegrationTest {
         assertEquals(expectedReport, reporter.generateSummaryOfReport());
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void missingChecksumTest() throws Exception {
         addDescription("Verifies that missing checksums are reported correctly");
 
@@ -138,7 +144,8 @@ public class BasicIntegrityReporterTest extends IntegrationTest {
     }
 
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void obsoleteChecksumTest() throws Exception {
         addDescription("Verifies that obsolete checksums are reported correctly");
 

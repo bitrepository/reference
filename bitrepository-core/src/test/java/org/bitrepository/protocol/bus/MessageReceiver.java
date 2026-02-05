@@ -169,7 +169,7 @@ public class MessageReceiver {
     }
 
     private class MessageModel {
-        private Map<Class<?>, BlockingQueue<?>> messageMap = new HashMap<>();
+        private final Map<Class<?>, BlockingQueue<?>> messageMap = new HashMap<>();
         private Collection<String> pillarFilter;
 
         private <T> void addMessage(T message) {

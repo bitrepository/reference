@@ -28,7 +28,6 @@ import io.qameta.allure.Allure;
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.client.eventhandler.EventHandler;
 
-
 import java.net.URL;
 import java.util.Arrays;
 

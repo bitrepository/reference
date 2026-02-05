@@ -23,13 +23,12 @@ package org.bitrepository.access.getstatus;
 
 import org.bitrepository.client.eventhandler.EventHandler;
 
-
 public class GetStatusClientTestWrapper implements GetStatusClient {
     private GetStatusClient getStatusClient;
 
     public GetStatusClientTestWrapper(GetStatusClient getStatusClient) {
         this.getStatusClient = getStatusClient;
-        
+
     }
 
     @Override

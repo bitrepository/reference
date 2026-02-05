@@ -96,7 +96,8 @@ public class GeneralMessageBusTest extends IntegrationTest {
         receiver2.waitForMessage(AlarmMessage.class);
     }
 
-    @Test @Tag("specificationonly" )
+    @Test
+    @Tag("specificationonly" )
     public final void messageBusFailoverTest() {
         addDescription("Verifies that we can switch to at second message bus " +
                 "in the middle of a conversation, if the connection is lost. " +
@@ -104,7 +105,8 @@ public class GeneralMessageBusTest extends IntegrationTest {
                 "message bus");
     }
 
-    @Test @Tag("specificationonly" )
+    @Test
+    @Tag("specificationonly" )
     public final void messageBusReconnectTest() {
         addDescription("Test whether we are able to reconnect to the message " +
                 "bus if the connection is lost");

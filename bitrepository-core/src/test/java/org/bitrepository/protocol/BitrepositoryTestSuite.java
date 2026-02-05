@@ -1,13 +1,11 @@
 package org.bitrepository.protocol;
 
-import org.bitrepository.protocol.bus.ActiveMQMessageBusTest;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.suite.api.ExcludeTags;
 import org.junit.platform.suite.api.IncludeTags;
 import org.junit.platform.suite.api.SelectClasses;
 import org.junit.platform.suite.api.SelectPackages;
 import org.junit.platform.suite.api.Suite;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.bitrepository.protocol.GlobalSuiteExtension;
 
 /**
  * BitrepositoryTestSuite is a JUnit 5 suite class that groups and configures multiple test classes
@@ -44,21 +42,17 @@ import org.bitrepository.protocol.GlobalSuiteExtension;
  * <pre>
  * {@code
  * @Suite
- * @SelectClasses({IntegrationTest.class})  // List your test classes here
- * @SelectPackages("org.bitrepository.protocol")  // List your test packages here
- * @IncludeTags("integration")  // List your include tags here
- * @ExcludeTags("slow")  // List your exclude tags here
+ * @SelectClasses({IntegrationTest.class}) // List your test classes here
+ * @SelectPackages("org.bitrepository.protocol") // List your test packages here
+ * @IncludeTags("integration") // List your include tags here
+ * @ExcludeTags("slow") // List your exclude tags here
  * @ExtendWith(GlobalSuiteExtension.class)
- * public class BitrepositoryTestSuite {
- *     // No need for methods here; this just groups and extends
- * }
- * }
  * </pre>
  */
 @Suite
-@SelectClasses({IntegrationTest.class, ActiveMQMessageBusTest.class})  // List your test classes here
-@ExtendWith(GlobalSuiteExtension.class)
+//@SelectClasses({IntegrationTest.class, ActiveMQMessageBusTest.class})  // List your test classes here
+@SelectPackages("org.bitrepository.protocol")
+@IncludeTags("regressiontest")
 public class BitrepositoryTestSuite {
     // No need for methods here; this just groups and extends
 }
-

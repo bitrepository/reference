@@ -62,6 +62,7 @@ import java.util.List;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(TestWatcherExtension.class)
 @ExtendWith(AllureJunit5.class)
+@ExtendWith(ExtentedTestInfoParameterResolver.class)
 public abstract class IntegrationTest {
     public static LocalActiveMQBroker broker;
     public static EmbeddedHttpServer server;
@@ -75,16 +76,19 @@ public abstract class IntegrationTest {
     protected static Settings settingsForTestClient;
     protected static String collectionID;
     protected AllureEventLogger eventLogger;
-    protected String NON_DEFAULT_FILE_ID;
-    protected static String DEFAULT_FILE_ID;
-    protected static URL DEFAULT_FILE_URL;
-    protected static String DEFAULT_DOWNLOAD_FILE_ADDRESS;
-    protected static String DEFAULT_UPLOAD_FILE_ADDRESS;
-    protected String DEFAULT_AUDIT_INFORMATION;
+    protected String nonDefaultFileId;
+    protected static String defaultFileId;
+    protected static URL defaultFileUrl;
+    protected static String defaultDownloadFileAddress;
+    protected static String defaultUploadFileAddress;
+    protected String defaultAuditInformation;
 
+    @RegisterExtension
+    TestWatcherExtension testWatcher = new TestWatcherExtension();
     protected String testMethodName;
 
-    protected void addDescription(String description) {
+    @BeforeAll
+    public void initializeSuite(SuiteInfo testInfo) {
         AllureTestUtils.addDescription(description);
     }
 
@@ -110,11 +114,11 @@ public abstract class IntegrationTest {
         eventLogger = new AllureEventLogger(getComponentID());
 
         securityManager = createSecurityManager();
-        DEFAULT_FILE_ID = "DefaultFile";
+        defaultFileId = "DefaultFile";
         try {
-            DEFAULT_FILE_URL = httpServerConfiguration.getURL(TestFileHelper.DEFAULT_FILE_ID);
-            DEFAULT_DOWNLOAD_FILE_ADDRESS = DEFAULT_FILE_URL.toExternalForm();
-            DEFAULT_UPLOAD_FILE_ADDRESS = DEFAULT_FILE_URL.toExternalForm() + "-" + DEFAULT_FILE_ID;
+            defaultFileUrl = httpServerConfiguration.getURL(TestFileHelper.DEFAULT_FILE_ID);
+            defaultDownloadFileAddress = defaultFileUrl.toExternalForm();
+            defaultUploadFileAddress = defaultFileUrl.toExternalForm() + "-" + defaultFileId;
         } catch (MalformedURLException e) {
             throw new RuntimeException("Never happens");
         }
@@ -162,32 +166,32 @@ public abstract class IntegrationTest {
         testMethodName = testInfo.getTestMethod().get().getName();
 
         Allure.step("Setup test: " + testMethodName, () -> {
-            setupSettings();
-            NON_DEFAULT_FILE_ID = TestFileHelper.createUniquePrefix(testMethodName);
-            DEFAULT_AUDIT_INFORMATION = testMethodName;
-            receiverManager = new MessageReceiverManager(messageBus);
-            registerMessageReceivers();
-            messageBus.setCollectionFilter(List.of());
-            messageBus.setComponentFilter(List.of());
-            receiverManager.startListeners();
-            initializeCUT();
-        });
-    }
+        setupSettings();
+        nonDefaultFileId = TestFileHelper.createUniquePrefix(testMethodName);
+        defaultAuditInformation = testMethodName;
+        receiverManager = new MessageReceiverManager(messageBus);
+        registerMessageReceivers();
+        messageBus.setCollectionFilter(List.of());
+        messageBus.setComponentFilter(List.of());
+        receiverManager.startListeners();
+        initializeCUT();
+    });
 
     protected void initializeCUT() {}
 
     @AfterEach
     public final void afterMethod() {
         Allure.step("Teardown test: " + testMethodName, () -> {
-            if (receiverManager != null) {
-                receiverManager.stopListeners();
-            }
-            if (TestWatcherExtension.isTestSuccessful()) {
-                afterMethodVerification();
-            }
-            shutdownCUT();
+        if (receiverManager != null) {
+            receiverManager.stopListeners();
+        }
+        if (testWatcher.isTestSuccessful()) {
+            afterMethodVerification();
+        }
+        shutdownCUT();
         });
     }
+
 
     /**
      * May be used by specific tests for general verification when the test method has finished. Will only be run
@@ -234,6 +238,14 @@ public abstract class IntegrationTest {
         settings.getRepositorySettings().getProtocolSettings()
                 .setCollectionDestination(settings.getCollectionDestination() + getTopicPostfix());
         settings.getRepositorySettings().getProtocolSettings().setAlarmDestination(settings.getAlarmDestination() + getTopicPostfix());
+    }
+
+    @BeforeEach
+    public void writeLogStatus() {
+        if (System.getProperty("enableLogStatus", "false").equals("true")) {
+            LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+            StatusPrinter.print(lc);
+        }
     }
 
     /**

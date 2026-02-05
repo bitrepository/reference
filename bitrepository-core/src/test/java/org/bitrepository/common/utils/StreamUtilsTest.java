@@ -50,14 +50,14 @@ public class StreamUtilsTest {
             StreamUtils.copyInputStreamToOutputStream(null, out);
             Assertions.fail("Should throw an exception here.");
         } catch (Exception e) {
-            Assertions.assertTrue(e instanceof IllegalArgumentException);
+            Assertions.assertInstanceOf(IllegalArgumentException.class, e);
         }
         
         try {
             StreamUtils.copyInputStreamToOutputStream(in, null);
             Assertions.fail("Should throw an exception here.");
         } catch (Exception e) {
-            Assertions.assertTrue(e instanceof IllegalArgumentException);
+            Assertions.assertInstanceOf(IllegalArgumentException.class, e);
         }
         
         addStep("Test copying the input stream to the output stream.", "Should contain the same data.");

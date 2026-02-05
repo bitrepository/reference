@@ -41,7 +41,7 @@ public class GetChecksumsClientTestWrapper implements GetChecksumsClient {
 
     public GetChecksumsClientTestWrapper(GetChecksumsClient createGetChecksumsClient) {
         this.getChecksumsClientInstance = createGetChecksumsClient;
-        
+
     }
 
     @Override

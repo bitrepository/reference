@@ -27,7 +27,6 @@ package org.bitrepository.access.getfile;
 import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.client.eventhandler.EventHandler;
 
-
 import java.net.URL;
 
 /**
@@ -38,7 +37,7 @@ public class GetFileClientTestWrapper implements GetFileClient {
 
     public GetFileClientTestWrapper(GetFileClient createGetFileClient) {
         this.createGetFileClient = createGetFileClient;
-        
+
     }
 
     @Override

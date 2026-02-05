@@ -26,7 +26,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -56,7 +55,8 @@ public class DeleteFileCmdTest extends DefaultFixtureClientTest {
         new DeleteFileCmd(args);
     }
 
-    @Test @Tag( "regressiontest")
+    @Test
+    @Tag( "regressiontest")
     public void missingCollectionArgumentTest() throws Exception {
         assertThrows(IllegalArgumentException.class, () -> {
             addDescription("Tests the scenario, where the collection arguments is missing.");
@@ -69,7 +69,8 @@ public class DeleteFileCmdTest extends DefaultFixtureClientTest {
         });
     }
 
-    @Test @Tag( "regressiontest")
+    @Test
+    @Tag( "regressiontest")
     public void missingPillarArgumentTest() throws Exception {
         assertThrows(IllegalArgumentException.class, () -> {
             addDescription("Tests the different scenarios, with the pillar argument.");
@@ -82,7 +83,8 @@ public class DeleteFileCmdTest extends DefaultFixtureClientTest {
         });
     }
 
-    @Test @Tag( "regressiontest")
+    @Test
+    @Tag( "regressiontest")
     public void unknownPillarArgumentTest() throws Exception {
         assertThrows(IllegalArgumentException.class, () -> {
             addStep("Testing against a non-existing pillar id", "Should fail");
@@ -96,7 +98,8 @@ public class DeleteFileCmdTest extends DefaultFixtureClientTest {
         });
     }
 
-    @Test @Tag( "regressiontest")
+    @Test
+    @Tag( "regressiontest")
     public void missingFileIDArgumentTest() throws Exception {
         assertThrows(IllegalArgumentException.class, () -> {
             addDescription("Tests the scenario, where no arguments for file id argument is given.");
@@ -109,7 +112,8 @@ public class DeleteFileCmdTest extends DefaultFixtureClientTest {
         });
     }
 
-    @Test @Tag( "regressiontest")
+    @Test
+    @Tag( "regressiontest")
     public void checksumArgumentNonSaltAlgorithmWitoutSaltTest() throws Exception {
         addDescription("Test MD5 checksum without salt -> no failure");
         String[] args = new String[]{"-s" + SETTINGS_DIR, 
@@ -122,7 +126,8 @@ public class DeleteFileCmdTest extends DefaultFixtureClientTest {
         new DeleteFileCmd(args);
     }
 
-    @Test @Tag( "regressiontest")
+    @Test
+    @Tag( "regressiontest")
     public void checksumArgumentSaltAlgorithmWithSaltTest() throws Exception {
         addDescription("Test HMAC_SHA256 checksum with salt -> No failure");
         String[] args = new String[]{"-s" + SETTINGS_DIR, 

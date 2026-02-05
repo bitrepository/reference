@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -54,6 +54,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.platform.suite.api.AfterSuite;
 
 import javax.jms.JMSException;
 import java.io.IOException;
@@ -64,16 +66,22 @@ import java.util.Map;
 
 /**
  * Super class for all tests which should test functionality on a single pillar.
- *
- * Note That no setup/teardown is possible in this test of external pillars, so tests need to be written
+ * <p>
+ * Note that no setup/teardown is possible in this test of external pillars, so tests need to be written
  * to be invariant against the initial pillar state.
  */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@ExtendWith(ExtentedTestInfoParameterResolver.class)
 public abstract class PillarIntegrationTest extends IntegrationTest {
-    /** The path to the directory containing the integration test configuration files */
+    /**
+     * The path to the directory containing the integration test configuration files
+     */
     protected static final String PATH_TO_CONFIG_DIR = System.getProperty(
             "pillar.integrationtest.settings.path",
-            "conf");   /** The path to the directory containing the integration test configuration files */
+            "conf");
+    /**
+     * The path to the directory containing the integration test configuration files
+     */
     protected static final String PATH_TO_TESTPROPS_DIR = System.getProperty(
             "pillar.integrationtest.testprops.path",
             "testprops");
@@ -98,21 +106,50 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
         clientEventHandler = new ClientEventLogger();
     }
 
+    /**
+     * Initializes the test suite environment.
+     * <p>
+     * This method is annotated with {@link BeforeAll} and is responsible for:
+     * <ul>
+     *     <li>Loading the test configuration.</li>
+     *     <li>Setting up the message bus.</li>
+     *     <li>Starting the embedded pillar if configured.</li>
+     *     <li>Initializing client providers and file managers.</li>
+     *     <li>Uploading a default test file to the repository.</li>
+     * </ul>
+     *
+     * @param testInfo Information about the test suite being initialized.
+     */
+    @Override
     @BeforeAll
-    public void setupPillarIntegrationTest(TestInfo testInfo) {
+    public void initializeSuite(SuiteInfo testInfo) {
         if (testConfiguration == null) {
             testConfiguration = new PillarIntegrationTestConfiguration(PATH_TO_TESTPROPS_DIR + "/" + TEST_CONFIGURATION_FILE_NAME);
         }
+        super.initializeSuite(testInfo);
 
-        super.initMessagebus();
+        setupRealMessageBus();
+
+
         startEmbeddedPillar(testInfo);
+        reloadMessageBus();
+        clientProvider = new ClientProvider(securityManager, settingsForTestClient, testEventManager);
+        nonDefaultCollectionId = settingsForTestClient.getCollections().get(1).getID();
+        irrelevantCollectionId = settingsForTestClient.getCollections().get(2).getID();
+        putDefaultFile();
     }
 
+    /**
+     * Shuts down the real message bus after all tests in the class have run.
+     * <p>
+     * This method checks if an embedded message bus is NOT being used before attempting to close and clear
+     * the message bus manager.
+     */
     @AfterAll
     public void shutdownRealMessageBus() {
-        if(!useEmbeddedMessageBus()) {
+        if (!useEmbeddedMessageBus()) {
             MessageBusManager.clear();
-            if(messageBus != null) {
+            if (messageBus != null) {
                 try {
                     messageBus.close();
                 } catch (JMSException e) {
@@ -122,7 +159,27 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
             }
         }
     }
-    
+
+    /**
+     * Performs teardown operations for the entire suite.
+     * <p>
+     * This includes stopping the embedded reference pillar and calling the superclass's shutdown method.
+     */
+    @AfterSuite
+    @Override
+    public void shutdownSuite() {
+        stopEmbeddedReferencePillar();
+        super.shutdownSuite();
+    }
+
+    /**
+     * Adds context information to the test result in case of failure.
+     * <p>
+     * This method is called after each test execution. Currently, it provides an empty implementation
+     * intended to be overridden or populated for debugging purposes.
+     *
+     * @param result Information about the executed test.
+     */
     @AfterEach
     public void addFailureContextInfo() {
     }
@@ -135,15 +192,8 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
             if (messageBus == null) {
                 messageBus = new org.bitrepository.protocol.messagebus.SimpleMessageBus();
             }
-            MessageBusManager.injectCustomMessageBus(MessageBusManager.DEFAULT_MESSAGE_BUS, messageBus);    
+            MessageBusManager.injectCustomMessageBus(MessageBusManager.DEFAULT_MESSAGE_BUS, messageBus);
         }
-    }
-
-    @Override
-    protected void setupMessageBus() {
-        //Shortcircuit this so the messagebus is NOT INITIALISED BEFORE THE CONFIGURATION
-        //super.setupMessageBus();
-        setupRealMessageBus();
     }
 
     @Override
@@ -157,12 +207,15 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
      * The type of pillar (full or checksum) is baed on the test group used, eg. if the group is
      * <code>checksumPillarTest</code> a checksum pillar is started, else a normal 'full' reference pillar is started.
      * </p>
+     *
      * @param testInfo
      */
-    protected void startEmbeddedPillar(TestInfo testInfo) {
+    protected void startEmbeddedPillar(SuiteInfo testInfo) {
         if (testConfiguration.useEmbeddedPillar()) {
             SettingsUtils.initialize(settingsForCUT);
-            if (testInfo.getTags().contains(PillarTestGroups.CHECKSUM_PILLAR_TEST)) {
+            //TODO the tags are for the tags on the class, not the method
+            // And they are not the tags from Suite, so you will not get the behaivour you want...
+            if (testInfo.getPillarType().filter(pillarType -> pillarType.equals("Checksum")).isPresent()) {
                 embeddedPillar = EmbeddedPillar.createChecksumPillar(settingsForCUT);
             } else {
                 embeddedPillar = EmbeddedPillar.createReferencePillar(settingsForCUT);
@@ -175,12 +228,15 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
             embeddedPillar.shutdown();
         }
     }
+
     @Override
     public boolean useEmbeddedMessageBus() {
-        return testConfiguration.useEmbeddedMessagebus();
+        return true;
     }
 
-    /** Loads the pillar test specific settings */
+    /**
+     * Loads the pillar test specific settings
+     */
     @Override
     protected Settings loadSettings(String componentID) {
         SettingsProvider settingsLoader =
@@ -191,7 +247,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     protected String getPillarID() {
         return testConfiguration.getPillarUnderTestID();
     }
-    
+
     protected long getOperationTimeout() {
         return testConfiguration.getPillarOperationTimeout();
     }
@@ -200,6 +256,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
      * Overrides the default settings modification, as this only works if the test can inject the modified settings into
      * the pillar. This means that if we are not using an embedded pillar we need to use the 'raw' collection settings,
      * eg. we can not add a special postfix.
+     *
      * @Override
      */
     protected String getTopicPostfix() {
@@ -227,7 +284,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
 
     @Override
     protected String getComponentID() {
-        return getPillarID() + "-test-client";
+        return getPillarID();// + "-test-client";
     }
 
     protected void reloadMessageBus() {
@@ -244,33 +301,34 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     protected void putDefaultFile() {
         try {
             FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(settingsForCUT);
-            try(InputStream fis = getClass().getClassLoader().getResourceAsStream("default-test-file.txt")) {
-                fe.putFile(fis, DEFAULT_FILE_URL);    
+            try (InputStream fis = getClass().getClassLoader().getResourceAsStream("default-test-file.txt")) {
+                fe.putFile(fis, defaultFileUrl);
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            
-            
+
+
             clientProvider.getPutClient().putFile(
-                    collectionID, DEFAULT_FILE_URL, DEFAULT_FILE_ID, 10L, TestFileHelper.getDefaultFileChecksum(),
-                null, clientEventHandler, null);
+                    collectionID, defaultFileUrl, defaultFileId, 10L, TestFileHelper.getDefaultFileChecksum(),
+                    null, clientEventHandler, null);
             clientProvider.getPutClient().putFile(
-            nonDefaultCollectionId, DEFAULT_FILE_URL, DEFAULT_FILE_ID, 10L, TestFileHelper.getDefaultFileChecksum(),
+                    nonDefaultCollectionId, defaultFileUrl, defaultFileId, 10L, TestFileHelper.getDefaultFileChecksum(),
                     null, clientEventHandler, null);
         } catch (OperationFailedException e) {
             throw new RuntimeException(e);
         }
     }
 
-    /** Used to listen for operation event and log this. */
+    /**
+     * Used to listen for operation event and log this.
+     */
     public class ClientEventLogger implements EventHandler {
 
         /** The constructor.
          */
         public ClientEventLogger() {
             super();
-            
         }
 
         @Override

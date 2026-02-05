@@ -44,9 +44,6 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -82,12 +79,13 @@ public class SecurityManagerTest {
                 SecurityTestConstants.getComponentID());
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void operationAuthorizationBehaviourTest() throws Exception {
         addDescription("Tests that a signature only allows the correct requests.");
 
         List<Collection> collections = settings.getRepositorySettings().getCollections().getCollection();
-        Assertions.assertEquals(collections.size(), 2,
+        Assertions.assertEquals(2, collections.size(),
                 "There should be two collections present to test the collection limited authorization");
         settings.getRepositorySettings().setPermissionSet(getCollectionLimitedPermissionSet());
         setupSecurityManager(settings);
@@ -178,7 +176,8 @@ public class SecurityManagerTest {
         }
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void negativeSigningAuthenticationRoundtripUnkonwnCertificateTest() throws Exception {
         addDescription("Tests that a roundtrip of signing a request and afterwards authenticating it fails due to " +
                 "a unknown certificate.");

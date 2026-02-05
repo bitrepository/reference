@@ -36,6 +36,9 @@ import io.qameta.allure.Allure;
 public class DeleteFileClientTestWrapper implements DeleteFileClient {
     /** The PutClient to wrap. */
     private DeleteFileClient wrappedDeleteClient;
+    private final DeleteFileClient wrappedDeleteClient;
+    /** The manager to monitor the operations.*/
+    private final TestEventManager testEventManager;
 
     /**
      * Constructor.

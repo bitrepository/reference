@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /** 
@@ -112,7 +113,6 @@ public class TestFileStore implements FileStore {
     @Override
     public void moveToArchive(String fileID, String collectionID) {
         // This does nothing.
-        return;
     }
 
     @Override
@@ -129,9 +129,7 @@ public class TestFileStore implements FileStore {
     public Collection<String> getAllFileIds(String collectionID) {
         String[] ids = new File(storageDir).list();
         List<String> res = new ArrayList<>();
-        for(String id : ids) {
-            res.add(id);
-        }
+        Collections.addAll(res, ids);
         return res;
     }
 

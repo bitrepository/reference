@@ -8,16 +8,16 @@
  * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -54,7 +54,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-
 import javax.xml.bind.JAXBException;
 import java.math.BigInteger;
 import java.net.URL;
@@ -73,7 +72,6 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
 
     /**
      * Set up the test scenario before running the tests in this class.
-     *
      * @throws javax.xml.bind.JAXBException
      */
     @BeforeEach
@@ -85,10 +83,9 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
     @Test
     @Tag("regressiontest")
     public void verifyGetFileIDsClientFromFactory() throws Exception {
-        Assertions.assertTrue(AccessComponentFactory.getInstance().createGetFileIDsClient(settingsForCUT, securityManager,
-                        settingsForTestClient.getComponentID()) instanceof ConversationBasedGetFileIDsClient,
-                "The default GetFileClient from the Access factory should be of the type '" +
-                        ConversationBasedGetFileIDsClient.class.getName() + "'.");
+        Assertions.assertInstanceOf(ConversationBasedGetFileIDsClient.class, AccessComponentFactory.getInstance().createGetFileIDsClient(settingsForCUT, securityManager,
+                settingsForTestClient.getComponentID()), "The default GetFileClient from the Access factory should be of the type '" +
+                ConversationBasedGetFileIDsClient.class.getName() + "'.");
     }
 
     @Test
@@ -160,14 +157,14 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         addStep("Receive and validate event results for the pillar.",
                 "Should be a FileIDsCompletePillarEvent with the ResultingFileIDs containing only the URL.");
         FileIDsCompletePillarEvent event = (FileIDsCompletePillarEvent) testEventHandler.waitForEvent();
-        assertEquals(event.getEventType(), OperationEventType.COMPONENT_COMPLETE);
+        assertEquals(OperationEventType.COMPONENT_COMPLETE, event.getEventType());
         ResultingFileIDs resFileIDs = event.getFileIDs();
         Assertions.assertNotNull(resFileIDs, "The ResultingFileIDs may not be null.");
         Assertions.assertTrue(resFileIDs.getResultAddress().contains(deliveryUrl.toExternalForm()),
                 "The resulting address'" + resFileIDs.getResultAddress() + "' should contain the argument address: '"
                         + deliveryUrl.toExternalForm() + "'");
         Assertions.assertNull(resFileIDs.getFileIDsData(), "No FileIDsData should be returned.");
-        assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPLETE);
+        assertEquals(OperationEventType.COMPLETE, testEventHandler.waitForEvent().getEventType());
     }
 
     @Test
@@ -192,7 +189,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
 
         IdentifyPillarsForGetFileIDsRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
                 IdentifyPillarsForGetFileIDsRequest.class);
-        assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFY_REQUEST_SENT);
+        assertEquals(OperationEventType.IDENTIFY_REQUEST_SENT, testEventHandler.waitForEvent().getEventType());
 
         addStep("The pillar sends a response to the identify message.",
                 "The callback listener should notify of the response and the client should send a GetFileIDsRequest "
@@ -204,17 +201,17 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         GetFileIDsRequest receivedGetFileIDsRequest = pillar1Receiver.waitForMessage(GetFileIDsRequest.class);
 
         for (int i = 0; i < settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().size(); i++) {
-            assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.COMPONENT_IDENTIFIED);
+            assertEquals(OperationEventType.COMPONENT_IDENTIFIED, testEventHandler.waitForEvent().getEventType());
         }
-        assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.IDENTIFICATION_COMPLETE);
-        assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.REQUEST_SENT);
+        assertEquals(OperationEventType.IDENTIFICATION_COMPLETE, testEventHandler.waitForEvent().getEventType());
+        assertEquals(OperationEventType.REQUEST_SENT, testEventHandler.waitForEvent().getEventType());
 
         addStep("The pillar sends a getFileIDsProgressResponse to the GetFileIDsClient.",
                 "The GetFileIDsClient should notify about the response through the callback interface.");
         GetFileIDsProgressResponse getFileIDsProgressResponse = messageFactory.createGetFileIDsProgressResponse(
                 receivedGetFileIDsRequest, PILLAR1_ID, pillar1DestinationId);
         messageBus.sendMessage(getFileIDsProgressResponse);
-        assertEquals(testEventHandler.waitForEvent().getEventType(), OperationEventType.PROGRESS);
+        assertEquals(OperationEventType.PROGRESS, testEventHandler.waitForEvent().getEventType());
 
         addStep("The resulting file is uploaded to the indicated url and the pillar sends a final response upload message",
                 "The GetFileIDsClient notifies that the file is ready through the callback listener and the uploaded file is present.");

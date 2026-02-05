@@ -26,7 +26,6 @@ package org.bitrepository.client.conversation.mediator;
 
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.client.conversation.Conversation;
-import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.common.DefaultThreadFactory;
 import org.bitrepository.common.settings.Settings;
@@ -197,7 +196,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
 
         @Override
         public void run() {
-            OperationFailedEvent failedEvent = new OperationFailedEvent(null, message, Collections.<ContributorEvent>emptyList());
+            OperationFailedEvent failedEvent = new OperationFailedEvent(null, message, Collections.emptyList());
             failedEvent.setConversationID(conversation.getConversationID());
             conversation.failConversation(failedEvent);
         }

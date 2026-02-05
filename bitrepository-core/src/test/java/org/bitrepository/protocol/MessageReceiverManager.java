@@ -51,7 +51,9 @@ public class MessageReceiverManager {
 
     public void stopListeners() {
         for (MessageReceiver receiver : messageReceivers) {
-            messageBus.removeListener(receiver.getDestination(), receiver.getMessageListener());
+            if (messageBus != null) {
+                messageBus.removeListener(receiver.getDestination(), receiver.getMessageListener());
+            }
         }
     }
 

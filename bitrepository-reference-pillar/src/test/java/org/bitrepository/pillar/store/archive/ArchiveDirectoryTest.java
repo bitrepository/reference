@@ -68,7 +68,7 @@ public class ArchiveDirectoryTest {
         addStep("Validate the existence of the file", "Should exist and be retrievable.");
         Assertions.assertTrue(directory.hasFile(FILE_ID));
         Assertions.assertNotNull(directory.retrieveFile(FILE_ID));
-        Assertions.assertEquals(directory.getFileIds(), Arrays.asList(FILE_ID));
+        Assertions.assertEquals(directory.getFileIds(), Collections.singletonList(FILE_ID));
         
         addStep("Delete the file.", "Should not be extractable.");
         directory.removeFileFromArchive(FILE_ID);
@@ -88,7 +88,7 @@ public class ArchiveDirectoryTest {
         addStep("Validate the existence of the file", "Should exist and be retrievable.");
         Assertions.assertFalse(directory.hasFile(FILE_ID));
         Assertions.assertNull(directory.retrieveFile(FILE_ID));
-        Assertions.assertEquals(directory.getFileIds(), Arrays.asList());
+        Assertions.assertEquals(directory.getFileIds(), List.of());
         
         addStep("Delete the file.", "exception since the file does not exist.");
         try {
@@ -230,7 +230,7 @@ public class ArchiveDirectoryTest {
         addStep("Validate the existence of the file", "Should exist and be retrievable.");
         Assertions.assertTrue(directory.hasFile(FOLDER_FILE_ID));
         Assertions.assertNotNull(directory.retrieveFile(FOLDER_FILE_ID));
-        Assertions.assertEquals(directory.getFileIds(), Arrays.asList(FOLDER_FILE_ID));
+        Assertions.assertEquals(directory.getFileIds(), Collections.singletonList(FOLDER_FILE_ID));
         
         addStep("Delete the file.", "Should not be retrievable.");
         directory.removeFileFromArchive(FOLDER_FILE_ID);

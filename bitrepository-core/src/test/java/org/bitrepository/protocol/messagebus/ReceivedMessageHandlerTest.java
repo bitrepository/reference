@@ -169,7 +169,8 @@ public class ReceivedMessageHandlerTest {
         verifyNoMoreInteractions(thirdStatusListener);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void specificMessageNamePoolAndDefaultPool() {
         addDescription("Tests it is possible to specify a pool for a specific message type, with a " +
                 "default pool for the remainder.");
@@ -235,7 +236,8 @@ public class ReceivedMessageHandlerTest {
         verifyNoMoreInteractions(thirdStatusListener);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void specificCollectionPoolAndDefaultPool() {
         addDescription("Tests it is possible to specify a pool for a specific collection, with a " +
                 "default pool for the remainder.");

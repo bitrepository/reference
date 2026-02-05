@@ -23,19 +23,15 @@ package org.bitrepository.access.getaudittrails;
 
 import org.bitrepository.client.eventhandler.EventHandler;
 
-
 import java.util.Arrays;
 
 public class AuditTrailClientTestWrapper implements AuditTrailClient {
     private AuditTrailClient auditTrailClient;
 
-
     public AuditTrailClientTestWrapper(AuditTrailClient auditTrailClient) {
         this.auditTrailClient = auditTrailClient;
-        
+
     }
-
-
     @Override
     public void getAuditTrails(String collectionID, AuditTrailQuery[] componentQueries, String fileID,
                                String urlForResult,

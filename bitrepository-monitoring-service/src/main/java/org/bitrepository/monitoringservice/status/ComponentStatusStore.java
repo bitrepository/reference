@@ -35,7 +35,7 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class ComponentStatusStore implements StatusStore {
     /** The log.*/
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
     /** The mapping between components and their respective status.*/
     private final ConcurrentMap<String, ComponentStatus> statusMap;
     

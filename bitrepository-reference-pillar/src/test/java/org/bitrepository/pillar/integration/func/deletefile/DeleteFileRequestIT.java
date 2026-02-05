@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import java.lang.reflect.Method;
+
 import java.util.concurrent.TimeUnit;
 
 public class DeleteFileRequestIT extends DefaultPillarOperationTest {
@@ -53,21 +53,21 @@ public class DeleteFileRequestIT extends DefaultPillarOperationTest {
         pillarDestination = lookupDeleteFileDestination();
         msgFactory = new DeleteFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), pillarDestination);
         clientProvider.getPutClient().putFile(
-                collectionID, DEFAULT_FILE_URL, testSpecificFileID, 10L, TestFileHelper.getDefaultFileChecksum(),
+                collectionID, defaultFileUrl, testSpecificFileID, 10L, TestFileHelper.getDefaultFileChecksum(),
                 null, null, null);
         clientProvider.getPutClient().putFile(
-                nonDefaultCollectionId, DEFAULT_FILE_URL, testSpecificFileID, 10L, TestFileHelper.getDefaultFileChecksum(),
+                nonDefaultCollectionId, defaultFileUrl, testSpecificFileID, 10L, TestFileHelper.getDefaultFileChecksum(),
                 null, null, null);
     }
 
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
-    @Tag( PillarTestGroups.CHECKSUM_PILLAR_TEST)
+    @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
     public void normalDeleteFileTest() {
         addDescription("Tests a normal DeleteFile sequence");
         addStep("Send a DeleteFile request to " + testConfiguration.getPillarUnderTestID(),
                 "The pillar should generate a OPERATION_ACCEPTED_PROGRESS progress response followed by a " +
-                "OPERATION_COMPLETED final response");
+                        "OPERATION_COMPLETED final response");
         DeleteFileRequest deleteRequest = (DeleteFileRequest) createRequest();
         deleteRequest.setFileID(testSpecificFileID);
         messageBus.sendMessage(deleteRequest);
@@ -88,15 +88,15 @@ public class DeleteFileRequestIT extends DefaultPillarOperationTest {
         Assertions.assertEquals(finalResponse.getFrom(), getPillarID());
         Assertions.assertEquals(finalResponse.getPillarID(), getPillarID());
     }
-    
+
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     public void requestNewChecksumDeleteFileTest() {
         addDescription("Tests a normal DeleteFile sequence");
         addStep("Send a DeleteFile request to " + testConfiguration.getPillarUnderTestID(),
                 "The pillar should generate a OPERATION_ACCEPTED_PROGRESS progress response followed by a " +
-                "OPERATION_COMPLETED final response");
-        
+                        "OPERATION_COMPLETED final response");
+
         ChecksumSpecTYPE requestedChecksumSpec = new ChecksumSpecTYPE();
         requestedChecksumSpec.setChecksumType(ChecksumType.HMAC_MD5);
         try {
@@ -124,14 +124,14 @@ public class DeleteFileRequestIT extends DefaultPillarOperationTest {
         Assertions.assertEquals(finalResponse.getCorrelationID(), deleteRequest.getCorrelationID());
         Assertions.assertEquals(finalResponse.getFrom(), getPillarID());
         Assertions.assertNotNull(finalResponse.getChecksumDataForExistingFile());
-        Assertions.assertEquals(finalResponse.getChecksumDataForExistingFile().getChecksumSpec(), 
+        Assertions.assertEquals(finalResponse.getChecksumDataForExistingFile().getChecksumSpec(),
                 requestedChecksumSpec);
         Assertions.assertEquals(finalResponse.getPillarID(), getPillarID());
     }
 
     @Override
     protected MessageRequest createRequest() {
-        return msgFactory.createDeleteFileRequest(TestFileHelper.getDefaultFileChecksum(), null, DEFAULT_FILE_ID);
+        return msgFactory.createDeleteFileRequest(TestFileHelper.getDefaultFileChecksum(), null, defaultFileId);
     }
 
     @Override

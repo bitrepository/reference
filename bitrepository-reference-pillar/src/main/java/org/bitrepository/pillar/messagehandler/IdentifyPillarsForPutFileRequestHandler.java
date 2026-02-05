@@ -65,9 +65,13 @@ public class IdentifyPillarsForPutFileRequestHandler extends IdentifyRequestHand
     }
 
     @Override
-    public void validateRequest(IdentifyPillarsForPutFileRequest request, MessageContext messageContext) throws RequestHandlerException {
+    public boolean validateRequest(IdentifyPillarsForPutFileRequest request, MessageContext messageContext) throws RequestHandlerException {
         validateCollectionID(request);
+        if (!this.context.getPillarCollections().contains(request.getCollectionID())) {
+            return false;
+        }
         validateFileIDFormat(request.getFileID());
+        return true;
     }
 
     @Override

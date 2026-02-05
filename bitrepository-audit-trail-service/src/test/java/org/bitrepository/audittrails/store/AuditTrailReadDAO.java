@@ -43,7 +43,7 @@ import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_TA
  */
 public class AuditTrailReadDAO {
 
-    private DBConnector dbConnector;
+    private final DBConnector dbConnector;
     
     public AuditTrailReadDAO(DatabaseManager databaseManager) {
         dbConnector = databaseManager.getConnector();
@@ -52,7 +52,7 @@ public class AuditTrailReadDAO {
     public List<String> getCollectionIDs() {
         String selectSql = "SELECT " + COLLECTION_ID + " FROM " + COLLECTION_TABLE;
         
-        return DatabaseUtils.selectStringList(dbConnector, selectSql, new Object[0]);
+        return DatabaseUtils.selectStringList(dbConnector, selectSql);
     }
     
     public List<String> getFileIDs(String collectionID) {
@@ -67,12 +67,12 @@ public class AuditTrailReadDAO {
     public List<String> getContributorIDs() {
         String selectSql = "SELECT " + CONTRIBUTOR_ID + " FROM " + CONTRIBUTOR_TABLE;
         
-        return DatabaseUtils.selectStringList(dbConnector, selectSql, new Object[0]);
+        return DatabaseUtils.selectStringList(dbConnector, selectSql);
     }
     
     public List<String> getActorNames() {
         String selectSql = "SELECT " + ACTOR_NAME + " FROM " + ACTOR_TABLE;
         
-        return DatabaseUtils.selectStringList(dbConnector, selectSql, new Object[0]);
+        return DatabaseUtils.selectStringList(dbConnector, selectSql);
     }
 }

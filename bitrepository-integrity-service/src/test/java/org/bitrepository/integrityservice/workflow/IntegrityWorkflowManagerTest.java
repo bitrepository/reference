@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -35,7 +35,6 @@ import org.bitrepository.settings.referencesettings.WorkflowSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -58,7 +57,6 @@ public class IntegrityWorkflowManagerTest {
     private DatatypeFactory factory;
     private String collection1ID, collection2ID;
     private TestWorkflow workflow1, workflow2;
-
 
     @BeforeEach
     public void setup() throws DatatypeConfigurationException {
@@ -83,12 +81,13 @@ public class IntegrityWorkflowManagerTest {
         workflow2 = new TestWorkflow(collection2ID);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void normalWorkflowSettings() {
         addDescription("Verifies that the IntegrityWorkflowManager loads correctly for at normally defined workflow.");
 
         addStep("Create a IntegrityWorkflowManager based on a single Testworkflow with a daily schedule in a to " +
-                "collection system",
+                        "collection system",
                 "Two Test workflows should be scheduled daily, one for each collection");
 
         createIntegrityWorkflowManager();
@@ -104,7 +103,7 @@ public class IntegrityWorkflowManagerTest {
                 "a workflow class name without a package scope (located in the default workflow package).");
 
         addStep("Create a IntegrityWorkflowManager based on a single Testworkflow with a daily schedule in a to " +
-                "collection system, where the className is just the simpleName",
+                        "collection system, where the className is just the simpleName",
                 "Two Test workflows should be scheduled daily, one for each collection");
         workflowSettings.getWorkflow().get(0).setWorkflowClass("TestWorkflow");
 
@@ -114,7 +113,8 @@ public class IntegrityWorkflowManagerTest {
         verifyNoMoreInteractions(scheduler);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void noWorkflowSettings() {
         addDescription("Verifies that the IntegrityWorkflowManager loads correctly for missing reference settings a " +
                 "workflow settings element.");
@@ -135,13 +135,14 @@ public class IntegrityWorkflowManagerTest {
         verifyNoMoreInteractions(scheduler);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void collectionSpecificWorkflows() {
         addDescription("Verifies that the IntegrityWorkflowManager loads correctly for workflows configured for " +
                 "specific collection.");
 
         addStep("Create a IntegrityWorkflowManager based on a workflow with different schedules for collection 1 and " +
-                "2 (daily and hourly)",
+                        "2 (daily and hourly)",
                 "Two workflows should be scheduled, one daily and one hourly");
         WorkflowConfiguration workflowConfiguration =
                 settings.getReferenceSettings().getIntegrityServiceSettings().getWorkflows().getWorkflow().get(0);
@@ -163,7 +164,8 @@ public class IntegrityWorkflowManagerTest {
         verifyNoMoreInteractions(scheduler);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void unscheduledWorkflow() {
         addDescription("Verifies that the IntegrityWorkflowManager loads workflow correctly for workflows without a " +
                 "defined schedule meaning they are never run automatically.");
@@ -176,10 +178,11 @@ public class IntegrityWorkflowManagerTest {
         when(manager.getNextScheduledRun(workflow1.getJobID())).thenReturn(null);
         when(manager.getRunInterval(workflow1.getJobID())).thenReturn(-1L);
         assertNull(manager.getNextScheduledRun(workflow1.getJobID()));
-        assertEquals(manager.getRunInterval(workflow1.getJobID()), -1);
+        assertEquals(-1, manager.getRunInterval(workflow1.getJobID()));
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void startWorkflow() {
         addDescription("Verifies that the that it is possible to manually start a workflow.");
 

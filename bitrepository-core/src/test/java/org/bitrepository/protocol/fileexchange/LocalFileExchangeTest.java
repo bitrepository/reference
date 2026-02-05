@@ -50,10 +50,10 @@ public class LocalFileExchangeTest  {
     @Tag("regressiontest")
     public void getUrlTest() throws MalformedURLException {
         String testFile = "getUrlTestfile";
-        
+
         File basedir = new File(BASE_FILE_EXCHANGE_DIR);
         URL expectedUrl = new URL("file:" + basedir.getAbsolutePath() + "/" + testFile);
-        
+
         URL actualUrl = exchange.getURL(testFile);
         Assertions.assertEquals(actualUrl, expectedUrl);
         File actualFile = new File(actualUrl.getFile());
@@ -81,74 +81,74 @@ public class LocalFileExchangeTest  {
         File actualFile = new File(fileExchangeUrl.toURI());
         Assertions.assertTrue(actualFile.exists());
         String fileExchangeContent = readTestFileContent(actualFile);
-        Assertions.assertEquals(fileExchangeContent, testFileContent);
+        Assertions.assertEquals(testFileContent, fileExchangeContent);
         actualFile.delete();
     }
-    
+
     @Test
     public void putFileByFileTest() throws IOException {
         String testFileName = "putFileByFileTestFile";
         String testFileLocation = "target/" + testFileName;
         String testFileContent = "lorem ipsum1";
         File testFile = createTestFile(testFileLocation, testFileContent);
-        
+
         File basedir = new File(BASE_FILE_EXCHANGE_DIR);
         URL expectedUrl = new URL("file:" + basedir.getAbsolutePath() + "/" + testFileName);
-        
+
         URL fileExchangeUrl = exchange.putFile(testFile);
         Assertions.assertEquals(fileExchangeUrl, expectedUrl);
-        
+
         File actualFile = new File(fileExchangeUrl.getFile());
         Assertions.assertTrue(actualFile.exists());
         String fileExchangeContent = readTestFileContent(actualFile);
-        Assertions.assertEquals(fileExchangeContent, testFileContent);
+        Assertions.assertEquals(testFileContent, fileExchangeContent);
         actualFile.delete();
     }
-    
+
     @Test
     public void putFileByStreamTest() throws IOException {
         String testFileName = "putFileByStreamTestFile";
         String testFileContent = "lorem ipsum2";
-        
+
         InputStream is = new ByteArrayInputStream(testFileContent.getBytes(StandardCharsets.UTF_8));
         URL fileExchangeUrl = exchange.getURL(testFileName);
         exchange.putFile(is, fileExchangeUrl);
-        
+
         File fileExchangeFile = new File(fileExchangeUrl.getFile());
         String fileExchangeContent = readTestFileContent(fileExchangeFile);
-        Assertions.assertEquals(fileExchangeContent, testFileContent);
+        Assertions.assertEquals(testFileContent, fileExchangeContent);
         fileExchangeFile.delete();
     }
-    
+
     @Test
     public void getFileByInputStreamTest() throws IOException {
         String testFileName = "getFileByInputStreamTestFile";
         String testFileContent = "lorem ipsum3";
         String testFileLocation = "target/" + testFileName;
-        
+
         File testFile = createTestFile(testFileLocation, testFileContent);
         URL testFileUrl = testFile.toURI().toURL();
-        
+
         InputStream is = exchange.getFile(testFileUrl);
         String fileContent = IOUtils.toString(is, StandardCharsets.UTF_8);
-        Assertions.assertEquals(fileContent, testFileContent);
+        Assertions.assertEquals(testFileContent, fileContent);
     }
-    
+
     @Test
     public void getFileByOutputStreamTest() throws IOException {
         String testFileName = "getFileByOutputStreamTestFile";
         String testFileContent = "lorem ipsum4";
         String testFileLocation = "target/" + testFileName;
-        
+
         File testFile = createTestFile(testFileLocation, testFileContent);
         URL testFileUrl = testFile.toURI().toURL();
-        
+
         OutputStream os = new ByteArrayOutputStream();
-        
+
         exchange.getFile(os, testFileUrl);
-        Assertions.assertEquals(os.toString(), testFileContent);
+        Assertions.assertEquals(testFileContent, os.toString());
     }
-    
+
     @Test
     public void getFileByAddressTest() throws IOException {
         String testFileName = "getFileByAddressTestFile";
@@ -157,39 +157,39 @@ public class LocalFileExchangeTest  {
 
         File testFile = createTestFile(testFileLocation, testFileContent);
         URL testFileUrl = testFile.toURI().toURL();
-        
+
         File destination = new File("target/getFileByAddressTestOutputFile");
         destination.deleteOnExit();
-        
+
         exchange.getFile(destination, testFileUrl.toString());
         String destinationContent = readTestFileContent(destination);
-        Assertions.assertEquals(destinationContent, testFileContent);
+        Assertions.assertEquals(testFileContent, destinationContent);
     }
 
     @Test
     public void deleteFileTest() throws IOException, URISyntaxException {
         String testFileName = "putFileByStreamTestFile";
         String testFileContent = "lorem ipsum6";
-        
+
         InputStream is = new ByteArrayInputStream(testFileContent.getBytes(StandardCharsets.UTF_8));
         URL fileExchangeUrl = exchange.getURL(testFileName);
         exchange.putFile(is, fileExchangeUrl);
-        
+
         File fileExchangeFile = new File(fileExchangeUrl.getFile());
         Assertions.assertTrue(fileExchangeFile.exists());
         exchange.deleteFile(fileExchangeUrl);
         Assertions.assertFalse(fileExchangeFile.exists());
     }
-    
+
     private File createTestFile(String filename, String content) throws IOException {
         Files.write(Paths.get(filename), content.getBytes(StandardCharsets.UTF_8));
         File f = Paths.get(filename).toFile();
         f.deleteOnExit();
         return f;
     }
-    
+
     private String readTestFileContent(File testFile) throws IOException {
         return Files.readString(Paths.get(testFile.toURI()));
     }
-    
+
 }

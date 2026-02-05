@@ -7,7 +7,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import java.math.BigInteger;
@@ -40,14 +39,14 @@ public class XmlUtilsTest {
         addDescription("Tests xmlDurationToDuration in sunshine scenario cases");
 
         addStep("Durations of 0 of some time unit", "Duration.ZERO");
-        Assertions.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("P0Y")), Duration.ZERO);
-        Assertions.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("P0M")), Duration.ZERO);
-        Assertions.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("P0D")), Duration.ZERO);
-        Assertions.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("PT0H")), Duration.ZERO);
-        Assertions.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("PT0M")), Duration.ZERO);
-        Assertions.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("PT0S")), Duration.ZERO);
-        Assertions.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("PT0.0000S")),
-                Duration.ZERO);
+        Assertions.assertEquals(Duration.ZERO, XmlUtils.xmlDurationToDuration(factory.newDuration("P0Y")));
+        Assertions.assertEquals(Duration.ZERO, XmlUtils.xmlDurationToDuration(factory.newDuration("P0M")));
+        Assertions.assertEquals(Duration.ZERO, XmlUtils.xmlDurationToDuration(factory.newDuration("P0D")));
+        Assertions.assertEquals(Duration.ZERO, XmlUtils.xmlDurationToDuration(factory.newDuration("PT0H")));
+        Assertions.assertEquals(Duration.ZERO, XmlUtils.xmlDurationToDuration(factory.newDuration("PT0M")));
+        Assertions.assertEquals(Duration.ZERO, XmlUtils.xmlDurationToDuration(factory.newDuration("PT0S")));
+        Assertions.assertEquals(Duration.ZERO,
+                XmlUtils.xmlDurationToDuration(factory.newDuration("PT0.0000S")));
 
         addStep("Test correct and precise conversion",
                 "Hours, minutes and seconds are converted with full precision");
@@ -132,33 +131,33 @@ public class XmlUtilsTest {
         });
     }
 
-        @Test
+    @Test
     @Tag("regressiontest")
     public void testXmlDurationToMilliseconds() {
         addDescription("Tests xmlDurationToMilliseconds in sunshine scenario cases");
         addStep("Test correct and precise conversion",
                 "Hours, minutes and seconds are converted with full precision");
 
-        Assertions.assertEquals(XmlUtils.xmlDurationToMilliseconds(factory.newDuration(1)), 1);
-        Assertions.assertEquals(XmlUtils.xmlDurationToMilliseconds(factory.newDuration(1000)), 1000);
+        Assertions.assertEquals(1, XmlUtils.xmlDurationToMilliseconds(factory.newDuration(1)));
+        Assertions.assertEquals(1000, XmlUtils.xmlDurationToMilliseconds(factory.newDuration(1000)));
 
-        Assertions.assertEquals(XmlUtils.xmlDurationToMilliseconds(factory.newDuration("PT0.001S")), 1);
-        Assertions.assertEquals(XmlUtils.xmlDurationToMilliseconds(factory.newDuration("PT0.001999S")), 1);
-        Assertions.assertEquals(XmlUtils.xmlDurationToMilliseconds(factory.newDuration("PT2S")), 2000);
+        Assertions.assertEquals(1, XmlUtils.xmlDurationToMilliseconds(factory.newDuration("PT0.001S")));
+        Assertions.assertEquals(1, XmlUtils.xmlDurationToMilliseconds(factory.newDuration("PT0.001999S")));
+        Assertions.assertEquals(2000, XmlUtils.xmlDurationToMilliseconds(factory.newDuration("PT2S")));
     }
 
-        @Test
+    @Test
     @Tag("regressiontest")
     public void testNegativeXmlDurationToMilliseconds() {
-        Assertions.assertEquals(XmlUtils.xmlDurationToMilliseconds(factory.newDuration("-PT1S")), -1000);
+        Assertions.assertEquals(-1000, XmlUtils.xmlDurationToMilliseconds(factory.newDuration("-PT1S")));
     }
 
-        @Test
+    @Test
     @Tag("regressiontest")
     public void convertsToTimeMeasure() {
         TimeMeasureTYPE shortTimeMeasure = XmlUtils.xmlDurationToTimeMeasure(factory.newDuration(1));
-        Assertions.assertEquals(shortTimeMeasure.getTimeMeasureUnit(), TimeMeasureUnit.MILLISECONDS);
-        Assertions.assertEquals(shortTimeMeasure.getTimeMeasureValue(), BigInteger.ONE);
+        Assertions.assertEquals(TimeMeasureUnit.MILLISECONDS, shortTimeMeasure.getTimeMeasureUnit());
+        Assertions.assertEquals(BigInteger.ONE, shortTimeMeasure.getTimeMeasureValue());
 
         long hours = 2_562_047_788_015L;
         TimeMeasureTYPE longTimeMeasure = XmlUtils.xmlDurationToTimeMeasure(factory.newDurationDayTime(
@@ -166,7 +165,7 @@ public class XmlUtilsTest {
         if (longTimeMeasure.getTimeMeasureUnit() == TimeMeasureUnit.HOURS) {
             Assertions.assertEquals(longTimeMeasure.getTimeMeasureValue(), BigInteger.valueOf(hours));
         } else {
-            Assertions.assertEquals(longTimeMeasure.getTimeMeasureUnit(), TimeMeasureUnit.MILLISECONDS);
+            Assertions.assertEquals(TimeMeasureUnit.MILLISECONDS, longTimeMeasure.getTimeMeasureUnit());
             Assertions.assertEquals(longTimeMeasure.getTimeMeasureValue(),
                     BigInteger.valueOf(Duration.ofHours(hours).toMillis()));
         }

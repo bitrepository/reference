@@ -34,11 +34,12 @@ import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.mockito.ArgumentCaptor;
+
 import javax.xml.datatype.DatatypeFactory;
 
 import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
@@ -57,7 +58,7 @@ public class AuditCollectorTest {
     public static final String TEST_COLLECTION = "dummy-collection";
     public static final String DEFAULT_CONTRIBUTOR = "Contributor1";
     
-    @BeforeEach
+    @BeforeAll
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("AuditCollectorUnderTest");
         Collection c = settings.getRepositorySettings().getCollections().getCollection().get(0);
@@ -66,7 +67,8 @@ public class AuditCollectorTest {
         settings.getRepositorySettings().getCollections().getCollection().add(c);
     }
 
-    @Test @Tag("regressiontest")
+    @Test
+    @Tag("regressiontest")
     public void auditCollectorIntervalTest() throws Exception {
         addDescription("Test that the collector calls the AuditClient at the correct intervals.");
         DatatypeFactory factory = DatatypeFactory.newInstance();

@@ -63,7 +63,7 @@ public class IdentifyPillarsForGetFileRequestHandler extends IdentifyRequestHand
     }
 
     @Override
-    protected void validateRequest(IdentifyPillarsForGetFileRequest request, MessageContext requestContext)
+    protected boolean validateRequest(IdentifyPillarsForGetFileRequest request, MessageContext requestContext)
             throws RequestHandlerException {
         if (getPillarModel().getChecksumPillarSpec() != null) {
             throw new InvalidMessageException(ResponseCode.REQUEST_NOT_SUPPORTED,
@@ -71,9 +71,13 @@ public class IdentifyPillarsForGetFileRequestHandler extends IdentifyRequestHand
         }
 
         validateCollectionID(request);
+        if (!this.context.getPillarCollections().contains(request.getCollectionID())) {
+            return false;
+        }
         validateFileIDFormat(request.getFileID());
 
         checkThatFileIsAvailable(request);
+        return true;
     }
 
     @Override

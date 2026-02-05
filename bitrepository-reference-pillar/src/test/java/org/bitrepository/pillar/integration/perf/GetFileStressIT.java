@@ -6,16 +6,16 @@ package org.bitrepository.pillar.integration.perf;
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -58,9 +58,9 @@ public class GetFileStressIT extends PillarPerformanceTest {
         metrics.addAppenders(metricAppenders);
         metrics.start();
         addStep("Getting " + NUMBER_OF_FILES + " files", "Not errors should occur");
-        for (String fileID:fileIDs) {
+        for (String fileID : fileIDs) {
             blockingGetFileClient.getFileFromSpecificPillar(
-                    collectionID, DEFAULT_FILE_ID, null, httpServerConfiguration.getURL(NON_DEFAULT_FILE_ID), getPillarID(), null,
+                    collectionID, defaultFileId, null, httpServerConfiguration.getURL(nonDefaultFileId), getPillarID(), null,
                     "performing singleGetFilePerformanceTest");
             metrics.mark(fileID);
         }
@@ -82,9 +82,9 @@ public class GetFileStressIT extends PillarPerformanceTest {
         ParallelOperationLimiter getLimiter = new ParallelOperationLimiter(numberOfParallelGets);
         EventHandler eventHandler = new OperationEventHandlerForMetrics(metrics, getLimiter);
         for (int i = 1; i <= numberOfFiles; i++) {
-            getLimiter.addJob(DEFAULT_FILE_ID);
+            getLimiter.addJob(defaultFileId);
             getFileClient.getFileFromSpecificPillar(
-                    collectionID, DEFAULT_FILE_ID, null, httpServerConfiguration.getURL(NON_DEFAULT_FILE_ID + "-" + i), getPillarID(),
+                    collectionID, defaultFileId, null, httpServerConfiguration.getURL(nonDefaultFileId + "-" + i), getPillarID(),
                     eventHandler,
                     " performing parallelGetFilePerformance");
         }
@@ -114,8 +114,8 @@ public class GetFileStressIT extends PillarPerformanceTest {
             getLimiter.addJob(correlationID);
             GetFileRequest getRequest =
                     msgFactory.createGetFileRequest("noIdentfyGetFilePerformanceTest", correlationID,
-                            httpServerConfiguration.getURL(NON_DEFAULT_FILE_ID + "-" + i).toExternalForm(), DEFAULT_FILE_ID, null,
-                            getPillarID(), getPillarID(), settingsForTestClient.getReceiverDestinationID(),  pillarDestination);
+                            httpServerConfiguration.getURL(nonDefaultFileId + "-" + i).toExternalForm(), defaultFileId, null,
+                            getPillarID(), getPillarID(), settingsForTestClient.getReceiverDestinationID(), pillarDestination);
             messageBus.sendMessage(getRequest);
         }
 
@@ -123,12 +123,12 @@ public class GetFileStressIT extends PillarPerformanceTest {
     }
 
     public String lookupGetFileDestination() {
-        MessageReceiver clientReceiver = new MessageReceiver(settingsForTestClient.getReceiverDestinationID());
-        messageBus.addListener(clientReceiver.getDestination(), clientReceiver.getMessageListener());;
+        MessageReceiver clientReceiver = new MessageReceiver(settingsForTestClient.getReceiverDestinationID(), testEventManager);
+        messageBus.addListener(clientReceiver.getDestination(), clientReceiver.getMessageListener());
         GetFileMessageFactory pillarLookupmMsgFactory =
                 new GetFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
         IdentifyPillarsForGetFileRequest identifyRequest =
-                pillarLookupmMsgFactory.createIdentifyPillarsForGetFileRequest(DEFAULT_FILE_ID);
+                pillarLookupmMsgFactory.createIdentifyPillarsForGetFileRequest(defaultFileId);
         messageBus.sendMessage(identifyRequest);
         String pillarDestination = clientReceiver.waitForMessage(IdentifyPillarsForGetFileResponse.class).getReplyTo();
         messageBus.removeListener(clientReceiver.getDestination(), clientReceiver.getMessageListener());

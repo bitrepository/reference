@@ -29,7 +29,6 @@ import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.eventhandler.EventHandler;
 
-
 import java.net.URL;
 
 /**

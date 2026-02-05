@@ -30,13 +30,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-
 import javax.security.auth.x500.X500Principal;
-import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.Security;
-import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
 import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
@@ -108,7 +105,7 @@ public class CertificateIDTest {
         Assertions.assertEquals(certificateID1, certificateID1);
 
         addStep("Test with a null as argument", "Should give negative result");
-        Assertions.assertNotEquals(certificateID1, null);
+        Assertions.assertNotEquals(null, certificateID1);
 
         addStep("Test with another class", "Should give negative result");
         Assertions.assertNotEquals(new Object(), certificateID1);
