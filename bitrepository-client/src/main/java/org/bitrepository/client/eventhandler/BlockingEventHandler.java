@@ -63,9 +63,11 @@ public class BlockingEventHandler implements EventHandler {
      * @return the operationEvent
      */
     public synchronized OperationEvent awaitFinished() {
-        try {
-            this.wait();
-        } catch (InterruptedException ignored) {
+        while (finishEvent == null) {
+            try {
+                this.wait();
+            } catch (InterruptedException ignored) {
+            }
         }
         return finishEvent;
     }
