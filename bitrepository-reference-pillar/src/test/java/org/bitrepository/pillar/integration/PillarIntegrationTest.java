@@ -39,6 +39,7 @@ import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
+import org.bitrepository.protocol.messagebus.SimpleMessageBus;
 import org.bitrepository.protocol.security.BasicMessageAuthenticator;
 import org.bitrepository.protocol.security.BasicMessageSigner;
 import org.bitrepository.protocol.security.BasicOperationAuthorizer;
@@ -64,16 +65,21 @@ import java.io.InputStream;
 /**
  * Super class for all tests which should test functionality on a single pillar.
  * <p>
- * Note That no setup/teardown is possible in this test of external pillars, so tests need to be written
+ * Note that no setup/teardown is possible in this test of external pillars, so tests need to be written
  * to be invariant against the initial pillar state.
  */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(ExtentedTestInfoParameterResolver.class)
 public abstract class PillarIntegrationTest extends IntegrationTest {
-    /** The path to the directory containing the integration test configuration files */
+    /**
+     * The path to the directory containing the integration test configuration files
+     */
     protected static final String PATH_TO_CONFIG_DIR = System.getProperty(
             "pillar.integrationtest.settings.path",
-            "conf");   /** The path to the directory containing the integration test configuration files */
+            "conf");
+    /**
+     * The path to the directory containing the integration test configuration files
+     */
     protected static final String PATH_TO_TESTPROPS_DIR = System.getProperty(
             "pillar.integrationtest.testprops.path",
             "testprops");
@@ -98,6 +104,20 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
         clientEventHandler = new ClientEventLogger(testEventManager);
     }
 
+    /**
+     * Initializes the test suite environment.
+     * <p>
+     * This method is annotated with {@link BeforeAll} and is responsible for:
+     * <ul>
+     *     <li>Loading the test configuration.</li>
+     *     <li>Setting up the message bus.</li>
+     *     <li>Starting the embedded pillar if configured.</li>
+     *     <li>Initializing client providers and file managers.</li>
+     *     <li>Uploading a default test file to the repository.</li>
+     * </ul>
+     *
+     * @param testInfo Information about the test suite being initialized.
+     */
     @Override
     @BeforeAll
     public void initializeSuite(SuiteInfo testInfo) {
@@ -117,11 +137,17 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
         putDefaultFile();
     }
 
+    /**
+     * Shuts down the real message bus after all tests in the class have run.
+     * <p>
+     * This method checks if an embedded message bus is NOT being used before attempting to close and clear
+     * the message bus manager.
+     */
     @AfterAll
     public void shutdownRealMessageBus() {
-        if(!useEmbeddedMessageBus()) {
+        if (!useEmbeddedMessageBus()) {
             MessageBusManager.clear();
-            if(messageBus != null) {
+            if (messageBus != null) {
                 try {
                     messageBus.close();
                 } catch (JMSException e) {
@@ -132,6 +158,11 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
         }
     }
 
+    /**
+     * Performs teardown operations for the entire suite.
+     * <p>
+     * This includes stopping the embedded reference pillar and calling the superclass's shutdown method.
+     */
     @AfterSuite
     @Override
     public void shutdownSuite() {
@@ -139,25 +170,27 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
         super.shutdownSuite();
     }
 
+    /**
+     * Adds context information to the test result in case of failure.
+     * <p>
+     * This method is called after each test execution. Currently, it provides an empty implementation
+     * intended to be overridden or populated for debugging purposes.
+     *
+     * @param result Information about the executed test.
+     */
     @AfterEach
     public void addFailureContextInfo(TestInfo result) {
     }
 
     protected void setupRealMessageBus() {
-        if(!useEmbeddedMessageBus()) {
+        if (!useEmbeddedMessageBus()) {
             MessageBusManager.clear();
             messageBus = MessageBusManager.getMessageBus(settingsForCUT, securityManager);
         } else {
-            setupMessageBus();
+            messageBus = new SimpleMessageBus();
             MessageBusManager.injectCustomMessageBus(MessageBusManager.DEFAULT_MESSAGE_BUS, messageBus);
         }
     }
-//
-//    @Override
-//    protected void setupMessageBus() {
-//        //Shortcircuit this so the messagebus is NOT INITIALISED BEFORE THE CONFIGURATION
-//        super.setupMessageBus();
-//    }
 
     @Override
     public void initMessagebus() {
@@ -170,6 +203,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
      * The type of pillar (full or checksum) is baed on the test group used, eg. if the group is
      * <code>checksumPillarTest</code> a checksum pillar is started, else a normal 'full' reference pillar is started.
      * </p>
+     *
      * @param testInfo
      */
     protected void startEmbeddedPillar(SuiteInfo testInfo) {
@@ -177,7 +211,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
             SettingsUtils.initialize(settingsForCUT);
             //TODO the tags are for the tags on the class, not the method
             // And they are not the tags from Suite, so you will not get the behaivour you want...
-            if (testInfo.getPillarType().filter(pillarType -> pillarType.equals("Checksum")).isPresent()){
+            if (testInfo.getPillarType().filter(pillarType -> pillarType.equals("Checksum")).isPresent()) {
                 embeddedPillar = EmbeddedPillar.createChecksumPillar(settingsForCUT);
             } else {
                 embeddedPillar = EmbeddedPillar.createReferencePillar(settingsForCUT);
@@ -190,12 +224,15 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
             embeddedPillar.shutdown();
         }
     }
+
     @Override
     public boolean useEmbeddedMessageBus() {
-        return testConfiguration.useEmbeddedMessagebus();
+        return true;
     }
 
-    /** Loads the pillar test specific settings */
+    /**
+     * Loads the pillar test specific settings
+     */
     @Override
     protected Settings loadSettings(String componentID) {
         SettingsProvider settingsLoader =
@@ -215,6 +252,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
      * Overrides the default settings modification, as this only works if the test can inject the modified settings into
      * the pillar. This means that if we are not using an embedded pillar we need to use the 'raw' collection settings,
      * eg. we can not add a special postfix.
+     *
      * @Override
      */
     protected String getTopicPostfix() {
@@ -278,13 +316,18 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
         }
     }
 
-    /** Used to listen for operation event and log this. */
+    /**
+     * Used to listen for operation event and log this.
+     */
     public class ClientEventLogger implements EventHandler {
 
-        /** The <code>TestEventManager</code> used to manage the event for the associated test. */
+        /**
+         * The <code>TestEventManager</code> used to manage the event for the associated test.
+         */
         private final TestEventManager testEventManager;
 
-        /** The constructor.
+        /**
+         * The constructor.
          *
          * @param testEventManager The <code>TestEventManager</code> used to manage the event for the associated test.
          */
@@ -295,7 +338,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
 
         @Override
         public void handleEvent(OperationEvent event) {
-            testEventManager.addResult("Received event: "+ event);
+            testEventManager.addResult("Received event: " + event);
         }
     }
 }
