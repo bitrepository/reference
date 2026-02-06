@@ -49,6 +49,10 @@ import javax.xml.datatype.DatatypeFactory;
 import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addFixture;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addReference;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
@@ -82,7 +86,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         PutFileClient putClient = createPutFileClient();
 
 
@@ -152,7 +156,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         settingsForCUT.getRepositorySettings().getClientSettings()
                 .setIdentificationTimeoutDuration(datatypeFactory.newDuration(100));
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         PutFileClient putClient = createPutFileClient();
 
         addStep("Request the putting of a file through the PutClient",
@@ -182,7 +186,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         settingsForCUT.getRepositorySettings().getClientSettings()
                 .setIdentificationTimeoutDuration(datatypeFactory.newDuration(100));
         settingsForCUT.getReferenceSettings().getPutFileSettings().setPartialPutsAllow(true);
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         PutFileClient putClient = createPutFileClient();
 
         addStep("Request the putting of a file through the PutClient",
@@ -230,7 +234,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         settingsForCUT.getRepositorySettings().getClientSettings()
                 .setIdentificationTimeoutDuration(datatypeFactory.newDuration(100));
         settingsForCUT.getReferenceSettings().getPutFileSettings().setPartialPutsAllow(false);
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         PutFileClient putClient = createPutFileClient();
 
         addStep("Request the putting of a file through the PutClient",
@@ -267,7 +271,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
         settingsForCUT.getRepositorySettings().getClientSettings()
                 .setOperationTimeoutDuration(datatypeFactory.newDuration(100));
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         PutFileClient putClient = createPutFileClient();
 
         addStep("Request the putting of a file through the PutClient",
@@ -307,7 +311,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         PutFileClient putClient = createPutFileClient();
 
         addStep("Ensure that the test-file is placed on the HTTP server.", "Should be removed an reuploaded.");
@@ -353,7 +357,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
     public void fileExistsOnPillarNoChecksumFromPillar() throws Exception {
         addDescription("Tests that PutClient handles the presence of a file correctly, when the pillar doesn't return a " +
                 "checksum in the identification response. ");
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         PutFileClient putClient = createPutFileClient();
 
         addStep("Call putFile.",
@@ -387,7 +391,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
     public void fileExistsOnPillarDifferentChecksumFromPillar() throws Exception {
         addDescription("Tests that PutClient handles the presence of a file correctly, when the pillar " +
                 "returns a checksum different from the file being put. ");
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         PutFileClient putClient = createPutFileClient();
 
         addStep("Call putFile.",
@@ -426,7 +430,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
     public void sameFileExistsOnOnePillar() throws Exception {
         addDescription("Tests that PutClient handles the presence of a file correctly, when the pillar " +
                 "returns a checksum equal the file being put (idempotent).");
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         PutFileClient putClient = createPutFileClient();
 
         addStep("Call putFile.",
@@ -482,7 +486,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
     public void fileExistsOnPillarChecksumFromPillarNoClientChecksum() throws Exception {
         addDescription("Tests that PutClient handles the presence of a file correctly, when the pillar " +
                 "returns a checksum but the putFile was called without a checksum. ");
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         PutFileClient putClient = createPutFileClient();
 
         addStep("Call putFile.",
@@ -523,7 +527,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                 "put, replace and delete clients fails if return checksums are requested and a checksumpillar is " +
                 "involved</a>");
 
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         PutFileClient putClient = createPutFileClient();
 
         addStep("Call putFile while requesting a salted checksum to be returned.",
@@ -576,7 +580,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         addDescription("Tests that PutClient handles the presence of a ChecksumPillar correctly, when a return" +
                 " checksum of default type is requested (which a checksum pillar can provide). ");
 
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         PutFileClient putClient = createPutFileClient();
 
         addStep("Call putFile while requesting a salted checksum to be returned.",
@@ -628,7 +632,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         addDescription("Tests that PutClient handles the presence of a ChecksumPillar correctly, when no return" +
                 " checksum is requested.");
 
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         PutFileClient putClient = createPutFileClient();
 
         addStep("Call putFile while requesting a salted checksum to be returned.",
@@ -680,7 +684,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         settingsForCUT.getReferenceSettings().getClientSettings().setOperationRetryCount(BigInteger.valueOf(2));
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         PutFileClient putClient = createPutFileClient();
 
         addStep("Request the putting of a file through the PutClient",
@@ -734,7 +738,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         settingsForCUT.getReferenceSettings().getClientSettings().setOperationRetryCount(BigInteger.valueOf(2));
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         PutFileClient putClient = createPutFileClient();
 
         addStep("Request the putting of a file through the PutClient",
@@ -802,7 +806,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(1).getPillarIDs().getPillarID().clear();
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(1).getPillarIDs().getPillarID().add(PILLAR2_ID);
         String otherCollection = settingsForCUT.getRepositorySettings().getCollections().getCollection().get(1).getID();
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         PutFileClient putClient = createPutFileClient();
 
         addStep("Request the putting of a file through the PutClient for collection2",
@@ -846,6 +850,6 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
     private PutFileClient createPutFileClient() {
         return new PutFileClientTestWrapper(new ConversationBasedPutFileClient(
                 messageBus, conversationMediator, settingsForCUT, settingsForTestClient.getComponentID())
-                , testEventManager);
+        );
     }
 }

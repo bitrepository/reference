@@ -56,6 +56,9 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.util.Date;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addFixture;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 

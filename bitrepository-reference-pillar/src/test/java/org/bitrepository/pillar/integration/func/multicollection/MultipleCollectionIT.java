@@ -34,6 +34,9 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 import java.util.Collections;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+
 public class MultipleCollectionIT extends PillarIntegrationTest {
     /**
      * Used for receiving responses from the pillar

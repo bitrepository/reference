@@ -47,6 +47,8 @@ import org.mockito.stubbing.Answer;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.Date;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;

@@ -44,6 +44,7 @@ import org.bitrepository.protocol.bus.MessageReceiver;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -51,6 +52,8 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import java.math.BigInteger;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -81,6 +84,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
 
     @Test
     @Tag("regressiontest")
+    @DisplayName("Tests that the AuditTrailClient can be created from the AccessComponentFactory.")
     public void verifyAuditTrailClientFromFactory() {
         Assertions.assertInstanceOf(ConversationBasedAuditTrailClient.class, AccessComponentFactory.getInstance().createAuditTrailClient(
                 settingsForCUT, securityManager, settingsForTestClient.getComponentID()), "The default AuditTrailClient from the Access factory should be of the type '" +
@@ -89,19 +93,20 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
 
     @Test
     @Tag("regressiontest")
+    @DisplayName("Tests that the AuditTrailClient can be created from the AccessComponentFactory.")
     public void getAllAuditTrailsTest() throws InterruptedException {
         addDescription("Tests the simplest case of getting all audit trail event for all contributors.");
 
         addStep("Create a AuditTrailClient.", "");
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         AuditTrailClient client = createAuditTrailClient();
 
         addStep("Retrieve all audit trails from the collection by calling with a null componentQueries array",
                 "This should be interpreted as a request for all audit trails from all the collection settings " +
                         "defined contributors.");
         client.getAuditTrails(collectionID, null, DEFAULT_FILE_ID, null, testEventHandler, null);
-        assertEquals(OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT,
-                testEventHandler.waitForEvent().getEventType());
+        assertEquals(testEventHandler.waitForEvent().getEventType(),
+                OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT);
         IdentifyContributorsForGetAuditTrailsRequest receivedIdentifyRequest =
                 collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
         assertEquals(receivedIdentifyRequest.getCollectionID(), collectionID);
@@ -181,7 +186,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
     public void getSomeAuditTrailsTest() throws InterruptedException {
         addDescription("Tests the client maps a AuditTrail query correctly to a GetAuditTrail request.");
 
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         AuditTrailClient client = createAuditTrailClient();
 
         addStep("Request audit trails from pillar 1 with both min and max sequence number set.",
@@ -243,7 +248,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
                 "GetAuditTrails response from one contributors.");
 
         addStep("Create a AuditTrailClient.", "");
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         AuditTrailClient client = createAuditTrailClient();
 
         addStep("Retrieve all audit trails from the collection by calling with a null componentQueries array",
@@ -318,7 +323,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         addDescription("Tests that progress events are handled correctly.");
 
         addStep("Create a AuditTrailClient.", "");
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         AuditTrailClient client = createAuditTrailClient();
 
         addStep("Retrieve all audit trails from the collection by calling with a null componentQueries array",
@@ -391,7 +396,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
                 "The default 2 contributors collection is used", "");
 
         settingsForCUT.getRepositorySettings().getClientSettings().setOperationTimeoutDuration(datatypeFactory.newDuration(500));
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         AuditTrailClient client = createAuditTrailClient();
 
         client.getAuditTrails(collectionID, null, null, null, testEventHandler, null);
@@ -437,7 +442,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
 
         addStep("Make the client ask for all audit trails.",
                 "It should send a identify message");
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         client.getAuditTrails(collectionID, null, null, null, testEventHandler, null);
         IdentifyContributorsForGetAuditTrailsRequest identifyRequest =
                 collectionReceiver.waitForMessage(IdentifyContributorsForGetAuditTrailsRequest.class);
@@ -481,7 +486,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
      */
     private AuditTrailClient createAuditTrailClient() {
         return new AuditTrailClientTestWrapper(new ConversationBasedAuditTrailClient(
-                settingsForCUT, conversationMediator, messageBus, settingsForTestClient.getComponentID()), testEventManager);
+                settingsForCUT, conversationMediator, messageBus, settingsForTestClient.getComponentID()));
     }
 
     private ResultingAuditTrails createTestResultingAuditTrails(String componentID) {

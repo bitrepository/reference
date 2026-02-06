@@ -51,6 +51,9 @@ import javax.xml.datatype.DatatypeFactory;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+
 public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
     private ChecksumSpecTYPE DEFAULT_CHECKSUM_SPEC;
     private ChecksumDataForFileTYPE DEFAULT_OLD_CHECKSUM_DATA;

@@ -44,6 +44,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.TimeUnit;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+
 public class DeleteFileRequestIT extends DefaultPillarOperationTest {
     protected DeleteFileMessageFactory msgFactory;
     private String pillarDestination;

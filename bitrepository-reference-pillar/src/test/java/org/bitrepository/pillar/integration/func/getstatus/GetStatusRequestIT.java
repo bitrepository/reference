@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -37,6 +37,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+
 public class GetStatusRequestIT extends PillarFunctionTest {
     protected GetStatusMessageFactory msgFactory;
     private String pillarDestination;
@@ -49,7 +52,8 @@ public class GetStatusRequestIT extends PillarFunctionTest {
     }
 
     @Test
-    @Tag(PillarTestGroups.FULL_PILLAR_TEST) @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
+    @Tag(PillarTestGroups.FULL_PILLAR_TEST)
+    @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
     public void normalGetStatusTest() {
         addDescription("Tests the GetStatus functionality of a pillar for the successful scenario.");
 
@@ -70,7 +74,7 @@ public class GetStatusRequestIT extends PillarFunctionTest {
     @Tag("failing")
     public void checksumPillarGetStatusWrongContributor() {
         addDescription("Tests the GetStatus functionality of the reference pillar for the bad scenario, where a wrong "
-                       + "contributor id is given.");
+                + "contributor id is given.");
         settingsForCUT.getReferenceSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);
         String wrongContributorId = "wrongContributor";
 

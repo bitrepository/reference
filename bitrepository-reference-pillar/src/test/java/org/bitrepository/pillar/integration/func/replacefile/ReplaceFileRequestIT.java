@@ -40,6 +40,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.TimeUnit;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+
 public class ReplaceFileRequestIT extends DefaultPillarOperationTest {
     protected ReplaceFileMessageFactory msgFactory;
     private String pillarDestination;
