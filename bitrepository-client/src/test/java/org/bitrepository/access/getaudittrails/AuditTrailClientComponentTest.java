@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -52,6 +52,8 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import java.math.BigInteger;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -65,16 +67,16 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
     @BeforeEach
     public void beforeMethodSetup() throws DatatypeConfigurationException {
         testMessageFactory = new GetAuditTrailsMessageFactory(settingsForTestClient.getComponentID());
-        
+
         Collection c = settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0);
         c.setID(collectionID);
         c.getPillarIDs().getPillarID().clear();
         c.getPillarIDs().getPillarID().add(PILLAR1_ID);
         c.getPillarIDs().getPillarID().add(PILLAR2_ID);
-        
+
         settingsForCUT.getRepositorySettings().getCollections().getCollection().clear();
         settingsForCUT.getRepositorySettings().getCollections().getCollection().add(c);
-        
+
         settingsForCUT.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().clear();
 
         datatypeFactory = DatatypeFactory.newInstance();
@@ -94,7 +96,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
     @DisplayName("Tests that the AuditTrailClient can be created from the AccessComponentFactory.")
     public void getAllAuditTrailsTest() throws InterruptedException {
         addDescription("Tests the simplest case of getting all audit trail event for all contributors.");
-        
+
         addStep("Create a AuditTrailClient.", "");
         TestEventHandler testEventHandler = new TestEventHandler();
         AuditTrailClient client = createAuditTrailClient();
@@ -484,7 +486,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
      */
     private AuditTrailClient createAuditTrailClient() {
         return new AuditTrailClientTestWrapper(new ConversationBasedAuditTrailClient(
-                settingsForCUT, conversationMediator, messageBus, settingsForTestClient.getComponentID()) );
+                settingsForCUT, conversationMediator, messageBus, settingsForTestClient.getComponentID()));
     }
 
     private ResultingAuditTrails createTestResultingAuditTrails(String componentID) {

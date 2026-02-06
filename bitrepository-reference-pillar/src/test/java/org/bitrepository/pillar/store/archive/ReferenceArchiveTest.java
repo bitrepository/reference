@@ -42,6 +42,9 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+
 public class ReferenceArchiveTest extends DefaultPillarTest {
     protected ReferenceArchive archive;
     protected PillarMediator mediator;

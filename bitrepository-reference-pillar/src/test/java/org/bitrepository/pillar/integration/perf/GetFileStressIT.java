@@ -36,6 +36,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+
 public class GetFileStressIT extends PillarPerformanceTest {
     protected GetFileClient getFileClient;
 
@@ -123,7 +126,7 @@ public class GetFileStressIT extends PillarPerformanceTest {
     }
 
     public String lookupGetFileDestination() {
-        MessageReceiver clientReceiver = new MessageReceiver(settingsForTestClient.getReceiverDestinationID(), testEventManager);
+        MessageReceiver clientReceiver = new MessageReceiver(settingsForTestClient.getReceiverDestinationID());
         messageBus.addListener(clientReceiver.getDestination(), clientReceiver.getMessageListener());
         GetFileMessageFactory pillarLookupmMsgFactory =
                 new GetFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);

@@ -59,6 +59,9 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.util.Date;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addFixture;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
@@ -72,6 +75,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
 
     /**
      * Set up the test scenario before running the tests in this class.
+     *
      * @throws javax.xml.bind.JAXBException
      */
     @BeforeEach

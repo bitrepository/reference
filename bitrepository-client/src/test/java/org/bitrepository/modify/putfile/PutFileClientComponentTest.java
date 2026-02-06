@@ -49,6 +49,10 @@ import javax.xml.datatype.DatatypeFactory;
 import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addFixture;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addReference;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
@@ -846,6 +850,6 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
     private PutFileClient createPutFileClient() {
         return new PutFileClientTestWrapper(new ConversationBasedPutFileClient(
                 messageBus, conversationMediator, settingsForCUT, settingsForTestClient.getComponentID())
-                );
+        );
     }
 }

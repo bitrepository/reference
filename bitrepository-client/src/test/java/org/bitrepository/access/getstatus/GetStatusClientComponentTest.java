@@ -44,6 +44,8 @@ import org.junit.jupiter.api.Test;
 import javax.xml.datatype.DatatypeFactory;
 import java.util.List;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
@@ -83,7 +85,7 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
         DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
         settingsForCUT.getRepositorySettings().getClientSettings()
                 .setIdentificationTimeoutDuration(datatypeFactory.newDuration(1000));
-            TestEventHandler testEventHandler = new TestEventHandler();
+        TestEventHandler testEventHandler = new TestEventHandler();
         GetStatusClient client = createGetStatusClient();
 
         client.getStatus(testEventHandler);
@@ -121,15 +123,15 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
         addDescription("Tests the simplest case of getting status for all contributors.");
 
         addStep("Create a GetStatusClient.", "");
-            TestEventHandler testEventHandler = new TestEventHandler();
-            GetStatusClient client = createGetStatusClient();
+        TestEventHandler testEventHandler = new TestEventHandler();
+        GetStatusClient client = createGetStatusClient();
 
-            addStep("Retrieve from all contributors in the collection",
-                    "This should be interpreted as a request for getting statuses from all contributors defined " +
-                    "in the collection settings.");
-            client.getStatus(testEventHandler);
-            IdentifyContributorsForGetStatusRequest identifyRequest =
-                    collectionReceiver.waitForMessage(IdentifyContributorsForGetStatusRequest.class);
+        addStep("Retrieve from all contributors in the collection",
+                "This should be interpreted as a request for getting statuses from all contributors defined " +
+                        "in the collection settings.");
+        client.getStatus(testEventHandler);
+        IdentifyContributorsForGetStatusRequest identifyRequest =
+                collectionReceiver.waitForMessage(IdentifyContributorsForGetStatusRequest.class);
         assertEquals(OperationEventType.IDENTIFY_REQUEST_SENT,
                 testEventHandler.waitForEvent().getEventType());
 
@@ -196,16 +198,16 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
      */
     private GetStatusClient createGetStatusClient() {
         return new GetStatusClientTestWrapper(new ConversationBasedGetStatusClient(
-                    messageBus, conversationMediator, settingsForCUT, settingsForTestClient.getComponentID()) );
-        }
-        
-        private ResultingStatus createTestResultingStatus(String componentID) {
-            ResultingStatus resultingStatus = new ResultingStatus();
-            StatusInfo info = new StatusInfo();
-            info.setStatusCode(StatusCode.OK);
-            info.setStatusText("Everythings fine..");
-            resultingStatus.setStatusInfo(info);
-            resultingStatus.setStatusTimestamp(CalendarUtils.getNow());
-            return resultingStatus;
-        }
+                messageBus, conversationMediator, settingsForCUT, settingsForTestClient.getComponentID()));
+    }
+
+    private ResultingStatus createTestResultingStatus(String componentID) {
+        ResultingStatus resultingStatus = new ResultingStatus();
+        StatusInfo info = new StatusInfo();
+        info.setStatusCode(StatusCode.OK);
+        info.setStatusText("Everythings fine..");
+        resultingStatus.setStatusInfo(info);
+        resultingStatus.setStatusTimestamp(CalendarUtils.getNow());
+        return resultingStatus;
+    }
 }

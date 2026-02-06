@@ -21,6 +21,8 @@
  */
 package org.bitrepository.pillar.integration;
 
+import org.bitrepository.ExtentedTestInfoParameterResolver;
+import org.bitrepository.SuiteInfo;
 import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
 import org.bitrepository.client.conversation.mediator.ConversationMediatorManager;
 import org.bitrepository.client.eventhandler.EventHandler;
@@ -32,12 +34,12 @@ import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.PillarSettingsProvider;
-import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.model.PillarFileManager;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
+import org.bitrepository.protocol.messagebus.SimpleMessageBus;
 import org.bitrepository.protocol.security.BasicMessageAuthenticator;
 import org.bitrepository.protocol.security.BasicMessageSigner;
 import org.bitrepository.protocol.security.BasicOperationAuthorizer;
@@ -47,8 +49,6 @@ import org.bitrepository.protocol.security.MessageSigner;
 import org.bitrepository.protocol.security.OperationAuthorizer;
 import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
-
-import org.bitrepository.protocol.utils.BitrepositoryEvent;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -60,9 +60,6 @@ import org.junit.platform.suite.api.AfterSuite;
 import javax.jms.JMSException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Super class for all tests which should test functionality on a single pillar.
@@ -102,7 +99,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
         reloadMessageBus();
         clientProvider = new ClientProvider(securityManager, settingsForTestClient);
         pillarFileManager = new PillarFileManager(collectionID,
-            getPillarID(), settingsForTestClient, clientProvider, httpServerConfiguration);
+                getPillarID(), settingsForTestClient, clientProvider, httpServerConfiguration);
         clientEventHandler = new ClientEventLogger();
     }
 
@@ -133,7 +130,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
 
         startEmbeddedPillar(testInfo);
         reloadMessageBus();
-        clientProvider = new ClientProvider(securityManager, settingsForTestClient, testEventManager);
+        clientProvider = new ClientProvider(securityManager, settingsForTestClient);
         nonDefaultCollectionId = settingsForTestClient.getCollections().get(1).getID();
         irrelevantCollectionId = settingsForTestClient.getCollections().get(2).getID();
         putDefaultFile();
@@ -181,17 +178,15 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
      * @param result Information about the executed test.
      */
     @AfterEach
-    public void addFailureContextInfo() {
+    public void addFailureContextInfo(TestInfo result) {
     }
 
     protected void setupRealMessageBus() {
-        if(!useEmbeddedMessageBus()) {
+        if (!useEmbeddedMessageBus()) {
             MessageBusManager.clear();
             messageBus = MessageBusManager.getMessageBus(settingsForCUT, securityManager);
         } else {
-            if (messageBus == null) {
-                messageBus = new org.bitrepository.protocol.messagebus.SimpleMessageBus();
-            }
+            messageBus = new SimpleMessageBus();
             MessageBusManager.injectCustomMessageBus(MessageBusManager.DEFAULT_MESSAGE_BUS, messageBus);
         }
     }
@@ -208,7 +203,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
      * <code>checksumPillarTest</code> a checksum pillar is started, else a normal 'full' reference pillar is started.
      * </p>
      *
-     * @param testInfo
+     * @param testInfo The suite info containing the pillar type.
      */
     protected void startEmbeddedPillar(SuiteInfo testInfo) {
         if (testConfiguration.useEmbeddedPillar()) {
@@ -304,8 +299,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
             try (InputStream fis = getClass().getClassLoader().getResourceAsStream("default-test-file.txt")) {
                 fe.putFile(fis, defaultFileUrl);
             } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                throw new RuntimeException("Failed to upload default test file", e);
             }
 
 
@@ -325,7 +319,12 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
      */
     public class ClientEventLogger implements EventHandler {
 
-        /** The constructor.
+        /**
+         * The <code>TestEventManager</code> used to manage the event for the associated test.
+         */
+
+        /**
+         * The constructor.
          */
         public ClientEventLogger() {
             super();
@@ -333,16 +332,9 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
 
         @Override
         public void handleEvent(OperationEvent event) {
-            Map<String, Object> eventData = new HashMap<>();
-            eventData.put("info", event.getInfo());
-            eventData.put("fileID", event.getFileID());
-            eventData.put("collectionID", event.getCollectionID());
-            eventData.put("conversationID", event.getConversationID());
-
-            eventLogger.logEvent(new BitrepositoryEvent(
-                    event.getEventType().name(),
-                    eventData
-            ));
+            io.qameta.allure.Allure.step("Received event: " + event.getEventType(), () -> {
+                io.qameta.allure.Allure.addAttachment("Event Details", event.toString());
+            });
         }
     }
 }

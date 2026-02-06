@@ -28,6 +28,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ReplaceFileCmdTest extends DefaultFixtureClientTest {
