@@ -33,7 +33,7 @@ import java.util.Date;
  * Runs ExtendedTestCase with a regression test.
  */
 
-public class AlarmDatabaseExtractionModelTest extends ExtendedTestCase {
+public class AlarmDatabaseExtractionModelTest {
     @Test
     @Tag("regressiontest")
     public void alarmExceptionTest() throws Exception {

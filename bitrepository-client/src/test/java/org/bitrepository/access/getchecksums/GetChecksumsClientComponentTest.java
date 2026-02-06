@@ -68,6 +68,10 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addFixture;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+
 /**
  * Test class for the 'GetFileClient'.
  */

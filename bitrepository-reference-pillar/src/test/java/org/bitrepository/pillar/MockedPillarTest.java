@@ -36,7 +36,7 @@ import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
 
-import static org.bitrepository.common.utils.AllureTestUtils.addFixture;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addFixture;
 import static org.mockito.Mockito.mock;
 
 public abstract class MockedPillarTest extends DefaultFixturePillarTest {

@@ -49,6 +49,9 @@ import org.junit.jupiter.api.Test;
 import javax.xml.datatype.DatatypeFactory;
 import java.nio.charset.StandardCharsets;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+
 public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
     private TestDeleteFileMessageFactory messageFactory;
     private DatatypeFactory datatypeFactory;
