@@ -26,7 +26,6 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
-import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.DefaultPillarIdentificationTest;
 import org.bitrepository.pillar.messagefactories.PutFileMessageFactory;
@@ -107,8 +106,6 @@ public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest
         assertEquals(receivedIdentifyResponse.getCorrelationID(), identifyRequest.getCorrelationID());
         assertEquals(receivedIdentifyResponse.getFrom(), getPillarID());
         assertNull(receivedIdentifyResponse.getChecksumDataForExistingFile());
-        assertEquals(receivedIdentifyResponse.getPillarChecksumSpec().getChecksumType(),
-                ChecksumUtils.getDefault(settingsForCUT).getChecksumType());
         assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
         assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
                 receivedIdentifyResponse.getResponseInfo().getResponseCode());

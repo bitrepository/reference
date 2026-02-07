@@ -43,6 +43,7 @@ import java.util.concurrent.TimeUnit;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -120,7 +121,7 @@ public class PutFileRequestIT extends DefaultPillarOperationTest {
         messageBus.sendMessage(putRequest);
 
         PutFileFinalResponse finalResponse = (PutFileFinalResponse) receiveResponse();
-        assertEquals(TestFileHelper.getDefaultFileChecksum().getChecksumValue(),
+        assertArrayEquals(TestFileHelper.getDefaultFileChecksum().getChecksumValue(),
                 finalResponse.getChecksumDataForNewFile().getChecksumValue(),
                 "Return MD5 checksum was not equals to checksum for default file.");
     }

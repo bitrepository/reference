@@ -37,12 +37,16 @@ import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
 import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import javax.jms.JMSException;
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.Date;
 
 /**
@@ -74,9 +78,15 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
         QUEUE += "-" + (new Date()).getTime();
 
         addStep("Make configuration for the messagebus.", "Both should be created.");
+        MessageBusConfiguration conf = new MessageBusConfiguration();
+        int port = getFreePort();
+        conf.setURL("tcp://localhost:" + port);
+        settings.getRepositorySettings().getProtocolSettings().setMessageBusConfiguration(conf);
+        LocalActiveMQBroker broker = new LocalActiveMQBroker(conf);
         ResendMessageListener listener = null;
 
         try {
+            broker.start();
             addStep("Initialise the message-listener", "Should be allowed.");
             listener = new ResendMessageListener(settings);
 
@@ -102,6 +112,7 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
                 listener.stop();
                 listener = null;
             }
+            broker.stop();
         }
     }
 
@@ -161,6 +172,17 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
     }
 
     /**
+     * Finds a free port on the localhost.
+     * @return A free port number.
+     * @throws IOException If an I/O error occurs.
+     */
+    private int getFreePort() throws IOException {
+        try (ServerSocket socket = new ServerSocket(0)) {
+            return socket.getLocalPort();
+        }
+    }
+
+    /**
      * Messagelistener which only resends the messages it receive.
      * It does not reply, it send to the same destination, thus receiving it again.
      * It keeps track of the amount of messages received.
@@ -183,6 +205,14 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
         public ResendMessageListener(Settings conf) {
             /* The mocked SecurityManager */
             SecurityManager securityManager = new DummySecurityManager();
+            try {
+                java.lang.reflect.Field field = Settings.class.getDeclaredField("componentID");
+                field.setAccessible(true);
+                field.set(conf, "ResendMessageListener-" + System.nanoTime());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
             this.bus = new ActiveMQMessageBus(conf, securityManager);
             this.count = 0;
 
@@ -194,6 +224,11 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
          */
         public void stop() {
             bus.removeListener(QUEUE, this);
+            try {
+                bus.close();
+            } catch (JMSException e) {
+                // ignore
+            }
         }
 
         /**
