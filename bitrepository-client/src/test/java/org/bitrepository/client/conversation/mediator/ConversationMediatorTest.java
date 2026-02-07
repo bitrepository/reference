@@ -29,11 +29,17 @@ import org.bitrepository.client.conversation.StateBasedConversation;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.protocol.MessageContext;
+import org.bitrepository.protocol.bus.LocalActiveMQBroker;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.net.ServerSocket;
 
 /**
  * Test the general ConversationMediator functionality.
@@ -41,6 +47,30 @@ import org.junit.jupiter.api.Test;
 public abstract class ConversationMediatorTest {
     protected Settings settings = TestSettingsProvider.getSettings(getClass().getSimpleName());
     protected SecurityManager securityManager = new DummySecurityManager();
+    private LocalActiveMQBroker broker;
+
+    @BeforeEach
+    public void setUp() throws Exception {
+        MessageBusConfiguration conf = new MessageBusConfiguration();
+        int port = getFreePort();
+        conf.setURL("tcp://localhost:" + port);
+        settings.getRepositorySettings().getProtocolSettings().setMessageBusConfiguration(conf);
+        broker = new LocalActiveMQBroker(conf);
+        broker.start();
+    }
+
+    @AfterEach
+    public void tearDown() throws Exception {
+        if (broker != null) {
+            broker.stop();
+        }
+    }
+
+    private int getFreePort() throws IOException {
+        try (ServerSocket socket = new ServerSocket(0)) {
+            return socket.getLocalPort();
+        }
+    }
 
     /**
      * Validates the core mediator functionality of delegating messages from the message bus to the relevant 

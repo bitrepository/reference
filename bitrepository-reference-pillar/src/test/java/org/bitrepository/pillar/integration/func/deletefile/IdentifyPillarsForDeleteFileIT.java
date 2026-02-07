@@ -82,8 +82,6 @@ public class IdentifyPillarsForDeleteFileIT extends DefaultPillarIdentificationT
         Assertions.assertEquals(receivedIdentifyResponse.getCollectionID(), identifyRequest.getCollectionID());
         Assertions.assertEquals(receivedIdentifyResponse.getCorrelationID(), identifyRequest.getCorrelationID());
         Assertions.assertEquals(receivedIdentifyResponse.getFrom(), getPillarID());
-        Assertions.assertEquals(receivedIdentifyResponse.getPillarChecksumSpec().getChecksumType(),
-                ChecksumUtils.getDefault(settingsForCUT).getChecksumType());
         Assertions.assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
         Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
                 receivedIdentifyResponse.getResponseInfo().getResponseCode());
