@@ -37,7 +37,6 @@ import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -88,7 +87,7 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
 
 
     @Test
-    @Disabled
+//    @Disabled
     // Fragile test, fails occasionally.
     @SuppressWarnings("rawtypes")
     public void auditPreservationSchedulingTest() throws Exception {

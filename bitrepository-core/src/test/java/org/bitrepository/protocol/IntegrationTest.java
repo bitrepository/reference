@@ -44,6 +44,7 @@ import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.protocol.utils.TestWatcherExtension;
 import org.jaccept.TestEventManager;
 import org.jaccept.structure.ExtendedTestCase;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,7 +52,6 @@ import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.platform.suite.api.AfterSuite;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.JMSException;
@@ -60,7 +60,6 @@ import java.net.URL;
 import java.util.List;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@ExtendWith(TestWatcherExtension.class)
 @ExtendWith(ExtentedTestInfoParameterResolver.class)
 public abstract class IntegrationTest extends ExtendedTestCase {
     protected static TestEventManager testEventManager = TestEventManager.getInstance();
@@ -104,6 +103,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         } catch (MalformedURLException e) {
             throw new RuntimeException("Never happens");
         }
+        initMessagebus();
     }
 
     /**
@@ -119,12 +119,12 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         receiverManager.addReceiver(receiver);
     }
 
-    @BeforeAll
+    //    @BeforeAll
     public void initMessagebus() {
         setupMessageBus();
     }
 
-    @AfterSuite
+    @AfterAll
     public void shutdownSuite() {
         teardownMessageBus();
         teardownHttpServer();
@@ -148,7 +148,8 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     }
 
 
-    protected void initializeCUT() {}
+    protected void initializeCUT() {
+    }
 
     @AfterEach
     public final void afterMethod() {
@@ -179,7 +180,8 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     /**
      * May be overridden by specific tests wishing to do stuff. Remember to call super if this is overridden.
      */
-    protected void shutdownCUT() {}
+    protected void shutdownCUT() {
+    }
 
     /**
      * Initializes the settings. Will postfix the alarm and collection topics with '-${user.name}
