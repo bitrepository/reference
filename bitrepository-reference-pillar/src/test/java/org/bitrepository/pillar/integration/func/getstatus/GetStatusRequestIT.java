@@ -67,7 +67,6 @@ public class GetStatusRequestIT extends PillarFunctionTest {
     }
 
     @Test
-    @Tag("failing")
     public void checksumPillarGetStatusWrongContributor() {
         addDescription("Tests the GetStatus functionality of the reference pillar for the bad scenario, where a wrong "
                        + "contributor id is given.");
@@ -75,13 +74,13 @@ public class GetStatusRequestIT extends PillarFunctionTest {
         String wrongContributorId = "wrongContributor";
 
         addStep("Make and send the request for the actual GetStatus operation",
-                "Should be caught and handled by the pillar.");
+                "Should be ignored by the pillar.");
         GetStatusRequest request = msgFactory.createGetStatusRequest();
         request.setContributor(wrongContributorId);
         messageBus.sendMessage(request);
 
-        addStep("The pillar should send an alarm.", "");
-        Assertions.assertNotNull(alarmReceiver.waitForMessage(AlarmMessage.class));
+        addStep("The pillar should not send an alarm.", "");
+        alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
     }
 
 

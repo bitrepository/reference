@@ -44,8 +44,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -153,6 +155,13 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
 
             testListeners(settings.getMessageBusConfiguration(), securityManager);
         } finally {
+            if (bus != null) {
+                try {
+                    bus.close();
+                } catch (Exception e) {
+                    // ignore
+                }
+            }
             broker.stop();
         }
     }
@@ -173,17 +182,32 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
         alarmMessage.setDestination(QUEUE);
 
         addStep("Make configuration for the messagebus.", "Both should be created.");
-        MessageBusConfiguration conf = MessageBusConfigurationFactory.createDefaultConfiguration();
+        MessageBusConfiguration conf = new MessageBusConfiguration();
+        int port = getFreePort();
+        conf.setURL("tcp://localhost:" + port);
+        settings.getRepositorySettings().getProtocolSettings().setMessageBusConfiguration(conf);
         /* The mocked SecurityManager */
         SecurityManager securityManager = new DummySecurityManager();
+        LocalActiveMQBroker broker = new LocalActiveMQBroker(conf);
 
-        addStep("Start the broker and initialise the listeners.",
-                "Connections should be established.");
-        bus = new ActiveMQMessageBus(settings, securityManager);
+        try {
+            broker.start();
+            addStep("Start the broker and initialise the listeners.",
+                    "Connections should be established.");
+            bus = new ActiveMQMessageBus(settings, securityManager);
 
-        testListeners(conf, securityManager);
+            testListeners(conf, securityManager);
+        } finally {
+            if (bus != null) {
+                try {
+                    bus.close();
+                } catch (Exception e) {
+                    // ignore
+                }
+            }
+            broker.stop();
+        }
     }
-
 
     public void testListeners(MessageBusConfiguration conf, SecurityManager securityManager) throws Exception {
         List<NotificationMessageListener> listeners = new ArrayList<>(NUMBER_OF_LISTENERS);
@@ -191,7 +215,17 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
         try {
             addStep("Initialise the message listeners.", "Should be created and connected to the message bus.");
             for (int i = 0; i < NUMBER_OF_LISTENERS; i++) {
-                listeners.add(new NotificationMessageListener(settings, securityManager));
+                Settings listenerSettings = TestSettingsProvider.getSettings(getClass().getSimpleName());
+                try {
+                    java.lang.reflect.Field field = Settings.class.getDeclaredField("componentID");
+                    field.setAccessible(true);
+                    field.set(listenerSettings, getClass().getSimpleName() + "-Listener-" + i + "-" + System.nanoTime());
+                } catch (Exception e) {
+                    throw new RuntimeException("Failed to set componentID", e);
+                }
+                listenerSettings.getRepositorySettings().getProtocolSettings().setMessageBusConfiguration(conf);
+
+                listeners.add(new NotificationMessageListener(listenerSettings, securityManager));
             }
 
             addStep("Wait for setup", "We wait!");
@@ -268,6 +302,17 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
     }
 
     /**
+     * Finds a free port on the localhost.
+     * @return A free port number.
+     * @throws IOException If an I/O error occurs.
+     */
+    private int getFreePort() throws IOException {
+        try (ServerSocket socket = new ServerSocket(0)) {
+            return socket.getLocalPort();
+        }
+    }
+
+    /**
      * Method for sending the Alarm message with a specific ID.
      *
      * @param id The correlation id for the message to send.
@@ -326,6 +371,11 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
          */
         public void stop() {
             bus.removeListener(QUEUE, this);
+            try {
+                bus.close();
+            } catch (javax.jms.JMSException e) {
+                // ignore
+            }
         }
 
         /**

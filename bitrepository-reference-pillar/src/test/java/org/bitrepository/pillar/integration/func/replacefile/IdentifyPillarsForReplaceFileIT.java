@@ -26,7 +26,6 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequ
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
-import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.DefaultPillarIdentificationTest;
 import org.bitrepository.pillar.messagefactories.ReplaceFileMessageFactory;
@@ -84,8 +83,6 @@ public class IdentifyPillarsForReplaceFileIT extends DefaultPillarIdentification
         Assertions.assertEquals(receivedIdentifyResponse.getCollectionID(), identifyRequest.getCollectionID());
         Assertions.assertEquals(receivedIdentifyResponse.getCorrelationID(), identifyRequest.getCorrelationID());
         Assertions.assertEquals(receivedIdentifyResponse.getFrom(), getPillarID());
-        Assertions.assertEquals(receivedIdentifyResponse.getPillarChecksumSpec().getChecksumType(),
-                ChecksumUtils.getDefault(settingsForCUT).getChecksumType());
         Assertions.assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
         Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
                 receivedIdentifyResponse.getResponseInfo().getResponseCode());

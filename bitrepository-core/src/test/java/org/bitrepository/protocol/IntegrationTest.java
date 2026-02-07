@@ -241,6 +241,13 @@ public abstract class IntegrationTest extends ExtendedTestCase {
             if (messageBus == null) {
                 messageBus = new SimpleMessageBus();
             }
+            MessageBusManager.injectCustomMessageBus(MessageBusManager.DEFAULT_MESSAGE_BUS, messageBus);
+            if (settingsForTestClient != null) {
+                MessageBusManager.injectCustomMessageBus(settingsForTestClient.getComponentID(), messageBus);
+            }
+            if (settingsForCUT != null) {
+                MessageBusManager.injectCustomMessageBus(settingsForCUT.getComponentID(), messageBus);
+            }
         }
     }
 
