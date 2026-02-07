@@ -43,6 +43,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.Date;
 
 import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
@@ -128,8 +130,10 @@ public class MessageBusTimeToSendMessagesStressTest {
         QUEUE += "-" + (new Date()).getTime();
 
         addStep("Make configuration for the messagebus and define the local broker.", "Both should be created.");
-        MessageBusConfiguration conf = MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration();
-        Assertions.assertNotNull(conf);
+        MessageBusConfiguration conf = new MessageBusConfiguration();
+        int port = getFreePort();
+        conf.setURL("tcp://localhost:" + port);
+        settings.getRepositorySettings().getProtocolSettings().setMessageBusConfiguration(conf);
         LocalActiveMQBroker broker = new LocalActiveMQBroker(conf);
         Assertions.assertNotNull(broker);
 
@@ -174,6 +178,17 @@ public class MessageBusTimeToSendMessagesStressTest {
     }
 
     /**
+     * Finds a free port on the localhost.
+     * @return A free port number.
+     * @throws IOException If an I/O error occurs.
+     */
+    private int getFreePort() throws IOException {
+        try (ServerSocket socket = new ServerSocket(0)) {
+            return socket.getLocalPort();
+        }
+    }
+
+    /**
      * Sends the wanted amount of messages.
      * @param conf The configuration for the messagebus, where the messages should be sent.
      */
@@ -192,7 +207,16 @@ public class MessageBusTimeToSendMessagesStressTest {
         private final String id;
 
         public MessageSenderThread(MessageBusConfiguration conf, SecurityManager securityManager, int numberOfMessages, String id) {
-            this.bus = new ActiveMQMessageBus(settings, securityManager);
+            Settings senderSettings = TestSettingsProvider.getSettings(MessageBusTimeToSendMessagesStressTest.class.getSimpleName());
+            senderSettings.getRepositorySettings().getProtocolSettings().setMessageBusConfiguration(conf);
+            try {
+                java.lang.reflect.Field field = Settings.class.getDeclaredField("componentID");
+                field.setAccessible(true);
+                field.set(senderSettings, "Sender-" + id + "-" + System.nanoTime());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            this.bus = new ActiveMQMessageBus(senderSettings, securityManager);
             this.numberOfMessages = numberOfMessages;
             this.id = id;
         }
@@ -209,6 +233,12 @@ public class MessageBusTimeToSendMessagesStressTest {
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e);
+            } finally {
+                try {
+                    bus.close();
+                } catch (javax.jms.JMSException e) {
+                    // ignore
+                }
             }
         }
     }
@@ -238,6 +268,11 @@ public class MessageBusTimeToSendMessagesStressTest {
          */
         public void stop() {
             bus.removeListener(QUEUE, this);
+            try {
+                bus.close();
+            } catch (javax.jms.JMSException e) {
+                // ignore
+            }
         }
 
         /**
