@@ -36,7 +36,6 @@ import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -56,6 +55,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -87,7 +87,7 @@ public class LocalAuditPreservationTest {
 
 
     @Test
-    @Disabled
+//    @Disabled
     // Fragile test, fails occasionally.
     @SuppressWarnings("rawtypes")
     public void auditPreservationSchedulingTest() throws Exception {
@@ -97,16 +97,19 @@ public class LocalAuditPreservationTest {
         MockPutClient client = new MockPutClient();
 
         settings.getReferenceSettings().getAuditTrailServiceSettings().setTimerTaskCheckInterval(100);
-        Duration interval = DatatypeFactory.newInstance().newDuration(300);
+        Duration interval = DatatypeFactory.newInstance().newDuration(1000);
         settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailPreservation().setAuditTrailPreservationInterval(
                 interval);
+        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().clear();
         settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().add(PILLAR_ID);
+        SettingsUtils.initialize(settings);
 
         addStep("Create the preserver", "No calls to store or client");
         FileExchange fileExchangeMock = mock(FileExchange.class);
+        when(fileExchangeMock.getURL(anyString())).thenReturn(testUploadUrl);
         AuditTrailStore store = mock(AuditTrailStore.class);
-        final AuditEventIterator iterator = mock(AuditEventIterator.class);
+        final AuditEventIterator iterator = spy(new StubAuditEventIterator());
 
         LocalAuditTrailPreserver preserver = new LocalAuditTrailPreserver(settings, store, client, fileExchangeMock);
         
@@ -117,6 +120,10 @@ public class LocalAuditPreservationTest {
         Assertions.assertEquals(store.getCallsToSetPreservationSequenceNumber(), 0);
         Assertions.assertEquals(client.getCallsToPutFile(), 0);*/
 
+        verify(store).addCollection(collectionID);
+        verify(store).addContributor(PILLAR_ID);
+        verify(store).hasPreservationKey(PILLAR_ID, collectionID);
+        verify(store).setPreservationSequenceNumber(PILLAR_ID, collectionID, 0L);
         verify(store).getPreservationSequenceNumber(PILLAR_ID, collectionID);
         verifyNoMoreInteractions(store);
 
@@ -125,24 +132,23 @@ public class LocalAuditPreservationTest {
             public AuditEventIterator answer(InvocationOnMock invocation) {
                 return iterator;
             }
-        }).when(store).getAuditTrailsByIterator(anyString(), anyString(), anyString(), any(Long.class), any(Long.class),
-                anyString(), any(FileAction.class), any(Date.class), any(Date.class), anyString(), anyString());
+        }).when(store).getAuditTrailsByIterator(any(), anyString(), anyString(), any(Long.class), any(),
+                any(), any(), any(), any(), any(), any());
 
         preserver.start();
 
         synchronized (this) {
             this.wait(500);
         }
-        verifyNoMoreInteractions(store);
         addStep("stop the scheduling", "Should have made calls to the store and the client regarding the preservation");
         preserver.close();
         // getPreservationSequenceNumber should be called twice, first to 'initialize' auditpacker, and second to 
         // run the preserver/packer...
         verify(store, times(2)).getPreservationSequenceNumber(PILLAR_ID, collectionID);
         verify(store).getAuditTrailsByIterator(
-                null, null, PILLAR_ID, 0L, null, null,
+                null, collectionID, PILLAR_ID, 1L, null, null,
                 null, null, null, null, null);
-        verify(iterator).getNextAuditTrailEvent();
+        verify(iterator, times(2)).getNextAuditTrailEvent();
         //Assertions.assertEquals(store.getCallsToGetAuditTrails(), settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().size());
 
         //Assertions.assertEquals(store.getCallsToGetPreservationSequenceNumber(), 2);

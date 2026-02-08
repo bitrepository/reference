@@ -49,7 +49,6 @@ import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.platform.suite.api.AfterSuite;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.JMSException;
@@ -58,7 +57,6 @@ import java.net.URL;
 import java.util.List;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@ExtendWith(TestWatcherExtension.class)
 @ExtendWith(ExtentedTestInfoParameterResolver.class)
 public abstract class IntegrationTest {
     public static LocalActiveMQBroker broker;
@@ -121,7 +119,7 @@ public abstract class IntegrationTest {
         setupMessageBus();
     }
 
-    @AfterSuite
+    @AfterAll
     public void shutdownSuite() {
         teardownMessageBus();
         teardownHttpServer();
@@ -234,6 +232,13 @@ public abstract class IntegrationTest {
         if (useEmbeddedMessageBus()) {
             if (messageBus == null) {
                 messageBus = new SimpleMessageBus();
+            }
+            MessageBusManager.injectCustomMessageBus(MessageBusManager.DEFAULT_MESSAGE_BUS, messageBus);
+            if (settingsForTestClient != null) {
+                MessageBusManager.injectCustomMessageBus(settingsForTestClient.getComponentID(), messageBus);
+            }
+            if (settingsForCUT != null) {
+                MessageBusManager.injectCustomMessageBus(settingsForCUT.getComponentID(), messageBus);
             }
         }
     }
