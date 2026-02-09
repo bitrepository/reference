@@ -42,6 +42,7 @@ import org.bitrepository.protocol.messagebus.SimpleMessageBus;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.protocol.utils.TestWatcherExtension;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;

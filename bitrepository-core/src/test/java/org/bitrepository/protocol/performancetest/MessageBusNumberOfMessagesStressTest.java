@@ -37,9 +37,9 @@ import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -55,7 +55,9 @@ import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
  * Stress testing of the messagebus.
  */
 public class MessageBusNumberOfMessagesStressTest {
-    /** The name of the queue to send the messages.*/
+    /**
+     * The name of the queue to send the messages.
+     */
     private static String QUEUE = "TEST-QUEUE";
     private Settings settings;
 
@@ -173,6 +175,7 @@ public class MessageBusNumberOfMessagesStressTest {
 
     /**
      * Finds a free port on the localhost.
+     *
      * @return A free port number.
      * @throws IOException If an I/O error occurs.
      */
