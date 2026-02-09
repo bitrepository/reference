@@ -42,8 +42,6 @@ import org.bitrepository.protocol.messagebus.SimpleMessageBus;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.protocol.utils.TestWatcherExtension;
-import org.jaccept.TestEventManager;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -61,8 +59,7 @@ import java.util.List;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(ExtentedTestInfoParameterResolver.class)
-public abstract class IntegrationTest extends ExtendedTestCase {
-    protected static TestEventManager testEventManager = TestEventManager.getInstance();
+public abstract class IntegrationTest {
     public static LocalActiveMQBroker broker;
     public static EmbeddedHttpServer server;
     public static HttpServerConfiguration httpServerConfiguration;
@@ -111,7 +108,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
      * <code>super.registerReceivers()</code> when overriding
      */
     protected void registerMessageReceivers() {
-        alarmReceiver = new MessageReceiver(settingsForCUT.getAlarmDestination(), testEventManager);
+        alarmReceiver = new MessageReceiver(settingsForCUT.getAlarmDestination());
         addReceiver(alarmReceiver);
     }
 
@@ -119,7 +116,6 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         receiverManager.addReceiver(receiver);
     }
 
-    //    @BeforeAll
     public void initMessagebus() {
         setupMessageBus();
     }
@@ -162,6 +158,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         shutdownCUT();
     }
 
+
     /**
      * May be used by specific tests for general verification when the test method has finished. Will only be run
      * if the test has passed (so far).
@@ -196,7 +193,6 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         settingsForTestClient = loadSettings(testMethodName);
         makeUserSpecificSettings(settingsForTestClient);
     }
-
 
     protected Settings loadSettings(String componentID) {
         return TestSettingsProvider.reloadSettings(componentID);
