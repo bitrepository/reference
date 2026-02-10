@@ -38,6 +38,7 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
+import static java.lang.Long.MAX_VALUE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -75,7 +76,7 @@ public class FullPillarModelTest extends DefaultFixturePillarTest {
     public void testPillarModelBasicFunctionality() throws Exception {
         addDescription("Test the basic functions of the full reference pillar model.");
         addStep("Check the pillar id in the pillar model", "Identical to the one from the test.");
-        assertEquals(pillarModel.getPillarID(), getPillarID());
+        assertEquals(getPillarID(), pillarModel.getPillarID());
 
         addStep("Ask whether it can handle a file of size 0",
                 "Should not throw an exception");
@@ -84,7 +85,7 @@ public class FullPillarModelTest extends DefaultFixturePillarTest {
         addStep("Ask whether it can handle a file of maximum size",
                 "Should throw an exception");
         try {
-            pillarModel.verifyEnoughFreeSpaceLeftForFile(Long.MAX_VALUE, collectionID);
+            pillarModel.verifyEnoughFreeSpaceLeftForFile(MAX_VALUE, collectionID);
             fail("Should not be possible to verify such amount of space left.");
         } catch (RequestHandlerException e) {
             // expected.
@@ -107,7 +108,7 @@ public class FullPillarModelTest extends DefaultFixturePillarTest {
         assertTrue(pillarModel.hasFileID(defaultFileId, collectionID));
         FileInfo fileInfo = pillarModel.getFileInfoForActualFile(defaultFileId, collectionID);
         assertEquals(0L, fileInfo.getSize());
-        assertEquals(fileInfo.getFileID(), defaultFileId);
+        assertEquals(defaultFileId, fileInfo.getFileID());
 
         addStep("Verify that no exceptions are thrown when verifying file existance.", "Should exist.");
         pillarModel.verifyFileExists(defaultFileId, collectionID);

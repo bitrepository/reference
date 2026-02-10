@@ -21,12 +21,16 @@
  */
 package org.bitrepository.common.utils;
 
-import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.jaccept.structure.ExtendedTestCase;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+
+import static org.bitrepository.bitrepositoryelements.ResponseCode.IDENTIFICATION_POSITIVE;
+import static org.bitrepository.bitrepositoryelements.ResponseCode.OPERATION_ACCEPTED_PROGRESS;
+import static org.bitrepository.common.utils.ResponseInfoUtils.getInitialProgressResponse;
+import static org.bitrepository.common.utils.ResponseInfoUtils.getPositiveIdentification;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 public class ResponseInfoUtilsTest extends ExtendedTestCase {
@@ -35,12 +39,12 @@ public class ResponseInfoUtilsTest extends ExtendedTestCase {
     public void responseInfoTester() throws Exception {
         addDescription("Test the response info.");
         addStep("Validate the positive identification response", "Should be 'IDENTIFICATION_POSITIVE'");
-        ResponseInfo ri = ResponseInfoUtils.getPositiveIdentification();
-        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE, ri.getResponseCode());
+        ResponseInfo ri = getPositiveIdentification();
+        assertEquals(IDENTIFICATION_POSITIVE, ri.getResponseCode());
 
         addStep("Validate the Progress response", "Should be 'OPERATION_ACCEPTED_PROGRESS'");
-        ri = ResponseInfoUtils.getInitialProgressResponse();
-        Assertions.assertEquals(ResponseCode.OPERATION_ACCEPTED_PROGRESS, ri.getResponseCode());
+        ri = getInitialProgressResponse();
+        assertEquals(OPERATION_ACCEPTED_PROGRESS, ri.getResponseCode());
     }
 
 }

@@ -22,7 +22,6 @@
 package org.bitrepository.common.utils;
 
 import org.jaccept.structure.ExtendedTestCase;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -31,8 +30,22 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
+
+import static java.lang.System.currentTimeMillis;
+import static java.lang.System.out;
+import static java.time.ZoneId.of;
+import static java.util.Locale.ROOT;
+import static java.util.TimeZone.getTimeZone;
+import static org.bitrepository.common.utils.CalendarUtils.convertFromXMLGregorianCalendar;
+import static org.bitrepository.common.utils.CalendarUtils.getEpoch;
+import static org.bitrepository.common.utils.CalendarUtils.getFromMillis;
+import static org.bitrepository.common.utils.CalendarUtils.getInstance;
+import static org.bitrepository.common.utils.CalendarUtils.getNow;
+import static org.bitrepository.common.utils.CalendarUtils.getTimeZoneDisplayName;
+import static org.bitrepository.common.utils.CalendarUtils.getXmlGregorianCalendar;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CalendarUtilsTest extends ExtendedTestCase {
     long DATE_IN_MILLIS = 123456789L;
@@ -43,100 +56,100 @@ public class CalendarUtilsTest extends ExtendedTestCase {
         addDescription("Test the calendar utility class");
         addStep("Test the convertion of a date", "Should be the same date.");
         Date date = new Date(DATE_IN_MILLIS);
-        XMLGregorianCalendar calendar = CalendarUtils.getXmlGregorianCalendar(date);
-        Assertions.assertEquals(calendar.toGregorianCalendar().getTimeInMillis(), DATE_IN_MILLIS);
+        XMLGregorianCalendar calendar = getXmlGregorianCalendar(date);
+        assertEquals(DATE_IN_MILLIS, calendar.toGregorianCalendar().getTimeInMillis());
 
         addStep("Test that a 'null' date is equivalent to epoch", "Should be date '0'");
-        calendar = CalendarUtils.getXmlGregorianCalendar((Date) null);
-        Assertions.assertEquals(0, calendar.toGregorianCalendar().getTimeInMillis());
+        calendar = getXmlGregorianCalendar((Date) null);
+        assertEquals(0, calendar.toGregorianCalendar().getTimeInMillis());
 
         addStep("Test epoch", "Should be date '0'");
-        calendar = CalendarUtils.getEpoch();
-        Assertions.assertEquals(0, calendar.toGregorianCalendar().getTimeInMillis());
+        calendar = getEpoch();
+        assertEquals(0, calendar.toGregorianCalendar().getTimeInMillis());
 
         addStep("Test that a given time in millis is extractable in millis", "Should be same value");
-        calendar = CalendarUtils.getFromMillis(DATE_IN_MILLIS);
-        Assertions.assertEquals(calendar.toGregorianCalendar().getTimeInMillis(), DATE_IN_MILLIS);
+        calendar = getFromMillis(DATE_IN_MILLIS);
+        assertEquals(DATE_IN_MILLIS, calendar.toGregorianCalendar().getTimeInMillis());
 
         addStep("Test the 'getNow' function", "Should give a value very close to System.currentTimeInMillis");
-        long beforeNow = System.currentTimeMillis();
-        calendar = CalendarUtils.getNow();
-        long afterNow = System.currentTimeMillis();
-        Assertions.assertTrue(calendar.toGregorianCalendar().getTimeInMillis() <= afterNow);
-        Assertions.assertTrue(calendar.toGregorianCalendar().getTimeInMillis() >= beforeNow);
+        long beforeNow = currentTimeMillis();
+        calendar = getNow();
+        long afterNow = currentTimeMillis();
+        assertTrue(calendar.toGregorianCalendar().getTimeInMillis() <= afterNow);
+        assertTrue(calendar.toGregorianCalendar().getTimeInMillis() >= beforeNow);
 
         addStep("Test the reverse conversion, from XMLCalendar to Date", "Should give the same value");
-        date = CalendarUtils.convertFromXMLGregorianCalendar(calendar);
-        Assertions.assertTrue(date.getTime() <= afterNow);
-        Assertions.assertTrue(date.getTime() >= beforeNow);
-        Assertions.assertEquals(date.getTime(), calendar.toGregorianCalendar().getTimeInMillis());
+        date = convertFromXMLGregorianCalendar(calendar);
+        assertTrue(date.getTime() <= afterNow);
+        assertTrue(date.getTime() >= beforeNow);
+        assertEquals(calendar.toGregorianCalendar().getTimeInMillis(), date.getTime());
     }
 
     @Test
     public void displaysNiceTimeZoneId() {
         addDescription("Test that the time zone ID logged is human readable (for example Europe/Copenhagen)");
-        ZoneId zoneId = ZoneId.of("Europe/Copenhagen");
-        String displayName = CalendarUtils.getTimeZoneDisplayName(TimeZone.getTimeZone(zoneId));
-        Assertions.assertEquals("Europe/Copenhagen", displayName);
+        ZoneId zoneId = of("Europe/Copenhagen");
+        String displayName = getTimeZoneDisplayName(getTimeZone(zoneId));
+        assertEquals("Europe/Copenhagen", displayName);
     }
 
     @Test
     @Tag("regressiontest")
     public void startDateTest() throws ParseException {
         addDescription("Test that the start date is considered as localtime and converted into UTC.");
-        CalendarUtils cu = CalendarUtils.getInstance(TimeZone.getTimeZone("Europe/Copenhagen"));
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.ROOT);
+        CalendarUtils cu = getInstance(getTimeZone("Europe/Copenhagen"));
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", ROOT);
         Date expectedStartOfDay = sdf.parse("2015-02-25T23:00:00.000Z");
 
         Date parsedStartOfDay = cu.makeStartDateObject("2015/02/26");
-        Assertions.assertEquals(parsedStartOfDay, expectedStartOfDay);
+        assertEquals(expectedStartOfDay, parsedStartOfDay);
     }
 
     @Test
     @Tag("regressiontest")
     public void endDateTest() throws ParseException {
         addDescription("Test that the end date is considered as localtime and converted into UTC.");
-        CalendarUtils cu = CalendarUtils.getInstance(TimeZone.getTimeZone("Europe/Copenhagen"));
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.ROOT);
+        CalendarUtils cu = getInstance(getTimeZone("Europe/Copenhagen"));
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", ROOT);
         Date expectedStartOfDay = sdf.parse("2015-02-26T22:59:59.999Z");
 
         Date parsedStartOfDay = cu.makeEndDateObject("2015/02/26");
-        Assertions.assertEquals(parsedStartOfDay, expectedStartOfDay);
+        assertEquals(expectedStartOfDay, parsedStartOfDay);
     }
 
     @Test
     @Tag("regressiontest")
     public void endDateRolloverTest() throws ParseException {
         addDescription("Test that the end date is correctly rolls over a year and month change.");
-        CalendarUtils cu = CalendarUtils.getInstance(TimeZone.getTimeZone("Europe/Copenhagen"));
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.ROOT);
+        CalendarUtils cu = getInstance(getTimeZone("Europe/Copenhagen"));
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", ROOT);
         Date expectedStartOfDay = sdf.parse("2016-01-01T22:59:59.999Z");
 
         Date parsedStartOfDay = cu.makeEndDateObject("2015/12/32");
-        Assertions.assertEquals(parsedStartOfDay, expectedStartOfDay);
+        assertEquals(expectedStartOfDay, parsedStartOfDay);
     }
 
     @Test
     @Tag("regressiontest")
     public void testBeginningOfDay() throws ParseException {
         addDescription("Tests that the time is converted to the beginning of the day localtime, not UTC");
-        CalendarUtils cu = CalendarUtils.getInstance(TimeZone.getTimeZone("Europe/Copenhagen"));
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.ROOT);
+        CalendarUtils cu = getInstance(getTimeZone("Europe/Copenhagen"));
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", ROOT);
         Date expectedStartOfDayInUTC = sdf.parse("2016-01-31T23:00:00.000Z");
-        System.out.println("expectedStartOfDayInUTC parsed: " + expectedStartOfDayInUTC.getTime());
+        out.println("expectedStartOfDayInUTC parsed: " + expectedStartOfDayInUTC.getTime());
         Date parsedStartOfDay = cu.makeStartDateObject("2016/02/01");
-        Assertions.assertEquals(parsedStartOfDay, expectedStartOfDayInUTC);
+        assertEquals(expectedStartOfDayInUTC, parsedStartOfDay);
     }
 
     @Test
     @Tag("regressiontest")
     public void testEndOfDay() throws ParseException {
         addDescription("Tests that the time is converted to the beginning of the day localtime, not UTC");
-        CalendarUtils cu = CalendarUtils.getInstance(TimeZone.getTimeZone("Europe/Copenhagen"));
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.ROOT);
+        CalendarUtils cu = getInstance(getTimeZone("Europe/Copenhagen"));
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", ROOT);
         Date expectedEndOfDayInUTC = sdf.parse("2016-02-01T22:59:59.999Z");
         Date parsedEndOfDay = cu.makeEndDateObject("2016/02/01");
-        Assertions.assertEquals(parsedEndOfDay, expectedEndOfDayInUTC);
+        assertEquals(expectedEndOfDayInUTC, parsedEndOfDay);
     }
 
     @Test
@@ -144,14 +157,14 @@ public class CalendarUtilsTest extends ExtendedTestCase {
     public void testSummerWinterTimeChange() {
         addDescription("Test that the interval between start and end date on a summertime to "
                 + "wintertime change is 25 hours (-1 millisecond).");
-        CalendarUtils cu = CalendarUtils.getInstance(TimeZone.getTimeZone("Europe/Copenhagen"));
+        CalendarUtils cu = getInstance(getTimeZone("Europe/Copenhagen"));
         Date startDate = cu.makeStartDateObject("2015/10/25");
-        Assertions.assertNotNull(startDate);
+        assertNotNull(startDate);
         Date endDate = cu.makeEndDateObject("2015/10/25");
-        Assertions.assertNotNull(endDate);
+        assertNotNull(endDate);
         long MS_PER_HOUR = 1000 * 60 * 60;
         long expectedIntervalLength = (MS_PER_HOUR * 25) - 1;
-        Assertions.assertEquals(endDate.getTime() - startDate.getTime(), expectedIntervalLength);
+        assertEquals(expectedIntervalLength, endDate.getTime() - startDate.getTime());
     }
 
     @Test
@@ -159,14 +172,14 @@ public class CalendarUtilsTest extends ExtendedTestCase {
     public void testWinterSummerTimeChange() {
         addDescription("Test that the interval between start and end date on a wintertime to "
                 + "summertime change is 23 hours (-1 millisecond).");
-        CalendarUtils cu = CalendarUtils.getInstance(TimeZone.getTimeZone("Europe/Copenhagen"));
+        CalendarUtils cu = getInstance(getTimeZone("Europe/Copenhagen"));
         Date startDate = cu.makeStartDateObject("2016/03/27");
-        Assertions.assertNotNull(startDate);
+        assertNotNull(startDate);
         Date endDate = cu.makeEndDateObject("2016/03/27");
-        Assertions.assertNotNull(endDate);
+        assertNotNull(endDate);
         long MS_PER_HOUR = 1000 * 60 * 60;
         long expectedIntervalLength = (MS_PER_HOUR * 23) - 1;
-        Assertions.assertEquals(endDate.getTime() - startDate.getTime(), expectedIntervalLength);
+        assertEquals(expectedIntervalLength, endDate.getTime() - startDate.getTime());
     }
 
 }

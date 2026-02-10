@@ -3,7 +3,8 @@
  * Bitrepository Reference Pillar
  *
  * $Id: ReplaceFileOnReferencePillarTest.java 589 2011-12-01 15:34:42Z jolf $
- * $HeadURL: https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk/bitrepository-reference-pillar/src/test/java/org/bitrepository/pillar/ReplaceFileOnReferencePillarTest.java $
+ * $HeadURL: https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk/bitrepository-reference-pillar/src
+ * /test/java/org/bitrepository/pillar/ReplaceFileOnReferencePillarTest.java $
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -25,18 +26,14 @@
 package org.bitrepository.pillar.messagehandling;
 
 import org.apache.commons.codec.DecoderException;
-import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
-import org.bitrepository.common.utils.Base16Utils;
-import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.MockedPillarTest;
 import org.bitrepository.pillar.messagefactories.ReplaceFileMessageFactory;
 import org.junit.jupiter.api.Tag;
@@ -44,6 +41,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import static org.bitrepository.bitrepositoryelements.AlarmCode.CHECKSUM_ALARM;
+import static org.bitrepository.bitrepositoryelements.ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE;
+import static org.bitrepository.bitrepositoryelements.ResponseCode.FILE_NOT_FOUND_FAILURE;
+import static org.bitrepository.bitrepositoryelements.ResponseCode.IDENTIFICATION_POSITIVE;
+import static org.bitrepository.bitrepositoryelements.ResponseCode.NEW_FILE_CHECKSUM_FAILURE;
+import static org.bitrepository.bitrepositoryelements.ResponseCode.OPERATION_COMPLETED;
+import static org.bitrepository.common.utils.Base16Utils.encodeBase16;
+import static org.bitrepository.common.utils.CalendarUtils.getNow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -72,7 +77,8 @@ public class ReplaceFileTest extends MockedPillarTest {
     @Tag("regressiontest")
     @Tag("pillartest")
     public void goodCaseIdentification() {
-        addDescription("Tests the identification for a ReplaceFile operation on the pillar for the successful scenario.");
+        addDescription("Tests the identification for a ReplaceFile operation on the pillar for the successful " +
+                "scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = defaultFileId;
 
@@ -83,17 +89,17 @@ public class ReplaceFileTest extends MockedPillarTest {
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
-        IdentifyPillarsForReplaceFileRequest identifyRequest = msgFactory.createIdentifyPillarsForReplaceFileRequest(FILE_ID, FILE_SIZE);
+        IdentifyPillarsForReplaceFileRequest identifyRequest =
+                msgFactory.createIdentifyPillarsForReplaceFileRequest(FILE_ID, FILE_SIZE);
         messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response getPillarID() the pillar.",
                 "The pillar should make a response.");
         IdentifyPillarsForReplaceFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForReplaceFileResponse.class);
-        assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
-                receivedIdentifyResponse.getResponseInfo().getResponseCode());
-        assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
-        assertEquals(receivedIdentifyResponse.getFileID(), FILE_ID);
+        assertEquals(IDENTIFICATION_POSITIVE, receivedIdentifyResponse.getResponseInfo().getResponseCode());
+        assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID());
+        assertEquals(FILE_ID, receivedIdentifyResponse.getFileID());
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
         assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
@@ -104,7 +110,8 @@ public class ReplaceFileTest extends MockedPillarTest {
     @Tag("regressiontest")
     @Tag("pillartest")
     public void badCaseIdentification() {
-        addDescription("Tests the identification for a ReplaceFile operation on the pillar for the failure scenario, when the file does not exist.");
+        addDescription("Tests the identification for a ReplaceFile operation on the pillar for the failure scenario, " +
+                "when the file does not exist.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = defaultFileId;
 
@@ -115,17 +122,17 @@ public class ReplaceFileTest extends MockedPillarTest {
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
-        IdentifyPillarsForReplaceFileRequest identifyRequest = msgFactory.createIdentifyPillarsForReplaceFileRequest(FILE_ID, FILE_SIZE);
+        IdentifyPillarsForReplaceFileRequest identifyRequest =
+                msgFactory.createIdentifyPillarsForReplaceFileRequest(FILE_ID, FILE_SIZE);
         messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response getPillarID() the pillar.",
                 "The pillar should make a response.");
         IdentifyPillarsForReplaceFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForReplaceFileResponse.class);
-        assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE,
-                receivedIdentifyResponse.getResponseInfo().getResponseCode());
-        assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
-        assertEquals(receivedIdentifyResponse.getFileID(), FILE_ID);
+        assertEquals(FILE_NOT_FOUND_FAILURE, receivedIdentifyResponse.getResponseInfo().getResponseCode());
+        assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID());
+        assertEquals(FILE_ID, receivedIdentifyResponse.getFileID());
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
         assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
@@ -136,7 +143,8 @@ public class ReplaceFileTest extends MockedPillarTest {
     @Tag("regressiontest")
     @Tag("pillartest")
     public void badCaseOperationMissingFile() {
-        addDescription("Tests the ReplaceFile operation on the pillar for the failure scenario, when the file is missing.");
+        addDescription("Tests the ReplaceFile operation on the pillar for the failure scenario, when the file is " +
+                "missing.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = defaultFileId;
 
@@ -151,15 +159,16 @@ public class ReplaceFileTest extends MockedPillarTest {
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
-        ReplaceFileRequest request = msgFactory.createReplaceFileRequest(csData, csData, null, null, defaultDownloadFileAddress, FILE_ID, FILE_SIZE);
+        ReplaceFileRequest request = msgFactory.createReplaceFileRequest(csData, csData, null, null,
+                defaultDownloadFileAddress, FILE_ID, FILE_SIZE);
         messageBus.sendMessage(request);
 
         addStep("Retrieve the FinalResponse for the ReplaceFile request",
                 "The final response should give file not found failure.");
         ReplaceFileFinalResponse finalResponse = clientReceiver.waitForMessage(ReplaceFileFinalResponse.class);
-        assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE, finalResponse.getResponseInfo().getResponseCode());
-        assertEquals(finalResponse.getPillarID(), getPillarID());
-        assertEquals(finalResponse.getFileID(), FILE_ID);
+        assertEquals(FILE_NOT_FOUND_FAILURE, finalResponse.getResponseInfo().getResponseCode());
+        assertEquals(getPillarID(), finalResponse.getPillarID());
+        assertEquals(FILE_ID, finalResponse.getFileID());
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
         assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
@@ -183,21 +192,23 @@ public class ReplaceFileTest extends MockedPillarTest {
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
-        ReplaceFileRequest request = msgFactory.createReplaceFileRequest(null, csData, null, null, defaultDownloadFileAddress, FILE_ID, FILE_SIZE);
+        ReplaceFileRequest request = msgFactory.createReplaceFileRequest(null, csData, null, null,
+                defaultDownloadFileAddress, FILE_ID, FILE_SIZE);
         messageBus.sendMessage(request);
 
         addStep("Retrieve the FinalResponse for the ReplaceFile request",
                 "The final response should give existing checksum failure.");
         ReplaceFileFinalResponse finalResponse = clientReceiver.waitForMessage(ReplaceFileFinalResponse.class);
-        assertEquals(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE, finalResponse.getResponseInfo().getResponseCode());
-        assertEquals(finalResponse.getPillarID(), getPillarID());
-        assertEquals(finalResponse.getFileID(), FILE_ID);
+        assertEquals(EXISTING_FILE_CHECKSUM_FAILURE, finalResponse.getResponseInfo().getResponseCode());
+        assertEquals(getPillarID(), finalResponse.getPillarID());
+        assertEquals(FILE_ID, finalResponse.getFileID());
 
-        addStep("Pillar should have sent an alarm", "Alarm contains information about the missing verification checksum");
+        addStep("Pillar should have sent an alarm", "Alarm contains information about the missing verification " +
+                "checksum");
         AlarmMessage alarm = alarmReceiver.waitForMessage(AlarmMessage.class);
-        assertEquals(alarm.getAlarm().getFileID(), FILE_ID);
-        assertEquals(alarm.getAlarm().getAlarmRaiser(), getPillarID());
-        assertEquals(AlarmCode.CHECKSUM_ALARM, alarm.getAlarm().getAlarmCode());
+        assertEquals(FILE_ID, alarm.getAlarm().getFileID());
+        assertEquals(getPillarID(), alarm.getAlarm().getAlarmRaiser());
+        assertEquals(CHECKSUM_ALARM, alarm.getAlarm().getAlarmCode());
     }
 
     @SuppressWarnings("rawtypes")
@@ -218,21 +229,23 @@ public class ReplaceFileTest extends MockedPillarTest {
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
-        ReplaceFileRequest request = msgFactory.createReplaceFileRequest(csData, null, null, null, defaultDownloadFileAddress, FILE_ID, FILE_SIZE);
+        ReplaceFileRequest request = msgFactory.createReplaceFileRequest(csData, null, null, null,
+                defaultDownloadFileAddress, FILE_ID, FILE_SIZE);
         messageBus.sendMessage(request);
 
         addStep("Retrieve the FinalResponse for the ReplaceFile request",
                 "The final response should give new file checksum failure.");
         ReplaceFileFinalResponse finalResponse = clientReceiver.waitForMessage(ReplaceFileFinalResponse.class);
-        assertEquals(ResponseCode.NEW_FILE_CHECKSUM_FAILURE, finalResponse.getResponseInfo().getResponseCode());
-        assertEquals(finalResponse.getPillarID(), getPillarID());
-        assertEquals(finalResponse.getFileID(), FILE_ID);
+        assertEquals(NEW_FILE_CHECKSUM_FAILURE, finalResponse.getResponseInfo().getResponseCode());
+        assertEquals(getPillarID(), finalResponse.getPillarID());
+        assertEquals(FILE_ID, finalResponse.getFileID());
 
-        addStep("Pillar should have sent an alarm", "Alarm contains information about the missing verification checksum");
+        addStep("Pillar should have sent an alarm", "Alarm contains information about the missing verification " +
+                "checksum");
         AlarmMessage alarm = alarmReceiver.waitForMessage(AlarmMessage.class);
-        assertEquals(alarm.getAlarm().getFileID(), FILE_ID);
-        assertEquals(alarm.getAlarm().getAlarmRaiser(), getPillarID());
-        assertEquals(AlarmCode.CHECKSUM_ALARM, alarm.getAlarm().getAlarmCode());
+        assertEquals(FILE_ID, alarm.getAlarm().getFileID());
+        assertEquals(getPillarID(), alarm.getAlarm().getAlarmRaiser());
+        assertEquals(CHECKSUM_ALARM, alarm.getAlarm().getAlarmCode());
     }
 
     @SuppressWarnings("rawtypes")
@@ -249,25 +262,28 @@ public class ReplaceFileTest extends MockedPillarTest {
                 "Should return true, when requesting file-id existence.");
         doAnswer(invocation -> true).when(model).hasFileID(eq(FILE_ID), anyString());
         doAnswer(invocation -> settingsForCUT.getComponentID()).when(model).getPillarID();
-        doAnswer(invocation -> NON_DEFAULT_MD5_CHECKSUM).when(model).getChecksumForFile(anyString(), anyString(), any(ChecksumSpecTYPE.class));
+        doAnswer(invocation -> NON_DEFAULT_MD5_CHECKSUM).when(model).getChecksumForFile(anyString(), anyString(),
+                any(ChecksumSpecTYPE.class));
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
-        ReplaceFileRequest request = msgFactory.createReplaceFileRequest(csData, csData, null, null, defaultDownloadFileAddress, FILE_ID, FILE_SIZE);
+        ReplaceFileRequest request = msgFactory.createReplaceFileRequest(csData, csData, null, null,
+                defaultDownloadFileAddress, FILE_ID, FILE_SIZE);
         messageBus.sendMessage(request);
 
         addStep("Retrieve the FinalResponse for the ReplaceFile request",
                 "The final response should give existing file checksum failure.");
         ReplaceFileFinalResponse finalResponse = clientReceiver.waitForMessage(ReplaceFileFinalResponse.class);
-        assertEquals(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE, finalResponse.getResponseInfo().getResponseCode());
-        assertEquals(finalResponse.getPillarID(), getPillarID());
-        assertEquals(finalResponse.getFileID(), FILE_ID);
+        assertEquals(EXISTING_FILE_CHECKSUM_FAILURE, finalResponse.getResponseInfo().getResponseCode());
+        assertEquals(getPillarID(), finalResponse.getPillarID());
+        assertEquals(FILE_ID, finalResponse.getFileID());
 
-        addStep("Pillar should have sent an alarm", "Alarm contains information about the missing verification checksum");
+        addStep("Pillar should have sent an alarm", "Alarm contains information about the missing verification " +
+                "checksum");
         AlarmMessage alarm = alarmReceiver.waitForMessage(AlarmMessage.class);
-        assertEquals(alarm.getAlarm().getFileID(), FILE_ID);
-        assertEquals(alarm.getAlarm().getAlarmRaiser(), getPillarID());
-        assertEquals(AlarmCode.CHECKSUM_ALARM, alarm.getAlarm().getAlarmCode());
+        assertEquals(FILE_ID, alarm.getAlarm().getFileID());
+        assertEquals(getPillarID(), alarm.getAlarm().getAlarmRaiser());
+        assertEquals(CHECKSUM_ALARM, alarm.getAlarm().getAlarmCode());
     }
 
     @SuppressWarnings("rawtypes")
@@ -283,25 +299,27 @@ public class ReplaceFileTest extends MockedPillarTest {
                 "Should return true, when requesting file-id existence.");
         doAnswer(invocation -> true).when(model).hasFileID(eq(FILE_ID), anyString());
         doAnswer(invocation -> settingsForCUT.getComponentID()).when(model).getPillarID();
-        doAnswer(invocation -> DEFAULT_MD5_CHECKSUM).when(model).getChecksumForFile(anyString(), anyString(), any(ChecksumSpecTYPE.class));
+        doAnswer(invocation -> DEFAULT_MD5_CHECKSUM).when(model).getChecksumForFile(anyString(), anyString(),
+                any(ChecksumSpecTYPE.class));
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
-        ReplaceFileRequest request = msgFactory.createReplaceFileRequest(csData, csData, null, null, defaultDownloadFileAddress, FILE_ID, FILE_SIZE);
+        ReplaceFileRequest request = msgFactory.createReplaceFileRequest(csData, csData, null, null,
+                defaultDownloadFileAddress, FILE_ID, FILE_SIZE);
         messageBus.sendMessage(request);
 
         addStep("Retrieve the ProgressResponse for the GetFileIDs request",
                 "The GetFileIDs progress response should be sent by the pillar.");
         ReplaceFileProgressResponse progressResponse = clientReceiver.waitForMessage(ReplaceFileProgressResponse.class);
-        assertEquals(progressResponse.getFileID(), FILE_ID);
-        assertEquals(progressResponse.getPillarID(), getPillarID());
+        assertEquals(FILE_ID, progressResponse.getFileID());
+        assertEquals(getPillarID(), progressResponse.getPillarID());
 
         addStep("Retrieve the FinalResponse for the ReplaceFile request",
                 "The final response should say 'operation_complete', and give the requested data.");
         ReplaceFileFinalResponse finalResponse = clientReceiver.waitForMessage(ReplaceFileFinalResponse.class);
-        assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
-        assertEquals(finalResponse.getPillarID(), getPillarID());
-        assertEquals(finalResponse.getFileID(), FILE_ID);
+        assertEquals(OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
+        assertEquals(getPillarID(), finalResponse.getPillarID());
+        assertEquals(FILE_ID, finalResponse.getFileID());
         assertNull(finalResponse.getChecksumDataForNewFile());
         assertNull(finalResponse.getChecksumDataForExistingFile());
 
@@ -314,7 +332,8 @@ public class ReplaceFileTest extends MockedPillarTest {
     @Tag("regressiontest")
     @Tag("pillartest")
     public void goodCaseOperationWithChecksumsReturn() throws Exception {
-        addDescription("Tests the ReplaceFile operation on the pillar for the success scenario, when requesting both the cheksums of the file returned.");
+        addDescription("Tests the ReplaceFile operation on the pillar for the success scenario, when requesting both " +
+                "the cheksums of the file returned.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = defaultFileId;
 
@@ -325,13 +344,14 @@ public class ReplaceFileTest extends MockedPillarTest {
                 "Should return true, when requesting file-id existence.");
         doAnswer(invocation -> true).when(model).hasFileID(eq(FILE_ID), anyString());
         doAnswer(invocation -> settingsForCUT.getComponentID()).when(model).getPillarID();
-        doAnswer(invocation -> DEFAULT_MD5_CHECKSUM).when(model).getChecksumForFile(anyString(), anyString(), any(ChecksumSpecTYPE.class));
+        doAnswer(invocation -> DEFAULT_MD5_CHECKSUM).when(model).getChecksumForFile(anyString(), anyString(),
+                any(ChecksumSpecTYPE.class));
         doAnswer(invocation -> {
             ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
             res.setChecksumSpec(otherCsSpec);
-            res.setCalculationTimestamp(CalendarUtils.getNow());
+            res.setCalculationTimestamp(getNow());
             try {
-                res.setChecksumValue(Base16Utils.encodeBase16(NON_DEFAULT_MD5_CHECKSUM));
+                res.setChecksumValue(encodeBase16(NON_DEFAULT_MD5_CHECKSUM));
             } catch (DecoderException e) {
                 e.printStackTrace();
             }
@@ -340,32 +360,33 @@ public class ReplaceFileTest extends MockedPillarTest {
         doAnswer(invocation -> {
             ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
             res.setChecksumSpec(csSpec);
-            res.setCalculationTimestamp(CalendarUtils.getNow());
-            res.setChecksumValue(Base16Utils.encodeBase16(DEFAULT_MD5_CHECKSUM));
+            res.setCalculationTimestamp(getNow());
+            res.setChecksumValue(encodeBase16(DEFAULT_MD5_CHECKSUM));
             return res;
         }).when(model).getChecksumDataForFile(anyString(), anyString(), eq(csSpec));
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
-        ReplaceFileRequest request = msgFactory.createReplaceFileRequest(csData, csData, existingRequestChecksumSpec, newRequestChecksumSpec, defaultDownloadFileAddress, FILE_ID, FILE_SIZE);
+        ReplaceFileRequest request = msgFactory.createReplaceFileRequest(csData, csData, existingRequestChecksumSpec,
+                newRequestChecksumSpec, defaultDownloadFileAddress, FILE_ID, FILE_SIZE);
         messageBus.sendMessage(request);
 
         addStep("Retrieve the ProgressResponse for the GetFileIDs request",
                 "The GetFileIDs progress response should be sent by the pillar.");
         ReplaceFileProgressResponse progressResponse = clientReceiver.waitForMessage(ReplaceFileProgressResponse.class);
-        assertEquals(progressResponse.getFileID(), FILE_ID);
-        assertEquals(progressResponse.getPillarID(), getPillarID());
+        assertEquals(FILE_ID, progressResponse.getFileID());
+        assertEquals(getPillarID(), progressResponse.getPillarID());
 
         addStep("Retrieve the FinalResponse for the ReplaceFile request",
                 "The final response should say 'operation_complete', and give the requested data.");
         ReplaceFileFinalResponse finalResponse = clientReceiver.waitForMessage(ReplaceFileFinalResponse.class);
-        assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
-        assertEquals(finalResponse.getPillarID(), getPillarID());
-        assertEquals(finalResponse.getFileID(), FILE_ID);
+        assertEquals(OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
+        assertEquals(getPillarID(), finalResponse.getPillarID());
+        assertEquals(FILE_ID, finalResponse.getFileID());
         assertNotNull(finalResponse.getChecksumDataForNewFile());
-        assertEquals(finalResponse.getChecksumDataForNewFile().getChecksumSpec(), newRequestChecksumSpec);
+        assertEquals(newRequestChecksumSpec, finalResponse.getChecksumDataForNewFile().getChecksumSpec());
         assertNotNull(finalResponse.getChecksumDataForExistingFile());
-        assertEquals(finalResponse.getChecksumDataForExistingFile().getChecksumSpec(), existingRequestChecksumSpec);
+        assertEquals(existingRequestChecksumSpec, finalResponse.getChecksumDataForExistingFile().getChecksumSpec());
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
         assertEquals(1, audits.getCallsForAuditEvent(), "Should make 1 put-file audit trail");

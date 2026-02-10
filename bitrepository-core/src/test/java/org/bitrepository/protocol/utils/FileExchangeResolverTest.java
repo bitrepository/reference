@@ -5,12 +5,16 @@ import org.bitrepository.protocol.LocalFileExchange;
 import org.bitrepository.protocol.http.HttpFileExchange;
 import org.bitrepository.protocol.http.HttpsFileExchange;
 import org.bitrepository.settings.referencesettings.FileExchangeSettings;
-import org.bitrepository.settings.referencesettings.ProtocolType;
 import org.junit.jupiter.api.Test;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import static org.bitrepository.protocol.utils.FileExchangeResolver.getBasicFileExchangeFromURL;
+import static org.bitrepository.protocol.utils.FileExchangeResolver.getFileExchange;
+import static org.bitrepository.settings.referencesettings.ProtocolType.FILE;
+import static org.bitrepository.settings.referencesettings.ProtocolType.HTTP;
+import static org.bitrepository.settings.referencesettings.ProtocolType.HTTPS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -18,45 +22,45 @@ public class FileExchangeResolverTest {
     @Test
     public void resolveFileProtocol() {
         FileExchangeSettings settings = new FileExchangeSettings();
-        settings.setProtocolType(ProtocolType.FILE);
-        FileExchange exchange = FileExchangeResolver.getFileExchange(settings);
+        settings.setProtocolType(FILE);
+        FileExchange exchange = getFileExchange(settings);
         assertEquals(LocalFileExchange.class, exchange.getClass());
     }
 
     @Test
     public void resolveHttpProtocol() {
         FileExchangeSettings settings = new FileExchangeSettings();
-        settings.setProtocolType(ProtocolType.HTTP);
-        FileExchange exchange = FileExchangeResolver.getFileExchange(settings);
+        settings.setProtocolType(HTTP);
+        FileExchange exchange = getFileExchange(settings);
         assertEquals(HttpFileExchange.class, exchange.getClass());
     }
 
     @Test
     public void resolveHttpsProtocol() {
         FileExchangeSettings settings = new FileExchangeSettings();
-        settings.setProtocolType(ProtocolType.HTTPS);
-        FileExchange exchange = FileExchangeResolver.getFileExchange(settings);
+        settings.setProtocolType(HTTPS);
+        FileExchange exchange = getFileExchange(settings);
         assertEquals(HttpsFileExchange.class, exchange.getClass());
     }
 
     @Test
     public void resolveFileProtocolURL() throws MalformedURLException {
         URL url = new URL("file:///home/user/Desktop/my-cool-file.txt");
-        FileExchange exchange = FileExchangeResolver.getBasicFileExchangeFromURL(url);
+        FileExchange exchange = getBasicFileExchangeFromURL(url);
         assertEquals(LocalFileExchange.class, exchange.getClass());
     }
 
     @Test
     public void resolveHttpProtocolURL() throws MalformedURLException {
         URL url = new URL("http://localhost:80/myfile.txt");
-        FileExchange exchange = FileExchangeResolver.getBasicFileExchangeFromURL(url);
+        FileExchange exchange = getBasicFileExchangeFromURL(url);
         assertEquals(HttpFileExchange.class, exchange.getClass());
     }
 
     @Test
     public void resolveHttpsProtocolURL() throws MalformedURLException {
         URL url = new URL("https://localhost:443/myfile.txt");
-        FileExchange exchange = FileExchangeResolver.getBasicFileExchangeFromURL(url);
+        FileExchange exchange = getBasicFileExchangeFromURL(url);
         assertEquals(HttpsFileExchange.class, exchange.getClass());
     }
 

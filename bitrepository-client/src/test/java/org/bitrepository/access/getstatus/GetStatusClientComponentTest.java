@@ -32,7 +32,6 @@ import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusR
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
 import org.bitrepository.client.DefaultFixtureClientTest;
 import org.bitrepository.client.TestEventHandler;
-import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.protocol.message.TestGetStatusMessageFactory;
 import org.bitrepository.settings.repositorysettings.GetStatusSettings;
@@ -44,6 +43,15 @@ import org.junit.jupiter.api.Test;
 import javax.xml.datatype.DatatypeFactory;
 import java.util.List;
 
+import static javax.xml.datatype.DatatypeFactory.newInstance;
+import static org.bitrepository.client.eventhandler.OperationEvent.OperationEventType.COMPLETE;
+import static org.bitrepository.client.eventhandler.OperationEvent.OperationEventType.COMPONENT_COMPLETE;
+import static org.bitrepository.client.eventhandler.OperationEvent.OperationEventType.COMPONENT_FAILED;
+import static org.bitrepository.client.eventhandler.OperationEvent.OperationEventType.COMPONENT_IDENTIFIED;
+import static org.bitrepository.client.eventhandler.OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE;
+import static org.bitrepository.client.eventhandler.OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT;
+import static org.bitrepository.client.eventhandler.OperationEvent.OperationEventType.IDENTIFY_TIMEOUT;
+import static org.bitrepository.client.eventhandler.OperationEvent.OperationEventType.REQUEST_SENT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
@@ -80,7 +88,7 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
         addStep("Configure 1 second timeout for identifying contributors. " +
                 "The default 2 contributors collection is used", "");
 
-        DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
+        DatatypeFactory datatypeFactory = newInstance();
         settingsForCUT.getRepositorySettings().getClientSettings()
                 .setIdentificationTimeoutDuration(datatypeFactory.newDuration(1000));
         TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
@@ -89,8 +97,7 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
         client.getStatus(testEventHandler);
         IdentifyContributorsForGetStatusRequest identifyRequest =
                 collectionReceiver.waitForMessage(IdentifyContributorsForGetStatusRequest.class);
-        assertEquals(OperationEventType.IDENTIFY_REQUEST_SENT,
-                testEventHandler.waitForEvent().getEventType());
+        assertEquals(IDENTIFY_REQUEST_SENT, testEventHandler.waitForEvent().getEventType());
 
         addStep("Send a identifyResponse from pillar 1",
                 "A COMPONENT_IDENTIFIED event should be received.");
@@ -99,19 +106,14 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
                         PILLAR1_ID, pillar1DestinationId);
         messageBus.sendMessage(responsePillar1);
 
-        assertEquals(OperationEventType.COMPONENT_IDENTIFIED,
-                testEventHandler.waitForEvent().getEventType());
+        assertEquals(COMPONENT_IDENTIFIED, testEventHandler.waitForEvent().getEventType());
 
         addStep("Wait for timeout event", "An IDENTIFY_TIMEOUT and IDENTIFICATION_COMPLETE event should be received" +
                 "Right after this a GetStatusRequest should be sent to pillar1");
-        assertEquals(OperationEventType.IDENTIFY_TIMEOUT,
-                testEventHandler.waitForEvent().getEventType());
-        assertEquals(OperationEventType.COMPONENT_FAILED,
-                testEventHandler.waitForEvent().getEventType());
-        assertEquals(OperationEventType.IDENTIFICATION_COMPLETE,
-                testEventHandler.waitForEvent().getEventType());
-        assertEquals(OperationEventType.REQUEST_SENT,
-                testEventHandler.waitForEvent().getEventType());
+        assertEquals(IDENTIFY_TIMEOUT, testEventHandler.waitForEvent().getEventType());
+        assertEquals(COMPONENT_FAILED, testEventHandler.waitForEvent().getEventType());
+        assertEquals(IDENTIFICATION_COMPLETE, testEventHandler.waitForEvent().getEventType());
+        assertEquals(REQUEST_SENT, testEventHandler.waitForEvent().getEventType());
         pillar1Receiver.waitForMessage(GetStatusRequest.class);
     }
 
@@ -130,8 +132,7 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
         client.getStatus(testEventHandler);
         IdentifyContributorsForGetStatusRequest identifyRequest =
                 collectionReceiver.waitForMessage(IdentifyContributorsForGetStatusRequest.class);
-        assertEquals(OperationEventType.IDENTIFY_REQUEST_SENT,
-                testEventHandler.waitForEvent().getEventType());
+        assertEquals(IDENTIFY_REQUEST_SENT, testEventHandler.waitForEvent().getEventType());
 
         addStep("Send a identifyResponse from each pillar",
                 "Two COMPONENT_IDENTIFIED events and a IDENTIFICATION_COMPLETE event should be received." +
@@ -141,23 +142,22 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
                 testMessageFactory.createIdentifyContributorsForGetStatusResponse(identifyRequest,
                         PILLAR1_ID, pillar1DestinationId);
         messageBus.sendMessage(responsePillar1);
-        assertEquals(OperationEventType.COMPONENT_IDENTIFIED,
-                testEventHandler.waitForEvent().getEventType());
+        assertEquals(COMPONENT_IDENTIFIED, testEventHandler.waitForEvent().getEventType());
 
         IdentifyContributorsForGetStatusResponse responsePillar2 =
                 testMessageFactory.createIdentifyContributorsForGetStatusResponse(identifyRequest,
                         PILLAR2_ID, pillar2DestinationId);
         messageBus.sendMessage(responsePillar2);
-        assertEquals(OperationEventType.COMPONENT_IDENTIFIED, testEventHandler.waitForEvent().getEventType());
-        assertEquals(OperationEventType.IDENTIFICATION_COMPLETE, testEventHandler.waitForEvent().getEventType());
+        assertEquals(COMPONENT_IDENTIFIED, testEventHandler.waitForEvent().getEventType());
+        assertEquals(IDENTIFICATION_COMPLETE, testEventHandler.waitForEvent().getEventType());
 
-        assertEquals(OperationEventType.REQUEST_SENT, testEventHandler.waitForEvent().getEventType());
+        assertEquals(REQUEST_SENT, testEventHandler.waitForEvent().getEventType());
         GetStatusRequest requestPillar1 = pillar1Receiver.waitForMessage(GetStatusRequest.class);
-        assertEquals(requestPillar1, testMessageFactory.createGetStatusRequest(
-                requestPillar1, PILLAR1_ID, pillar1DestinationId, settingsForTestClient.getComponentID()));
+        assertEquals(testMessageFactory.createGetStatusRequest(
+                requestPillar1, PILLAR1_ID, pillar1DestinationId, settingsForTestClient.getComponentID()), requestPillar1);
         GetStatusRequest requestPillar2 = pillar2Receiver.waitForMessage(GetStatusRequest.class);
-        assertEquals(requestPillar2, testMessageFactory.createGetStatusRequest(
-                requestPillar2, PILLAR2_ID, pillar2DestinationId, settingsForTestClient.getComponentID()));
+        assertEquals(testMessageFactory.createGetStatusRequest(
+                requestPillar2, PILLAR2_ID, pillar2DestinationId, settingsForTestClient.getComponentID()), requestPillar2);
 
         addStep("Send a final response from pillar 1",
                 "A COMPONENT_COMPLETE event should be generated with the audit trail results.");
@@ -167,8 +167,8 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
                         PILLAR1_ID, pillar1DestinationId, status1);
         messageBus.sendMessage(resultPillar1);
         StatusCompleteContributorEvent result1Event = (StatusCompleteContributorEvent) testEventHandler.waitForEvent();
-        assertEquals(OperationEventType.COMPONENT_COMPLETE, result1Event.getEventType());
-        assertEquals(result1Event.getStatus(), status1);
+        assertEquals(COMPONENT_COMPLETE, result1Event.getEventType());
+        assertEquals(status1, result1Event.getStatus());
 
         addStep("Send a final response from pillar 2",
                 "A COMPONENT_COMPLETE event should be generated with the audit trail results." +
@@ -180,10 +180,9 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
         messageBus.sendMessage(resultPillar2);
 
         StatusCompleteContributorEvent result2Event = (StatusCompleteContributorEvent) testEventHandler.waitForEvent();
-        assertEquals(OperationEventType.COMPONENT_COMPLETE, result2Event.getEventType());
-        assertEquals(result2Event.getStatus(), status2);
-        assertEquals(OperationEventType.COMPLETE,
-                testEventHandler.waitForEvent().getEventType());
+        assertEquals(COMPONENT_COMPLETE, result2Event.getEventType());
+        assertEquals(status2, result2Event.getStatus());
+        assertEquals(COMPLETE, testEventHandler.waitForEvent().getEventType());
     }
 
     /**

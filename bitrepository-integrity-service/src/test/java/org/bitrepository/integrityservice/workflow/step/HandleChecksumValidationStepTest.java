@@ -48,6 +48,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static java.lang.Long.valueOf;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -116,13 +120,13 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         step.performStep();
 
         addStep("Validate the file ids", "Should not have integrity issues.");
-        Assertions.assertFalse(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
-        Assertions.assertEquals(cs.getCollectionStat().getChecksumErrors(), Long.valueOf(0));
-        Assertions.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_3).getChecksumErrors(), Long.valueOf(0));
-        Assertions.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors(), Long.valueOf(0));
-        Assertions.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors(), Long.valueOf(0));
+        assertFalse(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
+        assertEquals(valueOf(0), cs.getCollectionStat().getChecksumErrors());
+        assertEquals(valueOf(0), cs.getPillarCollectionStat(TEST_PILLAR_3).getChecksumErrors());
+        assertEquals(valueOf(0), cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors());
+        assertEquals(valueOf(0), cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors());
         for (FileInfo fi : cache.getFileInfos(FILE_1, TEST_COLLECTION)) {
-            Assertions.assertEquals("1234cccc4321", fi.getChecksum());
+            assertEquals("1234cccc4321", fi.getChecksum());
         }
     }
 
@@ -168,10 +172,10 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         step.performStep();
 
         addStep("Validate the file ids", "Should have integrity issues. No entry should be valid.");
-        Assertions.assertTrue(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
-        Assertions.assertEquals(cs.getCollectionStat().getChecksumErrors(), Long.valueOf(1));
-        Assertions.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors(), Long.valueOf(1));
-        Assertions.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors(), Long.valueOf(1));
+        assertTrue(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
+        assertEquals(valueOf(1), cs.getCollectionStat().getChecksumErrors());
+        assertEquals(valueOf(1), cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors());
+        assertEquals(valueOf(1), cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors());
         /*for(FileInfo fi : cache.getFileInfos(FILE_1, TEST_COLLECTION)) {
             Assertions.assertTrue(fi.getChecksumState() != ChecksumState.VALID);
         }*/
@@ -199,11 +203,11 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         step.performStep();
 
         addStep("Validate the file ids", "Should have integrity issues.");
-        Assertions.assertTrue(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
-        Assertions.assertEquals(cs.getCollectionStat().getChecksumErrors(), Long.valueOf(1));
-        Assertions.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_3).getChecksumErrors(), Long.valueOf(1));
-        Assertions.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors(), Long.valueOf(1));
-        Assertions.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors(), Long.valueOf(1));
+        assertTrue(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
+        assertEquals(valueOf(1), cs.getCollectionStat().getChecksumErrors());
+        assertEquals(valueOf(1), cs.getPillarCollectionStat(TEST_PILLAR_3).getChecksumErrors());
+        assertEquals(valueOf(1), cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors());
+        assertEquals(valueOf(1), cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors());
     }
 
     @Test
@@ -229,11 +233,11 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         step.performStep();
 
         addStep("Validate the file ids", "Should only have integrity issues on pillar 3.");
-        Assertions.assertTrue(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
-        Assertions.assertEquals(cs.getCollectionStat().getChecksumErrors(), Long.valueOf(1));
-        Assertions.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_3).getChecksumErrors(), Long.valueOf(1));
-        Assertions.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors(), Long.valueOf(0));
-        Assertions.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors(), Long.valueOf(0));
+        assertTrue(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
+        assertEquals(valueOf(1), cs.getCollectionStat().getChecksumErrors());
+        assertEquals(valueOf(1), cs.getPillarCollectionStat(TEST_PILLAR_3).getChecksumErrors());
+        assertEquals(valueOf(0), cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors());
+        assertEquals(valueOf(0), cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors());
     }
 
     @Test

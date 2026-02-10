@@ -23,16 +23,18 @@ package org.bitrepository.pillar.integration.func.multicollection;
 
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.client.exceptions.NegativeResponseException;
-import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.PillarIntegrationTest;
 import org.bitrepository.protocol.bus.MessageReceiver;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
+
+import static org.bitrepository.common.utils.TestFileHelper.getDefaultFileChecksum;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class MultipleCollectionIT extends PillarIntegrationTest {
     /**
@@ -48,19 +50,19 @@ public class MultipleCollectionIT extends PillarIntegrationTest {
                 "with getFile, getChecksums, getFileIDs and can be replaced and deleted correctly.");
         addStep("Put the file to the second collection", "Should complete successfully");
         clientProvider.getPutClient().putFile(
-                nonDefaultCollectionId, defaultFileUrl, nonDefaultFileId, 10L, TestFileHelper.getDefaultFileChecksum(),
+                nonDefaultCollectionId, defaultFileUrl, nonDefaultFileId, 10L, getDefaultFileChecksum(),
                 null, null, null);
 
         addStep("Send a getFileIDs for the file in the second collection", "The fileID should be retrieved");
         ContributorQuery query = new ContributorQuery(getPillarID(), null, null, null);
-        Assertions.assertEquals(1, clientProvider.getGetFileIDsClient().getGetFileIDs(
+        assertEquals(1, clientProvider.getGetFileIDsClient().getGetFileIDs(
                 nonDefaultCollectionId, new ContributorQuery[]{query}, nonDefaultFileId, defaultFileUrl, null).size());
 
         addStep("Send a getFileIDs for the file in the other collections", "The file should not be found here");
         try {
             clientProvider.getGetFileIDsClient().getGetFileIDs(
                     collectionID, new ContributorQuery[]{query}, nonDefaultFileId, defaultFileUrl, null).size();
-            Assertions.fail("Should have throw a NegativeResponseException as the file doesn't exist in the default " +
+            fail("Should have throw a NegativeResponseException as the file doesn't exist in the default " +
                     "collection");
         } catch (NegativeResponseException nre) {
             //Expected

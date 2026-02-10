@@ -25,13 +25,22 @@
 package org.bitrepository.common.utils;
 
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
-import org.bitrepository.bitrepositoryelements.TimeMeasureUnit;
 import org.jaccept.structure.ExtendedTestCase;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
+
+import static java.lang.Long.MAX_VALUE;
+import static java.math.BigInteger.valueOf;
+import static org.bitrepository.bitrepositoryelements.TimeMeasureUnit.HOURS;
+import static org.bitrepository.bitrepositoryelements.TimeMeasureUnit.MILLISECONDS;
+import static org.bitrepository.common.utils.TimeMeasurementUtils.compare;
+import static org.bitrepository.common.utils.TimeMeasurementUtils.getMaximumTime;
+import static org.bitrepository.common.utils.TimeMeasurementUtils.getTimeMeasureInLong;
+import static org.bitrepository.common.utils.TimeMeasurementUtils.getTimeMeasurementFromMilliseconds;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests the <code>TimeMeasureComparator</code> class.
@@ -43,21 +52,21 @@ public class TimeMeasurementUtilsTest extends ExtendedTestCase {
         addDescription("Test the comparison between TimeMeasure units.");
         TimeMeasureTYPE referenceTime = new TimeMeasureTYPE();
         referenceTime.setTimeMeasureValue(new BigInteger("2"));
-        referenceTime.setTimeMeasureUnit(TimeMeasureUnit.MILLISECONDS);
+        referenceTime.setTimeMeasureUnit(MILLISECONDS);
 
         TimeMeasureTYPE compareTime = new TimeMeasureTYPE();
         compareTime.setTimeMeasureValue(new BigInteger("3"));
-        compareTime.setTimeMeasureUnit(TimeMeasureUnit.MILLISECONDS);
+        compareTime.setTimeMeasureUnit(MILLISECONDS);
 
-        Assertions.assertTrue(TimeMeasurementUtils.compare(referenceTime, compareTime) < 0, referenceTime +
+        assertTrue(compare(referenceTime, compareTime) < 0, referenceTime +
                 " should be smaller than " + compareTime);
 
         compareTime.setTimeMeasureValue(new BigInteger("1"));
-        Assertions.assertTrue(TimeMeasurementUtils.compare(referenceTime, compareTime) > 0, referenceTime +
+        assertTrue(compare(referenceTime, compareTime) > 0, referenceTime +
                 " should be larger than " + compareTime);
 
         compareTime.setTimeMeasureValue(new BigInteger("2"));
-        Assertions.assertEquals(0, TimeMeasurementUtils.compare(referenceTime, compareTime), referenceTime +
+        assertEquals(0, compare(referenceTime, compareTime), referenceTime +
                 " should be same as " + compareTime);
     }
 
@@ -67,39 +76,39 @@ public class TimeMeasurementUtilsTest extends ExtendedTestCase {
         addDescription("Test the comparison between milliseconds and hours.");
         long millis = 7200000L;
         TimeMeasureTYPE referenceTime = new TimeMeasureTYPE();
-        referenceTime.setTimeMeasureValue(BigInteger.valueOf(millis));
-        referenceTime.setTimeMeasureUnit(TimeMeasureUnit.MILLISECONDS);
+        referenceTime.setTimeMeasureValue(valueOf(millis));
+        referenceTime.setTimeMeasureUnit(MILLISECONDS);
 
         TimeMeasureTYPE compareTime = new TimeMeasureTYPE();
         compareTime.setTimeMeasureValue(new BigInteger("3"));
-        compareTime.setTimeMeasureUnit(TimeMeasureUnit.HOURS);
+        compareTime.setTimeMeasureUnit(HOURS);
 
-        Assertions.assertTrue(TimeMeasurementUtils.compare(referenceTime, compareTime) < 0, referenceTime +
+        assertTrue(compare(referenceTime, compareTime) < 0, referenceTime +
                 " should be smaller than " + compareTime);
 
         compareTime.setTimeMeasureValue(new BigInteger("1"));
-        Assertions.assertTrue(TimeMeasurementUtils.compare(referenceTime, compareTime) > 0, referenceTime +
+        assertTrue(compare(referenceTime, compareTime) > 0, referenceTime +
                 " should be larger than " + compareTime);
 
         compareTime.setTimeMeasureValue(new BigInteger("2"));
-        Assertions.assertEquals(0, TimeMeasurementUtils.compare(referenceTime, compareTime), referenceTime +
+        assertEquals(0, compare(referenceTime, compareTime), referenceTime +
                 " should be same as " + compareTime);
 
-        Assertions.assertEquals(millis, TimeMeasurementUtils.getTimeMeasureInLong(referenceTime));
+        assertEquals(millis, getTimeMeasureInLong(referenceTime));
     }
 
     @Test
     @Tag("regressiontest")
     public void testMaxValue() {
         addDescription("Test the Maximum value");
-        TimeMeasureTYPE time = TimeMeasurementUtils.getMaximumTime();
-        Assertions.assertEquals(Long.MAX_VALUE, time.getTimeMeasureValue().longValue());
-        Assertions.assertEquals(TimeMeasureUnit.HOURS, time.getTimeMeasureUnit());
+        TimeMeasureTYPE time = getMaximumTime();
+        assertEquals(MAX_VALUE, time.getTimeMeasureValue().longValue());
+        assertEquals(HOURS, time.getTimeMeasureUnit());
 
-        TimeMeasureTYPE time2 = TimeMeasurementUtils.getTimeMeasurementFromMilliseconds(
-                BigInteger.valueOf(Long.MAX_VALUE));
-        time2.setTimeMeasureUnit(TimeMeasureUnit.HOURS);
-        Assertions.assertEquals(0, TimeMeasurementUtils.compare(time, time2));
+        TimeMeasureTYPE time2 = getTimeMeasurementFromMilliseconds(
+                valueOf(MAX_VALUE));
+        time2.setTimeMeasureUnit(HOURS);
+        assertEquals(0, compare(time, time2));
     }
 
 }

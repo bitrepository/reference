@@ -21,7 +21,6 @@
  */
 package org.bitrepository.pillar.integration.func.replacefile;
 
-import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
@@ -33,12 +32,19 @@ import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.DefaultPillarOperationTest;
 import org.bitrepository.pillar.messagefactories.ReplaceFileMessageFactory;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.TimeUnit;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.bitrepository.bitrepositoryelements.ResponseCode.OPERATION_ACCEPTED_PROGRESS;
+import static org.bitrepository.bitrepositoryelements.ResponseCode.OPERATION_COMPLETED;
+import static org.bitrepository.common.utils.TestFileHelper.getDefaultFileChecksum;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class ReplaceFileRequestIT extends DefaultPillarOperationTest {
     protected ReplaceFileMessageFactory msgFactory;
@@ -65,27 +71,26 @@ public class ReplaceFileRequestIT extends DefaultPillarOperationTest {
                 "The pillar should generate a OPERATION_ACCEPTED_PROGRESS progress response followed by a " +
                         "OPERATION_COMPLETED final response");
         ReplaceFileRequest replaceRequest = msgFactory.createReplaceFileRequest(
-                TestFileHelper.getDefaultFileChecksum(), TestFileHelper.getDefaultFileChecksum(),
+                getDefaultFileChecksum(), getDefaultFileChecksum(),
                 null, null, defaultDownloadFileAddress, testSpecificFileID, DEFAULT_FILE_SIZE);
         messageBus.sendMessage(replaceRequest);
 
         ReplaceFileProgressResponse progressResponse = clientReceiver.waitForMessage(ReplaceFileProgressResponse.class,
-                getOperationTimeout(), TimeUnit.SECONDS);
-        Assertions.assertNotNull(progressResponse);
-        Assertions.assertEquals(progressResponse.getCorrelationID(), replaceRequest.getCorrelationID());
-        Assertions.assertEquals(progressResponse.getFrom(), getPillarID());
-        Assertions.assertEquals(progressResponse.getPillarID(), getPillarID());
-        Assertions.assertEquals(ResponseCode.OPERATION_ACCEPTED_PROGRESS,
-                progressResponse.getResponseInfo().getResponseCode());
+                getOperationTimeout(), SECONDS);
+        assertNotNull(progressResponse);
+        assertEquals(replaceRequest.getCorrelationID(), progressResponse.getCorrelationID());
+        assertEquals(getPillarID(), progressResponse.getFrom());
+        assertEquals(getPillarID(), progressResponse.getPillarID());
+        assertEquals(OPERATION_ACCEPTED_PROGRESS, progressResponse.getResponseInfo().getResponseCode());
 
         ReplaceFileFinalResponse finalResponse = (ReplaceFileFinalResponse) receiveResponse();
-        Assertions.assertNotNull(finalResponse);
-        Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
-        Assertions.assertEquals(finalResponse.getCorrelationID(), replaceRequest.getCorrelationID());
-        Assertions.assertEquals(finalResponse.getFrom(), getPillarID());
-        Assertions.assertNull(finalResponse.getChecksumDataForExistingFile());
-        Assertions.assertNull(finalResponse.getChecksumDataForNewFile());
-        Assertions.assertEquals(finalResponse.getPillarID(), getPillarID());
+        assertNotNull(finalResponse);
+        assertEquals(OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
+        assertEquals(replaceRequest.getCorrelationID(), finalResponse.getCorrelationID());
+        assertEquals(getPillarID(), finalResponse.getFrom());
+        assertNull(finalResponse.getChecksumDataForExistingFile());
+        assertNull(finalResponse.getChecksumDataForNewFile());
+        assertEquals(getPillarID(), finalResponse.getPillarID());
     }
 
     @Override
