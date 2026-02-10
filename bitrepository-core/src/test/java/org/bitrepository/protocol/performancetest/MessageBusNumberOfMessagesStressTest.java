@@ -208,14 +208,6 @@ public class MessageBusNumberOfMessagesStressTest {
         public ResendMessageListener(Settings conf) {
             /* The mocked SecurityManager */
             SecurityManager securityManager = new DummySecurityManager();
-            try {
-                java.lang.reflect.Field field = Settings.class.getDeclaredField("componentID");
-                field.setAccessible(true);
-                field.set(conf, "ResendMessageListener-" + System.nanoTime());
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-
             this.bus = new ActiveMQMessageBus(conf, securityManager);
             this.count = 0;
 

@@ -47,7 +47,6 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.lang.reflect.Field;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.Date;
@@ -222,15 +221,7 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
             addStep("Initialise the message listeners.", "Should be created and connected to the message bus.");
             for (int i = 0; i < NUMBER_OF_LISTENERS; i++) {
                 Settings listenerSettings = getSettings(getClass().getSimpleName());
-                try {
-                    Field field = Settings.class.getDeclaredField("componentID");
-                    field.setAccessible(true);
-                    field.set(listenerSettings, getClass().getSimpleName() + "-Listener-" + i + "-" + nanoTime());
-                } catch (Exception e) {
-                    throw new RuntimeException("Failed to set componentID", e);
-                }
                 listenerSettings.getRepositorySettings().getProtocolSettings().setMessageBusConfiguration(conf);
-
                 listeners.add(new NotificationMessageListener(listenerSettings, securityManager));
             }
 
