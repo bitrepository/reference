@@ -207,13 +207,6 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
         public MessageSenderThread(MessageBusConfiguration conf, SecurityManager securityManager, int numberOfMessages, String id) {
             Settings senderSettings = TestSettingsProvider.getSettings(MessageBusTimeToSendMessagesStressTest.class.getSimpleName());
             senderSettings.getRepositorySettings().getProtocolSettings().setMessageBusConfiguration(conf);
-            try {
-                java.lang.reflect.Field field = Settings.class.getDeclaredField("componentID");
-                field.setAccessible(true);
-                field.set(senderSettings, "Sender-" + id + "-" + System.nanoTime());
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
             this.bus = new ActiveMQMessageBus(senderSettings, securityManager);
             this.numberOfMessages = numberOfMessages;
             this.id = id;
