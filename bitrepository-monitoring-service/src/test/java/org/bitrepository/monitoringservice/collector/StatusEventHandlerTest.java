@@ -25,14 +25,15 @@ import org.bitrepository.access.getstatus.conversation.StatusCompleteContributor
 import org.bitrepository.client.eventhandler.AbstractOperationEvent;
 import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.DefaultEvent;
-import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.monitoringservice.MockAlerter;
 import org.bitrepository.monitoringservice.MockStatusStore;
 import org.jaccept.structure.ExtendedTestCase;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+
+import static org.bitrepository.client.eventhandler.OperationEvent.OperationEventType.WARNING;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class StatusEventHandlerTest extends ExtendedTestCase {
 
@@ -48,43 +49,43 @@ public class StatusEventHandlerTest extends ExtendedTestCase {
         GetStatusEventHandler eventHandler = new GetStatusEventHandler(store, alerter);
 
         addStep("Validate initial calls to the mocks", "No calls expected");
-        Assertions.assertEquals(0, store.getCallsForGetStatusMap());
-        Assertions.assertEquals(0, store.getCallsForUpdateReplayCounts());
-        Assertions.assertEquals(0, store.getCallsForUpdateStatus());
-        Assertions.assertEquals(0, alerter.getCallsForCheckStatuses());
+        assertEquals(0, store.getCallsForGetStatusMap());
+        assertEquals(0, store.getCallsForUpdateReplayCounts());
+        assertEquals(0, store.getCallsForUpdateStatus());
+        assertEquals(0, alerter.getCallsForCheckStatuses());
 
         addStep("Test an unhandled event.", "Should not make any calls.");
         AbstractOperationEvent event = new DefaultEvent(TEST_COLLECTION);
-        event.setEventType(OperationEventType.WARNING);
+        event.setEventType(WARNING);
         eventHandler.handleEvent(event);
 
-        Assertions.assertEquals(0, store.getCallsForGetStatusMap());
-        Assertions.assertEquals(0, store.getCallsForUpdateReplayCounts());
-        Assertions.assertEquals(0, store.getCallsForUpdateStatus());
-        Assertions.assertEquals(0, alerter.getCallsForCheckStatuses());
+        assertEquals(0, store.getCallsForGetStatusMap());
+        assertEquals(0, store.getCallsForUpdateReplayCounts());
+        assertEquals(0, store.getCallsForUpdateStatus());
+        assertEquals(0, alerter.getCallsForCheckStatuses());
 
         addStep("Test the Complete event", "Should make a call to the alerter");
         event = new CompleteEvent(TEST_COLLECTION, null);
         eventHandler.handleEvent(event);
-        Assertions.assertEquals(0, store.getCallsForGetStatusMap());
-        Assertions.assertEquals(0, store.getCallsForUpdateReplayCounts());
-        Assertions.assertEquals(0, store.getCallsForUpdateStatus());
-        Assertions.assertEquals(1, alerter.getCallsForCheckStatuses());
+        assertEquals(0, store.getCallsForGetStatusMap());
+        assertEquals(0, store.getCallsForUpdateReplayCounts());
+        assertEquals(0, store.getCallsForUpdateStatus());
+        assertEquals(1, alerter.getCallsForCheckStatuses());
 
         addStep("Test the Failed event", "Should make another call to the alerter");
         event = new OperationFailedEvent(null, "info", null);
         eventHandler.handleEvent(event);
-        Assertions.assertEquals(0, store.getCallsForGetStatusMap());
-        Assertions.assertEquals(0, store.getCallsForUpdateReplayCounts());
-        Assertions.assertEquals(0, store.getCallsForUpdateStatus());
-        Assertions.assertEquals(2, alerter.getCallsForCheckStatuses());
+        assertEquals(0, store.getCallsForGetStatusMap());
+        assertEquals(0, store.getCallsForUpdateReplayCounts());
+        assertEquals(0, store.getCallsForUpdateStatus());
+        assertEquals(2, alerter.getCallsForCheckStatuses());
 
         addStep("Test the component complete status", "Should attempt to update the store");
         event = new StatusCompleteContributorEvent("ContributorID", "dummy-collection", null);
         eventHandler.handleEvent(event);
-        Assertions.assertEquals(0, store.getCallsForGetStatusMap());
-        Assertions.assertEquals(0, store.getCallsForUpdateReplayCounts());
-        Assertions.assertEquals(1, store.getCallsForUpdateStatus());
-        Assertions.assertEquals(2, alerter.getCallsForCheckStatuses());
+        assertEquals(0, store.getCallsForGetStatusMap());
+        assertEquals(0, store.getCallsForUpdateReplayCounts());
+        assertEquals(1, store.getCallsForUpdateStatus());
+        assertEquals(2, alerter.getCallsForCheckStatuses());
     }
 }

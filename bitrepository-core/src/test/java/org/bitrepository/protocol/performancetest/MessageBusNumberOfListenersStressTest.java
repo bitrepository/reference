@@ -38,6 +38,7 @@ import org.bitrepository.protocol.messagebus.MessageListener;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
+import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -46,13 +47,16 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.lang.reflect.Field;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+import static java.lang.System.nanoTime;
+import static org.bitrepository.common.settings.TestSettingsProvider.getSettings;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Stress testing of the messagebus.
@@ -68,7 +72,7 @@ import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
  * This is controlled through the variables 'WRITE_RESULTS_TO_FILE', which deternimes whether to write to the file, and
  * 'OUTPUT_FILE_NAME' which is the name of the file to write the output results.
  */
-public class MessageBusNumberOfListenersStressTest {
+public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
     /**
      * The queue name.
      */
@@ -217,11 +221,11 @@ public class MessageBusNumberOfListenersStressTest {
         try {
             addStep("Initialise the message listeners.", "Should be created and connected to the message bus.");
             for (int i = 0; i < NUMBER_OF_LISTENERS; i++) {
-                Settings listenerSettings = TestSettingsProvider.getSettings(getClass().getSimpleName());
+                Settings listenerSettings = getSettings(getClass().getSimpleName());
                 try {
-                    java.lang.reflect.Field field = Settings.class.getDeclaredField("componentID");
+                    Field field = Settings.class.getDeclaredField("componentID");
                     field.setAccessible(true);
-                    field.set(listenerSettings, getClass().getSimpleName() + "-Listener-" + i + "-" + System.nanoTime());
+                    field.set(listenerSettings, getClass().getSimpleName() + "-Listener-" + i + "-" + nanoTime());
                 } catch (Exception e) {
                     throw new RuntimeException("Failed to set componentID", e);
                 }
@@ -267,12 +271,11 @@ public class MessageBusNumberOfListenersStressTest {
             addStep("Verifying the amount of message sent '" + idReached + "' has been received by all '"
                     + NUMBER_OF_LISTENERS + "' listeners", "Should be the same amount for each listener, and the same "
                     + "amount as the correlation ID of the message");
-            Assertions.assertEquals(messageReceived, idReached * NUMBER_OF_LISTENERS,
-                    "Reached message Id " + idReached + " thus each message of the " + NUMBER_OF_LISTENERS + " listener "
-                            + "should have received " + idReached + " message, though they have received "
-                            + messageReceived + " message all together.");
+            assertEquals(idReached * NUMBER_OF_LISTENERS, messageReceived, "Reached message Id " + idReached + " thus each message of the " + NUMBER_OF_LISTENERS + " listener "
+                    + "should have received " + idReached + " message, though they have received "
+                    + messageReceived + " message all together.");
             for (NotificationMessageListener listener : listeners) {
-                Assertions.assertTrue((listener.getCount() == idReached),
+                assertTrue((listener.getCount() == idReached),
                         "Should have received " + idReached + " messages, but has received "
                                 + listener.getCount());
             }
@@ -305,6 +308,7 @@ public class MessageBusNumberOfListenersStressTest {
 
     /**
      * Finds a free port on the localhost.
+     *
      * @return A free port number.
      * @throws IOException If an I/O error occurs.
      */

@@ -23,7 +23,6 @@ package org.bitrepository.pillar.integration.func.getchecksums;
 
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
@@ -37,8 +36,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+import static org.bitrepository.bitrepositoryelements.ResponseCode.FILE_NOT_FOUND_FAILURE;
+import static org.bitrepository.bitrepositoryelements.ResponseCode.IDENTIFICATION_POSITIVE;
+import static org.bitrepository.common.utils.ChecksumUtils.getDefault;
+import static org.bitrepository.common.utils.FileIDsUtils.createFileIDs;
+import static org.bitrepository.common.utils.FileIDsUtils.getAllFileIDs;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -62,8 +64,8 @@ public class IdentifyPillarsForGetChecksumsIT extends DefaultPillarIdentificatio
 
         addStep("Sending a identify request.",
                 "The pillar under test should make a response with the correct elements.");
-        FileIDs fileids = FileIDsUtils.createFileIDs(defaultFileId);
-        ChecksumSpecTYPE csSpec = ChecksumUtils.getDefault(settingsForCUT);
+        FileIDs fileids = createFileIDs(defaultFileId);
+        ChecksumSpecTYPE csSpec = getDefault(settingsForCUT);
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
@@ -76,18 +78,16 @@ public class IdentifyPillarsForGetChecksumsIT extends DefaultPillarIdentificatio
         IdentifyPillarsForGetChecksumsResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetChecksumsResponse.class);
         assertNotNull(receivedIdentifyResponse);
-        assertEquals(receivedIdentifyResponse.getCollectionID(), identifyRequest.getCollectionID(),
-                "Received unexpected 'CollectionID' in response.");
-        assertEquals(receivedIdentifyResponse.getCorrelationID(), identifyRequest.getCorrelationID(),
-                "Received unexpected 'CorrelationID' in response.");
-        assertEquals(receivedIdentifyResponse.getFrom(), getPillarID(),
-                "Received unexpected 'From' in response.");
-        assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID(),
-                "Received unexpected 'PillarID' in response.");
+        assertEquals(identifyRequest.getCollectionID(), receivedIdentifyResponse.getCollectionID(), "Received " +
+                "unexpected 'CollectionID' in response.");
+        assertEquals(identifyRequest.getCorrelationID(), receivedIdentifyResponse.getCorrelationID(), "Received " +
+                "unexpected 'CorrelationID' in response.");
+        assertEquals(getPillarID(), receivedIdentifyResponse.getFrom(), "Received unexpected 'From' in response.");
+        assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID(), "Received unexpected 'PillarID' in " +
+                "response.");
         assertNotNull(receivedIdentifyResponse.getReplyTo());
-        assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
-                receivedIdentifyResponse.getResponseInfo().getResponseCode(),
-                "Received unexpected 'Response' in response.");
+        assertEquals(IDENTIFICATION_POSITIVE, receivedIdentifyResponse.getResponseInfo().getResponseCode(), "Received" +
+                " unexpected 'Response' in response.");
     }
 
     @Test
@@ -99,8 +99,8 @@ public class IdentifyPillarsForGetChecksumsIT extends DefaultPillarIdentificatio
         addStep("Setup for test", "2 files on the pillar");
         //pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
-        FileIDs fileids = FileIDsUtils.createFileIDs(nonDefaultFileId);
-        ChecksumSpecTYPE csSpec = ChecksumUtils.getDefault(settingsForCUT);
+        FileIDs fileids = createFileIDs(nonDefaultFileId);
+        ChecksumSpecTYPE csSpec = getDefault(settingsForCUT);
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
@@ -113,18 +113,18 @@ public class IdentifyPillarsForGetChecksumsIT extends DefaultPillarIdentificatio
         IdentifyPillarsForGetChecksumsResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetChecksumsResponse.class);
         assertNotNull(receivedIdentifyResponse.getFileIDs().getFileID());
-        assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE,
-                receivedIdentifyResponse.getResponseInfo().getResponseCode(),
-                "Received unexpected 'ResponseCode' in response.");
+        assertEquals(FILE_NOT_FOUND_FAILURE, receivedIdentifyResponse.getResponseInfo().getResponseCode(), "Received " +
+                "unexpected 'ResponseCode' in response.");
     }
 
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
     public void allFilesTest() {
-        addDescription("Tests that the pillar accepts a GetChecksums requests for all files, even though it does not have any files.");
-        FileIDs fileids = FileIDsUtils.getAllFileIDs();
-        ChecksumSpecTYPE csSpec = ChecksumUtils.getDefault(settingsForCUT);
+        addDescription("Tests that the pillar accepts a GetChecksums requests for all files, even though it does not " +
+                "have any files.");
+        FileIDs fileids = getAllFileIDs();
+        ChecksumSpecTYPE csSpec = getDefault(settingsForCUT);
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
@@ -136,9 +136,8 @@ public class IdentifyPillarsForGetChecksumsIT extends DefaultPillarIdentificatio
                 "The pillar should make a response.");
         IdentifyPillarsForGetChecksumsResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetChecksumsResponse.class);
-        assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
-                receivedIdentifyResponse.getResponseInfo().getResponseCode(),
-                "Received unexpected 'ResponseCode' in response.");
+        assertEquals(IDENTIFICATION_POSITIVE, receivedIdentifyResponse.getResponseInfo().getResponseCode(), "Received" +
+                " unexpected 'ResponseCode' in response.");
     }
 
     @Override

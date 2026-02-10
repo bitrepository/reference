@@ -26,6 +26,7 @@ import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.encoders.Base64;
+import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -36,31 +37,40 @@ import java.nio.charset.StandardCharsets;
 import java.security.Security;
 import java.security.cert.X509Certificate;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.security.Security.addProvider;
+import static org.bitrepository.protocol.security.SecurityModuleConstants.defaultEncodingType;
+import static org.bitrepository.protocol.security.SecurityTestConstants.getTestData;
+import static org.bitrepository.protocol.security.TestCertProvider.getPositiveCertSignature;
+import static org.bitrepository.protocol.security.TestCertProvider.loadNegativeCert;
+import static org.bitrepository.protocol.security.TestCertProvider.loadPositiveCert;
+import static org.bouncycastle.util.encoders.Base64.decode;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class CertificateIDTest {
+public class CertificateIDTest extends ExtendedTestCase {
 
     @Test
     @Tag("regressiontest")
     public void positiveCertificateIdentificationTest() throws Exception {
         addDescription("Tests that a certificate can be identified based on the correct signature.");
         addStep("Create CertificateID object based on the certificate used to sign the data", "CertificateID object not null");
-        Security.addProvider(new BouncyCastleProvider());
+        addProvider(new BouncyCastleProvider());
 
-        X509Certificate myCertificate = TestCertProvider.loadPositiveCert();
+        X509Certificate myCertificate = loadPositiveCert();
         CertificateID certificateIDfromCertificate =
                 new CertificateID(myCertificate.getIssuerX500Principal(), myCertificate.getSerialNumber());
 
         addStep("Create CertificateID object based on signature", "Certificate object not null");
-        byte[] decodeSig = Base64.decode(TestCertProvider.getPositiveCertSignature().getBytes(StandardCharsets.UTF_8));
+        byte[] decodeSig = decode(getPositiveCertSignature().getBytes(UTF_8));
         CMSSignedData s = new CMSSignedData(new CMSProcessableByteArray(
-                SecurityTestConstants.getTestData().getBytes(SecurityModuleConstants.defaultEncodingType)), decodeSig);
+                getTestData().getBytes(defaultEncodingType)), decodeSig);
         SignerInformation signer = s.getSignerInfos().getSigners().iterator().next();
         CertificateID certificateIDFromSignature = new CertificateID(signer.getSID().getIssuer(), signer.getSID().getSerialNumber());
 
         addStep("Assert that the two CertificateID objects are equal", "Assert succeeds");
-        Assertions.assertEquals(certificateIDfromCertificate, certificateIDFromSignature);
+        assertEquals(certificateIDFromSignature, certificateIDfromCertificate);
     }
 
     @Test
@@ -90,51 +100,51 @@ public class CertificateIDTest {
     public void equalTest() throws Exception {
         addDescription("Tests the equality of CertificateIDs");
         addStep("Setup", "");
-        Security.addProvider(new BouncyCastleProvider());
+        addProvider(new BouncyCastleProvider());
 
-        X509Certificate myCertificate = TestCertProvider.loadNegativeCert();
+        X509Certificate myCertificate = loadNegativeCert();
         X500Principal issuer = myCertificate.getIssuerX500Principal();
         BigInteger serial = myCertificate.getSerialNumber();
         CertificateID certificateID1 = new CertificateID(issuer, serial);
 
         addStep("Validate the content of the certificateID", "Should be same as x509Certificate");
-        Assertions.assertEquals(certificateID1.getIssuer(), issuer);
-        Assertions.assertEquals(certificateID1.getSerial(), serial);
+        assertEquals(issuer, certificateID1.getIssuer());
+        assertEquals(serial, certificateID1.getSerial());
 
         addStep("Test whether it equals it self", "should give positive result");
-        Assertions.assertEquals(certificateID1, certificateID1);
+        assertEquals(certificateID1, certificateID1);
 
         addStep("Test with a null as argument", "Should give negative result");
-        Assertions.assertNotEquals(null, certificateID1);
+        assertNotEquals(null, certificateID1);
 
         addStep("Test with another class", "Should give negative result");
-        Assertions.assertNotEquals(new Object(), certificateID1);
+        assertNotEquals(new Object(), certificateID1);
 
         addStep("Test with same issuer but no serial", "Should give negative result");
-        Assertions.assertNotEquals(new CertificateID(issuer, null), certificateID1);
+        assertNotEquals(new CertificateID(issuer, null), certificateID1);
 
         addStep("Test with same serial but no issuer", "Should give negative result");
-        Assertions.assertNotEquals(new CertificateID((X500Principal) null, serial), certificateID1);
+        assertNotEquals(new CertificateID((X500Principal) null, serial), certificateID1);
 
         addStep("Test the positive case, with both the issuer and serial ", "Should give positive result");
-        Assertions.assertEquals(new CertificateID(issuer, serial), certificateID1);
+        assertEquals(certificateID1, new CertificateID(issuer, serial));
 
         addStep("Setup an empty certificate", "");
         CertificateID certificateID2 = new CertificateID((X500Principal) null, null);
 
         addStep("Test empty certificate against issuer but no serial", "Should give negative result");
-        Assertions.assertNotEquals(new CertificateID(issuer, null), certificateID2);
+        assertNotEquals(new CertificateID(issuer, null), certificateID2);
 
         addStep("Test empty certificate against serial but no issuer", "Should give negative result");
-        Assertions.assertNotEquals(new CertificateID((X500Principal) null, serial), certificateID2);
+        assertNotEquals(new CertificateID((X500Principal) null, serial), certificateID2);
 
         addStep("Test empty certificate against serial and issuer", "Should give negative result");
-        Assertions.assertNotEquals(new CertificateID(issuer, serial), certificateID2);
+        assertNotEquals(new CertificateID(issuer, serial), certificateID2);
 
         addStep("Test the positive case, with neither issuer nor serial", "Should give positive result");
-        Assertions.assertEquals(new CertificateID((X500Principal) null, null), certificateID2);
+        assertEquals(new CertificateID((X500Principal) null, null), certificateID2);
 
         addStep("Check the hash codes for the two certificate", "Should not be the same");
-        Assertions.assertTrue(certificateID1.hashCode() != certificateID2.hashCode());
+        assertTrue(certificateID1.hashCode() != certificateID2.hashCode());
     }
 }

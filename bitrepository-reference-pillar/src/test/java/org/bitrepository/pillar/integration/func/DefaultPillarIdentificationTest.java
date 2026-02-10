@@ -22,16 +22,14 @@
 
 package org.bitrepository.pillar.integration.func;
 
-import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.pillar.PillarTestGroups;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+import static org.bitrepository.bitrepositoryelements.ResponseCode.IDENTIFICATION_POSITIVE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 public abstract class DefaultPillarIdentificationTest extends DefaultPillarMessagingTest {
@@ -52,7 +50,6 @@ public abstract class DefaultPillarIdentificationTest extends DefaultPillarMessa
 
     protected void assertPositivResponseIsReceived() {
         MessageResponse receivedResponse = receiveResponse();
-        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
-                receivedResponse.getResponseInfo().getResponseCode());
+        assertEquals(IDENTIFICATION_POSITIVE, receivedResponse.getResponseInfo().getResponseCode());
     }
 }

@@ -28,19 +28,17 @@ import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.monitoringservice.MockStatusStore;
 import org.bitrepository.monitoringservice.status.ComponentStatus;
-import org.bitrepository.monitoringservice.status.ComponentStatusCode;
 import org.bitrepository.protocol.IntegrationTest;
-import org.bitrepository.settings.referencesettings.AlarmLevel;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+import static java.math.BigInteger.ONE;
+import static org.bitrepository.monitoringservice.status.ComponentStatusCode.UNRESPONSIVE;
+import static org.bitrepository.settings.referencesettings.AlarmLevel.ERROR;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MonitorAlerterTest extends IntegrationTest {
 
@@ -50,19 +48,19 @@ public class MonitorAlerterTest extends IntegrationTest {
         addDescription("Tests the " + BasicMonitoringServiceAlerter.class.getName());
         addStep("Setup", "");
         String componentID = "TestMonitorService";
-        settingsForCUT.getReferenceSettings().getMonitoringServiceSettings().setMaxRetries(BigInteger.ONE);
+        settingsForCUT.getReferenceSettings().getMonitoringServiceSettings().setMaxRetries(ONE);
         AlerterStatusStore store = new AlerterStatusStore();
 
         addStep("Create the alerter, but ignore the part of actually sending the alarms. Just log it.", "");
         BasicMonitoringServiceAlerter alerter = new BasicMonitoringServiceAlerter(
-                settingsForCUT, messageBus, AlarmLevel.ERROR, store);
+                settingsForCUT, messageBus, ERROR, store);
 
-        Assertions.assertEquals(0, store.getCallsForGetStatusMap());
+        assertEquals(0, store.getCallsForGetStatusMap());
 
         addStep("Check statuses with an empty map.", "Should only make a call for GetStatusMap");
         store.statuses = new HashMap<>();
         alerter.checkStatuses();
-        Assertions.assertEquals(1, store.getCallsForGetStatusMap());
+        assertEquals(1, store.getCallsForGetStatusMap());
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
 
         addStep("Check the status when a positive entry exists.", "Should make another call for the GetStatusMap");
@@ -70,7 +68,7 @@ public class MonitorAlerterTest extends IntegrationTest {
         cs.updateStatus(createPositiveStatus());
         store.statuses.put(componentID, cs);
         alerter.checkStatuses();
-        Assertions.assertEquals(2, store.getCallsForGetStatusMap());
+        assertEquals(2, store.getCallsForGetStatusMap());
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
 
         addStep("Check the status when a negative entry exists.",
@@ -78,10 +76,10 @@ public class MonitorAlerterTest extends IntegrationTest {
         cs.updateReplies();
         store.statuses.put(componentID, cs);
         alerter.checkStatuses();
-        Assertions.assertEquals(3, store.getCallsForGetStatusMap());
+        assertEquals(3, store.getCallsForGetStatusMap());
         alarmReceiver.waitForMessage(AlarmMessage.class);
 
-        Assertions.assertEquals(ComponentStatusCode.UNRESPONSIVE, cs.getStatus());
+        assertEquals(UNRESPONSIVE, cs.getStatus());
     }
 
     private ResultingStatus createPositiveStatus() {

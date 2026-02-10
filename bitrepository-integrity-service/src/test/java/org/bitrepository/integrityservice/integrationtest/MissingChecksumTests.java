@@ -54,6 +54,7 @@ import org.bitrepository.integrityservice.workflow.step.HandleMissingChecksumsSt
 import org.bitrepository.integrityservice.workflow.step.UpdateChecksumsStep;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.service.exception.WorkflowAbortedException;
+import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -63,14 +64,12 @@ import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -82,7 +81,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 
-public class MissingChecksumTests {
+public class MissingChecksumTests extends ExtendedTestCase {
     private static final String PILLAR_1 = "pillar1";
     private static final String PILLAR_2 = "pillar2";
 
@@ -160,7 +159,7 @@ public class MissingChecksumTests {
         final ResultingChecksums resultingChecksums = createResultingChecksums(TEST_FILE_1);
         doAnswer(invocation -> {
             EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
-            eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(PILLAR_1, PILLAR_2)));
+            eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, asList(PILLAR_1, PILLAR_2)));
             eventHandler.handleEvent(new ChecksumsCompletePillarEvent(PILLAR_1, TEST_COLLECTION,
                     resultingChecksums, createChecksumSpecTYPE(), false));
             eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
@@ -170,7 +169,7 @@ public class MissingChecksumTests {
                 any(ContributorQuery[].class), any(EventHandler.class));
 
         when(integrityContributors.getActiveContributors())
-                .thenReturn(new HashSet<>(Arrays.asList(PILLAR_1, PILLAR_2))).thenReturn(new HashSet<>());
+                .thenReturn(new HashSet<>(asList(PILLAR_1, PILLAR_2))).thenReturn(new HashSet<>());
 
         UpdateChecksumsStep step = new FullUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(),
                 settings, TEST_COLLECTION, integrityContributors);
@@ -208,7 +207,7 @@ public class MissingChecksumTests {
         final ResultingChecksums resultingChecksums = createResultingChecksums(TEST_FILE_1);
         doAnswer(invocation -> {
             EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
-            eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(PILLAR_1, PILLAR_2)));
+            eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, asList(PILLAR_1, PILLAR_2)));
             eventHandler.handleEvent(new ChecksumsCompletePillarEvent(PILLAR_1, TEST_COLLECTION,
                     resultingChecksums, createChecksumSpecTYPE(), false));
             eventHandler.handleEvent(new ChecksumsCompletePillarEvent(PILLAR_2, TEST_COLLECTION,
@@ -220,7 +219,7 @@ public class MissingChecksumTests {
                 anyString(), any(ContributorQuery[].class), any(EventHandler.class));
 
         when(integrityContributors.getActiveContributors())
-                .thenReturn(new HashSet<>(Arrays.asList(PILLAR_1, PILLAR_2))).thenReturn(new HashSet<>());
+                .thenReturn(new HashSet<>(asList(PILLAR_1, PILLAR_2))).thenReturn(new HashSet<>());
 
         UpdateChecksumsStep step1 = new FullUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(),
                 settings, TEST_COLLECTION, integrityContributors);
@@ -234,7 +233,7 @@ public class MissingChecksumTests {
         assertEquals(1, metrics.get(PILLAR_1).getPillarFileCount());
         assertEquals(1, metrics.get(PILLAR_2).getPillarFileCount());
 
-        for (String pillar : Arrays.asList(PILLAR_1, PILLAR_2)) {
+        for (String pillar : asList(PILLAR_1, PILLAR_2)) {
             List<String> missingChecksums
                     = getIssuesFromIterator(model.findFilesWithMissingChecksum(TEST_COLLECTION, pillar, testStart));
             assertEquals(0, missingChecksums.size());
@@ -243,7 +242,7 @@ public class MissingChecksumTests {
         addStep("Add checksum results for only the second pillar.", "");
         doAnswer(invocation -> {
             EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
-            eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(PILLAR_1, PILLAR_2)));
+            eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, asList(PILLAR_1, PILLAR_2)));
             eventHandler.handleEvent(new ChecksumsCompletePillarEvent(PILLAR_2, TEST_COLLECTION,
                     resultingChecksums, createChecksumSpecTYPE(), false));
             eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
@@ -253,7 +252,7 @@ public class MissingChecksumTests {
                 anyString(), any(ContributorQuery[].class), any(EventHandler.class));
 
         when(integrityContributors.getActiveContributors())
-                .thenReturn(new HashSet<>(Arrays.asList(PILLAR_1, PILLAR_2))).thenReturn(new HashSet<>());
+                .thenReturn(new HashSet<>(asList(PILLAR_1, PILLAR_2))).thenReturn(new HashSet<>());
 
         Date secondUpdate = new Date();
         UpdateChecksumsStep step2 = new FullUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(),

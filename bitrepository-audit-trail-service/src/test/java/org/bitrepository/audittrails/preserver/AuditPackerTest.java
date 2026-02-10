@@ -5,6 +5,7 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.settings.referencesettings.AuditTrailPreservation;
+import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -13,6 +14,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.List.of;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -21,7 +24,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class AuditPackerTest {
+public class AuditPackerTest extends ExtendedTestCase {
     private String collectionID;
     private AuditTrailPreservation preservationSettings;
     private AuditTrailStore store;
@@ -43,7 +46,7 @@ public class AuditPackerTest {
         assertEquals(0, packer.getPackedAuditCount());
 
         // Create a stubbed event iterator for each expected contributor containing only one event.
-        List<StubAuditEventIterator> iterators = List.of(
+        List<StubAuditEventIterator> iterators = of(
                 new StubAuditEventIterator(), new StubAuditEventIterator(), new StubAuditEventIterator());
 
         when(store.getAuditTrailsByIterator(
@@ -54,11 +57,11 @@ public class AuditPackerTest {
         packer.createNewPackage();
         Long[] expectedSeqNums = {1L, 1L, 1L};
         assertEquals(3, packer.getPackedAuditCount());
-        assertEquals(packer.getSequenceNumbersReached().values().toArray(new Long[0]), expectedSeqNums);
+        assertArrayEquals(expectedSeqNums, packer.getSequenceNumbersReached().values().toArray(new Long[0]));
 
         // As the iterators have no new audits there should be no newly packed audits on a new call.
         packer.createNewPackage();
         assertEquals(0, packer.getPackedAuditCount());
-        assertEquals(packer.getSequenceNumbersReached().values().toArray(new Long[0]), expectedSeqNums);
+        assertArrayEquals(expectedSeqNums, packer.getSequenceNumbersReached().values().toArray(new Long[0]));
     }
 }

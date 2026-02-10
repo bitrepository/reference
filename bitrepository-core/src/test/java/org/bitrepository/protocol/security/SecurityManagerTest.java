@@ -37,6 +37,7 @@ import org.bitrepository.settings.repositorysettings.OperationPermission;
 import org.bitrepository.settings.repositorysettings.Permission;
 import org.bitrepository.settings.repositorysettings.PermissionSet;
 import org.bouncycastle.util.encoders.Base64;
+import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -47,10 +48,12 @@ import org.slf4j.LoggerFactory;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+import static org.bitrepository.protocol.security.SecurityTestConstants.getTestData;
+import static org.bitrepository.protocol.security.TestCertProvider.getPositiveCertSignature;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
-public class SecurityManagerTest {
+public class SecurityManagerTest extends ExtendedTestCase {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private org.bitrepository.protocol.security.SecurityManager securityManager;
     private PermissionStore permissionStore;
@@ -85,8 +88,8 @@ public class SecurityManagerTest {
         addDescription("Tests that a signature only allows the correct requests.");
 
         List<Collection> collections = settings.getRepositorySettings().getCollections().getCollection();
-        Assertions.assertEquals(2, collections.size(),
-                "There should be two collections present to test the collection limited authorization");
+        assertEquals(2, collections.size(), "There should be two collections present to test the collection limited " +
+                "authorization");
         settings.getRepositorySettings().setPermissionSet(getCollectionLimitedPermissionSet());
         setupSecurityManager(settings);
 
@@ -96,32 +99,33 @@ public class SecurityManagerTest {
         addStep("Check that PUT_FILE is allowed for both collections.", "PUT_FILE is allowed.");
         try {
             securityManager.authorizeOperation(PutFileRequest.class.getSimpleName(),
-                    SecurityTestConstants.getTestData(), TestCertProvider.getPositiveCertSignature(), collectionID1);
+                    getTestData(), getPositiveCertSignature(), collectionID1);
         } catch (OperationAuthorizationException e) {
-            Assertions.fail(e.getMessage());
+            fail(e.getMessage());
         }
         try {
             securityManager.authorizeOperation(PutFileRequest.class.getSimpleName(),
-                    SecurityTestConstants.getTestData(), TestCertProvider.getPositiveCertSignature(), collectionID2);
+                    getTestData(), getPositiveCertSignature(), collectionID2);
         } catch (OperationAuthorizationException e) {
-            Assertions.fail(e.getMessage());
+            fail(e.getMessage());
         }
 
         addStep("Check that GET_FILE is only allowed for the first collection.",
-                "GET_FILE is allowed for first collection, and disallowed for the second collection (exception thrown).");
+                "GET_FILE is allowed for first collection, and disallowed for the second collection (exception " +
+                        "thrown).");
 
 
         try {
             securityManager.authorizeOperation(GetFileRequest.class.getSimpleName(),
-                    SecurityTestConstants.getTestData(), TestCertProvider.getPositiveCertSignature(), collectionID1);
+                    getTestData(), getPositiveCertSignature(), collectionID1);
         } catch (OperationAuthorizationException e) {
-            Assertions.fail(e.getMessage());
+            fail(e.getMessage());
         }
 
         try {
             securityManager.authorizeOperation(GetFileRequest.class.getSimpleName(),
-                    SecurityTestConstants.getTestData(), TestCertProvider.getPositiveCertSignature(), collectionID2);
-            Assertions.fail("SecurityManager did not throw the expected OperationAuthorizationException");
+                    getTestData(), getPositiveCertSignature(), collectionID2);
+            fail("SecurityManager did not throw the expected OperationAuthorizationException");
         } catch (OperationAuthorizationException ignored) {
         }
     }
@@ -164,7 +168,8 @@ public class SecurityManagerTest {
         }
         permissionStore.loadPermissions(getSigningCertPermission(), SecurityTestConstants.getComponentID());
 
-        String signatureString = new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)),
+        String signatureString =
+                new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)),
                 StandardCharsets.UTF_8);
         log.info("Signature for testdata is: {}", signatureString);
 
@@ -188,7 +193,8 @@ public class SecurityManagerTest {
         } catch (MessageSigningException e) {
             Assertions.fail("Failed signing test data!", e);
         }
-        String signatureString = new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)),
+        String signatureString =
+                new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)),
                 StandardCharsets.UTF_8);
         log.info("Signature for testdata is: {}", signatureString);
 
@@ -216,7 +222,8 @@ public class SecurityManagerTest {
         }
         permissionStore.loadPermissions(getSigningCertPermission(), SecurityTestConstants.getComponentID());
 
-        String signatureString = new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)),
+        String signatureString =
+                new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)),
                 StandardCharsets.UTF_8);
         log.info("Signature for testdata is: {}", signatureString);
 

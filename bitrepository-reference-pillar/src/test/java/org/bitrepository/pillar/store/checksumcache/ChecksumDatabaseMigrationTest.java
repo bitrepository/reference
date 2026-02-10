@@ -26,30 +26,35 @@ import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumDBMigrator;
 import org.bitrepository.service.database.DBConnector;
-import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
+import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
 
+import static java.util.Calendar.getInstance;
+import static java.util.Locale.ROOT;
+import static java.util.TimeZone.getDefault;
+import static org.bitrepository.common.utils.FileUtils.retrieveDirectory;
+import static org.bitrepository.common.utils.FileUtils.unzip;
 import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CHECKSUM_TABLE;
 import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_CHECKSUM;
 import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_COLLECTION_ID;
 import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_DATE;
 import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_FILE_ID;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+import static org.bitrepository.service.database.DatabaseUtils.executeStatement;
+import static org.bitrepository.service.database.DatabaseUtils.selectFirstLongValue;
+import static org.bitrepository.service.database.DatabaseUtils.selectIntValue;
+import static org.bitrepository.service.database.DatabaseUtils.selectStringValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-public class ChecksumDatabaseMigrationTest {
+public class ChecksumDatabaseMigrationTest extends ExtendedTestCase {
     protected Settings settings;
 
     static final String PATH_TO_DATABASE_UNPACKED = "target/test/referencepillar/checksumdb-for-migration";
@@ -90,32 +95,32 @@ public class ChecksumDatabaseMigrationTest {
         addDescription("Tests that the checksums table can be migrated from version 1 to 2, e.g. getting the column "
                 + "collectionid, which should be set to the default in settings.");
         addStep("Unzipping and connecting to checksum database version 1", "");
-        FileUtils.unzip(new File(PATH_TO_DATABASE_V1_JAR_FILE), FileUtils.retrieveDirectory(PATH_TO_DATABASE_UNPACKED));
+        unzip(new File(PATH_TO_DATABASE_V1_JAR_FILE), retrieveDirectory(PATH_TO_DATABASE_UNPACKED));
 
         connector = new DBConnector(
                 settings.getReferenceSettings().getPillarSettings().getChecksumDatabase());
 
         addStep("Validate setup", "Checksums table has version 1");
         String extractVersionSql = "SELECT version FROM tableversions WHERE tablename = ?";
-        int versionBefore = DatabaseUtils.selectIntValue(connector, extractVersionSql, CHECKSUM_TABLE);
-        Assertions.assertEquals(1, versionBefore, "Table version before migration");
+        int versionBefore = selectIntValue(connector, extractVersionSql, CHECKSUM_TABLE);
+        assertEquals(1, versionBefore, "Table version before migration");
 
         addStep("Ingest a entry to the database without the collection id", "works only in version 1.");
         String insertSql = "INSERT INTO " + CHECKSUM_TABLE + " ( " + CS_FILE_ID + " , " + CS_CHECKSUM + " , " + CS_DATE
                 + " ) VALUES ( ? , ? , ? )";
-        DatabaseUtils.executeStatement(connector, insertSql, FILE_ID, CHECKSUM, new Date());
+        executeStatement(connector, insertSql, FILE_ID, CHECKSUM, new Date());
 
         addStep("Perform migration", "Checksums table has version 3");
         ChecksumDBMigrator migrator = new ChecksumDBMigrator(connector, settings);
         migrator.migrate();
-        int versionAfter = DatabaseUtils.selectIntValue(connector, extractVersionSql, CHECKSUM_TABLE);
-        Assertions.assertEquals(4, versionAfter, "Table version after migration");
+        int versionAfter = selectIntValue(connector, extractVersionSql, CHECKSUM_TABLE);
+        assertEquals(4, versionAfter, "Table version after migration");
 
         addStep("Validate the entry", "The collection id has been set to the default collection id");
         String retrieveCollectionIdSql = "SELECT " + CS_COLLECTION_ID + " FROM " + CHECKSUM_TABLE + " WHERE "
                 + CS_FILE_ID + " = ?";
-        String collectionID = DatabaseUtils.selectStringValue(connector, retrieveCollectionIdSql, FILE_ID);
-        Assertions.assertEquals(collectionID, settings.getCollections().get(0).getID());
+        String collectionID = selectStringValue(connector, retrieveCollectionIdSql, FILE_ID);
+        assertEquals(settings.getCollections().get(0).getID(), collectionID);
     }
 
     @Test
@@ -128,37 +133,37 @@ public class ChecksumDatabaseMigrationTest {
         cleanup();
 
         addStep("Unzipping and connecting to checksum database version 3", "");
-        FileUtils.unzip(new File(PATH_TO_DATABASE_V3_JAR_FILE), FileUtils.retrieveDirectory(PATH_TO_DATABASE_UNPACKED));
+        unzip(new File(PATH_TO_DATABASE_V3_JAR_FILE), retrieveDirectory(PATH_TO_DATABASE_UNPACKED));
 
         connector = new DBConnector(
                 settings.getReferenceSettings().getPillarSettings().getChecksumDatabase());
         Date testDate = new Date(1453984303527L);
-        Assertions.assertFalse(connector.getConnection().isClosed());
+        assertFalse(connector.getConnection().isClosed());
 
         addStep("Validate setup", "Checksums table has version 3");
         String extractVersionSql = "SELECT version FROM tableversions WHERE tablename = ?";
-        int versionBefore = DatabaseUtils.selectIntValue(connector, extractVersionSql, CHECKSUM_TABLE);
-        Assertions.assertEquals(3, versionBefore, "Table version before migration");
+        int versionBefore = selectIntValue(connector, extractVersionSql, CHECKSUM_TABLE);
+        assertEquals(3, versionBefore, "Table version before migration");
 
         addStep("Ingest a entry to the database with a date for the calculationdate", "works in version 3.");
         String insertSql = "INSERT INTO " + CHECKSUM_TABLE + " ( " + CS_FILE_ID + " , " + CS_CHECKSUM + " , " + CS_DATE
                 + " , " + CS_COLLECTION_ID + " ) VALUES ( ? , ? , ? , ? )";
-        DatabaseUtils.executeStatement(connector, insertSql, FILE_ID, CHECKSUM, testDate, settings.getCollections().get(0).getID());
+        executeStatement(connector, insertSql, FILE_ID, CHECKSUM, testDate, settings.getCollections().get(0).getID());
 
         addStep("Perform migration", "Checksums table has version 4");
         ChecksumDBMigrator migrator = new ChecksumDBMigrator(connector, settings);
         migrator.migrate();
-        int versionAfter = DatabaseUtils.selectIntValue(connector, extractVersionSql, CHECKSUM_TABLE);
-        Assertions.assertEquals(4, versionAfter, "Table version after migration");
+        int versionAfter = selectIntValue(connector, extractVersionSql, CHECKSUM_TABLE);
+        assertEquals(4, versionAfter, "Table version after migration");
 
         addStep("Validate the migration", "The timestamp is now the millis from epoch");
         String retrieveCollectionIdSql = "SELECT " + CS_DATE + " FROM " + CHECKSUM_TABLE + " WHERE "
                 + CS_FILE_ID + " = ?";
-        Long extractedDate = DatabaseUtils.selectFirstLongValue(connector, retrieveCollectionIdSql, FILE_ID);
+        Long extractedDate = selectFirstLongValue(connector, retrieveCollectionIdSql, FILE_ID);
 
         Date testDateAtTimeZone = new Date(testDate.getTime()
-                + Calendar.getInstance(TimeZone.getDefault(), Locale.ROOT).getTimeZone().getRawOffset());
+                + getInstance(getDefault(), ROOT).getTimeZone().getRawOffset());
 
-        Assertions.assertEquals(extractedDate.longValue(), testDateAtTimeZone.getTime());
+        assertEquals(testDateAtTimeZone.getTime(), extractedDate.longValue());
     }
 }

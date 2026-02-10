@@ -23,15 +23,16 @@ package org.bitrepository.client.exception;
 
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.client.exceptions.NegativeResponseException;
-import org.junit.jupiter.api.Assertions;
+import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 
-public class NegativeResponseExceptionTest {
+public class NegativeResponseExceptionTest extends ExtendedTestCase {
 
     @Test
     @Tag("regressiontest")
@@ -46,10 +47,10 @@ public class NegativeResponseExceptionTest {
         try {
             throw new NegativeResponseException(errMsg, responseCode);
         } catch (Exception e) {
-            Assertions.assertInstanceOf(NegativeResponseException.class, e);
-            Assertions.assertEquals(errMsg, e.getMessage());
-            Assertions.assertEquals(responseCode, ((NegativeResponseException) e).getErrorCode());
-            Assertions.assertNull(e.getCause());
+            assertInstanceOf(NegativeResponseException.class, e);
+            assertEquals(errMsg, e.getMessage());
+            assertEquals(responseCode, ((NegativeResponseException) e).getErrorCode());
+            assertNull(e.getCause());
         }
     }
 }

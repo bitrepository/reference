@@ -22,18 +22,20 @@
 package org.bitrepository.service.exception;
 
 import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.junit.jupiter.api.Assertions;
+import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 
 /**
  * jaccept steps to validate that the exception thrown is the exception thrown.
  */
-public class IdentifyContributorExceptionTest {
+public class IdentifyContributorExceptionTest extends ExtendedTestCase {
     private final String TEST_COLLECTION_ID = "test-collection-id";
 
     @Test
@@ -49,24 +51,24 @@ public class IdentifyContributorExceptionTest {
         try {
             throw new IdentifyContributorException(errCode, errMsg);
         } catch (Exception e) {
-            Assertions.assertInstanceOf(IdentifyContributorException.class, e);
-            Assertions.assertEquals(errMsg, e.getMessage());
-            Assertions.assertEquals(errCode, ((IdentifyContributorException) e).getResponseInfo().getResponseCode());
-            Assertions.assertEquals(errMsg, ((IdentifyContributorException) e).getResponseInfo().getResponseText());
-            Assertions.assertNull(e.getCause());
+            assertInstanceOf(IdentifyContributorException.class, e);
+            assertEquals(errMsg, e.getMessage());
+            assertEquals(errCode, ((IdentifyContributorException) e).getResponseInfo().getResponseCode());
+            assertEquals(errMsg, ((IdentifyContributorException) e).getResponseInfo().getResponseText());
+            assertNull(e.getCause());
         }
 
         addStep("Throw the exception with an embedded exception", "The embedded exception should be the same.");
         try {
             throw new IdentifyContributorException(errCode, errMsg, new IllegalArgumentException(causeMsg));
         } catch (Exception e) {
-            Assertions.assertInstanceOf(IdentifyContributorException.class, e);
-            Assertions.assertEquals(errMsg, e.getMessage());
-            Assertions.assertEquals(errCode, ((IdentifyContributorException) e).getResponseInfo().getResponseCode());
-            Assertions.assertEquals(errMsg, ((IdentifyContributorException) e).getResponseInfo().getResponseText());
-            Assertions.assertNotNull(e.getCause());
-            Assertions.assertInstanceOf(IllegalArgumentException.class, e.getCause());
-            Assertions.assertEquals(causeMsg, e.getCause().getMessage());
+            assertInstanceOf(IdentifyContributorException.class, e);
+            assertEquals(errMsg, e.getMessage());
+            assertEquals(errCode, ((IdentifyContributorException) e).getResponseInfo().getResponseCode());
+            assertEquals(errMsg, ((IdentifyContributorException) e).getResponseInfo().getResponseText());
+            assertNotNull(e.getCause());
+            assertInstanceOf(IllegalArgumentException.class, e.getCause());
+            assertEquals(causeMsg, e.getCause().getMessage());
         }
     }
 }
