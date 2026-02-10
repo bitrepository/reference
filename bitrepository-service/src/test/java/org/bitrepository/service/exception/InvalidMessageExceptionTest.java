@@ -24,9 +24,13 @@ package org.bitrepository.service.exception;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.jaccept.structure.ExtendedTestCase;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 
 /**
@@ -48,26 +52,26 @@ public class InvalidMessageExceptionTest extends ExtendedTestCase {
         try {
             throw new InvalidMessageException(errCode, errMsg);
         } catch (Exception e) {
-            Assertions.assertInstanceOf(InvalidMessageException.class, e);
-            Assertions.assertEquals(errMsg, e.getMessage());
-            Assertions.assertEquals(errCode, ((InvalidMessageException) e).getResponseInfo().getResponseCode());
-            Assertions.assertEquals(errMsg, ((InvalidMessageException) e).getResponseInfo().getResponseText());
-            Assertions.assertNull(e.getCause());
+            assertInstanceOf(InvalidMessageException.class, e);
+            assertEquals(errMsg, e.getMessage());
+            assertEquals(errCode, ((InvalidMessageException) e).getResponseInfo().getResponseCode());
+            assertEquals(errMsg, ((InvalidMessageException) e).getResponseInfo().getResponseText());
+            assertNull(e.getCause());
         }
 
         addStep("Throw the exception with an embedded exception", "The embedded exception should be the same.");
         try {
             throw new InvalidMessageException(errCode, errMsg, new IllegalArgumentException(causeMsg));
         } catch (Exception e) {
-            Assertions.assertInstanceOf(InvalidMessageException.class, e);
-            Assertions.assertInstanceOf(RequestHandlerException.class, e);
-            Assertions.assertEquals(errMsg, e.getMessage());
-            Assertions.assertEquals(errCode, ((InvalidMessageException) e).getResponseInfo().getResponseCode());
-            Assertions.assertEquals(errMsg, ((InvalidMessageException) e).getResponseInfo().getResponseText());
-            Assertions.assertNotNull(e.getCause());
-            Assertions.assertInstanceOf(IllegalArgumentException.class, e.getCause());
-            Assertions.assertEquals(causeMsg, e.getCause().getMessage());
-            Assertions.assertNotNull(e.toString());
+            assertInstanceOf(InvalidMessageException.class, e);
+            assertInstanceOf(RequestHandlerException.class, e);
+            assertEquals(errMsg, e.getMessage());
+            assertEquals(errCode, ((InvalidMessageException) e).getResponseInfo().getResponseCode());
+            assertEquals(errMsg, ((InvalidMessageException) e).getResponseInfo().getResponseText());
+            assertNotNull(e.getCause());
+            assertInstanceOf(IllegalArgumentException.class, e.getCause());
+            assertEquals(causeMsg, e.getCause().getMessage());
+            assertNotNull(e.toString());
         }
 
         addStep("Throw the exception with a ResponseInfo", "Should be caught and validated");
@@ -77,11 +81,11 @@ public class InvalidMessageExceptionTest extends ExtendedTestCase {
             ri.setResponseText(errMsg);
             throw new InvalidMessageException(ri);
         } catch (Exception e) {
-            Assertions.assertInstanceOf(InvalidMessageException.class, e);
-            Assertions.assertEquals(errMsg, e.getMessage());
-            Assertions.assertEquals(errCode, ((InvalidMessageException) e).getResponseInfo().getResponseCode());
-            Assertions.assertEquals(errMsg, ((InvalidMessageException) e).getResponseInfo().getResponseText());
-            Assertions.assertNull(e.getCause());
+            assertInstanceOf(InvalidMessageException.class, e);
+            assertEquals(errMsg, e.getMessage());
+            assertEquals(errCode, ((InvalidMessageException) e).getResponseInfo().getResponseCode());
+            assertEquals(errMsg, ((InvalidMessageException) e).getResponseInfo().getResponseText());
+            assertNull(e.getCause());
         }
     }
 }

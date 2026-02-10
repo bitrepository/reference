@@ -25,7 +25,6 @@ import org.apache.commons.codec.DecoderException;
 import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResultingChecksums;
 import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.ContributorEvent;
@@ -45,6 +44,12 @@ import org.mockito.stubbing.Answer;
 import javax.xml.datatype.DatatypeConfigurationException;
 import java.util.Arrays;
 
+import static java.util.Arrays.asList;
+import static org.bitrepository.bitrepositoryelements.ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE;
+import static org.bitrepository.common.utils.ChecksumUtils.getDefault;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -111,7 +116,7 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
     @Tag("integritytest")
     public void testFullData() throws Exception {
         addDescription("Test step for retrieving the checksum of a single file, when all three pillars deliver results.");
-        ChecksumSpecTYPE checksumType = ChecksumUtils.getDefault(settings);
+        ChecksumSpecTYPE checksumType = getDefault(settings);
 
         addStep("Setup mock answers", "");
         doAnswer((Answer<Void>) invocation -> {
@@ -139,11 +144,11 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
         addStep("Validate the checksum results", "Should have checksum for each pillar.");
         step.performStep();
 
-        Assertions.assertFalse(step.getResults().isEmpty());
-        Assertions.assertEquals(3, step.getResults().size());
-        Assertions.assertTrue(step.getResults().containsKey(TEST_PILLAR_1));
-        Assertions.assertTrue(step.getResults().containsKey(TEST_PILLAR_2));
-        Assertions.assertTrue(step.getResults().containsKey(TEST_PILLAR_3));
+        assertFalse(step.getResults().isEmpty());
+        assertEquals(3, step.getResults().size());
+        assertTrue(step.getResults().containsKey(TEST_PILLAR_1));
+        assertTrue(step.getResults().containsKey(TEST_PILLAR_2));
+        assertTrue(step.getResults().containsKey(TEST_PILLAR_3));
 
         verifyNoInteractions(alerter);
         verify(collector).getChecksums(anyString(), any(), eq(checksumType), eq(FILE_1), anyString(), any(), any(EventHandler.class));
@@ -155,7 +160,7 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
     @Tag("integritytest")
     public void testComponentFailure() throws Exception {
         addDescription("Test step for retrieving the checksum of a single file, when one pillar fails.");
-        ChecksumSpecTYPE checksumType = ChecksumUtils.getDefault(settings);
+        ChecksumSpecTYPE checksumType = getDefault(settings);
 
         addStep("Setup mock answers", "");
         doAnswer((Answer<Void>) invocation -> {
@@ -166,11 +171,11 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
                     (ChecksumSpecTYPE) invocation.getArguments()[2], false);
             ContributorEvent e2 = new ChecksumsCompletePillarEvent(TEST_PILLAR_2, TEST_COLLECTION, res,
                     (ChecksumSpecTYPE) invocation.getArguments()[2], false);
-            ContributorEvent e3 = new ContributorFailedEvent(TEST_PILLAR_3, TEST_COLLECTION, ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
+            ContributorEvent e3 = new ContributorFailedEvent(TEST_PILLAR_3, TEST_COLLECTION, REQUEST_NOT_UNDERSTOOD_FAILURE);
             eventHandler.handleEvent(e1);
             eventHandler.handleEvent(e2);
             eventHandler.handleEvent(e3);
-            eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "COMPONENT FAILED", Arrays.asList(e1, e2, e3)));
+            eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "COMPONENT FAILED", asList(e1, e2, e3)));
             return null;
         }).when(collector).getChecksums(
                 eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class), anyString(),
@@ -182,11 +187,11 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
         addStep("Validate the file ids", "Should not have integrity issues.");
         step.performStep();
 
-        Assertions.assertFalse(step.getResults().isEmpty());
-        Assertions.assertEquals(2, step.getResults().size());
-        Assertions.assertTrue(step.getResults().containsKey(TEST_PILLAR_1));
-        Assertions.assertTrue(step.getResults().containsKey(TEST_PILLAR_2));
-        Assertions.assertFalse(step.getResults().containsKey(TEST_PILLAR_3));
+        assertFalse(step.getResults().isEmpty());
+        assertEquals(2, step.getResults().size());
+        assertTrue(step.getResults().containsKey(TEST_PILLAR_1));
+        assertTrue(step.getResults().containsKey(TEST_PILLAR_2));
+        assertFalse(step.getResults().containsKey(TEST_PILLAR_3));
 
         verify(alerter).integrityFailed(anyString(), eq(TEST_COLLECTION));
         verifyNoMoreInteractions(alerter);

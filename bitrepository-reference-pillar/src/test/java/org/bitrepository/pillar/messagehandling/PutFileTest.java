@@ -3,7 +3,8 @@
  * Bitrepository Reference Pillar
  *
  * $Id: PutFileOnReferencePillarTest.java 589 2011-12-01 15:34:42Z jolf $
- * $HeadURL: https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk/bitrepository-reference-pillar/src/test/java/org/bitrepository/pillar/PutFileOnReferencePillarTest.java $
+ * $HeadURL: https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk/bitrepository-reference-pillar/src
+ * /test/java/org/bitrepository/pillar/PutFileOnReferencePillarTest.java $
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -24,18 +25,14 @@
  */
 package org.bitrepository.pillar.messagehandling;
 
-import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
 import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
-import org.bitrepository.common.utils.Base16Utils;
-import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.MockedPillarTest;
 import org.bitrepository.pillar.messagefactories.PutFileMessageFactory;
 import org.junit.jupiter.api.Tag;
@@ -43,6 +40,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import static org.bitrepository.bitrepositoryelements.AlarmCode.CHECKSUM_ALARM;
+import static org.bitrepository.bitrepositoryelements.ResponseCode.DUPLICATE_FILE_FAILURE;
+import static org.bitrepository.bitrepositoryelements.ResponseCode.IDENTIFICATION_POSITIVE;
+import static org.bitrepository.bitrepositoryelements.ResponseCode.NEW_FILE_CHECKSUM_FAILURE;
+import static org.bitrepository.bitrepositoryelements.ResponseCode.OPERATION_COMPLETED;
+import static org.bitrepository.common.utils.Base16Utils.encodeBase16;
+import static org.bitrepository.common.utils.CalendarUtils.getNow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -93,17 +97,17 @@ public class PutFileTest extends MockedPillarTest {
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
-        IdentifyPillarsForPutFileRequest identifyRequest = msgFactory.createIdentifyPillarsForPutFileRequest(FILE_ID, FILE_SIZE);
+        IdentifyPillarsForPutFileRequest identifyRequest = msgFactory.createIdentifyPillarsForPutFileRequest(FILE_ID,
+                FILE_SIZE);
         messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response getPillarID() the pillar.",
                 "The pillar should make a response.");
         IdentifyPillarsForPutFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForPutFileResponse.class);
-        assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
-                receivedIdentifyResponse.getResponseInfo().getResponseCode());
-        assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
-        assertEquals(receivedIdentifyResponse.getFileID(), FILE_ID);
+        assertEquals(IDENTIFICATION_POSITIVE, receivedIdentifyResponse.getResponseInfo().getResponseCode());
+        assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID());
+        assertEquals(FILE_ID, receivedIdentifyResponse.getFileID());
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
         assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
@@ -114,7 +118,8 @@ public class PutFileTest extends MockedPillarTest {
     @Tag("regressiontest")
     @Tag("pillartest")
     public void badCaseIdentification() throws Exception {
-        addDescription("Tests the identification for a PutFile operation on the pillar for the failure scenario, when the file already exists.");
+        addDescription("Tests the identification for a PutFile operation on the pillar for the failure scenario, when" +
+                " the file already exists.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = defaultFileId + testMethodName;
 
@@ -133,17 +138,17 @@ public class PutFileTest extends MockedPillarTest {
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
-        IdentifyPillarsForPutFileRequest identifyRequest = msgFactory.createIdentifyPillarsForPutFileRequest(FILE_ID, FILE_SIZE);
+        IdentifyPillarsForPutFileRequest identifyRequest = msgFactory.createIdentifyPillarsForPutFileRequest(FILE_ID,
+                FILE_SIZE);
         messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response getPillarID() the pillar.",
                 "The pillar should make a response.");
         IdentifyPillarsForPutFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForPutFileResponse.class);
-        assertEquals(ResponseCode.DUPLICATE_FILE_FAILURE,
-                receivedIdentifyResponse.getResponseInfo().getResponseCode());
-        assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
-        assertEquals(receivedIdentifyResponse.getFileID(), FILE_ID);
+        assertEquals(DUPLICATE_FILE_FAILURE, receivedIdentifyResponse.getResponseInfo().getResponseCode());
+        assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID());
+        assertEquals(FILE_ID, receivedIdentifyResponse.getFileID());
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
         assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
@@ -154,7 +159,8 @@ public class PutFileTest extends MockedPillarTest {
     @Tag("regressiontest")
     @Tag("pillartest")
     public void badCaseOperationFileAlreadyExists() throws Exception {
-        addDescription("Tests the PutFile operation on the pillar for the failure scenario, when the file already exists.");
+        addDescription("Tests the PutFile operation on the pillar for the failure scenario, when the file already " +
+                "exists.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = defaultFileId + testMethodName;
 
@@ -173,7 +179,8 @@ public class PutFileTest extends MockedPillarTest {
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
-        PutFileRequest request = msgFactory.createPutFileRequest(csData, null, defaultDownloadFileAddress, FILE_ID, FILE_SIZE);
+        PutFileRequest request = msgFactory.createPutFileRequest(csData, null, defaultDownloadFileAddress, FILE_ID,
+                FILE_SIZE);
         messageBus.sendMessage(request);
 
         // Does not send a progress response.
@@ -181,9 +188,9 @@ public class PutFileTest extends MockedPillarTest {
         addStep("Retrieve the FinalResponse for the PutFile request",
                 "The final response should say 'operation_complete', and give the requested data.");
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
-        assertEquals(ResponseCode.DUPLICATE_FILE_FAILURE, finalResponse.getResponseInfo().getResponseCode());
-        assertEquals(finalResponse.getPillarID(), getPillarID());
-        assertEquals(finalResponse.getFileID(), FILE_ID);
+        assertEquals(DUPLICATE_FILE_FAILURE, finalResponse.getResponseInfo().getResponseCode());
+        assertEquals(getPillarID(), finalResponse.getPillarID());
+        assertEquals(FILE_ID, finalResponse.getFileID());
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
         assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
@@ -194,7 +201,8 @@ public class PutFileTest extends MockedPillarTest {
     @Tag("regressiontest")
     @Tag("pillartest")
     public void badCasePutOperationNoValidationChecksum() throws Exception {
-        addDescription("Tests the PutFile operation on the pillar for the failure scenario, when no validation checksum is given but required.");
+        addDescription("Tests the PutFile operation on the pillar for the failure scenario, when no validation " +
+                "checksum is given but required.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = defaultFileId + testMethodName;
         settingsForCUT.getRepositorySettings().getProtocolSettings().setRequireChecksumForNewFileRequests(true);
@@ -214,21 +222,23 @@ public class PutFileTest extends MockedPillarTest {
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
-        PutFileRequest request = msgFactory.createPutFileRequest(null, null, defaultDownloadFileAddress, FILE_ID, FILE_SIZE);
+        PutFileRequest request = msgFactory.createPutFileRequest(null, null, defaultDownloadFileAddress, FILE_ID,
+                FILE_SIZE);
         messageBus.sendMessage(request);
 
         addStep("Retrieve the FinalResponse for the PutFile request",
                 "The final response should say 'operation_complete', and give the requested data.");
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
-        assertEquals(ResponseCode.NEW_FILE_CHECKSUM_FAILURE, finalResponse.getResponseInfo().getResponseCode());
-        assertEquals(finalResponse.getPillarID(), getPillarID());
-        assertEquals(finalResponse.getFileID(), FILE_ID);
+        assertEquals(NEW_FILE_CHECKSUM_FAILURE, finalResponse.getResponseInfo().getResponseCode());
+        assertEquals(getPillarID(), finalResponse.getPillarID());
+        assertEquals(FILE_ID, finalResponse.getFileID());
 
-        addStep("Pillar should have sent an alarm", "Alarm contains information about the missing verification checksum");
+        addStep("Pillar should have sent an alarm", "Alarm contains information about the missing verification " +
+                "checksum");
         AlarmMessage alarm = alarmReceiver.waitForMessage(AlarmMessage.class);
-        assertEquals(alarm.getAlarm().getFileID(), FILE_ID);
-        assertEquals(alarm.getAlarm().getAlarmRaiser(), getPillarID());
-        assertEquals(AlarmCode.CHECKSUM_ALARM, alarm.getAlarm().getAlarmCode());
+        assertEquals(FILE_ID, alarm.getAlarm().getFileID());
+        assertEquals(getPillarID(), alarm.getAlarm().getAlarmRaiser());
+        assertEquals(CHECKSUM_ALARM, alarm.getAlarm().getAlarmCode());
     }
 
     @SuppressWarnings("rawtypes")
@@ -255,21 +265,22 @@ public class PutFileTest extends MockedPillarTest {
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
-        PutFileRequest request = msgFactory.createPutFileRequest(csData, null, defaultDownloadFileAddress, FILE_ID, FILE_SIZE);
+        PutFileRequest request = msgFactory.createPutFileRequest(csData, null, defaultDownloadFileAddress, FILE_ID,
+                FILE_SIZE);
         messageBus.sendMessage(request);
 
         addStep("Retrieve the ProgressResponse for the GetFileIDs request",
                 "The GetFileIDs progress response should be sent by the pillar.");
         PutFileProgressResponse progressResponse = clientReceiver.waitForMessage(PutFileProgressResponse.class);
-        assertEquals(progressResponse.getFileID(), FILE_ID);
-        assertEquals(progressResponse.getPillarID(), getPillarID());
+        assertEquals(FILE_ID, progressResponse.getFileID());
+        assertEquals(getPillarID(), progressResponse.getPillarID());
 
         addStep("Retrieve the FinalResponse for the PutFile request",
                 "The final response should say 'operation_complete', and give the requested data.");
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
-        assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
-        assertEquals(finalResponse.getPillarID(), getPillarID());
-        assertEquals(finalResponse.getFileID(), FILE_ID);
+        assertEquals(OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
+        assertEquals(getPillarID(), finalResponse.getPillarID());
+        assertEquals(FILE_ID, finalResponse.getFileID());
         assertNull(finalResponse.getChecksumDataForNewFile());
         assertNull(finalResponse.getChecksumDataForExistingFile());
 
@@ -283,41 +294,44 @@ public class PutFileTest extends MockedPillarTest {
     @Tag("regressiontest")
     @Tag("pillartest")
     public void goodCaseOperationWithChecksumReturn() throws Exception {
-        addDescription("Tests the PutFile operation on the pillar for the success scenario, when requesting the cheksum of the file returned.");
+        addDescription("Tests the PutFile operation on the pillar for the success scenario, when requesting the " +
+                "cheksum of the file returned.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = defaultFileId + testMethodName;
 
-        addStep("Setup for not already having the file and delivering pillar id, and delivering an answer for the checksum request",
+        addStep("Setup for not already having the file and delivering pillar id, and delivering an answer for the " +
+                        "checksum request",
                 "Should return false, when requesting file-id existence.");
         when(model.hasFileID(eq(FILE_ID), anyString())).thenReturn(false);
         when(model.getPillarID()).thenReturn(settingsForCUT.getComponentID());
         doAnswer(invocation -> {
             ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
             res.setChecksumSpec(csSpec);
-            res.setCalculationTimestamp(CalendarUtils.getNow());
-            res.setChecksumValue(Base16Utils.encodeBase16(DEFAULT_MD5_CHECKSUM));
+            res.setCalculationTimestamp(getNow());
+            res.setChecksumValue(encodeBase16(DEFAULT_MD5_CHECKSUM));
             return res;
         }).when(model).getChecksumDataForFile(eq(FILE_ID), anyString(), any(ChecksumSpecTYPE.class));
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
-        PutFileRequest request = msgFactory.createPutFileRequest(csData, csSpec, defaultDownloadFileAddress, FILE_ID, FILE_SIZE);
+        PutFileRequest request = msgFactory.createPutFileRequest(csData, csSpec, defaultDownloadFileAddress, FILE_ID,
+                FILE_SIZE);
         messageBus.sendMessage(request);
 
         addStep("Retrieve the ProgressResponse for the GetFileIDs request",
                 "The GetFileIDs progress response should be sent by the pillar.");
         PutFileProgressResponse progressResponse = clientReceiver.waitForMessage(PutFileProgressResponse.class);
-        assertEquals(progressResponse.getFileID(), FILE_ID);
-        assertEquals(progressResponse.getPillarID(), getPillarID());
+        assertEquals(FILE_ID, progressResponse.getFileID());
+        assertEquals(getPillarID(), progressResponse.getPillarID());
 
         addStep("Retrieve the FinalResponse for the PutFile request",
                 "The final response should say 'operation_complete', and give the requested data.");
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
-        assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
-        assertEquals(finalResponse.getPillarID(), getPillarID());
-        assertEquals(finalResponse.getFileID(), FILE_ID);
+        assertEquals(OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
+        assertEquals(getPillarID(), finalResponse.getPillarID());
+        assertEquals(FILE_ID, finalResponse.getFileID());
         assertNotNull(finalResponse.getChecksumDataForNewFile());
-        assertEquals(finalResponse.getChecksumDataForNewFile().getChecksumSpec(), csSpec);
+        assertEquals(csSpec, finalResponse.getChecksumDataForNewFile().getChecksumSpec());
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
         assertEquals(1, audits.getCallsForAuditEvent(), "Should make 1 put-file audit trail");

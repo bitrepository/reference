@@ -22,13 +22,14 @@
 
 package org.bitrepository.pillar.integration.func;
 
-import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.pillar.PillarTestGroups;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+
+import static org.bitrepository.bitrepositoryelements.ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 /**
@@ -50,8 +51,7 @@ public abstract class DefaultPillarMessagingTest extends PillarFunctionTest {
         messageBus.sendMessage(request);
 
         MessageResponse receivedResponse = receiveResponse();
-        Assertions.assertEquals(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE,
-                receivedResponse.getResponseInfo().getResponseCode());
+        assertEquals(REQUEST_NOT_UNDERSTOOD_FAILURE, receivedResponse.getResponseInfo().getResponseCode());
     }
 
     @Test
@@ -60,7 +60,7 @@ public abstract class DefaultPillarMessagingTest extends PillarFunctionTest {
     public void otherCollectionTest() {
         addDescription("Verifies identification works correctly for a second collection defined for pillar");
         addStep("Sending a identify request with a non-default collectionID (not the first collection) " +
-                "the pillar is part of",
+                        "the pillar is part of",
                 "The pillar under test should make a positive response");
         MessageRequest request = createRequest();
         request.setCollectionID(nonDefaultCollectionId);
@@ -69,7 +69,10 @@ public abstract class DefaultPillarMessagingTest extends PillarFunctionTest {
     }
 
     protected abstract MessageRequest createRequest();
+
     protected abstract MessageResponse receiveResponse();
+
     protected abstract void assertPositivResponseIsReceived();
+
     protected abstract void assertNoResponseIsReceived();
 }

@@ -25,13 +25,11 @@ import org.bitrepository.audittrails.store.AuditEventIterator;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.DefaultThreadFactory;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
-import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.settings.repositorysettings.Collection;
@@ -43,12 +41,12 @@ import org.junit.jupiter.api.TestInstance;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 import java.io.FileInputStream;
 import java.net.URL;
-import java.sql.Date;
 
+import static javax.xml.datatype.DatatypeFactory.newInstance;
+import static org.bitrepository.common.utils.SettingsUtils.initialize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -98,13 +96,13 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         MockPutClient client = new MockPutClient();
 
         settings.getReferenceSettings().getAuditTrailServiceSettings().setTimerTaskCheckInterval(100);
-        Duration interval = DatatypeFactory.newInstance().newDuration(1000);
+        Duration interval = newInstance().newDuration(1000);
         settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailPreservation().setAuditTrailPreservationInterval(
                 interval);
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().clear();
         settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().add(PILLAR_ID);
-        SettingsUtils.initialize(settings);
+        initialize(settings);
 
         addStep("Create the preserver", "No calls to store or client");
         FileExchange fileExchangeMock = mock(FileExchange.class);
@@ -169,7 +167,7 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
                 PILLAR_ID);
         settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().clear();
         settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().add(PILLAR_ID);
-        SettingsUtils.initialize(settings);
+        initialize(settings);
 
         AuditTrailStore store = mock(AuditTrailStore.class);
 
