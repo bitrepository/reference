@@ -21,7 +21,6 @@
  */
 package org.bitrepository.pillar;
 
-import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
@@ -35,15 +34,18 @@ import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
 import org.bitrepository.service.contributor.handler.RequestHandler;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+
+import static java.math.BigInteger.valueOf;
+import static java.util.UUID.randomUUID;
+import static org.bitrepository.bitrepositoryelements.ResponseCode.FAILURE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
@@ -81,17 +83,17 @@ public class MediatorTest extends DefaultFixturePillarTest {
             IdentifyContributorsForGetStatusRequest request = new IdentifyContributorsForGetStatusRequest();
             request.setAuditTrailInformation("audit");
             request.setCollectionID(collectionID);
-            request.setCorrelationID(UUID.randomUUID().toString());
+            request.setCorrelationID(randomUUID().toString());
             request.setFrom(getPillarID());
-            request.setMinVersion(BigInteger.valueOf(24L));
+            request.setMinVersion(valueOf(24L));
             request.setReplyTo(clientDestinationId);
             request.setDestination(settingsForCUT.getCollectionDestination());
-            request.setVersion(BigInteger.valueOf(24L));
+            request.setVersion(valueOf(24L));
             messageBus.sendMessage(request);
 
             MessageResponse response = clientReceiver.waitForMessage(IdentifyContributorsForGetStatusResponse.class);
-            Assertions.assertEquals(ResponseCode.FAILURE, response.getResponseInfo().getResponseCode());
-            Assertions.assertNotNull(alarmReceiver.waitForMessage(AlarmMessage.class));
+            assertEquals(FAILURE, response.getResponseInfo().getResponseCode());
+            assertNotNull(alarmReceiver.waitForMessage(AlarmMessage.class));
         } finally {
             mediator.close();
         }

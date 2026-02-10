@@ -22,16 +22,14 @@
 
 package org.bitrepository.pillar.integration.func;
 
-import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.pillar.PillarTestGroups;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+import static org.bitrepository.bitrepositoryelements.ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 /**
@@ -53,8 +51,7 @@ public abstract class DefaultPillarMessagingTest extends PillarFunctionTest {
         messageBus.sendMessage(request);
 
         MessageResponse receivedResponse = receiveResponse();
-        Assertions.assertEquals(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE,
-                receivedResponse.getResponseInfo().getResponseCode());
+        assertEquals(REQUEST_NOT_UNDERSTOOD_FAILURE, receivedResponse.getResponseInfo().getResponseCode());
     }
 
     @Test

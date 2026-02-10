@@ -24,9 +24,10 @@ package org.bitrepository.settings;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SettingsProviderTest {
     private static final String PATH_TO_TEST_SETTINGS = "settings/xml/bitrepository-devel";
@@ -39,7 +40,7 @@ public class SettingsProviderTest {
                 new SettingsProvider(new XMLFileSettingsLoader(PATH_TO_TEST_SETTINGS), myComponentID);
 
         Settings settings = settingsLoader.getSettings();
-        Assertions.assertEquals(myComponentID, settings.getComponentID());
+        assertEquals(myComponentID, settings.getComponentID());
     }
 
     @Test
@@ -54,13 +55,12 @@ public class SettingsProviderTest {
 
         String newCollectionID = "newCollectionID";
         settings.getRepositorySettings().getCollections().getCollection().get(0).setID(newCollectionID);
-        Assertions.assertEquals(newCollectionID,
-                settings.getRepositorySettings().getCollections().getCollection().get(0).getID());
-        Assertions.assertEquals(newCollectionID, settings.getCollections().get(0).getID());
+        assertEquals(newCollectionID, settings.getRepositorySettings().getCollections().getCollection().get(0).getID());
+        assertEquals(newCollectionID, settings.getCollections().get(0).getID());
 
         settingsLoader.reloadSettings();
         settings = settingsLoader.getSettings();
-        Assertions.assertEquals(settings.getRepositorySettings().getCollections().getCollection().get(0).getID(), originalCollectionID);
-        Assertions.assertEquals(settings.getCollections().get(0).getID(), originalCollectionID);
+        assertEquals(originalCollectionID, settings.getRepositorySettings().getCollections().getCollection().get(0).getID());
+        assertEquals(originalCollectionID, settings.getCollections().get(0).getID());
     }
 }

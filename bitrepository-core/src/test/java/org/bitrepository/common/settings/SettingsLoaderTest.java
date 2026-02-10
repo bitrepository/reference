@@ -24,13 +24,16 @@
  */
 package org.bitrepository.common.settings;
 
-import org.junit.jupiter.api.Assertions;
+import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-public class SettingsLoaderTest {
+import static java.util.List.of;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class SettingsLoaderTest extends ExtendedTestCase {
     private static final String PATH_TO_SETTINGS = "settings/xml/bitrepository-devel";
     private static final String PATH_TO_EXAMPLE_SETTINGS = "examples/settings";
 
@@ -41,10 +44,8 @@ public class SettingsLoaderTest {
                 new SettingsProvider(new XMLFileSettingsLoader(PATH_TO_SETTINGS), getClass().getSimpleName());
 
         Settings settings = settingsLoader.getSettings();
-        List<String> expectedPillarIDs = List.of("Pillar1", "Pillar2");
-        Assertions.assertEquals(
-                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID(),
-                expectedPillarIDs);
+        List<String> expectedPillarIDs = of("Pillar1", "Pillar2");
+        assertEquals(expectedPillarIDs, settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
     }
 
     @Test

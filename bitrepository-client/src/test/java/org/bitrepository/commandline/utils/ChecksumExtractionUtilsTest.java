@@ -30,7 +30,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.bitrepositoryelements.ChecksumType.HMAC_SHA256;
+import static org.bitrepository.bitrepositoryelements.ChecksumType.SHA384;
+import static org.bitrepository.bitrepositoryelements.ChecksumType.SHA512;
+import static org.bitrepository.commandline.Constants.REQUEST_CHECKSUM_SALT_ARG;
+import static org.bitrepository.commandline.Constants.REQUEST_CHECKSUM_TYPE_ARG;
+import static org.bitrepository.commandline.utils.ChecksumExtractionUtils.extractChecksumType;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -53,26 +58,26 @@ public class ChecksumExtractionUtilsTest extends DefaultFixtureClientTest {
     public void testDefaultChecksumSpec() throws Exception {
         addDescription("Test that the default checksum is retrieved when no arguments are given.");
         cmdHandler.parseArguments();
-        ChecksumType type = ChecksumExtractionUtils.extractChecksumType(cmdHandler, settingsForCUT, output);
-        assertEquals(type.name(), settingsForCUT.getRepositorySettings().getProtocolSettings().getDefaultChecksumType());
+        ChecksumType type = extractChecksumType(cmdHandler, settingsForCUT, output);
+        assertEquals(settingsForCUT.getRepositorySettings().getProtocolSettings().getDefaultChecksumType(), type.name());
     }
 
     @Test
     @Tag("regressiontest")
     public void testDefaultChecksumSpecWithSaltArgument() throws Exception {
         addDescription("Test that the HMAC version of default checksum is retrieved when the salt arguments are given.");
-        cmdHandler.parseArguments("-" + Constants.REQUEST_CHECKSUM_SALT_ARG + "0110");
-        ChecksumType type = ChecksumExtractionUtils.extractChecksumType(cmdHandler, settingsForCUT, output);
-        assertEquals(type.name(), "HMAC_" + settingsForCUT.getRepositorySettings().getProtocolSettings().getDefaultChecksumType());
+        cmdHandler.parseArguments("-" + REQUEST_CHECKSUM_SALT_ARG + "0110");
+        ChecksumType type = extractChecksumType(cmdHandler, settingsForCUT, output);
+        assertEquals("HMAC_" + settingsForCUT.getRepositorySettings().getProtocolSettings().getDefaultChecksumType(), type.name());
     }
 
     @Test
     @Tag("regressiontest")
     public void testNonSaltChecksumSpecWithoutSaltArgument() throws Exception {
         addDescription("Test that a non-salt checksum type is retrieved when it is given as argument, and no salt arguments are given.");
-        ChecksumType enteredType = ChecksumType.SHA384;
-        cmdHandler.parseArguments("-" + Constants.REQUEST_CHECKSUM_TYPE_ARG + enteredType);
-        ChecksumType type = ChecksumExtractionUtils.extractChecksumType(cmdHandler, settingsForCUT, output);
+        ChecksumType enteredType = SHA384;
+        cmdHandler.parseArguments("-" + REQUEST_CHECKSUM_TYPE_ARG + enteredType);
+        ChecksumType type = extractChecksumType(cmdHandler, settingsForCUT, output);
         assertEquals(enteredType, type);
     }
 
@@ -81,12 +86,12 @@ public class ChecksumExtractionUtilsTest extends DefaultFixtureClientTest {
     public void testNonSaltChecksumSpecWithSaltArgument() throws Exception {
         addDescription("Test that a salt checksum type is retrieved even though a non-salt checksum algorithm it is given as argument, "
                 + "but a salt argument also is given.");
-        ChecksumType enteredType = ChecksumType.SHA512;
-        cmdHandler.parseArguments("-" + Constants.REQUEST_CHECKSUM_TYPE_ARG + enteredType,
-                "-" + Constants.REQUEST_CHECKSUM_SALT_ARG + "0110");
-        ChecksumType type = ChecksumExtractionUtils.extractChecksumType(cmdHandler, settingsForCUT, output);
+        ChecksumType enteredType = SHA512;
+        cmdHandler.parseArguments("-" + REQUEST_CHECKSUM_TYPE_ARG + enteredType,
+                "-" + REQUEST_CHECKSUM_SALT_ARG + "0110");
+        ChecksumType type = extractChecksumType(cmdHandler, settingsForCUT, output);
         assertNotEquals(enteredType, type);
-        assertEquals(type.name(), "HMAC_" + enteredType.name());
+        assertEquals("HMAC_" + enteredType.name(), type.name());
     }
 
     @Test
@@ -94,12 +99,12 @@ public class ChecksumExtractionUtilsTest extends DefaultFixtureClientTest {
     public void testSaltChecksumSpecWithoutSaltArgument() throws Exception {
         addDescription("Test that a non-salt checksum type is retrieved even though a salt checksum algorithm it is given as argument, "
                 + "but no salt argument also is given.");
-        ChecksumType enteredType = ChecksumType.HMAC_SHA256;
-        cmdHandler.parseArguments("-" + Constants.REQUEST_CHECKSUM_TYPE_ARG + enteredType);
-        ChecksumType type = ChecksumExtractionUtils.extractChecksumType(cmdHandler, settingsForCUT, output);
+        ChecksumType enteredType = HMAC_SHA256;
+        cmdHandler.parseArguments("-" + REQUEST_CHECKSUM_TYPE_ARG + enteredType);
+        ChecksumType type = extractChecksumType(cmdHandler, settingsForCUT, output);
         assertNotEquals(enteredType, type);
         assertTrue(enteredType.name().contains("HMAC"));
-        assertEquals(type.name(), enteredType.name().replace("HMAC_", ""));
+        assertEquals(enteredType.name().replace("HMAC_", ""), type.name());
     }
 
     @Test
@@ -107,10 +112,10 @@ public class ChecksumExtractionUtilsTest extends DefaultFixtureClientTest {
     public void testSaltChecksumSpecWithSaltArgument() throws Exception {
         addDescription("Test that a salt checksum type is retrieved when the salt checksum algorithm it is given as argument, "
                 + "and a salt argument also is given.");
-        ChecksumType enteredType = ChecksumType.HMAC_SHA256;
-        cmdHandler.parseArguments("-" + Constants.REQUEST_CHECKSUM_TYPE_ARG + enteredType,
-                "-" + Constants.REQUEST_CHECKSUM_SALT_ARG + "0110");
-        ChecksumType type = ChecksumExtractionUtils.extractChecksumType(cmdHandler, settingsForCUT, output);
+        ChecksumType enteredType = HMAC_SHA256;
+        cmdHandler.parseArguments("-" + REQUEST_CHECKSUM_TYPE_ARG + enteredType,
+                "-" + REQUEST_CHECKSUM_SALT_ARG + "0110");
+        ChecksumType type = extractChecksumType(cmdHandler, settingsForCUT, output);
         assertEquals(enteredType, type);
     }
 }

@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.List.of;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -44,7 +45,7 @@ public class AuditPackerTest {
         assertEquals(0, packer.getPackedAuditCount());
 
         // Create a stubbed event iterator for each expected contributor containing only one event.
-        List<StubAuditEventIterator> iterators = List.of(
+        List<StubAuditEventIterator> iterators = of(
                 new StubAuditEventIterator(), new StubAuditEventIterator(), new StubAuditEventIterator());
 
         when(store.getAuditTrailsByIterator(

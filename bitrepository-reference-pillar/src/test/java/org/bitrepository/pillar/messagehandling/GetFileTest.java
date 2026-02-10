@@ -3,7 +3,8 @@
  * Bitrepository Reference Pillar
  *
  * $Id: PutFileOnReferencePillarTest.java 589 2011-12-01 15:34:42Z jolf $
- * $HeadURL: https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk/bitrepository-reference-pillar/src/test/java/org/bitrepository/pillar/PutFileOnReferencePillarTest.java $
+ * $HeadURL: https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk/bitrepository-reference-pillar/src
+ * /test/java/org/bitrepository/pillar/PutFileOnReferencePillarTest.java $
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -24,7 +25,6 @@
  */
 package org.bitrepository.pillar.messagehandling;
 
-import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
@@ -45,8 +45,9 @@ import org.mockito.stubbing.Answer;
 
 import java.io.ByteArrayInputStream;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+import static org.bitrepository.bitrepositoryelements.ResponseCode.FILE_NOT_FOUND_FAILURE;
+import static org.bitrepository.bitrepositoryelements.ResponseCode.IDENTIFICATION_POSITIVE;
+import static org.bitrepository.bitrepositoryelements.ResponseCode.OPERATION_COMPLETED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -91,10 +92,9 @@ public class GetFileTest extends MockedPillarTest {
                 "The pillar should make a response.");
         IdentifyPillarsForGetFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetFileResponse.class);
-        assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
-                receivedIdentifyResponse.getResponseInfo().getResponseCode());
-        assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
-        assertEquals(receivedIdentifyResponse.getFileID(), FILE_ID);
+        assertEquals(IDENTIFICATION_POSITIVE, receivedIdentifyResponse.getResponseInfo().getResponseCode());
+        assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID());
+        assertEquals(FILE_ID, receivedIdentifyResponse.getFileID());
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
         assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
@@ -105,7 +105,8 @@ public class GetFileTest extends MockedPillarTest {
     @Tag("regressiontest")
     @Tag("pillartest")
     public void badCaseIdentification() throws Exception {
-        addDescription("Tests the identification for a GetFile operation on the checksum pillar for the failure scenario, when the file is missing.");
+        addDescription("Tests the identification for a GetFile operation on the checksum pillar for the failure " +
+                "scenario, when the file is missing.");
         addStep("Set up constants and variables.", "Should not fail here!");
         final String FILE_ID = defaultFileId + testMethodName;
 
@@ -113,7 +114,7 @@ public class GetFileTest extends MockedPillarTest {
                 "Should cause the FILE_NOT_FOUND_FAILURE later.");
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) throws RequestHandlerException {
-                throw new IdentifyContributorException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.");
+                throw new IdentifyContributorException(FILE_NOT_FOUND_FAILURE, "File not found.");
             }
         }).when(model).verifyFileExists(eq(FILE_ID), anyString());
         doAnswer(new Answer() {
@@ -131,10 +132,9 @@ public class GetFileTest extends MockedPillarTest {
                 "The pillar should make a response.");
         IdentifyPillarsForGetFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetFileResponse.class);
-        assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE,
-                receivedIdentifyResponse.getResponseInfo().getResponseCode());
-        assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
-        assertEquals(receivedIdentifyResponse.getFileID(), FILE_ID);
+        assertEquals(FILE_NOT_FOUND_FAILURE, receivedIdentifyResponse.getResponseInfo().getResponseCode());
+        assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID());
+        assertEquals(FILE_ID, receivedIdentifyResponse.getFileID());
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
         assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
@@ -145,7 +145,8 @@ public class GetFileTest extends MockedPillarTest {
 //    @Tag("regressiontest", "pillartest"})
     // FAILS, when combined with other tests...
     public void badCaseOperationNoFile() throws Exception {
-        addDescription("Tests the GetFile functionality of the pillar for the failure scenario, where it does not have the file.");
+        addDescription("Tests the GetFile functionality of the pillar for the failure scenario, where it does not " +
+                "have the file.");
         addStep("Set up constants and variables.", "Should not fail here!");
         final String FILE_ID = defaultFileId + testMethodName;
 
@@ -153,7 +154,7 @@ public class GetFileTest extends MockedPillarTest {
                 "Should cause the FILE_NOT_FOUND_FAILURE later.");
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) throws RequestHandlerException {
-                throw new IdentifyContributorException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.");
+                throw new IdentifyContributorException(FILE_NOT_FOUND_FAILURE, "File not found.");
             }
         }).when(model).verifyFileExists(eq(FILE_ID), anyString());
         doAnswer(new Answer() {
@@ -171,9 +172,9 @@ public class GetFileTest extends MockedPillarTest {
         addStep("Retrieve the FinalResponse for the GetFile request",
                 "The final response should tell about the error, and not contain the file.");
         GetFileFinalResponse finalResponse = clientReceiver.waitForMessage(GetFileFinalResponse.class);
-        assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE, finalResponse.getResponseInfo().getResponseCode());
-        assertEquals(finalResponse.getPillarID(), getPillarID());
-        assertEquals(finalResponse.getFileID(), FILE_ID);
+        assertEquals(FILE_NOT_FOUND_FAILURE, finalResponse.getResponseInfo().getResponseCode());
+        assertEquals(getPillarID(), finalResponse.getPillarID());
+        assertEquals(FILE_ID, finalResponse.getFileID());
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
         assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
@@ -184,7 +185,8 @@ public class GetFileTest extends MockedPillarTest {
 //    @Tag("regressiontest", "pillartest"})
     // FAILS, when combined with other tests...
     public void goodCaseOperation() throws Exception {
-        addDescription("Tests the GetFile functionality of the pillar for the success scenario, where the file is uploaded.");
+        addDescription("Tests the GetFile functionality of the pillar for the success scenario, where the file is " +
+                "uploaded.");
         addStep("Set up constants and variables.", "Should not fail here!");
         final String FILE_ID = defaultFileId + testMethodName;
 
@@ -210,16 +212,16 @@ public class GetFileTest extends MockedPillarTest {
         addStep("Retrieve the ProgressResponse for the GetFile request",
                 "The GetFile progress response should be sent by the pillar.");
         GetFileProgressResponse progressResponse = clientReceiver.waitForMessage(GetFileProgressResponse.class);
-        assertEquals(progressResponse.getFileID(), FILE_ID);
-        assertEquals(progressResponse.getPillarID(), getPillarID());
+        assertEquals(FILE_ID, progressResponse.getFileID());
+        assertEquals(getPillarID(), progressResponse.getPillarID());
         assertEquals(0L, progressResponse.getFileSize().longValue());
 
         addStep("Retrieve the FinalResponse for the GetFile request",
                 "The final response should tell about the error, and not contain the file.");
         GetFileFinalResponse finalResponse = clientReceiver.waitForMessage(GetFileFinalResponse.class);
-        assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
-        assertEquals(finalResponse.getPillarID(), getPillarID());
-        assertEquals(finalResponse.getFileID(), FILE_ID);
+        assertEquals(OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
+        assertEquals(getPillarID(), finalResponse.getPillarID());
+        assertEquals(FILE_ID, finalResponse.getFileID());
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
         assertEquals(1, audits.getCallsForAuditEvent(), "Should create one audit trail for the GetFile operation");

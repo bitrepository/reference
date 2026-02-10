@@ -20,11 +20,16 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+
+import static java.net.URLEncoder.encode;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class LocalFileExchangeTest extends ExtendedTestCase {
@@ -56,9 +61,9 @@ public class LocalFileExchangeTest extends ExtendedTestCase {
         URL expectedUrl = new URL("file:" + basedir.getAbsolutePath() + "/" + testFile);
 
         URL actualUrl = exchange.getURL(testFile);
-        Assertions.assertEquals(actualUrl, expectedUrl);
+        assertEquals(expectedUrl, actualUrl);
         File actualFile = new File(actualUrl.getFile());
-        Assertions.assertFalse(actualFile.exists());
+        assertFalse(actualFile.exists());
     }
 
     /**
@@ -74,15 +79,15 @@ public class LocalFileExchangeTest extends ExtendedTestCase {
         File testFile = createTestFile(testFileLocation, testFileContent);
 
         File basedir = new File(BASE_FILE_EXCHANGE_DIR);
-        URL expectedUrl = new URL("file:" + basedir.getAbsolutePath() + "/" + URLEncoder.encode(testFileName,
-                StandardCharsets.UTF_8));
+        URL expectedUrl = new URL("file:" + basedir.getAbsolutePath() + "/" + encode(testFileName,
+                UTF_8));
 
         URL fileExchangeUrl = exchange.putFile(testFile);
-        Assertions.assertEquals(fileExchangeUrl, expectedUrl);
+        assertEquals(expectedUrl, fileExchangeUrl);
         File actualFile = new File(fileExchangeUrl.toURI());
-        Assertions.assertTrue(actualFile.exists());
+        assertTrue(actualFile.exists());
         String fileExchangeContent = readTestFileContent(actualFile);
-        Assertions.assertEquals(testFileContent, fileExchangeContent);
+        assertEquals(testFileContent, fileExchangeContent);
         actualFile.delete();
     }
 
@@ -97,12 +102,12 @@ public class LocalFileExchangeTest extends ExtendedTestCase {
         URL expectedUrl = new URL("file:" + basedir.getAbsolutePath() + "/" + testFileName);
 
         URL fileExchangeUrl = exchange.putFile(testFile);
-        Assertions.assertEquals(fileExchangeUrl, expectedUrl);
+        assertEquals(expectedUrl, fileExchangeUrl);
 
         File actualFile = new File(fileExchangeUrl.getFile());
-        Assertions.assertTrue(actualFile.exists());
+        assertTrue(actualFile.exists());
         String fileExchangeContent = readTestFileContent(actualFile);
-        Assertions.assertEquals(testFileContent, fileExchangeContent);
+        assertEquals(testFileContent, fileExchangeContent);
         actualFile.delete();
     }
 
@@ -111,13 +116,13 @@ public class LocalFileExchangeTest extends ExtendedTestCase {
         String testFileName = "putFileByStreamTestFile";
         String testFileContent = "lorem ipsum2";
 
-        InputStream is = new ByteArrayInputStream(testFileContent.getBytes(StandardCharsets.UTF_8));
+        InputStream is = new ByteArrayInputStream(testFileContent.getBytes(UTF_8));
         URL fileExchangeUrl = exchange.getURL(testFileName);
         exchange.putFile(is, fileExchangeUrl);
 
         File fileExchangeFile = new File(fileExchangeUrl.getFile());
         String fileExchangeContent = readTestFileContent(fileExchangeFile);
-        Assertions.assertEquals(testFileContent, fileExchangeContent);
+        assertEquals(testFileContent, fileExchangeContent);
         fileExchangeFile.delete();
     }
 
@@ -131,8 +136,8 @@ public class LocalFileExchangeTest extends ExtendedTestCase {
         URL testFileUrl = testFile.toURI().toURL();
 
         InputStream is = exchange.getFile(testFileUrl);
-        String fileContent = IOUtils.toString(is, StandardCharsets.UTF_8);
-        Assertions.assertEquals(testFileContent, fileContent);
+        String fileContent = IOUtils.toString(is, UTF_8);
+        assertEquals(testFileContent, fileContent);
     }
 
     @Test
@@ -147,7 +152,7 @@ public class LocalFileExchangeTest extends ExtendedTestCase {
         OutputStream os = new ByteArrayOutputStream();
 
         exchange.getFile(os, testFileUrl);
-        Assertions.assertEquals(testFileContent, os.toString());
+        assertEquals(testFileContent, os.toString());
     }
 
     @Test
@@ -164,7 +169,7 @@ public class LocalFileExchangeTest extends ExtendedTestCase {
 
         exchange.getFile(destination, testFileUrl.toString());
         String destinationContent = readTestFileContent(destination);
-        Assertions.assertEquals(testFileContent, destinationContent);
+        assertEquals(testFileContent, destinationContent);
     }
 
     @Test

@@ -28,14 +28,15 @@ import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.store.checksumcache.MemoryCacheMock;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumStore;
 import org.bitrepository.service.AlarmDispatcher;
-import org.bitrepository.settings.referencesettings.ChecksumPillarFileDownload;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+import static java.lang.Long.MAX_VALUE;
+import static org.bitrepository.settings.referencesettings.ChecksumPillarFileDownload.ALWAYS_DOWNLOAD;
+import static org.bitrepository.settings.referencesettings.ChecksumPillarFileDownload.DOWNLOAD_WHEN_MISSING_FROM_MESSAGE;
+import static org.bitrepository.settings.referencesettings.ChecksumPillarFileDownload.NEVER_DOWNLOAD;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -71,7 +72,7 @@ public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
     public void testPillarModelBasicFunctionality() {
         addDescription("Test the basic functions of the full reference pillar model.");
         addStep("Check the pillar id in the pillar model", "Identical to the one from the test.");
-        assertEquals(pillarModel.getPillarID(), getPillarID());
+        assertEquals(getPillarID(), pillarModel.getPillarID());
 
         addStep("Ask whether it can handle a file of size 0",
                 "Should not throw an exception");
@@ -79,25 +80,22 @@ public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
 
         addStep("Ask whether it can handle a file of maximum size",
                 "Should not be a problem for the checksum pillar.");
-        pillarModel.verifyEnoughFreeSpaceLeftForFile(Long.MAX_VALUE, collectionID);
+        pillarModel.verifyEnoughFreeSpaceLeftForFile(MAX_VALUE, collectionID);
 
         addStep("Check the ChecksumPillarSpec",
                 "Must be the default checksum spec from settings");
-        assertEquals(pillarModel.getChecksumPillarSpec(), defaultCsType);
+        assertEquals(defaultCsType, pillarModel.getChecksumPillarSpec());
 
         addStep("Checkum whether the checksum pillar should download",
                 "It should say as it is in settings, or return default");
         settingsForCUT.getReferenceSettings().getPillarSettings().setChecksumPillarFileDownload(
-                ChecksumPillarFileDownload.ALWAYS_DOWNLOAD);
-        assertEquals(ChecksumPillarFileDownload.ALWAYS_DOWNLOAD,
-                pillarModel.getChecksumPillarFileDownload());
+                ALWAYS_DOWNLOAD);
+        assertEquals(ALWAYS_DOWNLOAD, pillarModel.getChecksumPillarFileDownload());
         settingsForCUT.getReferenceSettings().getPillarSettings().setChecksumPillarFileDownload(
-                ChecksumPillarFileDownload.NEVER_DOWNLOAD);
-        assertEquals(ChecksumPillarFileDownload.NEVER_DOWNLOAD,
-                pillarModel.getChecksumPillarFileDownload());
+                NEVER_DOWNLOAD);
+        assertEquals(NEVER_DOWNLOAD, pillarModel.getChecksumPillarFileDownload());
         settingsForCUT.getReferenceSettings().getPillarSettings().setChecksumPillarFileDownload(null);
-        assertEquals(ChecksumPillarFileDownload.DOWNLOAD_WHEN_MISSING_FROM_MESSAGE,
-                pillarModel.getChecksumPillarFileDownload());
+        assertEquals(DOWNLOAD_WHEN_MISSING_FROM_MESSAGE, pillarModel.getChecksumPillarFileDownload());
 
     }
 

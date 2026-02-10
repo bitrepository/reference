@@ -22,9 +22,13 @@
 package org.bitrepository.protocol.security.exception;
 
 import org.jaccept.structure.ExtendedTestCase;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 
 public class UnregisteredPermissionTest extends ExtendedTestCase {
@@ -41,20 +45,20 @@ public class UnregisteredPermissionTest extends ExtendedTestCase {
         try {
             throw new UnregisteredPermissionException(errMsg);
         } catch (Exception e) {
-            Assertions.assertInstanceOf(UnregisteredPermissionException.class, e);
-            Assertions.assertEquals(errMsg, e.getMessage());
-            Assertions.assertNull(e.getCause());
+            assertInstanceOf(UnregisteredPermissionException.class, e);
+            assertEquals(errMsg, e.getMessage());
+            assertNull(e.getCause());
         }
 
         addStep("Throw the exception with an embedded exception", "The embedded exception should be the same.");
         try {
             throw new UnregisteredPermissionException(errMsg, new IllegalArgumentException(causeMsg));
         } catch (Exception e) {
-            Assertions.assertInstanceOf(UnregisteredPermissionException.class, e);
-            Assertions.assertEquals(errMsg, e.getMessage());
-            Assertions.assertNotNull(e.getCause());
-            Assertions.assertInstanceOf(IllegalArgumentException.class, e.getCause());
-            Assertions.assertEquals(causeMsg, e.getCause().getMessage());
+            assertInstanceOf(UnregisteredPermissionException.class, e);
+            assertEquals(errMsg, e.getMessage());
+            assertNotNull(e.getCause());
+            assertInstanceOf(IllegalArgumentException.class, e.getCause());
+            assertEquals(causeMsg, e.getCause().getMessage());
         }
     }
 
