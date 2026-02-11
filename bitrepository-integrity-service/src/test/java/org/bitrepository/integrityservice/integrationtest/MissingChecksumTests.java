@@ -55,6 +55,7 @@ import org.bitrepository.integrityservice.workflow.step.UpdateChecksumsStep;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.service.exception.WorkflowAbortedException;
 import org.jaccept.structure.ExtendedTestCase;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -64,21 +65,13 @@ import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-
-import static java.util.Arrays.asList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 
 
 public class MissingChecksumTests extends ExtendedTestCase {
@@ -116,12 +109,12 @@ public class MissingChecksumTests extends ExtendedTestCase {
         TEST_COLLECTION = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
         SettingsUtils.initialize(settings);
 
-        collector = mock(IntegrityInformationCollector.class);
-        alerter = mock(IntegrityAlerter.class);
+        collector = Mockito.mock(IntegrityInformationCollector.class);
+        alerter = Mockito.mock(IntegrityAlerter.class);
         model = new IntegrityDatabase(settings);
 
-        reporter = mock(IntegrityReporter.class);
-        integrityContributors = mock(IntegrityContributors.class);
+        reporter = Mockito.mock(IntegrityReporter.class);
+        integrityContributors = Mockito.mock(IntegrityContributors.class);
 
         SettingsUtils.initialize(settings);
     }
@@ -136,13 +129,13 @@ public class MissingChecksumTests extends ExtendedTestCase {
         populateDatabase(model, TEST_FILE_1);
 
         addStep("Run missing checksum step.", "The file should be marked as missing at all pillars.");
-        doAnswer(invocation -> TEST_COLLECTION).when(reporter).getCollectionID();
+        Mockito.doAnswer(invocation -> TEST_COLLECTION).when(reporter).getCollectionID();
 
         StatisticsCollector cs = new StatisticsCollector(TEST_COLLECTION);
         HandleMissingChecksumsStep missingChecksumStep = new HandleMissingChecksumsStep(model, reporter, cs, new Date(0));
         missingChecksumStep.performStep();
         for (String pillar : SettingsUtils.getPillarIDsForCollection(TEST_COLLECTION)) {
-            assertEquals(1, (long) cs.getPillarCollectionStat(pillar).getMissingChecksums());
+            Assertions.assertEquals(1, (long) cs.getPillarCollectionStat(pillar).getMissingChecksums());
         }
     }
 
@@ -157,40 +150,40 @@ public class MissingChecksumTests extends ExtendedTestCase {
 
         addStep("Add checksum results for only one pillar.", "");
         final ResultingChecksums resultingChecksums = createResultingChecksums(TEST_FILE_1);
-        doAnswer(invocation -> {
+        Mockito.doAnswer(invocation -> {
             EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
-            eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, asList(PILLAR_1, PILLAR_2)));
+            eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(PILLAR_1, PILLAR_2)));
             eventHandler.handleEvent(new ChecksumsCompletePillarEvent(PILLAR_1, TEST_COLLECTION,
                     resultingChecksums, createChecksumSpecTYPE(), false));
             eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
             return null;
         }).when(collector).getChecksums(
-                eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class), any(), anyString(),
-                any(ContributorQuery[].class), any(EventHandler.class));
+                ArgumentMatchers.eq(TEST_COLLECTION), ArgumentMatchers.any(), ArgumentMatchers.any(ChecksumSpecTYPE.class), ArgumentMatchers.any(), ArgumentMatchers.anyString(),
+                ArgumentMatchers.any(ContributorQuery[].class), ArgumentMatchers.any(EventHandler.class));
 
-        when(integrityContributors.getActiveContributors())
-                .thenReturn(new HashSet<>(asList(PILLAR_1, PILLAR_2))).thenReturn(new HashSet<>());
+        Mockito.when(integrityContributors.getActiveContributors())
+                .thenReturn(new HashSet<>(Arrays.asList(PILLAR_1, PILLAR_2))).thenReturn(new HashSet<>());
 
         UpdateChecksumsStep step = new FullUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(),
                 settings, TEST_COLLECTION, integrityContributors);
         step.performStep();
-        verify(collector).getChecksums(eq(TEST_COLLECTION), any(),
-                any(ChecksumSpecTYPE.class), any(), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
-        verifyNoMoreInteractions(alerter);
+        Mockito.verify(collector).getChecksums(ArgumentMatchers.eq(TEST_COLLECTION), ArgumentMatchers.any(),
+                ArgumentMatchers.any(ChecksumSpecTYPE.class), ArgumentMatchers.any(), ArgumentMatchers.anyString(), ArgumentMatchers.any(ContributorQuery[].class), ArgumentMatchers.any(EventHandler.class));
+        Mockito.verifyNoMoreInteractions(alerter);
 
         addStep("Check whether checksum is missing", "Should be missing at pillar two only.");
         Map<String, PillarCollectionMetric> metrics = model.getPillarCollectionMetrics(TEST_COLLECTION);
-        assertEquals(1, metrics.get(PILLAR_1).getPillarFileCount());
-        assertEquals(1, metrics.get(PILLAR_2).getPillarFileCount());
+        Assertions.assertEquals(1, metrics.get(PILLAR_1).getPillarFileCount());
+        Assertions.assertEquals(1, metrics.get(PILLAR_2).getPillarFileCount());
 
         List<String> missingChecksumsPillar1
                 = getIssuesFromIterator(model.findFilesWithMissingChecksum(TEST_COLLECTION, PILLAR_1, testStart));
-        assertEquals(0, missingChecksumsPillar1.size());
+        Assertions.assertEquals(0, missingChecksumsPillar1.size());
 
         List<String> missingChecksumsPillar2
                 = getIssuesFromIterator(model.findFilesWithMissingChecksum(TEST_COLLECTION, PILLAR_2, testStart));
-        assertEquals(1, missingChecksumsPillar2.size());
-        assertEquals(TEST_FILE_1, missingChecksumsPillar2.get(0));
+        Assertions.assertEquals(1, missingChecksumsPillar2.size());
+        Assertions.assertEquals(TEST_FILE_1, missingChecksumsPillar2.get(0));
     }
 
     @Test
@@ -205,9 +198,9 @@ public class MissingChecksumTests extends ExtendedTestCase {
 
         addStep("Add checksum results for both pillar.", "");
         final ResultingChecksums resultingChecksums = createResultingChecksums(TEST_FILE_1);
-        doAnswer(invocation -> {
+        Mockito.doAnswer(invocation -> {
             EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
-            eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, asList(PILLAR_1, PILLAR_2)));
+            eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(PILLAR_1, PILLAR_2)));
             eventHandler.handleEvent(new ChecksumsCompletePillarEvent(PILLAR_1, TEST_COLLECTION,
                     resultingChecksums, createChecksumSpecTYPE(), false));
             eventHandler.handleEvent(new ChecksumsCompletePillarEvent(PILLAR_2, TEST_COLLECTION,
@@ -215,62 +208,62 @@ public class MissingChecksumTests extends ExtendedTestCase {
             eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
             return null;
         }).when(collector).getChecksums(
-                eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class), any(),
-                anyString(), any(ContributorQuery[].class), any(EventHandler.class));
+                ArgumentMatchers.eq(TEST_COLLECTION), ArgumentMatchers.any(), ArgumentMatchers.any(ChecksumSpecTYPE.class), ArgumentMatchers.any(),
+                ArgumentMatchers.anyString(), ArgumentMatchers.any(ContributorQuery[].class), ArgumentMatchers.any(EventHandler.class));
 
-        when(integrityContributors.getActiveContributors())
-                .thenReturn(new HashSet<>(asList(PILLAR_1, PILLAR_2))).thenReturn(new HashSet<>());
+        Mockito.when(integrityContributors.getActiveContributors())
+                .thenReturn(new HashSet<>(Arrays.asList(PILLAR_1, PILLAR_2))).thenReturn(new HashSet<>());
 
         UpdateChecksumsStep step1 = new FullUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(),
                 settings, TEST_COLLECTION, integrityContributors);
         step1.performStep();
-        verify(collector).getChecksums(eq(TEST_COLLECTION), any(),
-                any(ChecksumSpecTYPE.class), any(), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
-        verifyNoMoreInteractions(alerter);
+        Mockito.verify(collector).getChecksums(ArgumentMatchers.eq(TEST_COLLECTION), ArgumentMatchers.any(),
+                ArgumentMatchers.any(ChecksumSpecTYPE.class), ArgumentMatchers.any(), ArgumentMatchers.anyString(), ArgumentMatchers.any(ContributorQuery[].class), ArgumentMatchers.any(EventHandler.class));
+        Mockito.verifyNoMoreInteractions(alerter);
 
         addStep("Check whether checksum is missing", "Should be missing at pillar two only.");
         Map<String, PillarCollectionMetric> metrics = model.getPillarCollectionMetrics(TEST_COLLECTION);
-        assertEquals(1, metrics.get(PILLAR_1).getPillarFileCount());
-        assertEquals(1, metrics.get(PILLAR_2).getPillarFileCount());
+        Assertions.assertEquals(1, metrics.get(PILLAR_1).getPillarFileCount());
+        Assertions.assertEquals(1, metrics.get(PILLAR_2).getPillarFileCount());
 
-        for (String pillar : asList(PILLAR_1, PILLAR_2)) {
+        for (String pillar : Arrays.asList(PILLAR_1, PILLAR_2)) {
             List<String> missingChecksums
                     = getIssuesFromIterator(model.findFilesWithMissingChecksum(TEST_COLLECTION, pillar, testStart));
-            assertEquals(0, missingChecksums.size());
+            Assertions.assertEquals(0, missingChecksums.size());
         }
 
         addStep("Add checksum results for only the second pillar.", "");
-        doAnswer(invocation -> {
+        Mockito.doAnswer(invocation -> {
             EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
-            eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, asList(PILLAR_1, PILLAR_2)));
+            eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, Arrays.asList(PILLAR_1, PILLAR_2)));
             eventHandler.handleEvent(new ChecksumsCompletePillarEvent(PILLAR_2, TEST_COLLECTION,
                     resultingChecksums, createChecksumSpecTYPE(), false));
             eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
             return null;
         }).when(collector).getChecksums(
-                eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class), any(),
-                anyString(), any(ContributorQuery[].class), any(EventHandler.class));
+                ArgumentMatchers.eq(TEST_COLLECTION), ArgumentMatchers.any(), ArgumentMatchers.any(ChecksumSpecTYPE.class), ArgumentMatchers.any(),
+                ArgumentMatchers.anyString(), ArgumentMatchers.any(ContributorQuery[].class), ArgumentMatchers.any(EventHandler.class));
 
-        when(integrityContributors.getActiveContributors())
-                .thenReturn(new HashSet<>(asList(PILLAR_1, PILLAR_2))).thenReturn(new HashSet<>());
+        Mockito.when(integrityContributors.getActiveContributors())
+                .thenReturn(new HashSet<>(Arrays.asList(PILLAR_1, PILLAR_2))).thenReturn(new HashSet<>());
 
         Date secondUpdate = new Date();
         UpdateChecksumsStep step2 = new FullUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(),
                 settings, TEST_COLLECTION, integrityContributors);
         step2.performStep();
-        verifyNoMoreInteractions(alerter);
+        Mockito.verifyNoMoreInteractions(alerter);
 
         addStep("Check whether checksum is missing", "Should be missing at pillar one, and not on pillar two.");
         metrics = model.getPillarCollectionMetrics(TEST_COLLECTION);
-        assertEquals(1, metrics.get(PILLAR_1).getPillarFileCount());
-        assertEquals(1, metrics.get(PILLAR_2).getPillarFileCount());
+        Assertions.assertEquals(1, metrics.get(PILLAR_1).getPillarFileCount());
+        Assertions.assertEquals(1, metrics.get(PILLAR_2).getPillarFileCount());
 
         List<String> missingChecksumsPillar1
                 = getIssuesFromIterator(model.findFilesWithMissingChecksum(TEST_COLLECTION, PILLAR_1, secondUpdate));
-        assertEquals(1, missingChecksumsPillar1.size());
+        Assertions.assertEquals(1, missingChecksumsPillar1.size());
         List<String> missingChecksumsPillar2
                 = getIssuesFromIterator(model.findFilesWithMissingChecksum(TEST_COLLECTION, PILLAR_2, secondUpdate));
-        assertEquals(0, missingChecksumsPillar2.size());
+        Assertions.assertEquals(0, missingChecksumsPillar2.size());
     }
 
     protected void populateDatabase(IntegrityModel model, String... files) {

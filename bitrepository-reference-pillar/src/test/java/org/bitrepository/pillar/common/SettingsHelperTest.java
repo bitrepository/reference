@@ -24,15 +24,13 @@ package org.bitrepository.pillar.common;
 
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.bitrepository.settings.repositorysettings.PillarIDs;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static org.bitrepository.pillar.common.SettingsHelper.getPillarCollections;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SettingsHelperTest {
     @Test
@@ -46,15 +44,15 @@ public class SettingsHelperTest {
         collection.add(createCollection("mySecondCollection", new String[]{myPillarID, otherPillarID}));
         collection.add(createCollection("otherCollection", new String[]{otherPillarID}));
 
-        List<String> myCollections = getPillarCollections(myPillarID, collection);
-        assertEquals(2, myCollections.size());
-        assertEquals("myFirstCollection", myCollections.get(0));
-        assertEquals("mySecondCollection", myCollections.get(1));
+        List<String> myCollections = SettingsHelper.getPillarCollections(myPillarID, collection);
+        Assertions.assertEquals(2, myCollections.size());
+        Assertions.assertEquals("myFirstCollection", myCollections.get(0));
+        Assertions.assertEquals("mySecondCollection", myCollections.get(1));
 
-        List<String> otherCollections = getPillarCollections(otherPillarID, collection);
-        assertEquals(2, otherCollections.size());
-        assertEquals("mySecondCollection", otherCollections.get(0));
-        assertEquals("otherCollection", otherCollections.get(1));
+        List<String> otherCollections = SettingsHelper.getPillarCollections(otherPillarID, collection);
+        Assertions.assertEquals(2, otherCollections.size());
+        Assertions.assertEquals("mySecondCollection", otherCollections.get(0));
+        Assertions.assertEquals("otherCollection", otherCollections.get(1));
     }
 
     private Collection createCollection(String collectionID, String[] pillarIDs) {

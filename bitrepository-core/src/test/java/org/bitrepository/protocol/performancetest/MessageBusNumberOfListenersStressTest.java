@@ -44,19 +44,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.lang.reflect.Field;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import static java.lang.System.nanoTime;
-import static org.bitrepository.common.settings.TestSettingsProvider.getSettings;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Stress testing of the messagebus.
@@ -221,16 +215,8 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
         try {
             addStep("Initialise the message listeners.", "Should be created and connected to the message bus.");
             for (int i = 0; i < NUMBER_OF_LISTENERS; i++) {
-                Settings listenerSettings = getSettings(getClass().getSimpleName());
-                try {
-                    Field field = Settings.class.getDeclaredField("componentID");
-                    field.setAccessible(true);
-                    field.set(listenerSettings, getClass().getSimpleName() + "-Listener-" + i + "-" + nanoTime());
-                } catch (Exception e) {
-                    throw new RuntimeException("Failed to set componentID", e);
-                }
+                Settings listenerSettings = TestSettingsProvider.getSettings(getClass().getSimpleName());
                 listenerSettings.getRepositorySettings().getProtocolSettings().setMessageBusConfiguration(conf);
-
                 listeners.add(new NotificationMessageListener(listenerSettings, securityManager));
             }
 
@@ -271,11 +257,12 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
             addStep("Verifying the amount of message sent '" + idReached + "' has been received by all '"
                     + NUMBER_OF_LISTENERS + "' listeners", "Should be the same amount for each listener, and the same "
                     + "amount as the correlation ID of the message");
-            assertEquals(idReached * NUMBER_OF_LISTENERS, messageReceived, "Reached message Id " + idReached + " thus each message of the " + NUMBER_OF_LISTENERS + " listener "
+            Assertions.assertEquals(idReached * NUMBER_OF_LISTENERS, messageReceived, "Reached message Id " + idReached + " thus" +
+                    " each message of the " + NUMBER_OF_LISTENERS + " listener "
                     + "should have received " + idReached + " message, though they have received "
                     + messageReceived + " message all together.");
             for (NotificationMessageListener listener : listeners) {
-                assertTrue((listener.getCount() == idReached),
+                Assertions.assertTrue((listener.getCount() == idReached),
                         "Should have received " + idReached + " messages, but has received "
                                 + listener.getCount());
             }

@@ -32,18 +32,12 @@ import org.bitrepository.pillar.store.checksumdatabase.ChecksumStore;
 import org.bitrepository.pillar.store.filearchive.CollectionArchiveManager;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.exception.RequestHandlerException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-
-import static java.lang.Long.MAX_VALUE;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 public class FullPillarModelTest extends DefaultFixturePillarTest {
     FileStorageModel pillarModel;
@@ -76,7 +70,7 @@ public class FullPillarModelTest extends DefaultFixturePillarTest {
     public void testPillarModelBasicFunctionality() throws Exception {
         addDescription("Test the basic functions of the full reference pillar model.");
         addStep("Check the pillar id in the pillar model", "Identical to the one from the test.");
-        assertEquals(getPillarID(), pillarModel.getPillarID());
+        Assertions.assertEquals(getPillarID(), pillarModel.getPillarID());
 
         addStep("Ask whether it can handle a file of size 0",
                 "Should not throw an exception");
@@ -85,15 +79,15 @@ public class FullPillarModelTest extends DefaultFixturePillarTest {
         addStep("Ask whether it can handle a file of maximum size",
                 "Should throw an exception");
         try {
-            pillarModel.verifyEnoughFreeSpaceLeftForFile(MAX_VALUE, collectionID);
-            fail("Should not be possible to verify such amount of space left.");
+            pillarModel.verifyEnoughFreeSpaceLeftForFile(Long.MAX_VALUE, collectionID);
+            Assertions.fail("Should not be possible to verify such amount of space left.");
         } catch (RequestHandlerException e) {
             // expected.
         }
 
         addStep("Check the ChecksumPillarSpec",
                 "Must be null, since it is full reference pillar and not a checksums pillar");
-        assertNull(pillarModel.getChecksumPillarSpec());
+        Assertions.assertNull(pillarModel.getChecksumPillarSpec());
     }
 
     @Test
@@ -105,19 +99,19 @@ public class FullPillarModelTest extends DefaultFixturePillarTest {
         initializeWithDefaultFile();
 
         addStep("Check whether file exists and retrieve it.", "Should be the empty file.");
-        assertTrue(pillarModel.hasFileID(defaultFileId, collectionID));
+        Assertions.assertTrue(pillarModel.hasFileID(defaultFileId, collectionID));
         FileInfo fileInfo = pillarModel.getFileInfoForActualFile(defaultFileId, collectionID);
-        assertEquals(0L, fileInfo.getSize());
-        assertEquals(defaultFileId, fileInfo.getFileID());
+        Assertions.assertEquals(0L, fileInfo.getSize());
+        Assertions.assertEquals(defaultFileId, fileInfo.getFileID());
 
         addStep("Verify that no exceptions are thrown when verifying file existance.", "Should exist.");
         pillarModel.verifyFileExists(defaultFileId, collectionID);
 
         addStep("Check retrieval of non-default checksum", "");
         String md5Checksum = pillarModel.getNonDefaultChecksum(defaultFileId, collectionID, defaultCsType);
-        assertEquals(EMPTY_MD5_CHECKSUM, md5Checksum);
+        Assertions.assertEquals(EMPTY_MD5_CHECKSUM, md5Checksum);
         String otherChecksum = pillarModel.getNonDefaultChecksum(defaultFileId, collectionID, nonDefaultCsType);
-        assertEquals(EMPTY_HMAC_SHA385_CHECKSUM, otherChecksum);
+        Assertions.assertEquals(EMPTY_HMAC_SHA385_CHECKSUM, otherChecksum);
     }
 
     @Test
@@ -130,10 +124,10 @@ public class FullPillarModelTest extends DefaultFixturePillarTest {
 
         addStep("Check whether file exists and try to retrieve it.",
                 "Should say no, and throw exception when attempted to be retrieved.");
-        assertFalse(pillarModel.hasFileID(defaultFileId, collectionID));
+        Assertions.assertFalse(pillarModel.hasFileID(defaultFileId, collectionID));
         try {
             pillarModel.getFileInfoForActualFile(defaultFileId, collectionID);
-            fail("Must throw an exception, when asked for a file it does not have.");
+            Assertions.fail("Must throw an exception, when asked for a file it does not have.");
         } catch (Exception e) {
             // expected
         }
@@ -141,7 +135,7 @@ public class FullPillarModelTest extends DefaultFixturePillarTest {
         addStep("Verify that anexceptions are thrown when verifying file existance.", "Should not exist.");
         try {
             pillarModel.verifyFileExists(defaultFileId, collectionID);
-            fail("Must throw an exception here!");
+            Assertions.fail("Must throw an exception here!");
         } catch (Exception e) {
             // expected
         }

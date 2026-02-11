@@ -25,7 +25,9 @@ import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerId;
 import org.bouncycastle.cms.SignerInformation;
+import org.bouncycastle.util.encoders.Base64;
 import org.jaccept.structure.ExtendedTestCase;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -33,13 +35,6 @@ import org.junit.jupiter.api.Test;
 import java.math.BigInteger;
 import java.security.cert.X509Certificate;
 
-import static org.bitrepository.protocol.security.SecurityModuleConstants.defaultEncodingType;
-import static org.bitrepository.protocol.security.SecurityTestConstants.getTestData;
-import static org.bitrepository.protocol.security.TestCertProvider.getFingerprintForPositiveCert;
-import static org.bitrepository.protocol.security.TestCertProvider.getPositiveCertSignature;
-import static org.bitrepository.protocol.security.TestCertProvider.loadPositiveCert;
-import static org.bouncycastle.util.encoders.Base64.decode;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PermissionStoreTest extends ExtendedTestCase {
     private static final String componentID = "TEST";
@@ -57,14 +52,14 @@ public class PermissionStoreTest extends ExtendedTestCase {
         addDescription("Tests that a certificate can be retrieved based on the correct signerId.");
         addStep("Create signer to lookup certificate", "No exceptions");
         byte[] decodeSig =
-                decode(getPositiveCertSignature().getBytes(defaultEncodingType));
+                Base64.decode(TestCertProvider.getPositiveCertSignature().getBytes(SecurityModuleConstants.defaultEncodingType));
         CMSSignedData s = new CMSSignedData(new CMSProcessableByteArray(
-                getTestData().getBytes(defaultEncodingType)), decodeSig);
+                SecurityTestConstants.getTestData().getBytes(SecurityModuleConstants.defaultEncodingType)), decodeSig);
         SignerInformation signer = s.getSignerInfos().getSigners().iterator().next();
         addStep("Lookup certificate based on signerId", "No exceptions");
         X509Certificate certificateFromStore = permissionStore.getCertificate(signer.getSID());
-        X509Certificate positiveCertificate = loadPositiveCert();
-        assertEquals(certificateFromStore, positiveCertificate);
+        X509Certificate positiveCertificate = TestCertProvider.loadPositiveCert();
+        Assertions.assertEquals(certificateFromStore, positiveCertificate);
     }
 
     @Test
@@ -73,9 +68,9 @@ public class PermissionStoreTest extends ExtendedTestCase {
         addDescription("Tests that a certificate cannot be retrieved based on the wrong signerId.");
         addStep("Create signer and modify its ID so lookup will fail", "No exceptions");
         byte[] decodeSig =
-                decode(getPositiveCertSignature().getBytes(defaultEncodingType));
+                Base64.decode(TestCertProvider.getPositiveCertSignature().getBytes(SecurityModuleConstants.defaultEncodingType));
         CMSSignedData s = new CMSSignedData(new CMSProcessableByteArray(
-                getTestData().getBytes(defaultEncodingType)), decodeSig);
+                SecurityTestConstants.getTestData().getBytes(SecurityModuleConstants.defaultEncodingType)), decodeSig);
         SignerInformation signer = s.getSignerInfos().getSigners().iterator().next();
         SignerId signerId = signer.getSID();
         BigInteger serial = signerId.getSerialNumber();
@@ -83,8 +78,8 @@ public class PermissionStoreTest extends ExtendedTestCase {
         signerId = new SignerId(signerId.getIssuer(), serial);
         addStep("Lookup certificate based on signerId", "No exceptions");
         X509Certificate certificateFromStore = permissionStore.getCertificate(signerId);
-        X509Certificate positiveCertificate = loadPositiveCert();
-        assertEquals(certificateFromStore, positiveCertificate);
+        X509Certificate positiveCertificate = TestCertProvider.loadPositiveCert();
+        Assertions.assertEquals(certificateFromStore, positiveCertificate);
     }
 
     //@Test
@@ -105,15 +100,15 @@ public class PermissionStoreTest extends ExtendedTestCase {
         addDescription("Tests that a certificate fingerprint can correctly be retrieved for a signer.");
         addFixture("Create signer to lookup fingerprint");
         byte[] decodeSig =
-                decode(getPositiveCertSignature().getBytes(defaultEncodingType));
+                Base64.decode(TestCertProvider.getPositiveCertSignature().getBytes(SecurityModuleConstants.defaultEncodingType));
         CMSSignedData s = new CMSSignedData(new CMSProcessableByteArray(
-                getTestData().getBytes(defaultEncodingType)), decodeSig);
+                SecurityTestConstants.getTestData().getBytes(SecurityModuleConstants.defaultEncodingType)), decodeSig);
         SignerInformation signer = s.getSignerInfos().getSigners().iterator().next();
 
         addStep("Lookup fingerprint based on signerId", "The correct finger print should be returned with openssl" +
                 "used to generate reference finger print");
         String certificateFingerprintFromStore = permissionStore.getCertificateFingerprint(signer.getSID());
-        String referenceCertificateFingerprint = getFingerprintForPositiveCert();
-        assertEquals(certificateFingerprintFromStore, referenceCertificateFingerprint);
+        String referenceCertificateFingerprint = TestCertProvider.getFingerprintForPositiveCert();
+        Assertions.assertEquals(certificateFingerprintFromStore, referenceCertificateFingerprint);
     }
 }

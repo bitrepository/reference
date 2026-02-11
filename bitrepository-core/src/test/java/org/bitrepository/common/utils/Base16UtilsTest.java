@@ -27,10 +27,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import static org.bitrepository.common.utils.Base16Utils.decodeBase16;
-import static org.bitrepository.common.utils.Base16Utils.encodeBase16;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 /**
  * Utility class for handling encoding and decoding of base64 bytes.
  */
@@ -44,12 +40,12 @@ public class Base16UtilsTest extends ExtendedTestCase {
     public void encodeChecksum() throws Exception {
         addDescription("Validating the encoding of the checksums.");
         addStep("Encode the checksum and validate", "It should match the precalculated constant.");
-        byte[] encodedChecksum = encodeBase16(DECODED_CHECKSUM);
+        byte[] encodedChecksum = Base16Utils.encodeBase16(DECODED_CHECKSUM);
 
-        assertEquals(ENCODED_CHECKSUM.length, encodedChecksum.length, "The size of the encoded checksum differs from the expected.");
+        Assertions.assertEquals(ENCODED_CHECKSUM.length, encodedChecksum.length, "The size of the encoded checksum differs from the expected.");
 
         for (int i = 0; i < encodedChecksum.length; i++) {
-            assertEquals(ENCODED_CHECKSUM[i], encodedChecksum[i]);
+            Assertions.assertEquals(ENCODED_CHECKSUM[i], encodedChecksum[i]);
         }
     }
 
@@ -58,8 +54,8 @@ public class Base16UtilsTest extends ExtendedTestCase {
     public void decodeChecksum() {
         addDescription("Validating the decoding of the checksums.");
         addStep("Decode the checksum and validate.", "It should match the precalculated constant.");
-        String decodedChecksum = decodeBase16(ENCODED_CHECKSUM);
-        assertEquals(DECODED_CHECKSUM, decodedChecksum);
+        String decodedChecksum = Base16Utils.decodeBase16(ENCODED_CHECKSUM);
+        Assertions.assertEquals(DECODED_CHECKSUM, decodedChecksum);
     }
 
     @Test

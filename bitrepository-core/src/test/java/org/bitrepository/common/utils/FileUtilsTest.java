@@ -29,17 +29,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.bitrepository.common.utils.FileUtils.delete;
-import static org.bitrepository.common.utils.FileUtils.retrieveDirectory;
-import static org.bitrepository.common.utils.FileUtils.retrieveSubDirectory;
-import static org.bitrepository.common.utils.FileUtils.unzip;
-import static org.bitrepository.common.utils.FileUtils.writeStreamToFile;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import java.nio.charset.StandardCharsets;
 
 import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
@@ -73,20 +63,20 @@ public class FileUtilsTest {
         addDescription("Test the ability to create directories.");
         addStep("Test the ability to create a directory", "Should be created by utility.");
         File dir = new File(DIR);
-        assertFalse(dir.exists());
-        File madeDir = retrieveDirectory(DIR);
-        assertTrue(madeDir.exists());
-        assertTrue(madeDir.isDirectory());
-        assertTrue(dir.isDirectory());
-        assertEquals(madeDir.getAbsolutePath(), dir.getAbsolutePath());
+        Assertions.assertFalse(dir.exists());
+        File madeDir = FileUtils.retrieveDirectory(DIR);
+        Assertions.assertTrue(madeDir.exists());
+        Assertions.assertTrue(madeDir.isDirectory());
+        Assertions.assertTrue(dir.isDirectory());
+        Assertions.assertEquals(madeDir.getAbsolutePath(), dir.getAbsolutePath());
 
         addStep("Test error scenarios, when the directory path is a file", "Should throw exception");
         File testFile = new File(dir, TEST_FILE_NAME);
-        assertTrue(testFile.createNewFile());
+        Assertions.assertTrue(testFile.createNewFile());
 
         try {
-            retrieveDirectory(testFile.getPath());
-            fail("Should throw an exception");
+            FileUtils.retrieveDirectory(testFile.getPath());
+            Assertions.fail("Should throw an exception");
         } catch (IllegalArgumentException e) {
             // expected
         }
@@ -97,32 +87,32 @@ public class FileUtilsTest {
     public void createSubDirectoryTester() throws Exception {
         addDescription("Test the ability to create sub directories.");
         addStep("Test the ability to create sub-directories", "Should be created by utility");
-        File dir = retrieveDirectory(DIR);
+        File dir = FileUtils.retrieveDirectory(DIR);
         File subdir = new File(dir, SUB_DIR);
-        assertFalse(subdir.exists());
-        File madeSubdir = retrieveSubDirectory(dir, SUB_DIR);
-        assertTrue(madeSubdir.exists());
-        assertTrue(madeSubdir.isDirectory());
-        assertTrue(subdir.isDirectory());
-        assertEquals(madeSubdir.getAbsolutePath(), subdir.getAbsolutePath());
+        Assertions.assertFalse(subdir.exists());
+        File madeSubdir = FileUtils.retrieveSubDirectory(dir, SUB_DIR);
+        Assertions.assertTrue(madeSubdir.exists());
+        Assertions.assertTrue(madeSubdir.isDirectory());
+        Assertions.assertTrue(subdir.isDirectory());
+        Assertions.assertEquals(madeSubdir.getAbsolutePath(), subdir.getAbsolutePath());
 
         addStep("Test that it fails if the 'directory' is actually a file", "Throws exception");
         File testFile = new File(dir, TEST_FILE_NAME);
-        assertTrue(testFile.createNewFile());
+        Assertions.assertTrue(testFile.createNewFile());
 
         try {
-            retrieveSubDirectory(testFile, SUB_DIR);
-            fail("Should throw an exception");
+            FileUtils.retrieveSubDirectory(testFile, SUB_DIR);
+            Assertions.fail("Should throw an exception");
         } catch (IllegalArgumentException e) {
             // expected
         }
 
         addStep("Test that it fails, if the parent directory does not allow writing", "Throws exception");
-        delete(subdir);
+        FileUtils.delete(subdir);
         try {
             dir.setWritable(false);
-            retrieveSubDirectory(dir, SUB_DIR);
-            fail("Should throw an exception");
+            FileUtils.retrieveSubDirectory(dir, SUB_DIR);
+            Assertions.fail("Should throw an exception");
         } catch (IllegalStateException e) {
             // expected
         } finally {
@@ -191,15 +181,15 @@ public class FileUtilsTest {
     public void writeInputstreamTester() throws Exception {
         addDescription("Test writing an inputstream to a file.");
         addStep("Setup", "");
-        File dir = retrieveDirectory(DIR);
+        File dir = FileUtils.retrieveDirectory(DIR);
         File testFile = new File(dir, TEST_FILE_NAME);
-        assertFalse(testFile.exists());
-        ByteArrayInputStream in = new ByteArrayInputStream(DATA.getBytes(UTF_8));
+        Assertions.assertFalse(testFile.exists());
+        ByteArrayInputStream in = new ByteArrayInputStream(DATA.getBytes(StandardCharsets.UTF_8));
 
         addStep("Write the input stream to the file", "The file should exist and have same size as the data.");
-        writeStreamToFile(in, testFile);
-        assertTrue(testFile.exists());
-        assertEquals(DATA.length(), testFile.length());
+        FileUtils.writeStreamToFile(in, testFile);
+        Assertions.assertTrue(testFile.exists());
+        Assertions.assertEquals(DATA.length(), testFile.length());
     }
 
     @Test
@@ -207,14 +197,14 @@ public class FileUtilsTest {
     public void unzipFileTester() throws Exception {
         addDescription("Test unzipping a file.");
         addStep("Setup", "");
-        File dir = retrieveDirectory(DIR);
+        File dir = FileUtils.retrieveDirectory(DIR);
         File zipFile = new File("src/test/resources/test-files/test.jar");
-        assertTrue(zipFile.isFile(), zipFile.getAbsolutePath());
-        assertEquals(0, dir.listFiles().length);
+        Assertions.assertTrue(zipFile.isFile(), zipFile.getAbsolutePath());
+        Assertions.assertEquals(0, dir.listFiles().length);
 
         addStep("Unzip the zipfile to the directory", "Should place a file and a directory inside the dir");
-        unzip(zipFile, dir);
-        assertEquals(2, dir.listFiles().length);
+        FileUtils.unzip(zipFile, dir);
+        Assertions.assertEquals(2, dir.listFiles().length);
     }
 
     @Test
