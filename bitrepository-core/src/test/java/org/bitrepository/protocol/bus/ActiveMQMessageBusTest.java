@@ -28,6 +28,7 @@ import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import javax.jms.Message;
@@ -35,11 +36,7 @@ import javax.jms.MessageListener;
 import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
-
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.bitrepository.protocol.activemq.ActiveMQMessageBus.MESSAGE_TO_KEY;
-import static org.bitrepository.protocol.message.ExampleMessageFactory.createMessage;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -114,12 +111,12 @@ public class ActiveMQMessageBusTest extends GeneralMessageBusTest {
             }
         });
         IdentifyPillarsForDeleteFileRequest messageToSend =
-                createMessage(IdentifyPillarsForDeleteFileRequest.class);
+                ExampleMessageFactory.createMessage(IdentifyPillarsForDeleteFileRequest.class);
         messageToSend.setDestination(settingsForTestClient.getCollectionDestination());
         messageToSend.setTo(receiverID);
         messageBus.sendMessage(messageToSend);
-        Message receivedMessage = messageList.poll(3, SECONDS);
-        assertEquals(receiverID, receivedMessage.getStringProperty(MESSAGE_TO_KEY));
+        Message receivedMessage = messageList.poll(3, TimeUnit.SECONDS);
+        Assertions.assertEquals(receiverID, receivedMessage.getStringProperty(ActiveMQMessageBus.MESSAGE_TO_KEY));
     }
 
     @Test

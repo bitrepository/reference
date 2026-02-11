@@ -22,13 +22,9 @@
 package org.bitrepository.protocol.security.exception;
 
 import org.jaccept.structure.ExtendedTestCase;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class SecurityExceptionTest extends ExtendedTestCase {
 
@@ -44,20 +40,20 @@ public class SecurityExceptionTest extends ExtendedTestCase {
         try {
             throw new SecurityException(errMsg);
         } catch (Exception e) {
-            assertInstanceOf(SecurityException.class, e);
-            assertEquals(errMsg, e.getMessage());
-            assertNull(e.getCause());
+            Assertions.assertInstanceOf(SecurityException.class, e);
+            Assertions.assertEquals(errMsg, e.getMessage());
+            Assertions.assertNull(e.getCause());
         }
 
         addStep("Throw the exception with an embedded exception", "The embedded exception should be the same.");
         try {
             throw new SecurityException(errMsg, new IllegalArgumentException(causeMsg));
         } catch (Exception e) {
-            assertInstanceOf(SecurityException.class, e);
-            assertEquals(errMsg, e.getMessage());
-            assertNotNull(e.getCause());
-            assertInstanceOf(IllegalArgumentException.class, e.getCause());
-            assertEquals(causeMsg, e.getCause().getMessage());
+            Assertions.assertInstanceOf(SecurityException.class, e);
+            Assertions.assertEquals(errMsg, e.getMessage());
+            Assertions.assertNotNull(e.getCause());
+            Assertions.assertInstanceOf(IllegalArgumentException.class, e.getCause());
+            Assertions.assertEquals(causeMsg, e.getCause().getMessage());
         }
     }
 

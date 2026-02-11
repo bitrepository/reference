@@ -23,15 +23,9 @@ package org.bitrepository.common.utils;
 
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.jaccept.structure.ExtendedTestCase;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-
-import static org.bitrepository.common.utils.FileIDsUtils.getAllFileIDs;
-import static org.bitrepository.common.utils.FileIDsUtils.getSpecificFileIDs;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FileIDUtilsTest extends ExtendedTestCase {
     String FILE_ID = "Test-File-Id";
@@ -41,15 +35,15 @@ public class FileIDUtilsTest extends ExtendedTestCase {
     public void fileIDsTest() throws Exception {
         addDescription("Test the utility class for generating FileIDs");
         addStep("Test 'all file ids'", "is only AllFileIDs");
-        FileIDs allFileIDs = getAllFileIDs();
-        assertTrue(allFileIDs.isSetAllFileIDs());
-        assertFalse(allFileIDs.isSetFileID());
-        assertNull(allFileIDs.getFileID());
+        FileIDs allFileIDs = FileIDsUtils.getAllFileIDs();
+        Assertions.assertTrue(allFileIDs.isSetAllFileIDs());
+        Assertions.assertFalse(allFileIDs.isSetFileID());
+        Assertions.assertNull(allFileIDs.getFileID());
 
         addStep("Test a specific file id", "Should not be AllFileIDs");
-        FileIDs specificFileIDs = getSpecificFileIDs(FILE_ID);
-        assertFalse(specificFileIDs.isSetAllFileIDs());
-        assertTrue(specificFileIDs.isSetFileID());
-        assertEquals(FILE_ID, specificFileIDs.getFileID());
+        FileIDs specificFileIDs = FileIDsUtils.getSpecificFileIDs(FILE_ID);
+        Assertions.assertFalse(specificFileIDs.isSetAllFileIDs());
+        Assertions.assertTrue(specificFileIDs.isSetFileID());
+        Assertions.assertEquals(FILE_ID, specificFileIDs.getFileID());
     }
 }

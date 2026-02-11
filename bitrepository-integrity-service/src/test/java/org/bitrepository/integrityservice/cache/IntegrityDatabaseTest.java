@@ -31,6 +31,7 @@ import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.IntegrityDatabaseTestCase;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.service.audit.AuditTrailManager;
@@ -38,6 +39,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -45,15 +47,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import static java.lang.Long.MAX_VALUE;
-import static org.bitrepository.common.utils.CalendarUtils.getEpoch;
-import static org.bitrepository.common.utils.SettingsUtils.getPillarIDsForCollection;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
 
 public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     AuditTrailManager auditManager;
@@ -70,7 +63,7 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     public void setup() throws Exception {
         super.setup();
         TEST_COLLECTIONID = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
-        auditManager = mock(AuditTrailManager.class);
+        auditManager = Mockito.mock(AuditTrailManager.class);
     }
 
     @Override
@@ -105,34 +98,34 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         addStep("Test the 'findChecksumsOlderThan'", "Should deliver an empty collection");
         Collection<String> oldChecksums = getIssuesFromIterator(model.findChecksumsOlderThan(
                 new Date(0), TEST_PILLAR_1, TEST_COLLECTIONID));
-        assertNotNull(oldChecksums);
-        assertEquals(0, oldChecksums.size());
+        Assertions.assertNotNull(oldChecksums);
+        Assertions.assertEquals(0, oldChecksums.size());
 
         addStep("Test the 'findMissingChecksums'", "Should deliver an empty collection");
-        for (String pillar : getPillarIDsForCollection(TEST_COLLECTIONID)) {
+        for (String pillar : SettingsUtils.getPillarIDsForCollection(TEST_COLLECTIONID)) {
             Collection<String> missingChecksums
                     = getIssuesFromIterator(model.findFilesWithMissingChecksum(TEST_COLLECTIONID, pillar, new Date(0)));
-            assertNotNull(missingChecksums);
-            assertEquals(0, missingChecksums.size());
+            Assertions.assertNotNull(missingChecksums);
+            Assertions.assertEquals(0, missingChecksums.size());
         }
 
         addStep("Test the 'findMissingFiles'", "Should deliver an empty collection");
         Collection<String> missingFiles = getIssuesFromIterator(model.findFilesWithMissingCopies(TEST_COLLECTIONID,
-                getPillarIDsForCollection(TEST_COLLECTIONID).size(), 0L, MAX_VALUE));
-        assertNotNull(missingFiles);
-        assertEquals(0, missingFiles.size());
+                SettingsUtils.getPillarIDsForCollection(TEST_COLLECTIONID).size(), 0L, Long.MAX_VALUE));
+        Assertions.assertNotNull(missingFiles);
+        Assertions.assertEquals(0, missingFiles.size());
 
         addStep("Test the 'getAllFileIDs'", "Should deliver an empty collection");
-        assertEquals(0, model.getNumberOfFilesInCollection(TEST_COLLECTIONID));
+        Assertions.assertEquals(0, model.getNumberOfFilesInCollection(TEST_COLLECTIONID));
 
         addStep("Test the 'getFileInfos'", "Should deliver an empty collection");
         Collection<FileInfo> fileInfos = model.getFileInfos(TEST_FILE_ID, TEST_COLLECTIONID);
-        assertNotNull(fileInfos);
-        assertEquals(0, fileInfos.size());
+        Assertions.assertNotNull(fileInfos);
+        Assertions.assertEquals(0, fileInfos.size());
 
         addStep("Test the 'getPillarCollectionMetrics'", "The set of metrics should be empty.");
         Map<String, PillarCollectionMetric> metrics = model.getPillarCollectionMetrics(TEST_COLLECTIONID);
-        assertTrue(metrics.isEmpty());
+        Assertions.assertTrue(metrics.isEmpty());
     }
 
     @Test
@@ -152,10 +145,11 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         Collection<FileInfo> fileinfos = model.getFileInfos(TEST_FILE_ID, TEST_COLLECTIONID);
         Assertions.assertNotNull(fileinfos);
         for (FileInfo fi : fileinfos) {
-            assertEquals(TEST_FILE_ID, fi.getFileId());
-            assertNull(fi.getChecksum());
-            assertEquals(getEpoch(), fi.getDateForLastChecksumCheck());
-            assertEquals(data1.getFileIDsDataItems().getFileIDsDataItem().get(0).getLastModificationTime(), fi.getDateForLastFileIDCheck());
+            Assertions.assertEquals(TEST_FILE_ID, fi.getFileId());
+            Assertions.assertNull(fi.getChecksum());
+            Assertions.assertEquals(CalendarUtils.getEpoch(), fi.getDateForLastChecksumCheck());
+            Assertions.assertEquals(data1.getFileIDsDataItems().getFileIDsDataItem().get(0).getLastModificationTime(),
+                    fi.getDateForLastFileIDCheck());
         }
     }
 
@@ -176,9 +170,9 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         Collection<FileInfo> fileinfos = model.getFileInfos(TEST_FILE_ID, TEST_COLLECTIONID);
         Assertions.assertNotNull(fileinfos);
         for (FileInfo fi : fileinfos) {
-            assertEquals(TEST_FILE_ID, fi.getFileId());
-            assertEquals(TEST_CHECKSUM, fi.getChecksum());
-            assertEquals(csData.get(0).getCalculationTimestamp(), fi.getDateForLastChecksumCheck());
+            Assertions.assertEquals(TEST_FILE_ID, fi.getFileId());
+            Assertions.assertEquals(TEST_CHECKSUM, fi.getChecksum());
+            Assertions.assertEquals(csData.get(0).getCalculationTimestamp(), fi.getDateForLastChecksumCheck());
         }
     }
 
@@ -196,18 +190,18 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         model.addFileIDs(data1, TEST_PILLAR_2, TEST_COLLECTIONID);
 
         Collection<FileInfo> fileinfos = model.getFileInfos(TEST_FILE_ID, TEST_COLLECTIONID);
-        assertNotNull(fileinfos);
-        assertEquals(2, fileinfos.size());
+        Assertions.assertNotNull(fileinfos);
+        Assertions.assertEquals(2, fileinfos.size());
 
         addStep("Delete the entry", "No fileinfos should be extracted.");
         model.deleteFileIdEntry(TEST_COLLECTIONID, TEST_PILLAR_1, TEST_FILE_ID);
         fileinfos = model.getFileInfos(TEST_FILE_ID, TEST_COLLECTIONID);
-        assertNotNull(fileinfos);
-        assertEquals(1, fileinfos.size());
+        Assertions.assertNotNull(fileinfos);
+        Assertions.assertEquals(1, fileinfos.size());
         model.deleteFileIdEntry(TEST_COLLECTIONID, TEST_PILLAR_2, TEST_FILE_ID);
         fileinfos = model.getFileInfos(TEST_FILE_ID, TEST_COLLECTIONID);
-        assertNotNull(fileinfos);
-        assertEquals(0, fileinfos.size());
+        Assertions.assertNotNull(fileinfos);
+        Assertions.assertEquals(0, fileinfos.size());
     }
 
     private List<ChecksumDataForChecksumSpecTYPE> getChecksumResults(String fileID, String checksum) {

@@ -48,11 +48,6 @@ import org.slf4j.LoggerFactory;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static org.bitrepository.protocol.security.SecurityTestConstants.getTestData;
-import static org.bitrepository.protocol.security.TestCertProvider.getPositiveCertSignature;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
-
 public class SecurityManagerTest extends ExtendedTestCase {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private org.bitrepository.protocol.security.SecurityManager securityManager;
@@ -88,7 +83,7 @@ public class SecurityManagerTest extends ExtendedTestCase {
         addDescription("Tests that a signature only allows the correct requests.");
 
         List<Collection> collections = settings.getRepositorySettings().getCollections().getCollection();
-        assertEquals(2, collections.size(), "There should be two collections present to test the collection limited " +
+        Assertions.assertEquals(2, collections.size(), "There should be two collections present to test the collection limited " +
                 "authorization");
         settings.getRepositorySettings().setPermissionSet(getCollectionLimitedPermissionSet());
         setupSecurityManager(settings);
@@ -99,15 +94,15 @@ public class SecurityManagerTest extends ExtendedTestCase {
         addStep("Check that PUT_FILE is allowed for both collections.", "PUT_FILE is allowed.");
         try {
             securityManager.authorizeOperation(PutFileRequest.class.getSimpleName(),
-                    getTestData(), getPositiveCertSignature(), collectionID1);
+                    SecurityTestConstants.getTestData(), TestCertProvider.getPositiveCertSignature(), collectionID1);
         } catch (OperationAuthorizationException e) {
-            fail(e.getMessage());
+            Assertions.fail(e.getMessage());
         }
         try {
             securityManager.authorizeOperation(PutFileRequest.class.getSimpleName(),
-                    getTestData(), getPositiveCertSignature(), collectionID2);
+                    SecurityTestConstants.getTestData(), TestCertProvider.getPositiveCertSignature(), collectionID2);
         } catch (OperationAuthorizationException e) {
-            fail(e.getMessage());
+            Assertions.fail(e.getMessage());
         }
 
         addStep("Check that GET_FILE is only allowed for the first collection.",
@@ -117,15 +112,15 @@ public class SecurityManagerTest extends ExtendedTestCase {
 
         try {
             securityManager.authorizeOperation(GetFileRequest.class.getSimpleName(),
-                    getTestData(), getPositiveCertSignature(), collectionID1);
+                    SecurityTestConstants.getTestData(), TestCertProvider.getPositiveCertSignature(), collectionID1);
         } catch (OperationAuthorizationException e) {
-            fail(e.getMessage());
+            Assertions.fail(e.getMessage());
         }
 
         try {
             securityManager.authorizeOperation(GetFileRequest.class.getSimpleName(),
-                    getTestData(), getPositiveCertSignature(), collectionID2);
-            fail("SecurityManager did not throw the expected OperationAuthorizationException");
+                    SecurityTestConstants.getTestData(), TestCertProvider.getPositiveCertSignature(), collectionID2);
+            Assertions.fail("SecurityManager did not throw the expected OperationAuthorizationException");
         } catch (OperationAuthorizationException ignored) {
         }
     }

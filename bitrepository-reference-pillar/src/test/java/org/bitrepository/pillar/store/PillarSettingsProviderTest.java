@@ -25,11 +25,9 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
 import org.bitrepository.pillar.PillarSettingsProvider;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 
 public class PillarSettingsProviderTest {
 
@@ -42,13 +40,13 @@ public class PillarSettingsProviderTest {
                 new PillarSettingsProvider(new XMLFileSettingsLoader(PATH_TO_TEST_SETTINGS),
                         null);
         Settings settings = settingsLoader.getSettings();
-        assertEquals(settings.getComponentID(), settings.getReferenceSettings().getPillarSettings().getPillarID());
+        Assertions.assertEquals(settings.getComponentID(), settings.getReferenceSettings().getPillarSettings().getPillarID());
 
         String componentID = "testPillarID";
         settingsLoader =
                 new PillarSettingsProvider(new XMLFileSettingsLoader(PATH_TO_TEST_SETTINGS),
                         "testPillarID");
         settings = settingsLoader.getSettings();
-        assertEquals(componentID, settings.getComponentID());
+        Assertions.assertEquals(componentID, settings.getComponentID());
     }
 }
