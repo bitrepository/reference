@@ -22,15 +22,14 @@
 
 package org.bitrepository.pillar.integration.func;
 
+import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
-
-import static org.bitrepository.bitrepositoryelements.ResponseCode.OPERATION_COMPLETED;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Assertions;
 
 public abstract class DefaultPillarOperationTest extends DefaultPillarMessagingTest {
 
     protected void assertPositivResponseIsReceived() {
         MessageResponse receivedResponse = receiveResponse();
-        assertEquals(OPERATION_COMPLETED, receivedResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, receivedResponse.getResponseInfo().getResponseCode());
     }
 }

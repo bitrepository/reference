@@ -23,21 +23,18 @@ package org.bitrepository.pillar.integration.func.getfileids;
 
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
+import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.PillarTestGroups;
+import org.bitrepository.pillar.integration.func.Assert;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
-
-import static java.util.Calendar.MILLISECOND;
-import static org.bitrepository.common.utils.CalendarUtils.getXmlGregorianCalendar;
-import static org.bitrepository.pillar.integration.func.Assert.assertEmpty;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public class GetFileIDsQueryTest extends PillarFunctionTest {
@@ -53,11 +50,11 @@ public class GetFileIDsQueryTest extends PillarFunctionTest {
         addStep("Retrieve a list of all file ids.", "Run through the list and verify each element is older or the " +
                 "same age as the following element");
         List<FileIDsDataItem> originalFileIDsList = pillarFileManager.getFileIDs(null);
-        assertTrue(originalFileIDsList.size() >= 2, "Must initially have at least two file ids, but had: "
+        Assertions.assertTrue(originalFileIDsList.size() >= 2, "Must initially have at least two file ids, but had: "
                 + originalFileIDsList.size());
 
         for (int counter = 0; counter < originalFileIDsList.size() - 1; counter++) {
-            assertTrue(originalFileIDsList.get(counter).getLastModificationTime().compare(
+            Assertions.assertTrue(originalFileIDsList.get(counter).getLastModificationTime().compare(
                             originalFileIDsList.get(counter + 1).getLastModificationTime()) <= 0,
                     "file id (" + counter + ") " + originalFileIDsList.get(counter) + " newer than the following file" +
                             " id("
@@ -77,7 +74,7 @@ public class GetFileIDsQueryTest extends PillarFunctionTest {
         addStep("Retrieve a list of all file ids by setting maxNumberOfResult to null.", "At least 2 file ids " +
                 "should be returned");
         List<FileIDsDataItem> originalFileIDsList = pillarFileManager.getFileIDs(null);
-        assertTrue(originalFileIDsList.size() >= 2, "Must initially have at least two file ids, but had: "
+        Assertions.assertTrue(originalFileIDsList.size() >= 2, "Must initially have at least two file ids, but had: "
                 + originalFileIDsList.size());
 
         addStep("Repeat the request file ids, this time with maxNumberOfResult set to one", "A file id result with " +
@@ -85,8 +82,8 @@ public class GetFileIDsQueryTest extends PillarFunctionTest {
                 ".");
         ContributorQuery singleFileIDQuery = new ContributorQuery(getPillarID(), null, null, 1);
         List<FileIDsDataItem> singleFileIDList = pillarFileManager.getFileIDs(singleFileIDQuery);
-        assertEquals(1, singleFileIDList.size(), "The result didn't contain a single file id");
-        assertEquals(originalFileIDsList.get(0), singleFileIDList.get(0), "The returned file id wasn't equal to the " +
+        Assertions.assertEquals(1, singleFileIDList.size(), "The result didn't contain a single file id");
+        Assertions.assertEquals(originalFileIDsList.get(0), singleFileIDList.get(0), "The returned file id wasn't equal to the " +
                 "oldest file id");
     }
 
@@ -102,9 +99,9 @@ public class GetFileIDsQueryTest extends PillarFunctionTest {
                 "A list with at least 2 different timestamps (it is not the fault of the pillar if this fails, but " +
                         "the test needs this to be satisfied to make sense).");
         List<FileIDsDataItem> originalFileIDsList = pillarFileManager.getFileIDs(null);
-        assertTrue(originalFileIDsList.size() >= 2, "Must initially have at least two file ids, but had: "
+        Assertions.assertTrue(originalFileIDsList.size() >= 2, "Must initially have at least two file ids, but had: "
                 + originalFileIDsList.size());
-        assertTrue(originalFileIDsList.get(0).getLastModificationTime().compare(
+        Assertions.assertTrue(originalFileIDsList.get(0).getLastModificationTime().compare(
                         originalFileIDsList.get(originalFileIDsList.size() - 1).getLastModificationTime()) != 0,
                 "The timestamps of the first and last file id are the same.");
 
@@ -114,7 +111,7 @@ public class GetFileIDsQueryTest extends PillarFunctionTest {
         ContributorQuery query = new ContributorQuery(getPillarID(),
                 oldestTimestamp.toGregorianCalendar().getTime(), null, null);
         List<FileIDsDataItem> limitedFileIDsList = pillarFileManager.getFileIDs(query);
-        assertEquals(originalFileIDsList, limitedFileIDsList, "Different list return when setting old minTimestamp: "
+        Assertions.assertEquals(originalFileIDsList, limitedFileIDsList, "Different list return when setting old minTimestamp: "
                 + limitedFileIDsList + " != " + originalFileIDsList);
 
         addStep("Request file ids with MinTimeStamp set to the timestamp of the newest file id",
@@ -124,19 +121,19 @@ public class GetFileIDsQueryTest extends PillarFunctionTest {
         query = new ContributorQuery(getPillarID(),
                 newestTimestamp.toGregorianCalendar().getTime(), null, null);
         limitedFileIDsList = pillarFileManager.getFileIDs(query);
-        assertFalse(limitedFileIDsList.isEmpty(), "Empty list returned when when minTimestamp is set to newest " +
+        Assertions.assertFalse(limitedFileIDsList.isEmpty(), "Empty list returned when when minTimestamp is set to newest " +
                 "calculated checksum timestamp");
-        assertEquals(0, limitedFileIDsList.get(0).getLastModificationTime().compare(newestTimestamp), "Different " +
+        Assertions.assertEquals(0, limitedFileIDsList.get(0).getLastModificationTime().compare(newestTimestamp), "Different " +
                 "timestamps in the set of newest file ids." + limitedFileIDsList);
 
         addStep("Request file ids with MinTimeStamp set to the timestamp of the newest file id + 10 ms",
                 "No file ids are returned.");
         GregorianCalendar newerThanNewestTimestamp = newestTimestamp.toGregorianCalendar();
-        newerThanNewestTimestamp.add(MILLISECOND, 10);
+        newerThanNewestTimestamp.add(Calendar.MILLISECOND, 10);
         query = new ContributorQuery(getPillarID(), newerThanNewestTimestamp.getTime(), null, null);
         limitedFileIDsList = pillarFileManager.getFileIDs(query);
-        assertEmpty(limitedFileIDsList, "Non-empty list returned with olderThanOldestTimestamp(" +
-                getXmlGregorianCalendar(newerThanNewestTimestamp) + ") query");
+        Assert.assertEmpty(limitedFileIDsList, "Non-empty list returned with olderThanOldestTimestamp(" +
+                CalendarUtils.getXmlGregorianCalendar(newerThanNewestTimestamp) + ") query");
     }
 
     @Test
@@ -151,9 +148,9 @@ public class GetFileIDsQueryTest extends PillarFunctionTest {
                 "A list with at least 2 different timestamps (it is not the fault of the pillar if this fails, but " +
                         "the test needs this to be satisfied to make sense).");
         List<FileIDsDataItem> originalFileIDsList = pillarFileManager.getFileIDs(null);
-        assertTrue(originalFileIDsList.size() >= 2, "Must initially have at least two file ids, but had: "
+        Assertions.assertTrue(originalFileIDsList.size() >= 2, "Must initially have at least two file ids, but had: "
                 + originalFileIDsList.size());
-        assertTrue(originalFileIDsList.get(0).getLastModificationTime().compare(
+        Assertions.assertTrue(originalFileIDsList.get(0).getLastModificationTime().compare(
                         originalFileIDsList.get(originalFileIDsList.size() - 1).getLastModificationTime()) != 0,
                 "The timestamps of the first and last file id are the same.");
 
@@ -164,7 +161,7 @@ public class GetFileIDsQueryTest extends PillarFunctionTest {
         ContributorQuery query = new ContributorQuery(getPillarID(),
                 null, newestTimestamp.toGregorianCalendar().getTime(), null);
         List<FileIDsDataItem> limitedFileIDsList = pillarFileManager.getFileIDs(query);
-        assertEquals(originalFileIDsList, limitedFileIDsList, "Different list return when setting newest maxTimestamp");
+        Assertions.assertEquals(originalFileIDsList, limitedFileIDsList, "Different list return when setting newest maxTimestamp");
 
         addStep("Request file ids with MaxTimeStamp set to the timestamp of the oldest file id",
                 "Only file id with the timestamp equal to MaxTimeStamp are returned.");
@@ -172,18 +169,18 @@ public class GetFileIDsQueryTest extends PillarFunctionTest {
         query = new ContributorQuery(getPillarID(),
                 null, oldestTimestamp.toGregorianCalendar().getTime(), null);
         limitedFileIDsList = pillarFileManager.getFileIDs(query);
-        assertFalse(limitedFileIDsList.isEmpty(), "At least one file id with the oldest timestamp should be " +
+        Assertions.assertFalse(limitedFileIDsList.isEmpty(), "At least one file id with the oldest timestamp should be " +
                 "returned. The folliwing fileIDs where received: ");
-        assertEquals(0, limitedFileIDsList.get(0).getLastModificationTime().compare(oldestTimestamp), "Different " +
+        Assertions.assertEquals(0, limitedFileIDsList.get(0).getLastModificationTime().compare(oldestTimestamp), "Different " +
                 "timestamps in the set of oldest file ids." + limitedFileIDsList);
 
         addStep("Request file ids with MaxTimeStamp set to the timestamp of the oldest file id - 10 ms",
                 "No file ids are returned.");
         GregorianCalendar olderThanOldestTimestamp = oldestTimestamp.toGregorianCalendar();
-        olderThanOldestTimestamp.add(MILLISECOND, -10);
+        olderThanOldestTimestamp.add(Calendar.MILLISECOND, -10);
         query = new ContributorQuery(getPillarID(), null, olderThanOldestTimestamp.getTime(), null);
         limitedFileIDsList = pillarFileManager.getFileIDs(query);
-        assertEmpty(limitedFileIDsList, "Non-empty list returned with olderThanOldestTimestamp(" +
-                getXmlGregorianCalendar(olderThanOldestTimestamp) + ") query");
+        Assert.assertEmpty(limitedFileIDsList, "Non-empty list returned with olderThanOldestTimestamp(" +
+                CalendarUtils.getXmlGregorianCalendar(olderThanOldestTimestamp) + ") query");
     }
 }

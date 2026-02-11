@@ -22,22 +22,16 @@
 
 package org.bitrepository.pillar.integration.func.getstatus;
 
-import org.bitrepository.bitrepositorymessages.AlarmMessage;
-import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetStatusRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositorymessages.*;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.bitrepository.pillar.messagefactories.GetStatusMessageFactory;
 import org.bitrepository.settings.referencesettings.AlarmLevel;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-
-import static org.bitrepository.bitrepositoryelements.ResponseCode.OPERATION_COMPLETED;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class GetStatusRequestIT extends PillarFunctionTest {
     protected GetStatusMessageFactory msgFactory;
@@ -63,10 +57,13 @@ public class GetStatusRequestIT extends PillarFunctionTest {
 
         addStep("Receive and validate the final response", "Should be sent by the pillar.");
         GetStatusFinalResponse finalResponse = clientReceiver.waitForMessage(GetStatusFinalResponse.class);
-        assertNotNull(finalResponse);
-        assertEquals(OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
-        assertEquals(request.getCorrelationID(), finalResponse.getCorrelationID());
-        assertEquals(getPillarID(), finalResponse.getFrom());
+        Assertions.assertNotNull(finalResponse);
+        Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(request.getCorrelationID(), finalResponse.getCorrelationID());
+        Assertions.assertNotNull(finalResponse);
+        Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(request.getCorrelationID(), finalResponse.getCorrelationID());
+        Assertions.assertEquals(getPillarID(), finalResponse.getFrom());
     }
 
     @Test

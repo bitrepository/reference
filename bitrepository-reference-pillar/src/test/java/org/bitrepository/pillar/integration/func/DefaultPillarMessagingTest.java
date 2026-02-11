@@ -22,15 +22,13 @@
 
 package org.bitrepository.pillar.integration.func;
 
+import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.pillar.PillarTestGroups;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-
-import static org.bitrepository.bitrepositoryelements.ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 
 /**
  * Contains the tests for exploringa pillars handling of general messaging. The concrete class needs to
@@ -51,7 +49,7 @@ public abstract class DefaultPillarMessagingTest extends PillarFunctionTest {
         messageBus.sendMessage(request);
 
         MessageResponse receivedResponse = receiveResponse();
-        assertEquals(REQUEST_NOT_UNDERSTOOD_FAILURE, receivedResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE, receivedResponse.getResponseInfo().getResponseCode());
     }
 
     @Test

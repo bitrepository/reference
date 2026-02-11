@@ -22,12 +22,9 @@
 package org.bitrepository.alarm;
 
 import org.jaccept.structure.ExtendedTestCase;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class AlarmExceptionTest extends ExtendedTestCase {
 
@@ -39,17 +36,17 @@ public class AlarmExceptionTest extends ExtendedTestCase {
         try {
             throw new AlarmException(alarmError);
         } catch (AlarmException e) {
-            assertEquals(alarmError, e.getMessage());
-            assertNull(e.getCause());
+            Assertions.assertEquals(alarmError, e.getMessage());
+            Assertions.assertNull(e.getCause());
         }
 
         String otherError = "This is the message of the included exception";
         try {
             throw new AlarmException(alarmError, new Exception(otherError));
         } catch (AlarmException e) {
-            assertEquals(alarmError, e.getMessage());
-            assertNotNull(e.getCause());
-            assertEquals(otherError, e.getCause().getMessage());
+            Assertions.assertEquals(alarmError, e.getMessage());
+            Assertions.assertNotNull(e.getCause());
+            Assertions.assertEquals(otherError, e.getCause().getMessage());
         }
     }
 
