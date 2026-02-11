@@ -21,18 +21,16 @@
  */
 package org.bitrepository.pillar.integration.func.getfile;
 
+import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-
-import static org.bitrepository.bitrepositoryelements.ResponseCode.FILE_NOT_FOUND_FAILURE;
-import static org.bitrepository.bitrepositoryelements.ResponseCode.IDENTIFICATION_POSITIVE;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
     protected GetFileMessageFactory msgFactory;
@@ -65,7 +63,7 @@ public class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
         assertEquals(defaultFileId, receivedIdentifyResponse.getFileID(), "Received unexpected 'FileID' in response.");
         assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID(), "Received unexpected 'PillarID' in " +
                 "response.");
-        assertEquals(IDENTIFICATION_POSITIVE, receivedIdentifyResponse.getResponseInfo().getResponseCode(), "Received" +
+        assertEquals(ResponseCode.IDENTIFICATION_POSITIVE, receivedIdentifyResponse.getResponseInfo().getResponseCode(), "Received" +
                 " unexpected 'ResponseCode' in response.");
         assertEquals(identifyRequest.getReplyTo(), receivedIdentifyResponse.getDestination(), "Received unexpected " +
                 "'ReplyTo' in response.");
@@ -88,6 +86,6 @@ public class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
                 "The pillar should make a response.");
         IdentifyPillarsForGetFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetFileResponse.class);
-        assertEquals(FILE_NOT_FOUND_FAILURE, receivedIdentifyResponse.getResponseInfo().getResponseCode());
+        assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE, receivedIdentifyResponse.getResponseInfo().getResponseCode());
     }
 }

@@ -28,20 +28,12 @@ import org.bitrepository.pillar.DefaultFixturePillarTest;
 import org.bitrepository.pillar.store.checksumcache.MemoryCacheMock;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumStore;
 import org.bitrepository.service.AlarmDispatcher;
+import org.bitrepository.settings.referencesettings.ChecksumPillarFileDownload;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;
-
-import static java.lang.Long.MAX_VALUE;
-import static org.bitrepository.settings.referencesettings.ChecksumPillarFileDownload.ALWAYS_DOWNLOAD;
-import static org.bitrepository.settings.referencesettings.ChecksumPillarFileDownload.DOWNLOAD_WHEN_MISSING_FROM_MESSAGE;
-import static org.bitrepository.settings.referencesettings.ChecksumPillarFileDownload.NEVER_DOWNLOAD;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 
 public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
@@ -72,7 +64,7 @@ public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
     public void testPillarModelBasicFunctionality() {
         addDescription("Test the basic functions of the full reference pillar model.");
         addStep("Check the pillar id in the pillar model", "Identical to the one from the test.");
-        assertEquals(getPillarID(), pillarModel.getPillarID());
+        Assertions.assertEquals(getPillarID(), pillarModel.getPillarID());
 
         addStep("Ask whether it can handle a file of size 0",
                 "Should not throw an exception");
@@ -80,22 +72,22 @@ public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
 
         addStep("Ask whether it can handle a file of maximum size",
                 "Should not be a problem for the checksum pillar.");
-        pillarModel.verifyEnoughFreeSpaceLeftForFile(MAX_VALUE, collectionID);
+        pillarModel.verifyEnoughFreeSpaceLeftForFile(Long.MAX_VALUE, collectionID);
 
         addStep("Check the ChecksumPillarSpec",
                 "Must be the default checksum spec from settings");
-        assertEquals(defaultCsType, pillarModel.getChecksumPillarSpec());
+        Assertions.assertEquals(defaultCsType, pillarModel.getChecksumPillarSpec());
 
         addStep("Checkum whether the checksum pillar should download",
                 "It should say as it is in settings, or return default");
         settingsForCUT.getReferenceSettings().getPillarSettings().setChecksumPillarFileDownload(
-                ALWAYS_DOWNLOAD);
-        assertEquals(ALWAYS_DOWNLOAD, pillarModel.getChecksumPillarFileDownload());
+                ChecksumPillarFileDownload.ALWAYS_DOWNLOAD);
+        Assertions.assertEquals(ChecksumPillarFileDownload.ALWAYS_DOWNLOAD, pillarModel.getChecksumPillarFileDownload());
         settingsForCUT.getReferenceSettings().getPillarSettings().setChecksumPillarFileDownload(
-                NEVER_DOWNLOAD);
-        assertEquals(NEVER_DOWNLOAD, pillarModel.getChecksumPillarFileDownload());
+                ChecksumPillarFileDownload.NEVER_DOWNLOAD);
+        Assertions.assertEquals(ChecksumPillarFileDownload.NEVER_DOWNLOAD, pillarModel.getChecksumPillarFileDownload());
         settingsForCUT.getReferenceSettings().getPillarSettings().setChecksumPillarFileDownload(null);
-        assertEquals(DOWNLOAD_WHEN_MISSING_FROM_MESSAGE, pillarModel.getChecksumPillarFileDownload());
+        Assertions.assertEquals(ChecksumPillarFileDownload.DOWNLOAD_WHEN_MISSING_FROM_MESSAGE, pillarModel.getChecksumPillarFileDownload());
 
     }
 
@@ -109,10 +101,10 @@ public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
 
         addStep("Check whether file exists and retrieve it.",
                 "Should have the file ID, but throw an exception when asked for the actual file.");
-        assertTrue(pillarModel.hasFileID(defaultFileId, collectionID));
+        Assertions.assertTrue(pillarModel.hasFileID(defaultFileId, collectionID));
         try {
             pillarModel.getFileInfoForActualFile(defaultFileId, collectionID);
-            fail("Must throw an exception here!");
+            Assertions.fail("Must throw an exception here!");
         } catch (Exception e) {
             // expected
         }
@@ -120,47 +112,47 @@ public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
         addStep("Check whether file exists.", "Should not exist.");
         try {
             pillarModel.verifyFileExists(defaultFileId, collectionID);
-            fail("Must throw an exception here");
+            Assertions.fail("Must throw an exception here");
         } catch (Exception e) {
             // expected
         }
 
         addStep("Ask for the checksum data for the file with different checksum specs",
                 "Should fail, unless asked for the default checksum spec.");
-        assertNotNull(pillarModel.getChecksumDataForFile(defaultFileId, collectionID, defaultCsType));
+        Assertions.assertNotNull(pillarModel.getChecksumDataForFile(defaultFileId, collectionID, defaultCsType));
         try {
             pillarModel.getChecksumDataForFile(defaultFileId, collectionID, nonDefaultCsType);
-            fail("Must throw an exception here");
+            Assertions.fail("Must throw an exception here");
         } catch (Exception e) {
             // expected
         }
 
         addStep("Ask for the checksum entry for the file with different checksum specs",
                 "Should fail, unless asked for the default checksum spec.");
-        assertNotNull(pillarModel.getChecksumEntryForFile(defaultFileId, collectionID, defaultCsType));
+        Assertions.assertNotNull(pillarModel.getChecksumEntryForFile(defaultFileId, collectionID, defaultCsType));
         try {
             pillarModel.getChecksumEntryForFile(defaultFileId, collectionID, nonDefaultCsType);
-            fail("Must throw an exception here");
+            Assertions.fail("Must throw an exception here");
         } catch (Exception e) {
             // expected
         }
 
         addStep("Ask for the checksum for the file with different checksum specs",
                 "Should fail, unless asked for the default checksum spec.");
-        assertNotNull(pillarModel.getChecksumForFile(defaultFileId, collectionID, defaultCsType));
+        Assertions.assertNotNull(pillarModel.getChecksumForFile(defaultFileId, collectionID, defaultCsType));
         try {
             pillarModel.getChecksumForFile(defaultFileId, collectionID, nonDefaultCsType);
-            fail("Must throw an exception here");
+            Assertions.fail("Must throw an exception here");
         } catch (Exception e) {
             // expected
         }
 
         addStep("Check extraction of checksum result set",
                 "Should deliver non-null object when called with default checksum spec, otherwise throw exception.");
-        assertNotNull(pillarModel.getChecksumResultSet(null, null, null, collectionID, defaultCsType));
+        Assertions.assertNotNull(pillarModel.getChecksumResultSet(null, null, null, collectionID, defaultCsType));
         try {
             pillarModel.getChecksumResultSet(null, null, null, collectionID, nonDefaultCsType);
-            fail("Must throw an exception here.");
+            Assertions.fail("Must throw an exception here.");
         } catch (Exception e) {
             // exptected
         }
@@ -168,7 +160,7 @@ public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
         addStep("Check retrieval of non-default checksum", "");
         try {
             pillarModel.getNonDefaultChecksum(defaultFileId, collectionID, defaultCsType);
-            fail("Must throw an exception here");
+            Assertions.fail("Must throw an exception here");
         } catch (Exception e) {
             // expected
         }
@@ -176,7 +168,7 @@ public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
         addStep("Check retrieval of non-default checksum result set", "");
         try {
             pillarModel.getNonDefaultChecksumResultSet(null, collectionID, defaultCsType);
-            fail("Must throw an exception here");
+            Assertions.fail("Must throw an exception here");
         } catch (Exception e) {
             // expected
         }
@@ -186,7 +178,7 @@ public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
         pillarModel.getSingleChecksumResultSet(defaultFileId, collectionID, null, null, defaultCsType);
         try {
             pillarModel.getSingleChecksumResultSet(defaultFileId, collectionID, null, null, nonDefaultCsType);
-            fail("Must throw an exception here");
+            Assertions.fail("Must throw an exception here");
         } catch (Exception e) {
             // expected
         }
@@ -201,10 +193,10 @@ public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
 
         addStep("Check whether file exists and try to retrieve it.",
                 "Should say no, and throw exception when attempted to be retrieved.");
-        assertFalse(pillarModel.hasFileID(defaultFileId, collectionID));
+        Assertions.assertFalse(pillarModel.hasFileID(defaultFileId, collectionID));
         try {
             pillarModel.getFileInfoForActualFile(defaultFileId, collectionID);
-            fail("Must throw an exception, when asked for a file it does not have.");
+            Assertions.fail("Must throw an exception, when asked for a file it does not have.");
         } catch (Exception e) {
             // expected
         }
@@ -212,7 +204,7 @@ public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
         addStep("Verify that anexceptions are thrown when verifying file existance.", "Should not exist.");
         try {
             pillarModel.verifyFileExists(defaultFileId, collectionID);
-            fail("Must throw an exception here!");
+            Assertions.fail("Must throw an exception here!");
         } catch (Exception e) {
             // expected
         }

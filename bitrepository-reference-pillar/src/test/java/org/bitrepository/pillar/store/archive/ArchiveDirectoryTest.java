@@ -22,6 +22,7 @@ package org.bitrepository.pillar.store.archive;
  */
 
 import org.bitrepository.common.utils.FileUtils;
+import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.store.filearchive.ArchiveDirectory;
 import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.AfterEach;
@@ -33,19 +34,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import static java.util.Collections.EMPTY_LIST;
-import static java.util.Collections.singletonList;
-import static java.util.List.of;
-import static org.bitrepository.common.utils.TestFileHelper.getAllFilesFromSubDirs;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 class ArchiveDirectoryTest extends ExtendedTestCase {
     private static final String DIR_NAME = "archive-directory";
@@ -74,14 +66,14 @@ class ArchiveDirectoryTest extends ExtendedTestCase {
         createExistingFile();
 
         addStep("Validate the existence of the file", "Should exist and be retrievable.");
-        assertTrue(directory.hasFile(FILE_ID));
-        assertNotNull(directory.retrieveFile(FILE_ID));
-        assertEquals(singletonList(FILE_ID), directory.getFileIds());
+        Assertions.assertTrue(directory.hasFile(FILE_ID));
+        Assertions.assertNotNull(directory.retrieveFile(FILE_ID));
+        Assertions.assertEquals(Collections.singletonList(FILE_ID), directory.getFileIds());
 
         addStep("Delete the file.", "Should not be extractable.");
         directory.removeFileFromArchive(FILE_ID);
-        assertFalse(directory.hasFile(FILE_ID));
-        assertNull(directory.retrieveFile(FILE_ID));
+        Assertions.assertFalse(directory.hasFile(FILE_ID));
+        Assertions.assertNull(directory.retrieveFile(FILE_ID));
     }
 
     @Test
@@ -94,14 +86,14 @@ class ArchiveDirectoryTest extends ExtendedTestCase {
         ArchiveDirectory directory = new ArchiveDirectory(DIR_NAME);
 
         addStep("Validate the existence of the file", "Should exist and be retrievable.");
-        assertFalse(directory.hasFile(FILE_ID));
-        assertNull(directory.retrieveFile(FILE_ID));
-        assertEquals(of(), directory.getFileIds());
+        Assertions.assertFalse(directory.hasFile(FILE_ID));
+        Assertions.assertNull(directory.retrieveFile(FILE_ID));
+        Assertions.assertEquals(List.of(), directory.getFileIds());
 
         addStep("Delete the file.", "exception since the file does not exist.");
         try {
             directory.removeFileFromArchive(FILE_ID);
-            fail("Should not be possible to remove a non-existing file.");
+            Assertions.fail("Should not be possible to remove a non-existing file.");
         } catch (IllegalStateException e) {
             // exptected
         }
@@ -118,32 +110,32 @@ class ArchiveDirectoryTest extends ExtendedTestCase {
         addStep("Retrieve tmp file", "Exception since files does not exist.");
         try {
             directory.getFileInTempDir(FILE_ID);
-            fail("Should throw exception since the file does not exist.");
+            Assertions.fail("Should throw exception since the file does not exist.");
         } catch (IllegalStateException e) {
             // exptected
         }
 
         addStep("Request a new file for the tmp dir", "Should be received and creatable.");
         File newFile = directory.getNewFileInTempDir(FILE_ID);
-        assertTrue(newFile.createNewFile());
+        Assertions.assertTrue(newFile.createNewFile());
 
         addStep("Retrieve tmp file", "Should be the newly created file.");
         File tmpFile = directory.getFileInTempDir(FILE_ID);
-        assertNotNull(tmpFile);
-        assertEquals(newFile.getAbsolutePath(), tmpFile.getAbsolutePath());
+        Assertions.assertNotNull(tmpFile);
+        Assertions.assertEquals(newFile.getAbsolutePath(), tmpFile.getAbsolutePath());
 
         addStep("Request another new file with the same name", "Should throw exception, since it already exists.");
         try {
             directory.getNewFileInTempDir(FILE_ID);
-            fail("Should throw exception, since the file already exists.");
+            Assertions.fail("Should throw exception, since the file already exists.");
         } catch (IllegalStateException e) {
             // expected
         }
 
         addStep("Move the file from tmp to archive", "Should exist in archive but not in tmp.");
         directory.moveFromTmpToArchive(FILE_ID);
-        assertTrue(directory.hasFile(FILE_ID));
-        assertFalse(directory.hasFileInTempDir(FILE_ID));
+        Assertions.assertTrue(directory.hasFile(FILE_ID));
+        Assertions.assertFalse(directory.hasFileInTempDir(FILE_ID));
     }
 
     @Test
@@ -198,7 +190,7 @@ class ArchiveDirectoryTest extends ExtendedTestCase {
         addStep("Remove nonexisting file from archive", "Exception since it does not exist");
         try {
             directory.removeFileFromArchive(FILE_ID);
-            fail("Should throw exception since the file does not exist.");
+            Assertions.fail("Should throw exception since the file does not exist.");
         } catch (IllegalStateException e) {
             // exptected
         }
@@ -206,7 +198,7 @@ class ArchiveDirectoryTest extends ExtendedTestCase {
         addStep("Remove nonexisting file from tmp", "Exception since it does not exist");
         try {
             directory.removeFileFromTmp(FILE_ID);
-            fail("Should throw exception since the file does not exist.");
+            Assertions.fail("Should throw exception since the file does not exist.");
         } catch (IllegalStateException e) {
             // exptected
         }
@@ -214,15 +206,15 @@ class ArchiveDirectoryTest extends ExtendedTestCase {
         addStep("Create file in both tmp, archive and retain directories.", "");
         createExistingFile();
         File tmpFile = directory.getNewFileInTempDir(FILE_ID);
-        assertTrue(tmpFile.createNewFile());
+        Assertions.assertTrue(tmpFile.createNewFile());
         File retainFile = new File(retainDir, FILE_ID);
-        assertTrue(retainFile.createNewFile());
-        assertEquals(1, Objects.requireNonNull(retainDir.list()).length);
+        Assertions.assertTrue(retainFile.createNewFile());
+        Assertions.assertEquals(1, Objects.requireNonNull(retainDir.list()).length);
 
         addStep("Remove the file from archive and tmp", "all 3 files in retain dir.");
         directory.removeFileFromArchive(FILE_ID);
         directory.removeFileFromTmp(FILE_ID);
-        assertEquals(3, Objects.requireNonNull(retainDir.list()).length);
+        Assertions.assertEquals(3, Objects.requireNonNull(retainDir.list()).length);
     }
 
     @Test
@@ -236,14 +228,14 @@ class ArchiveDirectoryTest extends ExtendedTestCase {
         createExistingFolderFile();
 
         addStep("Validate the existence of the file", "Should exist and be retrievable.");
-        assertTrue(directory.hasFile(FOLDER_FILE_ID));
-        assertNotNull(directory.retrieveFile(FOLDER_FILE_ID));
-        assertEquals(singletonList(FOLDER_FILE_ID), directory.getFileIds());
+        Assertions.assertTrue(directory.hasFile(FOLDER_FILE_ID));
+        Assertions.assertNotNull(directory.retrieveFile(FOLDER_FILE_ID));
+        Assertions.assertEquals(Collections.singletonList(FOLDER_FILE_ID), directory.getFileIds());
 
         addStep("Delete the file.", "Should not be retrievable.");
         directory.removeFileFromArchive(FOLDER_FILE_ID);
-        assertFalse(directory.hasFile(FOLDER_FILE_ID));
-        assertNull(directory.retrieveFile(FOLDER_FILE_ID));
+        Assertions.assertFalse(directory.hasFile(FOLDER_FILE_ID));
+        Assertions.assertNull(directory.retrieveFile(FOLDER_FILE_ID));
     }
 
     @Test
@@ -256,14 +248,14 @@ class ArchiveDirectoryTest extends ExtendedTestCase {
         ArchiveDirectory directory = new ArchiveDirectory(DIR_NAME);
 
         addStep("Validate the existence of the file", "Should neither exist nor be retrievable.");
-        assertFalse(directory.hasFile(FOLDER_FILE_ID));
-        assertNull(directory.retrieveFile(FOLDER_FILE_ID));
-        assertEquals(EMPTY_LIST, directory.getFileIds());
+        Assertions.assertFalse(directory.hasFile(FOLDER_FILE_ID));
+        Assertions.assertNull(directory.retrieveFile(FOLDER_FILE_ID));
+        Assertions.assertEquals(Collections.EMPTY_LIST, directory.getFileIds());
 
         addStep("Delete the file.", "exception since the file does not exist.");
         try {
             directory.removeFileFromArchive(FOLDER_FILE_ID);
-            fail("Should not be possible to remove a non-existing file.");
+            Assertions.fail("Should not be possible to remove a non-existing file.");
         } catch (IllegalStateException e) {
             // exptected
         }
@@ -280,32 +272,32 @@ class ArchiveDirectoryTest extends ExtendedTestCase {
         addStep("Retrieve tmp file", "Exception since files does not exist.");
         try {
             directory.getFileInTempDir(FOLDER_FILE_ID);
-            fail("Should throw exception since the file does not exist.");
+            Assertions.fail("Should throw exception since the file does not exist.");
         } catch (IllegalStateException e) {
             // exptected
         }
 
         addStep("Request a new file for the tmp dir", "Should be received and creatable.");
         File newFile = directory.getNewFileInTempDir(FOLDER_FILE_ID);
-        assertTrue(newFile.createNewFile());
+        Assertions.assertTrue(newFile.createNewFile());
 
         addStep("Retrieve tmp file", "Should be the newly created file.");
         File tmpFile = directory.getFileInTempDir(FOLDER_FILE_ID);
-        assertNotNull(tmpFile);
-        assertEquals(newFile.getAbsolutePath(), tmpFile.getAbsolutePath());
+        Assertions.assertNotNull(tmpFile);
+        Assertions.assertEquals(newFile.getAbsolutePath(), tmpFile.getAbsolutePath());
 
         addStep("Request another new file with the same name", "Should throw exception, since it already exists.");
         try {
             directory.getNewFileInTempDir(FOLDER_FILE_ID);
-            fail("Should throw exception, since the file already exists.");
+            Assertions.fail("Should throw exception, since the file already exists.");
         } catch (IllegalStateException e) {
             // expected
         }
 
         addStep("Move the file from tmp to archive", "Should exist in archive but not in tmp.");
         directory.moveFromTmpToArchive(FOLDER_FILE_ID);
-        assertTrue(directory.hasFile(FOLDER_FILE_ID));
-        assertFalse(directory.hasFileInTempDir(FOLDER_FILE_ID));
+        Assertions.assertTrue(directory.hasFile(FOLDER_FILE_ID));
+        Assertions.assertFalse(directory.hasFileInTempDir(FOLDER_FILE_ID));
     }
 
     @Test
@@ -362,7 +354,7 @@ class ArchiveDirectoryTest extends ExtendedTestCase {
         addStep("Remove nonexisting file from archive", "Exception since it does not exist");
         try {
             directory.removeFileFromArchive(FOLDER_FILE_ID);
-            fail("Should throw exception since the file does not exist.");
+            Assertions.fail("Should throw exception since the file does not exist.");
         } catch (IllegalStateException e) {
             // exptected
         }
@@ -370,7 +362,7 @@ class ArchiveDirectoryTest extends ExtendedTestCase {
         addStep("Remove nonexisting file from tmp", "Exception since it does not exist");
         try {
             directory.removeFileFromTmp(FOLDER_FILE_ID);
-            fail("Should throw exception since the file does not exist.");
+            Assertions.fail("Should throw exception since the file does not exist.");
         } catch (IllegalStateException e) {
             // exptected
         }
@@ -378,19 +370,19 @@ class ArchiveDirectoryTest extends ExtendedTestCase {
         addStep("Create file in both tmp, archive and retain directories.", "");
         createExistingFolderFile();
         File tmpFile = directory.getNewFileInTempDir(FOLDER_FILE_ID);
-        assertTrue(tmpFile.createNewFile());
+        Assertions.assertTrue(tmpFile.createNewFile());
         File retainFile = new File(retainDir, FOLDER_FILE_ID);
         if (!retainFile.getParentFile().isDirectory()) {
-            assertTrue(retainFile.getParentFile().mkdirs());
+            Assertions.assertTrue(retainFile.getParentFile().mkdirs());
         }
-        assertTrue(retainFile.createNewFile());
-        assertEquals(1, Objects.requireNonNull(retainDir.list()).length);
+        Assertions.assertTrue(retainFile.createNewFile());
+        Assertions.assertEquals(1, Objects.requireNonNull(retainDir.list()).length);
 
         addStep("Remove the file from archive and tmp", "all 3 files in retain dir.");
         directory.removeFileFromArchive(FOLDER_FILE_ID);
         directory.removeFileFromTmp(FOLDER_FILE_ID);
-        List<File> retainFiles = getAllFilesFromSubDirs(retainDir);
-        assertEquals(3, retainFiles.size());
+        List<File> retainFiles = TestFileHelper.getAllFilesFromSubDirs(retainDir);
+        Assertions.assertEquals(3, retainFiles.size());
     }
 
     private void createExistingFile() throws Exception {

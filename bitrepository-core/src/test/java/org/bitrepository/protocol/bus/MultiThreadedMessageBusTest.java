@@ -29,6 +29,7 @@ import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -38,10 +39,6 @@ import org.junit.jupiter.api.Test;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.bitrepository.protocol.message.ExampleMessageFactory.createMessage;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Class for testing the interface with the message bus.
@@ -73,7 +70,7 @@ public class MultiThreadedMessageBusTest extends IntegrationTest {
     public final void manyTheadsBeforeFinish() throws Exception {
         addDescription("Tests whether it is possible to start the handling of many threads simultaneously.");
         IdentifyPillarsForGetFileRequest content =
-                createMessage(IdentifyPillarsForGetFileRequest.class);
+                ExampleMessageFactory.createMessage(IdentifyPillarsForGetFileRequest.class);
         listener = new MultiMessageListener();
         messageBus.addListener("BusActivityTest", listener);
         content.setDestination("BusActivityTest");
@@ -82,8 +79,8 @@ public class MultiThreadedMessageBusTest extends IntegrationTest {
         for (int i = 0; i < threadCount; i++) {
             messageBus.sendMessage(content);
         }
-        assertEquals(FINISH, finishQueue.poll(TIME_FOR_WAIT, MILLISECONDS));
-        assertEquals(threadCount, count);
+        Assertions.assertEquals(FINISH, finishQueue.poll(TIME_FOR_WAIT, TimeUnit.MILLISECONDS));
+        Assertions.assertEquals(threadCount, count);
     }
 
     @AfterEach

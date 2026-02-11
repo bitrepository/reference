@@ -22,18 +22,22 @@
 package org.bitrepository.protocol.http;
 
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.settings.referencesettings.FileExchangeSettings;
+import org.bitrepository.settings.referencesettings.ProtocolType;
 import org.jaccept.structure.ExtendedTestCase;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import static java.math.BigInteger.valueOf;
-import static org.bitrepository.common.settings.TestSettingsProvider.reloadSettings;
-import static org.bitrepository.settings.referencesettings.ProtocolType.HTTP;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+//import static java.math.BigInteger.valueOf;
+//import static org.bitrepository.common.settings.TestSettingsProvider.reloadSettings;
+//import static org.bitrepository.settings.referencesettings.ProtocolType.HTTP;
+//import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 public class HttpFileExchangeTest extends ExtendedTestCase {
@@ -41,11 +45,11 @@ public class HttpFileExchangeTest extends ExtendedTestCase {
     @Tag("regressiontest")
     public void checkUrlEncodingOfFilenamesTest() throws MalformedURLException {
         addDescription("Tests that the filename is url-encoded correctly for a configured webdav server");
-        Settings mySettings = reloadSettings("uploadTest");
+        Settings mySettings = TestSettingsProvider.reloadSettings("uploadTest");
         FileExchangeSettings fileExchangeSettings = mySettings.getReferenceSettings().getFileExchangeSettings();
-        fileExchangeSettings.setProtocolType(HTTP);
+        fileExchangeSettings.setProtocolType(ProtocolType.HTTP);
         fileExchangeSettings.setServerName("testserver.org");
-        fileExchangeSettings.setPort(valueOf(8000));
+        fileExchangeSettings.setPort(BigInteger.valueOf(8000));
         fileExchangeSettings.setPath("dav");
         HttpFileExchange fe = new HttpFileExchange(fileExchangeSettings);
         String serverPathPrefix = fileExchangeSettings.getPath() + "/";
@@ -55,12 +59,12 @@ public class HttpFileExchangeTest extends ExtendedTestCase {
         String plainFilename = "testfile";
         URL plainFilenameUrl = fe.getURL(plainFilename);
 
-        assertEquals(serverPathPrefix + plainFilename, plainFilenameUrl.getFile());
+        Assertions.assertEquals(serverPathPrefix + plainFilename, plainFilenameUrl.getFile());
 
         addStep("Check that + is encoded as expected", "Filenames with a + is correctly encoded");
         String plusFilename = "test+file";
         URL plusFilenameUrl = fe.getURL(plusFilename);
         String expectedEncodedPlusFilename = "test%2Bfile";
-        assertEquals(serverPathPrefix + expectedEncodedPlusFilename, plusFilenameUrl.getFile());
+        Assertions.assertEquals(serverPathPrefix + expectedEncodedPlusFilename, plusFilenameUrl.getFile());
     }
 }
