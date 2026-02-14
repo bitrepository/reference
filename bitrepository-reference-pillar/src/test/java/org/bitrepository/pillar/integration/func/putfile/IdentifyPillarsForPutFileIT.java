@@ -64,22 +64,26 @@ public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest
 
         IdentifyPillarsForPutFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForPutFileResponse.class);
-        Assertions.assertEquals(identifyRequest.getCollectionID(), receivedIdentifyResponse.getCollectionID(), "Received " +
-                "unexpected CollectionID");
-        Assertions.assertEquals(identifyRequest.getCorrelationID(), receivedIdentifyResponse.getCorrelationID(), "Received " +
-                "unexpected CorrelationID");
-        Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getFrom(), "Received unexpected PillarID");
-        Assertions.assertEquals(identifyRequest.getFrom(), receivedIdentifyResponse.getTo(), "Received unexpected 'To' element.");
+        Assertions.assertEquals(identifyRequest.getCollectionID(), receivedIdentifyResponse.getCollectionID(),
+                "Received unexpected CollectionID");
+        Assertions.assertEquals(identifyRequest.getCorrelationID(), receivedIdentifyResponse.getCorrelationID(),
+                "Received unexpected CorrelationID");
+        Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getFrom(),
+                "Received unexpected PillarID");
+        Assertions.assertEquals(identifyRequest.getFrom(), receivedIdentifyResponse.getTo(),
+                "Received unexpected 'To' element.");
         Assertions.assertNull(receivedIdentifyResponse.getChecksumDataForExistingFile(),
                 "Received unexpected ChecksumDataForExistingFile");
         Assertions.assertNull(receivedIdentifyResponse.getPillarChecksumSpec(),
                 "Received unexpected PillarChecksumSpec");
-        Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID(), "Unexpected 'From' element in the " +
-                "received response:\n" + receivedIdentifyResponse + "\n");
-        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE, receivedIdentifyResponse.getResponseInfo().getResponseCode(), "Received" +
-                " unexpected ResponseCode");
-        Assertions.assertEquals(identifyRequest.getReplyTo(), receivedIdentifyResponse.getDestination(), "Received unexpected " +
-                "ReplyTo");
+        Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID(),
+                "Unexpected 'From' element in the " +
+                        "received response:\n" + receivedIdentifyResponse + "\n");
+        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode(),
+                "Received unexpected ResponseCode");
+        Assertions.assertEquals(identifyRequest.getReplyTo(), receivedIdentifyResponse.getDestination(),
+                "Received unexpected ReplyTo");
     }
 
     @Test
@@ -100,7 +104,8 @@ public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest
         Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getFrom());
         Assertions.assertNull(receivedIdentifyResponse.getChecksumDataForExistingFile());
         Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID());
-        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE, receivedIdentifyResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode());
         Assertions.assertEquals(identifyRequest.getReplyTo(), receivedIdentifyResponse.getDestination());
     }
 

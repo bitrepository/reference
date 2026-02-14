@@ -1,16 +1,15 @@
 package org.bitrepository.common.settings;
 
 import org.jaccept.structure.ExtendedTestCase;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
-
 import java.math.BigInteger;
 import java.time.Duration;
-import org.junit.jupiter.api.Assertions;
 
 public class SettingsTest extends ExtendedTestCase {
 
@@ -38,7 +37,8 @@ public class SettingsTest extends ExtendedTestCase {
         addDescription("Tests conversions and selection by getDurationFromXmlDurationOrMillis()");
 
         addStep("null and some milliseconds", "Duration of millis");
-        Assertions.assertEquals(Duration.ofMillis(54321), Settings.getDurationFromXmlDurationOrMillis(null, BigInteger.valueOf(54321)));
+        Assertions.assertEquals(Duration.ofMillis(54321),
+                Settings.getDurationFromXmlDurationOrMillis(null, BigInteger.valueOf(54321)));
 
         addStep("XML duration and null", "XML duration converted");
         Assertions.assertEquals(Duration.ofMinutes(7), Settings.getDurationFromXmlDurationOrMillis(

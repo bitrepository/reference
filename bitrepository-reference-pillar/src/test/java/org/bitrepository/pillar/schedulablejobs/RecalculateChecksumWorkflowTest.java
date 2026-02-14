@@ -85,6 +85,7 @@ public class RecalculateChecksumWorkflowTest extends DefaultPillarTest {
         workflow.start();
         Date afterWorkflowDate = csCache.getCalculationDate(defaultFileId, collectionID);
 
-        Assertions.assertEquals(afterWorkflowDate.getTime(), beforeWorkflowDate.getTime(), beforeWorkflowDate.getTime() + " == " + afterWorkflowDate.getTime());
+        Assertions.assertEquals(afterWorkflowDate.getTime(), beforeWorkflowDate.getTime(),
+                beforeWorkflowDate.getTime() + " == " + afterWorkflowDate.getTime());
     }
 }

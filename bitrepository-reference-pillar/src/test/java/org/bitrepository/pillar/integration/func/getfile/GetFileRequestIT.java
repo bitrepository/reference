@@ -3,24 +3,14 @@ package org.bitrepository.pillar.integration.func.getfile;
 import org.apache.commons.io.IOUtils;
 import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
-import org.bitrepository.bitrepositorymessages.MessageRequest;
-import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.bitrepositorymessages.*;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,29 +68,38 @@ public class GetFileRequestIT extends PillarFunctionTest {
 
         GetFileFinalResponse finalResponse = (GetFileFinalResponse) receiveResponse();
         Assertions.assertNotNull(finalResponse);
-        Assertions.assertEquals(getRequest.getCorrelationID(), finalResponse.getCorrelationID(), "Received unexpected " +
-                "'CorrelationID' element.");
-        Assertions.assertEquals(getRequest.getCollectionID(), finalResponse.getCollectionID(), "Received unexpected " +
-                "'CollectionID' element.");
-        Assertions.assertEquals(getPillarID(), finalResponse.getFrom(), "Received unexpected 'From' element.");
-        Assertions.assertEquals(getRequest.getFrom(), finalResponse.getTo(), "Received unexpected 'To' element.");
-        Assertions.assertEquals(getRequest.getReplyTo(), finalResponse.getDestination(), "Received unexpected 'Destination' " +
-                "element.");
+        Assertions.assertEquals(getRequest.getCorrelationID(), finalResponse.getCorrelationID(),
+                "Received unexpected " +
+                        "'CorrelationID' element.");
+        Assertions.assertEquals(getRequest.getCollectionID(), finalResponse.getCollectionID(),
+                "Received unexpected " +
+                        "'CollectionID' element.");
+        Assertions.assertEquals(getPillarID(), finalResponse.getFrom(),
+                "Received unexpected 'From' element.");
+        Assertions.assertEquals(getRequest.getFrom(), finalResponse.getTo(),
+                "Received unexpected 'To' element.");
+        Assertions.assertEquals(getRequest.getReplyTo(), finalResponse.getDestination(),
+                "Received unexpected 'Destination' " +
+                        "element.");
         Assertions.assertNull(finalResponse.getFilePart(),
                 "Received unexpected 'FilePart' element.");
-        Assertions.assertEquals(getRequest.getFileID(), finalResponse.getFileID(), "Received unexpected 'To' element.");
-        Assertions.assertEquals(getRequest.getFileAddress(), finalResponse.getFileAddress(), "Received unexpected 'FileAddress' " +
-                "element.");
-        Assertions.assertEquals(getPillarID(), finalResponse.getPillarID(), "Received unexpected 'PillarID' element.");
-        Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode(), "Received unexpected " +
-                "'ResponseCode' element.");
+        Assertions.assertEquals(getRequest.getFileID(), finalResponse.getFileID(),
+                "Received unexpected 'To' element.");
+        Assertions.assertEquals(getRequest.getFileAddress(), finalResponse.getFileAddress(),
+                "Received unexpected 'FileAddress' " +
+                        "element.");
+        Assertions.assertEquals(getPillarID(), finalResponse.getPillarID(),
+                "Received unexpected 'PillarID' element.");
+        Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode(),
+                "Received unexpected 'ResponseCode' element.");
 
         try (InputStream localFileIS = TestFileHelper.getDefaultFile();
              InputStream getFileIS = fe.getFile(testFileURL)) {
             String localFileContent = IOUtils.toString(localFileIS, StandardCharsets.UTF_8);
             String getFileContent = IOUtils.toString(getFileIS, StandardCharsets.UTF_8);
-            Assertions.assertEquals(localFileContent, getFileContent, "Differing content between original file and file from " +
-                    "GetFileRequest");
+            Assertions.assertEquals(localFileContent, getFileContent,
+                    "Differing content between original file and file from " +
+                            "GetFileRequest");
         }
     }
 
@@ -121,7 +120,8 @@ public class GetFileRequestIT extends PillarFunctionTest {
         messageBus.sendMessage(getRequest);
 
         GetFileFinalResponse finalResponse = (GetFileFinalResponse) receiveResponse();
-        Assertions.assertEquals(getRequest.getFilePart(), finalResponse.getFilePart(), "Received unexpected 'FilePart' element.");
+        Assertions.assertEquals(getRequest.getFilePart(), finalResponse.getFilePart(),
+                "Received unexpected 'FilePart' element.");
 
         try (InputStream localFileIS = TestFileHelper.getDefaultFile();
              InputStream getFileIS = fe.getFile(testFileURL)) {
@@ -129,8 +129,8 @@ public class GetFileRequestIT extends PillarFunctionTest {
             localFileIS.skip(offsetAndLength);
             localFileIS.read(localFilePartContent, 0, offsetAndLength);
             String getFileContent = IOUtils.toString(getFileIS, StandardCharsets.UTF_8);
-            Assertions.assertEquals(new String(localFilePartContent, StandardCharsets.UTF_8), getFileContent, "Differing content between original" +
-                    " file and file from GetFileRequest");
+            Assertions.assertEquals(new String(localFilePartContent, StandardCharsets.UTF_8), getFileContent,
+                    "Differing content between original file and file from GetFileRequest");
         }
     }
 
@@ -146,8 +146,8 @@ public class GetFileRequestIT extends PillarFunctionTest {
         messageBus.sendMessage(getRequest);
 
         GetFileFinalResponse finalResponse = (GetFileFinalResponse) receiveResponse();
-        Assertions.assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE, finalResponse.getResponseInfo().getResponseCode(), "Received unexpected " +
-                "'ResponseCode' element.");
+        Assertions.assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE, finalResponse.getResponseInfo().getResponseCode(),
+                "Received unexpected 'ResponseCode' element.");
     }
 
     @Test
@@ -161,7 +161,8 @@ public class GetFileRequestIT extends PillarFunctionTest {
         messageBus.sendMessage(request);
 
         MessageResponse receivedResponse = receiveResponse();
-        Assertions.assertEquals(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE, receivedResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE,
+                receivedResponse.getResponseInfo().getResponseCode());
     }
 
     @Test

@@ -33,7 +33,8 @@ import org.junit.jupiter.api.Test;
 public class Base16UtilsTest extends ExtendedTestCase {
 
     private final String DECODED_CHECKSUM = "ff5aca7ae8c80c9a3aeaf9173e4dfd27";
-    private final byte[] ENCODED_CHECKSUM = new byte[]{-1, 90, -54, 122, -24, -56, 12, -102, 58, -22, -7, 23, 62, 77, -3, 39};
+    private final byte[] ENCODED_CHECKSUM =
+            new byte[]{-1, 90, -54, 122, -24, -56, 12, -102, 58, -22, -7, 23, 62, 77, -3, 39};
 
     @Test
     @Tag("regressiontest")
@@ -42,7 +43,8 @@ public class Base16UtilsTest extends ExtendedTestCase {
         addStep("Encode the checksum and validate", "It should match the precalculated constant.");
         byte[] encodedChecksum = Base16Utils.encodeBase16(DECODED_CHECKSUM);
 
-        Assertions.assertEquals(ENCODED_CHECKSUM.length, encodedChecksum.length, "The size of the encoded checksum differs from the expected.");
+        Assertions.assertEquals(ENCODED_CHECKSUM.length, encodedChecksum.length,
+                "The size of the encoded checksum differs from the expected.");
 
         for (int i = 0; i < encodedChecksum.length; i++) {
             Assertions.assertEquals(ENCODED_CHECKSUM[i], encodedChecksum[i]);
