@@ -53,13 +53,13 @@ public class AuditPackerTest extends ExtendedTestCase {
 
         // Do the actual call to createNewPackage - this will fetch first event from the iterators.
         packer.createNewPackage();
-        Long[] expectedSeqNums = {1L, 1L, 1L};
+        List<Long> expectedSeqNums = List.of(1L, 1L, 1L);
         Assertions.assertEquals(3, packer.getPackedAuditCount());
-        Assertions.assertArrayEquals(expectedSeqNums, packer.getSequenceNumbersReached().values().toArray(new Long[0]));
+        Assertions.assertIterableEquals(expectedSeqNums, packer.getSequenceNumbersReached().values());
 
         // As the iterators have no new audits there should be no newly packed audits on a new call.
         packer.createNewPackage();
         Assertions.assertEquals(0, packer.getPackedAuditCount());
-        Assertions.assertArrayEquals(expectedSeqNums, packer.getSequenceNumbersReached().values().toArray(new Long[0]));
+        Assertions.assertArrayEquals(expectedSeqNums.toArray(), packer.getSequenceNumbersReached().values().toArray());
     }
 }

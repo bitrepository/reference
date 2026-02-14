@@ -28,12 +28,7 @@ import org.junit.jupiter.api.Test;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.Period;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAmount;
 import java.util.Date;
@@ -247,14 +242,22 @@ public class TimeUtilsTest extends ExtendedTestCase {
         Assertions.assertEquals(0, expectedZero.getCount());
         Assertions.assertNotNull(expectedZero.getUnit());
 
-        Assertions.assertEquals(new CountAndTimeUnit(1, TimeUnit.NANOSECONDS), TimeUtils.durationToCountAndTimeUnit(Duration.ofNanos(1)));
-        Assertions.assertEquals(new CountAndTimeUnit(Long.MAX_VALUE, TimeUnit.NANOSECONDS), TimeUtils.durationToCountAndTimeUnit(Duration.ofNanos(Long.MAX_VALUE)));
-        Assertions.assertEquals(new CountAndTimeUnit(Long.MAX_VALUE / 1000 + 1, TimeUnit.MICROSECONDS), TimeUtils.durationToCountAndTimeUnit(Duration.of(Long.MAX_VALUE / 1000 + 1, ChronoUnit.MICROS)));
-        Assertions.assertEquals(new CountAndTimeUnit(Long.MAX_VALUE, TimeUnit.MICROSECONDS), TimeUtils.durationToCountAndTimeUnit(Duration.of(Long.MAX_VALUE, ChronoUnit.MICROS)));
-        Assertions.assertEquals(new CountAndTimeUnit(Long.MAX_VALUE / 1000 + 1, TimeUnit.MILLISECONDS), TimeUtils.durationToCountAndTimeUnit(Duration.ofMillis(Long.MAX_VALUE / 1000 + 1)));
-        Assertions.assertEquals(new CountAndTimeUnit(Long.MAX_VALUE, TimeUnit.MILLISECONDS), TimeUtils.durationToCountAndTimeUnit(Duration.ofMillis(Long.MAX_VALUE)));
-        Assertions.assertEquals(new CountAndTimeUnit(Long.MAX_VALUE / 1000 + 1, TimeUnit.SECONDS), TimeUtils.durationToCountAndTimeUnit(Duration.ofSeconds(Long.MAX_VALUE / 1000 + 1)));
-        Assertions.assertEquals(new CountAndTimeUnit(Long.MAX_VALUE, TimeUnit.SECONDS), TimeUtils.durationToCountAndTimeUnit(Duration.ofSeconds(Long.MAX_VALUE)));
+        Assertions.assertEquals(new CountAndTimeUnit(1, TimeUnit.NANOSECONDS),
+                TimeUtils.durationToCountAndTimeUnit(Duration.ofNanos(1)));
+        Assertions.assertEquals(new CountAndTimeUnit(Long.MAX_VALUE, TimeUnit.NANOSECONDS),
+                TimeUtils.durationToCountAndTimeUnit(Duration.ofNanos(Long.MAX_VALUE)));
+        Assertions.assertEquals(new CountAndTimeUnit(Long.MAX_VALUE / 1000 + 1, TimeUnit.MICROSECONDS),
+                TimeUtils.durationToCountAndTimeUnit(Duration.of(Long.MAX_VALUE / 1000 + 1, ChronoUnit.MICROS)));
+        Assertions.assertEquals(new CountAndTimeUnit(Long.MAX_VALUE, TimeUnit.MICROSECONDS),
+                TimeUtils.durationToCountAndTimeUnit(Duration.of(Long.MAX_VALUE, ChronoUnit.MICROS)));
+        Assertions.assertEquals(new CountAndTimeUnit(Long.MAX_VALUE / 1000 + 1, TimeUnit.MILLISECONDS),
+                TimeUtils.durationToCountAndTimeUnit(Duration.ofMillis(Long.MAX_VALUE / 1000 + 1)));
+        Assertions.assertEquals(new CountAndTimeUnit(Long.MAX_VALUE, TimeUnit.MILLISECONDS),
+                TimeUtils.durationToCountAndTimeUnit(Duration.ofMillis(Long.MAX_VALUE)));
+        Assertions.assertEquals(new CountAndTimeUnit(Long.MAX_VALUE / 1000 + 1, TimeUnit.SECONDS),
+                TimeUtils.durationToCountAndTimeUnit(Duration.ofSeconds(Long.MAX_VALUE / 1000 + 1)));
+        Assertions.assertEquals(new CountAndTimeUnit(Long.MAX_VALUE, TimeUnit.SECONDS),
+                TimeUtils.durationToCountAndTimeUnit(Duration.ofSeconds(Long.MAX_VALUE)));
     }
 
 }

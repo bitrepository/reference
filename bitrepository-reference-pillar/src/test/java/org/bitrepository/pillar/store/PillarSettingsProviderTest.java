@@ -40,7 +40,8 @@ public class PillarSettingsProviderTest {
                 new PillarSettingsProvider(new XMLFileSettingsLoader(PATH_TO_TEST_SETTINGS),
                         null);
         Settings settings = settingsLoader.getSettings();
-        Assertions.assertEquals(settings.getComponentID(), settings.getReferenceSettings().getPillarSettings().getPillarID());
+        Assertions.assertEquals(settings.getComponentID(),
+                settings.getReferenceSettings().getPillarSettings().getPillarID());
 
         String componentID = "testPillarID";
         settingsLoader =

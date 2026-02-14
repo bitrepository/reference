@@ -58,7 +58,7 @@ public class CertificateIDTest extends ExtendedTestCase {
         CertificateID certificateIDFromSignature = new CertificateID(signer.getSID().getIssuer(), signer.getSID().getSerialNumber());
 
         addStep("Assert that the two CertificateID objects are equal", "Assert succeeds");
-        Assertions.assertEquals(certificateIDFromSignature, certificateIDfromCertificate);
+        Assertions.assertEquals(certificateIDfromCertificate, certificateIDFromSignature);
     }
 
     @Test
