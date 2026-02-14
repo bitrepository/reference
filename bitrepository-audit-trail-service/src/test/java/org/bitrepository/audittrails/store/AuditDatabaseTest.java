@@ -42,7 +42,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import java.util.Locale;
 
 public class AuditDatabaseTest extends ExtendedTestCase {
@@ -103,12 +102,12 @@ public class AuditDatabaseTest extends ExtendedTestCase {
         res = getEventsFromIterator(database.getAuditTrailsByIterator(fileID, null, null, null, null, null, null,
                 null, null, null, null));
         Assertions.assertEquals(1, res.size(), res.toString());
-        Assertions.assertEquals(res.get(0).getFileID(), fileID);
+        Assertions.assertEquals(fileID, res.get(0).getFileID());
 
         res = getEventsFromIterator(database.getAuditTrailsByIterator(fileID2, null, null, null, null, null, null,
                 null, null, null, null));
         Assertions.assertEquals(1, res.size(), res.toString());
-        Assertions.assertEquals(res.get(0).getFileID(), fileID2);
+        Assertions.assertEquals(fileID2, res.get(0).getFileID());
 
         addStep("Test the extraction of CollectionID", "Only results when the defined collection is used");
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, collectionID, null, null, null, null, null,

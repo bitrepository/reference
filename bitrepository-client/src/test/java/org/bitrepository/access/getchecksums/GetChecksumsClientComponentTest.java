@@ -41,17 +41,8 @@ package org.bitrepository.access.getchecksums;
 
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.ContributorQuery;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumType;
-import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositoryelements.ResponseInfo;
-import org.bitrepository.bitrepositoryelements.ResultingChecksums;
-import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
-import org.bitrepository.bitrepositorymessages.MessageRequest;
-import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.bitrepositoryelements.*;
+import org.bitrepository.bitrepositorymessages.*;
 import org.bitrepository.client.DefaultClientTest;
 import org.bitrepository.client.TestEventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
@@ -92,9 +83,9 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
     public void verifyGetChecksumsClientFromFactory() throws Exception {
         Assertions.assertInstanceOf(ConversationBasedGetChecksumsClient.class,
                 AccessComponentFactory.getInstance().createGetChecksumsClient(settingsForCUT, securityManager,
-                settingsForTestClient.getComponentID()), "The default GetFileClient from the Access factory should be" +
+                        settingsForTestClient.getComponentID()), "The default GetFileClient from the Access factory should be" +
                         " of the type '" +
-                ConversationBasedGetChecksumsClient.class.getName() + "'.");
+                        ConversationBasedGetChecksumsClient.class.getName() + "'.");
     }
 
     @Test
@@ -127,7 +118,7 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
                 "This should be ignored.");
         IdentifyPillarsForGetChecksumsResponse identifyResponse2 =
                 messageFactory.createIdentifyPillarsForGetChecksumsResponse(
-                receivedIdentifyRequestMessage, PILLAR2_ID, pillar2DestinationId);
+                        receivedIdentifyRequestMessage, PILLAR2_ID, pillar2DestinationId);
         messageBus.sendMessage(identifyResponse2);
         testEventHandler.verifyNoEventsAreReceived();
 
@@ -137,7 +128,7 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
 
         IdentifyPillarsForGetChecksumsResponse identifyResponse =
                 messageFactory.createIdentifyPillarsForGetChecksumsResponse(
-                receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
+                        receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
         messageBus.sendMessage(identifyResponse);
         GetChecksumsRequest receivedGetChecksumsRequest = pillar1Receiver.waitForMessage(GetChecksumsRequest.class);
 
@@ -192,11 +183,11 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
 
         IdentifyPillarsForGetChecksumsResponse identifyResponse1 =
                 messageFactory.createIdentifyPillarsForGetChecksumsResponse(
-                receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
+                        receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
         messageBus.sendMessage(identifyResponse1);
         IdentifyPillarsForGetChecksumsResponse identifyResponse2 =
                 messageFactory.createIdentifyPillarsForGetChecksumsResponse(
-                receivedIdentifyRequestMessage, PILLAR2_ID, pillar2DestinationId);
+                        receivedIdentifyRequestMessage, PILLAR2_ID, pillar2DestinationId);
         messageBus.sendMessage(identifyResponse2);
         GetChecksumsRequest receivedGetChecksumsRequest1 = pillar1Receiver.waitForMessage(GetChecksumsRequest.class);
 
@@ -313,22 +304,22 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
 
         GetChecksumsRequest receivedGetChecksumsRequest1 = pillar1Receiver.waitForMessage(GetChecksumsRequest.class);
         Assertions.assertEquals(CalendarUtils.getXmlGregorianCalendar(query1.getMinTimestamp()),
-                receivedGetChecksumsRequest1.getMinTimestamp(), "Unexpected MinTimestamp in GetChecksumsRequest to " +
-                        "pillar1.");
+                receivedGetChecksumsRequest1.getMinTimestamp(),
+                "Unexpected MinTimestamp in GetChecksumsRequest to pillar1.");
         Assertions.assertEquals(CalendarUtils.getXmlGregorianCalendar(query1.getMaxTimestamp()),
-                receivedGetChecksumsRequest1.getMaxTimestamp(), "Unexpected MaxTimestamp in GetChecksumsRequest to " +
-                        "pillar1.");
+                receivedGetChecksumsRequest1.getMaxTimestamp(),
+                "Unexpected MaxTimestamp in GetChecksumsRequest to pillar1.");
         Assertions.assertEquals(BigInteger.valueOf(query1.getMaxNumberOfResults()),
                 receivedGetChecksumsRequest1.getMaxNumberOfResults(),
                 "Unexpected MaxNumberOfResults in GetChecksumsRequest to pillar1.");
 
         GetChecksumsRequest receivedGetChecksumsRequest2 = pillar2Receiver.waitForMessage(GetChecksumsRequest.class);
         Assertions.assertEquals(CalendarUtils.getXmlGregorianCalendar((query2.getMinTimestamp())),
-                receivedGetChecksumsRequest2.getMinTimestamp(), "Unexpected MinTimestamp in GetChecksumsRequest to " +
-                        "pillar2.");
+                receivedGetChecksumsRequest2.getMinTimestamp(),
+                "Unexpected MinTimestamp in GetChecksumsRequest to pillar2.");
         Assertions.assertEquals(CalendarUtils.getXmlGregorianCalendar(query2.getMaxTimestamp()),
-                receivedGetChecksumsRequest2.getMaxTimestamp(), "Unexpected MaxTimestamp in GetChecksumsRequest to " +
-                        "pillar2.");
+                receivedGetChecksumsRequest2.getMaxTimestamp(),
+                "Unexpected MaxTimestamp in GetChecksumsRequest to pillar2.");
         Assertions.assertEquals(BigInteger.valueOf(query2.getMaxNumberOfResults()),
                 receivedGetChecksumsRequest2.getMaxNumberOfResults(),
                 "Unexpected MaxNumberOfResults in GetChecksumsRequest to pillar2.");
@@ -396,16 +387,14 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
 
     @Override
     protected MessageResponse createIdentifyResponse(MessageRequest identifyRequest, String from, String to) {
-        MessageResponse response = messageFactory.createIdentifyPillarsForGetChecksumsResponse(
+        return messageFactory.createIdentifyPillarsForGetChecksumsResponse(
                 (IdentifyPillarsForGetChecksumsRequest) identifyRequest, from, to);
-        return response;
     }
 
     @Override
     protected MessageResponse createFinalResponse(MessageRequest request, String from, String to) {
-        MessageResponse response = messageFactory.createGetChecksumsFinalResponse(
+        return messageFactory.createGetChecksumsFinalResponse(
                 (GetChecksumsRequest) request, from, to);
-        return response;
     }
 
     @Override

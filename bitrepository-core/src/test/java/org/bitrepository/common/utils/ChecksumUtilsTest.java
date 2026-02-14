@@ -27,6 +27,7 @@ package org.bitrepository.common.utils;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.common.settings.Settings;
+import org.bitrepository.common.settings.TestSettingsProvider;
 import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
@@ -37,8 +38,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
-
-import org.bitrepository.common.settings.TestSettingsProvider;
 
 public class ChecksumUtilsTest extends ExtendedTestCase {
     @Test
@@ -61,9 +60,12 @@ public class ChecksumUtilsTest extends ExtendedTestCase {
         addStep("Test with no text and no key for HMAC_MD5, HMAC_SHA1, and HMAC_SHA256",
                 "Should give expected results.");
         InputStream data1 = new ByteArrayInputStream(new byte[0]);
-        Assertions.assertEquals("74e6f7298a9c2d168935f58c001bad88", ChecksumUtils.generateChecksum(data1, csHmacMD5));
-        Assertions.assertEquals("fbdb1d1b18aa6c08324b7d64b71fb76370690e1d", ChecksumUtils.generateChecksum(data1, csHmacSHA1));
-        Assertions.assertEquals("b613679a0814d9ec772f95d778c35fc5ff1697c493715653c6c712144292c5ad", ChecksumUtils.generateChecksum(data1, csHmacSHA256));
+        Assertions.assertEquals("74e6f7298a9c2d168935f58c001bad88",
+                ChecksumUtils.generateChecksum(data1, csHmacMD5));
+        Assertions.assertEquals("fbdb1d1b18aa6c08324b7d64b71fb76370690e1d",
+                ChecksumUtils.generateChecksum(data1, csHmacSHA1));
+        Assertions.assertEquals("b613679a0814d9ec772f95d778c35fc5ff1697c493715653c6c712144292c5ad",
+                ChecksumUtils.generateChecksum(data1, csHmacSHA256));
 
         String message = "The quick brown fox jumps over the lazy dog";
         InputStream data2 = new ByteArrayInputStream(message.getBytes(StandardCharsets.UTF_8));
@@ -74,11 +76,14 @@ public class ChecksumUtilsTest extends ExtendedTestCase {
 
         addStep("Test with the text '" + message + "' and key '" + key + "' for MD5, SHA1, and SHA256",
                 "Should give expected results.");
-        Assertions.assertEquals("80070713463e7749b90c2dc24911e275", ChecksumUtils.generateChecksum(data2, csHmacMD5));
+        Assertions.assertEquals("80070713463e7749b90c2dc24911e275",
+                ChecksumUtils.generateChecksum(data2, csHmacMD5));
         data2.reset();
-        Assertions.assertEquals("de7c9b85b8b78aa6bc8a7a36f70a90701c9db4d9", ChecksumUtils.generateChecksum(data2, csHmacSHA1));
+        Assertions.assertEquals("de7c9b85b8b78aa6bc8a7a36f70a90701c9db4d9",
+                ChecksumUtils.generateChecksum(data2, csHmacSHA1));
         data2.reset();
-        Assertions.assertEquals("f7bc83f430538424b13298e6aa6fb143ef4d59a14946175997479dbc2d1a3cd8", ChecksumUtils.generateChecksum(data2, csHmacSHA256));
+        Assertions.assertEquals("f7bc83f430538424b13298e6aa6fb143ef4d59a14946175997479dbc2d1a3cd8",
+                ChecksumUtils.generateChecksum(data2, csHmacSHA256));
         data2.reset();
 
         addStep("Try calculating HMAC with a null salt", "Should throw NoSuchAlgorithmException");
@@ -107,18 +112,24 @@ public class ChecksumUtilsTest extends ExtendedTestCase {
         addStep("Test with no text and no key for MD5, SHA1, and SHA256",
                 "Should give expected results.");
         InputStream data1 = new ByteArrayInputStream(new byte[0]);
-        Assertions.assertEquals("d41d8cd98f00b204e9800998ecf8427e", ChecksumUtils.generateChecksum(data1, csMD5));
-        Assertions.assertEquals("da39a3ee5e6b4b0d3255bfef95601890afd80709", ChecksumUtils.generateChecksum(data1, csSHA1));
-        Assertions.assertEquals("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", ChecksumUtils.generateChecksum(data1, csSHA256));
+        Assertions.assertEquals("d41d8cd98f00b204e9800998ecf8427e",
+                ChecksumUtils.generateChecksum(data1, csMD5));
+        Assertions.assertEquals("da39a3ee5e6b4b0d3255bfef95601890afd80709",
+                ChecksumUtils.generateChecksum(data1, csSHA1));
+        Assertions.assertEquals("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                ChecksumUtils.generateChecksum(data1, csSHA256));
 
         addStep("Test with text ", "Should giver different checksums");
         String message = "The quick brown fox jumps over the lazy dog";
         InputStream data2 = new ByteArrayInputStream(message.getBytes(StandardCharsets.UTF_8));
-        Assertions.assertEquals("9e107d9d372bb6826bd81d3542a419d6", ChecksumUtils.generateChecksum(data2, csMD5));
+        Assertions.assertEquals("9e107d9d372bb6826bd81d3542a419d6",
+                ChecksumUtils.generateChecksum(data2, csMD5));
         data2.reset();
-        Assertions.assertEquals("2fd4e1c67a2d28fced849ee1bb76e7391b93eb12", ChecksumUtils.generateChecksum(data2, csSHA1));
+        Assertions.assertEquals("2fd4e1c67a2d28fced849ee1bb76e7391b93eb12",
+                ChecksumUtils.generateChecksum(data2, csSHA1));
         data2.reset();
-        Assertions.assertEquals("d7a8fbb307d7809469ca9abcb0082e4f8d5651e46d3cdb762d02d0bf37c9e592", ChecksumUtils.generateChecksum(data2, csSHA256));
+        Assertions.assertEquals("d7a8fbb307d7809469ca9abcb0082e4f8d5651e46d3cdb762d02d0bf37c9e592",
+                ChecksumUtils.generateChecksum(data2, csSHA256));
         data2.reset();
 
         addStep("add a salt to the checksum", "Should throw an exception");
@@ -152,7 +163,6 @@ public class ChecksumUtilsTest extends ExtendedTestCase {
         Assertions.assertEquals(cs3, cs1);
         Assertions.assertEquals(cs3, cs2);
     }
-
 
     @Test
     @Tag("regressiontest")
@@ -206,8 +216,9 @@ public class ChecksumUtilsTest extends ExtendedTestCase {
     }
 
     private void validateHmac(ChecksumType hmacType) throws NoSuchAlgorithmException {
-        addStep("Test '" + hmacType + "'", "Should be invalid without salt, and valid with no matter whether "
-                + "the salt is empty.");
+        addStep("Test '" + hmacType + "'",
+                "Should be invalid without salt, and valid with no matter whether "
+                        + "the salt is empty.");
         ChecksumSpecTYPE csType = new ChecksumSpecTYPE();
         csType.setChecksumType(hmacType);
 
@@ -228,14 +239,16 @@ public class ChecksumUtilsTest extends ExtendedTestCase {
     }
 
     private void validateMessageDigest(ChecksumType algorithmType) throws NoSuchAlgorithmException {
-        addStep("Test '" + algorithmType + "'", "Should be valid without salt, valid with an empty salt, "
-                + "and invalid with a proper salt.");
+        addStep("Test '" + algorithmType + "'",
+                "Should be valid without salt, valid with an empty salt, "
+                        + "and invalid with a proper salt.");
         ChecksumSpecTYPE csType = new ChecksumSpecTYPE();
         csType.setChecksumType(algorithmType);
 
         ChecksumUtils.verifyAlgorithm(csType);
 
-        Assertions.assertFalse(ChecksumUtils.requiresSalt(algorithmType), "Non-HMAC algorithms must not require salt.");
+        Assertions.assertFalse(ChecksumUtils.requiresSalt(algorithmType),
+                "Non-HMAC algorithms must not require salt.");
 
         csType.setChecksumSalt(new byte[0]);
         ChecksumUtils.verifyAlgorithm(csType);
@@ -251,14 +264,16 @@ public class ChecksumUtilsTest extends ExtendedTestCase {
 
     @Test
     @Tag("regressiontest")
-    public void testDefaultChecksum() throws Exception {
+    public void testDefaultChecksum() {
         addDescription("Test the extraction of the default checksum from settings.");
         addStep("Setup the settings", "Loading the test settings");
         Settings settings = TestSettingsProvider.reloadSettings("ChecksumUtils");
 
-        addStep("Use utils to extract default checksum spec", "Should be the one defined in Settings.");
+        addStep("Use utils to extract default checksum spec",
+                "Should be the one defined in Settings.");
         ChecksumSpecTYPE csType = ChecksumUtils.getDefault(settings);
-        Assertions.assertEquals(settings.getRepositorySettings().getProtocolSettings().getDefaultChecksumType(), csType.getChecksumType().name());
+        Assertions.assertEquals(settings.getRepositorySettings().getProtocolSettings().getDefaultChecksumType(),
+                csType.getChecksumType().name());
         Assertions.assertNull(csType.getChecksumSalt(), "Should not contain any salt.");
     }
 }

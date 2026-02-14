@@ -29,13 +29,7 @@ import org.bitrepository.protocol.security.exception.CertificateUseException;
 import org.bitrepository.protocol.security.exception.MessageAuthenticationException;
 import org.bitrepository.protocol.security.exception.MessageSigningException;
 import org.bitrepository.protocol.security.exception.OperationAuthorizationException;
-import org.bitrepository.settings.repositorysettings.Certificate;
-import org.bitrepository.settings.repositorysettings.Collection;
-import org.bitrepository.settings.repositorysettings.ComponentIDs;
-import org.bitrepository.settings.repositorysettings.Operation;
-import org.bitrepository.settings.repositorysettings.OperationPermission;
-import org.bitrepository.settings.repositorysettings.Permission;
-import org.bitrepository.settings.repositorysettings.PermissionSet;
+import org.bitrepository.settings.repositorysettings.*;
 import org.bouncycastle.util.encoders.Base64;
 import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
@@ -83,8 +77,8 @@ public class SecurityManagerTest extends ExtendedTestCase {
         addDescription("Tests that a signature only allows the correct requests.");
 
         List<Collection> collections = settings.getRepositorySettings().getCollections().getCollection();
-        Assertions.assertEquals(2, collections.size(), "There should be two collections present to test the collection limited " +
-                "authorization");
+        Assertions.assertEquals(2, collections.size(),
+                "There should be two collections present to test the collection limited authorization");
         settings.getRepositorySettings().setPermissionSet(getCollectionLimitedPermissionSet());
         setupSecurityManager(settings);
 
@@ -106,10 +100,7 @@ public class SecurityManagerTest extends ExtendedTestCase {
         }
 
         addStep("Check that GET_FILE is only allowed for the first collection.",
-                "GET_FILE is allowed for first collection, and disallowed for the second collection (exception " +
-                        "thrown).");
-
-
+                "GET_FILE is allowed for first collection, and disallowed for the second collection (exception thrown).");
         try {
             securityManager.authorizeOperation(GetFileRequest.class.getSimpleName(),
                     SecurityTestConstants.getTestData(), TestCertProvider.getPositiveCertSignature(), collectionID1);
@@ -165,7 +156,7 @@ public class SecurityManagerTest extends ExtendedTestCase {
 
         String signatureString =
                 new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)),
-                StandardCharsets.UTF_8);
+                        StandardCharsets.UTF_8);
         log.info("Signature for testdata is: {}", signatureString);
 
         addStep("Check signature matches the data ", "Signature and data matches");
@@ -190,7 +181,7 @@ public class SecurityManagerTest extends ExtendedTestCase {
         }
         String signatureString =
                 new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)),
-                StandardCharsets.UTF_8);
+                        StandardCharsets.UTF_8);
         log.info("Signature for testdata is: {}", signatureString);
 
         addStep("Check signature matches the data", "Signature cant be matched as certificate is unknown.");
@@ -219,7 +210,7 @@ public class SecurityManagerTest extends ExtendedTestCase {
 
         String signatureString =
                 new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)),
-                StandardCharsets.UTF_8);
+                        StandardCharsets.UTF_8);
         log.info("Signature for testdata is: {}", signatureString);
 
         addStep("Check signature matches the data ", "Signature and data matches does not match");
