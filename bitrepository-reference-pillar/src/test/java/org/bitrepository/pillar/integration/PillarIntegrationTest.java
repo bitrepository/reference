@@ -21,7 +21,7 @@
  */
 package org.bitrepository.pillar.integration;
 
-import org.bitrepository.ExtentedTestInfoParameterResolver;
+import org.bitrepository.ExtendedTestInfoParameterResolver;
 import org.bitrepository.SuiteInfo;
 import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
 import org.bitrepository.client.conversation.mediator.ConversationMediatorManager;
@@ -40,21 +40,10 @@ import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.messagebus.SimpleMessageBus;
-import org.bitrepository.protocol.security.BasicMessageAuthenticator;
-import org.bitrepository.protocol.security.BasicMessageSigner;
-import org.bitrepository.protocol.security.BasicOperationAuthorizer;
-import org.bitrepository.protocol.security.BasicSecurityManager;
-import org.bitrepository.protocol.security.MessageAuthenticator;
-import org.bitrepository.protocol.security.MessageSigner;
-import org.bitrepository.protocol.security.OperationAuthorizer;
-import org.bitrepository.protocol.security.PermissionStore;
+import org.bitrepository.protocol.security.*;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.jaccept.TestEventManager;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.TestInfo;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.suite.api.AfterSuite;
 
@@ -69,7 +58,7 @@ import java.io.InputStream;
  * to be invariant against the initial pillar state.
  */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@ExtendWith(ExtentedTestInfoParameterResolver.class)
+@ExtendWith(ExtendedTestInfoParameterResolver.class)
 public abstract class PillarIntegrationTest extends IntegrationTest {
     /**
      * The path to the directory containing the integration test configuration files

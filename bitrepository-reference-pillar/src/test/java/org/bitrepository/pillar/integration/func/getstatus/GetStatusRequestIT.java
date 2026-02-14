@@ -60,9 +60,6 @@ public class GetStatusRequestIT extends PillarFunctionTest {
         Assertions.assertNotNull(finalResponse);
         Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
         Assertions.assertEquals(request.getCorrelationID(), finalResponse.getCorrelationID());
-        Assertions.assertNotNull(finalResponse);
-        Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
-        Assertions.assertEquals(request.getCorrelationID(), finalResponse.getCorrelationID());
         Assertions.assertEquals(getPillarID(), finalResponse.getFrom());
     }
 

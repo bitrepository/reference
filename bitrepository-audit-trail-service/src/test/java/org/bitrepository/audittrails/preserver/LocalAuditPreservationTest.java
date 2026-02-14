@@ -35,11 +35,7 @@ import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.jaccept.structure.ExtendedTestCase;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -103,13 +99,6 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         final AuditEventIterator iterator = Mockito.spy(new StubAuditEventIterator());
 
         LocalAuditTrailPreserver preserver = new LocalAuditTrailPreserver(settings, store, client, fileExchangeMock);
-        
-        /*Assertions.assertEquals(store.getCallsToAddAuditTrails(), 0);
-        Assertions.assertEquals(store.getCallsToGetAuditTrails(), 0);
-        Assertions.assertEquals(store.getCallsToGetPreservationSequenceNumber(), 1);
-        Assertions.assertEquals(store.getCallsToLargestSequenceNumber(), 0);
-        Assertions.assertEquals(store.getCallsToSetPreservationSequenceNumber(), 0);
-        Assertions.assertEquals(client.getCallsToPutFile(), 0);*/
 
         Mockito.verify(store).addCollection(collectionID);
         Mockito.verify(store).addContributor(PILLAR_ID);

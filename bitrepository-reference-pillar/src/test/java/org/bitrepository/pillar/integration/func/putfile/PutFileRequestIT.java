@@ -22,13 +22,7 @@
 package org.bitrepository.pillar.integration.func.putfile;
 
 import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
-import org.bitrepository.bitrepositorymessages.MessageRequest;
-import org.bitrepository.bitrepositorymessages.MessageResponse;
-import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
-import org.bitrepository.bitrepositorymessages.PutFileRequest;
+import org.bitrepository.bitrepositorymessages.*;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.PillarTestGroups;
@@ -77,24 +71,30 @@ public class PutFileRequestIT extends DefaultPillarOperationTest {
 
         PutFileFinalResponse finalResponse = (PutFileFinalResponse) receiveResponse();
         Assertions.assertNotNull(finalResponse);
-        Assertions.assertEquals(putRequest.getCorrelationID(), finalResponse.getCorrelationID(), "Received unexpected " +
-                "'CorrelationID' element.");
-        Assertions.assertEquals(putRequest.getCollectionID(), finalResponse.getCollectionID(), "Received unexpected " +
-                "'CollectionID' element.");
-        Assertions.assertEquals(getPillarID(), finalResponse.getFrom(), "Received unexpected 'From' element.");
-        Assertions.assertEquals(putRequest.getFrom(), finalResponse.getTo(), "Received unexpected 'To' element.");
-        Assertions.assertEquals(putRequest.getReplyTo(), finalResponse.getDestination(), "Received unexpected 'Destination' " +
-                "element.");
+        Assertions.assertEquals(putRequest.getCorrelationID(), finalResponse.getCorrelationID(),
+                "Received unexpected " +
+                        "'CorrelationID' element.");
+        Assertions.assertEquals(putRequest.getCollectionID(), finalResponse.getCollectionID(),
+                "Received unexpected " +
+                        "'CollectionID' element.");
+        Assertions.assertEquals(getPillarID(), finalResponse.getFrom(),
+                "Received unexpected 'From' element.");
+        Assertions.assertEquals(putRequest.getFrom(), finalResponse.getTo(),
+                "Received unexpected 'To' element.");
+        Assertions.assertEquals(putRequest.getReplyTo(), finalResponse.getDestination(),
+                "Received unexpected 'Destination' element.");
         Assertions.assertNull(finalResponse.getChecksumDataForExistingFile(),
                 "Received unexpected 'ChecksumDataForExistingFile' element.");
         Assertions.assertNull(finalResponse.getChecksumDataForNewFile(),
                 "Received unexpected 'ChecksumDataForNewFile' element.");
-        Assertions.assertEquals(putRequest.getFileID(), finalResponse.getFileID(), "Received unexpected 'To' element.");
-        Assertions.assertEquals(putRequest.getFileAddress(), finalResponse.getFileAddress(), "Received unexpected 'FileAddress' " +
-                "element.");
-        Assertions.assertEquals(getPillarID(), finalResponse.getPillarID(), "Received unexpected 'PillarID' element.");
-        Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode(), "Received unexpected " +
-                "'ResponseCode' element.");
+        Assertions.assertEquals(putRequest.getFileID(), finalResponse.getFileID(),
+                "Received unexpected 'To' element.");
+        Assertions.assertEquals(putRequest.getFileAddress(), finalResponse.getFileAddress(),
+                "Received unexpected 'FileAddress' element.");
+        Assertions.assertEquals(getPillarID(), finalResponse.getPillarID(),
+                "Received unexpected 'PillarID' element.");
+        Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode(),
+                "Received unexpected 'ResponseCode' element.");
     }
 
     @Test
@@ -142,20 +142,25 @@ public class PutFileRequestIT extends DefaultPillarOperationTest {
         PutFileProgressResponse progressResponse = clientReceiver.waitForMessage(PutFileProgressResponse.class,
                 getOperationTimeout(), TimeUnit.SECONDS);
         Assertions.assertNotNull(progressResponse);
-        Assertions.assertEquals(putRequest.getCorrelationID(), progressResponse.getCorrelationID(), "Received unexpected " +
-                "'CorrelationID' element.");
-        Assertions.assertEquals(putRequest.getCollectionID(), progressResponse.getCollectionID(), "Received unexpected " +
-                "'CollectionID' element.");
-        Assertions.assertEquals(getPillarID(), progressResponse.getFrom(), "Received unexpected 'From' element.");
-        Assertions.assertEquals(putRequest.getFrom(), progressResponse.getTo(), "Received unexpected 'To' element.");
-        Assertions.assertEquals(putRequest.getReplyTo(), progressResponse.getDestination(), "Received unexpected 'Destination' " +
-                "element.");
-        Assertions.assertEquals(getPillarID(), progressResponse.getPillarID(), "Received unexpected 'PillarID' element.");
-        Assertions.assertEquals(putRequest.getFileID(), progressResponse.getFileID(), "Received unexpected 'FileID' element.");
-        Assertions.assertEquals(putRequest.getFileAddress(), progressResponse.getFileAddress(), "Received unexpected " +
-                "'FileAddress' element.");
-        Assertions.assertEquals(ResponseCode.OPERATION_ACCEPTED_PROGRESS, progressResponse.getResponseInfo().getResponseCode(), "Received " +
-                "unexpected 'ResponseCode' element.");
+        Assertions.assertEquals(putRequest.getCorrelationID(), progressResponse.getCorrelationID(),
+                "Received unexpected 'CorrelationID' element.");
+        Assertions.assertEquals(putRequest.getCollectionID(), progressResponse.getCollectionID(),
+                "Received unexpected 'CollectionID' element.");
+        Assertions.assertEquals(getPillarID(), progressResponse.getFrom(),
+                "Received unexpected 'From' element.");
+        Assertions.assertEquals(putRequest.getFrom(), progressResponse.getTo(),
+                "Received unexpected 'To' element.");
+        Assertions.assertEquals(putRequest.getReplyTo(), progressResponse.getDestination(),
+                "Received unexpected 'Destination' element.");
+        Assertions.assertEquals(getPillarID(), progressResponse.getPillarID(),
+                "Received unexpected 'PillarID' element.");
+        Assertions.assertEquals(putRequest.getFileID(), progressResponse.getFileID(),
+                "Received unexpected 'FileID' element.");
+        Assertions.assertEquals(putRequest.getFileAddress(), progressResponse.getFileAddress(),
+                "Received unexpected 'FileAddress' element.");
+        Assertions.assertEquals(ResponseCode.OPERATION_ACCEPTED_PROGRESS,
+                progressResponse.getResponseInfo().getResponseCode(),
+                "Received unexpected 'ResponseCode' element.");
     }
 
     @Override
