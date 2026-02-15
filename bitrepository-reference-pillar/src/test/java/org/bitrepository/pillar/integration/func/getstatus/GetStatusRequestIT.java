@@ -23,11 +23,7 @@
 package org.bitrepository.pillar.integration.func.getstatus;
 
 import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositorymessages.AlarmMessage;
-import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetStatusRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
+import org.bitrepository.bitrepositorymessages.*;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.bitrepository.pillar.messagefactories.GetStatusMessageFactory;
@@ -66,8 +62,8 @@ public class GetStatusRequestIT extends PillarFunctionTest {
         GetStatusFinalResponse finalResponse = clientReceiver.waitForMessage(GetStatusFinalResponse.class);
         Assertions.assertNotNull(finalResponse);
         Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
-        Assertions.assertEquals(finalResponse.getCorrelationID(), request.getCorrelationID());
-        Assertions.assertEquals(finalResponse.getFrom(), getPillarID());
+        Assertions.assertEquals(request.getCorrelationID(), finalResponse.getCorrelationID());
+        Assertions.assertEquals(getPillarID(), finalResponse.getFrom());
     }
 
     @Test

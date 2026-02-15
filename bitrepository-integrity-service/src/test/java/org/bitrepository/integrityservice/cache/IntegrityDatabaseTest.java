@@ -39,6 +39,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -148,10 +149,11 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         Collection<FileInfo> fileinfos = model.getFileInfos(TEST_FILE_ID, TEST_COLLECTIONID);
         Assertions.assertNotNull(fileinfos);
         for (FileInfo fi : fileinfos) {
-            Assertions.assertEquals(fi.getFileId(), TEST_FILE_ID);
+            Assertions.assertEquals(TEST_FILE_ID, fi.getFileId());
             Assertions.assertNull(fi.getChecksum());
-            Assertions.assertEquals(fi.getDateForLastChecksumCheck(), CalendarUtils.getEpoch());
-            Assertions.assertEquals(fi.getDateForLastFileIDCheck(), data1.getFileIDsDataItems().getFileIDsDataItem().get(0).getLastModificationTime());
+            Assertions.assertEquals(CalendarUtils.getEpoch(), fi.getDateForLastChecksumCheck());
+            Assertions.assertEquals(data1.getFileIDsDataItems().getFileIDsDataItem().get(0).getLastModificationTime(),
+                    fi.getDateForLastFileIDCheck());
         }
     }
 
@@ -172,9 +174,9 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         Collection<FileInfo> fileinfos = model.getFileInfos(TEST_FILE_ID, TEST_COLLECTIONID);
         Assertions.assertNotNull(fileinfos);
         for (FileInfo fi : fileinfos) {
-            Assertions.assertEquals(fi.getFileId(), TEST_FILE_ID);
-            Assertions.assertEquals(fi.getChecksum(), TEST_CHECKSUM);
-            Assertions.assertEquals(fi.getDateForLastChecksumCheck(), csData.get(0).getCalculationTimestamp());
+            Assertions.assertEquals(TEST_FILE_ID, fi.getFileId());
+            Assertions.assertEquals(TEST_CHECKSUM, fi.getChecksum());
+            Assertions.assertEquals(csData.get(0).getCalculationTimestamp(), fi.getDateForLastChecksumCheck());
         }
     }
 

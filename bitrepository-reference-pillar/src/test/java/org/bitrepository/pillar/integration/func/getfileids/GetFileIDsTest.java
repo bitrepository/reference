@@ -78,27 +78,26 @@ public class GetFileIDsTest extends DefaultPillarOperationTest {
                 "A GetFileIDs progress response should be sent to the client with correct attributes.");
         GetFileIDsProgressResponse progressResponse = clientReceiver.waitForMessage(GetFileIDsProgressResponse.class,
                 getOperationTimeout(), TimeUnit.SECONDS);
-        assertNotNull(progressResponse);
-        assertEquals(progressResponse.getCorrelationID(), getFileIDsRequest.getCorrelationID());
-        assertEquals(progressResponse.getFileIDs(), getFileIDsRequest.getFileIDs());
-        assertEquals(progressResponse.getFrom(), getPillarID());
-        assertEquals(progressResponse.getPillarID(), getPillarID());
-        assertEquals(progressResponse.getReplyTo(), pillarDestination);
-        assertEquals(ResponseCode.OPERATION_ACCEPTED_PROGRESS,
-                progressResponse.getResponseInfo().getResponseCode());
+        Assertions.assertNotNull(progressResponse);
+        Assertions.assertEquals(getFileIDsRequest.getCorrelationID(), progressResponse.getCorrelationID());
+        Assertions.assertEquals(getFileIDsRequest.getFileIDs(), progressResponse.getFileIDs());
+        Assertions.assertEquals(getPillarID(), progressResponse.getFrom());
+        Assertions.assertEquals(getPillarID(), progressResponse.getPillarID());
+        Assertions.assertEquals(pillarDestination, progressResponse.getReplyTo());
+        Assertions.assertEquals(ResponseCode.OPERATION_ACCEPTED_PROGRESS, progressResponse.getResponseInfo().getResponseCode());
 
         addStep("Retrieve the FinalResponse for the GetFileIDs request",
                 "The GetFileIDs response should be sent by the pillar.");
         GetFileIDsFinalResponse finalResponse = (GetFileIDsFinalResponse) receiveResponse();
-        assertNotNull(finalResponse);
-        assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
-        assertEquals(finalResponse.getCorrelationID(), getFileIDsRequest.getCorrelationID());
-        assertEquals(finalResponse.getFileIDs(), FileIDsUtils.getAllFileIDs());
-        assertEquals(finalResponse.getFrom(), getPillarID());
-        assertEquals(finalResponse.getPillarID(), getPillarID());
-        assertEquals(finalResponse.getReplyTo(), pillarDestination);
-        assertNull(finalResponse.getResultingFileIDs().getResultAddress());
-        assertTrue(finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size() >= 2,
+        Assertions.assertNotNull(finalResponse);
+        Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(getFileIDsRequest.getCorrelationID(), finalResponse.getCorrelationID());
+        Assertions.assertEquals(FileIDsUtils.getAllFileIDs(), finalResponse.getFileIDs());
+        Assertions.assertEquals(getPillarID(), finalResponse.getFrom());
+        Assertions.assertEquals(getPillarID(), finalResponse.getPillarID());
+        Assertions.assertEquals(pillarDestination, finalResponse.getReplyTo());
+        Assertions.assertNull(finalResponse.getResultingFileIDs().getResultAddress());
+        Assertions.assertTrue(finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size() >= 2,
                 "Should be at least 2 files, but found: " + finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size());
     }
 
@@ -115,7 +114,7 @@ public class GetFileIDsTest extends DefaultPillarOperationTest {
         GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(fileids, null);
         messageBus.sendMessage(getFileIDsRequest);
         GetFileIDsFinalResponse finalResponse = (GetFileIDsFinalResponse) receiveResponse();
-        assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE, finalResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE, finalResponse.getResponseInfo().getResponseCode());
     }
 
     @Test
@@ -135,9 +134,9 @@ public class GetFileIDsTest extends DefaultPillarOperationTest {
         addStep("Retrieve the FinalResponse for the GetFileIDs request.",
                 "A OPERATION_COMPLETE final response only containing the requested file-id.");
         GetFileIDsFinalResponse finalResponse = (GetFileIDsFinalResponse) receiveResponse();
-        assertEquals(1, finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size());
-        assertEquals(finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID(), defaultFileId);
-        assertFalse(finalResponse.isSetPartialResult() && finalResponse.isPartialResult());
+        Assertions.assertEquals(1, finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size());
+        Assertions.assertEquals(defaultFileId, finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID());
+        Assertions.assertFalse(finalResponse.isSetPartialResult() && finalResponse.isPartialResult());
     }
 
     @Test
@@ -153,8 +152,7 @@ public class GetFileIDsTest extends DefaultPillarOperationTest {
         addStep("Retrieve the FinalResponse for the GetFileIDs request.",
                 "A FILE_TRANSFER_FAILURE final response is expected.");
         GetFileIDsFinalResponse finalResponse = (GetFileIDsFinalResponse) receiveResponse();
-        assertEquals(ResponseCode.FILE_TRANSFER_FAILURE,
-                finalResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(ResponseCode.FILE_TRANSFER_FAILURE, finalResponse.getResponseInfo().getResponseCode());
     }
 
     @Test
@@ -170,9 +168,8 @@ public class GetFileIDsTest extends DefaultPillarOperationTest {
         addStep("Retrieve the FinalResponse for the GetFileIDs request.",
                 "A OPERATION_COMPLETE final response is expected containing the result provided address.");
         GetFileIDsFinalResponse finalResponse = (GetFileIDsFinalResponse) receiveResponse();
-        assertEquals(ResponseCode.OPERATION_COMPLETED,
-                finalResponse.getResponseInfo().getResponseCode());
-        assertEquals(finalResponse.getResultingFileIDs().getResultAddress(), defaultUploadFileAddress);
+        Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(defaultUploadFileAddress, finalResponse.getResultingFileIDs().getResultAddress());
     }
 
     @Override

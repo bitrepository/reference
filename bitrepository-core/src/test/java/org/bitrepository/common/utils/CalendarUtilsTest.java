@@ -37,7 +37,6 @@ import org.bitrepository.protocol.utils.AllureTestUtils;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 
-
 public class CalendarUtilsTest {
     long DATE_IN_MILLIS = 123456789L;
 
@@ -48,7 +47,7 @@ public class CalendarUtilsTest {
         addStep("Test the convertion of a date", "Should be the same date.");
         Date date = new Date(DATE_IN_MILLIS);
         XMLGregorianCalendar calendar = CalendarUtils.getXmlGregorianCalendar(date);
-        Assertions.assertEquals(calendar.toGregorianCalendar().getTimeInMillis(), DATE_IN_MILLIS);
+        Assertions.assertEquals(DATE_IN_MILLIS, calendar.toGregorianCalendar().getTimeInMillis());
 
         addStep("Test that a 'null' date is equivalent to epoch", "Should be date '0'");
         calendar = CalendarUtils.getXmlGregorianCalendar((Date) null);
@@ -60,7 +59,7 @@ public class CalendarUtilsTest {
 
         addStep("Test that a given time in millis is extractable in millis", "Should be same value");
         calendar = CalendarUtils.getFromMillis(DATE_IN_MILLIS);
-        Assertions.assertEquals(calendar.toGregorianCalendar().getTimeInMillis(), DATE_IN_MILLIS);
+        Assertions.assertEquals(DATE_IN_MILLIS, calendar.toGregorianCalendar().getTimeInMillis());
 
         addStep("Test the 'getNow' function", "Should give a value very close to System.currentTimeInMillis");
         long beforeNow = System.currentTimeMillis();
@@ -73,7 +72,7 @@ public class CalendarUtilsTest {
         date = CalendarUtils.convertFromXMLGregorianCalendar(calendar);
         Assertions.assertTrue(date.getTime() <= afterNow);
         Assertions.assertTrue(date.getTime() >= beforeNow);
-        Assertions.assertEquals(date.getTime(), calendar.toGregorianCalendar().getTimeInMillis());
+        Assertions.assertEquals(calendar.toGregorianCalendar().getTimeInMillis(), date.getTime());
     }
 
     @Test
@@ -93,7 +92,7 @@ public class CalendarUtilsTest {
         Date expectedStartOfDay = sdf.parse("2015-02-25T23:00:00.000Z");
 
         Date parsedStartOfDay = cu.makeStartDateObject("2015/02/26");
-        Assertions.assertEquals(parsedStartOfDay, expectedStartOfDay);
+        Assertions.assertEquals(expectedStartOfDay, parsedStartOfDay);
     }
 
     @Test
@@ -105,7 +104,7 @@ public class CalendarUtilsTest {
         Date expectedStartOfDay = sdf.parse("2015-02-26T22:59:59.999Z");
 
         Date parsedStartOfDay = cu.makeEndDateObject("2015/02/26");
-        Assertions.assertEquals(parsedStartOfDay, expectedStartOfDay);
+        Assertions.assertEquals(expectedStartOfDay, parsedStartOfDay);
     }
 
     @Test
@@ -117,7 +116,7 @@ public class CalendarUtilsTest {
         Date expectedStartOfDay = sdf.parse("2016-01-01T22:59:59.999Z");
 
         Date parsedStartOfDay = cu.makeEndDateObject("2015/12/32");
-        Assertions.assertEquals(parsedStartOfDay, expectedStartOfDay);
+        Assertions.assertEquals(expectedStartOfDay, parsedStartOfDay);
     }
 
     @Test
@@ -129,7 +128,7 @@ public class CalendarUtilsTest {
         Date expectedStartOfDayInUTC = sdf.parse("2016-01-31T23:00:00.000Z");
         System.out.println("expectedStartOfDayInUTC parsed: " + expectedStartOfDayInUTC.getTime());
         Date parsedStartOfDay = cu.makeStartDateObject("2016/02/01");
-        Assertions.assertEquals(parsedStartOfDay, expectedStartOfDayInUTC);
+        Assertions.assertEquals(expectedStartOfDayInUTC, parsedStartOfDay);
     }
 
     @Test
@@ -140,7 +139,7 @@ public class CalendarUtilsTest {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.ROOT);
         Date expectedEndOfDayInUTC = sdf.parse("2016-02-01T22:59:59.999Z");
         Date parsedEndOfDay = cu.makeEndDateObject("2016/02/01");
-        Assertions.assertEquals(parsedEndOfDay, expectedEndOfDayInUTC);
+        Assertions.assertEquals(expectedEndOfDayInUTC, parsedEndOfDay);
     }
 
     @Test
@@ -155,7 +154,7 @@ public class CalendarUtilsTest {
         Assertions.assertNotNull(endDate);
         long MS_PER_HOUR = 1000 * 60 * 60;
         long expectedIntervalLength = (MS_PER_HOUR * 25) - 1;
-        Assertions.assertEquals(endDate.getTime() - startDate.getTime(), expectedIntervalLength);
+        Assertions.assertEquals(expectedIntervalLength, endDate.getTime() - startDate.getTime());
     }
 
     @Test
@@ -170,7 +169,7 @@ public class CalendarUtilsTest {
         Assertions.assertNotNull(endDate);
         long MS_PER_HOUR = 1000 * 60 * 60;
         long expectedIntervalLength = (MS_PER_HOUR * 23) - 1;
-        Assertions.assertEquals(endDate.getTime() - startDate.getTime(), expectedIntervalLength);
+        Assertions.assertEquals(expectedIntervalLength, endDate.getTime() - startDate.getTime());
     }
 
 }

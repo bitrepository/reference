@@ -37,8 +37,11 @@ import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.pillar.MockedPillarTest;
 import org.bitrepository.pillar.messagefactories.GetFileIDsMessageFactory;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedFileIDsResultSet;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -102,13 +105,12 @@ public class GetFileIDsTest extends MockedPillarTest {
                 "The pillar should make a response.");
         IdentifyPillarsForGetFileIDsResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetFileIDsResponse.class);
-        assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
-                receivedIdentifyResponse.getResponseInfo().getResponseCode());
-        assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
-        assertEquals(receivedIdentifyResponse.getFileIDs(), fileids);
+        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE, receivedIdentifyResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID());
+        Assertions.assertEquals(fileids, receivedIdentifyResponse.getFileIDs());
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
-        assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
+        Assertions.assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
     }
 
     @SuppressWarnings("rawtypes")
@@ -143,13 +145,12 @@ public class GetFileIDsTest extends MockedPillarTest {
                 "The pillar should make a response.");
         IdentifyPillarsForGetFileIDsResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetFileIDsResponse.class);
-        assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE,
-                receivedIdentifyResponse.getResponseInfo().getResponseCode());
-        assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
-        assertEquals(receivedIdentifyResponse.getFileIDs(), fileids);
+        Assertions.assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE, receivedIdentifyResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID());
+        Assertions.assertEquals(fileids, receivedIdentifyResponse.getFileIDs());
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
-        assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
+        Assertions.assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
     }
 
     @SuppressWarnings("rawtypes")
@@ -188,18 +189,20 @@ public class GetFileIDsTest extends MockedPillarTest {
         addStep("Retrieve the ProgressResponse for the GetFileIDs request",
                 "The GetFileIDs progress response should be sent by the pillar.");
         GetFileIDsProgressResponse progressResponse = clientReceiver.waitForMessage(GetFileIDsProgressResponse.class);
-        assertEquals(progressResponse.getFileIDs(), fileids);
-        assertEquals(progressResponse.getPillarID(), getPillarID());
-        assertNull(progressResponse.getResultAddress());
+        Assertions.assertEquals(fileids, progressResponse.getFileIDs());
+        Assertions.assertEquals(getPillarID(), progressResponse.getPillarID());
+        Assertions.assertNull(progressResponse.getResultAddress());
 
         addStep("Retrieve the FinalResponse for the GetFileIDs request",
                 "The final response should say 'operation_complete', and give the requested data.");
         GetFileIDsFinalResponse finalResponse = clientReceiver.waitForMessage(GetFileIDsFinalResponse.class);
-        assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
-        assertEquals(finalResponse.getPillarID(), getPillarID());
-        assertEquals(finalResponse.getFileIDs().getFileID(), FILE_ID);
-        assertEquals(1, finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size());
-        assertEquals(finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID(), FILE_ID);
+        Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(getPillarID(), finalResponse.getPillarID());
+        Assertions.assertEquals(FILE_ID, finalResponse.getFileIDs().getFileID());
+        Assertions.assertEquals(1,
+                finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size());
+        Assertions.assertEquals(FILE_ID,
+                finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID());
     }
 
     @SuppressWarnings("rawtypes")
@@ -240,17 +243,18 @@ public class GetFileIDsTest extends MockedPillarTest {
         addStep("Retrieve the ProgressResponse for the GetFileIDs request",
                 "The GetFileIDs progress response should be sent by the pillar.");
         GetFileIDsProgressResponse progressResponse = clientReceiver.waitForMessage(GetFileIDsProgressResponse.class);
-        assertEquals(progressResponse.getFileIDs(), fileids);
-        assertEquals(progressResponse.getPillarID(), getPillarID());
-        assertNull(progressResponse.getResultAddress());
+        Assertions.assertEquals(fileids, progressResponse.getFileIDs());
+        Assertions.assertEquals(getPillarID(), progressResponse.getPillarID());
+        Assertions.assertNull(progressResponse.getResultAddress());
 
         addStep("Retrieve the FinalResponse for the GetFileIDs request",
                 "The final response should say 'operation_complete', and give the requested data.");
         GetFileIDsFinalResponse finalResponse = clientReceiver.waitForMessage(GetFileIDsFinalResponse.class);
-        assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
-        assertEquals(finalResponse.getPillarID(), getPillarID());
-        assertNull(finalResponse.getFileIDs().getFileID());
-        assertEquals(2, finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size());
+        Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(getPillarID(), finalResponse.getPillarID());
+        Assertions.assertNull(finalResponse.getFileIDs().getFileID());
+        Assertions.assertEquals(2,
+                finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size());
     }
 
     @SuppressWarnings("rawtypes")
@@ -284,13 +288,13 @@ public class GetFileIDsTest extends MockedPillarTest {
         addStep("Retrieve the FinalResponse for the GetFileIDs request",
                 "The final response should tell about the error, and not contain the file.");
         GetFileIDsFinalResponse finalResponse = clientReceiver.waitForMessage(GetFileIDsFinalResponse.class);
-        assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE, finalResponse.getResponseInfo().getResponseCode());
-        assertEquals(finalResponse.getPillarID(), getPillarID());
-        assertEquals(finalResponse.getFileIDs().getFileID(), FILE_ID);
-        assertNull(finalResponse.getResultingFileIDs());
+        Assertions.assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE, finalResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(getPillarID(), finalResponse.getPillarID());
+        Assertions.assertEquals(FILE_ID, finalResponse.getFileIDs().getFileID());
+        Assertions.assertNull(finalResponse.getResultingFileIDs());
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
-        assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
+        Assertions.assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
     }
 
     @SuppressWarnings("rawtypes")
@@ -335,17 +339,19 @@ public class GetFileIDsTest extends MockedPillarTest {
         addStep("Retrieve the ProgressResponse for the GetFileIDs request",
                 "The GetFileIDs progress response should be sent by the pillar.");
         GetFileIDsProgressResponse progressResponse = clientReceiver.waitForMessage(GetFileIDsProgressResponse.class);
-        assertEquals(progressResponse.getFileIDs(), fileids);
-        assertEquals(progressResponse.getPillarID(), getPillarID());
-        assertNull(progressResponse.getResultAddress());
+        Assertions.assertEquals(fileids, progressResponse.getFileIDs());
+        Assertions.assertEquals(getPillarID(), progressResponse.getPillarID());
+        Assertions.assertNull(progressResponse.getResultAddress());
 
         addStep("Retrieve the FinalResponse for the GetFileIDs request",
                 "The final response should say 'operation_complete', and give the requested data.");
         GetFileIDsFinalResponse finalResponse = clientReceiver.waitForMessage(GetFileIDsFinalResponse.class);
-        assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
-        assertEquals(finalResponse.getPillarID(), getPillarID());
-        assertNull(finalResponse.getFileIDs().getFileID());
-        assertEquals(1, finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size());
-        assertEquals(finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID(), FILE_ID);
+        Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(getPillarID(), finalResponse.getPillarID());
+        Assertions.assertNull(finalResponse.getFileIDs().getFileID());
+        Assertions.assertEquals(1,
+                finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size());
+        Assertions.assertEquals(FILE_ID,
+                finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID());
     }
 }

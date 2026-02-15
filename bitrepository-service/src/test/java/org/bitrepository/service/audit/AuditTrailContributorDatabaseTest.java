@@ -83,11 +83,16 @@ public class AuditTrailContributorDatabaseTest {
         daba.initialize(settings.getComponentID());
 
         addStep("Populate the database.", "Should be inserted into database.");
-        daba.addAuditEvent(firstCollectionID, FILE_ID_1, DEFAULT_ACTOR, DEFAULT_INFO, DEFAULT_AUDIT_TRAIL_MESSAGE, FileAction.PUT_FILE, DEFAULT_OPERATION_ID, DEFAULT_CERTIFICATE_ID);
-        daba.addAuditEvent(firstCollectionID, FILE_ID_1, DEFAULT_ACTOR, DEFAULT_INFO, DEFAULT_AUDIT_TRAIL_MESSAGE, FileAction.CHECKSUM_CALCULATED, DEFAULT_OPERATION_ID, DEFAULT_CERTIFICATE_ID);
-        daba.addAuditEvent(firstCollectionID, FILE_ID_2, DEFAULT_ACTOR, DEFAULT_INFO, DEFAULT_AUDIT_TRAIL_MESSAGE, FileAction.FILE_MOVED, DEFAULT_OPERATION_ID, DEFAULT_CERTIFICATE_ID);
-        daba.addAuditEvent(firstCollectionID, FILE_ID_2, DEFAULT_ACTOR, DEFAULT_INFO, DEFAULT_AUDIT_TRAIL_MESSAGE, FileAction.FAILURE, DEFAULT_OPERATION_ID, DEFAULT_CERTIFICATE_ID);
-        daba.addAuditEvent(firstCollectionID, FILE_ID_2, DEFAULT_ACTOR, DEFAULT_INFO, DEFAULT_AUDIT_TRAIL_MESSAGE, FileAction.INCONSISTENCY, DEFAULT_OPERATION_ID, DEFAULT_CERTIFICATE_ID);
+        daba.addAuditEvent(firstCollectionID, FILE_ID_1, DEFAULT_ACTOR, DEFAULT_INFO, DEFAULT_AUDIT_TRAIL_MESSAGE,
+                FileAction.PUT_FILE, DEFAULT_OPERATION_ID, DEFAULT_CERTIFICATE_ID);
+        daba.addAuditEvent(firstCollectionID, FILE_ID_1, DEFAULT_ACTOR, DEFAULT_INFO, DEFAULT_AUDIT_TRAIL_MESSAGE,
+                FileAction.CHECKSUM_CALCULATED, DEFAULT_OPERATION_ID, DEFAULT_CERTIFICATE_ID);
+        daba.addAuditEvent(firstCollectionID, FILE_ID_2, DEFAULT_ACTOR, DEFAULT_INFO, DEFAULT_AUDIT_TRAIL_MESSAGE,
+                FileAction.FILE_MOVED, DEFAULT_OPERATION_ID, DEFAULT_CERTIFICATE_ID);
+        daba.addAuditEvent(firstCollectionID, FILE_ID_2, DEFAULT_ACTOR, DEFAULT_INFO, DEFAULT_AUDIT_TRAIL_MESSAGE,
+                FileAction.FAILURE, DEFAULT_OPERATION_ID, DEFAULT_CERTIFICATE_ID);
+        daba.addAuditEvent(firstCollectionID, FILE_ID_2, DEFAULT_ACTOR, DEFAULT_INFO, DEFAULT_AUDIT_TRAIL_MESSAGE,
+                FileAction.INCONSISTENCY, DEFAULT_OPERATION_ID, DEFAULT_CERTIFICATE_ID);
 
         addStep("Test extracting all the events", "Should be all 5 events.");
         AuditTrailDatabaseResults events = daba.getAudits(firstCollectionID, null, null, null, null, null, null);
@@ -142,11 +147,16 @@ public class AuditTrailContributorDatabaseTest {
         daba.initialize(settings.getComponentID());
 
         addStep("Populate the database.", "Should be inserted into database.");
-        daba.addAuditEvent(firstCollectionID, FILE_ID_1, DEFAULT_ACTOR, DEFAULT_INFO, DEFAULT_AUDIT_TRAIL_MESSAGE, FileAction.PUT_FILE, DEFAULT_OPERATION_ID, DEFAULT_CERTIFICATE_ID);
-        daba.addAuditEvent(firstCollectionID, FILE_ID_1, DEFAULT_ACTOR, DEFAULT_INFO, DEFAULT_AUDIT_TRAIL_MESSAGE, FileAction.CHECKSUM_CALCULATED, DEFAULT_OPERATION_ID, DEFAULT_CERTIFICATE_ID);
-        daba.addAuditEvent(firstCollectionID, FILE_ID_2, DEFAULT_ACTOR, DEFAULT_INFO, DEFAULT_AUDIT_TRAIL_MESSAGE, FileAction.FILE_MOVED, DEFAULT_OPERATION_ID, DEFAULT_CERTIFICATE_ID);
-        daba.addAuditEvent(firstCollectionID, FILE_ID_2, DEFAULT_ACTOR, DEFAULT_INFO, DEFAULT_AUDIT_TRAIL_MESSAGE, FileAction.FAILURE, DEFAULT_OPERATION_ID, DEFAULT_CERTIFICATE_ID);
-        daba.addAuditEvent(firstCollectionID, FILE_ID_2, DEFAULT_ACTOR, DEFAULT_INFO, DEFAULT_AUDIT_TRAIL_MESSAGE, FileAction.INCONSISTENCY, DEFAULT_OPERATION_ID, DEFAULT_CERTIFICATE_ID);
+        daba.addAuditEvent(firstCollectionID, FILE_ID_1, DEFAULT_ACTOR, DEFAULT_INFO, DEFAULT_AUDIT_TRAIL_MESSAGE,
+                FileAction.PUT_FILE, DEFAULT_OPERATION_ID, DEFAULT_CERTIFICATE_ID);
+        daba.addAuditEvent(firstCollectionID, FILE_ID_1, DEFAULT_ACTOR, DEFAULT_INFO, DEFAULT_AUDIT_TRAIL_MESSAGE,
+                FileAction.CHECKSUM_CALCULATED, DEFAULT_OPERATION_ID, DEFAULT_CERTIFICATE_ID);
+        daba.addAuditEvent(firstCollectionID, FILE_ID_2, DEFAULT_ACTOR, DEFAULT_INFO, DEFAULT_AUDIT_TRAIL_MESSAGE,
+                FileAction.FILE_MOVED, DEFAULT_OPERATION_ID, DEFAULT_CERTIFICATE_ID);
+        daba.addAuditEvent(firstCollectionID, FILE_ID_2, DEFAULT_ACTOR, DEFAULT_INFO, DEFAULT_AUDIT_TRAIL_MESSAGE,
+                FileAction.FAILURE, DEFAULT_OPERATION_ID, DEFAULT_CERTIFICATE_ID);
+        daba.addAuditEvent(firstCollectionID, FILE_ID_2, DEFAULT_ACTOR, DEFAULT_INFO, DEFAULT_AUDIT_TRAIL_MESSAGE,
+                FileAction.INCONSISTENCY, DEFAULT_OPERATION_ID, DEFAULT_CERTIFICATE_ID);
 
         addStep("Extract 3 audit-trails", "Should give first 3 audit-trails in order.");
         AuditTrailDatabaseResults events = daba.getAudits(firstCollectionID, null, null, null, null, null, 3L);
@@ -179,11 +189,11 @@ public class AuditTrailContributorDatabaseTest {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.ROOT);
         Date summertimeTS = sdf.parse("2015-10-25T02:59:54.000+02:00");
         Date summertimeUnix = new Date(1445734794000L);
-        Assertions.assertEquals(summertimeTS, summertimeUnix);
+        Assertions.assertEquals(summertimeUnix, summertimeTS);
 
         Date wintertimeTS = sdf.parse("2015-10-25T02:59:54.000+01:00");
         Date wintertimeUnix = new Date(1445738394000L);
-        Assertions.assertEquals(wintertimeTS, wintertimeUnix);
+        Assertions.assertEquals(wintertimeUnix, wintertimeTS);
 
         daba.addAuditEvent(firstCollectionID, "summertime", summertimeTS, "actor", "info", "auditTrail",
                 FileAction.OTHER, null, null);
@@ -192,13 +202,13 @@ public class AuditTrailContributorDatabaseTest {
 
         AuditTrailDatabaseResults events = daba.getAudits(firstCollectionID, "summertime", null, null, null, null, 2L);
         Assertions.assertEquals(1, events.getAuditTrailEvents().getAuditTrailEvent().size(), events.toString());
-        Assertions.assertEquals(CalendarUtils.convertFromXMLGregorianCalendar(
-                events.getAuditTrailEvents().getAuditTrailEvent().get(0).getActionDateTime()), summertimeUnix);
+        Assertions.assertEquals(summertimeUnix, CalendarUtils.convertFromXMLGregorianCalendar(
+                events.getAuditTrailEvents().getAuditTrailEvent().get(0).getActionDateTime()));
 
         events = daba.getAudits(firstCollectionID, "wintertime", null, null, null, null, 2L);
         Assertions.assertEquals(1, events.getAuditTrailEvents().getAuditTrailEvent().size(), events.toString());
-        Assertions.assertEquals(CalendarUtils.convertFromXMLGregorianCalendar(
-                events.getAuditTrailEvents().getAuditTrailEvent().get(0).getActionDateTime()), wintertimeUnix);
+        Assertions.assertEquals(wintertimeUnix, CalendarUtils.convertFromXMLGregorianCalendar(
+                events.getAuditTrailEvents().getAuditTrailEvent().get(0).getActionDateTime()));
 
     }
 
@@ -224,7 +234,8 @@ public class AuditTrailContributorDatabaseTest {
         daba.initialize(settings.getComponentID());
 
         addStep("Test with all data.", "No failures");
-        daba.addAuditEvent(firstCollectionID, fileID1, actor, info, auditTrail, FileAction.FAILURE, operationID, certificateID);
+        daba.addAuditEvent(firstCollectionID, fileID1, actor, info, auditTrail, FileAction.FAILURE, operationID,
+                certificateID);
 
         addStep("Test with no collection", "Throws exception");
         try {
@@ -235,19 +246,24 @@ public class AuditTrailContributorDatabaseTest {
         }
 
         addStep("Test with with no file id.", "No failures");
-        daba.addAuditEvent(firstCollectionID, null, actor, info, auditTrail, FileAction.FAILURE, operationID, certificateID);
+        daba.addAuditEvent(firstCollectionID, null, actor, info, auditTrail, FileAction.FAILURE, operationID,
+                certificateID);
 
         addStep("Test with with no actor.", "No failures");
-        daba.addAuditEvent(firstCollectionID, fileID1, null, info, auditTrail, FileAction.FAILURE, operationID, certificateID);
+        daba.addAuditEvent(firstCollectionID, fileID1, null, info, auditTrail, FileAction.FAILURE, operationID,
+                certificateID);
 
         addStep("Test with with no info.", "No failures");
-        daba.addAuditEvent(firstCollectionID, fileID1, actor, null, auditTrail, FileAction.FAILURE, operationID, certificateID);
+        daba.addAuditEvent(firstCollectionID, fileID1, actor, null, auditTrail, FileAction.FAILURE, operationID,
+                certificateID);
 
         addStep("Test with with no audittrail.", "No failures");
-        daba.addAuditEvent(firstCollectionID, fileID1, actor, info, null, FileAction.FAILURE, operationID, certificateID);
+        daba.addAuditEvent(firstCollectionID, fileID1, actor, info, null, FileAction.FAILURE, operationID,
+                certificateID);
 
         addStep("Test with with no operationID.", "No failures");
-        daba.addAuditEvent(firstCollectionID, fileID1, actor, info, auditTrail, FileAction.FAILURE, null, certificateID);
+        daba.addAuditEvent(firstCollectionID, fileID1, actor, info, auditTrail, FileAction.FAILURE, null,
+                certificateID);
 
         addStep("Test with with no certificateID.", "No failures");
         daba.addAuditEvent(firstCollectionID, fileID1, actor, info, auditTrail, FileAction.FAILURE, operationID, null);
@@ -262,7 +278,8 @@ public class AuditTrailContributorDatabaseTest {
 
         addStep("Test with with very large file id.", "Throws exception");
         try {
-            daba.addAuditEvent(firstCollectionID, veryLongString, actor, info, auditTrail, FileAction.FAILURE, operationID, certificateID);
+            daba.addAuditEvent(firstCollectionID, veryLongString, actor, info, auditTrail, FileAction.FAILURE,
+                    operationID, certificateID);
             Assertions.fail("Should throw an exception");
         } catch (IllegalStateException e) {
             // expected
@@ -270,17 +287,20 @@ public class AuditTrailContributorDatabaseTest {
 
         addStep("Test with with very large actor name.", "Throws exception");
         try {
-            daba.addAuditEvent(firstCollectionID, fileID1, veryLongString, info, auditTrail, FileAction.FAILURE, operationID, certificateID);
+            daba.addAuditEvent(firstCollectionID, fileID1, veryLongString, info, auditTrail, FileAction.FAILURE,
+                    operationID, certificateID);
             Assertions.fail("Should throw an exception");
         } catch (IllegalStateException e) {
             // expected
         }
 
         addStep("Test with with very large info.", "No failures");
-        daba.addAuditEvent(firstCollectionID, fileID1, actor, veryLongString, auditTrail, FileAction.FAILURE, operationID, certificateID);
+        daba.addAuditEvent(firstCollectionID, fileID1, actor, veryLongString, auditTrail, FileAction.FAILURE,
+                operationID, certificateID);
 
         addStep("Test with with very large audittrail.", "No failures");
-        daba.addAuditEvent(firstCollectionID, fileID1, actor, info, veryLongString, FileAction.FAILURE, operationID, certificateID);
+        daba.addAuditEvent(firstCollectionID, fileID1, actor, info, veryLongString, FileAction.FAILURE, operationID,
+                certificateID);
 
         dm.getConnector().destroy();
     }

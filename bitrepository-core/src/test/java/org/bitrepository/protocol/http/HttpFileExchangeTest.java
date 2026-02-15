@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class HttpFileExchangeTest {
     @Test
-    @Tag("regressiontest" )
+    @Tag("regressiontest")
     public void checkUrlEncodingOfFilenamesTest() throws MalformedURLException {
         addDescription("Tests that the filename is url-encoded correctly for a configured webdav server");
         Settings mySettings = TestSettingsProvider.reloadSettings("uploadTest");
@@ -50,18 +50,18 @@ public class HttpFileExchangeTest {
         fileExchangeSettings.setPath("dav");
         HttpFileExchange fe = new HttpFileExchange(fileExchangeSettings);
         String serverPathPrefix = fileExchangeSettings.getPath() + "/";
-        
+
         addStep("Check plain filename (a filename that does not see any changes due to urlencoding", "The filename " +
                 "should be unmodified");
         String plainFilename = "testfile";
         URL plainFilenameUrl = fe.getURL(plainFilename);
-        
-        assertEquals(plainFilenameUrl.getFile(), serverPathPrefix + plainFilename);
-        
+
+        Assertions.assertEquals(serverPathPrefix + plainFilename, plainFilenameUrl.getFile());
+
         addStep("Check that + is encoded as expected", "Filenames with a + is correctly encoded");
         String plusFilename = "test+file";
         URL plusFilenameUrl = fe.getURL(plusFilename);
         String expectedEncodedPlusFilename = "test%2Bfile";
-        assertEquals(plusFilenameUrl.getFile(), serverPathPrefix + expectedEncodedPlusFilename);
+        Assertions.assertEquals(serverPathPrefix + expectedEncodedPlusFilename, plusFilenameUrl.getFile());
     }
 }

@@ -115,7 +115,7 @@ public class ChecksumDatabaseMigrationTest {
         String retrieveCollectionIdSql = "SELECT " + CS_COLLECTION_ID + " FROM " + CHECKSUM_TABLE + " WHERE "
                 + CS_FILE_ID + " = ?";
         String collectionID = DatabaseUtils.selectStringValue(connector, retrieveCollectionIdSql, FILE_ID);
-        Assertions.assertEquals(collectionID, settings.getCollections().get(0).getID());
+        Assertions.assertEquals(settings.getCollections().get(0).getID(), collectionID);
     }
 
     @Test
@@ -159,6 +159,7 @@ public class ChecksumDatabaseMigrationTest {
         Date testDateAtTimeZone = new Date(testDate.getTime()
                 + Calendar.getInstance(TimeZone.getDefault(), Locale.ROOT).getTimeZone().getRawOffset());
 
-        Assertions.assertEquals(extractedDate.longValue(), testDateAtTimeZone.getTime());
+        Assertions.assertNotNull(extractedDate);
+        Assertions.assertEquals(testDateAtTimeZone.getTime(), extractedDate.longValue());
     }
 }

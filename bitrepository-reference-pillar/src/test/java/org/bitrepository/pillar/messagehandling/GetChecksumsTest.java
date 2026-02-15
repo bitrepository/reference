@@ -39,8 +39,11 @@ import org.bitrepository.pillar.MockedPillarTest;
 import org.bitrepository.pillar.messagefactories.GetChecksumsMessageFactory;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumEntry;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -101,13 +104,12 @@ public class GetChecksumsTest extends MockedPillarTest {
                 "The pillar should make a response.");
         IdentifyPillarsForGetChecksumsResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetChecksumsResponse.class);
-        assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
-                receivedIdentifyResponse.getResponseInfo().getResponseCode());
-        assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
-        assertEquals(receivedIdentifyResponse.getFileIDs(), fileids);
+        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE, receivedIdentifyResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID());
+        Assertions.assertEquals(fileids, receivedIdentifyResponse.getFileIDs());
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
-        assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
+        Assertions.assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
     }
 
     @SuppressWarnings("rawtypes")
@@ -142,13 +144,12 @@ public class GetChecksumsTest extends MockedPillarTest {
                 "The pillar should make a response.");
         IdentifyPillarsForGetChecksumsResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetChecksumsResponse.class);
-        assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE,
-                receivedIdentifyResponse.getResponseInfo().getResponseCode());
-        assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
-        assertEquals(receivedIdentifyResponse.getFileIDs(), fileids);
+        Assertions.assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE, receivedIdentifyResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID());
+        Assertions.assertEquals(fileids, receivedIdentifyResponse.getFileIDs());
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
-        assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
+        Assertions.assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
     }
 
     @SuppressWarnings("rawtypes")
@@ -187,18 +188,19 @@ public class GetChecksumsTest extends MockedPillarTest {
 
         addStep("Retrieve the ProgressResponse for the GetChecksums request",
                 "The GetChecksums progress response should be sent by the pillar.");
-        GetChecksumsProgressResponse progressResponse = clientReceiver.waitForMessage(GetChecksumsProgressResponse.class);
-        assertEquals(progressResponse.getFileIDs(), fileids);
-        assertEquals(progressResponse.getPillarID(), getPillarID());
-        assertNull(progressResponse.getResultAddress());
+        GetChecksumsProgressResponse progressResponse =
+                clientReceiver.waitForMessage(GetChecksumsProgressResponse.class);
+        Assertions.assertEquals(fileids, progressResponse.getFileIDs());
+        Assertions.assertEquals(getPillarID(), progressResponse.getPillarID());
+        Assertions.assertNull(progressResponse.getResultAddress());
 
         addStep("Retrieve the FinalResponse for the GetChecksums request",
                 "The final response should say 'operation_complete', and give the requested data.");
         GetChecksumsFinalResponse finalResponse = clientReceiver.waitForMessage(GetChecksumsFinalResponse.class);
-        assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
-        assertEquals(finalResponse.getPillarID(), getPillarID());
-        assertEquals(1, finalResponse.getResultingChecksums().getChecksumDataItems().size());
-        assertEquals(finalResponse.getResultingChecksums().getChecksumDataItems().get(0).getFileID(), FILE_ID);
+        Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(getPillarID(), finalResponse.getPillarID());
+        Assertions.assertEquals(1, finalResponse.getResultingChecksums().getChecksumDataItems().size());
+        Assertions.assertEquals(FILE_ID, finalResponse.getResultingChecksums().getChecksumDataItems().get(0).getFileID());
     }
 
     @SuppressWarnings("rawtypes")
@@ -232,17 +234,18 @@ public class GetChecksumsTest extends MockedPillarTest {
 
         addStep("Retrieve the ProgressResponse for the GetChecksums request",
                 "The GetChecksums progress response should be sent by the pillar.");
-        GetChecksumsProgressResponse progressResponse = clientReceiver.waitForMessage(GetChecksumsProgressResponse.class);
-        assertEquals(progressResponse.getFileIDs(), fileids);
-        assertEquals(progressResponse.getPillarID(), getPillarID());
-        assertNull(progressResponse.getResultAddress());
+        GetChecksumsProgressResponse progressResponse =
+                clientReceiver.waitForMessage(GetChecksumsProgressResponse.class);
+        Assertions.assertEquals(fileids, progressResponse.getFileIDs());
+        Assertions.assertEquals(getPillarID(), progressResponse.getPillarID());
+        Assertions.assertNull(progressResponse.getResultAddress());
 
         addStep("Retrieve the FinalResponse for the GetChecksums request",
                 "The final response should say 'operation_complete', and give the requested data.");
         GetChecksumsFinalResponse finalResponse = clientReceiver.waitForMessage(GetChecksumsFinalResponse.class);
-        assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
-        assertEquals(finalResponse.getPillarID(), getPillarID());
-        assertEquals(2, finalResponse.getResultingChecksums().getChecksumDataItems().size());
+        Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(getPillarID(), finalResponse.getPillarID());
+        Assertions.assertEquals(2, finalResponse.getResultingChecksums().getChecksumDataItems().size());
     }
 
     @SuppressWarnings("rawtypes")
@@ -276,12 +279,12 @@ public class GetChecksumsTest extends MockedPillarTest {
         addStep("Retrieve the FinalResponse for the GetChecksums request",
                 "The final response should tell about the error, and not contain the file.");
         GetChecksumsFinalResponse finalResponse = clientReceiver.waitForMessage(GetChecksumsFinalResponse.class);
-        assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE, finalResponse.getResponseInfo().getResponseCode());
-        assertEquals(finalResponse.getPillarID(), getPillarID());
-        assertNull(finalResponse.getResultingChecksums());
+        Assertions.assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE, finalResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(getPillarID(), finalResponse.getPillarID());
+        Assertions.assertNull(finalResponse.getResultingChecksums());
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
-        assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
+        Assertions.assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
     }
 
     @SuppressWarnings("rawtypes")
@@ -319,17 +322,18 @@ public class GetChecksumsTest extends MockedPillarTest {
 
         addStep("Retrieve the ProgressResponse for the GetChecksums request",
                 "The GetChecksums progress response should be sent by the pillar.");
-        GetChecksumsProgressResponse progressResponse = clientReceiver.waitForMessage(GetChecksumsProgressResponse.class);
-        assertEquals(progressResponse.getFileIDs(), fileids);
-        assertEquals(progressResponse.getPillarID(), getPillarID());
-        assertNull(progressResponse.getResultAddress());
+        GetChecksumsProgressResponse progressResponse =
+                clientReceiver.waitForMessage(GetChecksumsProgressResponse.class);
+        Assertions.assertEquals(fileids, progressResponse.getFileIDs());
+        Assertions.assertEquals(getPillarID(), progressResponse.getPillarID());
+        Assertions.assertNull(progressResponse.getResultAddress());
 
         addStep("Retrieve the FinalResponse for the GetChecksums request",
                 "The final response should say 'operation_complete', and give the requested data.");
         GetChecksumsFinalResponse finalResponse = clientReceiver.waitForMessage(GetChecksumsFinalResponse.class);
-        assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
-        assertEquals(finalResponse.getPillarID(), getPillarID());
-        assertEquals(1, finalResponse.getResultingChecksums().getChecksumDataItems().size());
-        assertEquals(finalResponse.getResultingChecksums().getChecksumDataItems().get(0).getFileID(), defaultFileId);
+        Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(getPillarID(), finalResponse.getPillarID());
+        Assertions.assertEquals(1, finalResponse.getResultingChecksums().getChecksumDataItems().size());
+        Assertions.assertEquals(defaultFileId, finalResponse.getResultingChecksums().getChecksumDataItems().get(0).getFileID());
     }
 }

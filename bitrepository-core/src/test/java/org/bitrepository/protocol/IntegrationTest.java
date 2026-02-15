@@ -158,7 +158,6 @@ public abstract class IntegrationTest {
         shutdownCUT();
     }
 
-
     /**
      * May be used by specific tests for general verification when the test method has finished. Will only be run
      * if the test has passed (so far).

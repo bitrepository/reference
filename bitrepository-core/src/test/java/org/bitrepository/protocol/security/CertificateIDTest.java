@@ -98,14 +98,14 @@ public class CertificateIDTest {
         CertificateID certificateID1 = new CertificateID(issuer, serial);
 
         addStep("Validate the content of the certificateID", "Should be same as x509Certificate");
-        Assertions.assertEquals(certificateID1.getIssuer(), issuer);
-        Assertions.assertEquals(certificateID1.getSerial(), serial);
+        Assertions.assertEquals(issuer, certificateID1.getIssuer());
+        Assertions.assertEquals(serial, certificateID1.getSerial());
 
         addStep("Test whether it equals it self", "should give positive result");
         Assertions.assertEquals(certificateID1, certificateID1);
 
         addStep("Test with a null as argument", "Should give negative result");
-        Assertions.assertNotEquals(null, certificateID1);
+        Assertions.assertNotNull(certificateID1);
 
         addStep("Test with another class", "Should give negative result");
         Assertions.assertNotEquals(new Object(), certificateID1);
@@ -117,7 +117,7 @@ public class CertificateIDTest {
         Assertions.assertNotEquals(new CertificateID((X500Principal) null, serial), certificateID1);
 
         addStep("Test the positive case, with both the issuer and serial ", "Should give positive result");
-        Assertions.assertEquals(new CertificateID(issuer, serial), certificateID1);
+        Assertions.assertEquals(certificateID1, new CertificateID(issuer, serial));
 
         addStep("Setup an empty certificate", "");
         CertificateID certificateID2 = new CertificateID((X500Principal) null, null);

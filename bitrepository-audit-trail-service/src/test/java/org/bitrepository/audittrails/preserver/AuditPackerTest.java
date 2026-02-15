@@ -6,8 +6,11 @@ import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.settings.referencesettings.AuditTrailPreservation;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.util.List;
@@ -40,8 +43,8 @@ public class AuditPackerTest {
     public void testCreateNewPackage() throws IOException {
         AuditPacker packer = new AuditPacker(store, preservationSettings, collectionID);
         Map<String, Long> seqNumsReached = packer.getSequenceNumbersReached();
-        assertEquals(3, seqNumsReached.size());
-        assertEquals(0, packer.getPackedAuditCount());
+        Assertions.assertEquals(3, seqNumsReached.size());
+        Assertions.assertEquals(0, packer.getPackedAuditCount());
 
         // Create a stubbed event iterator for each expected contributor containing only one event.
         List<StubAuditEventIterator> iterators = List.of(
@@ -53,13 +56,13 @@ public class AuditPackerTest {
 
         // Do the actual call to createNewPackage - this will fetch first event from the iterators.
         packer.createNewPackage();
-        Long[] expectedSeqNums = {1L, 1L, 1L};
-        assertEquals(3, packer.getPackedAuditCount());
-        assertArrayEquals(expectedSeqNums, packer.getSequenceNumbersReached().values().toArray(new Long[0]));
+        List<Long> expectedSeqNums = List.of(1L, 1L, 1L);
+        Assertions.assertEquals(3, packer.getPackedAuditCount());
+        Assertions.assertIterableEquals(expectedSeqNums, packer.getSequenceNumbersReached().values());
 
         // As the iterators have no new audits there should be no newly packed audits on a new call.
         packer.createNewPackage();
-        assertEquals(0, packer.getPackedAuditCount());
-        assertArrayEquals(expectedSeqNums, packer.getSequenceNumbersReached().values().toArray(new Long[0]));
+        Assertions.assertEquals(0, packer.getPackedAuditCount());
+        Assertions.assertArrayEquals(expectedSeqNums.toArray(), packer.getSequenceNumbersReached().values().toArray());
     }
 }

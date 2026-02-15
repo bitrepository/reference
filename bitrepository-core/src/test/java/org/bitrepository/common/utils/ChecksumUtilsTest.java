@@ -161,11 +161,10 @@ public class ChecksumUtilsTest {
         String cs2 = ChecksumUtils.generateChecksum(testFile, ChecksumType.MD5);
         String cs3 = ChecksumUtils.generateChecksum(testFile, ChecksumType.MD5, null);
 
-        Assertions.assertEquals(cs1, cs2);
-        Assertions.assertEquals(cs1, cs3);
-        Assertions.assertEquals(cs2, cs3);
+        Assertions.assertEquals(cs2, cs1);
+        Assertions.assertEquals(cs3, cs1);
+        Assertions.assertEquals(cs3, cs2);
     }
-
 
     @Test
     @Tag("regressiontest")
@@ -219,8 +218,9 @@ public class ChecksumUtilsTest {
     }
 
     private void validateHmac(ChecksumType hmacType) throws NoSuchAlgorithmException {
-        addStep("Test '" + hmacType + "'", "Should be invalid without salt, and valid with no matter whether "
-                + "the salt is empty.");
+        addStep("Test '" + hmacType + "'",
+                "Should be invalid without salt, and valid with no matter whether "
+                        + "the salt is empty.");
         ChecksumSpecTYPE csType = new ChecksumSpecTYPE();
         csType.setChecksumType(hmacType);
 
@@ -241,14 +241,16 @@ public class ChecksumUtilsTest {
     }
 
     private void validateMessageDigest(ChecksumType algorithmType) throws NoSuchAlgorithmException {
-        addStep("Test '" + algorithmType + "'", "Should be valid without salt, valid with an empty salt, "
-                + "and invalid with a proper salt.");
+        addStep("Test '" + algorithmType + "'",
+                "Should be valid without salt, valid with an empty salt, "
+                        + "and invalid with a proper salt.");
         ChecksumSpecTYPE csType = new ChecksumSpecTYPE();
         csType.setChecksumType(algorithmType);
 
         ChecksumUtils.verifyAlgorithm(csType);
 
-        Assertions.assertFalse(ChecksumUtils.requiresSalt(algorithmType), "Non-HMAC algorithms must not require salt.");
+        Assertions.assertFalse(ChecksumUtils.requiresSalt(algorithmType),
+                "Non-HMAC algorithms must not require salt.");
 
         csType.setChecksumSalt(new byte[0]);
         ChecksumUtils.verifyAlgorithm(csType);
@@ -264,15 +266,16 @@ public class ChecksumUtilsTest {
 
     @Test
     @Tag("regressiontest")
-    public void testDefaultChecksum() throws Exception {
+    public void testDefaultChecksum() {
         addDescription("Test the extraction of the default checksum from settings.");
         addStep("Setup the settings", "Loading the test settings");
         Settings settings = TestSettingsProvider.reloadSettings("ChecksumUtils");
 
-        addStep("Use utils to extract default checksum spec", "Should be the one defined in Settings.");
+        addStep("Use utils to extract default checksum spec",
+                "Should be the one defined in Settings.");
         ChecksumSpecTYPE csType = ChecksumUtils.getDefault(settings);
-        Assertions.assertEquals(csType.getChecksumType().name(),
-                settings.getRepositorySettings().getProtocolSettings().getDefaultChecksumType());
+        Assertions.assertEquals(settings.getRepositorySettings().getProtocolSettings().getDefaultChecksumType(),
+                csType.getChecksumType().name());
         Assertions.assertNull(csType.getChecksumSalt(), "Should not contain any salt.");
     }
 }

@@ -56,49 +56,49 @@ public class TimeUtilsTest {
         long millis = 271433605;
         String millisInSec = TimeUtils.millisecondsToSeconds(millis % 60000);
         String expectedSec = "53s";
-        assertTrue(millisInSec.startsWith(expectedSec));
+        Assertions.assertTrue(millisInSec.startsWith(expectedSec));
 
         addStep("Test that milliseconds can be converted into human readable minutes.",
                 "Pi days % hours");
         String millisInMin = TimeUtils.millisecondsToMinutes(millis % 3600000);
         String expectedMin = "23m";
-        assertTrue(millisInMin.startsWith(expectedMin));
+        Assertions.assertTrue(millisInMin.startsWith(expectedMin));
 
         addStep("Test that milliseconds can be converted into human readable hours.",
                 "Pi days % days");
         String millisInHour = TimeUtils.millisecondsToHours(millis % (3600000 * 24));
         String expectedHours = "3h";
-        assertTrue(millisInHour.startsWith(expectedHours));
+        Assertions.assertTrue(millisInHour.startsWith(expectedHours));
 
         addStep("Test that milliseconds can be converted into human readable minutes.",
                 "Pi days");
         String millisInDay = TimeUtils.millisecondsToDays(millis);
         String expectedDays = "3d";
-        assertTrue(millisInDay.startsWith(expectedDays));
+        Assertions.assertTrue(millisInDay.startsWith(expectedDays));
 
         addStep("Test the human readable output.", "");
         String human = TimeUtils.millisecondsToHuman(millis);
-        assertTrue(human.contains(expectedSec), human);
-        assertTrue(human.contains(expectedMin), human);
-        assertTrue(human.contains(expectedHours), human);
-        assertTrue(human.contains(expectedDays), human);
+        Assertions.assertTrue(human.contains(expectedSec), human);
+        Assertions.assertTrue(human.contains(expectedMin), human);
+        Assertions.assertTrue(human.contains(expectedHours), human);
+        Assertions.assertTrue(human.contains(expectedDays), human);
     }
 
     @Test
     @Tag("regressiontest")
     public void printsHumanDuration() {
-        assertEquals("1y", TimeUtils.durationToHumanUsingEstimates(ChronoUnit.YEARS.getDuration()));
-        assertEquals("1m", TimeUtils.durationToHumanUsingEstimates(ChronoUnit.MONTHS.getDuration()));
-        assertEquals("1d", TimeUtils.durationToHumanUsingEstimates(ChronoUnit.DAYS.getDuration()));
-        assertEquals("1h", TimeUtils.durationToHumanUsingEstimates(ChronoUnit.HOURS.getDuration()));
-        assertEquals("1m", TimeUtils.durationToHumanUsingEstimates(ChronoUnit.MINUTES.getDuration()));
+        Assertions.assertEquals("1y", TimeUtils.durationToHumanUsingEstimates(ChronoUnit.YEARS.getDuration()));
+        Assertions.assertEquals("1m", TimeUtils.durationToHumanUsingEstimates(ChronoUnit.MONTHS.getDuration()));
+        Assertions.assertEquals("1d", TimeUtils.durationToHumanUsingEstimates(ChronoUnit.DAYS.getDuration()));
+        Assertions.assertEquals("1h", TimeUtils.durationToHumanUsingEstimates(ChronoUnit.HOURS.getDuration()));
+        Assertions.assertEquals("1m", TimeUtils.durationToHumanUsingEstimates(ChronoUnit.MINUTES.getDuration()));
         // Don’t print seconds
-        assertEquals("0m", TimeUtils.durationToHumanUsingEstimates(ChronoUnit.SECONDS.getDuration()));
-        assertEquals("2h 3m", TimeUtils.durationToHumanUsingEstimates(Duration.parse("PT2H3M5S")));
+        Assertions.assertEquals("0m", TimeUtils.durationToHumanUsingEstimates(ChronoUnit.SECONDS.getDuration()));
+        Assertions.assertEquals("2h 3m", TimeUtils.durationToHumanUsingEstimates(Duration.parse("PT2H3M5S")));
 
         addStep("Test the limits of what the method handles", "0m and 500y respectively");
-        assertEquals("0m", TimeUtils.durationToHumanUsingEstimates(Duration.ZERO));
-        assertEquals("500y", TimeUtils.durationToHumanUsingEstimates(Duration.ofHours(4_382_910)));
+        Assertions.assertEquals("0m", TimeUtils.durationToHumanUsingEstimates(Duration.ZERO));
+        Assertions.assertEquals("500y", TimeUtils.durationToHumanUsingEstimates(Duration.ofHours(4_382_910)));
     }
 
     @Test
@@ -107,7 +107,7 @@ public class TimeUtilsTest {
         addDescription("Verifies that a 0 ms interval is represented correctly");
         addStep("Call millisecondsToHuman with 0 ms", "The output should be '0 ms'");
         String zeroTimeString = TimeUtils.millisecondsToHuman(0);
-        assertEquals(" 0 ms", zeroTimeString);
+        Assertions.assertEquals(" 0 ms", zeroTimeString);
     }
 
     @Test
@@ -115,23 +115,23 @@ public class TimeUtilsTest {
     public void durationsPrintHumanly() {
         addDescription("Tests durationToHuman()");
 
-        assertTrue(TimeUtils.durationToHuman(Duration.ZERO).contains("0"),
+        Assertions.assertTrue(TimeUtils.durationToHuman(Duration.ZERO).contains("0"),
                 "Zero duration should contain a 0 digit");
 
-        assertEquals("2d", TimeUtils.durationToHuman(Duration.ofDays(2)));
-        assertEquals("3h", TimeUtils.durationToHuman(Duration.ofHours(3)));
-        assertEquals("5m", TimeUtils.durationToHuman(Duration.ofMinutes(5)));
-        assertEquals("7s", TimeUtils.durationToHuman(Duration.ofSeconds(7)));
-        assertEquals("11 ms", TimeUtils.durationToHuman(Duration.ofMillis(11)));
-        assertEquals("13 ns", TimeUtils.durationToHuman(Duration.ofNanos(13)));
+        Assertions.assertEquals("2d", TimeUtils.durationToHuman(Duration.ofDays(2)));
+        Assertions.assertEquals("3h", TimeUtils.durationToHuman(Duration.ofHours(3)));
+        Assertions.assertEquals("5m", TimeUtils.durationToHuman(Duration.ofMinutes(5)));
+        Assertions.assertEquals("7s", TimeUtils.durationToHuman(Duration.ofSeconds(7)));
+        Assertions.assertEquals("11 ms", TimeUtils.durationToHuman(Duration.ofMillis(11)));
+        Assertions.assertEquals("13 ns", TimeUtils.durationToHuman(Duration.ofNanos(13)));
         // When there are nanoseconds, don't print millis
-        assertEquals("999999937 ns", TimeUtils.durationToHuman(Duration.ofNanos(999_999_937)));
+        Assertions.assertEquals("999999937 ns", TimeUtils.durationToHuman(Duration.ofNanos(999_999_937)));
 
-        assertEquals("minus 2d", TimeUtils.durationToHuman(Duration.ofDays(-2)));
-        assertEquals("minus 13 ns", TimeUtils.durationToHuman(Duration.ofNanos(-13)));
+        Assertions.assertEquals("minus 2d", TimeUtils.durationToHuman(Duration.ofDays(-2)));
+        Assertions.assertEquals("minus 13 ns", TimeUtils.durationToHuman(Duration.ofNanos(-13)));
 
         Duration allUnits = Duration.parse("P3DT5H7M11.013000017S");
-        assertEquals("3d 5h 7m 11s 13000017 ns", TimeUtils.durationToHuman(allUnits));
+        Assertions.assertEquals("3d 5h 7m 11s 13000017 ns", TimeUtils.durationToHuman(allUnits));
     }
 
     @Test
@@ -142,7 +142,7 @@ public class TimeUtilsTest {
 
         addStep("Call humanDifference() with same time twice", "The output should be '0m'");
         String zeroTimeString = TimeUtils.humanDifference(BASE, BASE);
-        assertEquals("0m", zeroTimeString);
+        Assertions.assertEquals("0m", zeroTimeString);
 
         addStep("Call humanDifference() with a difference obtained from a Duration",
                 "Expect corresponding readable output");
@@ -176,7 +176,7 @@ public class TimeUtilsTest {
                         12, 0, 0, 0, testZoneId),
                 ZonedDateTime.of(2021, 2, 2,
                         11, 59, 29, 0, testZoneId));
-        assertEquals("1d 23h 59m", oneDaySomethingString);
+        Assertions.assertEquals("1d 23h 59m", oneDaySomethingString);
     }
 
     @Test
@@ -217,7 +217,7 @@ public class TimeUtilsTest {
             end = end.plus(amount);
         }
         String differenceString = TimeUtils.humanDifference(BASE, end);
-        assertEquals(expected, differenceString);
+        Assertions.assertEquals(expected, differenceString);
     }
 
     /*
@@ -231,7 +231,7 @@ public class TimeUtilsTest {
         DateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.ROOT);
         Date date = new Date(1360069129256L);
         String shortDateString = TimeUtils.shortDate(date);
-        Assertions.assertEquals(shortDateString, formatter.format(date));
+        Assertions.assertEquals(formatter.format(date), shortDateString);
     }
 
     @Test
@@ -254,18 +254,15 @@ public class TimeUtilsTest {
                 TimeUtils.durationToCountAndTimeUnit(Duration.ofNanos(1)));
         Assertions.assertEquals(new CountAndTimeUnit(Long.MAX_VALUE, TimeUnit.NANOSECONDS),
                 TimeUtils.durationToCountAndTimeUnit(Duration.ofNanos(Long.MAX_VALUE)));
-        Assertions.assertEquals(
-                new CountAndTimeUnit(Long.MAX_VALUE / 1000 + 1, TimeUnit.MICROSECONDS),
+        Assertions.assertEquals(new CountAndTimeUnit(Long.MAX_VALUE / 1000 + 1, TimeUnit.MICROSECONDS),
                 TimeUtils.durationToCountAndTimeUnit(Duration.of(Long.MAX_VALUE / 1000 + 1, ChronoUnit.MICROS)));
         Assertions.assertEquals(new CountAndTimeUnit(Long.MAX_VALUE, TimeUnit.MICROSECONDS),
                 TimeUtils.durationToCountAndTimeUnit(Duration.of(Long.MAX_VALUE, ChronoUnit.MICROS)));
-        Assertions.assertEquals(
-                new CountAndTimeUnit(Long.MAX_VALUE / 1000 + 1, TimeUnit.MILLISECONDS),
+        Assertions.assertEquals(new CountAndTimeUnit(Long.MAX_VALUE / 1000 + 1, TimeUnit.MILLISECONDS),
                 TimeUtils.durationToCountAndTimeUnit(Duration.ofMillis(Long.MAX_VALUE / 1000 + 1)));
         Assertions.assertEquals(new CountAndTimeUnit(Long.MAX_VALUE, TimeUnit.MILLISECONDS),
                 TimeUtils.durationToCountAndTimeUnit(Duration.ofMillis(Long.MAX_VALUE)));
-        Assertions.assertEquals(
-                new CountAndTimeUnit(Long.MAX_VALUE / 1000 + 1, TimeUnit.SECONDS),
+        Assertions.assertEquals(new CountAndTimeUnit(Long.MAX_VALUE / 1000 + 1, TimeUnit.SECONDS),
                 TimeUtils.durationToCountAndTimeUnit(Duration.ofSeconds(Long.MAX_VALUE / 1000 + 1)));
         Assertions.assertEquals(new CountAndTimeUnit(Long.MAX_VALUE, TimeUnit.SECONDS),
                 TimeUtils.durationToCountAndTimeUnit(Duration.ofSeconds(Long.MAX_VALUE)));

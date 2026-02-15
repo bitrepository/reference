@@ -40,7 +40,7 @@ public class AuditTrailQueryTest {
     public void testNoSequenceNumbers() throws Exception {
         addDescription("Test that a AuditTrailQuery can be created without any sequence numbers.");
         AuditTrailQuery query = new AuditTrailQuery(componentId, null, null, DEFAULT_MAX_NUMBER_OF_RESULTS);
-        assertEquals(query.getComponentID(), componentId);
+        assertEquals(componentId, query.getComponentID());
         assertNull(query.getMaxSequenceNumber());
         assertNull(query.getMinSequenceNumber());
     }
@@ -51,7 +51,7 @@ public class AuditTrailQueryTest {
         addDescription("Test the creation of a AuditTrailQuery with only the minSequenceNumber");
         Long minSeq = 1L;
         AuditTrailQuery query = new AuditTrailQuery(componentId, minSeq, null, DEFAULT_MAX_NUMBER_OF_RESULTS);
-        assertEquals(query.getComponentID(), componentId);
+        assertEquals(componentId, query.getComponentID());
         assertEquals(minSeq, query.getMinSequenceNumber());
         assertNull(query.getMaxSequenceNumber());
     }
@@ -63,7 +63,7 @@ public class AuditTrailQueryTest {
         Long minSeq = 1L;
         Long maxSeq = 2L;
         AuditTrailQuery query = new AuditTrailQuery(componentId, minSeq, maxSeq, DEFAULT_MAX_NUMBER_OF_RESULTS);
-        assertEquals(query.getComponentID(), componentId);
+        assertEquals(componentId, query.getComponentID());
         assertEquals(minSeq, query.getMinSequenceNumber());
         assertEquals(maxSeq, query.getMaxSequenceNumber());
     }

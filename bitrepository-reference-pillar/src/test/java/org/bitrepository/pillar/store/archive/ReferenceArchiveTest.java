@@ -90,7 +90,7 @@ public class ReferenceArchiveTest extends DefaultPillarTest {
         }
 
         addStep("Test getAllFileIDs", "Should only deliver the existing file");
-        Assertions.assertEquals(archive.getAllFileIds(), List.of(EXISTING_FILE));
+        Assertions.assertEquals(List.of(EXISTING_FILE), archive.getAllFileIds());
 
         addStep("Test 'getFileAsInputStream'", "Should only be able to deliver the existing file.");
         FileInputStream fileAsInputStream = archive.getFileAsInputStream(EXISTING_FILE);

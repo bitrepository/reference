@@ -27,11 +27,7 @@ import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.common.ChecksumDatabaseCreator;
-import org.bitrepository.pillar.store.checksumdatabase.ChecksumDAO;
-import org.bitrepository.pillar.store.checksumdatabase.ChecksumDatabaseManager;
-import org.bitrepository.pillar.store.checksumdatabase.ChecksumEntry;
-import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;
-import org.bitrepository.pillar.store.checksumdatabase.ExtractedFileIDsResultSet;
+import org.bitrepository.pillar.store.checksumdatabase.*;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 import org.bitrepository.settings.repositorysettings.PillarIDs;
@@ -96,8 +92,7 @@ public class ChecksumDatabaseTest {
         Assertions.assertEquals(1, entries.size());
         Assertions.assertEquals(DEFAULT_FILE_ID, entries.get(0).getFileID());
         Assertions.assertEquals(DEFAULT_CHECKSUM, Base16Utils.decodeBase16(entries.get(0).getChecksumValue()));
-        Assertions.assertEquals(DEFAULT_DATE,
-                CalendarUtils.convertFromXMLGregorianCalendar(entries.get(0).getCalculationTimestamp()));
+        Assertions.assertEquals(DEFAULT_DATE, CalendarUtils.convertFromXMLGregorianCalendar(entries.get(0).getCalculationTimestamp()));
     }
 
     @Test
@@ -111,8 +106,7 @@ public class ChecksumDatabaseTest {
         Assertions.assertTrue(cache.hasFile(DEFAULT_FILE_ID, collectionID));
         ExtractedFileIDsResultSet res = cache.getFileIDs(null, null, null, null, collectionID);
         Assertions.assertEquals(1, res.getEntries().getFileIDsDataItems().getFileIDsDataItem().size());
-        Assertions.assertEquals(DEFAULT_FILE_ID,
-                res.getEntries().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID());
+        Assertions.assertEquals(DEFAULT_FILE_ID, res.getEntries().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID());
 
         addStep("Remove the default entry", "Should no longer exist");
         cache.deleteEntry(DEFAULT_FILE_ID, collectionID);
@@ -215,8 +209,7 @@ public class ChecksumDatabaseTest {
         extractedResults = cache.getChecksumResults(CalendarUtils.getXmlGregorianCalendar(beforeTest), null, null, collectionID);
         Assertions.assertEquals(1, extractedResults.getEntries().size());
         dataEntry = extractedResults.getEntries().get(0);
-        Assertions.assertEquals(DEFAULT_DATE,
-                CalendarUtils.convertFromXMLGregorianCalendar(dataEntry.getCalculationTimestamp()));
+        Assertions.assertEquals(DEFAULT_DATE, CalendarUtils.convertFromXMLGregorianCalendar(dataEntry.getCalculationTimestamp()));
         Assertions.assertEquals(DEFAULT_FILE_ID, dataEntry.getFileID());
 
         addStep("Extract all dates older than the newest instance", "Both entries");

@@ -26,10 +26,16 @@ import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.client.DefaultFixtureClientTest;
 import org.bitrepository.commandline.Constants;
 import org.bitrepository.commandline.output.OutputHandler;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -54,7 +60,7 @@ public class ChecksumExtractionUtilsTest extends DefaultFixtureClientTest {
         addDescription("Test that the default checksum is retrieved when no arguments are given.");
         cmdHandler.parseArguments();
         ChecksumType type = ChecksumExtractionUtils.extractChecksumType(cmdHandler, settingsForCUT, output);
-        assertEquals(type.name(), settingsForCUT.getRepositorySettings().getProtocolSettings().getDefaultChecksumType());
+        Assertions.assertEquals(settingsForCUT.getRepositorySettings().getProtocolSettings().getDefaultChecksumType(), type.name());
     }
 
     @Test
@@ -63,7 +69,7 @@ public class ChecksumExtractionUtilsTest extends DefaultFixtureClientTest {
         addDescription("Test that the HMAC version of default checksum is retrieved when the salt arguments are given.");
         cmdHandler.parseArguments("-" + Constants.REQUEST_CHECKSUM_SALT_ARG + "0110");
         ChecksumType type = ChecksumExtractionUtils.extractChecksumType(cmdHandler, settingsForCUT, output);
-        assertEquals(type.name(), "HMAC_" + settingsForCUT.getRepositorySettings().getProtocolSettings().getDefaultChecksumType());
+        Assertions.assertEquals("HMAC_" + settingsForCUT.getRepositorySettings().getProtocolSettings().getDefaultChecksumType(), type.name());
     }
 
     @Test
@@ -73,7 +79,7 @@ public class ChecksumExtractionUtilsTest extends DefaultFixtureClientTest {
         ChecksumType enteredType = ChecksumType.SHA384;
         cmdHandler.parseArguments("-" + Constants.REQUEST_CHECKSUM_TYPE_ARG + enteredType);
         ChecksumType type = ChecksumExtractionUtils.extractChecksumType(cmdHandler, settingsForCUT, output);
-        assertEquals(enteredType, type);
+        Assertions.assertEquals(enteredType, type);
     }
 
     @Test
@@ -85,8 +91,8 @@ public class ChecksumExtractionUtilsTest extends DefaultFixtureClientTest {
         cmdHandler.parseArguments("-" + Constants.REQUEST_CHECKSUM_TYPE_ARG + enteredType,
                 "-" + Constants.REQUEST_CHECKSUM_SALT_ARG + "0110");
         ChecksumType type = ChecksumExtractionUtils.extractChecksumType(cmdHandler, settingsForCUT, output);
-        assertNotEquals(enteredType, type);
-        assertEquals(type.name(), "HMAC_" + enteredType.name());
+        Assertions.assertNotEquals(enteredType, type);
+        Assertions.assertEquals("HMAC_" + enteredType.name(), type.name());
     }
 
     @Test
@@ -97,9 +103,9 @@ public class ChecksumExtractionUtilsTest extends DefaultFixtureClientTest {
         ChecksumType enteredType = ChecksumType.HMAC_SHA256;
         cmdHandler.parseArguments("-" + Constants.REQUEST_CHECKSUM_TYPE_ARG + enteredType);
         ChecksumType type = ChecksumExtractionUtils.extractChecksumType(cmdHandler, settingsForCUT, output);
-        assertNotEquals(enteredType, type);
-        assertTrue(enteredType.name().contains("HMAC"));
-        assertEquals(type.name(), enteredType.name().replace("HMAC_", ""));
+        Assertions.assertNotEquals(enteredType, type);
+        Assertions.assertTrue(enteredType.name().contains("HMAC"));
+        Assertions.assertEquals(enteredType.name().replace("HMAC_", ""), type.name());
     }
 
     @Test
@@ -111,6 +117,6 @@ public class ChecksumExtractionUtilsTest extends DefaultFixtureClientTest {
         cmdHandler.parseArguments("-" + Constants.REQUEST_CHECKSUM_TYPE_ARG + enteredType,
                 "-" + Constants.REQUEST_CHECKSUM_SALT_ARG + "0110");
         ChecksumType type = ChecksumExtractionUtils.extractChecksumType(cmdHandler, settingsForCUT, output);
-        assertEquals(enteredType, type);
+        Assertions.assertEquals(enteredType, type);
     }
 }

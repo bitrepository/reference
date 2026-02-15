@@ -18,8 +18,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.net.URLEncoder;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
@@ -55,7 +55,7 @@ public class LocalFileExchangeTest  {
         URL expectedUrl = new URL("file:" + basedir.getAbsolutePath() + "/" + testFile);
 
         URL actualUrl = exchange.getURL(testFile);
-        Assertions.assertEquals(actualUrl, expectedUrl);
+        Assertions.assertEquals(expectedUrl, actualUrl);
         File actualFile = new File(actualUrl.getFile());
         Assertions.assertFalse(actualFile.exists());
     }
@@ -77,7 +77,7 @@ public class LocalFileExchangeTest  {
                 StandardCharsets.UTF_8));
 
         URL fileExchangeUrl = exchange.putFile(testFile);
-        Assertions.assertEquals(fileExchangeUrl, expectedUrl);
+        Assertions.assertEquals(expectedUrl, fileExchangeUrl);
         File actualFile = new File(fileExchangeUrl.toURI());
         Assertions.assertTrue(actualFile.exists());
         String fileExchangeContent = readTestFileContent(actualFile);
@@ -96,7 +96,7 @@ public class LocalFileExchangeTest  {
         URL expectedUrl = new URL("file:" + basedir.getAbsolutePath() + "/" + testFileName);
 
         URL fileExchangeUrl = exchange.putFile(testFile);
-        Assertions.assertEquals(fileExchangeUrl, expectedUrl);
+        Assertions.assertEquals(expectedUrl, fileExchangeUrl);
 
         File actualFile = new File(fileExchangeUrl.getFile());
         Assertions.assertTrue(actualFile.exists());

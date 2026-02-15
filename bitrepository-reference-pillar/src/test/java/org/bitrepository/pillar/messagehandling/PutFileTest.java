@@ -38,8 +38,11 @@ import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.MockedPillarTest;
 import org.bitrepository.pillar.messagefactories.PutFileMessageFactory;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -102,13 +105,12 @@ public class PutFileTest extends MockedPillarTest {
                 "The pillar should make a response.");
         IdentifyPillarsForPutFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForPutFileResponse.class);
-        assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
-                receivedIdentifyResponse.getResponseInfo().getResponseCode());
-        assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
-        assertEquals(receivedIdentifyResponse.getFileID(), FILE_ID);
+        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE, receivedIdentifyResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID());
+        Assertions.assertEquals(FILE_ID, receivedIdentifyResponse.getFileID());
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
-        assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
+        Assertions.assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
     }
 
     @SuppressWarnings("rawtypes")
@@ -142,13 +144,12 @@ public class PutFileTest extends MockedPillarTest {
                 "The pillar should make a response.");
         IdentifyPillarsForPutFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForPutFileResponse.class);
-        assertEquals(ResponseCode.DUPLICATE_FILE_FAILURE,
-                receivedIdentifyResponse.getResponseInfo().getResponseCode());
-        assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
-        assertEquals(receivedIdentifyResponse.getFileID(), FILE_ID);
+        Assertions.assertEquals(ResponseCode.DUPLICATE_FILE_FAILURE, receivedIdentifyResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID());
+        Assertions.assertEquals(FILE_ID, receivedIdentifyResponse.getFileID());
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
-        assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
+        Assertions.assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
     }
 
     @SuppressWarnings("rawtypes")
@@ -183,12 +184,12 @@ public class PutFileTest extends MockedPillarTest {
         addStep("Retrieve the FinalResponse for the PutFile request",
                 "The final response should say 'operation_complete', and give the requested data.");
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
-        assertEquals(ResponseCode.DUPLICATE_FILE_FAILURE, finalResponse.getResponseInfo().getResponseCode());
-        assertEquals(finalResponse.getPillarID(), getPillarID());
-        assertEquals(finalResponse.getFileID(), FILE_ID);
+        Assertions.assertEquals(ResponseCode.DUPLICATE_FILE_FAILURE, finalResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(getPillarID(), finalResponse.getPillarID());
+        Assertions.assertEquals(FILE_ID, finalResponse.getFileID());
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
-        assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
+        Assertions.assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
     }
 
     @SuppressWarnings("rawtypes")
@@ -222,15 +223,15 @@ public class PutFileTest extends MockedPillarTest {
         addStep("Retrieve the FinalResponse for the PutFile request",
                 "The final response should say 'operation_complete', and give the requested data.");
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
-        assertEquals(ResponseCode.NEW_FILE_CHECKSUM_FAILURE, finalResponse.getResponseInfo().getResponseCode());
-        assertEquals(finalResponse.getPillarID(), getPillarID());
-        assertEquals(finalResponse.getFileID(), FILE_ID);
+        Assertions.assertEquals(ResponseCode.NEW_FILE_CHECKSUM_FAILURE, finalResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(getPillarID(), finalResponse.getPillarID());
+        Assertions.assertEquals(FILE_ID, finalResponse.getFileID());
 
         addStep("Pillar should have sent an alarm", "Alarm contains information about the missing verification checksum");
         AlarmMessage alarm = alarmReceiver.waitForMessage(AlarmMessage.class);
-        assertEquals(alarm.getAlarm().getFileID(), FILE_ID);
-        assertEquals(alarm.getAlarm().getAlarmRaiser(), getPillarID());
-        assertEquals(AlarmCode.CHECKSUM_ALARM, alarm.getAlarm().getAlarmCode());
+        Assertions.assertEquals(FILE_ID, alarm.getAlarm().getFileID());
+        Assertions.assertEquals(getPillarID(), alarm.getAlarm().getAlarmRaiser());
+        Assertions.assertEquals(AlarmCode.CHECKSUM_ALARM, alarm.getAlarm().getAlarmCode());
     }
 
     @SuppressWarnings("rawtypes")
@@ -263,20 +264,20 @@ public class PutFileTest extends MockedPillarTest {
         addStep("Retrieve the ProgressResponse for the GetFileIDs request",
                 "The GetFileIDs progress response should be sent by the pillar.");
         PutFileProgressResponse progressResponse = clientReceiver.waitForMessage(PutFileProgressResponse.class);
-        assertEquals(progressResponse.getFileID(), FILE_ID);
-        assertEquals(progressResponse.getPillarID(), getPillarID());
+        Assertions.assertEquals(FILE_ID, progressResponse.getFileID());
+        Assertions.assertEquals(getPillarID(), progressResponse.getPillarID());
 
         addStep("Retrieve the FinalResponse for the PutFile request",
                 "The final response should say 'operation_complete', and give the requested data.");
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
-        assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
-        assertEquals(finalResponse.getPillarID(), getPillarID());
-        assertEquals(finalResponse.getFileID(), FILE_ID);
-        assertNull(finalResponse.getChecksumDataForNewFile());
-        assertNull(finalResponse.getChecksumDataForExistingFile());
+        Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(getPillarID(), finalResponse.getPillarID());
+        Assertions.assertEquals(FILE_ID, finalResponse.getFileID());
+        Assertions.assertNull(finalResponse.getChecksumDataForNewFile());
+        Assertions.assertNull(finalResponse.getChecksumDataForExistingFile());
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
-        assertEquals(1, audits.getCallsForAuditEvent(), "Should make 1 put-file audit trail");
+        Assertions.assertEquals(1, audits.getCallsForAuditEvent(), "Should make 1 put-file audit trail");
     }
 
 
@@ -309,19 +310,19 @@ public class PutFileTest extends MockedPillarTest {
         addStep("Retrieve the ProgressResponse for the GetFileIDs request",
                 "The GetFileIDs progress response should be sent by the pillar.");
         PutFileProgressResponse progressResponse = clientReceiver.waitForMessage(PutFileProgressResponse.class);
-        assertEquals(progressResponse.getFileID(), FILE_ID);
-        assertEquals(progressResponse.getPillarID(), getPillarID());
+        Assertions.assertEquals(FILE_ID, progressResponse.getFileID());
+        Assertions.assertEquals(getPillarID(), progressResponse.getPillarID());
 
         addStep("Retrieve the FinalResponse for the PutFile request",
                 "The final response should say 'operation_complete', and give the requested data.");
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
-        assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
-        assertEquals(finalResponse.getPillarID(), getPillarID());
-        assertEquals(finalResponse.getFileID(), FILE_ID);
-        assertNotNull(finalResponse.getChecksumDataForNewFile());
-        assertEquals(finalResponse.getChecksumDataForNewFile().getChecksumSpec(), csSpec);
+        Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(getPillarID(), finalResponse.getPillarID());
+        Assertions.assertEquals(FILE_ID, finalResponse.getFileID());
+        Assertions.assertNotNull(finalResponse.getChecksumDataForNewFile());
+        Assertions.assertEquals(csSpec, finalResponse.getChecksumDataForNewFile().getChecksumSpec());
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
-        assertEquals(1, audits.getCallsForAuditEvent(), "Should make 1 put-file audit trail");
+        Assertions.assertEquals(1, audits.getCallsForAuditEvent(), "Should make 1 put-file audit trail");
     }
 }

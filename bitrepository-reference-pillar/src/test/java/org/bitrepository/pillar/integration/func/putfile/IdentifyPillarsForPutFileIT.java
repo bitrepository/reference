@@ -29,6 +29,7 @@ import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.DefaultPillarIdentificationTest;
 import org.bitrepository.pillar.messagefactories.PutFileMessageFactory;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -68,24 +69,25 @@ public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest
 
         IdentifyPillarsForPutFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForPutFileResponse.class);
-        assertEquals(receivedIdentifyResponse.getCollectionID(), identifyRequest.getCollectionID(),
+        Assertions.assertEquals(identifyRequest.getCollectionID(), receivedIdentifyResponse.getCollectionID(),
                 "Received unexpected CollectionID");
-        assertEquals(receivedIdentifyResponse.getCorrelationID(), identifyRequest.getCorrelationID(),
+        Assertions.assertEquals(identifyRequest.getCorrelationID(), receivedIdentifyResponse.getCorrelationID(),
                 "Received unexpected CorrelationID");
-        assertEquals(receivedIdentifyResponse.getFrom(), getPillarID(),
+        Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getFrom(),
                 "Received unexpected PillarID");
-        assertEquals(receivedIdentifyResponse.getTo(), identifyRequest.getFrom(),
+        Assertions.assertEquals(identifyRequest.getFrom(), receivedIdentifyResponse.getTo(),
                 "Received unexpected 'To' element.");
-        assertNull(receivedIdentifyResponse.getChecksumDataForExistingFile(),
+        Assertions.assertNull(receivedIdentifyResponse.getChecksumDataForExistingFile(),
                 "Received unexpected ChecksumDataForExistingFile");
-        assertNull(receivedIdentifyResponse.getPillarChecksumSpec(),
+        Assertions.assertNull(receivedIdentifyResponse.getPillarChecksumSpec(),
                 "Received unexpected PillarChecksumSpec");
-        assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID(),
-                "Unexpected 'From' element in the received response:\n" + receivedIdentifyResponse + "\n");
-        assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
+        Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID(),
+                "Unexpected 'From' element in the " +
+                        "received response:\n" + receivedIdentifyResponse + "\n");
+        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
                 receivedIdentifyResponse.getResponseInfo().getResponseCode(),
                 "Received unexpected ResponseCode");
-        assertEquals(receivedIdentifyResponse.getDestination(), identifyRequest.getReplyTo(),
+        Assertions.assertEquals(identifyRequest.getReplyTo(), receivedIdentifyResponse.getDestination(),
                 "Received unexpected ReplyTo");
     }
 
@@ -102,14 +104,14 @@ public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest
 
         IdentifyPillarsForPutFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForPutFileResponse.class);
-        assertEquals(receivedIdentifyResponse.getCollectionID(), identifyRequest.getCollectionID());
-        assertEquals(receivedIdentifyResponse.getCorrelationID(), identifyRequest.getCorrelationID());
-        assertEquals(receivedIdentifyResponse.getFrom(), getPillarID());
-        assertNull(receivedIdentifyResponse.getChecksumDataForExistingFile());
-        assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
-        assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
+        Assertions.assertEquals(identifyRequest.getCollectionID(), receivedIdentifyResponse.getCollectionID());
+        Assertions.assertEquals(identifyRequest.getCorrelationID(), receivedIdentifyResponse.getCorrelationID());
+        Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getFrom());
+        Assertions.assertNull(receivedIdentifyResponse.getChecksumDataForExistingFile());
+        Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID());
+        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
                 receivedIdentifyResponse.getResponseInfo().getResponseCode());
-        assertEquals(receivedIdentifyResponse.getDestination(), identifyRequest.getReplyTo());
+        Assertions.assertEquals(identifyRequest.getReplyTo(), receivedIdentifyResponse.getDestination());
     }
 
     @Test
@@ -129,8 +131,7 @@ public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest
 
         IdentifyPillarsForPutFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForPutFileResponse.class);
-        assertEquals(ResponseCode.DUPLICATE_FILE_FAILURE,
-                receivedIdentifyResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(ResponseCode.DUPLICATE_FILE_FAILURE, receivedIdentifyResponse.getResponseInfo().getResponseCode());
     }
 
     @Override

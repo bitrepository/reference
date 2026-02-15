@@ -39,6 +39,7 @@ import org.bitrepository.service.audit.AuditTrailManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -119,10 +120,10 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
 
         addStep("Validate the file ids", "Should not have integrity issues.");
         Assertions.assertFalse(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
-        Assertions.assertEquals(cs.getCollectionStat().getChecksumErrors(), Long.valueOf(0));
-        Assertions.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_3).getChecksumErrors(), Long.valueOf(0));
-        Assertions.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors(), Long.valueOf(0));
-        Assertions.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors(), Long.valueOf(0));
+        Assertions.assertEquals(0L, cs.getCollectionStat().getChecksumErrors());
+        Assertions.assertEquals(0L, cs.getPillarCollectionStat(TEST_PILLAR_3).getChecksumErrors());
+        Assertions.assertEquals(0L, cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors());
+        Assertions.assertEquals(0L, cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors());
         for (FileInfo fi : cache.getFileInfos(FILE_1, TEST_COLLECTION)) {
             Assertions.assertEquals("1234cccc4321", fi.getChecksum());
         }
@@ -171,9 +172,9 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
 
         addStep("Validate the file ids", "Should have integrity issues. No entry should be valid.");
         Assertions.assertTrue(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
-        Assertions.assertEquals(cs.getCollectionStat().getChecksumErrors(), Long.valueOf(1));
-        Assertions.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors(), Long.valueOf(1));
-        Assertions.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors(), Long.valueOf(1));
+        Assertions.assertEquals(1L, cs.getCollectionStat().getChecksumErrors());
+        Assertions.assertEquals(1L, cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors());
+        Assertions.assertEquals(1L, cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors());
         /*for(FileInfo fi : cache.getFileInfos(FILE_1, TEST_COLLECTION)) {
             Assertions.assertTrue(fi.getChecksumState() != ChecksumState.VALID);
         }*/
@@ -202,10 +203,10 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
 
         addStep("Validate the file ids", "Should have integrity issues.");
         Assertions.assertTrue(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
-        Assertions.assertEquals(cs.getCollectionStat().getChecksumErrors(), Long.valueOf(1));
-        Assertions.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_3).getChecksumErrors(), Long.valueOf(1));
-        Assertions.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors(), Long.valueOf(1));
-        Assertions.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors(), Long.valueOf(1));
+        Assertions.assertEquals(1L, cs.getCollectionStat().getChecksumErrors());
+        Assertions.assertEquals(1L, cs.getPillarCollectionStat(TEST_PILLAR_3).getChecksumErrors());
+        Assertions.assertEquals(1L, cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors());
+        Assertions.assertEquals(1L, cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors());
     }
 
     @Test
@@ -232,10 +233,10 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
 
         addStep("Validate the file ids", "Should only have integrity issues on pillar 3.");
         Assertions.assertTrue(reporter.hasIntegrityIssues(), reporter.generateSummaryOfReport());
-        Assertions.assertEquals(cs.getCollectionStat().getChecksumErrors(), Long.valueOf(1));
-        Assertions.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_3).getChecksumErrors(), Long.valueOf(1));
-        Assertions.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors(), Long.valueOf(0));
-        Assertions.assertEquals(cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors(), Long.valueOf(0));
+        Assertions.assertEquals(1L, cs.getCollectionStat().getChecksumErrors());
+        Assertions.assertEquals(1L, cs.getPillarCollectionStat(TEST_PILLAR_3).getChecksumErrors());
+        Assertions.assertEquals(0L, cs.getPillarCollectionStat(TEST_PILLAR_2).getChecksumErrors());
+        Assertions.assertEquals(0L, cs.getPillarCollectionStat(TEST_PILLAR_1).getChecksumErrors());
     }
 
     @Test

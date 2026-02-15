@@ -25,13 +25,7 @@ import org.apache.commons.codec.DecoderException;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
-import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
-import org.bitrepository.bitrepositorymessages.MessageRequest;
-import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.bitrepositorymessages.*;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.PillarTestGroups;
@@ -78,18 +72,17 @@ public class DeleteFileRequestIT extends DefaultPillarOperationTest {
         DeleteFileProgressResponse progressResponse = clientReceiver.waitForMessage(DeleteFileProgressResponse.class, getOperationTimeout(),
                 TimeUnit.SECONDS);
         Assertions.assertNotNull(progressResponse);
-        Assertions.assertEquals(progressResponse.getCorrelationID(), deleteRequest.getCorrelationID());
-        Assertions.assertEquals(progressResponse.getFrom(), getPillarID());
-        Assertions.assertEquals(progressResponse.getPillarID(), getPillarID());
-        Assertions.assertEquals(ResponseCode.OPERATION_ACCEPTED_PROGRESS,
-                progressResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(deleteRequest.getCorrelationID(), progressResponse.getCorrelationID());
+        Assertions.assertEquals(getPillarID(), progressResponse.getFrom());
+        Assertions.assertEquals(getPillarID(), progressResponse.getPillarID());
+        Assertions.assertEquals(ResponseCode.OPERATION_ACCEPTED_PROGRESS, progressResponse.getResponseInfo().getResponseCode());
 
         DeleteFileFinalResponse finalResponse = (DeleteFileFinalResponse) receiveResponse();
         Assertions.assertNotNull(finalResponse);
         Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
-        Assertions.assertEquals(finalResponse.getCorrelationID(), deleteRequest.getCorrelationID());
-        Assertions.assertEquals(finalResponse.getFrom(), getPillarID());
-        Assertions.assertEquals(finalResponse.getPillarID(), getPillarID());
+        Assertions.assertEquals(deleteRequest.getCorrelationID(), finalResponse.getCorrelationID());
+        Assertions.assertEquals(getPillarID(), finalResponse.getFrom());
+        Assertions.assertEquals(getPillarID(), finalResponse.getPillarID());
     }
 
     @Test
@@ -115,21 +108,25 @@ public class DeleteFileRequestIT extends DefaultPillarOperationTest {
         DeleteFileProgressResponse progressResponse = clientReceiver.waitForMessage(DeleteFileProgressResponse.class, getOperationTimeout(),
                 TimeUnit.SECONDS);
         Assertions.assertNotNull(progressResponse);
-        Assertions.assertEquals(progressResponse.getCorrelationID(), deleteRequest.getCorrelationID());
-        Assertions.assertEquals(progressResponse.getFrom(), getPillarID());
-        Assertions.assertEquals(progressResponse.getPillarID(), getPillarID());
-        Assertions.assertEquals(ResponseCode.OPERATION_ACCEPTED_PROGRESS,
-                progressResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(deleteRequest.getCorrelationID(), progressResponse.getCorrelationID());
+        Assertions.assertEquals(getPillarID(), progressResponse.getFrom());
+        Assertions.assertEquals(getPillarID(), progressResponse.getPillarID());
+        Assertions.assertEquals(ResponseCode.OPERATION_ACCEPTED_PROGRESS, progressResponse.getResponseInfo().getResponseCode());
 
         DeleteFileFinalResponse finalResponse = (DeleteFileFinalResponse) receiveResponse();
         Assertions.assertNotNull(finalResponse);
         Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
-        Assertions.assertEquals(finalResponse.getCorrelationID(), deleteRequest.getCorrelationID());
-        Assertions.assertEquals(finalResponse.getFrom(), getPillarID());
+        Assertions.assertEquals(deleteRequest.getCorrelationID(), finalResponse.getCorrelationID());
+        Assertions.assertEquals(getPillarID(), finalResponse.getFrom());
         Assertions.assertNotNull(finalResponse.getChecksumDataForExistingFile());
-        Assertions.assertEquals(finalResponse.getChecksumDataForExistingFile().getChecksumSpec(),
-                requestedChecksumSpec);
-        Assertions.assertEquals(finalResponse.getPillarID(), getPillarID());
+        Assertions.assertEquals(requestedChecksumSpec, finalResponse.getChecksumDataForExistingFile().getChecksumSpec());
+        Assertions.assertNotNull(finalResponse);
+        Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(deleteRequest.getCorrelationID(), finalResponse.getCorrelationID());
+        Assertions.assertEquals(getPillarID(), finalResponse.getFrom());
+        Assertions.assertNotNull(finalResponse.getChecksumDataForExistingFile());
+        Assertions.assertEquals(requestedChecksumSpec, finalResponse.getChecksumDataForExistingFile().getChecksumSpec());
+        Assertions.assertEquals(getPillarID(), finalResponse.getPillarID());
     }
 
     @Override

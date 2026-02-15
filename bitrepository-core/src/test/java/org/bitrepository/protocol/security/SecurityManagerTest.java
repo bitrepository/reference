@@ -29,13 +29,7 @@ import org.bitrepository.protocol.security.exception.CertificateUseException;
 import org.bitrepository.protocol.security.exception.MessageAuthenticationException;
 import org.bitrepository.protocol.security.exception.MessageSigningException;
 import org.bitrepository.protocol.security.exception.OperationAuthorizationException;
-import org.bitrepository.settings.repositorysettings.Certificate;
-import org.bitrepository.settings.repositorysettings.Collection;
-import org.bitrepository.settings.repositorysettings.ComponentIDs;
-import org.bitrepository.settings.repositorysettings.Operation;
-import org.bitrepository.settings.repositorysettings.OperationPermission;
-import org.bitrepository.settings.repositorysettings.Permission;
-import org.bitrepository.settings.repositorysettings.PermissionSet;
+import org.bitrepository.settings.repositorysettings.*;
 import org.bouncycastle.util.encoders.Base64;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -109,8 +103,6 @@ public class SecurityManagerTest {
 
         addStep("Check that GET_FILE is only allowed for the first collection.",
                 "GET_FILE is allowed for first collection, and disallowed for the second collection (exception thrown).");
-
-
         try {
             securityManager.authorizeOperation(GetFileRequest.class.getSimpleName(),
                     SecurityTestConstants.getTestData(), TestCertProvider.getPositiveCertSignature(), collectionID1);
@@ -164,8 +156,9 @@ public class SecurityManagerTest {
         }
         permissionStore.loadPermissions(getSigningCertPermission(), SecurityTestConstants.getComponentID());
 
-        String signatureString = new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)),
-                StandardCharsets.UTF_8);
+        String signatureString =
+                new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)),
+                        StandardCharsets.UTF_8);
         log.info("Signature for testdata is: {}", signatureString);
 
         addStep("Check signature matches the data ", "Signature and data matches");
@@ -188,8 +181,9 @@ public class SecurityManagerTest {
         } catch (MessageSigningException e) {
             Assertions.fail("Failed signing test data!", e);
         }
-        String signatureString = new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)),
-                StandardCharsets.UTF_8);
+        String signatureString =
+                new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)),
+                        StandardCharsets.UTF_8);
         log.info("Signature for testdata is: {}", signatureString);
 
         addStep("Check signature matches the data", "Signature cant be matched as certificate is unknown.");
@@ -216,8 +210,9 @@ public class SecurityManagerTest {
         }
         permissionStore.loadPermissions(getSigningCertPermission(), SecurityTestConstants.getComponentID());
 
-        String signatureString = new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)),
-                StandardCharsets.UTF_8);
+        String signatureString =
+                new String(Base64.encode(signature.getBytes(SecurityModuleConstants.defaultEncodingType)),
+                        StandardCharsets.UTF_8);
         log.info("Signature for testdata is: {}", signatureString);
 
         addStep("Check signature matches the data ", "Signature and data matches does not match");

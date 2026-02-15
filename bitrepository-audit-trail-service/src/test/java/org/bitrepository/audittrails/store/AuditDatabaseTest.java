@@ -120,7 +120,8 @@ public class AuditDatabaseTest {
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, pillarID, null, null, null, null,
                 null, null, null, null));
         Assertions.assertEquals(2, res.size(), res.toString());
-        res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, "NO COMPONENT", null, null, null, null,
+        res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, "NO COMPONENT", null, null, null,
+                null,
                 null, null, null, null));
         Assertions.assertEquals(0, res.size(), res.toString());
 
@@ -129,22 +130,22 @@ public class AuditDatabaseTest {
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null, 5L, null, null, null, null,
                 null, null, null));
         Assertions.assertEquals(1, res.size(), res.toString());
-        Assertions.assertEquals(res.get(0).getFileID(), fileID2);
+        Assertions.assertEquals(fileID2, res.get(0).getFileID());
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null, null, 5L, null, null, null,
                 null, null, null));
         Assertions.assertEquals(1, res.size(), res.toString());
-        Assertions.assertEquals(res.get(0).getFileID(), fileID);
+        Assertions.assertEquals(fileID, res.get(0).getFileID());
 
         addStep("Perform extraction based on actor id restriction.",
                 "Should be possible to restrict on the id of the actor.");
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null, null, null, actor1, null,
                 null, null, null, null));
         Assertions.assertEquals(1, res.size(), res.toString());
-        Assertions.assertEquals(res.get(0).getActorOnFile(), actor1);
+        Assertions.assertEquals(actor1, res.get(0).getActorOnFile());
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null, null, null, actor2, null,
                 null, null, null, null));
         Assertions.assertEquals(1, res.size(), res.toString());
-        Assertions.assertEquals(res.get(0).getActorOnFile(), actor2);
+        Assertions.assertEquals(actor2, res.get(0).getActorOnFile());
 
         addStep("Perform extraction based on operation restriction.",
                 "Should be possible to restrict on the FileAction operation.");
@@ -162,18 +163,18 @@ public class AuditDatabaseTest {
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null, null, null, null, null,
                 restrictionDate, null, null, null));
         Assertions.assertEquals(1, res.size(), res.toString());
-        Assertions.assertEquals(res.get(0).getFileID(), fileID2);
+        Assertions.assertEquals(fileID2, res.get(0).getFileID());
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null, null, null, null, null,
                 null, restrictionDate, null, null));
         Assertions.assertEquals(1, res.size(), res.toString());
-        Assertions.assertEquals(res.get(0).getFileID(), fileID);
+        Assertions.assertEquals(fileID, res.get(0).getFileID());
 
         addStep("Perform extraction based on fingerprint restriction.",
                 "Should be possible to restrict on the fingerprint of the audit.");
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null, null, null, null, null,
                 null, null, fingerprint1, null));
         Assertions.assertEquals(1, res.size(), res.toString());
-        Assertions.assertEquals(res.get(0).getFileID(), fileID);
+        Assertions.assertEquals(fileID, res.get(0).getFileID());
         Assertions.assertEquals(fingerprint1, res.get(0).getCertificateID());
 
         addStep("Perform extraction based on operationID restriction.",
@@ -181,7 +182,7 @@ public class AuditDatabaseTest {
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null, null, null, null, null,
                 null, null, null, operationID2));
         Assertions.assertEquals(1, res.size(), res.toString());
-        Assertions.assertEquals(res.get(0).getFileID(), fileID2);
+        Assertions.assertEquals(fileID2, res.get(0).getFileID());
         Assertions.assertEquals(operationID2, res.get(0).getOperationID());
 
         database.close();
@@ -227,11 +228,11 @@ public class AuditDatabaseTest {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.ROOT);
         Date summertimeTS = sdf.parse("2015-10-25T02:59:54.000+02:00");
         Date summertimeUnix = new Date(1445734794000L);
-        Assertions.assertEquals(summertimeTS, summertimeUnix);
+        Assertions.assertEquals(summertimeUnix, summertimeTS);
 
         Date wintertimeTS = sdf.parse("2015-10-25T02:59:54.000+01:00");
         Date wintertimeUnix = new Date(1445738394000L);
-        Assertions.assertEquals(wintertimeTS, wintertimeUnix);
+        Assertions.assertEquals(wintertimeUnix, wintertimeTS);
 
         AuditTrailEvents events = new AuditTrailEvents();
         events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getXmlGregorianCalendar(summertimeTS),
@@ -242,17 +243,16 @@ public class AuditDatabaseTest {
                 operationID1, fingerprint1));
         database.addAuditTrails(events, collectionID, pillarID);
 
-        List<AuditTrailEvent> res = getEventsFromIterator(database.getAuditTrailsByIterator("summertime", null, null, null,
+        List<AuditTrailEvent> res = getEventsFromIterator(database.getAuditTrailsByIterator("summertime", null, null,
+                null,
                 null, null, null, null, null, null, null));
         Assertions.assertEquals(1, res.size(), res.toString());
-        Assertions.assertEquals(
-                CalendarUtils.convertFromXMLGregorianCalendar(res.get(0).getActionDateTime()), summertimeUnix);
+        Assertions.assertEquals(summertimeUnix, CalendarUtils.convertFromXMLGregorianCalendar(res.get(0).getActionDateTime()));
 
         res = getEventsFromIterator(database.getAuditTrailsByIterator("wintertime", null, null, null, null, null, null,
                 null, null, null, null));
         Assertions.assertEquals(1, res.size(), res.toString());
-        Assertions.assertEquals(
-                CalendarUtils.convertFromXMLGregorianCalendar(res.get(0).getActionDateTime()), wintertimeUnix);
+        Assertions.assertEquals(wintertimeUnix, CalendarUtils.convertFromXMLGregorianCalendar(res.get(0).getActionDateTime()));
 
     }
 
@@ -367,7 +367,8 @@ public class AuditDatabaseTest {
         addStep("Test ingest with very long info (255+)", "Not failing any more");
         events = new AuditTrailEvents();
         events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED,
-                "actor", "auditInfo", "fileID", veryLongString, pillarID, new BigInteger("10"), operationID1, fingerprint1));
+                "actor", "auditInfo", "fileID", veryLongString, pillarID, new BigInteger("10"), operationID1,
+                fingerprint1));
         database.addAuditTrails(events, collectionID, pillarID);
     }
 
@@ -412,7 +413,8 @@ public class AuditDatabaseTest {
     }
 
     private AuditTrailEvent createSingleEvent(XMLGregorianCalendar datetime, FileAction action, String actor,
-                                              String auditInfo, String fileID, String info, String component, BigInteger seqNumber, String operationID,
+                                              String auditInfo, String fileID, String info, String component,
+                                              BigInteger seqNumber, String operationID,
                                               String fingerprint) {
         AuditTrailEvent res = new AuditTrailEvent();
         res.setActionDateTime(datetime);

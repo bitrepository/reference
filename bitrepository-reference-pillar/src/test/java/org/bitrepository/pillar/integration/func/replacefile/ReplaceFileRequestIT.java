@@ -75,20 +75,19 @@ public class ReplaceFileRequestIT extends DefaultPillarOperationTest {
         ReplaceFileProgressResponse progressResponse = clientReceiver.waitForMessage(ReplaceFileProgressResponse.class,
                 getOperationTimeout(), TimeUnit.SECONDS);
         Assertions.assertNotNull(progressResponse);
-        Assertions.assertEquals(progressResponse.getCorrelationID(), replaceRequest.getCorrelationID());
-        Assertions.assertEquals(progressResponse.getFrom(), getPillarID());
-        Assertions.assertEquals(progressResponse.getPillarID(), getPillarID());
-        Assertions.assertEquals(ResponseCode.OPERATION_ACCEPTED_PROGRESS,
-                progressResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(replaceRequest.getCorrelationID(), progressResponse.getCorrelationID());
+        Assertions.assertEquals(getPillarID(), progressResponse.getFrom());
+        Assertions.assertEquals(getPillarID(), progressResponse.getPillarID());
+        Assertions.assertEquals(ResponseCode.OPERATION_ACCEPTED_PROGRESS, progressResponse.getResponseInfo().getResponseCode());
 
         ReplaceFileFinalResponse finalResponse = (ReplaceFileFinalResponse) receiveResponse();
         Assertions.assertNotNull(finalResponse);
         Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
-        Assertions.assertEquals(finalResponse.getCorrelationID(), replaceRequest.getCorrelationID());
-        Assertions.assertEquals(finalResponse.getFrom(), getPillarID());
+        Assertions.assertEquals(replaceRequest.getCorrelationID(), finalResponse.getCorrelationID());
+        Assertions.assertEquals(getPillarID(), finalResponse.getFrom());
         Assertions.assertNull(finalResponse.getChecksumDataForExistingFile());
         Assertions.assertNull(finalResponse.getChecksumDataForNewFile());
-        Assertions.assertEquals(finalResponse.getPillarID(), getPillarID());
+        Assertions.assertEquals(getPillarID(), finalResponse.getPillarID());
     }
 
     @Override

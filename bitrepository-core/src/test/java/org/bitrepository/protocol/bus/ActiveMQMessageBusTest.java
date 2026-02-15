@@ -28,6 +28,7 @@ import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import javax.jms.Message;
@@ -119,7 +120,7 @@ public class ActiveMQMessageBusTest extends GeneralMessageBusTest {
         messageToSend.setTo(receiverID);
         messageBus.sendMessage(messageToSend);
         Message receivedMessage = messageList.poll(3, TimeUnit.SECONDS);
-        assertEquals(receiverID, receivedMessage.getStringProperty(ActiveMQMessageBus.MESSAGE_TO_KEY));
+        Assertions.assertEquals(receiverID, receivedMessage.getStringProperty(ActiveMQMessageBus.MESSAGE_TO_KEY));
     }
 
     @Test

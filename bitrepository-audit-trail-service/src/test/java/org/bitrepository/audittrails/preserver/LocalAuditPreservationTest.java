@@ -25,7 +25,6 @@ import org.bitrepository.audittrails.store.AuditEventIterator;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.DefaultThreadFactory;
@@ -112,13 +111,6 @@ public class LocalAuditPreservationTest {
         final AuditEventIterator iterator = spy(new StubAuditEventIterator());
 
         LocalAuditTrailPreserver preserver = new LocalAuditTrailPreserver(settings, store, client, fileExchangeMock);
-        
-        /*Assertions.assertEquals(store.getCallsToAddAuditTrails(), 0);
-        Assertions.assertEquals(store.getCallsToGetAuditTrails(), 0);
-        Assertions.assertEquals(store.getCallsToGetPreservationSequenceNumber(), 1);
-        Assertions.assertEquals(store.getCallsToLargestSequenceNumber(), 0);
-        Assertions.assertEquals(store.getCallsToSetPreservationSequenceNumber(), 0);
-        Assertions.assertEquals(client.getCallsToPutFile(), 0);*/
 
         verify(store).addCollection(collectionID);
         verify(store).addContributor(PILLAR_ID);
@@ -152,7 +144,7 @@ public class LocalAuditPreservationTest {
         //Assertions.assertEquals(store.getCallsToGetAuditTrails(), settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().size());
 
         //Assertions.assertEquals(store.getCallsToGetPreservationSequenceNumber(), 2);
-        assertEquals(1, client.getCallsToPutFile());
+        Assertions.assertEquals(1, client.getCallsToPutFile());
     }
 
     @Test
@@ -200,7 +192,7 @@ public class LocalAuditPreservationTest {
         verify(store).getAuditTrailsByIterator(null, collectionID, PILLAR_ID, 1L, null, null, null, null, null, null,
                 null);
 
-        assertEquals(1, client.getCallsToPutFile());
+        Assertions.assertEquals(1, client.getCallsToPutFile());
 
         verify(fileExchange).putFile(any(FileInputStream.class), any(URL.class));
     }

@@ -43,7 +43,7 @@ public class ArchiveDirectoryTest {
     private static String DIR_NAME = "archive-directory";
     private static String FILE_DIR_NAME = DIR_NAME + "/fileDir";
     private static String FOLDER_DIR_NAME = DIR_NAME + "/" + ArchiveDirectory.FOLDER_DIR;
-    
+
     private static String FILE_ID = "file1";
     private static String FOLDER_FILE_ID = "folder1/folder2/file1";
     
@@ -68,8 +68,8 @@ public class ArchiveDirectoryTest {
         addStep("Validate the existence of the file", "Should exist and be retrievable.");
         Assertions.assertTrue(directory.hasFile(FILE_ID));
         Assertions.assertNotNull(directory.retrieveFile(FILE_ID));
-        Assertions.assertEquals(directory.getFileIds(), Collections.singletonList(FILE_ID));
-        
+        Assertions.assertEquals(Collections.singletonList(FILE_ID), directory.getFileIds());
+
         addStep("Delete the file.", "Should not be extractable.");
         directory.removeFileFromArchive(FILE_ID);
         Assertions.assertFalse(directory.hasFile(FILE_ID));
@@ -88,8 +88,8 @@ public class ArchiveDirectoryTest {
         addStep("Validate the existence of the file", "Should exist and be retrievable.");
         Assertions.assertFalse(directory.hasFile(FILE_ID));
         Assertions.assertNull(directory.retrieveFile(FILE_ID));
-        Assertions.assertEquals(directory.getFileIds(), List.of());
-        
+        Assertions.assertEquals(List.of(), directory.getFileIds());
+
         addStep("Delete the file.", "exception since the file does not exist.");
         try {
             directory.removeFileFromArchive(FILE_ID);
@@ -98,7 +98,7 @@ public class ArchiveDirectoryTest {
             // exptected
         }
     }
-    
+
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
@@ -122,8 +122,8 @@ public class ArchiveDirectoryTest {
         addStep("Retrieve tmp file", "Should be the newly created file.");
         File tmpFile = directory.getFileInTempDir(FILE_ID);
         Assertions.assertNotNull(tmpFile);
-        Assertions.assertEquals(tmpFile.getAbsolutePath(), newFile.getAbsolutePath());
-        
+        Assertions.assertEquals(newFile.getAbsolutePath(), tmpFile.getAbsolutePath());
+
         addStep("Request another new file with the same name", "Should throw exception, since it already exists.");
         try {
             directory.getNewFileInTempDir(FILE_ID);
@@ -209,12 +209,12 @@ public class ArchiveDirectoryTest {
         Assertions.assertTrue(tmpFile.createNewFile());
         File retainFile = new File(retainDir, FILE_ID);
         Assertions.assertTrue(retainFile.createNewFile());
-        Assertions.assertEquals(1, retainDir.list().length);
+        Assertions.assertEquals(1, Objects.requireNonNull(retainDir.list()).length);
 
         addStep("Remove the file from archive and tmp", "all 3 files in retain dir.");
         directory.removeFileFromArchive(FILE_ID);
         directory.removeFileFromTmp(FILE_ID);
-        Assertions.assertEquals(3, retainDir.list().length);
+        Assertions.assertEquals(3, Objects.requireNonNull(retainDir.list()).length);
     }
 
     @Test
@@ -230,14 +230,14 @@ public class ArchiveDirectoryTest {
         addStep("Validate the existence of the file", "Should exist and be retrievable.");
         Assertions.assertTrue(directory.hasFile(FOLDER_FILE_ID));
         Assertions.assertNotNull(directory.retrieveFile(FOLDER_FILE_ID));
-        Assertions.assertEquals(directory.getFileIds(), Collections.singletonList(FOLDER_FILE_ID));
-        
+        Assertions.assertEquals(Collections.singletonList(FOLDER_FILE_ID), directory.getFileIds());
+
         addStep("Delete the file.", "Should not be retrievable.");
         directory.removeFileFromArchive(FOLDER_FILE_ID);
         Assertions.assertFalse(directory.hasFile(FOLDER_FILE_ID));
         Assertions.assertNull(directory.retrieveFile(FOLDER_FILE_ID));
     }
-    
+
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
@@ -284,8 +284,8 @@ public class ArchiveDirectoryTest {
         addStep("Retrieve tmp file", "Should be the newly created file.");
         File tmpFile = directory.getFileInTempDir(FOLDER_FILE_ID);
         Assertions.assertNotNull(tmpFile);
-        Assertions.assertEquals(tmpFile.getAbsolutePath(), newFile.getAbsolutePath());
-        
+        Assertions.assertEquals(newFile.getAbsolutePath(), tmpFile.getAbsolutePath());
+
         addStep("Request another new file with the same name", "Should throw exception, since it already exists.");
         try {
             directory.getNewFileInTempDir(FOLDER_FILE_ID);
@@ -376,7 +376,7 @@ public class ArchiveDirectoryTest {
             Assertions.assertTrue(retainFile.getParentFile().mkdirs());
         }
         Assertions.assertTrue(retainFile.createNewFile());
-        Assertions.assertEquals(1, retainDir.list().length);
+        Assertions.assertEquals(1, Objects.requireNonNull(retainDir.list()).length);
 
         addStep("Remove the file from archive and tmp", "all 3 files in retain dir.");
         directory.removeFileFromArchive(FOLDER_FILE_ID);

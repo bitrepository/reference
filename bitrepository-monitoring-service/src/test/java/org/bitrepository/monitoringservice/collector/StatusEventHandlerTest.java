@@ -22,11 +22,7 @@
 package org.bitrepository.monitoringservice.collector;
 
 import org.bitrepository.access.getstatus.conversation.StatusCompleteContributorEvent;
-import org.bitrepository.client.eventhandler.AbstractOperationEvent;
-import org.bitrepository.client.eventhandler.CompleteEvent;
-import org.bitrepository.client.eventhandler.DefaultEvent;
-import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
-import org.bitrepository.client.eventhandler.OperationFailedEvent;
+import org.bitrepository.client.eventhandler.*;
 import org.bitrepository.monitoringservice.MockAlerter;
 import org.bitrepository.monitoringservice.MockStatusStore;
 import org.junit.jupiter.api.Assertions;
@@ -58,7 +54,7 @@ public class StatusEventHandlerTest {
 
         addStep("Test an unhandled event.", "Should not make any calls.");
         AbstractOperationEvent event = new DefaultEvent(TEST_COLLECTION);
-        event.setEventType(OperationEventType.WARNING);
+        event.setEventType(OperationEvent.OperationEventType.WARNING);
         eventHandler.handleEvent(event);
 
         Assertions.assertEquals(0, store.getCallsForGetStatusMap());

@@ -73,7 +73,7 @@ public class AlarmDatabaseExtractionModelTest {
         addStep("Test the EndDate", "Should be able to put a new one in and extract it again.");
         Date defaultEndDate = new Date(987654321);
         model.setEndDate(defaultEndDate);
-        Assertions.assertEquals(model.getEndDate(), defaultEndDate);
+        Assertions.assertEquals(defaultEndDate, model.getEndDate());
 
         addStep("Test the FileID", "Should be able to put a new one in and extract it again.");
         String defaultFileID = "DefaultFileID";
@@ -88,7 +88,7 @@ public class AlarmDatabaseExtractionModelTest {
         addStep("Test the StartDate", "Should be able to put a new one in and extract it again.");
         Date defaultStartDate = new Date(123456789);
         model.setStartDate(defaultStartDate);
-        Assertions.assertEquals(model.getStartDate(), defaultStartDate);
+        Assertions.assertEquals(defaultStartDate, model.getStartDate());
 
         addStep("Test the CollectionID", "Should be able to put a new one in and extract it again.");
         String collectionID = "collection1";
