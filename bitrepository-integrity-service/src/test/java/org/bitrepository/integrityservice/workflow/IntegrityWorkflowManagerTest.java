@@ -27,11 +27,7 @@ import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.service.scheduler.TimerBasedScheduler;
 import org.bitrepository.service.workflow.WorkflowManager;
-import org.bitrepository.settings.referencesettings.Collections;
-import org.bitrepository.settings.referencesettings.Schedule;
-import org.bitrepository.settings.referencesettings.Schedules;
-import org.bitrepository.settings.referencesettings.WorkflowConfiguration;
-import org.bitrepository.settings.referencesettings.WorkflowSettings;
+import org.bitrepository.settings.referencesettings.*;
 import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -44,10 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class IntegrityWorkflowManagerTest extends ExtendedTestCase {
     private Settings settings;
@@ -195,8 +188,8 @@ public class IntegrityWorkflowManagerTest extends ExtendedTestCase {
 
     private IntegrityWorkflowManager createIntegrityWorkflowManager() {
         IntegrityWorkflowManager manager =
-                new IntegrityWorkflowManager(new IntegrityWorkflowContext(settings, null, null, null, null),
-                        scheduler);
+                new IntegrityWorkflowManager(new IntegrityWorkflowContext(settings, null, null,
+                        null, null), scheduler);
         verify(scheduler).addJobEventListener(any(WorkflowManager.WorkflowEventListener.class));
         return manager;
     }

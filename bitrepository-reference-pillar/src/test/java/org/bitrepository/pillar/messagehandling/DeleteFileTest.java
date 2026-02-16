@@ -28,12 +28,7 @@ package org.bitrepository.pillar.messagehandling;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositorymessages.AlarmMessage;
-import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
-import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
+import org.bitrepository.bitrepositorymessages.*;
 import org.bitrepository.pillar.MockedPillarTest;
 import org.bitrepository.pillar.messagefactories.DeleteFileMessageFactory;
 import org.junit.jupiter.api.Assertions;
@@ -216,8 +211,9 @@ public class DeleteFileTest extends MockedPillarTest {
         Assertions.assertEquals(getPillarID(), finalResponse.getPillarID());
         Assertions.assertEquals(FILE_ID, finalResponse.getFileID());
 
-        addStep("Pillar should have sent an alarm", "Alarm contains information about the missing verification " +
-                "checksum");
+        addStep("Pillar should have sent an alarm",
+                "Alarm contains information about the missing verification " +
+                        "checksum");
         AlarmMessage alarm = alarmReceiver.waitForMessage(AlarmMessage.class);
         Assertions.assertEquals(FILE_ID, alarm.getAlarm().getFileID());
         Assertions.assertEquals(getPillarID(), alarm.getAlarm().getAlarmRaiser());
@@ -231,13 +227,13 @@ public class DeleteFileTest extends MockedPillarTest {
 //    @Tag("regressiontest", "pillartest"})
     // FAILS, when combined with other tests...
     public void goodCaseOperation() throws Exception {
-        addDescription("Tests the DeleteFile functionality of the pillar for the success scenario, where the file is " +
-                "uploaded.");
+        addDescription("Tests the DeleteFile functionality of the pillar for the success scenario, " +
+                "where the file is uploaded.");
         addStep("Set up constants and variables.", "Should not fail here!");
         final String FILE_ID = defaultFileId + testMethodName;
 
-        addStep("Setup for delivering pillar id, having the file with expected checksum, and no errors when deleting " +
-                        "file.",
+        addStep("Setup for delivering pillar id, having the file with expected checksum, " +
+                        "and no errors when deleting file.",
                 "Returns true, when requesting file-id existence.");
         Mockito.doAnswer(new Answer() {
             public Boolean answer(InvocationOnMock invocation) {
@@ -274,6 +270,7 @@ public class DeleteFileTest extends MockedPillarTest {
         Assertions.assertEquals(FILE_ID, finalResponse.getFileID());
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
-        Assertions.assertEquals(1, audits.getCallsForAuditEvent(), "Should create one audit trail for the DeleteFile operation");
+        Assertions.assertEquals(1, audits.getCallsForAuditEvent(),
+                "Should create one audit trail for the DeleteFile operation");
     }
 }

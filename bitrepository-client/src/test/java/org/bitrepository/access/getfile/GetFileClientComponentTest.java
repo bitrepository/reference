@@ -26,14 +26,10 @@ package org.bitrepository.access.getfile;
 
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.bitrepositoryelements.FilePart;
-import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
-import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
-import org.bitrepository.bitrepositorymessages.GetFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositoryelements.TimeMeasureUnit;
+import org.bitrepository.bitrepositorymessages.*;
 import org.bitrepository.client.TestEventHandler;
 import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.client.eventhandler.IdentificationCompleteEvent;
@@ -45,8 +41,8 @@ import org.junit.jupiter.api.Test;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
-import java.net.URL;
 import java.math.BigInteger;
+import java.net.URL;
 
 import static javax.xml.datatype.DatatypeFactory.newInstance;
 
@@ -85,7 +81,8 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         String auditTrailInformation = "AuditTrailInfo for getFileFromSpecificPillarTest";
         client.getFileFromSpecificPillar(collectionID, DEFAULT_FILE_ID, null, httpServerConfiguration.getURL(DEFAULT_FILE_ID),
                 PILLAR2_ID, testEventHandler, auditTrailInformation);
-        IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(IdentifyPillarsForGetFileRequest.class);
+        IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage =
+                collectionReceiver.waitForMessage(IdentifyPillarsForGetFileRequest.class);
         Assertions.assertEquals(collectionID, receivedIdentifyRequestMessage.getCollectionID());
         Assertions.assertNotNull(receivedIdentifyRequestMessage.getCorrelationID());
         Assertions.assertEquals(settingsForCUT.getReceiverDestinationID(), receivedIdentifyRequestMessage.getReplyTo());

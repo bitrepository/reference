@@ -153,7 +153,8 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     public void testTwoDisagreeingChecksums() throws Exception {
         addDescription("Test the checksum integrity validator when only two pillar has data, but it it different.");
         IntegrityModel cache = getIntegrityModel();
-        IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION, "test", new File("target/"));
+        IntegrityReporter reporter =
+                new BasicIntegrityReporter(TEST_COLLECTION, "test", new File("target/"));
         StatisticsCollector cs = new StatisticsCollector(TEST_COLLECTION);
         HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter, cs);
 
@@ -182,7 +183,8 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     public void testThreeDisagreeingChecksums() throws Exception {
         addDescription("Test the checksum integrity validator when all pillars have different checksums.");
         IntegrityModel cache = getIntegrityModel();
-        IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION, "test", new File("target/"));
+        IntegrityReporter reporter =
+                new BasicIntegrityReporter(TEST_COLLECTION, "test", new File("target/"));
         StatisticsCollector cs = new StatisticsCollector(TEST_COLLECTION);
         HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter, cs);
 
@@ -212,7 +214,8 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         addDescription("Test the checksum integrity validator when two pillars have one checksum and the last pillar "
                 + "has another checksum.");
         IntegrityModel cache = getIntegrityModel();
-        IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION, "test", new File("target/"));
+        IntegrityReporter reporter =
+                new BasicIntegrityReporter(TEST_COLLECTION, "test", new File("target/"));
         StatisticsCollector cs = new StatisticsCollector(TEST_COLLECTION);
         HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter, cs);
 
@@ -242,7 +245,8 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         addDescription("Test audit trails for checksum errors. Verify that a pillar with a single checksum will"
                 + " be pointed out as the possible cause.");
         IntegrityModel cache = getIntegrityModel();
-        IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION, "test", new File("target/"));
+        IntegrityReporter reporter =
+                new BasicIntegrityReporter(TEST_COLLECTION, "test", new File("target/"));
         TestAuditTrailManager auditManager = new TestAuditTrailManager();
         StatisticsCollector cs = new StatisticsCollector(TEST_COLLECTION);
         HandleChecksumValidationStep step = new HandleChecksumValidationStep(cache, auditManager, reporter, cs);

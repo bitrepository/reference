@@ -68,8 +68,9 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
                 "It should be an instance of SimplePutFileClient");
         PutFileClient pfc = ModifyComponentFactory.getInstance().retrievePutClient(
                 settingsForCUT, securityManager, settingsForTestClient.getComponentID());
-        Assertions.assertInstanceOf(ConversationBasedPutFileClient.class, pfc, "The PutFileClient '" + pfc + "' should be instance of '"
-                + ConversationBasedPutFileClient.class.getName() + "'");
+        Assertions.assertInstanceOf(ConversationBasedPutFileClient.class, pfc,
+                "The PutFileClient '" + pfc + "' should be instance of '"
+                        + ConversationBasedPutFileClient.class.getName() + "'");
     }
 
     @Test

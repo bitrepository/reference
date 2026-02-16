@@ -28,12 +28,7 @@ package org.bitrepository.pillar.messagehandling;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositorymessages.AlarmMessage;
-import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
-import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
+import org.bitrepository.bitrepositorymessages.*;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.pillar.MockedPillarTest;
@@ -206,8 +201,8 @@ public class GetChecksumsTest extends MockedPillarTest {
     @Tag("regressiontest")
     @Tag("pillartest")
     public void goodCaseOperationAllFiles() throws Exception {
-        addDescription("Tests the GetChecksums operation on the pillar for the successful scenario, when requesting " +
-                "all files.");
+        addDescription("Tests the GetChecksums operation on the pillar for the successful scenario, " +
+                "when requesting all files.");
         addStep("Set up constants and variables.", "Should not fail here!");
         FileIDs fileids = FileIDsUtils.getAllFileIDs();
 
@@ -307,7 +302,8 @@ public class GetChecksumsTest extends MockedPillarTest {
                 return settingsForCUT.getComponentID();
             }
         }).when(model).getPillarID();
-        addStep("Setup for only delivering result-set when the correct restrictions are given.", "No failure here");
+        addStep("Setup for only delivering result-set when the correct restrictions are given.",
+                "No failure here");
         Mockito.doAnswer(new Answer() {
             public ExtractedChecksumResultSet answer(InvocationOnMock invocation) {
                 ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();

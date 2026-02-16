@@ -112,8 +112,10 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
             public AuditEventIterator answer(InvocationOnMock invocation) {
                 return iterator;
             }
-        }).when(store).getAuditTrailsByIterator(ArgumentMatchers.any(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(Long.class), ArgumentMatchers.any(),
-                ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any());
+        }).when(store).getAuditTrailsByIterator(ArgumentMatchers.any(), ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyString(), ArgumentMatchers.any(Long.class), ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.any());
 
         preserver.start();
 
@@ -129,9 +131,6 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
                 null, collectionID, PILLAR_ID, 1L, null, null,
                 null, null, null, null, null);
         Mockito.verify(iterator, Mockito.times(2)).getNextAuditTrailEvent();
-        //Assertions.assertEquals(store.getCallsToGetAuditTrails(), settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().size());
-
-        //Assertions.assertEquals(store.getCallsToGetPreservationSequenceNumber(), 2);
         Assertions.assertEquals(1, client.getCallsToPutFile());
     }
 
@@ -168,8 +167,10 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         addStep("Call the preservation of audit trails now.",
                 "Should make calls to the store, upload the file and call the client");
 
-        Mockito.doAnswer(invocation -> iterator).when(store).getAuditTrailsByIterator(ArgumentMatchers.any(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString(),
-                ArgumentMatchers.any(Long.class), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any());
+        Mockito.doAnswer(invocation -> iterator).when(store).getAuditTrailsByIterator(ArgumentMatchers.any(),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(Long.class),
+                ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any());
 
         Mockito.when(fileExchange.getURL(ArgumentMatchers.anyString())).thenReturn(testUploadUrl);
 
@@ -177,7 +178,8 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
         // getPreservationSequenceNumber should be called twice, first to 'initialize' audit-packer, and second to
         // run the preserver/packer...
         Mockito.verify(store, Mockito.times(2)).getPreservationSequenceNumber(PILLAR_ID, collectionID);
-        Mockito.verify(store).getAuditTrailsByIterator(null, collectionID, PILLAR_ID, 1L, null, null, null, null, null, null,
+        Mockito.verify(store).getAuditTrailsByIterator(null, collectionID, PILLAR_ID, 1L,
+                null, null, null, null, null, null,
                 null);
 
         Assertions.assertEquals(1, client.getCallsToPutFile());

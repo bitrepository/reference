@@ -12,7 +12,8 @@ public class PillarDetailsDtoTest {
 
     @Test
     void testSerialization() throws IOException {
-        PillarDetailsDto dto = new PillarDetailsDto("id", "pillar", "TYPE", "admin");
+        PillarDetailsDto dto =
+                new PillarDetailsDto("id", "pillar", "TYPE", "admin");
 
         String jsonOutput = objectMapper.writeValueAsString(dto);
 

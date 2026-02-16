@@ -1,23 +1,23 @@
 /*
  * #%L
  * Bitmagasin integrationstest
- * 
+ *
  * $Id$
  * $HeadURL$
  * %%
  * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -54,7 +54,7 @@ public class GeneralMessageBusTest extends IntegrationTest {
     }
 
     @Test
-    @Tag("regressiontest" )
+    @Tag("regressiontest")
     public final void busActivityTest() throws Exception {
         addDescription("Tests whether it is possible to create a message listener, " +
                 "and then set it to listen to the topic. Then puts a message" +
@@ -77,7 +77,8 @@ public class GeneralMessageBusTest extends IntegrationTest {
         addDescription("Verifies that two listeners on the same topic both receive the message");
         TestEventManager testEventManager = TestEventManager.getInstance();
 
-        addStep("Make a connection to the message bus and add two listeners", "No exceptions should be thrown");
+        addStep("Make a connection to the message bus and add two listeners",
+                "No exceptions should be thrown");
         MessageReceiver receiver1 = new MessageReceiver(alarmDestinationID, testEventManager);
         addReceiver(receiver1);
         messageBus.addListener(receiver1.getDestination(), receiver1.getMessageListener());
@@ -97,7 +98,7 @@ public class GeneralMessageBusTest extends IntegrationTest {
     }
 
     @Test
-    @Tag("specificationonly" )
+    @Tag("specificationonly")
     public final void messageBusFailoverTest() {
         addDescription("Verifies that we can switch to at second message bus " +
                 "in the middle of a conversation, if the connection is lost. " +
@@ -106,7 +107,7 @@ public class GeneralMessageBusTest extends IntegrationTest {
     }
 
     @Test
-    @Tag("specificationonly" )
+    @Tag("specificationonly")
     public final void messageBusReconnectTest() {
         addDescription("Test whether we are able to reconnect to the message " +
                 "bus if the connection is lost");

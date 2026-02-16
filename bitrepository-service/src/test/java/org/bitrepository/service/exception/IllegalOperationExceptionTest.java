@@ -26,10 +26,7 @@ import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 /**
@@ -61,7 +58,8 @@ public class IllegalOperationExceptionTest extends ExtendedTestCase {
             assertEquals(FileID, ((IllegalOperationException) e).getFileId());
         }
 
-        addStep("Throw the exception with an embedded exception", "The embedded exception should be the same.");
+        addStep("Throw the exception with an embedded exception",
+                "The embedded exception should be the same.");
         try {
             throw new IllegalOperationException(errCode, errMsg, FileID, new IllegalArgumentException(causeMsg));
         } catch (Exception e) {

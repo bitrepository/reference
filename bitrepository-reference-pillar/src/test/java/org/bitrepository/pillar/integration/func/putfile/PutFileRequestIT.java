@@ -102,9 +102,8 @@ public class PutFileRequestIT extends DefaultPillarOperationTest {
     public void putFileWithMD5ReturnChecksumTest() {
         addDescription("Tests that the pillar is able to return the default type checksum in the final response");
         addStep("Send a putFile request to " + testConfiguration.getPillarUnderTestID() + " with the ",
-                "The pillar should send a final response with the ChecksumRequestForNewFile elements containing the " +
-                        "MD5 " +
-                        "checksum for the supplied file.");
+                "The pillar should send a final response with the ChecksumRequestForNewFile elements " +
+                        "containing the MD5 checksum for the supplied file.");
         PutFileRequest putRequest = msgFactory.createPutFileRequest(
                 TestFileHelper.getDefaultFileChecksum(), null, defaultDownloadFileAddress, testSpecificFileID,
                 DEFAULT_FILE_SIZE);

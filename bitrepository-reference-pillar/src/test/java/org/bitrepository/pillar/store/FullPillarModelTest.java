@@ -47,7 +47,8 @@ public class FullPillarModelTest extends DefaultFixturePillarTest {
     ChecksumSpecTYPE defaultCsType;
     ChecksumSpecTYPE nonDefaultCsType;
 
-    protected static final String EMPTY_HMAC_SHA385_CHECKSUM = "3e7012b39d4f6c503b2a4846fff3f4d0d61fb1a58b81035765f283cfa5f1b93e57ded9e0a946447ff24e5c9be39c8573";
+    protected static final String EMPTY_HMAC_SHA385_CHECKSUM =
+            "3e7012b39d4f6c503b2a4846fff3f4d0d61fb1a58b81035765f283cfa5f1b93e57ded9e0a946447ff24e5c9be39c8573";
     protected static final String EMPTY_MD5_CHECKSUM = "d41d8cd98f00b204e9800998ecf8427e";
 
     @Override
@@ -132,7 +133,8 @@ public class FullPillarModelTest extends DefaultFixturePillarTest {
             // expected
         }
 
-        addStep("Verify that anexceptions are thrown when verifying file existance.", "Should not exist.");
+        addStep("Verify that anexceptions are thrown when verifying file existance.",
+                "Should not exist.");
         try {
             pillarModel.verifyFileExists(defaultFileId, collectionID);
             Assertions.fail("Must throw an exception here!");
