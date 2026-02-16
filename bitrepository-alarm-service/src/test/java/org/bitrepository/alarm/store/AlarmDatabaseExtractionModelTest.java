@@ -43,7 +43,9 @@ public class AlarmDatabaseExtractionModelTest extends ExtendedTestCase {
         boolean ascending = true;
 
         addStep("Create an empty model", "Should be populated with nulls.");
-        AlarmDatabaseExtractionModel model = new AlarmDatabaseExtractionModel(null, null, null, null, null, null, null, ascending);
+        AlarmDatabaseExtractionModel model =
+                new AlarmDatabaseExtractionModel(null, null, null, null,
+                        null, null, null, ascending);
 
         Assertions.assertNull(model.getAlarmCode());
         Assertions.assertNull(model.getComponentId());

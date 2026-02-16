@@ -27,20 +27,9 @@ package org.bitrepository.access.getfileids;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEvent;
-import org.bitrepository.bitrepositoryelements.FileIDs;
-import org.bitrepository.bitrepositoryelements.FileIDsData;
+import org.bitrepository.bitrepositoryelements.*;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
-import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
-import org.bitrepository.bitrepositoryelements.ResponseInfo;
-import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
-import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
-import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
-import org.bitrepository.bitrepositorymessages.MessageRequest;
-import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.bitrepositorymessages.*;
 import org.bitrepository.client.DefaultClientTest;
 import org.bitrepository.client.TestEventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
@@ -80,9 +69,9 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
     public void verifyGetFileIDsClientFromFactory() throws Exception {
         Assertions.assertInstanceOf(ConversationBasedGetFileIDsClient.class,
                 AccessComponentFactory.getInstance().createGetFileIDsClient(settingsForCUT, securityManager,
-                settingsForTestClient.getComponentID()), "The default GetFileClient from the Access factory should be" +
-                        " of the type '" +
-                ConversationBasedGetFileIDsClient.class.getName() + "'.");
+                        settingsForTestClient.getComponentID()),
+                "The default GetFileClient from the Access factory should be of the type '" +
+                        ConversationBasedGetFileIDsClient.class.getName() + "'.");
     }
 
     @Test
@@ -121,7 +110,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
                         + "message to the pillar");
         IdentifyPillarsForGetFileIDsResponse identifyResponse =
                 messageFactory.createIdentifyPillarsForGetFileIDsResponse(
-                receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
+                        receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
         messageBus.sendMessage(identifyResponse);
         Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_IDENTIFIED, testEventHandler.waitForEvent().getEventType());
 
@@ -143,8 +132,8 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
 
         addStep("The resulting file is uploaded to the indicated url and the pillar sends a final response upload " +
                         "message",
-                "The GetFileIDsClient notifies that the file is ready through the callback listener and the uploaded " +
-                        "file is present.");
+                "The GetFileIDsClient notifies that the file is ready through the callback listener " +
+                        "and the uploaded file is present.");
         GetFileIDsFinalResponse completeMsg = messageFactory.createGetFileIDsFinalResponse(
                 receivedGetFileIDsRequest, PILLAR1_ID, pillar1DestinationId);
 
@@ -198,7 +187,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
 
         IdentifyPillarsForGetFileIDsResponse identifyResponse =
                 messageFactory.createIdentifyPillarsForGetFileIDsResponse(
-                receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
+                        receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
         messageBus.sendMessage(identifyResponse);
         GetFileIDsRequest receivedGetFileIDsRequest = pillar1Receiver.waitForMessage(GetFileIDsRequest.class);
 
@@ -247,8 +236,8 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
             Assertions.assertNull(resFileIDs.getResultAddress(), "The results should be sent back through the message, "
                     + "and therefore no resulting address should be returned.");
             Assertions.assertNotNull(resFileIDs.getFileIDsData(), "No FileIDsData should be returned.");
-            Assertions.assertEquals(1, resFileIDs.getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size(), "Response " +
-                    "should contain same amount of fileids as requested.");
+            Assertions.assertEquals(1, resFileIDs.getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size(),
+                    "Response should contain same amount of fileids as requested.");
         }
 
         Assertions.assertEquals(OperationEvent.OperationEventType.COMPLETE, testEventHandler.waitForEvent().getEventType());
@@ -285,7 +274,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         GetFileIDsRequest receivedGetFileIDsRequest = null;
         IdentifyPillarsForGetFileIDsResponse identifyResponse =
                 messageFactory.createIdentifyPillarsForGetFileIDsResponse(
-                receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
+                        receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
         messageBus.sendMessage(identifyResponse);
         receivedGetFileIDsRequest = pillar1Receiver.waitForMessage(GetFileIDsRequest.class);
 
@@ -415,16 +404,14 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
 
     @Override
     protected MessageResponse createIdentifyResponse(MessageRequest identifyRequest, String from, String to) {
-        MessageResponse response = messageFactory.createIdentifyPillarsForGetFileIDsResponse(
+        return messageFactory.createIdentifyPillarsForGetFileIDsResponse(
                 (IdentifyPillarsForGetFileIDsRequest) identifyRequest, from, to);
-        return response;
     }
 
     @Override
     protected MessageResponse createFinalResponse(MessageRequest request, String from, String to) {
-        MessageResponse response = messageFactory.createGetFileIDsFinalResponse(
+        return messageFactory.createGetFileIDsFinalResponse(
                 (GetFileIDsRequest) request, from, to);
-        return response;
     }
 
     @Override

@@ -49,17 +49,14 @@ import javax.xml.datatype.DatatypeFactory;
 import java.math.BigInteger;
 import java.util.concurrent.ThreadFactory;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.timeout;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class AuditTrailServiceTest extends ExtendedTestCase {
-    /** The settings for the tests. Should be instantiated in the setup. */
+    /**
+     * The settings for the tests. Should be instantiated in the setup.
+     */
     Settings settings;
 
     public static final String TEST_COLLECTION = "dummy-collection";
@@ -124,12 +121,14 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
 
         verify(store, times(1)).addAuditTrails(any(AuditTrailEvents.class), eq(TEST_COLLECTION),
                 eq(DEFAULT_CONTRIBUTOR));
-        service.queryAuditTrailEventsByIterator(null, null, null, null, null, null, null, null, null, 10000);
-        verify(store, times(1)).getAuditTrailsByIterator(isNull(), isNull(), isNull(), isNull(), isNull(), isNull(),
-                isNull(), isNull(), isNull(), isNull(), isNull(), eq(10000));
-        service.queryAuditTrailEventsByIterator(null, null, null, null, null, null, FileAction.FAILURE, null, null, 100);
-        verify(store, times(1)).getAuditTrailsByIterator(isNull(), isNull(), isNull(), isNull(), isNull(), isNull(),
-                eq(FileAction.FAILURE), isNull(), isNull(), isNull(), isNull(), eq(100));
+        service.queryAuditTrailEventsByIterator(null, null, null, null,
+                null, null, null, null, null, 10000);
+        verify(store, times(1)).getAuditTrailsByIterator(isNull(), isNull(), isNull(), isNull(),
+                isNull(), isNull(), isNull(), isNull(), isNull(), isNull(), isNull(), eq(10000));
+        service.queryAuditTrailEventsByIterator(null, null, null, null,
+                null, null, FileAction.FAILURE, null, null, 100);
+        verify(store, times(1)).getAuditTrailsByIterator(isNull(), isNull(), isNull(), isNull(),
+                isNull(), isNull(), eq(FileAction.FAILURE), isNull(), isNull(), isNull(), isNull(), eq(100));
 
         addStep("Shutdown", "");
         service.shutdown();

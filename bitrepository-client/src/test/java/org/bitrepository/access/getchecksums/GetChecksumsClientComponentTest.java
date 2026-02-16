@@ -415,6 +415,7 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
     @Override
     protected void startOperation(TestEventHandler testEventHandler) {
         GetChecksumsClient getChecksumsClient = createGetChecksumsClient();
-        getChecksumsClient.getChecksums(collectionID, null, null, null, null, testEventHandler, null);
+        getChecksumsClient.getChecksums(collectionID, null, null, null,
+                null, testEventHandler, null);
     }
 }

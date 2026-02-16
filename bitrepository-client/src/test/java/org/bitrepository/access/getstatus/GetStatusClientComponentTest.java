@@ -66,8 +66,9 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
     @Tag("regressiontest")
     public void verifyGetStatusClientFromFactory() {
         Assertions.assertInstanceOf(ConversationBasedGetStatusClient.class, AccessComponentFactory.getInstance().createGetStatusClient(
-                settingsForCUT, securityManager, settingsForTestClient.getComponentID()), "The default GetStatusClient from the Access factory should be of the type '" +
-                ConversationBasedGetStatusClient.class.getName() + "'.");
+                        settingsForCUT, securityManager, settingsForTestClient.getComponentID()),
+                "The default GetStatusClient from the Access factory should be of the type '" +
+                        ConversationBasedGetStatusClient.class.getName() + "'.");
     }
 
     @Test
@@ -87,7 +88,8 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
         client.getStatus(testEventHandler);
         IdentifyContributorsForGetStatusRequest identifyRequest =
                 collectionReceiver.waitForMessage(IdentifyContributorsForGetStatusRequest.class);
-        Assertions.assertEquals(OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT, testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT,
+                testEventHandler.waitForEvent().getEventType());
 
         addStep("Send a identifyResponse from pillar 1",
                 "A COMPONENT_IDENTIFIED event should be received.");
@@ -96,7 +98,8 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
                         PILLAR1_ID, pillar1DestinationId);
         messageBus.sendMessage(responsePillar1);
 
-        Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_IDENTIFIED, testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_IDENTIFIED,
+                testEventHandler.waitForEvent().getEventType());
 
         addStep("Wait for timeout event", "An IDENTIFY_TIMEOUT and IDENTIFICATION_COMPLETE event should be received" +
                 "Right after this a GetStatusRequest should be sent to pillar1");

@@ -66,7 +66,8 @@ public class ChecksumExtractionUtilsTest extends DefaultFixtureClientTest {
     @Test
     @Tag("regressiontest")
     public void testNonSaltChecksumSpecWithoutSaltArgument() throws Exception {
-        addDescription("Test that a non-salt checksum type is retrieved when it is given as argument, and no salt arguments are given.");
+        addDescription("Test that a non-salt checksum type is retrieved when it is given as argument, " +
+                "and no salt arguments are given.");
         ChecksumType enteredType = ChecksumType.SHA384;
         cmdHandler.parseArguments("-" + Constants.REQUEST_CHECKSUM_TYPE_ARG + enteredType);
         ChecksumType type = ChecksumExtractionUtils.extractChecksumType(cmdHandler, settingsForCUT, output);

@@ -23,19 +23,8 @@ package org.bitrepository.access.getaudittrails;
 
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
-import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
-import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
-import org.bitrepository.bitrepositoryelements.FileAction;
-import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositoryelements.ResponseInfo;
-import org.bitrepository.bitrepositoryelements.ResultingAuditTrails;
-import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetAuditTrailsProgressResponse;
-import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsResponse;
-import org.bitrepository.bitrepositorymessages.MessageRequest;
-import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.bitrepositoryelements.*;
+import org.bitrepository.bitrepositorymessages.*;
 import org.bitrepository.client.DefaultClientTest;
 import org.bitrepository.client.TestEventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
@@ -81,9 +70,9 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
     public void verifyAuditTrailClientFromFactory() {
         Assertions.assertInstanceOf(ConversationBasedAuditTrailClient.class,
                 AccessComponentFactory.getInstance().createAuditTrailClient(
-                settingsForCUT, securityManager, settingsForTestClient.getComponentID()), "The default " +
+                        settingsForCUT, securityManager, settingsForTestClient.getComponentID()), "The default " +
                         "AuditTrailClient from the Access factory should be of the type '" +
-                ConversationBasedAuditTrailClient.class.getName() + "'.");
+                        ConversationBasedAuditTrailClient.class.getName() + "'.");
     }
 
     @Test
@@ -523,16 +512,14 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
     @Override
     protected MessageResponse createIdentifyResponse(
             MessageRequest identifyRequest, String from, String to) {
-        MessageResponse response = testMessageFactory.createIdentifyContributorsForGetAuditTrailsResponse(
+        return testMessageFactory.createIdentifyContributorsForGetAuditTrailsResponse(
                 (IdentifyContributorsForGetAuditTrailsRequest) identifyRequest, from, to);
-        return response;
     }
 
     @Override
     protected MessageResponse createFinalResponse(MessageRequest request, String from, String to) {
-        MessageResponse response = testMessageFactory.createGetAuditTrailsFinalResponse(
+        return testMessageFactory.createGetAuditTrailsFinalResponse(
                 (GetAuditTrailsRequest) request, from, to, null);
-        return response;
     }
 
     @Override

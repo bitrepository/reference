@@ -101,7 +101,8 @@ public class FileUtilsTest extends ExtendedTestCase {
             // expected
         }
 
-        addStep("Test that it fails, if the parent directory does not allow writing", "Throws exception");
+        addStep("Test that it fails, if the parent directory does not allow writing",
+                "Throws exception");
         FileUtils.delete(subdir);
         try {
             dir.setWritable(false);
@@ -118,7 +119,8 @@ public class FileUtilsTest extends ExtendedTestCase {
     @Tag("regressiontest")
     public void createDeleteDirectoryTester() throws Exception {
         addDescription("Test the ability to delete directories.");
-        addStep("Test deleting a directory with file and subdirectory", "Removes directory, sub-directory and file");
+        addStep("Test deleting a directory with file and subdirectory",
+                "Removes directory, sub-directory and file");
         File dir = FileUtils.retrieveDirectory(directory);
         File subdir = FileUtils.retrieveSubDirectory(dir, subDirectory);
         Assertions.assertTrue(dir.exists());
@@ -180,7 +182,8 @@ public class FileUtilsTest extends ExtendedTestCase {
         Assertions.assertFalse(testFile.exists());
         ByteArrayInputStream in = new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8));
 
-        addStep("Write the input stream to the file", "The file should exist and have same size as the data.");
+        addStep("Write the input stream to the file",
+                "The file should exist and have same size as the data.");
         FileUtils.writeStreamToFile(in, testFile);
         Assertions.assertTrue(testFile.exists());
         Assertions.assertEquals(data.length(), testFile.length());
@@ -196,7 +199,8 @@ public class FileUtilsTest extends ExtendedTestCase {
         Assertions.assertTrue(zipFile.isFile(), zipFile.getAbsolutePath());
         Assertions.assertEquals(0, dir.listFiles().length);
 
-        addStep("Unzip the zipfile to the directory", "Should place a file and a directory inside the dir");
+        addStep("Unzip the zipfile to the directory",
+                "Should place a file and a directory inside the dir");
         FileUtils.unzip(zipFile, dir);
         Assertions.assertEquals(2, dir.listFiles().length);
     }

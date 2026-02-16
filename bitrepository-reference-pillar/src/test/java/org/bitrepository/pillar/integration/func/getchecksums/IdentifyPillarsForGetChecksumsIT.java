@@ -72,13 +72,14 @@ public class IdentifyPillarsForGetChecksumsIT extends DefaultPillarIdentificatio
         IdentifyPillarsForGetChecksumsResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetChecksumsResponse.class);
         Assertions.assertNotNull(receivedIdentifyResponse);
-        Assertions.assertEquals(identifyRequest.getCollectionID(), receivedIdentifyResponse.getCollectionID(), "Received " +
-                "unexpected 'CollectionID' in response.");
-        Assertions.assertEquals(identifyRequest.getCorrelationID(), receivedIdentifyResponse.getCorrelationID(), "Received " +
-                "unexpected 'CorrelationID' in response.");
-        Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getFrom(), "Received unexpected 'From' in response.");
-        Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID(), "Received unexpected 'PillarID' in " +
-                "response.");
+        Assertions.assertEquals(identifyRequest.getCollectionID(), receivedIdentifyResponse.getCollectionID(),
+                "Received unexpected 'CollectionID' in response.");
+        Assertions.assertEquals(identifyRequest.getCorrelationID(), receivedIdentifyResponse.getCorrelationID(),
+                "Received unexpected 'CorrelationID' in response.");
+        Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getFrom(),
+                "Received unexpected 'From' in response.");
+        Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID(),
+                "Received unexpected 'PillarID' in response.");
         Assertions.assertNotNull(receivedIdentifyResponse.getReplyTo());
         Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE, receivedIdentifyResponse.getResponseInfo().getResponseCode(), "Received" +
                 " unexpected 'Response' in response.");
@@ -91,7 +92,6 @@ public class IdentifyPillarsForGetChecksumsIT extends DefaultPillarIdentificatio
         addDescription("Tests that the pillar is able to reject a GetChecksums requests for a file, which it " +
                 "does not have during the identification phase.");
         addStep("Setup for test", "2 files on the pillar");
-        //pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
         FileIDs fileids = FileIDsUtils.createFileIDs(nonDefaultFileId);
         ChecksumSpecTYPE csSpec = ChecksumUtils.getDefault(settingsForCUT);
@@ -107,8 +107,9 @@ public class IdentifyPillarsForGetChecksumsIT extends DefaultPillarIdentificatio
         IdentifyPillarsForGetChecksumsResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetChecksumsResponse.class);
         Assertions.assertNotNull(receivedIdentifyResponse.getFileIDs().getFileID());
-        Assertions.assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE, receivedIdentifyResponse.getResponseInfo().getResponseCode(), "Received " +
-                "unexpected 'ResponseCode' in response.");
+        Assertions.assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode(),
+                "Received unexpected 'ResponseCode' in response.");
     }
 
     @Test
@@ -130,8 +131,9 @@ public class IdentifyPillarsForGetChecksumsIT extends DefaultPillarIdentificatio
                 "The pillar should make a response.");
         IdentifyPillarsForGetChecksumsResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetChecksumsResponse.class);
-        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE, receivedIdentifyResponse.getResponseInfo().getResponseCode(), "Received" +
-                " unexpected 'ResponseCode' in response.");
+        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode(),
+                "Received unexpected 'ResponseCode' in response.");
     }
 
     @Override

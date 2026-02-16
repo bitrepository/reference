@@ -6,16 +6,16 @@ package org.bitrepository.pillar.integration.perf;
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -59,7 +59,7 @@ public class PutFileStressIT extends PillarPerformanceTest {
         metrics.addAppenders(metricAppenders);
         metrics.start();
         addStep("Add " + NUMBER_OF_FILES + " files", "Not errors should occur");
-        for (String fileID:fileIDs) {
+        for (String fileID : fileIDs) {
             blockingPutFileClient.putFile(collectionID, httpServerConfiguration.getURL(TestFileHelper.DEFAULT_FILE_ID), fileID, 10L,
                     TestFileHelper.getDefaultFileChecksum(), null, null, "singleTreadedPut stress test file");
             metrics.mark(fileID);
@@ -73,9 +73,11 @@ public class PutFileStressIT extends PillarPerformanceTest {
     @Tag("pillar-stress-test")
 //    @Disabled
     public void parallelPut() throws Exception {
-        final int numberOfFiles = testConfiguration.getInt("pillarintegrationtest.PutFileStressIT.parallelPut.numberOfFiles");
-        final int  partStatisticsInterval = testConfiguration.getInt("pillarintegrationtest.PutFileStressIT.parallelPut.partStatisticsInterval");
-        final int  numberOfParallelPuts =
+        final int numberOfFiles =
+                testConfiguration.getInt("pillarintegrationtest.PutFileStressIT.parallelPut.numberOfFiles");
+        final int partStatisticsInterval =
+                testConfiguration.getInt("pillarintegrationtest.PutFileStressIT.parallelPut.partStatisticsInterval");
+        final int numberOfParallelPuts =
                 testConfiguration.getInt("pillarintegrationtest.PutFileStressIT.parallelPut.numberOfParallelPuts");
         addDescription("Attempt to put " + numberOfFiles + " files into the pillar, " + numberOfParallelPuts + " at 'same' time.");
         String[] fileIDs = TestFileHelper.createFileIDs(numberOfFiles, "parallelPutTest");
@@ -85,21 +87,24 @@ public class PutFileStressIT extends PillarPerformanceTest {
         addStep("Add " + numberOfFiles + " files", "Not errors should occur");
         ParallelPutLimiter putLimiter = new ParallelPutLimiter(numberOfParallelPuts);
         EventHandler eventHandler = new PutEventHandlerForMetrics(metrics, putLimiter);
-        for (String fileID:fileIDs) {
+        for (String fileID : fileIDs) {
             putLimiter.addJob(fileID);
             putClient.putFile(collectionID, httpServerConfiguration.getURL(TestFileHelper.DEFAULT_FILE_ID), fileID, 10L,
-                    TestFileHelper.getDefaultFileChecksum(), null, eventHandler, "parallelPut stress test file");
+                    TestFileHelper.getDefaultFileChecksum(), null,
+                    eventHandler, "parallelPut stress test file");
         }
 
         awaitAsynchronousCompletion(metrics, numberOfFiles);
 
-        addStep("Check that the files are now present on the pillar(s)", "No missing files should be found.");
+        addStep("Check that the files are now present on the pillar(s)",
+                "No missing files should be found.");
         existingFiles = fileIDs;
     }
 
     private class PutEventHandlerForMetrics implements EventHandler {
         private final Metrics metrics;
         private final ParallelPutLimiter putLimiter;
+
         public PutEventHandlerForMetrics(Metrics metrics, ParallelPutLimiter putLimiter) {
             this.metrics = metrics;
             this.putLimiter = putLimiter;

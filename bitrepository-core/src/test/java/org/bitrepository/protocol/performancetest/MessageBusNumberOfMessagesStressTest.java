@@ -130,7 +130,8 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
         long messagePerSec = 10;
         QUEUE += "-" + (new Date()).getTime();
 
-        addStep("Make configuration for the messagebus and define the local broker.", "Both should be created.");
+        addStep("Make configuration for the messagebus and define the local broker.",
+                "Both should be created.");
         settings.getRepositorySettings().getProtocolSettings().setMessageBusConfiguration(
                 MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration()
         );
@@ -173,6 +174,7 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
 
     /**
      * Finds a free port on the localhost.
+     *
      * @return A free port number.
      * @throws IOException If an I/O error occurs.
      */
