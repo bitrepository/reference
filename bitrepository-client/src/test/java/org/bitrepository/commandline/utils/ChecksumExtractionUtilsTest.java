@@ -22,6 +22,7 @@
 package org.bitrepository.commandline.utils;
 
 import org.apache.commons.cli.Option;
+import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.client.DefaultFixtureClientTest;
 import org.bitrepository.commandline.Constants;
@@ -30,9 +31,12 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
 
+@ExtendWith(SuiteInfoParameterResolver.class)
 public class ChecksumExtractionUtilsTest extends DefaultFixtureClientTest {
     CommandLineArgumentsHandler cmdHandler;
     OutputHandler output;

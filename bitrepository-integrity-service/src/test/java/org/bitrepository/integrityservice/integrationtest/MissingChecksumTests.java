@@ -24,13 +24,8 @@ package org.bitrepository.integrityservice.integrationtest;
 import org.apache.commons.codec.DecoderException;
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
-import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumType;
-import org.bitrepository.bitrepositoryelements.FileIDsData;
+import org.bitrepository.bitrepositoryelements.*;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
-import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
-import org.bitrepository.bitrepositoryelements.ResultingChecksums;
 import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.IdentificationCompleteEvent;
@@ -54,27 +49,24 @@ import org.bitrepository.integrityservice.workflow.step.HandleMissingChecksumsSt
 import org.bitrepository.integrityservice.workflow.step.UpdateChecksumsStep;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.service.exception.WorkflowAbortedException;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import java.util.*;
+
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 
 
-public class MissingChecksumTests extends ExtendedTestCase {
+public class MissingChecksumTests {
     private static final String PILLAR_1 = "pillar1";
     private static final String PILLAR_2 = "pillar2";
 

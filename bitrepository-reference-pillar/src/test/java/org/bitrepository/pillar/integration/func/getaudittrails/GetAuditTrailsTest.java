@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -71,8 +72,7 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
     public void maxNumberOfResultTest() {
-        addDescription("Verifies the size of the result set can be limited by setting the maxNumberOfResult parameter" +
-                ".");
+        addDescription("Verifies the size of the result set can be limited by setting the maxNumberOfResult parameter.");
         addFixture("Ensure at least two files are present on the pillar");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 

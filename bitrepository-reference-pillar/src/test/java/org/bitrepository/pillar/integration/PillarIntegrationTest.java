@@ -21,7 +21,6 @@
  */
 package org.bitrepository.pillar.integration;
 
-import org.bitrepository.ExtendedTestInfoParameterResolver;
 import org.bitrepository.SuiteInfo;
 import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
 import org.bitrepository.client.conversation.mediator.ConversationMediatorManager;
@@ -42,7 +41,6 @@ import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.messagebus.SimpleMessageBus;
 import org.bitrepository.protocol.security.*;
 import org.bitrepository.protocol.security.SecurityManager;
-import org.jaccept.TestEventManager;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.suite.api.AfterSuite;
@@ -58,7 +56,7 @@ import java.io.InputStream;
  * to be invariant against the initial pillar state.
  */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@ExtendWith(ExtendedTestInfoParameterResolver.class)
+@ExtendWith(SuiteInfoParameterResolver.class)
 public abstract class PillarIntegrationTest extends IntegrationTest {
     /**
      * The path to the directory containing the integration test configuration files
@@ -87,10 +85,10 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     protected void initializeCUT() {
         super.initializeCUT();
         reloadMessageBus();
-        clientProvider = new ClientProvider(securityManager, settingsForTestClient, testEventManager);
+        clientProvider = new ClientProvider(securityManager, settingsForTestClient);
         pillarFileManager = new PillarFileManager(collectionID,
-                getPillarID(), settingsForTestClient, clientProvider, testEventManager, httpServerConfiguration);
-        clientEventHandler = new ClientEventLogger(testEventManager);
+                getPillarID(), settingsForTestClient, clientProvider, httpServerConfiguration);
+        clientEventHandler = new ClientEventLogger();
     }
 
     /**
@@ -120,7 +118,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
 
         startEmbeddedPillar(testInfo);
         reloadMessageBus();
-        clientProvider = new ClientProvider(securityManager, settingsForTestClient, testEventManager);
+        clientProvider = new ClientProvider(securityManager, settingsForTestClient);
         nonDefaultCollectionId = settingsForTestClient.getCollections().get(1).getID();
         irrelevantCollectionId = settingsForTestClient.getCollections().get(2).getID();
         putDefaultFile();
@@ -199,7 +197,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
      * <code>checksumPillarTest</code> a checksum pillar is started, else a normal 'full' reference pillar is started.
      * </p>
      *
-     * @param testInfo
+     * @param testInfo The suite info containing the pillar type.
      */
     protected void startEmbeddedPillar(SuiteInfo testInfo) {
         if (testConfiguration.useEmbeddedPillar()) {
@@ -295,8 +293,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
             try (InputStream fis = getClass().getClassLoader().getResourceAsStream("default-test-file.txt")) {
                 fe.putFile(fis, defaultFileUrl);
             } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                throw new RuntimeException("Failed to upload default test file", e);
             }
 
 
@@ -319,21 +316,19 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
         /**
          * The <code>TestEventManager</code> used to manage the event for the associated test.
          */
-        private final TestEventManager testEventManager;
 
         /**
          * The constructor.
-         *
-         * @param testEventManager The <code>TestEventManager</code> used to manage the event for the associated test.
          */
-        public ClientEventLogger(TestEventManager testEventManager) {
+        public ClientEventLogger() {
             super();
-            this.testEventManager = testEventManager;
         }
 
         @Override
         public void handleEvent(OperationEvent event) {
-            testEventManager.addResult("Received event: " + event);
+            io.qameta.allure.Allure.step("Received event: " + event.getEventType(), () -> {
+                io.qameta.allure.Allure.addAttachment("Event Details", event.toString());
+            });
         }
     }
 }

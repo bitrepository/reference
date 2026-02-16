@@ -32,8 +32,10 @@ import org.bitrepository.pillar.messagehandler.PillarMessageHandler;
 import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.exception.RequestHandlerException;
+import org.bitrepository.pillar.integration.SuiteInfoParameterResolver;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -41,6 +43,7 @@ import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@ExtendWith(SuiteInfoParameterResolver.class)
 public class GeneralMessageHandlingTest extends MockedPillarTest {
 
     MockRequestHandler requestHandler;

@@ -28,16 +28,21 @@ import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.*;
 
 import java.io.File;
+
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_FILE_ID;
+import static org.bitrepository.service.audit.AuditDatabaseConstants.FILE_TABLE;
+
 
 /**
  * Test database migration.  Generates jaccept reports.
  *
  */
-public class AuditTrailContributorDatabaseMigrationTest extends ExtendedTestCase {
+public class AuditTrailContributorDatabaseMigrationTest {
     protected Settings settings;
 
     static final String PATH_TO_DATABASE_UNPACKED = "target/test/audits/auditcontributerdb-v1";
@@ -80,7 +85,7 @@ public class AuditTrailContributorDatabaseMigrationTest extends ExtendedTestCase
         Assertions.assertEquals(1, auditTableVersionBefore, "Table version before migration");
 
         addStep("Ingest a entry to the database without the collection id", "works only in version 1.");
-        String sqlInsert = "INSERT INTO " + AuditDatabaseConstants.FILE_TABLE + " ( " + AuditDatabaseConstants.FILE_FILE_ID + " ) VALUES ( ? )";
+        String sqlInsert = "INSERT INTO " + FILE_TABLE + " ( " + FILE_FILE_ID + " ) VALUES ( ? )";
         DatabaseUtils.executeStatement(connector, sqlInsert, FILE_ID);
 
         addStep("Perform migration", "File table has version 2, audit table version 5 and database-version is 5");

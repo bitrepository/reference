@@ -21,6 +21,9 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+
 public class GetFileRequestIT extends PillarFunctionTest {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     protected GetFileMessageFactory msgFactory;

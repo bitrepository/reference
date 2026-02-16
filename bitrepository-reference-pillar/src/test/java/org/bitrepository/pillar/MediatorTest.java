@@ -36,6 +36,8 @@ import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
 import org.bitrepository.service.contributor.handler.RequestHandler;
 import org.junit.jupiter.api.Assertions;
+import org.bitrepository.pillar.integration.SuiteInfoParameterResolver;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -48,6 +50,7 @@ import java.util.UUID;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 
+@ExtendWith(SuiteInfoParameterResolver.class)
 public class MediatorTest extends DefaultFixturePillarTest {
     MockAuditManager audits;
     MessageHandlerContext context;

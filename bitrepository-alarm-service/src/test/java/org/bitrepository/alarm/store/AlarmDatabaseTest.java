@@ -30,14 +30,7 @@ import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
-import org.jaccept.structure.ExtendedTestCase;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 
 import java.io.File;
 import java.text.ParseException;
@@ -47,11 +40,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+
 /**
  * Sees if alarms are correctly stored in the database.
  */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class AlarmDatabaseTest extends ExtendedTestCase {
+public class AlarmDatabaseTest {
     /**
      * The settings for the tests. Should be instantiated in the setup.
      */
