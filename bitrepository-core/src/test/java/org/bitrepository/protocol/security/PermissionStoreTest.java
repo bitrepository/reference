@@ -26,6 +26,7 @@ import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerId;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.util.encoders.Base64;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -33,63 +34,60 @@ import org.junit.jupiter.api.Test;
 import java.math.BigInteger;
 import java.security.cert.X509Certificate;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addFixture;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.bitrepository.protocol.utils.AllureTestUtils.*;
 
-public class PermissionStoreTest  {
+public class PermissionStoreTest {
     private static final String componentID = "TEST";
     private PermissionStore permissionStore;
-    
+
     @BeforeEach
     public void setUp() throws Exception {
         permissionStore = new PermissionStore();
         permissionStore.loadPermissions(SecurityTestConstants.getDefaultPermissions(), componentID);
     }
-    
+
     @Test
     @Tag("regressiontest")
     public void positiveCertificateRetrievalTest() throws Exception {
         addDescription("Tests that a certificate can be retrieved based on the correct signerId.");
         addStep("Create signer to lookup certificate", "No exceptions");
-        byte[] decodeSig = 
+        byte[] decodeSig =
                 Base64.decode(TestCertProvider.getPositiveCertSignature().getBytes(SecurityModuleConstants.defaultEncodingType));
         CMSSignedData s = new CMSSignedData(new CMSProcessableByteArray(
                 SecurityTestConstants.getTestData().getBytes(SecurityModuleConstants.defaultEncodingType)), decodeSig);
         SignerInformation signer = s.getSignerInfos().getSigners().iterator().next();
         addStep("Lookup certificate based on signerId", "No exceptions");
-        X509Certificate certificateFromStore = permissionStore.getCertificate(signer.getSID());        
+        X509Certificate certificateFromStore = permissionStore.getCertificate(signer.getSID());
         X509Certificate positiveCertificate = TestCertProvider.loadPositiveCert();
         Assertions.assertEquals(certificateFromStore, positiveCertificate);
     }
-    
+
     @Test
     @Tag("regressiontest")
     public void negativeCertificateRetrievalTest() throws Exception {
         addDescription("Tests that a certificate cannot be retrieved based on the wrong signerId.");
         addStep("Create signer and modify its ID so lookup will fail", "No exceptions");
-        byte[] decodeSig = 
+        byte[] decodeSig =
                 Base64.decode(TestCertProvider.getPositiveCertSignature().getBytes(SecurityModuleConstants.defaultEncodingType));
         CMSSignedData s = new CMSSignedData(new CMSProcessableByteArray(
                 SecurityTestConstants.getTestData().getBytes(SecurityModuleConstants.defaultEncodingType)), decodeSig);
         SignerInformation signer = s.getSignerInfos().getSigners().iterator().next();
-        SignerId signerId= signer.getSID();
+        SignerId signerId = signer.getSID();
         BigInteger serial = signerId.getSerialNumber();
         serial.add(new BigInteger("2"));
         signerId = new SignerId(signerId.getIssuer(), serial);
         addStep("Lookup certificate based on signerId", "No exceptions");
-        X509Certificate certificateFromStore = permissionStore.getCertificate(signerId);        
+        X509Certificate certificateFromStore = permissionStore.getCertificate(signerId);
         X509Certificate positiveCertificate = TestCertProvider.loadPositiveCert();
         Assertions.assertEquals(certificateFromStore, positiveCertificate);
     }
-    
+
     //@Test
 //    @Tag("regressiontest"})
     public void certificatePermissionCheckTest() {
         addDescription("Tests that a certificate only allows for the expected permission.");
     }
-    
+
     //@Test
 //    @Tag("regressiontest"})
     public void unknownCertificatePermissionCheckTest() {

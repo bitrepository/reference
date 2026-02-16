@@ -24,16 +24,13 @@
  */
 package org.bitrepository.access.getfile;
 
+import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.bitrepositoryelements.FilePart;
-import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
-import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
-import org.bitrepository.bitrepositorymessages.GetFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositoryelements.TimeMeasureUnit;
+import org.bitrepository.bitrepositorymessages.*;
 import org.bitrepository.client.TestEventHandler;
 import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.client.eventhandler.IdentificationCompleteEvent;
@@ -42,21 +39,20 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
-import java.net.URL;
 import java.math.BigInteger;
+import java.net.URL;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addFixture;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.bitrepository.protocol.utils.AllureTestUtils.*;
 
 
 /**
  * Test class for the 'GetFileClient'.
  */
+@ExtendWith(SuiteInfoParameterResolver.class)
 public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
     private static final FilePart NO_FILE_PART = null;

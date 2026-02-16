@@ -32,9 +32,11 @@ import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTr
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.MockedPillarTest;
 import org.bitrepository.pillar.messagefactories.GetAuditTrailsMessageFactory;
+import org.bitrepository.pillar.integration.SuiteInfoParameterResolver;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigInteger;
@@ -46,6 +48,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@ExtendWith(SuiteInfoParameterResolver.class)
 public class GetAuditTrailsTest extends MockedPillarTest {
     private GetAuditTrailsMessageFactory msgFactory;
 

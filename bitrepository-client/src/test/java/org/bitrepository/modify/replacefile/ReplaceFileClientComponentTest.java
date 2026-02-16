@@ -24,18 +24,12 @@
  */
 package org.bitrepository.modify.replacefile;
 
-import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumType;
-import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositoryelements.ResponseInfo;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResponse;
-import org.bitrepository.bitrepositorymessages.ReplaceFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
-import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
+import org.bitrepository.SuiteInfoParameterResolver;
+import org.bitrepository.bitrepositoryelements.*;
+import org.bitrepository.bitrepositorymessages.*;
 import org.bitrepository.client.DefaultFixtureClientTest;
 import org.bitrepository.client.TestEventHandler;
+import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
@@ -45,6 +39,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -54,6 +49,7 @@ import java.nio.charset.StandardCharsets;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 
+@ExtendWith(SuiteInfoParameterResolver.class)
 public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
     private ChecksumSpecTYPE DEFAULT_CHECKSUM_SPEC;
     private ChecksumDataForFileTYPE DEFAULT_OLD_CHECKSUM_DATA;

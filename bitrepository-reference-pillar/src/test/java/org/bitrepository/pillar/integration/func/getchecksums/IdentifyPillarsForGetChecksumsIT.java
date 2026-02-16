@@ -33,15 +33,13 @@ import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.DefaultPillarIdentificationTest;
 import org.bitrepository.pillar.messagefactories.GetChecksumsMessageFactory;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 
 public class IdentifyPillarsForGetChecksumsIT extends DefaultPillarIdentificationTest {
     protected GetChecksumsMessageFactory msgFactory;
@@ -119,7 +117,8 @@ public class IdentifyPillarsForGetChecksumsIT extends DefaultPillarIdentificatio
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
     public void allFilesTest() {
-        addDescription("Tests that the pillar accepts a GetChecksums requests for all files, even though it does not have any files.");
+        addDescription("Tests that the pillar accepts a GetChecksums requests for all files, even though it does not " +
+                "have any files.");
         FileIDs fileids = FileIDsUtils.getAllFileIDs();
         ChecksumSpecTYPE csSpec = ChecksumUtils.getDefault(settingsForCUT);
 

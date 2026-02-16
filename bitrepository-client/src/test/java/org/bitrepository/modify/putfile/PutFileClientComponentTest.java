@@ -24,16 +24,9 @@
  */
 package org.bitrepository.modify.putfile;
 
-import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumType;
-import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositoryelements.ResponseInfo;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
-import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
-import org.bitrepository.bitrepositorymessages.PutFileRequest;
+import org.bitrepository.SuiteInfoParameterResolver;
+import org.bitrepository.bitrepositoryelements.*;
+import org.bitrepository.bitrepositorymessages.*;
 import org.bitrepository.client.DefaultFixtureClientTest;
 import org.bitrepository.client.TestEventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
@@ -44,18 +37,15 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import javax.xml.datatype.DatatypeFactory;
 import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addFixture;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addReference;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.bitrepository.protocol.utils.AllureTestUtils.*;
 
-
+@ExtendWith(SuiteInfoParameterResolver.class)
 public class PutFileClientComponentTest extends DefaultFixtureClientTest {
     private TestPutFileMessageFactory messageFactory;
     private DatatypeFactory datatypeFactory;
@@ -156,7 +146,7 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
 
         settingsForCUT.getRepositorySettings().getClientSettings()
                 .setIdentificationTimeoutDuration(datatypeFactory.newDuration(100));
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         PutFileClient putClient = createPutFileClient();
 
         addStep("Request the putting of a file through the PutClient",
@@ -464,8 +454,8 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         IdentifyPillarsForPutFileResponse identifyResponse2 = messageFactory.createIdentifyPillarsForPutFileResponse(
                 receivedIdentifyRequestMessage, PILLAR2_ID, pillar2DestinationId);
         messageBus.sendMessage(identifyResponse2);
-        assertEquals(OperationEventType.COMPONENT_IDENTIFIED, testEventHandler.waitForEvent().getEventType());
-        assertEquals(OperationEventType.IDENTIFICATION_COMPLETE, testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEventType.COMPONENT_IDENTIFIED, testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEventType.IDENTIFICATION_COMPLETE, testEventHandler.waitForEvent().getEventType());
 
         addStep("The client should proceed to send a putFileOperation request to the second pillar.",
                 "A REQUEST_SENT event should be generated and a PutFileRequest should be received on the pillar.");

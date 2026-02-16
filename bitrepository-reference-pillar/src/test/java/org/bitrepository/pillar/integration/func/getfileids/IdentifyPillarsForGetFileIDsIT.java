@@ -38,9 +38,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 
 public class IdentifyPillarsForGetFileIDsIT extends DefaultPillarIdentificationTest {
     protected GetFileIDsMessageFactory msgFactory;
@@ -117,7 +114,8 @@ public class IdentifyPillarsForGetFileIDsIT extends DefaultPillarIdentificationT
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
     public void allFilesTest() {
-        addDescription("Tests that the pillar accepts a GetFileIDs requests for all files, even though it does not have any files.");
+        addDescription("Tests that the pillar accepts a GetFileIDs requests for all files, even though it does not " +
+                "have any files.");
         FileIDs fileids = FileIDsUtils.getAllFileIDs();
 
         addStep("Create and send the identify request message.",

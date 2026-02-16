@@ -51,7 +51,6 @@ import java.util.List;
 
 import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
-import static org.mockito.Mockito.mock;
 
 /**
  * Performs the validation of the integrity for the checksums.
@@ -80,7 +79,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         settings.getReferenceSettings().getIntegrityServiceSettings().setTimeBeforeMissingFileCheck(time);
         SettingsUtils.initialize(settings);
         TEST_COLLECTION = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
-        auditManager = mock(AuditTrailManager.class);
+        auditManager = Mockito.mock(AuditTrailManager.class);
     }
 
     @Test

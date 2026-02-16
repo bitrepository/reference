@@ -21,10 +21,12 @@
  */
 package org.bitrepository.commandline;
 
+import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.client.DefaultFixtureClientTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Date;
 
@@ -32,6 +34,7 @@ import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@ExtendWith(SuiteInfoParameterResolver.class)
 public class DeleteFileCmdTest extends DefaultFixtureClientTest {
     private static final String SETTINGS_DIR = "settings/xml/bitrepository-devel";
     private static final String KEY_FILE = "KeyFile";

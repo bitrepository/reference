@@ -22,6 +22,7 @@
 package org.bitrepository.commandline.utils;
 
 import org.apache.commons.cli.Option;
+import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.client.DefaultFixtureClientTest;
 import org.bitrepository.commandline.Constants;
@@ -30,18 +31,12 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
 
+@ExtendWith(SuiteInfoParameterResolver.class)
 public class ChecksumExtractionUtilsTest extends DefaultFixtureClientTest {
     CommandLineArgumentsHandler cmdHandler;
     OutputHandler output;
@@ -51,7 +46,7 @@ public class ChecksumExtractionUtilsTest extends DefaultFixtureClientTest {
         cmdHandler = new CommandLineArgumentsHandler();
         cmdHandler.addOption(new Option(Constants.REQUEST_CHECKSUM_SALT_ARG, Constants.HAS_ARGUMENT, ""));
         cmdHandler.addOption(new Option(Constants.REQUEST_CHECKSUM_TYPE_ARG, Constants.HAS_ARGUMENT, ""));
-        output = mock(OutputHandler.class);
+        output = Mockito.mock(OutputHandler.class);
     }
 
     @Test

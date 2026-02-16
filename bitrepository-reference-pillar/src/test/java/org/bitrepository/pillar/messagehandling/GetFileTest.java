@@ -25,15 +25,11 @@
 package org.bitrepository.pillar.messagehandling;
 
 import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositorymessages.AlarmMessage;
-import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
-import org.bitrepository.bitrepositorymessages.GetFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
+import org.bitrepository.bitrepositorymessages.*;
 import org.bitrepository.common.filestore.FileInfo;
 import org.bitrepository.pillar.MockedPillarTest;
 import org.bitrepository.pillar.common.FileInfoStub;
+import org.bitrepository.pillar.integration.SuiteInfoParameterResolver;
 import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
 import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.InvalidMessageException;
@@ -41,6 +37,7 @@ import org.bitrepository.service.exception.RequestHandlerException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -50,15 +47,12 @@ import java.io.ByteArrayInputStream;
 
 import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
 
 
 /**
  * Tests the PutFile functionality on the ReferencePillar.
  */
+@ExtendWith(SuiteInfoParameterResolver.class)
 public class GetFileTest extends MockedPillarTest {
     private GetFileMessageFactory msgFactory;
 
@@ -79,7 +73,7 @@ public class GetFileTest extends MockedPillarTest {
 
         addStep("Setup for having the file and delivering pillar id",
                 "Not throw an exception when calling the verifyFileExists method.");
-        doAnswer(new Answer() {
+        Mockito.doAnswer(new Answer() {
             public String answer(InvocationOnMock invocation) {
                 return settingsForCUT.getComponentID();
             }
@@ -107,18 +101,19 @@ public class GetFileTest extends MockedPillarTest {
     @Tag("regressiontest")
     @Tag("pillartest")
     public void badCaseIdentification() throws Exception {
-        addDescription("Tests the identification for a GetFile operation on the checksum pillar for the failure scenario, when the file is missing.");
+        addDescription("Tests the identification for a GetFile operation on the checksum pillar for the failure " +
+                "scenario, when the file is missing.");
         addStep("Set up constants and variables.", "Should not fail here!");
         final String FILE_ID = defaultFileId + testMethodName;
 
         addStep("Setup for throwing an exception when asked to verify file existence",
                 "Should cause the FILE_NOT_FOUND_FAILURE later.");
-        doAnswer(new Answer() {
+        Mockito.doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) throws RequestHandlerException {
                 throw new IdentifyContributorException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.");
             }
-        }).when(model).verifyFileExists(eq(FILE_ID), anyString());
-        doAnswer(new Answer() {
+        }).when(model).verifyFileExists(ArgumentMatchers.eq(FILE_ID), ArgumentMatchers.anyString());
+        Mockito.doAnswer(new Answer() {
             public String answer(InvocationOnMock invocation) {
                 return settingsForCUT.getComponentID();
             }
@@ -146,18 +141,19 @@ public class GetFileTest extends MockedPillarTest {
 //    @Tag("regressiontest", "pillartest"})
     // FAILS, when combined with other tests...
     public void badCaseOperationNoFile() throws Exception {
-        addDescription("Tests the GetFile functionality of the pillar for the failure scenario, where it does not have the file.");
+        addDescription("Tests the GetFile functionality of the pillar for the failure scenario, where it does not " +
+                "have the file.");
         addStep("Set up constants and variables.", "Should not fail here!");
         final String FILE_ID = defaultFileId + testMethodName;
 
         addStep("Setup for throwing an exception when asked to verify file existence",
                 "Should cause the FILE_NOT_FOUND_FAILURE later.");
-        doAnswer(new Answer() {
+        Mockito.doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) throws RequestHandlerException {
                 throw new IdentifyContributorException(ResponseCode.FILE_NOT_FOUND_FAILURE, "File not found.");
             }
-        }).when(model).verifyFileExists(eq(FILE_ID), anyString());
-        doAnswer(new Answer() {
+        }).when(model).verifyFileExists(ArgumentMatchers.eq(FILE_ID), ArgumentMatchers.anyString());
+        Mockito.doAnswer(new Answer() {
             public String answer(InvocationOnMock invocation) {
                 return settingsForCUT.getComponentID();
             }
@@ -185,19 +181,20 @@ public class GetFileTest extends MockedPillarTest {
 //    @Tag("regressiontest", "pillartest"})
     // FAILS, when combined with other tests...
     public void goodCaseOperation() throws Exception {
-        addDescription("Tests the GetFile functionality of the pillar for the success scenario, where the file is uploaded.");
+        addDescription("Tests the GetFile functionality of the pillar for the success scenario, where the file is " +
+                "uploaded.");
         addStep("Set up constants and variables.", "Should not fail here!");
         final String FILE_ID = defaultFileId + testMethodName;
 
         addStep("Setup for having the file and delevering a mock file.",
                 "Should make it possible to perform the whole operation without any exceptions.");
-        doAnswer(new Answer() {
+        Mockito.doAnswer(new Answer() {
             public FileInfo answer(InvocationOnMock invocation) throws InvalidMessageException {
                 FileInfo res = new FileInfoStub(FILE_ID, 0L, 0L, new ByteArrayInputStream(new byte[0]));
                 return res;
             }
-        }).when(model).getFileInfoForActualFile(eq(FILE_ID), anyString());
-        doAnswer(new Answer() {
+        }).when(model).getFileInfoForActualFile(ArgumentMatchers.eq(FILE_ID), ArgumentMatchers.anyString());
+        Mockito.doAnswer(new Answer() {
             public String answer(InvocationOnMock invocation) {
                 return settingsForCUT.getComponentID();
             }

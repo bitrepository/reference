@@ -46,10 +46,12 @@ public class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     public void goodCaseIdentificationIT() {
-        addDescription("Tests the general IdentifyPillarsForGetFile functionality of the pillar for the successful scenario.");
+        addDescription("Tests the general IdentifyPillarsForGetFile functionality of the pillar for the successful " +
+                "scenario.");
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
-        IdentifyPillarsForGetFileRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileRequest(defaultFileId);
+        IdentifyPillarsForGetFileRequest identifyRequest =
+                msgFactory.createIdentifyPillarsForGetFileRequest(defaultFileId);
         messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response getPillarID() the pillar.",
@@ -73,12 +75,14 @@ public class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     public void nonExistingFileIdentificationIT() {
-        addDescription("Tests the  IdentifyPillarsForGetFile functionality of the pillar for a IdentificationForGetFile " +
+        addDescription("Tests the  IdentifyPillarsForGetFile functionality of the pillar for a " +
+                "IdentificationForGetFile " +
                 "for a non existing file.");
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
-        IdentifyPillarsForGetFileRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileRequest(nonDefaultFileId);
+        IdentifyPillarsForGetFileRequest identifyRequest =
+                msgFactory.createIdentifyPillarsForGetFileRequest(nonDefaultFileId);
         messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response getPillarID() the pillar.",

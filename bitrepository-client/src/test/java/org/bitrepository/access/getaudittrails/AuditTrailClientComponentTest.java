@@ -21,32 +21,19 @@
  */
 package org.bitrepository.access.getaudittrails;
 
+import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
-import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
-import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
-import org.bitrepository.bitrepositoryelements.FileAction;
-import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositoryelements.ResponseInfo;
-import org.bitrepository.bitrepositoryelements.ResultingAuditTrails;
-import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetAuditTrailsProgressResponse;
-import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsResponse;
-import org.bitrepository.bitrepositorymessages.MessageRequest;
-import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.bitrepositoryelements.*;
+import org.bitrepository.bitrepositorymessages.*;
 import org.bitrepository.client.DefaultClientTest;
 import org.bitrepository.client.TestEventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.protocol.bus.MessageReceiver;
 import org.bitrepository.settings.repositorysettings.Collection;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -54,12 +41,11 @@ import java.math.BigInteger;
 
 import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Test the default AuditTrailClient.
  */
+@ExtendWith(SuiteInfoParameterResolver.class)
 public class AuditTrailClientComponentTest extends DefaultClientTest {
     private GetAuditTrailsMessageFactory testMessageFactory;
     private DatatypeFactory datatypeFactory;
@@ -88,9 +74,9 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
     public void verifyAuditTrailClientFromFactory() {
         Assertions.assertInstanceOf(ConversationBasedAuditTrailClient.class,
                 AccessComponentFactory.getInstance().createAuditTrailClient(
-                settingsForCUT, securityManager, settingsForTestClient.getComponentID()), "The default " +
+                        settingsForCUT, securityManager, settingsForTestClient.getComponentID()), "The default " +
                         "AuditTrailClient from the Access factory should be of the type '" +
-                ConversationBasedAuditTrailClient.class.getName() + "'.");
+                        ConversationBasedAuditTrailClient.class.getName() + "'.");
     }
 
     @Test

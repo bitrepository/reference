@@ -26,20 +26,17 @@ package org.bitrepository.pillar.messagehandling;
 
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositorymessages.AlarmMessage;
-import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
-import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
-import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
+import org.bitrepository.bitrepositorymessages.*;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.pillar.MockedPillarTest;
+import org.bitrepository.pillar.integration.SuiteInfoParameterResolver;
 import org.bitrepository.pillar.messagefactories.GetFileIDsMessageFactory;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedFileIDsResultSet;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -50,19 +47,11 @@ import java.util.Date;
 
 import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.doAnswer;
-
 
 /**
  * Tests the PutFile functionality on the ReferencePillar.
  */
+@ExtendWith(SuiteInfoParameterResolver.class)
 public class GetFileIDsTest extends MockedPillarTest {
     private GetFileIDsMessageFactory msgFactory;
 
@@ -85,12 +74,12 @@ public class GetFileIDsTest extends MockedPillarTest {
 
         addStep("Setup for having the file and delivering pillar id",
                 "Should return true, when requesting file-id existence.");
-        doAnswer(new Answer() {
+        Mockito.doAnswer(new Answer() {
             public Boolean answer(InvocationOnMock invocation) {
                 return true;
             }
-        }).when(model).hasFileID(eq(FILE_ID), anyString());
-        doAnswer(new Answer() {
+        }).when(model).hasFileID(ArgumentMatchers.eq(FILE_ID), ArgumentMatchers.anyString());
+        Mockito.doAnswer(new Answer() {
             public String answer(InvocationOnMock invocation) {
                 return settingsForCUT.getComponentID();
             }
@@ -98,7 +87,8 @@ public class GetFileIDsTest extends MockedPillarTest {
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
-        IdentifyPillarsForGetFileIDsRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileIDsRequest(fileids);
+        IdentifyPillarsForGetFileIDsRequest identifyRequest =
+                msgFactory.createIdentifyPillarsForGetFileIDsRequest(fileids);
         messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response getPillarID() the pillar.",
@@ -118,19 +108,20 @@ public class GetFileIDsTest extends MockedPillarTest {
     @Tag("regressiontest")
     @Tag("pillartest")
     public void badCaseIdentification() throws Exception {
-        addDescription("Tests the identification for a GetFileIDs operation on the pillar for the failure scenario, when the file is missing.");
+        addDescription("Tests the identification for a GetFileIDs operation on the pillar for the failure scenario, " +
+                "when the file is missing.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = defaultFileId + testMethodName;
         FileIDs fileids = FileIDsUtils.getSpecificFileIDs(FILE_ID);
 
         addStep("Setup for delivering pillar id and not having the file ",
                 "Should return false, when requesting file-id existence.");
-        doAnswer(new Answer() {
+        Mockito.doAnswer(new Answer() {
             public Boolean answer(InvocationOnMock invocation) {
                 return false;
             }
-        }).when(model).hasFileID(eq(FILE_ID), anyString());
-        doAnswer(new Answer() {
+        }).when(model).hasFileID(ArgumentMatchers.eq(FILE_ID), ArgumentMatchers.anyString());
+        Mockito.doAnswer(new Answer() {
             public String answer(InvocationOnMock invocation) {
                 return settingsForCUT.getComponentID();
             }
@@ -138,7 +129,8 @@ public class GetFileIDsTest extends MockedPillarTest {
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
-        IdentifyPillarsForGetFileIDsRequest identifyRequest = msgFactory.createIdentifyPillarsForGetFileIDsRequest(fileids);
+        IdentifyPillarsForGetFileIDsRequest identifyRequest =
+                msgFactory.createIdentifyPillarsForGetFileIDsRequest(fileids);
         messageBus.sendMessage(identifyRequest);
 
         addStep("Retrieve and validate the response getPillarID() the pillar.",
@@ -158,28 +150,30 @@ public class GetFileIDsTest extends MockedPillarTest {
 //    @Tag("regressiontest", "pillartest"})
     // FAILS, when combined with other tests...
     public void goodCaseOperationSingleFile() throws Exception {
-        addDescription("Tests the GetFileIDs operation on the pillar for the successful scenario when requesting one specific file.");
+        addDescription("Tests the GetFileIDs operation on the pillar for the successful scenario when requesting one " +
+                "specific file.");
         addStep("Set up constants and variables.", "Should not fail here!");
         final String FILE_ID = defaultFileId + testMethodName;
         FileIDs fileids = FileIDsUtils.getSpecificFileIDs(FILE_ID);
         addStep("Setup for having the file and delivering result-set", "No failure here");
-        doAnswer(new Answer() {
+        Mockito.doAnswer(new Answer() {
             public Boolean answer(InvocationOnMock invocation) {
                 return true;
             }
-        }).when(model).hasFileID(eq(FILE_ID), anyString());
-        doAnswer(new Answer() {
+        }).when(model).hasFileID(ArgumentMatchers.eq(FILE_ID), ArgumentMatchers.anyString());
+        Mockito.doAnswer(new Answer() {
             public String answer(InvocationOnMock invocation) {
                 return settingsForCUT.getComponentID();
             }
         }).when(model).getPillarID();
-        doAnswer(new Answer() {
+        Mockito.doAnswer(new Answer() {
             public ExtractedFileIDsResultSet answer(InvocationOnMock invocation) {
                 ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
                 res.insertFileID(FILE_ID, new Date(0));
                 return res;
             }
-        }).when(model).getFileIDsResultSet(anyString(), any(XMLGregorianCalendar.class), any(XMLGregorianCalendar.class), anyLong(), anyString());
+        }).when(model).getFileIDsResultSet(ArgumentMatchers.anyString(), ArgumentMatchers.any(XMLGregorianCalendar.class),
+                ArgumentMatchers.any(XMLGregorianCalendar.class), ArgumentMatchers.anyLong(), ArgumentMatchers.anyString());
 
         addStep("Create and send the actual GetFileIDs message to the pillar.",
                 "Should be received and handled by the pillar.");
@@ -210,30 +204,32 @@ public class GetFileIDsTest extends MockedPillarTest {
 //    @Tag("regressiontest", "pillartest"})
     // FAILS, when combined with other tests...
     public void goodCaseOperationAllFiles() throws Exception {
-        addDescription("Tests the GetFileIDs operation on the pillar for the successful scenario, when requesting all files.");
+        addDescription("Tests the GetFileIDs operation on the pillar for the successful scenario, when requesting all" +
+                " files.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = defaultFileId + testMethodName;
         FileIDs fileids = FileIDsUtils.getAllFileIDs();
 
         addStep("Setup for having the file and delivering result-set", "No failure here");
-        doAnswer(new Answer() {
+        Mockito.doAnswer(new Answer() {
             public Boolean answer(InvocationOnMock invocation) {
                 return true;
             }
-        }).when(model).hasFileID(eq(FILE_ID), anyString());
-        doAnswer(new Answer() {
+        }).when(model).hasFileID(ArgumentMatchers.eq(FILE_ID), ArgumentMatchers.anyString());
+        Mockito.doAnswer(new Answer() {
             public String answer(InvocationOnMock invocation) {
                 return settingsForCUT.getComponentID();
             }
         }).when(model).getPillarID();
-        doAnswer(new Answer() {
+        Mockito.doAnswer(new Answer() {
             public ExtractedFileIDsResultSet answer(InvocationOnMock invocation) {
                 ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
                 res.insertFileID(defaultFileId, new Date(0));
                 res.insertFileID(nonDefaultFileId, new Date());
                 return res;
             }
-        }).when(model).getFileIDsResultSet(isNull(), any(XMLGregorianCalendar.class), any(XMLGregorianCalendar.class), anyLong(), anyString());
+        }).when(model).getFileIDsResultSet(ArgumentMatchers.isNull(), ArgumentMatchers.any(XMLGregorianCalendar.class),
+                ArgumentMatchers.any(XMLGregorianCalendar.class), ArgumentMatchers.anyLong(), ArgumentMatchers.anyString());
 
         addStep("Create and send the actual GetFileIDs message to the pillar.",
                 "Should be received and handled by the pillar.");
@@ -262,18 +258,19 @@ public class GetFileIDsTest extends MockedPillarTest {
     @Tag("regressiontest")
     @Tag("pillartest")
     public void badCaseOperationNoFile() throws Exception {
-        addDescription("Tests the GetFileIDs functionality of the pillar for the failure scenario, where it does not have the file.");
+        addDescription("Tests the GetFileIDs functionality of the pillar for the failure scenario, where it does not " +
+                "have the file.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = defaultFileId + testMethodName;
         FileIDs fileids = FileIDsUtils.getSpecificFileIDs(FILE_ID);
 
         addStep("Setup for not having the file", "Should cause the FILE_NOT_FOUND_FAILURE later.");
-        doAnswer(new Answer() {
+        Mockito.doAnswer(new Answer() {
             public Boolean answer(InvocationOnMock invocation) {
                 return false;
             }
-        }).when(model).hasFileID(eq(FILE_ID), anyString());
-        doAnswer(new Answer() {
+        }).when(model).hasFileID(ArgumentMatchers.eq(FILE_ID), ArgumentMatchers.anyString());
+        Mockito.doAnswer(new Answer() {
             public String answer(InvocationOnMock invocation) {
                 return settingsForCUT.getComponentID();
             }
@@ -312,28 +309,30 @@ public class GetFileIDsTest extends MockedPillarTest {
         final XMLGregorianCalendar MAX_DATE = CalendarUtils.getXmlGregorianCalendar(new Date());
         final Long MAX_RESULTS = 12345L;
 
-        doAnswer(new Answer() {
+        Mockito.doAnswer(new Answer() {
             public Boolean answer(InvocationOnMock invocation) {
                 return true;
             }
-        }).when(model).hasFileID(eq(FILE_ID), eq(collectionID));
-        doAnswer(new Answer() {
+        }).when(model).hasFileID(ArgumentMatchers.eq(FILE_ID), ArgumentMatchers.eq(collectionID));
+        Mockito.doAnswer(new Answer() {
             public String answer(InvocationOnMock invocation) {
                 return settingsForCUT.getComponentID();
             }
         }).when(model).getPillarID();
         addStep("Setup for only delivering result-set when the correct restrictions are given.", "No failure here");
-        doAnswer(new Answer() {
+        Mockito.doAnswer(new Answer() {
             public ExtractedFileIDsResultSet answer(InvocationOnMock invocation) {
                 ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
                 res.insertFileID(FILE_ID, new Date(1234567890));
                 return res;
             }
-        }).when(model).getFileIDsResultSet(isNull(), eq(MIN_DATE), eq(MAX_DATE), eq(MAX_RESULTS), eq(collectionID));
+        }).when(model).getFileIDsResultSet(ArgumentMatchers.isNull(), ArgumentMatchers.eq(MIN_DATE), ArgumentMatchers.eq(MAX_DATE),
+                ArgumentMatchers.eq(MAX_RESULTS), ArgumentMatchers.eq(collectionID));
 
         addStep("Create and send the actual GetFileIDs message to the pillar.",
                 "Should be received and handled by the pillar.");
-        GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(fileids, null, MAX_RESULTS, MAX_DATE, MIN_DATE);
+        GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(fileids, null, MAX_RESULTS, MAX_DATE
+                , MIN_DATE);
         messageBus.sendMessage(getFileIDsRequest);
 
         addStep("Retrieve the ProgressResponse for the GetFileIDs request",

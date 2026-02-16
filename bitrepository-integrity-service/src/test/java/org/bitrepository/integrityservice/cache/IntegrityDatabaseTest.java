@@ -42,15 +42,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
-import static org.mockito.Mockito.mock;
 
 public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     AuditTrailManager auditManager;
@@ -67,7 +62,7 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     public void setup() throws Exception {
         super.setup();
         TEST_COLLECTIONID = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
-        auditManager = mock(AuditTrailManager.class);
+        auditManager = Mockito.mock(AuditTrailManager.class);
     }
 
     @Override

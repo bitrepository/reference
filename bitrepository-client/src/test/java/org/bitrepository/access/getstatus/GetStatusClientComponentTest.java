@@ -21,6 +21,7 @@
  */
 package org.bitrepository.access.getstatus;
 
+import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getstatus.conversation.StatusCompleteContributorEvent;
 import org.bitrepository.bitrepositoryelements.ResultingStatus;
@@ -32,7 +33,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusR
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
 import org.bitrepository.client.DefaultFixtureClientTest;
 import org.bitrepository.client.TestEventHandler;
-import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
+import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.protocol.message.TestGetStatusMessageFactory;
 import org.bitrepository.settings.repositorysettings.GetStatusSettings;
@@ -40,15 +41,15 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import javax.xml.datatype.DatatypeFactory;
 import java.util.List;
 
 import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
-
+@ExtendWith(SuiteInfoParameterResolver.class)
 public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
 
     private TestGetStatusMessageFactory testMessageFactory;

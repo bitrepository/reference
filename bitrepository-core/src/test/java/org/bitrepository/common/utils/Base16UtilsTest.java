@@ -35,7 +35,8 @@ import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 public class Base16UtilsTest {
 
     private final String DECODED_CHECKSUM = "ff5aca7ae8c80c9a3aeaf9173e4dfd27";
-    private final byte[] ENCODED_CHECKSUM = new byte[]{-1,90,-54,122,-24,-56,12,-102,58,-22,-7,23,62,77,-3,39};
+    private final byte[] ENCODED_CHECKSUM =
+            new byte[]{-1, 90, -54, 122, -24, -56, 12, -102, 58, -22, -7, 23, 62, 77, -3, 39};
 
     @Test
     @Tag("regressiontest")

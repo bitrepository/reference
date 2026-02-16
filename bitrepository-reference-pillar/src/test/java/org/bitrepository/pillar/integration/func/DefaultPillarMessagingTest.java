@@ -33,7 +33,6 @@ import org.junit.jupiter.api.Test;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 
-
 /**
  * Contains the tests for exploringa pillars handling of general messaging. The concrete class needs to
  * implement the abstract methods and add any operation specific tests. The test will not work for Alarm and status
@@ -62,7 +61,7 @@ public abstract class DefaultPillarMessagingTest extends PillarFunctionTest {
     public void otherCollectionTest() {
         addDescription("Verifies identification works correctly for a second collection defined for pillar");
         addStep("Sending a identify request with a non-default collectionID (not the first collection) " +
-                "the pillar is part of",
+                        "the pillar is part of",
                 "The pillar under test should make a positive response");
         MessageRequest request = createRequest();
         request.setCollectionID(nonDefaultCollectionId);

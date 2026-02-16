@@ -21,6 +21,7 @@
  */
 package org.bitrepository.alarm.handler;
 
+import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.alarm.handling.AlarmHandler;
 import org.bitrepository.alarm.handling.AlarmMediator;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
@@ -28,11 +29,13 @@ import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocol.IntegrationTest;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@ExtendWith(SuiteInfoParameterResolver.class)
 public class AlarmHandlerTest extends IntegrationTest {
     @Test
     @Tag("regressiontest")

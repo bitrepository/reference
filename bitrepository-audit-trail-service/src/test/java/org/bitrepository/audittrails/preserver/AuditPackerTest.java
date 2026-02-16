@@ -5,8 +5,8 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.settings.referencesettings.AuditTrailPreservation;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.mockito.ArgumentMatchers;
@@ -16,13 +16,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class AuditPackerTest {
@@ -50,8 +44,11 @@ public class AuditPackerTest {
         List<StubAuditEventIterator> iterators = List.of(
                 new StubAuditEventIterator(), new StubAuditEventIterator(), new StubAuditEventIterator());
 
-        when(store.getAuditTrailsByIterator(
-                any(), eq(collectionID), anyString(), any(Long.class), any(), any(), any(), any(), any(), any(), any())
+        Mockito.when(store.getAuditTrailsByIterator(
+                ArgumentMatchers.any(), ArgumentMatchers.eq(collectionID), ArgumentMatchers.anyString(),
+                ArgumentMatchers.any(Long.class), ArgumentMatchers.any(), ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(),
+                ArgumentMatchers.any())
         ).thenReturn(iterators.get(0)).thenReturn(iterators.get(1)).thenReturn(iterators.get(2));
 
         // Do the actual call to createNewPackage - this will fetch first event from the iterators.

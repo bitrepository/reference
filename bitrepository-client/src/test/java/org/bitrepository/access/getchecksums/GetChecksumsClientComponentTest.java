@@ -39,6 +39,7 @@
  */
 package org.bitrepository.access.getchecksums;
 
+import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.bitrepositoryelements.*;
@@ -52,6 +53,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.math.BigInteger;
 import java.net.URL;
@@ -59,13 +61,12 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addFixture;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+import static org.bitrepository.protocol.utils.AllureTestUtils.*;
 
 /**
  * Test class for the 'GetFileClient'.
  */
+@ExtendWith(SuiteInfoParameterResolver.class)
 public class GetChecksumsClientComponentTest extends DefaultClientTest {
     private TestGetChecksumsMessageFactory messageFactory;
 
@@ -120,8 +121,9 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
 
         addStep("Sends a response from pillar2.",
                 "This should be ignored.");
-        IdentifyPillarsForGetChecksumsResponse identifyResponse2 = messageFactory.createIdentifyPillarsForGetChecksumsResponse(
-                receivedIdentifyRequestMessage, PILLAR2_ID, pillar2DestinationId);
+        IdentifyPillarsForGetChecksumsResponse identifyResponse2 =
+                messageFactory.createIdentifyPillarsForGetChecksumsResponse(
+                        receivedIdentifyRequestMessage, PILLAR2_ID, pillar2DestinationId);
         messageBus.sendMessage(identifyResponse2);
         testEventHandler.verifyNoEventsAreReceived();
 
@@ -129,8 +131,9 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
                 "A getChecksumRequest should be sendt to pillar1 and the following events should be received: " +
                         "COMPONENT_IDENTIFIED, IDENTIFICATION_COMPLETE and REQUEST_SENT.");
 
-        IdentifyPillarsForGetChecksumsResponse identifyResponse = messageFactory.createIdentifyPillarsForGetChecksumsResponse(
-                receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
+        IdentifyPillarsForGetChecksumsResponse identifyResponse =
+                messageFactory.createIdentifyPillarsForGetChecksumsResponse(
+                        receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
         messageBus.sendMessage(identifyResponse);
         GetChecksumsRequest receivedGetChecksumsRequest = pillar1Receiver.waitForMessage(GetChecksumsRequest.class);
 
@@ -183,11 +186,13 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
                 "The callback listener should notify of the response and the client should send a GetChecksumsRequest "
                         + "message to the pillar");
 
-        IdentifyPillarsForGetChecksumsResponse identifyResponse1 = messageFactory.createIdentifyPillarsForGetChecksumsResponse(
-                receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
+        IdentifyPillarsForGetChecksumsResponse identifyResponse1 =
+                messageFactory.createIdentifyPillarsForGetChecksumsResponse(
+                        receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
         messageBus.sendMessage(identifyResponse1);
-        IdentifyPillarsForGetChecksumsResponse identifyResponse2 = messageFactory.createIdentifyPillarsForGetChecksumsResponse(
-                receivedIdentifyRequestMessage, PILLAR2_ID, pillar2DestinationId);
+        IdentifyPillarsForGetChecksumsResponse identifyResponse2 =
+                messageFactory.createIdentifyPillarsForGetChecksumsResponse(
+                        receivedIdentifyRequestMessage, PILLAR2_ID, pillar2DestinationId);
         messageBus.sendMessage(identifyResponse2);
         GetChecksumsRequest receivedGetChecksumsRequest1 = pillar1Receiver.waitForMessage(GetChecksumsRequest.class);
 
@@ -198,7 +203,8 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
         Assertions.assertEquals(OperationEvent.OperationEventType.REQUEST_SENT, testEventHandler.waitForEvent().getEventType());
 
         addStep("Sends a final response from each pillar",
-                "The GetChecksumsClient notifies that the file is ready through the callback listener and the uploaded file is present.");
+                "The GetChecksumsClient notifies that the file is ready through the callback listener and the " +
+                        "uploaded file is present.");
         GetChecksumsFinalResponse completeMsg1 = messageFactory.createGetChecksumsFinalResponse(
                 receivedGetChecksumsRequest1, PILLAR1_ID, pillar1DestinationId);
         ResultingChecksums res = new ResultingChecksums();
@@ -226,7 +232,8 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
         TestEventHandler testEventHandler = new TestEventHandler();
         GetChecksumsClient getChecksumsClient = createGetChecksumsClient();
 
-        addStep("Request the delivery of the checksum of a file from the pillar(s). A callback listener should be supplied.",
+        addStep("Request the delivery of the checksum of a file from the pillar(s). A callback listener should be " +
+                        "supplied.",
                 "A IdentifyPillarsForGetChecksumsRequest will be sent to the pillar(s).");
         getChecksumsClient.getChecksums(collectionID, null, DEFAULT_FILE_ID, null, null, testEventHandler,
                 "TEST-AUDIT");
@@ -382,16 +389,14 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
 
     @Override
     protected MessageResponse createIdentifyResponse(MessageRequest identifyRequest, String from, String to) {
-        MessageResponse response = messageFactory.createIdentifyPillarsForGetChecksumsResponse(
+        return messageFactory.createIdentifyPillarsForGetChecksumsResponse(
                 (IdentifyPillarsForGetChecksumsRequest) identifyRequest, from, to);
-        return response;
     }
 
     @Override
     protected MessageResponse createFinalResponse(MessageRequest request, String from, String to) {
-        MessageResponse response = messageFactory.createGetChecksumsFinalResponse(
+        return messageFactory.createGetChecksumsFinalResponse(
                 (GetChecksumsRequest) request, from, to);
-        return response;
     }
 
     @Override

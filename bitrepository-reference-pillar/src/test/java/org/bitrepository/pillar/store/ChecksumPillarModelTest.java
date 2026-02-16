@@ -25,6 +25,7 @@ import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
+import org.bitrepository.pillar.integration.SuiteInfoParameterResolver;
 import org.bitrepository.pillar.store.checksumcache.MemoryCacheMock;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumStore;
 import org.bitrepository.service.AlarmDispatcher;
@@ -32,18 +33,15 @@ import org.bitrepository.settings.referencesettings.ChecksumPillarFileDownload;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Date;
 
 import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 
+@ExtendWith(SuiteInfoParameterResolver.class)
 public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
     ChecksumStorageModel pillarModel;
     ChecksumStore cache;

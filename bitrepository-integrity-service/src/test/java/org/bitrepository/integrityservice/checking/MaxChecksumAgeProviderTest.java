@@ -22,6 +22,7 @@
 package org.bitrepository.integrityservice.checking;
 
 import org.bitrepository.settings.referencesettings.ObsoleteChecksumSettings;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -32,9 +33,8 @@ import java.time.Duration;
 
 import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class MaxChecksumAgeProviderTest{
+public class MaxChecksumAgeProviderTest {
 
     DatatypeFactory factory;
 
@@ -80,8 +80,8 @@ public class MaxChecksumAgeProviderTest{
 
 
         addStep("Create a MaxChecksumAgeProvider with settings containing a default MaxAge of 10, pillar1" +
-            "MaxChecksumAge of 1001 and pillar2 MaxChecksumAge of 1002" ,
-            "Test that the MaxAge for pillar1 is 1001, pillar2 is 1002 and for a random pillar is 10");
+                        "MaxChecksumAge of 1001 and pillar2 MaxChecksumAge of 1002",
+                "Test that the MaxAge for pillar1 is 1001, pillar2 is 1002 and for a random pillar is 10");
         Duration defaultMaxAge = Duration.ofMillis(100);
         long defaultMaxAgeInSettings = 100;
         final String PILLAR1 = "PILLAR1";
@@ -91,9 +91,9 @@ public class MaxChecksumAgeProviderTest{
         ObsoleteChecksumSettings settings = new ObsoleteChecksumSettings();
         settings.setDefaultMaxChecksumAge(factory.newDuration(defaultMaxAgeInSettings));
         settings.getMaxChecksumAgeForPillar().add(
-            MaxChecksumAgeProvider.createMaxChecksumAgeForPillar(PILLAR1, pillar1MaxAge));
+                MaxChecksumAgeProvider.createMaxChecksumAgeForPillar(PILLAR1, pillar1MaxAge));
         settings.getMaxChecksumAgeForPillar().add(
-            MaxChecksumAgeProvider.createMaxChecksumAgeForPillar(PILLAR2, pillar2MaxAge));
+                MaxChecksumAgeProvider.createMaxChecksumAgeForPillar(PILLAR2, pillar2MaxAge));
         MaxChecksumAgeProvider maxChecksumAgeProvider = new MaxChecksumAgeProvider(defaultMaxAge, settings);
         Assertions.assertEquals(Duration.ofMillis(pillar1MaxAge), maxChecksumAgeProvider.getMaxChecksumAge(PILLAR1));
         Assertions.assertEquals(Duration.ofMillis(pillar2MaxAge), maxChecksumAgeProvider.getMaxChecksumAge(PILLAR2));

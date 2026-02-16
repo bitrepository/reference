@@ -36,8 +36,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest {
     protected PutFileMessageFactory msgFactory;
