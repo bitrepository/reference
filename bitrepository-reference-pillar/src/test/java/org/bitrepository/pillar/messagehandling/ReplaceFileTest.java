@@ -67,8 +67,8 @@ public class ReplaceFileTest extends MockedPillarTest {
     @Tag("regressiontest")
     @Tag("pillartest")
     public void goodCaseIdentification() {
-        addDescription("Tests the identification for a ReplaceFile operation on the pillar for the successful " +
-                "scenario.");
+        addDescription("Tests the identification for a ReplaceFile operation on the pillar " +
+                "for the successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = defaultFileId;
 
@@ -193,8 +193,8 @@ public class ReplaceFileTest extends MockedPillarTest {
         Assertions.assertEquals(getPillarID(), finalResponse.getPillarID());
         Assertions.assertEquals(FILE_ID, finalResponse.getFileID());
 
-        addStep("Pillar should have sent an alarm", "Alarm contains information about the missing verification " +
-                "checksum");
+        addStep("Pillar should have sent an alarm",
+                "Alarm contains information about the missing verification checksum");
         AlarmMessage alarm = alarmReceiver.waitForMessage(AlarmMessage.class);
         Assertions.assertEquals(FILE_ID, alarm.getAlarm().getFileID());
         Assertions.assertEquals(getPillarID(), alarm.getAlarm().getAlarmRaiser());
@@ -230,8 +230,8 @@ public class ReplaceFileTest extends MockedPillarTest {
         Assertions.assertEquals(getPillarID(), finalResponse.getPillarID());
         Assertions.assertEquals(FILE_ID, finalResponse.getFileID());
 
-        addStep("Pillar should have sent an alarm", "Alarm contains information about the missing verification " +
-                "checksum");
+        addStep("Pillar should have sent an alarm",
+                "Alarm contains information about the missing verification checksum");
         AlarmMessage alarm = alarmReceiver.waitForMessage(AlarmMessage.class);
         Assertions.assertEquals(FILE_ID, alarm.getAlarm().getFileID());
         Assertions.assertEquals(getPillarID(), alarm.getAlarm().getAlarmRaiser());
@@ -243,14 +243,15 @@ public class ReplaceFileTest extends MockedPillarTest {
     @Tag("regressiontest")
     @Tag("pillartest")
     public void badCaseOperationWrongDestructiveChecksum() throws Exception {
-        addDescription("Tests the ReplaceFile operation on the pillar for the failure scenario, when the checksum for "
-                + "the destructive action is different from the one in the cache.");
+        addDescription("Tests the ReplaceFile operation on the pillar for the failure scenario, " +
+                "when the checksum for the destructive action is different from the one in the cache.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = defaultFileId;
 
         addStep("Setup for having the file and delivering pillar id",
                 "Should return true, when requesting file-id existence.");
-        Mockito.doAnswer(invocation -> true).when(model).hasFileID(ArgumentMatchers.eq(FILE_ID), ArgumentMatchers.anyString());
+        Mockito.doAnswer(invocation -> true).when(model).hasFileID(ArgumentMatchers.eq(FILE_ID),
+                ArgumentMatchers.anyString());
         Mockito.doAnswer(invocation -> settingsForCUT.getComponentID()).when(model).getPillarID();
         Mockito.doAnswer(invocation -> NON_DEFAULT_MD5_CHECKSUM).when(model).getChecksumForFile(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(),
                 ArgumentMatchers.any(ChecksumSpecTYPE.class));
@@ -268,8 +269,8 @@ public class ReplaceFileTest extends MockedPillarTest {
         Assertions.assertEquals(getPillarID(), finalResponse.getPillarID());
         Assertions.assertEquals(FILE_ID, finalResponse.getFileID());
 
-        addStep("Pillar should have sent an alarm", "Alarm contains information about the missing verification " +
-                "checksum");
+        addStep("Pillar should have sent an alarm",
+                "Alarm contains information about the missing verification checksum");
         AlarmMessage alarm = alarmReceiver.waitForMessage(AlarmMessage.class);
         Assertions.assertEquals(FILE_ID, alarm.getAlarm().getFileID());
         Assertions.assertEquals(getPillarID(), alarm.getAlarm().getAlarmRaiser());

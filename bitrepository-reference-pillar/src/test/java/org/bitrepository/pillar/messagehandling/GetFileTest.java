@@ -181,8 +181,8 @@ public class GetFileTest extends MockedPillarTest {
 //    @Tag("regressiontest", "pillartest"})
     // FAILS, when combined with other tests...
     public void goodCaseOperation() throws Exception {
-        addDescription("Tests the GetFile functionality of the pillar for the success scenario, where the file is " +
-                "uploaded.");
+        addDescription("Tests the GetFile functionality of the pillar for the success scenario, " +
+                "where the file is uploaded.");
         addStep("Set up constants and variables.", "Should not fail here!");
         final String FILE_ID = defaultFileId + testMethodName;
 
@@ -190,8 +190,7 @@ public class GetFileTest extends MockedPillarTest {
                 "Should make it possible to perform the whole operation without any exceptions.");
         Mockito.doAnswer(new Answer() {
             public FileInfo answer(InvocationOnMock invocation) throws InvalidMessageException {
-                FileInfo res = new FileInfoStub(FILE_ID, 0L, 0L, new ByteArrayInputStream(new byte[0]));
-                return res;
+                return new FileInfoStub(FILE_ID, 0L, 0L, new ByteArrayInputStream(new byte[0]));
             }
         }).when(model).getFileInfoForActualFile(ArgumentMatchers.eq(FILE_ID), ArgumentMatchers.anyString());
         Mockito.doAnswer(new Answer() {
@@ -220,6 +219,7 @@ public class GetFileTest extends MockedPillarTest {
         Assertions.assertEquals(FILE_ID, finalResponse.getFileID());
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
-        Assertions.assertEquals(1, audits.getCallsForAuditEvent(), "Should create one audit trail for the GetFile operation");
+        Assertions.assertEquals(1, audits.getCallsForAuditEvent(),
+                "Should create one audit trail for the GetFile operation");
     }
 }

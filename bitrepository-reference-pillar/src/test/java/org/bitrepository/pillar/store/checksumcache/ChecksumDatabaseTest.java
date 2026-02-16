@@ -265,7 +265,8 @@ public class ChecksumDatabaseTest extends ExtendedTestCase {
         Assertions.assertEquals(FILE_ID_1, efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID());
 
         addStep("Test with both minimum-date and maximum-date set to middle date.", "Delivers no files.");
-        efirs = cache.getFileIDs(CalendarUtils.getXmlGregorianCalendar(MIDDLE_DATE), CalendarUtils.getXmlGregorianCalendar(MIDDLE_DATE), 100000L, null, collectionID);
+        efirs = cache.getFileIDs(CalendarUtils.getXmlGregorianCalendar(MIDDLE_DATE),
+                CalendarUtils.getXmlGregorianCalendar(MIDDLE_DATE), 100000L, null, collectionID);
         Assertions.assertEquals(0, efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().size());
 
         addStep("Test the first file-id, with no other restrictions", "Only delivers the requested file-id");
@@ -278,8 +279,10 @@ public class ChecksumDatabaseTest extends ExtendedTestCase {
         Assertions.assertEquals(1, efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().size());
         Assertions.assertEquals(FILE_ID_2, efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID());
 
-        addStep("Test the date for the first file-id, while requesting the second file-id", "Should not deliver anything");
-        efirs = cache.getFileIDs(CalendarUtils.getFromMillis(0), CalendarUtils.getXmlGregorianCalendar(MIDDLE_DATE), 100000L, FILE_ID_2, collectionID);
+        addStep("Test the date for the first file-id, while requesting the second file-id",
+                "Should not deliver anything");
+        efirs = cache.getFileIDs(CalendarUtils.getFromMillis(0), CalendarUtils.getXmlGregorianCalendar(MIDDLE_DATE),
+                100000L, FILE_ID_2, collectionID);
         Assertions.assertEquals(0, efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().size());
     }
 
@@ -292,36 +295,46 @@ public class ChecksumDatabaseTest extends ExtendedTestCase {
         ChecksumDAO cache = getCacheWithData();
 
         addStep("Test with no time restrictions", "Retrieves the file");
-        ExtractedChecksumResultSet extractedChecksums = cache.getChecksumResult(null, null, DEFAULT_FILE_ID, collectionID);
+        ExtractedChecksumResultSet extractedChecksums = cache.getChecksumResult(null, null,
+                DEFAULT_FILE_ID, collectionID);
         Assertions.assertEquals(1, extractedChecksums.getEntries().size());
         Assertions.assertEquals(DEFAULT_FILE_ID, extractedChecksums.getEntries().get(0).getFileID());
 
         addStep("Test with time restrictions from epoc to now", "Retrieves the file");
-        extractedChecksums = cache.getChecksumResult(CalendarUtils.getEpoch(), CalendarUtils.getNow(), DEFAULT_FILE_ID, collectionID);
+        extractedChecksums = cache.getChecksumResult(CalendarUtils.getEpoch(), CalendarUtils.getNow(),
+                DEFAULT_FILE_ID, collectionID);
         Assertions.assertEquals(1, extractedChecksums.getEntries().size());
 
         addStep("Test with very strict time restrictions around the default date", "Retrieves the file");
-        extractedChecksums = cache.getChecksumResult(CalendarUtils.getFromMillis(DEFAULT_DATE.getTime() - 1), CalendarUtils.getFromMillis(DEFAULT_DATE.getTime() + 1), DEFAULT_FILE_ID, collectionID);
+        extractedChecksums = cache.getChecksumResult(CalendarUtils.getFromMillis(DEFAULT_DATE.getTime() - 1),
+                CalendarUtils.getFromMillis(DEFAULT_DATE.getTime() + 1), DEFAULT_FILE_ID, collectionID);
         Assertions.assertEquals(1, extractedChecksums.getEntries().size());
 
         addStep("Test with too new a lower limit", "Does not retrieve the file");
-        extractedChecksums = cache.getChecksumResult(CalendarUtils.getFromMillis(DEFAULT_DATE.getTime() + 1), CalendarUtils.getNow(), DEFAULT_FILE_ID, collectionID);
+        extractedChecksums = cache.getChecksumResult(CalendarUtils.getFromMillis(DEFAULT_DATE.getTime() + 1),
+                CalendarUtils.getNow(), DEFAULT_FILE_ID, collectionID);
         Assertions.assertEquals(0, extractedChecksums.getEntries().size());
 
         addStep("Test with exact date as both upper and lower limit", "Does not retrieve the file");
-        extractedChecksums = cache.getChecksumResult(CalendarUtils.getFromMillis(DEFAULT_DATE.getTime()), CalendarUtils.getFromMillis(DEFAULT_DATE.getTime()), DEFAULT_FILE_ID, collectionID);
+        extractedChecksums = cache.getChecksumResult(CalendarUtils.getFromMillis(DEFAULT_DATE.getTime()),
+                CalendarUtils.getFromMillis(DEFAULT_DATE.getTime()), DEFAULT_FILE_ID, collectionID);
         Assertions.assertEquals(0, extractedChecksums.getEntries().size());
 
-        addStep("Test with date limit from 1 millis before as lower and exact date a upper limit", "Does retrieve the file");
-        extractedChecksums = cache.getChecksumResult(CalendarUtils.getFromMillis(DEFAULT_DATE.getTime() - 1), CalendarUtils.getFromMillis(DEFAULT_DATE.getTime()), DEFAULT_FILE_ID, collectionID);
+        addStep("Test with date limit from 1 millis before as lower and exact date a upper limit",
+                "Does retrieve the file");
+        extractedChecksums = cache.getChecksumResult(CalendarUtils.getFromMillis(DEFAULT_DATE.getTime() - 1),
+                CalendarUtils.getFromMillis(DEFAULT_DATE.getTime()), DEFAULT_FILE_ID, collectionID);
         Assertions.assertEquals(1, extractedChecksums.getEntries().size());
 
-        addStep("Test with date limit from exact date as lower and 1 millis after date a upper limit", "Does not retrieve the file");
-        extractedChecksums = cache.getChecksumResult(CalendarUtils.getFromMillis(DEFAULT_DATE.getTime()), CalendarUtils.getFromMillis(DEFAULT_DATE.getTime() + 1), DEFAULT_FILE_ID, collectionID);
+        addStep("Test with date limit from exact date as lower and 1 millis after date a upper limit",
+                "Does not retrieve the file");
+        extractedChecksums = cache.getChecksumResult(CalendarUtils.getFromMillis(DEFAULT_DATE.getTime()),
+                CalendarUtils.getFromMillis(DEFAULT_DATE.getTime() + 1), DEFAULT_FILE_ID, collectionID);
         Assertions.assertEquals(0, extractedChecksums.getEntries().size());
 
         addStep("Test with too old an upper limit", "Does not retrieve the file");
-        extractedChecksums = cache.getChecksumResult(CalendarUtils.getEpoch(), CalendarUtils.getFromMillis(DEFAULT_DATE.getTime() - 1), DEFAULT_FILE_ID, collectionID);
+        extractedChecksums = cache.getChecksumResult(CalendarUtils.getEpoch(),
+                CalendarUtils.getFromMillis(DEFAULT_DATE.getTime() - 1), DEFAULT_FILE_ID, collectionID);
         Assertions.assertEquals(0, extractedChecksums.getEntries().size());
     }
 
@@ -350,7 +363,8 @@ public class ChecksumDatabaseTest extends ExtendedTestCase {
         extractedFileIDs = cache.getFileIDsWithOldChecksums(Instant.EPOCH, collectionID);
         Assertions.assertEquals(0, extractedFileIDs.size());
 
-        addStep("Extract all entries with checksum date older than middle date", "Returns the first file id");
+        addStep("Extract all entries with checksum date older than middle date",
+                "Returns the first file id");
         extractedFileIDs = cache.getFileIDsWithOldChecksums(MIDDLE_DATE.toInstant(), collectionID);
         Assertions.assertEquals(1, extractedFileIDs.size());
         Assertions.assertTrue(extractedFileIDs.contains(FILE_ID_1));

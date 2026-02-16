@@ -45,7 +45,8 @@ public class SecurityExceptionTest extends ExtendedTestCase {
             Assertions.assertNull(e.getCause());
         }
 
-        addStep("Throw the exception with an embedded exception", "The embedded exception should be the same.");
+        addStep("Throw the exception with an embedded exception",
+                "The embedded exception should be the same.");
         try {
             throw new SecurityException(errMsg, new IllegalArgumentException(causeMsg));
         } catch (Exception e) {

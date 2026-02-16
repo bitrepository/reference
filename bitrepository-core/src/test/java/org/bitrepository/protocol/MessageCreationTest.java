@@ -117,7 +117,7 @@ public class MessageCreationTest extends ExtendedTestCase {
      * Needed by XPath to handle the namespaces.
      */
     private NamespaceContext getNamespaceContext() {
-        NamespaceContext ctx = new NamespaceContext() {
+        return new NamespaceContext() {
             public String getNamespaceURI(String prefix) {
                 String uri;
                 switch (prefix) {
@@ -147,6 +147,5 @@ public class MessageCreationTest extends ExtendedTestCase {
                 return null;
             }
         };
-        return ctx;
     }
 }

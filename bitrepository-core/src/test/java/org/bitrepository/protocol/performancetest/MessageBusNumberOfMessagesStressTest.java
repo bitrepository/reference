@@ -132,7 +132,8 @@ public class MessageBusNumberOfMessagesStressTest {
         long messagePerSec = 10;
         QUEUE += "-" + (new Date()).getTime();
 
-        addStep("Make configuration for the messagebus and define the local broker.", "Both should be created.");
+        addStep("Make configuration for the messagebus and define the local broker.",
+                "Both should be created.");
         settings.getRepositorySettings().getProtocolSettings().setMessageBusConfiguration(
                 MessageBusConfigurationFactory.createEmbeddedMessageBusConfiguration()
         );

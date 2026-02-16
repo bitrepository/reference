@@ -21,17 +21,14 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
-
-public class GetFileRequestIT extends PillarFunctionTest {
+class GetFileRequestIT extends PillarFunctionTest {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     protected GetFileMessageFactory msgFactory;
     protected URL testFileURL = null;
     protected FileExchange fe = null;
 
     @BeforeEach
-    public void initialiseReferenceTest() throws Exception {
+    void initialiseReferenceTest() throws Exception {
         String pillarDestination = lookupGetFileDestination();
         msgFactory = new GetFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), pillarDestination);
         testFileURL = new URL(defaultFileUrl.toExternalForm() + System.currentTimeMillis());
@@ -39,7 +36,7 @@ public class GetFileRequestIT extends PillarFunctionTest {
     }
 
     @AfterEach
-    public void cleanUp(TestInfo testInfo) {
+    void cleanUp(TestInfo testInfo) {
         try {
             fe.deleteFile(testFileURL);
         } catch (Exception e) {
@@ -50,7 +47,7 @@ public class GetFileRequestIT extends PillarFunctionTest {
 
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
-    public void normalGetFileTest() throws IOException {
+    void normalGetFileTest() throws IOException {
         addDescription("Tests a normal GetFile sequence");
         addStep("Send a getFile request to " + testConfiguration.getPillarUnderTestID(),
                 "The pillar should send a final response with the following elements: <ol>" +
@@ -108,7 +105,7 @@ public class GetFileRequestIT extends PillarFunctionTest {
 
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
-    public void getFileWithFilePartTest() throws IOException {
+    void getFileWithFilePartTest() throws IOException {
         addDescription("Tests that a pillar is able to return a specified FilePart in the final response");
         addStep("Send a getFile request to " + testConfiguration.getPillarUnderTestID() + " with a specified " +
                 "FilePart", "The pillar should send a final response with the FilePart element for the " +

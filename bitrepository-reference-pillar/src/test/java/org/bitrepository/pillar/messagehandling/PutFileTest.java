@@ -149,8 +149,8 @@ public class PutFileTest extends MockedPillarTest {
     @Tag("regressiontest")
     @Tag("pillartest")
     public void badCaseOperationFileAlreadyExists() throws Exception {
-        addDescription("Tests the PutFile operation on the pillar for the failure scenario, when the file already " +
-                "exists.");
+        addDescription("Tests the PutFile operation on the pillar for the failure scenario, " +
+                "when the file already exists.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = defaultFileId + testMethodName;
 
@@ -212,8 +212,8 @@ public class PutFileTest extends MockedPillarTest {
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
-        PutFileRequest request = msgFactory.createPutFileRequest(null, null, defaultDownloadFileAddress, FILE_ID,
-                FILE_SIZE);
+        PutFileRequest request = msgFactory.createPutFileRequest(null, null,
+                defaultDownloadFileAddress, FILE_ID, FILE_SIZE);
         messageBus.sendMessage(request);
 
         addStep("Retrieve the FinalResponse for the PutFile request",
@@ -223,8 +223,8 @@ public class PutFileTest extends MockedPillarTest {
         Assertions.assertEquals(getPillarID(), finalResponse.getPillarID());
         Assertions.assertEquals(FILE_ID, finalResponse.getFileID());
 
-        addStep("Pillar should have sent an alarm", "Alarm contains information about the missing verification " +
-                "checksum");
+        addStep("Pillar should have sent an alarm",
+                "Alarm contains information about the missing verification checksum");
         AlarmMessage alarm = alarmReceiver.waitForMessage(AlarmMessage.class);
         Assertions.assertEquals(FILE_ID, alarm.getAlarm().getFileID());
         Assertions.assertEquals(getPillarID(), alarm.getAlarm().getAlarmRaiser());
@@ -255,8 +255,8 @@ public class PutFileTest extends MockedPillarTest {
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");
-        PutFileRequest request = msgFactory.createPutFileRequest(csData, null, defaultDownloadFileAddress, FILE_ID,
-                FILE_SIZE);
+        PutFileRequest request = msgFactory.createPutFileRequest(csData, null, defaultDownloadFileAddress,
+                FILE_ID, FILE_SIZE);
         messageBus.sendMessage(request);
 
         addStep("Retrieve the ProgressResponse for the GetFileIDs request",
@@ -289,8 +289,8 @@ public class PutFileTest extends MockedPillarTest {
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = defaultFileId + testMethodName;
 
-        addStep("Setup for not already having the file and delivering pillar id, and delivering an answer for the " +
-                        "checksum request",
+        addStep("Setup for not already having the file and delivering pillar id, " +
+                        "and delivering an answer for the checksum request",
                 "Should return false, when requesting file-id existence.");
         Mockito.when(model.hasFileID(ArgumentMatchers.eq(FILE_ID), ArgumentMatchers.anyString())).thenReturn(false);
         Mockito.when(model.getPillarID()).thenReturn(settingsForCUT.getComponentID());

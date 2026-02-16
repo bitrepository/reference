@@ -105,8 +105,8 @@ public class PermissionStoreTest {
                 SecurityTestConstants.getTestData().getBytes(SecurityModuleConstants.defaultEncodingType)), decodeSig);
         SignerInformation signer = s.getSignerInfos().getSigners().iterator().next();
 
-        addStep("Lookup fingerprint based on signerId", "The correct finger print should be returned with openssl" +
-                "used to generate reference finger print");
+        addStep("Lookup fingerprint based on signerId",
+                "The correct finger print should be returned with openssl used to generate reference finger print");
         String certificateFingerprintFromStore = permissionStore.getCertificateFingerprint(signer.getSID());
         String referenceCertificateFingerprint = TestCertProvider.getFingerprintForPositiveCert();
         Assertions.assertEquals(certificateFingerprintFromStore, referenceCertificateFingerprint);

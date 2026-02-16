@@ -43,25 +43,29 @@ public class ServiceSettingsProviderTest {
                 new ServiceSettingsProvider(new XMLFileSettingsLoader(PATH_TO_TEST_SETTINGS),
                         ServiceType.ALARM_SERVICE);
         Settings settings = settingsLoader.getSettings();
-        Assertions.assertEquals(settings.getComponentID(), settings.getReferenceSettings().getAlarmServiceSettings().getID());
+        Assertions.assertEquals(settings.getComponentID(),
+                settings.getReferenceSettings().getAlarmServiceSettings().getID());
 
         settingsLoader =
                 new ServiceSettingsProvider(new XMLFileSettingsLoader(PATH_TO_TEST_SETTINGS),
                         ServiceType.AUDIT_TRAIL_SERVICE);
         settings = settingsLoader.getSettings();
-        Assertions.assertEquals(settings.getComponentID(), settings.getReferenceSettings().getAuditTrailServiceSettings().getID());
+        Assertions.assertEquals(settings.getComponentID(),
+                settings.getReferenceSettings().getAuditTrailServiceSettings().getID());
 
         settingsLoader =
                 new ServiceSettingsProvider(new XMLFileSettingsLoader(PATH_TO_TEST_SETTINGS),
                         ServiceType.INTEGRITY_SERVICE);
         settings = settingsLoader.getSettings();
-        Assertions.assertEquals(settings.getComponentID(), settings.getReferenceSettings().getIntegrityServiceSettings().getID());
+        Assertions.assertEquals(settings.getComponentID(),
+                settings.getReferenceSettings().getIntegrityServiceSettings().getID());
 
         settingsLoader =
                 new ServiceSettingsProvider(new XMLFileSettingsLoader(PATH_TO_TEST_SETTINGS),
                         ServiceType.MONITORING_SERVICE);
         settings = settingsLoader.getSettings();
-        Assertions.assertEquals(settings.getComponentID(), settings.getReferenceSettings().getMonitoringServiceSettings().getID());
+        Assertions.assertEquals(settings.getComponentID(),
+                settings.getReferenceSettings().getMonitoringServiceSettings().getID());
 
     }
 }

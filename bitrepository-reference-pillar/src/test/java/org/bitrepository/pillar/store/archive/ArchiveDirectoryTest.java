@@ -147,7 +147,8 @@ public class ArchiveDirectoryTest {
         addStep("Setup", "No file added to the directory.");
         ArchiveDirectory directory = new ArchiveDirectory(DIR_NAME);
 
-        addStep("Moving file from tmp to archive", "Exception since it does not exist in the tmp-dir");
+        addStep("Moving file from tmp to archive",
+                "Exception since it does not exist in the tmp-dir");
         try {
             directory.moveFromTmpToArchive(FILE_ID);
             Assertions.fail("Should throw exception since the file does not exist.");
@@ -160,7 +161,8 @@ public class ArchiveDirectoryTest {
         File newFile = directory.getNewFileInTempDir(FILE_ID);
         Assertions.assertTrue(newFile.createNewFile());
 
-        addStep("Moving file from tmp to archive", "Exception since the file already exists within the archive.");
+        addStep("Moving file from tmp to archive",
+                "Exception since the file already exists within the archive.");
         try {
             directory.moveFromTmpToArchive(FILE_ID);
             Assertions.fail("Should throw exception since the file in archive already exists.");
@@ -168,7 +170,8 @@ public class ArchiveDirectoryTest {
             // exptected
         }
 
-        addStep("Remove the file from archive and try again", "File in tmp moved to archive.");
+        addStep("Remove the file from archive and try again",
+                "File in tmp moved to archive.");
         Assertions.assertTrue(directory.hasFile(FILE_ID));
         Assertions.assertTrue(directory.hasFileInTempDir(FILE_ID));
         directory.removeFileFromArchive(FILE_ID);
@@ -287,7 +290,8 @@ public class ArchiveDirectoryTest {
         Assertions.assertNotNull(tmpFile);
         Assertions.assertEquals(newFile.getAbsolutePath(), tmpFile.getAbsolutePath());
 
-        addStep("Request another new file with the same name", "Should throw exception, since it already exists.");
+        addStep("Request another new file with the same name",
+                "Should throw exception, since it already exists.");
         try {
             directory.getNewFileInTempDir(FOLDER_FILE_ID);
             Assertions.fail("Should throw exception, since the file already exists.");
@@ -309,7 +313,8 @@ public class ArchiveDirectoryTest {
         addStep("Setup", "No file added to the directory.");
         ArchiveDirectory directory = new ArchiveDirectory(DIR_NAME);
 
-        addStep("Moving file from tmp to archive", "Exception since it does not exist in the tmp-dir");
+        addStep("Moving file from tmp to archive",
+                "Exception since it does not exist in the tmp-dir");
         try {
             directory.moveFromTmpToArchive(FOLDER_FILE_ID);
             Assertions.fail("Should throw exception since the file does not exist.");
@@ -322,7 +327,8 @@ public class ArchiveDirectoryTest {
         File newFile = directory.getNewFileInTempDir(FOLDER_FILE_ID);
         Assertions.assertTrue(newFile.createNewFile());
 
-        addStep("Moving file from tmp to archive", "Exception since the file already exists within the archive.");
+        addStep("Moving file from tmp to archive",
+                "Exception since the file already exists within the archive.");
         try {
             directory.moveFromTmpToArchive(FOLDER_FILE_ID);
             Assertions.fail("Should throw exception since the file in archive already exists.");

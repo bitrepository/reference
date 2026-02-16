@@ -58,14 +58,16 @@ public class CalendarUtilsTest extends ExtendedTestCase {
         calendar = CalendarUtils.getFromMillis(DATE_IN_MILLIS);
         Assertions.assertEquals(DATE_IN_MILLIS, calendar.toGregorianCalendar().getTimeInMillis());
 
-        addStep("Test the 'getNow' function", "Should give a value very close to System.currentTimeInMillis");
+        addStep("Test the 'getNow' function",
+                "Should give a value very close to System.currentTimeInMillis");
         long beforeNow = System.currentTimeMillis();
         calendar = CalendarUtils.getNow();
         long afterNow = System.currentTimeMillis();
         Assertions.assertTrue(calendar.toGregorianCalendar().getTimeInMillis() <= afterNow);
         Assertions.assertTrue(calendar.toGregorianCalendar().getTimeInMillis() >= beforeNow);
 
-        addStep("Test the reverse conversion, from XMLCalendar to Date", "Should give the same value");
+        addStep("Test the reverse conversion, from XMLCalendar to Date",
+                "Should give the same value");
         date = CalendarUtils.convertFromXMLGregorianCalendar(calendar);
         Assertions.assertTrue(date.getTime() <= afterNow);
         Assertions.assertTrue(date.getTime() >= beforeNow);
