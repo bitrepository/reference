@@ -206,8 +206,8 @@ public class GetChecksumsTest extends MockedPillarTest {
     @Tag("regressiontest")
     @Tag("pillartest")
     public void goodCaseOperationAllFiles() throws Exception {
-        addDescription("Tests the GetChecksums operation on the pillar for the successful scenario, when requesting " +
-                "all files.");
+        addDescription("Tests the GetChecksums operation on the pillar for the successful scenario, " +
+                "when requesting all files.");
         addStep("Set up constants and variables.", "Should not fail here!");
         FileIDs fileids = FileIDsUtils.getAllFileIDs();
 
@@ -307,7 +307,8 @@ public class GetChecksumsTest extends MockedPillarTest {
                 return settingsForCUT.getComponentID();
             }
         }).when(model).getPillarID();
-        addStep("Setup for only delivering result-set when the correct restrictions are given.", "No failure here");
+        addStep("Setup for only delivering result-set when the correct restrictions are given.",
+                "No failure here");
         Mockito.doAnswer(new Answer() {
             public ExtractedChecksumResultSet answer(InvocationOnMock invocation) {
                 ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();

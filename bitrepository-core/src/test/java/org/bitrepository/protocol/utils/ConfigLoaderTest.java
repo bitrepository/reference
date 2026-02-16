@@ -22,40 +22,36 @@
 package org.bitrepository.protocol.utils;
 
 import org.bitrepository.common.utils.FileUtils;
+import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.bitrepository.protocol.utils.AllureTestUtils;
-
 
 import java.io.File;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
-
-public class ConfigLoaderTest {
-    String GOOD_FILE_PATH = "logback-test.xml";
+class ConfigLoaderTest extends ExtendedTestCase {
+    String goodFilePath = "logback-test.xml";
 
     @BeforeEach
-    public void setup() {
-        FileUtils.copyFile(new File("src/test/resources/logback-test.xml"), new File(GOOD_FILE_PATH));
+    void setup() {
+        FileUtils.copyFile(new File("src/test/resources/logback-test.xml"), new File(goodFilePath));
     }
 
     @AfterEach
-    public void teardown() {
-        FileUtils.delete(new File(GOOD_FILE_PATH));
+    void teardown() {
+        FileUtils.delete(new File(goodFilePath));
     }
 
     @Test
     @Tag("regressiontest")
-    public void testLoadingConfig() throws Exception {
+    void testLoadingConfig() throws Exception {
         addDescription("Test the loading of a configuration file for the config loader.");
         addStep("Setup variables", "");
         String badFilePath = "iDoNotExist.xml";
         Assertions.assertFalse(new File(badFilePath).exists());
-        Assertions.assertTrue(new File(GOOD_FILE_PATH).exists());
+        Assertions.assertTrue(new File(goodFilePath).exists());
 
         addStep("Test with a invalid file path", "Should throw an exception");
         try {
@@ -66,12 +62,12 @@ public class ConfigLoaderTest {
         }
 
         addStep("Test when the file is unreadable", "Should throw an exception");
-        File goodFile = new File(GOOD_FILE_PATH);
+        File goodFile = new File(goodFilePath);
         try {
             goodFile.setReadable(false);
 
             try {
-                new LogbackConfigLoader(GOOD_FILE_PATH);
+                new LogbackConfigLoader(goodFilePath);
                 Assertions.fail("Should throw an exception");
             } catch (IllegalArgumentException e) {
                 // expected
@@ -83,7 +79,7 @@ public class ConfigLoaderTest {
         }
 
         addStep("success case", "Should not throw an exception");
-        new LogbackConfigLoader(GOOD_FILE_PATH);
+        new LogbackConfigLoader(goodFilePath);
     }
 
 }

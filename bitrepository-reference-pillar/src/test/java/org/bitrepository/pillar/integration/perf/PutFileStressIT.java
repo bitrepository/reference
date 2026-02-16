@@ -35,9 +35,6 @@ import org.junit.jupiter.api.Test;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
-
 public class PutFileStressIT extends PillarPerformanceTest {
     protected PutFileClient putClient;
 
@@ -74,10 +71,12 @@ public class PutFileStressIT extends PillarPerformanceTest {
 
     @Test
     @Tag("pillar-stress-test")
-    @Disabled
+//    @Disabled
     public void parallelPut() throws Exception {
-        final int numberOfFiles = testConfiguration.getInt("pillarintegrationtest.PutFileStressIT.parallelPut.numberOfFiles");
-        final int partStatisticsInterval = testConfiguration.getInt("pillarintegrationtest.PutFileStressIT.parallelPut.partStatisticsInterval");
+        final int numberOfFiles =
+                testConfiguration.getInt("pillarintegrationtest.PutFileStressIT.parallelPut.numberOfFiles");
+        final int partStatisticsInterval =
+                testConfiguration.getInt("pillarintegrationtest.PutFileStressIT.parallelPut.partStatisticsInterval");
         final int numberOfParallelPuts =
                 testConfiguration.getInt("pillarintegrationtest.PutFileStressIT.parallelPut.numberOfParallelPuts");
         addDescription("Attempt to put " + numberOfFiles + " files into the pillar, " + numberOfParallelPuts + " at 'same' time.");
@@ -91,12 +90,14 @@ public class PutFileStressIT extends PillarPerformanceTest {
         for (String fileID : fileIDs) {
             putLimiter.addJob(fileID);
             putClient.putFile(collectionID, httpServerConfiguration.getURL(TestFileHelper.DEFAULT_FILE_ID), fileID, 10L,
-                    TestFileHelper.getDefaultFileChecksum(), null, eventHandler, "parallelPut stress test file");
+                    TestFileHelper.getDefaultFileChecksum(), null,
+                    eventHandler, "parallelPut stress test file");
         }
 
         awaitAsynchronousCompletion(metrics, numberOfFiles);
 
-        addStep("Check that the files are now present on the pillar(s)", "No missing files should be found.");
+        addStep("Check that the files are now present on the pillar(s)",
+                "No missing files should be found.");
         existingFiles = fileIDs;
     }
 

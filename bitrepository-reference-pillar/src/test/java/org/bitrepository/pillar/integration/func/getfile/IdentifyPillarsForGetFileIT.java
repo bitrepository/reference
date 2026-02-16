@@ -27,22 +27,23 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-public class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
     protected GetFileMessageFactory msgFactory;
 
     @BeforeEach
-    public void initialiseReferenceTest() throws Exception {
+    void initialiseReferenceTest() throws Exception {
         msgFactory = new GetFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
     }
 
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
-    public void goodCaseIdentificationIT() {
+    void goodCaseIdentificationIT() {
         addDescription("Tests the general IdentifyPillarsForGetFile functionality of the pillar for the successful " +
                 "scenario.");
         addStep("Create and send the identify request message.",
@@ -55,18 +56,20 @@ public class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
                 "The pillar should make a response.");
         IdentifyPillarsForGetFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetFileResponse.class);
-        assertEquals(identifyRequest.getCollectionID(), receivedIdentifyResponse.getCollectionID(), "Received " +
-                "unexpected 'CollectionID' in response.");
-        assertEquals(identifyRequest.getCorrelationID(), receivedIdentifyResponse.getCorrelationID(), "Received " +
-                "unexpected 'CorrelationID' in response.");
-        assertEquals(getPillarID(), receivedIdentifyResponse.getFrom(), "Received unexpected 'From' in response.");
-        assertEquals(defaultFileId, receivedIdentifyResponse.getFileID(), "Received unexpected 'FileID' in response.");
-        assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID(), "Received unexpected 'PillarID' in " +
-                "response.");
-        assertEquals(ResponseCode.IDENTIFICATION_POSITIVE, receivedIdentifyResponse.getResponseInfo().getResponseCode(), "Received" +
-                " unexpected 'ResponseCode' in response.");
-        assertEquals(identifyRequest.getReplyTo(), receivedIdentifyResponse.getDestination(), "Received unexpected " +
-                "'ReplyTo' in response.");
+        assertEquals(identifyRequest.getCollectionID(), receivedIdentifyResponse.getCollectionID(),
+                "Received unexpected 'CollectionID' in response.");
+        assertEquals(identifyRequest.getCorrelationID(), receivedIdentifyResponse.getCorrelationID(),
+                "Received unexpected 'CorrelationID' in response.");
+        assertEquals(getPillarID(), receivedIdentifyResponse.getFrom(),
+                "Received unexpected 'From' in response.");
+        assertEquals(defaultFileId, receivedIdentifyResponse.getFileID(),
+                "Received unexpected 'FileID' in response.");
+        assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID(),
+                "Received unexpected 'PillarID' in response.");
+        assertEquals(ResponseCode.IDENTIFICATION_POSITIVE, receivedIdentifyResponse.getResponseInfo().getResponseCode(),
+                "Received unexpected 'ResponseCode' in response.");
+        assertEquals(identifyRequest.getReplyTo(), receivedIdentifyResponse.getDestination(),
+                "Received unexpected 'ReplyTo' in response.");
     }
 
     @Test

@@ -58,14 +58,16 @@ public class IdentifyContributorsForGetStatusIT extends PillarFunctionTest {
 
         IdentifyContributorsForGetStatusResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyContributorsForGetStatusResponse.class);
-        Assertions.assertEquals(identifyRequest.getCollectionID(), receivedIdentifyResponse.getCollectionID(), "Received " +
-                "unexpected 'CollectionID' in response.");
-        Assertions.assertEquals(identifyRequest.getCorrelationID(), receivedIdentifyResponse.getCorrelationID(), "Received " +
-                "unexpected 'CorrelationID' in response.");
-        Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getFrom(), "Received unexpected 'PillarID' in response.");
-        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE, receivedIdentifyResponse.getResponseInfo().getResponseCode(), "Received" +
-                " unexpected 'ResponseCode' in response.");
-        Assertions.assertEquals(identifyRequest.getReplyTo(), receivedIdentifyResponse.getDestination(), "Received unexpected " +
-                "'To' in response.");
+        Assertions.assertEquals(identifyRequest.getCollectionID(), receivedIdentifyResponse.getCollectionID(),
+                "Received unexpected 'CollectionID' in response.");
+        Assertions.assertEquals(identifyRequest.getCorrelationID(), receivedIdentifyResponse.getCorrelationID(),
+                "Received unexpected 'CorrelationID' in response.");
+        Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getFrom(),
+                "Received unexpected 'PillarID' in response.");
+        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode(),
+                "Received unexpected 'ResponseCode' in response.");
+        Assertions.assertEquals(identifyRequest.getReplyTo(), receivedIdentifyResponse.getDestination(),
+                "Received unexpected 'To' in response.");
     }
 }

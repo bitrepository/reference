@@ -120,7 +120,8 @@ public class SecurityManagerTest extends ExtendedTestCase {
     @Tag("regressiontest")
     public void certificateAuthorizationBehaviourTest() throws Exception {
         addDescription("Tests that a certificate is only allowed by registered users (component).");
-        addStep("Check that the registered component is allowed.", "The registered component is allowed.");
+        addStep("Check that the registered component is allowed.",
+                "The registered component is allowed.");
 
         permissionStore.loadPermissions(getSigningCertPermission(), SecurityTestConstants.getComponentID());
 
@@ -131,7 +132,8 @@ public class SecurityManagerTest extends ExtendedTestCase {
             Assertions.fail(e.getMessage());
         }
         Assertions.assertNotNull(getSigningCertPermission().getPermission().get(0).getCertificate().getAllowedCertificateUsers());
-        addStep("Check that an unregistered component is not allowed.", "The unregistered component is not allowed.");
+        addStep("Check that an unregistered component is not allowed.",
+                "The unregistered component is not allowed.");
         try {
             securityManager.authorizeCertificateUse(SecurityTestConstants.getDisallowedCertificateUser(),
                     SecurityTestConstants.getTestData(), TestCertProvider.getPositiveCertSignature());
@@ -184,9 +186,10 @@ public class SecurityManagerTest extends ExtendedTestCase {
                         StandardCharsets.UTF_8);
         log.info("Signature for testdata is: {}", signatureString);
 
-        addStep("Check signature matches the data", "Signature cant be matched as certificate is unknown.");
+        addStep("Check signature matches the data",
+                "Signature cant be matched as certificate is unknown.");
         try {
-            securityManager.authenticateMessage(SecurityTestConstants.getTestData(), signature);//signatureString);
+            securityManager.authenticateMessage(SecurityTestConstants.getTestData(), signature);
             Assertions.fail("Authentication did not fail as expected");
         } catch (MessageAuthenticationException e) {
             log.info(e.getMessage());

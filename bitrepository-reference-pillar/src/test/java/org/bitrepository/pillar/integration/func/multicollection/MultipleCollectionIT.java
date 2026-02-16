@@ -51,12 +51,15 @@ public class MultipleCollectionIT extends PillarIntegrationTest {
                 nonDefaultCollectionId, defaultFileUrl, nonDefaultFileId, 10L, TestFileHelper.getDefaultFileChecksum(),
                 null, null, null);
 
-        addStep("Send a getFileIDs for the file in the second collection", "The fileID should be retrieved");
-        ContributorQuery query = new ContributorQuery(getPillarID(), null, null, null);
+        addStep("Send a getFileIDs for the file in the second collection",
+                "The fileID should be retrieved");
+        ContributorQuery query =
+                new ContributorQuery(getPillarID(), null, null, null);
         Assertions.assertEquals(1, clientProvider.getGetFileIDsClient().getGetFileIDs(
                 nonDefaultCollectionId, new ContributorQuery[]{query}, nonDefaultFileId, defaultFileUrl, null).size());
 
-        addStep("Send a getFileIDs for the file in the other collections", "The file should not be found here");
+        addStep("Send a getFileIDs for the file in the other collections",
+                "The file should not be found here");
         try {
             clientProvider.getGetFileIDsClient().getGetFileIDs(
                     collectionID, new ContributorQuery[]{query}, nonDefaultFileId, defaultFileUrl, null).size();

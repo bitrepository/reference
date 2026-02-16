@@ -84,18 +84,22 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
             eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
             return null;
         }).when(collector).getChecksums(
-                ArgumentMatchers.eq(TEST_COLLECTION), ArgumentMatchers.any(), ArgumentMatchers.any(ChecksumSpecTYPE.class), ArgumentMatchers.anyString(),
-                ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any(EventHandler.class));
+                ArgumentMatchers.eq(TEST_COLLECTION), ArgumentMatchers.any(), ArgumentMatchers.any(ChecksumSpecTYPE.class),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(),
+                ArgumentMatchers.any(EventHandler.class));
 
-        GetChecksumForFileStep step = new GetChecksumForFileStep(collector, alerter, checksumType, FILE_1, settings, TEST_COLLECTION,
-                integrityContributors);
+        GetChecksumForFileStep step =
+                new GetChecksumForFileStep(collector, alerter, checksumType, FILE_1, settings, TEST_COLLECTION,
+                        integrityContributors);
 
         addStep("Validate the checksum results", "Should not have any results");
         step.performStep();
 
         Assertions.assertTrue(step.getResults().isEmpty());
         Mockito.verifyNoInteractions(alerter);
-        Mockito.verify(collector).getChecksums(ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.eq(checksumType), ArgumentMatchers.eq(FILE_1), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any(EventHandler.class));
+        Mockito.verify(collector).getChecksums(ArgumentMatchers.anyString(), ArgumentMatchers.any(),
+                ArgumentMatchers.eq(checksumType), ArgumentMatchers.eq(FILE_1), ArgumentMatchers.anyString(),
+                ArgumentMatchers.any(), ArgumentMatchers.any(EventHandler.class));
         Mockito.verifyNoMoreInteractions(collector);
     }
 
@@ -112,18 +116,22 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
 
             ResultingChecksums res = createResultingChecksums((String) invocation.getArguments()[3]);
             eventHandler.handleEvent(
-                    new ChecksumsCompletePillarEvent(TEST_PILLAR_1, TEST_COLLECTION, res, (ChecksumSpecTYPE) invocation.getArguments()[2],
+                    new ChecksumsCompletePillarEvent(TEST_PILLAR_1, TEST_COLLECTION, res,
+                            (ChecksumSpecTYPE) invocation.getArguments()[2],
                             false));
             eventHandler.handleEvent(
-                    new ChecksumsCompletePillarEvent(TEST_PILLAR_2, TEST_COLLECTION, res, (ChecksumSpecTYPE) invocation.getArguments()[2],
+                    new ChecksumsCompletePillarEvent(TEST_PILLAR_2, TEST_COLLECTION, res,
+                            (ChecksumSpecTYPE) invocation.getArguments()[2],
                             false));
             eventHandler.handleEvent(
-                    new ChecksumsCompletePillarEvent(TEST_PILLAR_3, TEST_COLLECTION, res, (ChecksumSpecTYPE) invocation.getArguments()[2],
+                    new ChecksumsCompletePillarEvent(TEST_PILLAR_3, TEST_COLLECTION, res,
+                            (ChecksumSpecTYPE) invocation.getArguments()[2],
                             false));
             eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
             return null;
         }).when(collector).getChecksums(
-                ArgumentMatchers.eq(TEST_COLLECTION), ArgumentMatchers.any(), ArgumentMatchers.any(ChecksumSpecTYPE.class), ArgumentMatchers.anyString(),
+                ArgumentMatchers.eq(TEST_COLLECTION), ArgumentMatchers.any(),
+                ArgumentMatchers.any(ChecksumSpecTYPE.class), ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any(EventHandler.class));
 
         GetChecksumForFileStep step = new GetChecksumForFileStep(collector, alerter, checksumType, FILE_1, settings, TEST_COLLECTION,
@@ -159,7 +167,8 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
                     (ChecksumSpecTYPE) invocation.getArguments()[2], false);
             ContributorEvent e2 = new ChecksumsCompletePillarEvent(TEST_PILLAR_2, TEST_COLLECTION, res,
                     (ChecksumSpecTYPE) invocation.getArguments()[2], false);
-            ContributorEvent e3 = new ContributorFailedEvent(TEST_PILLAR_3, TEST_COLLECTION, ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
+            ContributorEvent e3 =
+                    new ContributorFailedEvent(TEST_PILLAR_3, TEST_COLLECTION, ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE);
             eventHandler.handleEvent(e1);
             eventHandler.handleEvent(e2);
             eventHandler.handleEvent(e3);
@@ -183,7 +192,9 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
 
         Mockito.verify(alerter).integrityFailed(ArgumentMatchers.anyString(), ArgumentMatchers.eq(TEST_COLLECTION));
         Mockito.verifyNoMoreInteractions(alerter);
-        Mockito.verify(collector).getChecksums(ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.eq(checksumType), ArgumentMatchers.eq(FILE_1), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any(EventHandler.class));
+        Mockito.verify(collector).getChecksums(ArgumentMatchers.anyString(), ArgumentMatchers.any(),
+                ArgumentMatchers.eq(checksumType), ArgumentMatchers.eq(FILE_1), ArgumentMatchers.anyString(),
+                ArgumentMatchers.any(), ArgumentMatchers.any(EventHandler.class));
         Mockito.verifyNoMoreInteractions(collector);
     }
 

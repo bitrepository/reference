@@ -61,12 +61,14 @@ public class GetAuditTrailsFileStressIT extends PillarPerformanceTest {
         metrics.start();
         addStep("Add " + NUMBER_OF_FILES + " files", "Not errors should occur");
         for (String fileID : fileIDs) {
-            blockingPutFileClient.putFile(collectionID, httpServerConfiguration.getURL(TestFileHelper.DEFAULT_FILE_ID), fileID, 10L,
-                    TestFileHelper.getDefaultFileChecksum(), null, null, "singleTreadedPut stress test file");
+            blockingPutFileClient.putFile(collectionID, httpServerConfiguration.getURL(TestFileHelper.DEFAULT_FILE_ID),
+                    fileID, 10L, TestFileHelper.getDefaultFileChecksum(), null,
+                    null, "singleTreadedPut stress test file");
             metrics.mark(fileID);
         }
 
-        addStep("Check that the files are now present on the pillar(s)", "No missing files should be found.");
+        addStep("Check that the files are now present on the pillar(s)",
+                "No missing files should be found.");
         //ToDo assert that the files are present
     }
 
@@ -86,7 +88,8 @@ public class GetAuditTrailsFileStressIT extends PillarPerformanceTest {
         addStep("Request " + NUMBER_OF_AUDITS + " full audit trails one", "Not errors should occur");
         for (int i = 0; i < NUMBER_OF_AUDITS; i++) {
             blockingAuditTrailFileClient.getAuditTrails(collectionID,
-                    null, null, null, null, "singleTreadedGetAuditTrails stress test");
+                    null, null, null, null,
+                    "singleTreadedGetAuditTrails stress test");
             metrics.mark();
         }
     }
@@ -107,7 +110,8 @@ public class GetAuditTrailsFileStressIT extends PillarPerformanceTest {
         for (int i = 0; i < NUMBER_OF_AUDITS; i++) {
             System.out.println("Get audit trails stress test no:" + i);
             auditTrailClient.getAuditTrails(collectionID,
-                    null, null, null, eventHandler, "singleTreadedGetAuditTrails stress test");
+                    null, null, null, eventHandler,
+                    "singleTreadedGetAuditTrails stress test");
         }
 
         awaitAsynchronousCompletion(metrics, NUMBER_OF_AUDITS);
