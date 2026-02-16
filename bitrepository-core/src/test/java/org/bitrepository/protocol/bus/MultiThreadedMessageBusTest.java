@@ -29,12 +29,14 @@ import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -43,6 +45,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Class for testing the interface with the message bus.
  */
+@ExtendWith(SuiteInfoParameterResolver.class)
 public class MultiThreadedMessageBusTest extends IntegrationTest {
     /**
      * The time to wait when sending a message before it definitely should

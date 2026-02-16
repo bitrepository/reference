@@ -21,6 +21,7 @@
  */
 package org.bitrepository.integrityservice;
 
+import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.integrityservice.alerter.IntegrityAlarmDispatcher;
@@ -29,7 +30,12 @@ import org.bitrepository.protocol.IntegrationTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+
+@ExtendWith(SuiteInfoParameterResolver.class)
 public class IntegrityAlerterTest extends IntegrationTest {
     @Test
     @Tag("regressiontest")

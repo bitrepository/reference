@@ -22,14 +22,20 @@
 
 package org.bitrepository.integrityservice.reports;
 
-import org.jaccept.structure.ExtendedTestCase;
+import org.bitrepository.SuiteInfoParameterResolver;
+import org.bitrepository.protocol.IntegrationTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.io.File;
 
-public class BasicIntegrityReporterTest extends ExtendedTestCase {
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+
+@ExtendWith(SuiteInfoParameterResolver.class)
+public class BasicIntegrityReporterTest extends IntegrationTest {
     private static final String REPORT_SUMMARY_START = "The following integrity issues were found:\n";
 
     @Test

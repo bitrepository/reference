@@ -36,6 +36,8 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.*;
+
 
 public class GetFileIDsQueryTest extends PillarFunctionTest {
 
@@ -66,8 +68,7 @@ public class GetFileIDsQueryTest extends PillarFunctionTest {
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
     public void maxNumberOfResultTest() {
-        addDescription("Verifies the size of the result set can be limited by setting the maxNumberOfResult parameter" +
-                ".");
+        addDescription("Verifies the size of the result set can be limited by setting the maxNumberOfResult parameter.");
         addFixture("Ensure at least two files are present on the pillar");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
@@ -78,8 +79,7 @@ public class GetFileIDsQueryTest extends PillarFunctionTest {
                 + originalFileIDsList.size());
 
         addStep("Repeat the request file ids, this time with maxNumberOfResult set to one", "A file id result with " +
-                "a single file id should be returned. The file id should be the oldest/first file id in the full list" +
-                ".");
+                "a single file id should be returned. The file id should be the oldest/first file id in the full list.");
         ContributorQuery singleFileIDQuery = new ContributorQuery(getPillarID(), null, null, 1);
         List<FileIDsDataItem> singleFileIDList = pillarFileManager.getFileIDs(singleFileIDQuery);
         Assertions.assertEquals(1, singleFileIDList.size(), "The result didn't contain a single file id");

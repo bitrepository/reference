@@ -35,6 +35,8 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.*;
+
 public class GetChecksumQueryTest extends PillarFunctionTest {
 
     @Test
@@ -62,8 +64,7 @@ public class GetChecksumQueryTest extends PillarFunctionTest {
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
     public void maxNumberOfResultTest() {
-        addDescription("Verifies the size of the result set can be limited by setting the maxNumberOfResult parameter" +
-                ".");
+        addDescription("Verifies the size of the result set can be limited by setting the maxNumberOfResult parameter.");
         addFixture("Ensure at least two files are present on the pillar");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
@@ -72,8 +73,7 @@ public class GetChecksumQueryTest extends PillarFunctionTest {
         List<ChecksumDataForChecksumSpecTYPE> originalChecksumList = pillarFileManager.getChecksums(null, null, null);
 
         addStep("Repeat the request checksums, this time with maxNumberOfResult set to one", "A checksum result with " +
-                "a single checksum should be returned. The checksum should be the oldest/first checksum in the full " +
-                "list.");
+                "a single checksum should be returned. The checksum should be the oldest/first checksum in the full list.");
         ContributorQuery singleChecksumQuery = new ContributorQuery(getPillarID(), null, null, 1);
         List<ChecksumDataForChecksumSpecTYPE> singleChecksumList = pillarFileManager.getChecksums(null,
                 singleChecksumQuery, null);

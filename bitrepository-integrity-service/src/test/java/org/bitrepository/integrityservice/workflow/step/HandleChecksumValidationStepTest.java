@@ -49,6 +49,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+
 /**
  * Performs the validation of the integrity for the checksums.
  */

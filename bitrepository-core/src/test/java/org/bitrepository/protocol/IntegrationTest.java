@@ -26,7 +26,6 @@ package org.bitrepository.protocol;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.util.StatusPrinter;
-import org.bitrepository.ExtendedTestInfoParameterResolver;
 import org.bitrepository.SuiteInfo;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
@@ -42,10 +41,7 @@ import org.bitrepository.protocol.messagebus.SimpleMessageBus;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.protocol.utils.TestWatcherExtension;
-import org.jaccept.TestEventManager;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.slf4j.LoggerFactory;
 
@@ -55,9 +51,7 @@ import java.net.URL;
 import java.util.List;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@ExtendWith(ExtendedTestInfoParameterResolver.class)
-public abstract class IntegrationTest extends ExtendedTestCase {
-    protected static TestEventManager testEventManager = TestEventManager.getInstance();
+public abstract class IntegrationTest {
     public static LocalActiveMQBroker broker;
     public static EmbeddedHttpServer server;
     public static HttpServerConfiguration httpServerConfiguration;
@@ -106,7 +100,7 @@ public abstract class IntegrationTest extends ExtendedTestCase {
      * <code>super.registerReceivers()</code> when overriding
      */
     protected void registerMessageReceivers() {
-        alarmReceiver = new MessageReceiver(settingsForCUT.getAlarmDestination(), testEventManager);
+        alarmReceiver = new MessageReceiver(settingsForCUT.getAlarmDestination());
         addReceiver(alarmReceiver);
     }
 
@@ -114,7 +108,6 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         receiverManager.addReceiver(receiver);
     }
 
-    //    @BeforeAll
     public void initMessagebus() {
         setupMessageBus();
     }
@@ -191,7 +184,6 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         settingsForTestClient = loadSettings(testMethodName);
         makeUserSpecificSettings(settingsForTestClient);
     }
-
 
     protected Settings loadSettings(String componentID) {
         return TestSettingsProvider.reloadSettings(componentID);

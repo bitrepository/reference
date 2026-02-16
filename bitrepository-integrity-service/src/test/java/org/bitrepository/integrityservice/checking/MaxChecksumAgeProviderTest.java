@@ -22,7 +22,6 @@
 package org.bitrepository.integrityservice.checking;
 
 import org.bitrepository.settings.referencesettings.ObsoleteChecksumSettings;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -32,7 +31,10 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import java.time.Duration;
 
-public class MaxChecksumAgeProviderTest extends ExtendedTestCase {
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+
+public class MaxChecksumAgeProviderTest {
 
     DatatypeFactory factory;
 

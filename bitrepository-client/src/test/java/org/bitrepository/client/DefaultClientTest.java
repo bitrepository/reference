@@ -21,11 +21,12 @@ package org.bitrepository.client;
  * #L%
  */
 
+import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.eventhandler.OperationEvent;
-import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.protocol.bus.MessageReceiver;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -33,14 +34,15 @@ import org.junit.jupiter.api.Test;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
-import org.junit.jupiter.api.Assertions;
+import static org.bitrepository.protocol.utils.AllureTestUtils.*;
+
 
 /**
  * Tests the general client functionality. A number of abstract methods with needs to be implemented with concrete
  * functionality by the test for the specific operations.
  */
 public abstract class DefaultClientTest extends DefaultFixtureClientTest {
-    protected final TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+    protected final TestEventHandler testEventHandler = new TestEventHandler();
     private DatatypeFactory datatypeFactory;
 
     @BeforeEach

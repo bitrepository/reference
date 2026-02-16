@@ -29,17 +29,10 @@ import org.bitrepository.client.exceptions.NegativeResponseException;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.bitrepository.protocol.utils.AllureTestUtils;
+import org.junit.jupiter.api.*;
 
 import java.util.List;
-
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class GetChecksumTest extends PillarFunctionTest {
@@ -53,18 +46,18 @@ public class GetChecksumTest extends PillarFunctionTest {
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
     public void md5ChecksumsForAllFilesTest() throws NegativeResponseException {
-        addDescription("Test the pillar support for MD5 type checksums");
+        AllureTestUtils.addDescription("Test the pillar support for MD5 type checksums");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
-        addStep("Request MD5 checksums for all files on the pillar",
+        AllureTestUtils.addStep("Request MD5 checksums for all files on the pillar",
                 "A list (at least 2 long) of MD5 checksums should be returned.");
         ChecksumSpecTYPE checksumSpec = new ChecksumSpecTYPE();
         checksumSpec.setChecksumType(ChecksumType.MD5);
         List<ChecksumDataForChecksumSpecTYPE> checksums = pillarFileManager.getChecksums(checksumSpec,
                 null, null);
-        assertTrue(checksums.size() >= 2, "The length of the returned checksums were less that 2");
+        Assertions.assertTrue(checksums.size() >= 2, "The length of the returned checksums were less that 2");
 
-        addStep("Retrieve the first two files and verify that the checksums are correct",
+        AllureTestUtils.addStep("Retrieve the first two files and verify that the checksums are correct",
                 "Not implemented");
         // ToDo implement this
     }
@@ -72,25 +65,25 @@ public class GetChecksumTest extends PillarFunctionTest {
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     public void sha1ChecksumsForDefaultTest() throws NegativeResponseException {
-        addDescription("Test the pillar support for SHA1 type checksums");
+        AllureTestUtils.addDescription("Test the pillar support for SHA1 type checksums");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
-        addStep("Request SHA1 checksums for the DefaultFile on the pillar",
+        AllureTestUtils.addStep("Request SHA1 checksums for the DefaultFile on the pillar",
                 "The SHA1 checksum for the default file should be returned should be returned (Not checked yet).");
         ChecksumSpecTYPE checksumSpec = new ChecksumSpecTYPE();
         checksumSpec.setChecksumType(ChecksumType.SHA1);
         List<ChecksumDataForChecksumSpecTYPE> checksums = pillarFileManager.getChecksums(
                 checksumSpec, null, defaultFileId);
-        assertNotNull(checksums.get(0));
+        Assertions.assertNotNull(checksums.get(0));
     }
 
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     public void md5SaltChecksumsForDefaultTest() throws NegativeResponseException {
-        addDescription("Test the pillar support for MD5 type checksums with a salt");
+        AllureTestUtils.addDescription("Test the pillar support for MD5 type checksums with a salt");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
-        addStep("Request salted MD5 checksums for the default on the pillar",
+        AllureTestUtils.addStep("Request salted MD5 checksums for the default on the pillar",
                 "The correct of SHA1 checksum should be returned (Not checked yet).");
         ChecksumSpecTYPE checksumSpec = new ChecksumSpecTYPE();
         checksumSpec.setChecksumType(ChecksumType.HMAC_MD5);
@@ -101,16 +94,16 @@ public class GetChecksumTest extends PillarFunctionTest {
         }
         List<ChecksumDataForChecksumSpecTYPE> checksums = pillarFileManager.getChecksums(
                 checksumSpec, null, defaultFileId);
-        assertNotNull(checksums.get(0));
+        Assertions.assertNotNull(checksums.get(0));
     }
 
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     public void sha1SaltChecksumsForDefaultTest() throws NegativeResponseException {
-        addDescription("Test the pillar support for SHA1 type checksums with a salt");
+        AllureTestUtils.addDescription("Test the pillar support for SHA1 type checksums with a salt");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
-        addStep("Request salted SHA1 checksums for the default on the pillar",
+        AllureTestUtils.addStep("Request salted SHA1 checksums for the default on the pillar",
                 "The correct of SHA1 checksum should be returned (Not checked yet).");
         ChecksumSpecTYPE checksumSpec = new ChecksumSpecTYPE();
         checksumSpec.setChecksumType(ChecksumType.HMAC_SHA1);
@@ -121,6 +114,6 @@ public class GetChecksumTest extends PillarFunctionTest {
         }
         List<ChecksumDataForChecksumSpecTYPE> checksums = pillarFileManager.getChecksums(
                 checksumSpec, null, defaultFileId);
-        assertNotNull(checksums.get(0));
+        Assertions.assertNotNull(checksums.get(0));
     }
 }

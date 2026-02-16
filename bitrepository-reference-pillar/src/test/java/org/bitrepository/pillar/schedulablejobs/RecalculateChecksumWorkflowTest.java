@@ -23,15 +23,21 @@ package org.bitrepository.pillar.schedulablejobs;
 
 import org.bitrepository.pillar.DefaultPillarTest;
 import org.bitrepository.service.workflow.SchedulableJob;
+import org.bitrepository.pillar.integration.SuiteInfoParameterResolver;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import java.util.Date;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+
+@ExtendWith(SuiteInfoParameterResolver.class)
 public class RecalculateChecksumWorkflowTest extends DefaultPillarTest {
 
     DatatypeFactory factory;
