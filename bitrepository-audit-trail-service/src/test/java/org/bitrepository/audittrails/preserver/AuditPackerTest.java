@@ -5,6 +5,7 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.settings.referencesettings.AuditTrailPreservation;
+import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -16,25 +17,24 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static org.mockito.Mockito.mock;
-
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class AuditPackerTest {
+class AuditPackerTest extends ExtendedTestCase {
     private String collectionID;
     private AuditTrailPreservation preservationSettings;
     private AuditTrailStore store;
 
     @BeforeAll
-    public void setup() {
+    void setup() {
         Settings settings = TestSettingsProvider.reloadSettings("LocalAuditPreservationUnderTest");
-        preservationSettings = settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailPreservation();
+        preservationSettings =
+                settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailPreservation();
         collectionID = settings.getCollections().get(0).getID();
         SettingsUtils.initialize(settings);
-        store = mock(AuditTrailStore.class);
+        store = Mockito.mock(AuditTrailStore.class);
     }
 
     @Test
-    public void testCreateNewPackage() throws IOException {
+    void testCreateNewPackage() throws IOException {
         AuditPacker packer = new AuditPacker(store, preservationSettings, collectionID);
         Map<String, Long> seqNumsReached = packer.getSequenceNumbersReached();
         Assertions.assertEquals(3, seqNumsReached.size());
@@ -60,6 +60,6 @@ public class AuditPackerTest {
         // As the iterators have no new audits there should be no newly packed audits on a new call.
         packer.createNewPackage();
         Assertions.assertEquals(0, packer.getPackedAuditCount());
-        Assertions.assertArrayEquals(expectedSeqNums.toArray(), packer.getSequenceNumbersReached().values().toArray());
+        Assertions.assertIterableEquals(expectedSeqNums, packer.getSequenceNumbersReached().values());
     }
 }
