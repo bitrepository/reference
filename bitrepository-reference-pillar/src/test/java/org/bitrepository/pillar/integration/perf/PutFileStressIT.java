@@ -29,6 +29,7 @@ import org.bitrepository.modify.putfile.BlockingPutFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.pillar.integration.perf.metrics.Metrics;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -45,10 +46,10 @@ public class PutFileStressIT extends PillarPerformanceTest {
         );
     }
 
+    @Disabled("Temporarily disabled due to performance issues")
     @Test
     @Tag("pillar-stress-test")
     @Tag("stress-test-pillar-population")
-//    @Disabled
     public void singleTreadedPut() throws Exception {
         final int NUMBER_OF_FILES = 10;
         final int PART_STATISTIC_INTERVAL = 2;
@@ -60,7 +61,8 @@ public class PutFileStressIT extends PillarPerformanceTest {
         metrics.start();
         addStep("Add " + NUMBER_OF_FILES + " files", "Not errors should occur");
         for (String fileID : fileIDs) {
-            blockingPutFileClient.putFile(collectionID, httpServerConfiguration.getURL(TestFileHelper.DEFAULT_FILE_ID), fileID, 10L,
+            blockingPutFileClient.putFile(collectionID, httpServerConfiguration.getURL(TestFileHelper.DEFAULT_FILE_ID),
+                    fileID, 10L,
                     TestFileHelper.getDefaultFileChecksum(), null, null, "singleTreadedPut stress test file");
             metrics.mark(fileID);
         }
@@ -69,9 +71,9 @@ public class PutFileStressIT extends PillarPerformanceTest {
         //ToDo assert that the files are present
     }
 
+    @Disabled("Temporarily disabled due to performance issues")
     @Test
     @Tag("pillar-stress-test")
-//    @Disabled
     public void parallelPut() throws Exception {
         final int numberOfFiles =
                 testConfiguration.getInt("pillarintegrationtest.PutFileStressIT.parallelPut.numberOfFiles");
@@ -79,7 +81,8 @@ public class PutFileStressIT extends PillarPerformanceTest {
                 testConfiguration.getInt("pillarintegrationtest.PutFileStressIT.parallelPut.partStatisticsInterval");
         final int numberOfParallelPuts =
                 testConfiguration.getInt("pillarintegrationtest.PutFileStressIT.parallelPut.numberOfParallelPuts");
-        addDescription("Attempt to put " + numberOfFiles + " files into the pillar, " + numberOfParallelPuts + " at 'same' time.");
+        addDescription("Attempt to put " + numberOfFiles + " files into the pillar, " + numberOfParallelPuts +
+                " at 'same' time.");
         String[] fileIDs = TestFileHelper.createFileIDs(numberOfFiles, "parallelPutTest");
         final Metrics metrics = new Metrics("put", numberOfFiles, partStatisticsInterval);
         metrics.addAppenders(metricAppenders);

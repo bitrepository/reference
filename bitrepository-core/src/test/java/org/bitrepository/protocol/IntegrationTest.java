@@ -89,7 +89,8 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         settingsForTestClient = loadSettings("TestSuiteInitialiser");
         makeUserSpecificSettings(settingsForCUT);
         makeUserSpecificSettings(settingsForTestClient);
-        httpServerConfiguration = new HttpServerConfiguration(settingsForTestClient.getReferenceSettings().getFileExchangeSettings());
+        httpServerConfiguration =
+                new HttpServerConfiguration(settingsForTestClient.getReferenceSettings().getFileExchangeSettings());
         collectionID = settingsForTestClient.getCollections().get(0).getID();
 
         securityManager = createSecurityManager();
@@ -117,7 +118,6 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         receiverManager.addReceiver(receiver);
     }
 
-    //    @BeforeAll
     public void initMessagebus() {
         setupMessageBus();
     }
@@ -203,7 +203,8 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     private void makeUserSpecificSettings(Settings settings) {
         settings.getRepositorySettings().getProtocolSettings()
                 .setCollectionDestination(settings.getCollectionDestination() + getTopicPostfix());
-        settings.getRepositorySettings().getProtocolSettings().setAlarmDestination(settings.getAlarmDestination() + getTopicPostfix());
+        settings.getRepositorySettings().getProtocolSettings()
+                .setAlarmDestination(settings.getAlarmDestination() + getTopicPostfix());
     }
 
     @BeforeEach
