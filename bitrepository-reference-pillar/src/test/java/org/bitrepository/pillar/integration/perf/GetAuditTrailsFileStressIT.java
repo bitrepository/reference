@@ -106,7 +106,6 @@ public class GetAuditTrailsFileStressIT extends PillarPerformanceTest {
         addStep("Add " + NUMBER_OF_AUDITS + " files", "Not errors should occur");
         EventHandler eventHandler = new EventHandlerForMetrics(metrics);
         for (int i = 0; i < NUMBER_OF_AUDITS; i++) {
-            System.out.println("Get audit trails stress test no:" + i);
             auditTrailClient.getAuditTrails(collectionID,
                     null, null, null, eventHandler,
                     "singleTreadedGetAuditTrails stress test");

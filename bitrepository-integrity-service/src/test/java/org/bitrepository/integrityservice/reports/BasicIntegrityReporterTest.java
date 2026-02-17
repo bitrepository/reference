@@ -108,8 +108,7 @@ public class BasicIntegrityReporterTest extends IntegrationTest {
                 "hasIntegrityIssues() should return true and the summary report should " +
                         "correctly inform of the checksum issue.");
         BasicIntegrityReporter reporter = new BasicIntegrityReporter("CollectionWithIssues",
-                "test", new File("target" +
-                "/"));
+                "test", new File("target/"));
         reporter.reportChecksumIssue("TestFile", "Pillar1");
         Assertions.assertTrue(reporter.hasIntegrityIssues(),
                 "Reporter didn't interpreted checksum issue as a integrity issue");
@@ -140,8 +139,7 @@ public class BasicIntegrityReporterTest extends IntegrationTest {
                 "hasIntegrityIssues() should return true and the summary report should " +
                         "correctly inform of the missing checksum.");
         BasicIntegrityReporter reporter = new BasicIntegrityReporter("CollectionWithIssues",
-                "test", new File("target" +
-                "/"));
+                "test", new File("target/"));
         reporter.reportMissingChecksum("TestChecksum", "Pillar1");
         Assertions.assertTrue(reporter.hasIntegrityIssues(),
                 "Reporter didn't interpreted missing checksum as a integrity issue");

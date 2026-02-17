@@ -131,8 +131,9 @@ public class IdentifyPillarsForGetFileIDsIT extends DefaultPillarIdentificationT
                 "The pillar should make a response.");
         IdentifyPillarsForGetFileIDsResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetFileIDsResponse.class);
-        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE, receivedIdentifyResponse.getResponseInfo().getResponseCode(), "Received" +
-                " unexpected 'ResponseCode' in response.");
+        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode(),
+                "Received unexpected 'ResponseCode' in response.");
     }
 
     @Override

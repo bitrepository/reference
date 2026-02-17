@@ -72,11 +72,9 @@ public class PutFileRequestIT extends DefaultPillarOperationTest {
         PutFileFinalResponse finalResponse = (PutFileFinalResponse) receiveResponse();
         Assertions.assertNotNull(finalResponse);
         Assertions.assertEquals(putRequest.getCorrelationID(), finalResponse.getCorrelationID(),
-                "Received unexpected " +
-                        "'CorrelationID' element.");
+                "Received unexpected 'CorrelationID' element.");
         Assertions.assertEquals(putRequest.getCollectionID(), finalResponse.getCollectionID(),
-                "Received unexpected " +
-                        "'CollectionID' element.");
+                "Received unexpected 'CollectionID' element.");
         Assertions.assertEquals(getPillarID(), finalResponse.getFrom(),
                 "Received unexpected 'From' element.");
         Assertions.assertEquals(putRequest.getFrom(), finalResponse.getTo(),

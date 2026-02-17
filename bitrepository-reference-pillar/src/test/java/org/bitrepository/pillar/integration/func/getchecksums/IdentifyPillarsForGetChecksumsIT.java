@@ -83,8 +83,9 @@ public class IdentifyPillarsForGetChecksumsIT extends DefaultPillarIdentificatio
         Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID(),
                 "Received unexpected 'PillarID' in response.");
         Assertions.assertNotNull(receivedIdentifyResponse.getReplyTo());
-        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE, receivedIdentifyResponse.getResponseInfo().getResponseCode(), "Received" +
-                " unexpected 'Response' in response.");
+        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode(),
+                "Received unexpected 'Response' in response.");
     }
 
     @Test
