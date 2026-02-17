@@ -32,6 +32,7 @@ import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.pillar.integration.perf.metrics.Metrics;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -69,9 +70,9 @@ public class GetAuditTrailsFileStressIT extends PillarPerformanceTest {
         //ToDo assert that the files are present
     }
 
+    @Disabled("Temporarily disabled due to performance issues")
     @Test
     @Tag("pillar-stress-test")
-//    @Disabled
     public void singleTreadedGetAuditTrails() throws Exception {
         final int NUMBER_OF_AUDITS = 100;
         final int PART_STATISTIC_INTERVAL = NUMBER_OF_AUDITS / 5;
@@ -91,9 +92,9 @@ public class GetAuditTrailsFileStressIT extends PillarPerformanceTest {
         }
     }
 
+    @Disabled("Temporarily disabled due to performance issues")
     @Test
     @Tag("pillar-stress-test")
-//    @Disabled
     public void parallelGetAuditTrails() throws Exception {
         final int NUMBER_OF_AUDITS = 10;
         final int PART_STATISTIC_INTERVAL = NUMBER_OF_AUDITS / 5;

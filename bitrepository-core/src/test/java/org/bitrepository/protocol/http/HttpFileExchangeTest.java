@@ -34,12 +34,6 @@ import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-//import static java.math.BigInteger.valueOf;
-//import static org.bitrepository.common.settings.TestSettingsProvider.reloadSettings;
-//import static org.bitrepository.settings.referencesettings.ProtocolType.HTTP;
-//import static org.junit.jupiter.api.Assertions.assertEquals;
-
-
 public class HttpFileExchangeTest extends ExtendedTestCase {
     @Test
     @Tag("regressiontest")
