@@ -18,13 +18,13 @@ import java.util.List;
 import java.util.Map;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class AuditPackerTest extends ExtendedTestCase {
+class AuditPackerTest extends ExtendedTestCase {
     private String collectionID;
     private AuditTrailPreservation preservationSettings;
     private AuditTrailStore store;
 
     @BeforeAll
-    public void setup() {
+    void setup() {
         Settings settings = TestSettingsProvider.reloadSettings("LocalAuditPreservationUnderTest");
         preservationSettings =
                 settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailPreservation();
@@ -34,7 +34,7 @@ public class AuditPackerTest extends ExtendedTestCase {
     }
 
     @Test
-    public void testCreateNewPackage() throws IOException {
+    void testCreateNewPackage() throws IOException {
         AuditPacker packer = new AuditPacker(store, preservationSettings, collectionID);
         Map<String, Long> seqNumsReached = packer.getSequenceNumbersReached();
         Assertions.assertEquals(3, seqNumsReached.size());
@@ -60,6 +60,6 @@ public class AuditPackerTest extends ExtendedTestCase {
         // As the iterators have no new audits there should be no newly packed audits on a new call.
         packer.createNewPackage();
         Assertions.assertEquals(0, packer.getPackedAuditCount());
-        Assertions.assertArrayEquals(expectedSeqNums.toArray(), packer.getSequenceNumbersReached().values().toArray());
+        Assertions.assertIterableEquals(expectedSeqNums, packer.getSequenceNumbersReached().values());
     }
 }
