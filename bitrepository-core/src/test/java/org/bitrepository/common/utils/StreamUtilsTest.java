@@ -60,7 +60,8 @@ public class StreamUtilsTest {
             Assertions.assertInstanceOf(IllegalArgumentException.class, e);
         }
 
-        addStep("Test copying the input stream to the output stream.", "Should contain the same data.");
+        addStep("Test copying the input stream to the output stream.",
+                "Should contain the same data.");
         StreamUtils.copyInputStreamToOutputStream(in, out);
 
         Assertions.assertEquals(DATA, out.toString(StandardCharsets.UTF_8));

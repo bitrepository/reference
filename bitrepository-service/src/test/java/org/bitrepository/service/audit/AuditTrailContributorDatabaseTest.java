@@ -95,42 +95,53 @@ public class AuditTrailContributorDatabaseTest {
                 FileAction.INCONSISTENCY, DEFAULT_OPERATION_ID, DEFAULT_CERTIFICATE_ID);
 
         addStep("Test extracting all the events", "Should be all 5 events.");
-        AuditTrailDatabaseResults events = daba.getAudits(firstCollectionID, null, null, null, null, null, null);
+        AuditTrailDatabaseResults events = daba.getAudits(firstCollectionID, null, null,
+                null, null, null, null);
         Assertions.assertEquals(5, events.getAuditTrailEvents().getAuditTrailEvent().size());
 
         addStep("Test extracting the events for fileID1", "Should be 2 events.");
-        events = daba.getAudits(firstCollectionID, FILE_ID_1, null, null, null, null, null);
+        events = daba.getAudits(firstCollectionID, FILE_ID_1, null, null, null,
+                null, null);
         Assertions.assertEquals(2, events.getAuditTrailEvents().getAuditTrailEvent().size());
 
         addStep("Test extracting the events for fileID2", "Should be 3 events.");
-        events = daba.getAudits(firstCollectionID, FILE_ID_2, null, null, null, null, null);
+        events = daba.getAudits(firstCollectionID, FILE_ID_2, null, null, null,
+                null, null);
         Assertions.assertEquals(3, events.getAuditTrailEvents().getAuditTrailEvent().size());
 
         addStep("Test extracting the events with the sequence number at least equal to the largest sequence number.",
                 "Should be 1 event.");
         Long seq = daba.extractLargestSequenceNumber();
-        events = daba.getAudits(firstCollectionID, null, seq, null, null, null, null);
+        events = daba.getAudits(firstCollectionID, null, seq, null, null, null,
+                null);
         Assertions.assertEquals(1, events.getAuditTrailEvents().getAuditTrailEvent().size());
 
-        addStep("Test extracting the events for fileID1 with sequence number 2 or more", "Should be 1 event.");
-        events = daba.getAudits(firstCollectionID, FILE_ID_1, seq - 3, null, null, null, null);
+        addStep("Test extracting the events for fileID1 with sequence number 2 or more",
+                "Should be 1 event.");
+        events = daba.getAudits(firstCollectionID, FILE_ID_1, seq - 3, null, null,
+                null, null);
         Assertions.assertEquals(1, events.getAuditTrailEvents().getAuditTrailEvent().size());
 
-        addStep("Test extracting the events for fileID1 with at most sequence number 2", "Should be 2 events.");
-        events = daba.getAudits(firstCollectionID, FILE_ID_1, null, seq - 3, null, null, null);
+        addStep("Test extracting the events for fileID1 with at most sequence number 2",
+                "Should be 2 events.");
+        events = daba.getAudits(firstCollectionID, FILE_ID_1, null, seq - 3, null,
+                null, null);
         Assertions.assertEquals(2, events.getAuditTrailEvents().getAuditTrailEvent().size());
 
         addStep("Test extracting at most 3 events", "Should extract 3 events.");
-        events = daba.getAudits(firstCollectionID, null, null, null, null, null, 3L);
+        events = daba.getAudits(firstCollectionID, null, null, null, null,
+                null, 3L);
         Assertions.assertEquals(3, events.getAuditTrailEvents().getAuditTrailEvent().size());
 
         addStep("Test extracting at most 1000 events", "Should extract all 5 events.");
-        events = daba.getAudits(firstCollectionID, null, null, null, null, null, 1000L);
+        events = daba.getAudits(firstCollectionID, null, null, null, null,
+                null, 1000L);
         Assertions.assertEquals(5, events.getAuditTrailEvents().getAuditTrailEvent().size());
 
         addStep("Test extracting from another collection", "Should not extract anything.");
         String secondCollectionID = settings.getCollections().get(1).getID();
-        events = daba.getAudits(secondCollectionID, null, null, null, null, null, 1000L);
+        events = daba.getAudits(secondCollectionID, null, null, null, null,
+                null, 1000L);
         Assertions.assertEquals(0, events.getAuditTrailEvents().getAuditTrailEvent().size());
 
         dm.getConnector().destroy();

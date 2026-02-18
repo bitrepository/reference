@@ -105,7 +105,8 @@ public class RepairMissingFilesWorkflowTest {
     }
 
     @Test
-    @Tag("regressiontest") @Tag("integritytest")
+    @Tag("regressiontest")
+    @Tag("integritytest")
     public void testNoMissingFiles() {
         addDescription("Test that the workflow does nothing, when it has no missing files.");
         addStep("Prepare for calls to mocks", "");
@@ -129,7 +130,8 @@ public class RepairMissingFilesWorkflowTest {
     }
     
     @Test
-    @Tag("regressiontest") @Tag("integritytest")
+    @Tag("regressiontest")
+    @Tag("integritytest")
     public void testSuccessRepair() {
         addDescription("Test that the workflow makes calls to the collector, when a file is missing");
         addStep("Prepare for calls to mocks to handle a repair", "");
@@ -157,7 +159,9 @@ public class RepairMissingFilesWorkflowTest {
         }).when(collector).putFile(
                 anyString(), anyString(), any(URL.class), any(ChecksumDataForFileTYPE.class), any(EventHandler.class), anyString());
 
-        addStep("Run workflow for repairing missing files.", "Should find one missing file and try to repair it by using put-file and get-file operations on the collector.");
+        addStep("Run workflow for repairing missing files.",
+                "Should find one missing file and try to repair it by using put-file " +
+                        "and get-file operations on the collector.");
 
         Workflow workflow = new RepairMissingFilesWorkflow();
         IntegrityWorkflowContext context = new IntegrityWorkflowContext(settings, collector, model, alerter, auditManager);
@@ -169,16 +173,19 @@ public class RepairMissingFilesWorkflowTest {
         verifyNoMoreInteractions(auditManager);
 
         verify(collector).getFile(eq(TEST_COLLECTION), eq(TEST_FILE_1), any(URL.class), any(EventHandler.class), anyString());
-        verify(collector).putFile(eq(TEST_COLLECTION), eq(TEST_FILE_1), any(URL.class), any(), any(EventHandler.class), anyString());
+        verify(collector).putFile(eq(TEST_COLLECTION), eq(TEST_FILE_1), any(URL.class), any(),
+                any(EventHandler.class), anyString());
         verifyNoMoreInteractions(collector);
         
-        verify(model, times(1)).findFilesWithMissingCopies(eq(TEST_COLLECTION), eq(2), anyLong(), anyLong());
+        verify(model, times(1)).findFilesWithMissingCopies(eq(TEST_COLLECTION), eq(2),
+                anyLong(), anyLong());
         verify(model).getFileInfos(eq(TEST_FILE_1), eq(TEST_COLLECTION));
         verifyNoMoreInteractions(model);
     }
     
     @Test
-    @Tag("regressiontest") @Tag("integritytest")
+    @Tag("regressiontest")
+    @Tag("integritytest")
     public void testFailedGetFile() {
         addDescription("Test that the workflow does not try to put a file, if it fails to get it.");
         addStep("Prepare for calls to mocks to fail when performing get-file", "");
@@ -213,13 +220,15 @@ public class RepairMissingFilesWorkflowTest {
         verify(collector).getFile(eq(TEST_COLLECTION), eq(TEST_FILE_1), any(URL.class), any(EventHandler.class), anyString());
         verifyNoMoreInteractions(collector);
         
-        verify(model, times(1)).findFilesWithMissingCopies(eq(TEST_COLLECTION), eq(2), anyLong(), anyLong());
+        verify(model, times(1)).findFilesWithMissingCopies(eq(TEST_COLLECTION), eq(2),
+                anyLong(), anyLong());
         verify(model).getFileInfos(eq(TEST_FILE_1), eq(TEST_COLLECTION));
         verifyNoMoreInteractions(model);
     }
     
     @Test
-    @Tag("regressiontest") @Tag("integritytest")
+    @Tag("regressiontest")
+    @Tag("integritytest")
     public void testFailedPutFile() {
         addDescription("Test that the workflow makes calls to the collector for get and put file, even when put file fails.");
         addStep("Prepare for calls to mocks", "");
@@ -246,9 +255,11 @@ public class RepairMissingFilesWorkflowTest {
                 return null;
             }
         }).when(collector).putFile(
-                anyString(), anyString(), any(URL.class), any(ChecksumDataForFileTYPE.class), any(EventHandler.class), anyString());
+                anyString(), anyString(), any(URL.class), any(ChecksumDataForFileTYPE.class), any(EventHandler.class),
+                anyString());
 
-        addStep("Run workflow to repair missing files.", "Should both get-file and put-file, but fail at put-file and then send an alarm.");
+        addStep("Run workflow to repair missing files.",
+                "Should both get-file and put-file, but fail at put-file and then send an alarm.");
 
         Workflow workflow = new RepairMissingFilesWorkflow();
         IntegrityWorkflowContext context = new IntegrityWorkflowContext(settings, collector, model, alerter, auditManager);
@@ -273,6 +284,7 @@ public class RepairMissingFilesWorkflowTest {
     private IntegrityIssueIterator createMockIterator(String ...strings) {
         return new IntegrityIssueIterator(null) {
             final Iterator<String> results = Arrays.asList(strings).iterator();
+
             @Override
             public void close() {
                 // TODO Auto-generated method stub
@@ -281,7 +293,7 @@ public class RepairMissingFilesWorkflowTest {
             
             @Override
             public String getNextIntegrityIssue() {
-                if(results.hasNext()) {
+                if (results.hasNext()) {
                     return results.next();
                 }
                 return null;
@@ -291,7 +303,7 @@ public class RepairMissingFilesWorkflowTest {
     
     private List<FileInfo> createMockFileInfo(String fileId, String checksum, String... pillars) {
         List<FileInfo> res = new ArrayList<>();
-        for(String pillar : pillars) {
+        for (String pillar : pillars) {
             res.add(new FileInfo(fileId, null, checksum, 0L, null, pillar));
         }
         return res;

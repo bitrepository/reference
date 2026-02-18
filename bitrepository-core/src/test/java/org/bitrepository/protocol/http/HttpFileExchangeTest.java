@@ -51,8 +51,8 @@ public class HttpFileExchangeTest {
         HttpFileExchange fe = new HttpFileExchange(fileExchangeSettings);
         String serverPathPrefix = fileExchangeSettings.getPath() + "/";
 
-        addStep("Check plain filename (a filename that does not see any changes due to urlencoding", "The filename " +
-                "should be unmodified");
+        addStep("Check plain filename (a filename that does not see any changes due to urlencoding",
+                "The filename should be unmodified");
         String plainFilename = "testfile";
         URL plainFilenameUrl = fe.getURL(plainFilename);
 

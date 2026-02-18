@@ -45,10 +45,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class IntegrityWorkflowManagerTest {
     private Settings settings;
@@ -196,8 +193,8 @@ public class IntegrityWorkflowManagerTest {
 
     private IntegrityWorkflowManager createIntegrityWorkflowManager() {
         IntegrityWorkflowManager manager =
-                new IntegrityWorkflowManager(new IntegrityWorkflowContext(settings, null, null, null, null),
-                        scheduler);
+                new IntegrityWorkflowManager(new IntegrityWorkflowContext(settings, null, null,
+                        null, null), scheduler);
         verify(scheduler).addJobEventListener(any(WorkflowManager.WorkflowEventListener.class));
         return manager;
     }

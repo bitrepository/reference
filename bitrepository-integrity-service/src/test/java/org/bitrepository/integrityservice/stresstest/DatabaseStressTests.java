@@ -85,7 +85,7 @@ public class DatabaseStressTests {
         FileIDsData data = new FileIDsData();
         FileIDsDataItems items = new FileIDsDataItems();
         XMLGregorianCalendar lastModificationTime = CalendarUtils.getNow();
-        for(int i = 0; i < NUMBER_OF_FILES; i++) {
+        for (int i = 0; i < NUMBER_OF_FILES; i++) {
             FileIDsDataItem item = new FileIDsDataItem();
             item.setFileID("fileid-" + i);
             item.setFileSize(BigInteger.valueOf(i));
@@ -102,7 +102,8 @@ public class DatabaseStressTests {
     
     @AfterEach
     public void clearDatabase() {
-        DBConnector connector = new DBConnector(settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
+        DBConnector connector =
+                new DBConnector(settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
         DatabaseUtils.executeStatement(connector, "DELETE FROM fileinfo");
         DatabaseUtils.executeStatement(connector, "DELETE FROM pillar");
     }
@@ -121,13 +122,14 @@ public class DatabaseStressTests {
         
         startTime = System.currentTimeMillis();
         String collection = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
-        int numberOfPillarsInCollection = settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().size();
+        int numberOfPillarsInCollection =
+                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().size();
         cache.findFilesWithMissingCopies(collection, numberOfPillarsInCollection, 0L, Long.MAX_VALUE);
         System.err.println("Time to find missing files: " + TimeUtils.millisecondsToHuman(System.currentTimeMillis() - startTime));
 
         startTime = System.currentTimeMillis();
-        for(String pillar : settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()) {
-            cache.getFilesWithMissingChecksums(collection, pillar, new Date(0));    
+        for (String pillar : settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()) {
+            cache.getFilesWithMissingChecksums(collection, pillar, new Date(0));
         }
         System.err.println("Time to find missing checksums: " + TimeUtils.millisecondsToHuman(System.currentTimeMillis() - startTime));
     }

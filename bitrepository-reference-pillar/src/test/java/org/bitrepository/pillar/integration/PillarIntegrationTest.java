@@ -263,17 +263,15 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
             MessageAuthenticator authenticator = new BasicMessageAuthenticator(permissionStore);
             MessageSigner signer = new BasicMessageSigner();
             OperationAuthorizer authorizer = new BasicOperationAuthorizer(permissionStore);
-            org.bitrepository.protocol.security.SecurityManager securityManager =
-                    new BasicSecurityManager(settingsForTestClient.getRepositorySettings(),
-                            testConfiguration.getPrivateKeyFileLocation(),
-                            authenticator, signer, authorizer, permissionStore, settingsForTestClient.getComponentID());
-            return securityManager;
+            return new BasicSecurityManager(settingsForTestClient.getRepositorySettings(),
+                    testConfiguration.getPrivateKeyFileLocation(),
+                    authenticator, signer, authorizer, permissionStore, settingsForTestClient.getComponentID());
         }
     }
 
     @Override
     protected String getComponentID() {
-        return getPillarID();// + "-test-client";
+        return getPillarID();
     }
 
     protected void reloadMessageBus() {

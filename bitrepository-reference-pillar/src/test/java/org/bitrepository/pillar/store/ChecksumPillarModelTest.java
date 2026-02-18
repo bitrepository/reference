@@ -155,9 +155,11 @@ public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
 
         addStep("Check extraction of checksum result set",
                 "Should deliver non-null object when called with default checksum spec, otherwise throw exception.");
-        Assertions.assertNotNull(pillarModel.getChecksumResultSet(null, null, null, collectionID, defaultCsType));
+        Assertions.assertNotNull(pillarModel.getChecksumResultSet(null, null,
+                null, collectionID, defaultCsType));
         try {
-            pillarModel.getChecksumResultSet(null, null, null, collectionID, nonDefaultCsType);
+            pillarModel.getChecksumResultSet(null, null, null,
+                    collectionID, nonDefaultCsType);
             Assertions.fail("Must throw an exception here.");
         } catch (Exception e) {
             // exptected
@@ -181,9 +183,11 @@ public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
 
         addStep("Test retrieval of single checksum result set",
                 "Should return non-null object, unless asked for non-default checksum spec which must raise exception.");
-        pillarModel.getSingleChecksumResultSet(defaultFileId, collectionID, null, null, defaultCsType);
+        pillarModel.getSingleChecksumResultSet(defaultFileId, collectionID, null,
+                null, defaultCsType);
         try {
-            pillarModel.getSingleChecksumResultSet(defaultFileId, collectionID, null, null, nonDefaultCsType);
+            pillarModel.getSingleChecksumResultSet(defaultFileId, collectionID, null,
+                    null, nonDefaultCsType);
             Assertions.fail("Must throw an exception here");
         } catch (Exception e) {
             // expected
@@ -207,7 +211,8 @@ public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
             // expected
         }
 
-        addStep("Verify that anexceptions are thrown when verifying file existance.", "Should not exist.");
+        addStep("Verify that anexceptions are thrown when verifying file existance.",
+                "Should not exist.");
         try {
             pillarModel.verifyFileExists(defaultFileId, collectionID);
             Assertions.fail("Must throw an exception here!");

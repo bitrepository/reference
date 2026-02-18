@@ -118,7 +118,7 @@ public class MessageCreationTest {
      * Needed by XPath to handle the namespaces.
      */
     private NamespaceContext getNamespaceContext() {
-        NamespaceContext ctx = new NamespaceContext() {
+        return new NamespaceContext() {
             public String getNamespaceURI(String prefix) {
                 String uri;
                 switch (prefix) {
@@ -148,6 +148,5 @@ public class MessageCreationTest {
                 return null;
             }
         };
-        return ctx;
     }
 }

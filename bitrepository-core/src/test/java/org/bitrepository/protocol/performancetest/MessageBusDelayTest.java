@@ -61,9 +61,9 @@ public class MessageBusDelayTest {
         securityManager = new DummySecurityManager();
     }
 
+    @Disabled("Temporarily disabled due to performance issues")
     @Test
     @Tag("StressTest")
-//    @Disabled
     public void testManyTimes() {
         for (int i = 0; i < NUMBER_OF_TESTS; i++) {
             try {

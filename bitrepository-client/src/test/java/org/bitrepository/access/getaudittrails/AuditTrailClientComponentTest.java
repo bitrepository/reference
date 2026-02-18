@@ -74,7 +74,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
     public void verifyAuditTrailClientFromFactory() {
         Assertions.assertInstanceOf(ConversationBasedAuditTrailClient.class,
                 AccessComponentFactory.getInstance().createAuditTrailClient(
-                        settingsForCUT, securityManager, settingsForTestClient.getComponentID()), "The default " +
+                settingsForCUT, securityManager, settingsForTestClient.getComponentID()), "The default " +
                         "AuditTrailClient from the Access factory should be of the type '" +
                         ConversationBasedAuditTrailClient.class.getName() + "'.");
     }
@@ -426,7 +426,8 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
         addDescription("Tests the the AuditTrailClient handles lack of Final Responses gracefully  ");
         addStep("Set a 100 ms timeout for the operation.", "");
 
-        settingsForCUT.getRepositorySettings().getClientSettings().setOperationTimeoutDuration(datatypeFactory.newDuration(100));
+        settingsForCUT.getRepositorySettings().getClientSettings()
+                .setOperationTimeoutDuration(datatypeFactory.newDuration(100));
         AuditTrailClient client = createAuditTrailClient();
 
         addStep("Make the client ask for all audit trails.",

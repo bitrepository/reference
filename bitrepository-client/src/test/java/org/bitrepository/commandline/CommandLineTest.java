@@ -46,7 +46,8 @@ public class CommandLineTest {
             addDescription("Test the handling of arguments by the CommandLineArgumentHandler.");
             CommandLineArgumentsHandler clah = new CommandLineArgumentsHandler();
 
-            addStep("Validate arguments without any options.", "Ok, when no arguments, but fails when arguments given.");
+            addStep("Validate arguments without any options.",
+                    "Ok, when no arguments, but fails when arguments given.");
             clah.parseArguments();
 
             clah.parseArguments("-Xunknown...");

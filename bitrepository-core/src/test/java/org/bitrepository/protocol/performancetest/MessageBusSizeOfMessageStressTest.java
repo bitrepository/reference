@@ -123,7 +123,8 @@ public class MessageBusSizeOfMessageStressTest {
         addStep("Define constants", "This should not be possible to fail.");
         QUEUE += "-" + (new Date()).getTime();
 
-        addStep("Make configuration for the messagebus and define the local broker.", "Both should be created.");
+        addStep("Make configuration for the messagebus and define the local broker.",
+                "Both should be created.");
         MessageBusConfiguration conf = new MessageBusConfiguration();
         int port = getFreePort();
         conf.setURL("tcp://localhost:" + port);
@@ -165,6 +166,7 @@ public class MessageBusSizeOfMessageStressTest {
 
     /**
      * Finds a free port on the localhost.
+     *
      * @return A free port number.
      * @throws IOException If an I/O error occurs.
      */

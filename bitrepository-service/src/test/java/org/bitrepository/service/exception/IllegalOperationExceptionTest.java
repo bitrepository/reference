@@ -62,7 +62,8 @@ public class IllegalOperationExceptionTest {
             assertEquals(FileID, ((IllegalOperationException) e).getFileId());
         }
 
-        addStep("Throw the exception with an embedded exception", "The embedded exception should be the same.");
+        addStep("Throw the exception with an embedded exception",
+                "The embedded exception should be the same.");
         try {
             throw new IllegalOperationException(errCode, errMsg, FileID, new IllegalArgumentException(causeMsg));
         } catch (Exception e) {

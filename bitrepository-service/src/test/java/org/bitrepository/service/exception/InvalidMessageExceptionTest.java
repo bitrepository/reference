@@ -57,7 +57,8 @@ public class InvalidMessageExceptionTest {
             Assertions.assertNull(e.getCause());
         }
 
-        addStep("Throw the exception with an embedded exception", "The embedded exception should be the same.");
+        addStep("Throw the exception with an embedded exception",
+                "The embedded exception should be the same.");
         try {
             throw new InvalidMessageException(errCode, errMsg, new IllegalArgumentException(causeMsg));
         } catch (Exception e) {

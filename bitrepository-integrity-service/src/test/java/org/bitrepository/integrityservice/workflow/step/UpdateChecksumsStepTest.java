@@ -302,7 +302,8 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
                 settings, TEST_COLLECTION, integrityContributors);
 
         step.performStep();
-        verify(model, times(2)).addChecksums(resultingChecksums.getChecksumDataItems(), TEST_PILLAR_1, TEST_COLLECTION);
+        verify(model, times(2)).addChecksums(resultingChecksums.getChecksumDataItems(),
+                TEST_PILLAR_1, TEST_COLLECTION);
         verify(collector, times(2)).getChecksums(eq(TEST_COLLECTION), any(),
                 any(ChecksumSpecTYPE.class), any(), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
     }

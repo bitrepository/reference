@@ -123,11 +123,13 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         IntegrityDAO integrityDAO = new DerbyIntegrityDAO(dm.getConnector());
         IntegrityDBTools tool = new IntegrityDBTools(dbCon);
         List<String> collections = integrityDAO.getCollections();
-        addStep("Extract initial list of collections.", "The list contains the expected collections.");
+        addStep("Extract initial list of collections.",
+                "The list contains the expected collections.");
         assertTrue(collections.contains(testCollectionid));
         assertTrue(collections.contains(extraCollectionId));
 
-        addStep("Attempt to add the new collection.", "An exception is thrown, and the collection list is uneffected.");
+        addStep("Attempt to add the new collection.",
+                "An exception is thrown, and the collection list is uneffected.");
         try {
             tool.addCollection(testCollectionid);
             fail("addCollection did not fail as expected");
@@ -152,12 +154,14 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         IntegrityDAO integrityDAO = new DerbyIntegrityDAO(dm.getConnector());
         IntegrityDBTools tool = new IntegrityDBTools(dbCon);
         List<String> collections = integrityDAO.getCollections();
-        addStep("Extract initial list of collections.", "The list contains the expected collections.");
+        addStep("Extract initial list of collections.",
+                "The list contains the expected collections.");
         assertTrue(collections.contains(testCollectionid));
         assertTrue(collections.contains(extraCollectionId));
         assertFalse(collections.contains(nonExistingCollectionID));
 
-        addStep("Attempt to remove the non-existing collection.", "An exception is thrown, the collection list is uneffected.");
+        addStep("Attempt to remove the non-existing collection.",
+                "An exception is thrown, the collection list is uneffected.");
         try {
             tool.removeCollection(nonExistingCollectionID);
             fail("removeCollection did not fail as expected");
@@ -168,68 +172,6 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
         assertTrue(collections.contains(testCollectionid));
         assertTrue(collections.contains(extraCollectionId));
     }
-    
-    /*@Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
-    @Tag("integritytest")
-    public void testRemoveExistingCollection() {
-        addDescription("Tests the removal of an existing collection and references to it in the integrity database");
-        DatabaseManager dm = new IntegrityDatabaseManager(
-                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
-        DBConnector dbCon = new DBConnector(settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
-        IntegrityDAO2 integrityDAO = new DerbyIntegrityDAO2(dm.getConnector(), settings);
-        IntegrityDBTools tool = new IntegrityDBTools(dbCon);
-        
-        List<String> collections = integrityDAO.getCollections();
-        addStep("Extract initial list of collections.", "The list contains the expected collections.");
-        assertTrue(collections.contains(TEST_COLLECTIONID));
-        assertTrue(collections.contains(EXTRA_COLLECTION));
-        
-        addStep("Populate the database", 
-                "The databse contains entries for the collection that is to be removed, and the one that stays.");
-        populateCollection(integrityDAO, TEST_COLLECTIONID);
-        populateCollection(integrityDAO, EXTRA_COLLECTION);
-        
-        Long collectionFileCount = integrityDAO.getNumberOfFilesInCollection(TEST_COLLECTIONID);
-        assertNotNull(collectionFileCount, "Number of files for the collection");
-        assertTrue(collectionFileCount > 0);
-        assertNotNull(integrityDAO.getLatestPillarStats(TEST_COLLECTIONID));
-        assertFalse(integrityDAO.getLatestPillarStats(TEST_COLLECTIONID).isEmpty());
-        assertNotNull(integrityDAO.getLatestCollectionStats(TEST_COLLECTIONID, 1L));
-        assertFalse(integrityDAO.getLatestCollectionStats(TEST_COLLECTIONID, 1L).isEmpty());
-
-        collectionFileCount = integrityDAO.getNumberOfFilesInCollection(EXTRA_COLLECTION);
-        assertNotNull(collectionFileCount, "Number of files for the collection");
-        assertTrue(collectionFileCount > 0);
-        assertNotNull(integrityDAO.getLatestPillarStats(EXTRA_COLLECTION));
-        assertFalse(integrityDAO.getLatestPillarStats(EXTRA_COLLECTION).isEmpty());
-        assertNotNull(integrityDAO.getLatestCollectionStats(EXTRA_COLLECTION, 1L));
-        assertFalse(integrityDAO.getLatestCollectionStats(EXTRA_COLLECTION, 1L).isEmpty());
-        
-        
-        addStep("Remove the collection TEST_COLLECTIONID", 
-                "The collection is removed, references to the collection does not exist anymore. "
-                + "The other collection is untouched");
-        tool.removeCollection(TEST_COLLECTIONID);
-        collections = integrityDAO.retrieveCollectionsInDatabase();
-        assertFalse(collections.contains(TEST_COLLECTIONID));
-        assertTrue(collections.contains(EXTRA_COLLECTION));
-        
-        collectionFileCount = integrityDAO.getNumberOfFilesInCollection(TEST_COLLECTIONID);
-        assertNotNull(collectionFileCount, "Number of files for the collection");
-        assertTrue(collectionFileCount == 0);
-        assertTrue(integrityDAO.getLatestPillarStats(TEST_COLLECTIONID).isEmpty());
-        assertTrue(integrityDAO.getLatestCollectionStats(TEST_COLLECTIONID, 1L).isEmpty());
-        
-        collectionFileCount = integrityDAO.getNumberOfFilesInCollection(EXTRA_COLLECTION);
-        assertNotNull(collectionFileCount, "Number of files for the collection");
-        assertTrue(collectionFileCount > 0);
-        assertNotNull(integrityDAO.getLatestPillarStats(EXTRA_COLLECTION));
-        assertFalse(integrityDAO.getLatestPillarStats(EXTRA_COLLECTION).isEmpty());
-        assertNotNull(integrityDAO.getLatestCollectionStats(EXTRA_COLLECTION, 1L));
-        assertFalse(integrityDAO.getLatestCollectionStats(EXTRA_COLLECTION, 1L).isEmpty());
-    }*/
 
     private void populateCollection(IntegrityDAO dao, String collectionID) {
         String file2 = testFileId + "-2";

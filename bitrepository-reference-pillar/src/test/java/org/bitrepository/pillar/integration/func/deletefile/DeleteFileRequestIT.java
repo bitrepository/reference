@@ -69,8 +69,8 @@ public class DeleteFileRequestIT extends DefaultPillarOperationTest {
         deleteRequest.setFileID(testSpecificFileID);
         messageBus.sendMessage(deleteRequest);
 
-        DeleteFileProgressResponse progressResponse = clientReceiver.waitForMessage(DeleteFileProgressResponse.class, getOperationTimeout(),
-                TimeUnit.SECONDS);
+        DeleteFileProgressResponse progressResponse =
+                clientReceiver.waitForMessage(DeleteFileProgressResponse.class, getOperationTimeout(), TimeUnit.SECONDS);
         Assertions.assertNotNull(progressResponse);
         Assertions.assertEquals(deleteRequest.getCorrelationID(), progressResponse.getCorrelationID());
         Assertions.assertEquals(getPillarID(), progressResponse.getFrom());
@@ -105,8 +105,8 @@ public class DeleteFileRequestIT extends DefaultPillarOperationTest {
                 TestFileHelper.getDefaultFileChecksum(), requestedChecksumSpec, testSpecificFileID);
         messageBus.sendMessage(deleteRequest);
 
-        DeleteFileProgressResponse progressResponse = clientReceiver.waitForMessage(DeleteFileProgressResponse.class, getOperationTimeout(),
-                TimeUnit.SECONDS);
+        DeleteFileProgressResponse progressResponse = clientReceiver.waitForMessage(DeleteFileProgressResponse.class,
+                getOperationTimeout(), TimeUnit.SECONDS);
         Assertions.assertNotNull(progressResponse);
         Assertions.assertEquals(deleteRequest.getCorrelationID(), progressResponse.getCorrelationID());
         Assertions.assertEquals(getPillarID(), progressResponse.getFrom());

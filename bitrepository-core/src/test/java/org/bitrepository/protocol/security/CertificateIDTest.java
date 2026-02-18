@@ -45,7 +45,8 @@ public class CertificateIDTest {
     @Tag("regressiontest")
     public void positiveCertificateIdentificationTest() throws Exception {
         addDescription("Tests that a certificate can be identified based on the correct signature.");
-        addStep("Create CertificateID object based on the certificate used to sign the data", "CertificateID object not null");
+        addStep("Create CertificateID object based on the certificate used to sign the data",
+                "CertificateID object not null");
         Security.addProvider(new BouncyCastleProvider());
 
         X509Certificate myCertificate = TestCertProvider.loadPositiveCert();
@@ -67,7 +68,8 @@ public class CertificateIDTest {
     @Tag("regressiontest")
     public void negativeCertificateIdentificationTest() throws Exception {
         addDescription("Tests that a certificate is not identified based on a incorrect signature.");
-        addStep("Create CertificateID object based on a certificate not used for signing the data", "CertificateID object not null");
+        addStep("Create CertificateID object based on a certificate not used for signing the data",
+                "CertificateID object not null");
         Security.addProvider(new BouncyCastleProvider());
 
         X509Certificate myCertificate = TestCertProvider.loadNegativeCert();
@@ -116,7 +118,8 @@ public class CertificateIDTest {
         addStep("Test with same serial but no issuer", "Should give negative result");
         Assertions.assertNotEquals(new CertificateID((X500Principal) null, serial), certificateID1);
 
-        addStep("Test the positive case, with both the issuer and serial ", "Should give positive result");
+        addStep("Test the positive case, with both the issuer and serial ",
+                "Should give positive result");
         Assertions.assertEquals(certificateID1, new CertificateID(issuer, serial));
 
         addStep("Setup an empty certificate", "");

@@ -137,7 +137,8 @@ public class MessageBusNumberOfListenersStressTest {
         idReached = -1;
         sendMoreMessages = true;
 
-        addStep("Define the message to send.", "Should retrieve the Alarm message from examples and set the To.");
+        addStep("Define the message to send.",
+                "Should retrieve the Alarm message from examples and set the To.");
         alarmMessage = ExampleMessageFactory.createMessage(AlarmMessage.class);
         alarmMessage.setDestination(QUEUE);
 
@@ -179,7 +180,8 @@ public class MessageBusNumberOfListenersStressTest {
         idReached = -1;
         sendMoreMessages = true;
 
-        addStep("Define the message to send.", "Should retrieve the Alarm message from examples and set the To.");
+        addStep("Define the message to send.",
+                "Should retrieve the Alarm message from examples and set the To.");
         alarmMessage = ExampleMessageFactory.createMessage(AlarmMessage.class);
         alarmMessage.setDestination(QUEUE);
 
@@ -215,7 +217,8 @@ public class MessageBusNumberOfListenersStressTest {
         List<NotificationMessageListener> listeners = new ArrayList<>(NUMBER_OF_LISTENERS);
 
         try {
-            addStep("Initialise the message listeners.", "Should be created and connected to the message bus.");
+            addStep("Initialise the message listeners.",
+                    "Should be created and connected to the message bus.");
             for (int i = 0; i < NUMBER_OF_LISTENERS; i++) {
                 Settings listenerSettings = TestSettingsProvider.getSettings(getClass().getSimpleName());
                 listenerSettings.getRepositorySettings().getProtocolSettings().setMessageBusConfiguration(conf);

@@ -27,10 +27,11 @@ public class AuditPackerTest {
     @BeforeAll
     public void setup() {
         Settings settings = TestSettingsProvider.reloadSettings("LocalAuditPreservationUnderTest");
-        preservationSettings = settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailPreservation();
+        preservationSettings =
+                settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailPreservation();
         collectionID = settings.getCollections().get(0).getID();
         SettingsUtils.initialize(settings);
-        store = mock(AuditTrailStore.class);
+        store = Mockito.mock(AuditTrailStore.class);
     }
 
     @Test
@@ -60,6 +61,6 @@ public class AuditPackerTest {
         // As the iterators have no new audits there should be no newly packed audits on a new call.
         packer.createNewPackage();
         Assertions.assertEquals(0, packer.getPackedAuditCount());
-        Assertions.assertArrayEquals(expectedSeqNums.toArray(), packer.getSequenceNumbersReached().values().toArray());
+        Assertions.assertIterableEquals(expectedSeqNums, packer.getSequenceNumbersReached().values());
     }
 }

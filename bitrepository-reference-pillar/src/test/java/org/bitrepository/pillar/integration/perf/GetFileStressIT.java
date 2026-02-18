@@ -72,8 +72,10 @@ public class GetFileStressIT extends PillarPerformanceTest {
     @Test
     @Tag("pillar-stress-test")
     public void parallelGetFilePerformanceTest() throws Exception {
-        final int numberOfFiles = testConfiguration.getInt("pillarintegrationtest.GetFileStressIT.parallelGet.numberOfFiles");
-        final int partStatisticsInterval = testConfiguration.getInt("pillarintegrationtest.GetFileStressIT.parallelGet.partStatisticsInterval");
+        final int numberOfFiles =
+                testConfiguration.getInt("pillarintegrationtest.GetFileStressIT.parallelGet.numberOfFiles");
+        final int partStatisticsInterval =
+                testConfiguration.getInt("pillarintegrationtest.GetFileStressIT.parallelGet.partStatisticsInterval");
         final int numberOfParallelGets =
                 testConfiguration.getInt("pillarintegrationtest.GetFileStressIT.parallelGet.numberOfParallelGets");
         addDescription("Attempt to get " + numberOfFiles + " files from " + getPillarID() + ", " + numberOfParallelGets +
@@ -87,19 +89,19 @@ public class GetFileStressIT extends PillarPerformanceTest {
         for (int i = 1; i <= numberOfFiles; i++) {
             getLimiter.addJob(defaultFileId);
             getFileClient.getFileFromSpecificPillar(
-                    collectionID, defaultFileId, null, httpServerConfiguration.getURL(nonDefaultFileId + "-" + i), getPillarID(),
-                    eventHandler,
-                    " performing parallelGetFilePerformance");
+                    collectionID, defaultFileId, null, httpServerConfiguration.getURL(nonDefaultFileId + "-" + i),
+                    getPillarID(), eventHandler, " performing parallelGetFilePerformance");
         }
-
         awaitAsynchronousCompletion(metrics, numberOfFiles);
     }
 
     @Test
     @Tag("pillar-stress-test")
     public void noIdentfyGetFilePerformanceTest() throws Exception {
-        final int numberOfFiles = testConfiguration.getInt("pillarintegrationtest.GetFileStressIT.parallelGet.numberOfFiles");
-        final int partStatisticsInterval = testConfiguration.getInt("pillarintegrationtest.GetFileStressIT.parallelGet.partStatisticsInterval");
+        final int numberOfFiles =
+                testConfiguration.getInt("pillarintegrationtest.GetFileStressIT.parallelGet.numberOfFiles");
+        final int partStatisticsInterval =
+                testConfiguration.getInt("pillarintegrationtest.GetFileStressIT.parallelGet.partStatisticsInterval");
         final int numberOfParallelGets =
                 testConfiguration.getInt("pillarintegrationtest.GetFileStressIT.parallelGet.numberOfParallelGets");
         addDescription("Attempt to get " + numberOfFiles + " files from " + getPillarID() + ", " + numberOfParallelGets +
@@ -111,14 +113,16 @@ public class GetFileStressIT extends PillarPerformanceTest {
         addStep("Getting " + numberOfFiles + " files", "Not errors should occur");
         ParallelOperationLimiter getLimiter = new ParallelOperationLimiter(numberOfParallelGets);
         messageBus.addListener(settingsForTestClient.getReceiverDestinationID(), new MessageHandlerForMetrics(metrics, getLimiter));
-        GetFileMessageFactory msgFactory = new GetFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
+        GetFileMessageFactory msgFactory = new GetFileMessageFactory(collectionID, settingsForTestClient,
+                getPillarID(), null);
         for (int i = 1; i <= numberOfFiles; i++) {
             String correlationID = msgFactory.getNewCorrelationID();
             getLimiter.addJob(correlationID);
             GetFileRequest getRequest =
                     msgFactory.createGetFileRequest("noIdentfyGetFilePerformanceTest", correlationID,
-                            httpServerConfiguration.getURL(nonDefaultFileId + "-" + i).toExternalForm(), defaultFileId, null,
-                            getPillarID(), getPillarID(), settingsForTestClient.getReceiverDestinationID(), pillarDestination);
+                            httpServerConfiguration.getURL(nonDefaultFileId + "-" + i).toExternalForm(),
+                            defaultFileId, null, getPillarID(), getPillarID(),
+                            settingsForTestClient.getReceiverDestinationID(), pillarDestination);
             messageBus.sendMessage(getRequest);
         }
 

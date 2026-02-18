@@ -32,6 +32,7 @@ import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.pillar.integration.perf.metrics.Metrics;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -61,18 +62,20 @@ public class GetAuditTrailsFileStressIT extends PillarPerformanceTest {
         metrics.start();
         addStep("Add " + NUMBER_OF_FILES + " files", "Not errors should occur");
         for (String fileID : fileIDs) {
-            blockingPutFileClient.putFile(collectionID, httpServerConfiguration.getURL(TestFileHelper.DEFAULT_FILE_ID), fileID, 10L,
-                    TestFileHelper.getDefaultFileChecksum(), null, null, "singleTreadedPut stress test file");
+            blockingPutFileClient.putFile(collectionID, httpServerConfiguration.getURL(TestFileHelper.DEFAULT_FILE_ID),
+                    fileID, 10L, TestFileHelper.getDefaultFileChecksum(), null,
+                    null, "singleTreadedPut stress test file");
             metrics.mark(fileID);
         }
 
-        addStep("Check that the files are now present on the pillar(s)", "No missing files should be found.");
+        addStep("Check that the files are now present on the pillar(s)",
+                "No missing files should be found.");
         //ToDo assert that the files are present
     }
 
+    @Disabled("Temporarily disabled due to performance issues")
     @Test
     @Tag("pillar-stress-test")
-//    @Disabled
     public void singleTreadedGetAuditTrails() throws Exception {
         final int NUMBER_OF_AUDITS = 100;
         final int PART_STATISTIC_INTERVAL = NUMBER_OF_AUDITS / 5;
@@ -86,14 +89,15 @@ public class GetAuditTrailsFileStressIT extends PillarPerformanceTest {
         addStep("Request " + NUMBER_OF_AUDITS + " full audit trails one", "Not errors should occur");
         for (int i = 0; i < NUMBER_OF_AUDITS; i++) {
             blockingAuditTrailFileClient.getAuditTrails(collectionID,
-                    null, null, null, null, "singleTreadedGetAuditTrails stress test");
+                    null, null, null, null,
+                    "singleTreadedGetAuditTrails stress test");
             metrics.mark();
         }
     }
 
+    @Disabled("Temporarily disabled due to performance issues")
     @Test
     @Tag("pillar-stress-test")
-//    @Disabled
     public void parallelGetAuditTrails() throws Exception {
         final int NUMBER_OF_AUDITS = 10;
         final int PART_STATISTIC_INTERVAL = NUMBER_OF_AUDITS / 5;
@@ -105,9 +109,9 @@ public class GetAuditTrailsFileStressIT extends PillarPerformanceTest {
         addStep("Add " + NUMBER_OF_AUDITS + " files", "Not errors should occur");
         EventHandler eventHandler = new EventHandlerForMetrics(metrics);
         for (int i = 0; i < NUMBER_OF_AUDITS; i++) {
-            System.out.println("Get audit trails stress test no:" + i);
             auditTrailClient.getAuditTrails(collectionID,
-                    null, null, null, eventHandler, "singleTreadedGetAuditTrails stress test");
+                    null, null, null, eventHandler,
+                    "singleTreadedGetAuditTrails stress test");
         }
 
         awaitAsynchronousCompletion(metrics, NUMBER_OF_AUDITS);

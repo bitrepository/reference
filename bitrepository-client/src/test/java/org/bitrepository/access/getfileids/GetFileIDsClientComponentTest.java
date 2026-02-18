@@ -73,9 +73,9 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
     public void verifyGetFileIDsClientFromFactory() throws Exception {
         Assertions.assertInstanceOf(ConversationBasedGetFileIDsClient.class,
                 AccessComponentFactory.getInstance().createGetFileIDsClient(settingsForCUT, securityManager,
-                        settingsForTestClient.getComponentID()), "The default GetFileClient from the Access factory should be" +
+                settingsForTestClient.getComponentID()), "The default GetFileClient from the Access factory should be" +
                         " of the type '" +
-                        ConversationBasedGetFileIDsClient.class.getName() + "'.");
+                ConversationBasedGetFileIDsClient.class.getName() + "'.");
     }
 
     @Test
@@ -115,7 +115,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
                         + "message to the pillar");
         IdentifyPillarsForGetFileIDsResponse identifyResponse =
                 messageFactory.createIdentifyPillarsForGetFileIDsResponse(
-                        receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
+                receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
         messageBus.sendMessage(identifyResponse);
         Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_IDENTIFIED, testEventHandler.waitForEvent().getEventType());
 
@@ -137,8 +137,8 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
 
         addStep("The resulting file is uploaded to the indicated url and the pillar sends a final response upload " +
                         "message",
-                "The GetFileIDsClient notifies that the file is ready through the callback listener and the uploaded " +
-                        "file is present.");
+                "The GetFileIDsClient notifies that the file is ready through the callback listener " +
+                        "and the uploaded file is present.");
         GetFileIDsFinalResponse completeMsg = messageFactory.createGetFileIDsFinalResponse(
                 receivedGetFileIDsRequest, PILLAR1_ID, pillar1DestinationId);
 
@@ -192,7 +192,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
 
         IdentifyPillarsForGetFileIDsResponse identifyResponse =
                 messageFactory.createIdentifyPillarsForGetFileIDsResponse(
-                        receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
+                receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
         messageBus.sendMessage(identifyResponse);
         GetFileIDsRequest receivedGetFileIDsRequest = pillar1Receiver.waitForMessage(GetFileIDsRequest.class);
 
@@ -241,8 +241,8 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
             Assertions.assertNull(resFileIDs.getResultAddress(), "The results should be sent back through the message, "
                     + "and therefore no resulting address should be returned.");
             Assertions.assertNotNull(resFileIDs.getFileIDsData(), "No FileIDsData should be returned.");
-            Assertions.assertEquals(1, resFileIDs.getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size(), "Response " +
-                    "should contain same amount of fileids as requested.");
+            Assertions.assertEquals(1, resFileIDs.getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size(),
+                    "Response should contain same amount of fileids as requested.");
         }
 
         Assertions.assertEquals(OperationEvent.OperationEventType.COMPLETE, testEventHandler.waitForEvent().getEventType());
@@ -279,7 +279,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         GetFileIDsRequest receivedGetFileIDsRequest = null;
         IdentifyPillarsForGetFileIDsResponse identifyResponse =
                 messageFactory.createIdentifyPillarsForGetFileIDsResponse(
-                        receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
+                receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
         messageBus.sendMessage(identifyResponse);
         receivedGetFileIDsRequest = pillar1Receiver.waitForMessage(GetFileIDsRequest.class);
 

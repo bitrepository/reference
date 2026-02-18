@@ -69,6 +69,7 @@ public class MessageBusTimeToSendMessagesStressTest {
     public void initializeSettings() {
         settings = TestSettingsProvider.getSettings(getClass().getSimpleName());
     }
+
     /**
      * Tests the amount of messages sent over a message bus, which is not placed locally.
      * Require sending at least five per second.
@@ -93,7 +94,8 @@ public class MessageBusTimeToSendMessagesStressTest {
             addStep("Start sending at '" + startSending + "'", "Should just be waiting.");
             sendAllTheMessages(conf, securityManager);
 
-            addStep("Sleep until the listeners have received all the messages.", "Should be sleeping.");
+            addStep("Sleep until the listeners have received all the messages.",
+                    "Should be sleeping.");
             while(!listener.isFinished()) {
                 synchronized (this) {
                     try {
@@ -112,7 +114,7 @@ public class MessageBusTimeToSendMessagesStressTest {
             long timeFrame = (endDate.getTime() - startSending.getTime())/1000;
             System.out.println("Sent '" + count + "' messages in '" + timeFrame + "' seconds.");
         } finally {
-            if(listener != null) {
+            if (listener != null) {
                 listener.stop();
             }
         }
@@ -129,7 +131,8 @@ public class MessageBusTimeToSendMessagesStressTest {
         addStep("Define constants", "This should not be possible to fail.");
         QUEUE += "-" + (new Date()).getTime();
 
-        addStep("Make configuration for the messagebus and define the local broker.", "Both should be created.");
+        addStep("Make configuration for the messagebus and define the local broker.",
+                "Both should be created.");
         MessageBusConfiguration conf = new MessageBusConfiguration();
         int port = getFreePort();
         conf.setURL("tcp://localhost:" + port);
@@ -154,7 +157,7 @@ public class MessageBusTimeToSendMessagesStressTest {
             addStep("Sleep until the listeners has received all the messages.", "Should be sleeping.");
             long startTime = new Date().getTime();
             long oneMinuteInMillis = 60000;
-            while(!listener.isFinished() && (new Date().getTime() - startTime) < oneMinuteInMillis) {
+            while (!listener.isFinished() && (new Date().getTime() - startTime) < oneMinuteInMillis) {
                 synchronized (this) {
                     try {
                         wait(TIME_FOR_MESSAGE_TRANSFER_WAIT);
@@ -170,7 +173,7 @@ public class MessageBusTimeToSendMessagesStressTest {
             long timeFrame = (listener.getStopSending().getTime() - startSending.getTime())/1000;
             System.out.println("Sent '" + count + "' messages in '" + timeFrame + "' seconds.");
         } finally {
-            if(listener != null) {
+            if (listener != null) {
                 listener.stop();
             }
             broker.stop();
@@ -195,7 +198,7 @@ public class MessageBusTimeToSendMessagesStressTest {
     private void sendAllTheMessages(MessageBusConfiguration conf, SecurityManager securityManager) {
         /* The number of threads to send the messages. */
         int NUMBER_OF_SENDERS = 10;
-        for(int i = 0; i < NUMBER_OF_SENDERS; i++) {
+        for (int i = 0; i < NUMBER_OF_SENDERS; i++) {
             Thread t = new MessageSenderThread(conf, securityManager, NUMBER_OF_MESSAGES / NUMBER_OF_SENDERS, "#" + i);
             t.start();
         }
@@ -219,7 +222,7 @@ public class MessageBusTimeToSendMessagesStressTest {
             try {
                 AlarmMessage message = ExampleMessageFactory.createMessage(AlarmMessage.class);
                 message.setDestination(QUEUE);
-                for(int i = 0; i < numberOfMessages; i++) {
+                for (int i = 0; i < numberOfMessages; i++) {
                     message.setCorrelationID(id + ":" + i);
                     bus.sendMessage(message);
 
@@ -279,7 +282,7 @@ public class MessageBusTimeToSendMessagesStressTest {
         @Override
         public void onMessage(Message message, MessageContext messageContext) {
             count++;
-            if(count >= NUMBER_OF_MESSAGES) {
+            if (count >= NUMBER_OF_MESSAGES) {
                 stopSending = new Date();
                 awaitingMore = false;
             }

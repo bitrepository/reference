@@ -84,7 +84,8 @@ public class IdentifyPillarsForDeleteFileIT extends DefaultPillarIdentificationT
         Assertions.assertEquals(identifyRequest.getCorrelationID(), receivedIdentifyResponse.getCorrelationID());
         Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getFrom());
         Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID());
-        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE, receivedIdentifyResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode());
         Assertions.assertEquals(identifyRequest.getReplyTo(), receivedIdentifyResponse.getDestination());
     }
 
@@ -101,7 +102,8 @@ public class IdentifyPillarsForDeleteFileIT extends DefaultPillarIdentificationT
 
         IdentifyPillarsForDeleteFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForDeleteFileResponse.class);
-        Assertions.assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE, receivedIdentifyResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode());
     }
 
     @Override

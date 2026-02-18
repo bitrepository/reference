@@ -246,8 +246,8 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
             Assertions.assertEquals(csData.get(0).getCalculationTimestamp(), fi.getDateForLastChecksumCheck());
         }
 
-        addStep("Check that the extra collection is untouched by the ingest", "should deliver an empty collection and" +
-                " no errors");
+        addStep("Check that the extra collection is untouched by the ingest",
+                "should deliver an empty collection and no errors");
         Assertions.assertEquals(Long.valueOf(1), cache.getNumberOfFilesInCollection(TEST_COLLECTIONID));
         Assertions.assertEquals(Long.valueOf(0), cache.getNumberOfFilesInCollection(EXTRA_COLLECTION));
 
@@ -282,21 +282,23 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Assertions.assertNotNull(fileinfos);
         Assertions.assertEquals(2, fileinfos.size());
 
-        addStep("Delete the entry for the first pillar", "No fileinfos should be extracted from the pillar in the " +
-                "collection.");
+        addStep("Delete the entry for the first pillar",
+                "No fileinfos should be extracted from the pillar in the collection.");
         cache.removeFile(TEST_COLLECTIONID, TEST_PILLAR_1, TEST_FILE_ID);
         List<FileInfo> fis = cache.getFileInfosForFile(TEST_FILE_ID, TEST_COLLECTIONID);
         Assertions.assertNotNull(fis);
         Assertions.assertEquals(1, fis.size());
         Assertions.assertEquals(TEST_PILLAR_2, fis.get(0).getPillarId());
 
-        addStep("Delete the entry for the second pillar", "No fileinfos should be extracted from the collection.");
+        addStep("Delete the entry for the second pillar",
+                "No fileinfos should be extracted from the collection.");
         cache.removeFile(TEST_COLLECTIONID, TEST_PILLAR_2, TEST_FILE_ID);
         fis = cache.getFileInfosForFile(TEST_FILE_ID, TEST_COLLECTIONID);
         Assertions.assertNotNull(fis);
         Assertions.assertEquals(0, fis.size());
 
-        addStep("Check that the data in the extra collection is still present", "the data is present");
+        addStep("Check that the data in the extra collection is still present",
+                "the data is present");
         fileinfos = cache.getFileInfosForFile(TEST_FILE_ID, EXTRA_COLLECTION);
         Assertions.assertNotNull(fileinfos);
         Assertions.assertEquals(2, fileinfos.size());
@@ -549,13 +551,15 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         String file2 = TEST_FILE_ID + "-2";
         String file3 = TEST_FILE_ID + "-3";
 
-        addStep("Insert two files into database for a pillar", "Ingesting the data into the database");
+        addStep("Insert two files into database for a pillar",
+                "Ingesting the data into the database");
         cache.updateFileIDs(getFileIDsData(TEST_FILE_ID, file2), TEST_PILLAR_1, TEST_COLLECTIONID);
-        addStep("Insert a file to the extra collection for the common pillar", "Data is ingested into the database");
+        addStep("Insert a file to the extra collection for the common pillar",
+                "Data is ingested into the database");
         cache.updateFileIDs(getFileIDsData(file3), TEST_PILLAR_1, EXTRA_COLLECTION);
 
-        addStep("Extract all the existing file ids for the pillar for collection '" + TEST_COLLECTIONID + "'", "Both " +
-                "file ids is found.");
+        addStep("Extract all the existing file ids for the pillar for collection '" + TEST_COLLECTIONID + "'",
+                "Both file ids is found.");
         IntegrityIssueIterator it = cache.getAllFileIDsOnPillar(TEST_COLLECTIONID, TEST_PILLAR_1, 0L, Long.MAX_VALUE);
         Collection<String> fileIDs = getIssuesFromIterator(it);
         Assertions.assertEquals(2, fileIDs.size(), "Number of files: " + fileIDs.size());
@@ -745,13 +749,14 @@ public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         long collectionSize = size1 + size2 + size3;
 
         Map<String, PillarCollectionMetric> metrics = cache.getPillarCollectionMetrics(TEST_COLLECTIONID);
-        addStep("Check the reported size of the first pillar in the collection", "The reported size matches the " +
-                "precalculated");
+        addStep("Check the reported size of the first pillar in the collection",
+                "The reported size matches the precalculated");
         Assertions.assertEquals(pillar1Size, metrics.get(TEST_PILLAR_1).getPillarCollectionSize());
-        addStep("Check the reported size of the second pillar in the collection", "The reported size matches the " +
-                "precalculated");
+        addStep("Check the reported size of the second pillar in the collection",
+                "The reported size matches the precalculated");
         Assertions.assertEquals(pillar2Size, metrics.get(TEST_PILLAR_2).getPillarCollectionSize());
-        addStep("Check the reported size of the whole collection", "The reported size matches the precalculated");
+        addStep("Check the reported size of the whole collection",
+                "The reported size matches the precalculated");
         Assertions.assertEquals(collectionSize, cache.getCollectionSize(TEST_COLLECTIONID));
     }
 

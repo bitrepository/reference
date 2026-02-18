@@ -79,11 +79,13 @@ public class ReferenceArchiveTest extends DefaultPillarTest {
         ReferenceArchive archive = new ReferenceArchive(List.of(DIR_NAME));
         createExistingFile();
 
-        addStep("test 'hasFile'", "Should be true for the existing one and false for the missing one.");
+        addStep("test 'hasFile'",
+                "Should be true for the existing one and false for the missing one.");
         Assertions.assertTrue(archive.hasFile(EXISTING_FILE));
         Assertions.assertFalse(archive.hasFile(MISSING_FILE));
 
-        addStep("Test 'getFile'", "Should be ok for the existing file and throw an exception on the missing");
+        addStep("Test 'getFile'",
+                "Should be ok for the existing file and throw an exception on the missing");
         archive.getFile(EXISTING_FILE);
         try {
             archive.getFile(MISSING_FILE);
@@ -136,7 +138,8 @@ public class ReferenceArchiveTest extends DefaultPillarTest {
         Assertions.assertFalse(new File(DIR_NAME + "/tmpDir/" + EXISTING_FILE).isFile());
         Assertions.assertTrue(new File(DIR_NAME + "/retainDir/" + EXISTING_FILE + ".old.old").isFile());
 
-        addStep("Try performing the replace, when the file in the tempdir has been removed.", "Should throw an exception");
+        addStep("Try performing the replace, when the file in the tempdir has been removed.",
+                "Should throw an exception");
         try {
             archive.replaceFile(EXISTING_FILE);
             Assertions.fail("Should throw an exception here.");

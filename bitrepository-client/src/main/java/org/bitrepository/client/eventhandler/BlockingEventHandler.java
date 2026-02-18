@@ -66,7 +66,9 @@ public class BlockingEventHandler implements EventHandler {
         while (finishEvent == null) {
             try {
                 this.wait();
-            } catch (InterruptedException ignored) {
+            } catch (InterruptedException e) {
+                // Restore the interrupted status so that callers can act on it.
+                Thread.currentThread().interrupt();
             }
         }
         return finishEvent;

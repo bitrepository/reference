@@ -42,7 +42,8 @@ public class MessageUtilsTest {
         ResponseInfo ri = new ResponseInfo();
         response.setResponseInfo(ri);
 
-        addStep("validate that it can see a positive identify response", "Should return true for positive identify.");
+        addStep("validate that it can see a positive identify response",
+                "Should return true for positive identify.");
         response.getResponseInfo().setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);
         Assertions.assertTrue(MessageUtils.isPositiveIdentifyResponse(response));
         response.getResponseInfo().setResponseCode(ResponseCode.IDENTIFICATION_NEGATIVE);

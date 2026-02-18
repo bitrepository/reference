@@ -72,16 +72,18 @@ public class IdentifyPillarsForGetFileIDsIT extends DefaultPillarIdentificationT
         IdentifyPillarsForGetFileIDsResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetFileIDsResponse.class);
         Assertions.assertNotNull(receivedIdentifyResponse);
-        Assertions.assertEquals(identifyRequest.getCollectionID(), receivedIdentifyResponse.getCollectionID(), "Received " +
-                "unexpected 'CollectionID' in response.");
-        Assertions.assertEquals(identifyRequest.getCorrelationID(), receivedIdentifyResponse.getCorrelationID(), "Received " +
-                "unexpected 'CorrelationID' in response.");
-        Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getFrom(), "Received unexpected 'From' in response.");
-        Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID(), "Received unexpected 'PillarID' in " +
-                "response.");
+        Assertions.assertEquals(identifyRequest.getCollectionID(), receivedIdentifyResponse.getCollectionID(),
+                "Received unexpected 'CollectionID' in response.");
+        Assertions.assertEquals(identifyRequest.getCorrelationID(), receivedIdentifyResponse.getCorrelationID(),
+                "Received unexpected 'CorrelationID' in response.");
+        Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getFrom(),
+                "Received unexpected 'From' in response.");
+        Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID(),
+                "Received unexpected 'PillarID' in response.");
         Assertions.assertNotNull(receivedIdentifyResponse.getReplyTo());
-        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE, receivedIdentifyResponse.getResponseInfo().getResponseCode(), "Received" +
-                " unexpected 'Response' in response.");
+        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode(),
+                "Received unexpected 'Response' in response.");
     }
 
     @Test
@@ -106,8 +108,9 @@ public class IdentifyPillarsForGetFileIDsIT extends DefaultPillarIdentificationT
         IdentifyPillarsForGetFileIDsResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetFileIDsResponse.class);
         Assertions.assertNotNull(receivedIdentifyResponse.getFileIDs().getFileID());
-        Assertions.assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE, receivedIdentifyResponse.getResponseInfo().getResponseCode(), "Received " +
-                "unexpected 'ResponseCode' in response.");
+        Assertions.assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode(),
+                "Received unexpected 'ResponseCode' in response.");
     }
 
     @Test
@@ -128,8 +131,9 @@ public class IdentifyPillarsForGetFileIDsIT extends DefaultPillarIdentificationT
                 "The pillar should make a response.");
         IdentifyPillarsForGetFileIDsResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetFileIDsResponse.class);
-        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE, receivedIdentifyResponse.getResponseInfo().getResponseCode(), "Received" +
-                " unexpected 'ResponseCode' in response.");
+        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode(),
+                "Received unexpected 'ResponseCode' in response.");
     }
 
     @Override
