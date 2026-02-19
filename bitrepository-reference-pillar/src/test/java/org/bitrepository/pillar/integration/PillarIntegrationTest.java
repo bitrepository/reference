@@ -22,6 +22,7 @@
 package org.bitrepository.pillar.integration;
 
 import org.bitrepository.SuiteInfo;
+import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
 import org.bitrepository.client.conversation.mediator.ConversationMediatorManager;
 import org.bitrepository.client.eventhandler.EventHandler;
@@ -109,7 +110,8 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     @BeforeAll
     public void initializeSuite(SuiteInfo testInfo) {
         if (testConfiguration == null) {
-            testConfiguration = new PillarIntegrationTestConfiguration(PATH_TO_TESTPROPS_DIR + "/" + TEST_CONFIGURATION_FILE_NAME);
+            testConfiguration =
+                    new PillarIntegrationTestConfiguration(PATH_TO_TESTPROPS_DIR + "/" + TEST_CONFIGURATION_FILE_NAME);
         }
         super.initializeSuite(testInfo);
 

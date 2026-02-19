@@ -6,16 +6,16 @@ package org.bitrepository.pillar.integration.perf;
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -29,6 +29,7 @@ import org.bitrepository.modify.putfile.BlockingPutFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.pillar.integration.perf.metrics.Metrics;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -62,8 +63,9 @@ public class PutFileStressIT extends PillarPerformanceTest {
         metrics.addAppenders(metricAppenders);
         metrics.start();
         addStep("Add " + NUMBER_OF_FILES + " files", "Not errors should occur");
-        for (String fileID:fileIDs) {
-            blockingPutFileClient.putFile(collectionID, httpServerConfiguration.getURL(TestFileHelper.DEFAULT_FILE_ID), fileID, 10L,
+        for (String fileID : fileIDs) {
+            blockingPutFileClient.putFile(collectionID, httpServerConfiguration.getURL(TestFileHelper.DEFAULT_FILE_ID),
+                    fileID, 10L,
                     TestFileHelper.getDefaultFileChecksum(), null, null, "singleTreadedPut stress test file");
             metrics.mark(fileID);
         }
@@ -108,6 +110,7 @@ public class PutFileStressIT extends PillarPerformanceTest {
     private class PutEventHandlerForMetrics implements EventHandler {
         private final Metrics metrics;
         private final ParallelPutLimiter putLimiter;
+
         public PutEventHandlerForMetrics(Metrics metrics, ParallelPutLimiter putLimiter) {
             this.metrics = metrics;
             this.putLimiter = putLimiter;

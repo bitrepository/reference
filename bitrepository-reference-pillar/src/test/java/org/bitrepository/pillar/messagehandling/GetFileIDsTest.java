@@ -25,13 +25,13 @@
  */
 package org.bitrepository.pillar.messagehandling;
 
+import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.*;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.pillar.MockedPillarTest;
-import org.bitrepository.pillar.integration.SuiteInfoParameterResolver;
 import org.bitrepository.pillar.messagefactories.GetFileIDsMessageFactory;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedFileIDsResultSet;
 import org.junit.jupiter.api.Assertions;
@@ -68,7 +68,8 @@ public class GetFileIDsTest extends MockedPillarTest {
     @Tag("regressiontest")
     @Tag("pillartest")
     public void goodCaseIdentification() throws Exception {
-        addDescription("Tests the identification for a GetFileIDs operation on the pillar for the successful scenario.");
+        addDescription(
+                "Tests the identification for a GetFileIDs operation on the pillar for the successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = defaultFileId + testMethodName;
         FileIDs fileids = FileIDsUtils.getSpecificFileIDs(FILE_ID);
@@ -96,7 +97,8 @@ public class GetFileIDsTest extends MockedPillarTest {
                 "The pillar should make a response.");
         IdentifyPillarsForGetFileIDsResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetFileIDsResponse.class);
-        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE, receivedIdentifyResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode());
         Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID());
         Assertions.assertEquals(fileids, receivedIdentifyResponse.getFileIDs());
 
@@ -138,7 +140,8 @@ public class GetFileIDsTest extends MockedPillarTest {
                 "The pillar should make a response.");
         IdentifyPillarsForGetFileIDsResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetFileIDsResponse.class);
-        Assertions.assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE, receivedIdentifyResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode());
         Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID());
         Assertions.assertEquals(fileids, receivedIdentifyResponse.getFileIDs());
 
@@ -168,13 +171,15 @@ public class GetFileIDsTest extends MockedPillarTest {
             }
         }).when(model).getPillarID();
         Mockito.doAnswer(new Answer() {
-            public ExtractedFileIDsResultSet answer(InvocationOnMock invocation) {
-                ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
-                res.insertFileID(FILE_ID, new Date(0));
-                return res;
-            }
-        }).when(model).getFileIDsResultSet(ArgumentMatchers.anyString(), ArgumentMatchers.any(XMLGregorianCalendar.class),
-                ArgumentMatchers.any(XMLGregorianCalendar.class), ArgumentMatchers.anyLong(), ArgumentMatchers.anyString());
+                    public ExtractedFileIDsResultSet answer(InvocationOnMock invocation) {
+                        ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
+                        res.insertFileID(FILE_ID, new Date(0));
+                        return res;
+                    }
+                }).when(model)
+                .getFileIDsResultSet(ArgumentMatchers.anyString(), ArgumentMatchers.any(XMLGregorianCalendar.class),
+                        ArgumentMatchers.any(XMLGregorianCalendar.class), ArgumentMatchers.anyLong(),
+                        ArgumentMatchers.anyString());
 
         addStep("Create and send the actual GetFileIDs message to the pillar.",
                 "Should be received and handled by the pillar.");
@@ -197,7 +202,8 @@ public class GetFileIDsTest extends MockedPillarTest {
         Assertions.assertEquals(1,
                 finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size());
         Assertions.assertEquals(FILE_ID,
-                finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID());
+                finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().get(0)
+                        .getFileID());
     }
 
     @SuppressWarnings("rawtypes")
@@ -230,7 +236,8 @@ public class GetFileIDsTest extends MockedPillarTest {
                 return res;
             }
         }).when(model).getFileIDsResultSet(ArgumentMatchers.isNull(), ArgumentMatchers.any(XMLGregorianCalendar.class),
-                ArgumentMatchers.any(XMLGregorianCalendar.class), ArgumentMatchers.anyLong(), ArgumentMatchers.anyString());
+                ArgumentMatchers.any(XMLGregorianCalendar.class), ArgumentMatchers.anyLong(),
+                ArgumentMatchers.anyString());
 
         addStep("Create and send the actual GetFileIDs message to the pillar.",
                 "Should be received and handled by the pillar.");
@@ -353,6 +360,7 @@ public class GetFileIDsTest extends MockedPillarTest {
         Assertions.assertEquals(1,
                 finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size());
         Assertions.assertEquals(FILE_ID,
-                finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID());
+                finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().get(0)
+                        .getFileID());
     }
 }

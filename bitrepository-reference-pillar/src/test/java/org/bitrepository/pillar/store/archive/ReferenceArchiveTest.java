@@ -3,7 +3,8 @@
  * Bitrepository Reference Pillar
  *
  * $Id: PutFileOnReferencePillarTest.java 589 2011-12-01 15:34:42Z jolf $
- * $HeadURL: https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk/bitrepository-reference-pillar/src/test/java/org
+ * $HeadURL: https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk/bitrepository-reference-pillar/src
+ * /test/java/org
  * /bitrepository/pillar/PutFileOnReferencePillarTest.java $
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
@@ -25,13 +26,13 @@
  */
 package org.bitrepository.pillar.store.archive;
 
+import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.DefaultPillarTest;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.messagehandler.PillarMediator;
 import org.bitrepository.pillar.store.filearchive.ReferenceArchive;
 import org.bitrepository.service.audit.MockAuditManager;
-import org.bitrepository.pillar.integration.SuiteInfoParameterResolver;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -151,8 +152,9 @@ public class ReferenceArchiveTest extends DefaultPillarTest {
     }
 
     private void createExistingFile() throws Exception {
-        OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(new File(FILE_DIR_NAME, EXISTING_FILE), false),
-                StandardCharsets.UTF_8);
+        OutputStreamWriter osw =
+                new OutputStreamWriter(new FileOutputStream(new File(FILE_DIR_NAME, EXISTING_FILE), false),
+                        StandardCharsets.UTF_8);
         osw.write("test-data\n");
         osw.flush();
         osw.close();

@@ -44,6 +44,7 @@ import java.util.Arrays;
 
 import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+import static org.mockito.ArgumentMatchers.*;
 
 /**
  * Performs the validation of the integrity for the checksums.

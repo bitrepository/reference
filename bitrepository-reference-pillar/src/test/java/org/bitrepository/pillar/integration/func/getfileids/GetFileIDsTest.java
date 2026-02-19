@@ -21,6 +21,7 @@
  */
 package org.bitrepository.pillar.integration.func.getfileids;
 
+import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.*;
@@ -28,7 +29,6 @@ import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.DefaultPillarOperationTest;
 import org.bitrepository.pillar.messagefactories.GetFileIDsMessageFactory;
-import org.bitrepository.pillar.integration.SuiteInfoParameterResolver;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -78,7 +78,8 @@ public class GetFileIDsTest extends DefaultPillarOperationTest {
         Assertions.assertEquals(getPillarID(), progressResponse.getFrom());
         Assertions.assertEquals(getPillarID(), progressResponse.getPillarID());
         Assertions.assertEquals(pillarDestination, progressResponse.getReplyTo());
-        Assertions.assertEquals(ResponseCode.OPERATION_ACCEPTED_PROGRESS, progressResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(ResponseCode.OPERATION_ACCEPTED_PROGRESS,
+                progressResponse.getResponseInfo().getResponseCode());
 
         addStep("Retrieve the FinalResponse for the GetFileIDs request",
                 "The GetFileIDs response should be sent by the pillar.");
@@ -91,8 +92,12 @@ public class GetFileIDsTest extends DefaultPillarOperationTest {
         Assertions.assertEquals(getPillarID(), finalResponse.getPillarID());
         Assertions.assertEquals(pillarDestination, finalResponse.getReplyTo());
         Assertions.assertNull(finalResponse.getResultingFileIDs().getResultAddress());
-        Assertions.assertTrue(finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size() >= 2,
-                "Should be at least 2 files, but found: " + finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size());
+        Assertions.assertTrue(
+                finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem()
+                        .size() >= 2,
+                "Should be at least 2 files, but found: " +
+                        finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem()
+                                .size());
     }
 
     @Test
@@ -128,8 +133,11 @@ public class GetFileIDsTest extends DefaultPillarOperationTest {
         addStep("Retrieve the FinalResponse for the GetFileIDs request.",
                 "A OPERATION_COMPLETE final response only containing the requested file-id.");
         GetFileIDsFinalResponse finalResponse = (GetFileIDsFinalResponse) receiveResponse();
-        Assertions.assertEquals(1, finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size());
-        Assertions.assertEquals(defaultFileId, finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID());
+        Assertions.assertEquals(1,
+                finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().size());
+        Assertions.assertEquals(defaultFileId,
+                finalResponse.getResultingFileIDs().getFileIDsData().getFileIDsDataItems().getFileIDsDataItem().get(0)
+                        .getFileID());
         Assertions.assertFalse(finalResponse.isSetPartialResult() && finalResponse.isPartialResult());
     }
 

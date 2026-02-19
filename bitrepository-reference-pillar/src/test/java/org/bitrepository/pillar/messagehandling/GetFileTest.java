@@ -3,7 +3,8 @@
  * Bitrepository Reference Pillar
  *
  * $Id: PutFileOnReferencePillarTest.java 589 2011-12-01 15:34:42Z jolf $
- * $HeadURL: https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk/bitrepository-reference-pillar/src/test/java/org/bitrepository/pillar/PutFileOnReferencePillarTest.java $
+ * $HeadURL: https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk/bitrepository-reference-pillar/src
+ * /test/java/org/bitrepository/pillar/PutFileOnReferencePillarTest.java $
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -24,12 +25,12 @@
  */
 package org.bitrepository.pillar.messagehandling;
 
+import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.*;
 import org.bitrepository.common.filestore.FileInfo;
 import org.bitrepository.pillar.MockedPillarTest;
 import org.bitrepository.pillar.common.FileInfoStub;
-import org.bitrepository.pillar.integration.SuiteInfoParameterResolver;
 import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
 import org.bitrepository.service.exception.IdentifyContributorException;
 import org.bitrepository.service.exception.InvalidMessageException;
@@ -88,7 +89,8 @@ public class GetFileTest extends MockedPillarTest {
                 "The pillar should make a response.");
         IdentifyPillarsForGetFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetFileResponse.class);
-        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE, receivedIdentifyResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode());
         Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID());
         Assertions.assertEquals(FILE_ID, receivedIdentifyResponse.getFileID());
 
@@ -128,7 +130,8 @@ public class GetFileTest extends MockedPillarTest {
                 "The pillar should make a response.");
         IdentifyPillarsForGetFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetFileResponse.class);
-        Assertions.assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE, receivedIdentifyResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode());
         Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID());
         Assertions.assertEquals(FILE_ID, receivedIdentifyResponse.getFileID());
 

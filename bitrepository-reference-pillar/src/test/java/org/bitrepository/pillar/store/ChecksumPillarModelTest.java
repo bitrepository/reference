@@ -21,11 +21,11 @@
  */
 package org.bitrepository.pillar.store;
 
+import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
-import org.bitrepository.pillar.integration.SuiteInfoParameterResolver;
 import org.bitrepository.pillar.store.checksumcache.MemoryCacheMock;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumStore;
 import org.bitrepository.service.AlarmDispatcher;
@@ -88,12 +88,14 @@ public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
                 "It should say as it is in settings, or return default");
         settingsForCUT.getReferenceSettings().getPillarSettings().setChecksumPillarFileDownload(
                 ChecksumPillarFileDownload.ALWAYS_DOWNLOAD);
-        Assertions.assertEquals(ChecksumPillarFileDownload.ALWAYS_DOWNLOAD, pillarModel.getChecksumPillarFileDownload());
+        Assertions.assertEquals(ChecksumPillarFileDownload.ALWAYS_DOWNLOAD,
+                pillarModel.getChecksumPillarFileDownload());
         settingsForCUT.getReferenceSettings().getPillarSettings().setChecksumPillarFileDownload(
                 ChecksumPillarFileDownload.NEVER_DOWNLOAD);
         Assertions.assertEquals(ChecksumPillarFileDownload.NEVER_DOWNLOAD, pillarModel.getChecksumPillarFileDownload());
         settingsForCUT.getReferenceSettings().getPillarSettings().setChecksumPillarFileDownload(null);
-        Assertions.assertEquals(ChecksumPillarFileDownload.DOWNLOAD_WHEN_MISSING_FROM_MESSAGE, pillarModel.getChecksumPillarFileDownload());
+        Assertions.assertEquals(ChecksumPillarFileDownload.DOWNLOAD_WHEN_MISSING_FROM_MESSAGE,
+                pillarModel.getChecksumPillarFileDownload());
 
     }
 
@@ -182,7 +184,8 @@ public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
         }
 
         addStep("Test retrieval of single checksum result set",
-                "Should return non-null object, unless asked for non-default checksum spec which must raise exception.");
+                "Should return non-null object, unless asked for non-default checksum spec which must raise exception" +
+                        ".");
         pillarModel.getSingleChecksumResultSet(defaultFileId, collectionID, null,
                 null, defaultCsType);
         try {

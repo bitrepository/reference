@@ -21,13 +21,13 @@
  */
 package org.bitrepository.pillar.store;
 
+import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.common.filestore.FileInfo;
 import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.pillar.DefaultFixturePillarTest;
-import org.bitrepository.pillar.integration.SuiteInfoParameterResolver;
 import org.bitrepository.pillar.store.checksumcache.MemoryCacheMock;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumStore;
 import org.bitrepository.pillar.store.filearchive.CollectionArchiveManager;
