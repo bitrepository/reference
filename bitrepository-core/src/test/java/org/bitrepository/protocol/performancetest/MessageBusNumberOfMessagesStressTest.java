@@ -38,7 +38,6 @@ import org.bitrepository.protocol.messagebus.MessageListener;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.*;
 
 import javax.jms.JMSException;
@@ -46,10 +45,13 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.Date;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+
 /**
  * Stress testing of the messagebus.
  */
-public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
+public class MessageBusNumberOfMessagesStressTest {
     /**
      * The name of the queue to send the messages.
      */

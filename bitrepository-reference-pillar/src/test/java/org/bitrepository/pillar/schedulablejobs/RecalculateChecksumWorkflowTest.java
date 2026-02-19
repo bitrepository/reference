@@ -21,9 +21,9 @@ package org.bitrepository.pillar.schedulablejobs;
  * #L%
  */
 
+import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.pillar.DefaultPillarTest;
 import org.bitrepository.service.workflow.SchedulableJob;
-import org.bitrepository.pillar.integration.SuiteInfoParameterResolver;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;

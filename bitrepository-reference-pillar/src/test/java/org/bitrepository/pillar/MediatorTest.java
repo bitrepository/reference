@@ -21,6 +21,7 @@
  */
 package org.bitrepository.pillar;
 
+import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
@@ -36,11 +37,10 @@ import org.bitrepository.service.audit.MockAuditManager;
 import org.bitrepository.service.contributor.ResponseDispatcher;
 import org.bitrepository.service.contributor.handler.RequestHandler;
 import org.junit.jupiter.api.Assertions;
-import org.bitrepository.pillar.integration.SuiteInfoParameterResolver;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.math.BigInteger;
 import java.util.ArrayList;

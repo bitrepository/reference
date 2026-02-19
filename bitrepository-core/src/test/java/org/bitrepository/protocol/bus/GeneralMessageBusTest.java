@@ -79,7 +79,7 @@ public class GeneralMessageBusTest extends IntegrationTest {
 
         addStep("Make a connection to the message bus and add two listeners",
                 "No exceptions should be thrown");
-        MessageReceiver receiver1 = new MessageReceiver(alarmDestinationID, testEventManager);
+        MessageReceiver receiver1 = new MessageReceiver(alarmDestinationID);
         addReceiver(receiver1);
         messageBus.addListener(receiver1.getDestination(), receiver1.getMessageListener());
         MessageReceiver receiver2 = new MessageReceiver(alarmDestinationID, testEventManager);

@@ -3,7 +3,8 @@
  * Bitrepository Reference Pillar
  *
  * $Id: PutFileOnReferencePillarTest.java 589 2011-12-01 15:34:42Z jolf $
- * $HeadURL: https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk/bitrepository-reference-pillar/src/test/java/org/bitrepository/pillar/PutFileOnReferencePillarTest.java $
+ * $HeadURL: https://sbforge.org/svn/bitrepository/bitrepository-reference/trunk/bitrepository-reference-pillar/src
+ * /test/java/org/bitrepository/pillar/PutFileOnReferencePillarTest.java $
  * %%
  * Copyright (C) 2010 - 2011 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
@@ -24,6 +25,7 @@
  */
 package org.bitrepository.pillar.messagehandling;
 
+import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.pillar.MockedPillarTest;
@@ -32,12 +34,11 @@ import org.bitrepository.pillar.messagehandler.PillarMessageHandler;
 import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.service.exception.RequestHandlerException;
-import org.bitrepository.pillar.integration.SuiteInfoParameterResolver;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
@@ -75,7 +76,9 @@ public class GeneralMessageHandlingTest extends MockedPillarTest {
     @Tag("regressiontest")
     @Tag("pillartest")
     public void testPillarMessageHandlerValidateFileIDFormatDefaultFileId() throws Exception {
-        addDescription("Test the validation of file id formats of the PillarMessageHandler super-class on the default file id");
+        addDescription(
+                "Test the validation of file id formats of the PillarMessageHandler super-class on the default file " +
+                        "id");
         requestHandler.validateFileIDFormat(defaultFileId);
     }
 
@@ -83,7 +86,9 @@ public class GeneralMessageHandlingTest extends MockedPillarTest {
     @Tag("regressiontest")
     @Tag("pillartest")
     public void testPillarMessageHandlerValidateFileIDFormatFolderFileId() throws Exception {
-        addDescription("Test the validation of file id formats of the PillarMessageHandler super-class on a file id with directory path");
+        addDescription(
+                "Test the validation of file id formats of the PillarMessageHandler super-class on a file id with " +
+                        "directory path");
         requestHandler.validateFileIDFormat("path/" + defaultFileId);
     }
 
@@ -114,8 +119,9 @@ public class GeneralMessageHandlingTest extends MockedPillarTest {
     @Tag("pillartest")
     public void testPillarMessageHandlerValidateFileIDFormatSubFolderToParentFolderFileId() throws Exception {
         assertThrows(RequestHandlerException.class, () -> {
-            addDescription("Test the validation of file id formats of the PillarMessageHandler super-class on a file id " +
-                    "containing path to a parent directory, but starting with a sub-folder");
+            addDescription(
+                    "Test the validation of file id formats of the PillarMessageHandler super-class on a file id " +
+                            "containing path to a parent directory, but starting with a sub-folder");
             requestHandler.validateFileIDFormat("OTHER_COLLECTION/../../folderDir/test.txt");
         });
     }
@@ -125,8 +131,9 @@ public class GeneralMessageHandlingTest extends MockedPillarTest {
     @Tag("pillartest")
     public void testPillarMessageHandlerValidateFileIDFormatEnvHomePathFileId() throws Exception {
         assertThrows(RequestHandlerException.class, () -> {
-            addDescription("Test the validation of file id formats of the PillarMessageHandler super-class on a file id " +
-                    "containing path relative paths from the environment variable home folder");
+            addDescription(
+                    "Test the validation of file id formats of the PillarMessageHandler super-class on a file id " +
+                            "containing path relative paths from the environment variable home folder");
             requestHandler.validateFileIDFormat("$HOME/bin/execute.sh");
         });
     }
@@ -136,8 +143,9 @@ public class GeneralMessageHandlingTest extends MockedPillarTest {
     @Tag("pillartest")
     public void testPillarMessageHandlerValidateFileIDFormatTildeHomePathFileId() throws Exception {
         assertThrows(RequestHandlerException.class, () -> {
-            addDescription("Test the validation of file id formats of the PillarMessageHandler super-class on a file id " +
-                    "containing path relative paths from the tilde home folder");
+            addDescription(
+                    "Test the validation of file id formats of the PillarMessageHandler super-class on a file id " +
+                            "containing path relative paths from the tilde home folder");
             requestHandler.validateFileIDFormat("~/bin/execute.sh");
         });
     }
@@ -147,8 +155,9 @@ public class GeneralMessageHandlingTest extends MockedPillarTest {
     @Tag("pillartest")
     public void testPillarMessageHandlerValidateFileIDFormatTooLong() throws Exception {
         assertThrows(RequestHandlerException.class, () -> {
-            addDescription("Test the validation of file id formats of the PillarMessageHandler super-class on a file id " +
-                    "which has more characters than required");
+            addDescription(
+                    "Test the validation of file id formats of the PillarMessageHandler super-class on a file id " +
+                            "which has more characters than required");
             String fileId = "";
             for (int i = 0; i < 300; i++) {
                 fileId += Integer.toString(i);
