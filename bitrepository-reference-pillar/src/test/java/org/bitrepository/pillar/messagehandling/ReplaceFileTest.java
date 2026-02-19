@@ -44,9 +44,15 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.testng.annotations.Test;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertNull;
 
 /**
  * Tests the ReplaceFile functionality on the ReferencePillar.
@@ -363,16 +369,14 @@ public class ReplaceFileTest extends MockedPillarTest {
                 e.printStackTrace();
             }
             return res;
-        }).when(model).getChecksumDataForFile(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(),
-                ArgumentMatchers.eq(otherCsSpec));
-        Mockito.doAnswer(invocation -> {
+        }).when(model).getChecksumDataForFile(anyString(), anyString(), eq(otherCsSpec));
+        doAnswer(invocation -> {
             ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
             res.setChecksumSpec(csSpec);
             res.setCalculationTimestamp(CalendarUtils.getNow());
             res.setChecksumValue(Base16Utils.encodeBase16(DEFAULT_MD5_CHECKSUM));
             return res;
-        }).when(model).getChecksumDataForFile(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(),
-                ArgumentMatchers.eq(csSpec));
+        }).when(model).getChecksumDataForFile(anyString(), anyString(), eq(csSpec));
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");

@@ -21,7 +21,6 @@
  */
 package org.bitrepository.common.utils;
 
-import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;

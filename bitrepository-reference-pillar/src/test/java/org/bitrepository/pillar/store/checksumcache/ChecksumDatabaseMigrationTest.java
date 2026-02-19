@@ -25,6 +25,7 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumDBMigrator;
+import org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
@@ -101,7 +102,7 @@ public class ChecksumDatabaseMigrationTest {
         Assertions.assertEquals(1, versionBefore, "Table version before migration");
 
         addStep("Ingest a entry to the database without the collection id", "works only in version 1.");
-        String insertSql = "INSERT INTO " + CHECKSUM_TABLE + " ( " + CS_FILE_ID + " , " + CS_CHECKSUM + " , " + CS_DATE
+        String insertSql = "INSERT INTO " + DatabaseConstants.CHECKSUM_TABLE + " ( " + DatabaseConstants.CS_FILE_ID + " , " + DatabaseConstants.CS_CHECKSUM + " , " + DatabaseConstants.CS_DATE
                 + " ) VALUES ( ? , ? , ? )";
         DatabaseUtils.executeStatement(connector, insertSql, FILE_ID, CHECKSUM, new Date());
 
@@ -112,8 +113,8 @@ public class ChecksumDatabaseMigrationTest {
         Assertions.assertEquals(4, versionAfter, "Table version after migration");
 
         addStep("Validate the entry", "The collection id has been set to the default collection id");
-        String retrieveCollectionIdSql = "SELECT " + CS_COLLECTION_ID + " FROM " + CHECKSUM_TABLE + " WHERE "
-                + CS_FILE_ID + " = ?";
+        String retrieveCollectionIdSql = "SELECT " + DatabaseConstants.CS_COLLECTION_ID + " FROM " + DatabaseConstants.CHECKSUM_TABLE + " WHERE "
+                + DatabaseConstants.CS_FILE_ID + " = ?";
         String collectionID = DatabaseUtils.selectStringValue(connector, retrieveCollectionIdSql, FILE_ID);
         Assertions.assertEquals(settings.getCollections().get(0).getID(), collectionID);
     }
@@ -141,8 +142,8 @@ public class ChecksumDatabaseMigrationTest {
         Assertions.assertEquals(3, versionBefore, "Table version before migration");
 
         addStep("Ingest a entry to the database with a date for the calculationdate", "works in version 3.");
-        String insertSql = "INSERT INTO " + CHECKSUM_TABLE + " ( " + CS_FILE_ID + " , " + CS_CHECKSUM + " , " + CS_DATE
-                + " , " + CS_COLLECTION_ID + " ) VALUES ( ? , ? , ? , ? )";
+        String insertSql = "INSERT INTO " + DatabaseConstants.CHECKSUM_TABLE + " ( " + DatabaseConstants.CS_FILE_ID + " , " + DatabaseConstants.CS_CHECKSUM + " , " + DatabaseConstants.CS_DATE
+                + " , " + DatabaseConstants.CS_COLLECTION_ID + " ) VALUES ( ? , ? , ? , ? )";
         DatabaseUtils.executeStatement(connector, insertSql, FILE_ID, CHECKSUM, testDate, settings.getCollections().get(0).getID());
 
         addStep("Perform migration", "Checksums table has version 4");
@@ -152,8 +153,8 @@ public class ChecksumDatabaseMigrationTest {
         Assertions.assertEquals(4, versionAfter, "Table version after migration");
 
         addStep("Validate the migration", "The timestamp is now the millis from epoch");
-        String retrieveCollectionIdSql = "SELECT " + CS_DATE + " FROM " + CHECKSUM_TABLE + " WHERE "
-                + CS_FILE_ID + " = ?";
+        String retrieveCollectionIdSql = "SELECT " + DatabaseConstants.CS_DATE + " FROM " + DatabaseConstants.CHECKSUM_TABLE + " WHERE "
+                + DatabaseConstants.CS_FILE_ID + " = ?";
         Long extractedDate = DatabaseUtils.selectFirstLongValue(connector, retrieveCollectionIdSql, FILE_ID);
 
         Date testDateAtTimeZone = new Date(testDate.getTime()

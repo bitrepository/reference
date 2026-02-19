@@ -35,7 +35,7 @@ import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
+class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
     protected GetFileMessageFactory msgFactory;
 
     @BeforeEach

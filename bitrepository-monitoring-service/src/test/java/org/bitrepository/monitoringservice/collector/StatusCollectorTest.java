@@ -41,10 +41,10 @@ import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class StatusCollectorTest {
     Settings settings;
-    
+
     private final int INTERVAL = 500;
     private final int INTERVAL_DELAY = 250;
-    
+
     @BeforeAll
     public void setup() {
         settings = TestSettingsProvider.reloadSettings("StatusCollectorUnderTest");
@@ -55,7 +55,7 @@ public class StatusCollectorTest {
     public void testStatusCollector() throws Exception {
         addDescription("Tests the status collector.");
         addStep("Setup", "");
-        
+
         MockAlerter alerter = new MockAlerter();
         MockStatusStore store = new MockStatusStore();
         MockGetStatusClient client = new MockGetStatusClient();
@@ -69,10 +69,10 @@ public class StatusCollectorTest {
         Assertions.assertEquals(0, client.getCallsToGetStatus());
         Assertions.assertEquals(0, client.getCallsToShutdown());
         StatusCollector collector = new StatusCollector(client, settings, store, alerter);
-        
+
         addStep("Start the collector", "It should immediately call the client and store.");
         collector.start();
-        synchronized(this) {
+        synchronized (this) {
             wait(INTERVAL_DELAY);
         }
         Assertions.assertEquals(0, store.getCallsForGetStatusMap());
@@ -81,23 +81,23 @@ public class StatusCollectorTest {
         Assertions.assertEquals(1, client.getCallsToGetStatus());
         Assertions.assertEquals(0, client.getCallsToShutdown());
 
-        addStep("wait 2 * the interval", "It should call the client and store two times more.");        
-        synchronized(this) {
+        addStep("wait 2 * the interval", "It should call the client and store two times more.");
+        synchronized (this) {
             wait(2L * INTERVAL);
         }
         collector.stop();
-        
+
         Assertions.assertEquals(0, store.getCallsForGetStatusMap());
         Assertions.assertEquals(3, store.getCallsForUpdateReplayCounts());
         Assertions.assertEquals(0, store.getCallsForUpdateStatus());
         Assertions.assertEquals(3, client.getCallsToGetStatus());
         Assertions.assertEquals(0, client.getCallsToShutdown());
-        
-        addStep("wait the interval + delay again", "It should not have made any more calls");        
-        synchronized(this) {
+
+        addStep("wait the interval + delay again", "It should not have made any more calls");
+        synchronized (this) {
             wait(INTERVAL + INTERVAL_DELAY);
         }
-        
+
         Assertions.assertEquals(0, store.getCallsForGetStatusMap());
         Assertions.assertEquals(3, store.getCallsForUpdateReplayCounts());
         Assertions.assertEquals(0, store.getCallsForUpdateStatus());

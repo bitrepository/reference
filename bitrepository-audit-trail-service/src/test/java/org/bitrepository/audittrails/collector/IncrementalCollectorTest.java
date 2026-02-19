@@ -295,8 +295,9 @@ public class IncrementalCollectorTest{
         
         AlarmDispatcher alarmDispatcher = mock(AlarmDispatcher.class);
 
-        addStep("Start a collection with two contributors", "A call should be made to the store to find out which " +
-            "sequence number to continue from");
+        addStep("Start a collection with two contributors",
+                "A call should be made to the store to find out which " +
+                        "sequence number to continue from");
         IncrementalCollector collector = new IncrementalCollector(TEST_COLLECTION, "Client1", client, store,
                 1, alarmDispatcher);
         Collection<String> contributors = Arrays.asList(TEST_CONTRIBUTOR1, TEST_CONTRIBUTOR2);
@@ -332,10 +333,10 @@ public class IncrementalCollectorTest{
         rats.setAuditTrailEvents(ates);
         return rats;
     }
-    
-    private AuditTrailEvent createSingleEvent(XMLGregorianCalendar datetime, FileAction action, String actor, 
-            String auditInfo, String fileID, String info, String component, BigInteger seqNumber, String operationID,
-            String fingerprint) {
+
+    private AuditTrailEvent createSingleEvent(XMLGregorianCalendar datetime, FileAction action, String actor,
+                                              String auditInfo, String fileID, String info, String component, BigInteger seqNumber, String operationID,
+                                              String fingerprint) {
         AuditTrailEvent res = new AuditTrailEvent();
         res.setActionDateTime(datetime);
         res.setActionOnFile(action);

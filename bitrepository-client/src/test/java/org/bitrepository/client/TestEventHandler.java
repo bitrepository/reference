@@ -35,7 +35,10 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 
-/** Used to listen for operation event and store them for later retrieval by a test. */
+
+/**
+ * Used to listen for operation event and store them for later retrieval by a test.
+ */
 public class TestEventHandler implements EventHandler {
 
     /** The <code>TestEventManager</code> used to manage the event for the associated test. */
@@ -43,7 +46,9 @@ public class TestEventHandler implements EventHandler {
     /** The queue used to store the received operation events. */
     private final BlockingQueue<OperationEvent> eventQueue = new LinkedBlockingQueue<>();
 
-    /** The default time to wait for events */
+    /**
+     * The default time to wait for events
+     */
     private static final long DEFAULT_WAIT_SECONDS = 3;
 
     /** The constructor.
@@ -62,7 +67,8 @@ public class TestEventHandler implements EventHandler {
 
     /**
      * Wait for an event for the DEFAULT_WAIT_SECONDS amount of time.
-     * @return The next event if any, else null 
+     *
+     * @return The next event if any, else null
      */
     public OperationEvent waitForEvent() throws InterruptedException {
         return waitForEvent(DEFAULT_WAIT_SECONDS, TimeUnit.SECONDS);

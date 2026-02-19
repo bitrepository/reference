@@ -21,7 +21,6 @@ package org.bitrepository.client;
  * #L%
  */
 
-import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.eventhandler.OperationEvent;

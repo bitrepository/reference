@@ -48,7 +48,11 @@ import org.slf4j.LoggerFactory;
 import javax.jms.JMSException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
+import org.bitrepository.protocol.utils.TestWatcherExtension;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.TestWatcher;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class IntegrationTest {

@@ -24,16 +24,8 @@ package org.bitrepository.integrityservice.workflow.step;
 import org.apache.commons.codec.DecoderException;
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
-import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumType;
-import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositoryelements.ResultingChecksums;
-import org.bitrepository.client.eventhandler.CompleteEvent;
-import org.bitrepository.client.eventhandler.ContributorFailedEvent;
-import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.client.eventhandler.IdentificationCompleteEvent;
-import org.bitrepository.client.eventhandler.OperationFailedEvent;
+import org.bitrepository.bitrepositoryelements.*;
+import org.bitrepository.client.eventhandler.*;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.SettingsUtils;
@@ -332,8 +324,8 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         step.performStep();
 
         ContributorQuery[] expectedContributorQueries =
-                makeFullQueries(settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID(),
-                        model);
+                makeFullQueries(settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()
+                );
 
         verify(collector).getChecksums(eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class),
                 any(), anyString(), eq(expectedContributorQueries), any(EventHandler.class));
@@ -370,7 +362,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         verifyNoMoreInteractions(alerter);
     }
 
-    private ContributorQuery[] makeFullQueries(List<String> pillars, IntegrityModel store) {
+    private ContributorQuery[] makeFullQueries(List<String> pillars) {
         List<ContributorQuery> res = new ArrayList<>();
         for (String pillar : pillars) {
             Date latestChecksumDate = new Date(0);

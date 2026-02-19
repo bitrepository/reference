@@ -73,8 +73,8 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
     public void verifyGetFileIDsClientFromFactory() throws Exception {
         Assertions.assertInstanceOf(ConversationBasedGetFileIDsClient.class,
                 AccessComponentFactory.getInstance().createGetFileIDsClient(settingsForCUT, securityManager,
-                settingsForTestClient.getComponentID()), "The default GetFileClient from the Access factory should be" +
-                        " of the type '" +
+                        settingsForTestClient.getComponentID()),
+                "The default GetFileClient from the Access factory should be of the type '" +
                 ConversationBasedGetFileIDsClient.class.getName() + "'.");
     }
 
@@ -115,7 +115,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
                         + "message to the pillar");
         IdentifyPillarsForGetFileIDsResponse identifyResponse =
                 messageFactory.createIdentifyPillarsForGetFileIDsResponse(
-                receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
+                        receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
         messageBus.sendMessage(identifyResponse);
         Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_IDENTIFIED, testEventHandler.waitForEvent().getEventType());
 
@@ -192,7 +192,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
 
         IdentifyPillarsForGetFileIDsResponse identifyResponse =
                 messageFactory.createIdentifyPillarsForGetFileIDsResponse(
-                receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
+                        receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
         messageBus.sendMessage(identifyResponse);
         GetFileIDsRequest receivedGetFileIDsRequest = pillar1Receiver.waitForMessage(GetFileIDsRequest.class);
 
@@ -279,7 +279,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         GetFileIDsRequest receivedGetFileIDsRequest = null;
         IdentifyPillarsForGetFileIDsResponse identifyResponse =
                 messageFactory.createIdentifyPillarsForGetFileIDsResponse(
-                receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
+                        receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
         messageBus.sendMessage(identifyResponse);
         receivedGetFileIDsRequest = pillar1Receiver.waitForMessage(GetFileIDsRequest.class);
 

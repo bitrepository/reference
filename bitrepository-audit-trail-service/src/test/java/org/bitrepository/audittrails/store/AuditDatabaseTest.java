@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -67,10 +67,10 @@ public class AuditDatabaseTest {
 
         AuditTrailDatabaseCreator auditTrailDatabaseCreator = new AuditTrailDatabaseCreator();
         auditTrailDatabaseCreator.createAuditTrailDatabase(settings, null);
-        
+
         collectionID = settings.getCollections().get(0).getID();
     }
-    
+
     @Test
     @Tag("regressiontest")
     @Tag("databasetest")
@@ -79,7 +79,7 @@ public class AuditDatabaseTest {
                 + "extracting the data from it.");
         addStep("Setup the variables and constants.", "Should be ok.");
         Date restrictionDate = new Date(123456789); // Sometime between epoch and now!
-        
+
         addStep("Adds the variables to the settings and instantaites the database cache", "Should be connected.");
         DatabaseManager dm = new AuditTrailDatabaseManager(
                 settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase());
@@ -89,7 +89,7 @@ public class AuditDatabaseTest {
         Assertions.assertEquals(0, database.largestSequenceNumber(pillarID, collectionID));
         database.addAuditTrails(createEvents(), collectionID, pillarID);
         Assertions.assertEquals(10, database.largestSequenceNumber(pillarID, collectionID));
-        
+
         addStep("Extract the audit trails", "");
         List<AuditTrailEvent> res =
                 getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null, null,
@@ -434,6 +434,8 @@ public class AuditDatabaseTest {
 
         database.addAuditTrails(events, collectionID, pillarID);
 
+        
+        
     }
 
     private AuditTrailEvents createEvents() {

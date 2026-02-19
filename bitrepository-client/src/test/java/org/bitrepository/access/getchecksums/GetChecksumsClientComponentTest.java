@@ -305,7 +305,8 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
     @Test
     @Tag("regressiontest")
     public void testPaging() throws Exception {
-        addDescription("Tests the GetChecksums client correctly handles functionality for limiting results, either by " +
+        addDescription("Tests the GetChecksums client correctly handles functionality for limiting results, either by" +
+                " " +
                 "timestamp or result count.");
 
         GetChecksumsClient getChecksumsClient = createGetChecksumsClient();
@@ -323,7 +324,8 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
                 IdentifyPillarsForGetChecksumsRequest.class);
 
         addStep("Send a IdentifyPillarsForGetChecksumsResponse from both pillars.",
-                "A GetChecksumsRequest should be sent to both pillars with the appropriate MinTimestamp, MaxTimestamp, " +
+                "A GetChecksumsRequest should be sent to both pillars with the appropriate MinTimestamp, " +
+                        "MaxTimestamp, " +
                         "MaxNumberOfResults values.");
         messageBus.sendMessage(messageFactory.createIdentifyPillarsForGetChecksumsResponse(
                 receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId));

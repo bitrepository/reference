@@ -57,7 +57,7 @@ public class IntegrityInformationCollectorTest {
 
     public final static String collectionID = "dummy-collection";
     public final static String fileId = "FILE_ID";
-    
+
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
@@ -73,19 +73,19 @@ public class IntegrityInformationCollectorTest {
         IntegrityInformationCollector collector =
                 new DelegatingIntegrityInformationCollector(getFileIDsClient, null, null, null);
         EventHandler eventHandler = mock(EventHandler.class);
-        
+
         addStep("Call the getFileIDs on the collector.", "Should go directly to the GetFileIDsClient");
         collector.getFileIDs(collectionID, List.of(pillarID), auditTrailInformation, contributorQueries, eventHandler);
         verify(getFileIDsClient).getFileIDs(eq(collectionID), any(), any(), any(), any(EventHandler.class));
 
-        addStep("Call the getFileIDs on the collector four times more.", 
+        addStep("Call the getFileIDs on the collector four times more.",
                 "The GetFileIDsClient should have been called 5 times.");
         collector.getFileIDs(collectionID, List.of(pillarID), auditTrailInformation, contributorQueries, null);
         collector.getFileIDs(collectionID, List.of(pillarID), auditTrailInformation, contributorQueries, null);
         collector.getFileIDs(collectionID, List.of(pillarID), auditTrailInformation, contributorQueries, null);
         collector.getFileIDs(collectionID, List.of(pillarID), auditTrailInformation, contributorQueries, null);
         verify(getFileIDsClient, times(5)).getFileIDs(eq(collectionID), any(), any(), any(), any());
-        
+
         verifyNoMoreInteractions(getFileIDsClient);
         verifyNoMoreInteractions(eventHandler);
     }

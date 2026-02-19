@@ -48,8 +48,9 @@ public class GetFileIDsQueryTest extends PillarFunctionTest {
         addFixture("Ensure at least two files are present on the pillar");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
-        addStep("Retrieve a list of all file ids.", "Run through the list and verify each element is older or the " +
-                "same age as the following element");
+        addStep("Retrieve a list of all file ids.",
+                "Run through the list and verify each element is older or the " +
+                        "same age as the following element");
         List<FileIDsDataItem> originalFileIDsList = pillarFileManager.getFileIDs(null);
         Assertions.assertTrue(originalFileIDsList.size() >= 2,
                 "Must initially have at least two file ids, but had: " + originalFileIDsList.size());
@@ -66,7 +67,8 @@ public class GetFileIDsQueryTest extends PillarFunctionTest {
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
     public void maxNumberOfResultTest() {
-        addDescription("Verifies the size of the result set can be limited by setting the maxNumberOfResult parameter.");
+        addDescription("Verifies the size of the result set can be limited by setting the maxNumberOfResult parameter" +
+                ".");
         addFixture("Ensure at least two files are present on the pillar");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 

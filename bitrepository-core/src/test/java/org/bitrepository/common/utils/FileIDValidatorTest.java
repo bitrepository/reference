@@ -52,7 +52,7 @@ public class FileIDValidatorTest {
         FileIDValidator validator = new FileIDValidator(settings);
         String validFileID = "abcdefghijklmnopqrstuvwxyz";
         String invalidCharacters = "¾§?+±|´~$½¥½{¥[]{[¡@£";
-        String tooLong = validFileID + validFileID + validFileID + validFileID + validFileID + validFileID 
+        String tooLong = validFileID + validFileID + validFileID + validFileID + validFileID + validFileID
                 + validFileID + validFileID + validFileID + validFileID + validFileID + validFileID;
         String tooShort = "";
 
@@ -82,13 +82,13 @@ public class FileIDValidatorTest {
         FileIDValidator validator = new FileIDValidator(settings);
         String validFileID = "abcdefghijklmnopqrstuvwxyz";
         String invalidCharacters = "¾§?+±|´~$½¥½{¥[]{[¡@£";
-        String tooLong = validFileID + validFileID + validFileID + validFileID + validFileID + validFileID 
+        String tooLong = validFileID + validFileID + validFileID + validFileID + validFileID + validFileID
                 + validFileID + validFileID + validFileID + validFileID + validFileID + validFileID;
         String tooShort = "";
-        
+
         addStep("Test a null as argument", "The null should be ignored.");
         Assertions.assertNull(validator.validateFileID(null));
-        
+
         addStep("Test a valid fileID", "Should be valid");
         Assertions.assertNull(validator.validateFileID(validFileID));
 
@@ -98,12 +98,12 @@ public class FileIDValidatorTest {
         addStep("Test invalid length", "Should be invalid");
         Assertions.assertNotNull(validator.validateFileID(tooLong),
                 "Should fail with invalid length here -> too long");
-        
+
         addStep("Test too short", "Should be invalid");
         Assertions.assertNotNull(validator.validateFileID(tooShort),
-            "Should fail with invalid length here -> too short");
+                "Should fail with invalid length here -> too short");
     }
-    
+
     @Test
     @Tag("regressiontest")
     public void badRegexTest() throws Exception {
@@ -121,11 +121,11 @@ public class FileIDValidatorTest {
         Assertions.assertNull(validator.getRegex());
     }
     private class TestFileIDValidator extends FileIDValidator {
-        
+
         public TestFileIDValidator(Settings settings) {
             super(settings);
         }
-        
+
         public String getRegex() {
             return regex;
         }

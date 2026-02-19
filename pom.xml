@@ -166,7 +166,7 @@
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-core</artifactId>
       <version>1.5.22</version>
-    </dependency>
+        </dependency>
 
         <!-- Updating org.jvnet jaxb2 dependencies to 0.12.0 causes problems for the jaxb2-maven-plugin
               when trying to use toString, hashCode etc.

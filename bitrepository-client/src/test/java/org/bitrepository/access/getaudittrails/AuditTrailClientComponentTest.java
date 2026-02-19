@@ -517,16 +517,14 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
     @Override
     protected MessageResponse createIdentifyResponse(
             MessageRequest identifyRequest, String from, String to) {
-        MessageResponse response = testMessageFactory.createIdentifyContributorsForGetAuditTrailsResponse(
+        return testMessageFactory.createIdentifyContributorsForGetAuditTrailsResponse(
                 (IdentifyContributorsForGetAuditTrailsRequest) identifyRequest, from, to);
-        return response;
     }
 
     @Override
     protected MessageResponse createFinalResponse(MessageRequest request, String from, String to) {
-        MessageResponse response = testMessageFactory.createGetAuditTrailsFinalResponse(
+        return testMessageFactory.createGetAuditTrailsFinalResponse(
                 (GetAuditTrailsRequest) request, from, to, null);
-        return response;
     }
 
     @Override

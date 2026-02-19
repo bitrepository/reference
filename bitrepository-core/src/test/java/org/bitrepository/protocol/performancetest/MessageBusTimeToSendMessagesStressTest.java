@@ -57,11 +57,17 @@ public class MessageBusTimeToSendMessagesStressTest {
     /** The time to wait when sending a message before it definitely should
      * have been consumed by a listener.*/
     static final int TIME_FOR_MESSAGE_TRANSFER_WAIT = 500;
-    /** The name of the queue to send the messages.*/
+    /**
+     * The name of the queue to send the messages.
+     */
     private static String QUEUE = "TEST-QUEUE";
-    /** The number of messages to send.*/
+    /**
+     * The number of messages to send.
+     */
     private static final int NUMBER_OF_MESSAGES = 1000;
-    /** The date for start sending the messages.*/
+    /**
+     * The date for start sending the messages.
+     */
     private static Date startSending;
     private Settings settings;
 
@@ -96,7 +102,7 @@ public class MessageBusTimeToSendMessagesStressTest {
 
             addStep("Sleep until the listeners have received all the messages.",
                     "Should be sleeping.");
-            while(!listener.isFinished()) {
+            while (!listener.isFinished()) {
                 synchronized (this) {
                     try {
                         wait(TIME_FOR_MESSAGE_TRANSFER_WAIT);
@@ -111,7 +117,7 @@ public class MessageBusTimeToSendMessagesStressTest {
                     + endDate + "'", "Should not be wrong.");
 
             int count = listener.getCount();
-            long timeFrame = (endDate.getTime() - startSending.getTime())/1000;
+            long timeFrame = (endDate.getTime() - startSending.getTime()) / 1000;
             System.out.println("Sent '" + count + "' messages in '" + timeFrame + "' seconds.");
         } finally {
             if (listener != null) {
@@ -170,7 +176,7 @@ public class MessageBusTimeToSendMessagesStressTest {
             addStep("Validating the count. Started at '" + startSending + "' and ended at '"
                     + listener.getStopSending() + "'", "Should not be wrong.");
             int count = listener.getCount();
-            long timeFrame = (listener.getStopSending().getTime() - startSending.getTime())/1000;
+            long timeFrame = (listener.getStopSending().getTime() - startSending.getTime()) / 1000;
             System.out.println("Sent '" + count + "' messages in '" + timeFrame + "' seconds.");
         } finally {
             if (listener != null) {
@@ -193,6 +199,7 @@ public class MessageBusTimeToSendMessagesStressTest {
 
     /**
      * Sends the wanted amount of messages.
+     *
      * @param conf The configuration for the messagebus, where the messages should be sent.
      */
     private void sendAllTheMessages(MessageBusConfiguration conf, SecurityManager securityManager) {
@@ -273,6 +280,7 @@ public class MessageBusTimeToSendMessagesStressTest {
 
         /**
          * Retrieval of the amount of messages caught by the listener.
+         *
          * @return The number of message received by this.
          */
         public int getCount() {

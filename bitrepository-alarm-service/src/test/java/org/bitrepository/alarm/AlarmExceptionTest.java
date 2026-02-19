@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
 
 public class AlarmExceptionTest {
-    
+
     @Test
     @Tag("regressiontest")
     public void alarmExceptionTest() throws Exception {

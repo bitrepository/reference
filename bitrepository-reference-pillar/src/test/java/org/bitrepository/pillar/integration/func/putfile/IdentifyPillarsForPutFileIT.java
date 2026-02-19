@@ -121,7 +121,8 @@ public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest
                 "the put operation for the pillars not yet containing the file. The client can easily " +
                 "implement idempotent behaviour based on this response.");
         addStep("Sending a putFile identification for a file already in the pillar.",
-                "The pillar under test should send a DUPLICATE_FILE_FAILURE response with the (default type) checksum " +
+                "The pillar under test should send a DUPLICATE_FILE_FAILURE response with the (default type) checksum" +
+                        " " +
                         "of the existing file.");
         IdentifyPillarsForPutFileRequest identifyRequest = msgFactory.createIdentifyPillarsForPutFileRequest(
                 defaultFileId, 0L);
