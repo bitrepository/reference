@@ -24,6 +24,7 @@
  */
 package org.bitrepository.modify.deletefile;
 
+import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.bitrepositoryelements.*;
 import org.bitrepository.bitrepositorymessages.*;
 import org.bitrepository.client.DefaultFixtureClientTest;
@@ -37,10 +38,15 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import javax.xml.datatype.DatatypeFactory;
 import java.nio.charset.StandardCharsets;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+
+@ExtendWith(SuiteInfoParameterResolver.class)
 public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
     private TestDeleteFileMessageFactory messageFactory;
     private DatatypeFactory datatypeFactory;
@@ -74,7 +80,11 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
                 .clear();
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()
                 .add(PILLAR1_ID);
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()
+                .clear();
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()
+                .add(PILLAR1_ID);
         DeleteFileClient deleteClient = createDeleteFileClient();
 
         String checksum = "123checksum321";
@@ -164,7 +174,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
     public void fileAlreadyDeletedFromPillar() throws Exception {
         addDescription("Test that a delete on a pillar completes successfully when the file is missing " +
                 "(has already been deleted). This is a test of the Idempotent behaviour of the delete client");
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         DeleteFileClient deleteClient = createDeleteFileClient();
 
         addStep("Request a file to be deleted on pillar1.",
@@ -214,7 +224,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
                 .add(PILLAR1_ID);
         settingsForCUT.getRepositorySettings().getClientSettings()
                 .setIdentificationTimeoutDuration(datatypeFactory.newDuration(1000));
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         DeleteFileClient deleteClient = createDeleteFileClient();
 
         String checksum = "123checksum321";
@@ -257,7 +267,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
                 .add(PILLAR1_ID);
         settingsForCUT.getRepositorySettings().getClientSettings()
                 .setOperationTimeoutDuration(datatypeFactory.newDuration(100));
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         DeleteFileClient deleteClient = createDeleteFileClient();
 
         String checksum = "123checksum321";
@@ -317,7 +327,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
                 .clear();
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()
                 .add(PILLAR1_ID);
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         DeleteFileClient deleteClient = createDeleteFileClient();
 
         String checksum = "123checksum321";
@@ -379,7 +389,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
     @Tag("regressiontest")
     public void deleteClientSpecifiedPillarFailedDuringIdentification() throws Exception {
         addDescription("Tests the handling of a identification failure for a pillar for the DeleteClient. ");
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         DeleteFileClient deleteClient = createDeleteFileClient();
 
         addStep("Request a file to be deleted on the pillar1.",
@@ -409,7 +419,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
     @Tag("regressiontest")
     public void deleteClientOtherPillarFailedDuringIdentification() throws Exception {
         addDescription("Tests the handling of a identification failure for a pillar for the DeleteClient. ");
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         DeleteFileClient deleteClient = createDeleteFileClient();
 
         addStep("Request a file to be deleted on the pillar1.",
@@ -458,7 +468,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
     @Tag("regressiontest")
     public void deleteOnChecksumPillar() throws Exception {
         addDescription("Verify that the DeleteClient works correctly when a checksum pillar is present. ");
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         DeleteFileClient deleteClient = createDeleteFileClient();
 
         addStep("Request a file to be deleted on the pillar1.",
@@ -506,7 +516,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
     public void deleteOnChecksumPillarWithDefaultReturnChecksumType() throws Exception {
         addDescription("Verify that the DeleteClient works correctly when a return checksum of the default type" +
                 "is requested. ");
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         DeleteFileClient deleteClient = createDeleteFileClient();
 
         addStep("Request a file to be deleted on the pillar1. The call should include a request for a check sum of " +
@@ -549,7 +559,7 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
     public void deleteOnChecksumPillarWithSaltedReturnChecksumType() throws Exception {
         addDescription("Verify that the DeleteClient works correctly when a return checksum with a salt " +
                 "is requested. ");
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         DeleteFileClient deleteClient = createDeleteFileClient();
 
         addStep("Request a file to be deleted on the pillar1. The call should include a request for a salted check " +
@@ -596,7 +606,6 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
      */
     private DeleteFileClient createDeleteFileClient() {
         return new DeleteFileClientTestWrapper(new ConversationBasedDeleteFileClient(
-                messageBus, conversationMediator, settingsForCUT, settingsForTestClient.getComponentID()),
-                testEventManager);
+                messageBus, conversationMediator, settingsForCUT, settingsForTestClient.getComponentID()));
     }
 }

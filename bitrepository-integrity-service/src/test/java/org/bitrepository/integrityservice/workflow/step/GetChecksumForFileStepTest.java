@@ -42,6 +42,8 @@ import org.mockito.stubbing.Answer;
 import javax.xml.datatype.DatatypeConfigurationException;
 import java.util.Arrays;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 import static org.mockito.ArgumentMatchers.*;
 
 /**
