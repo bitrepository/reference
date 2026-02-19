@@ -36,8 +36,8 @@ import java.util.Arrays;
  * Wraps the <code>GetFileClient</code> adding test event logging and functionality for handling blocking calls.
  */
 public class GetChecksumsClientTestWrapper implements GetChecksumsClient {
-    private GetChecksumsClient getChecksumsClientInstance;
-    private TestEventManager testEventManager;
+    private final GetChecksumsClient getChecksumsClientInstance;
+    private final TestEventManager testEventManager;
 
     public GetChecksumsClientTestWrapper(GetChecksumsClient createGetChecksumsClient,
             TestEventManager testEventManager) {

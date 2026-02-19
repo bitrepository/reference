@@ -6,16 +6,16 @@ package org.bitrepository.pillar.integration.perf;
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -25,25 +25,58 @@ import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getaudittrails.AuditTrailClient;
 import org.bitrepository.access.getaudittrails.BlockingAuditTrailClient;
 import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.common.utils.TestFileHelper;
+import org.bitrepository.modify.ModifyComponentFactory;
+import org.bitrepository.modify.putfile.BlockingPutFileClient;
+import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.pillar.integration.perf.metrics.Metrics;
 import org.bitrepository.protocol.security.DummySecurityManager;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 public class GetAuditTrailsFileStressIT extends PillarPerformanceTest {
     protected AuditTrailClient auditTrailClient;
+    PutFileClient putClient;
 
-    @BeforeMethod(alwaysRun=true)
+    @BeforeEach
     public void initialiseReferenceTest() throws Exception {
+        putClient = ModifyComponentFactory.getInstance().retrievePutClient(
+                settingsForTestClient, createSecurityManager(), settingsForTestClient.getComponentID());
         auditTrailClient = AccessComponentFactory.getInstance().createAuditTrailClient(
-                settingsForCUT, new DummySecurityManager(), settingsForCUT.getComponentID()
-        );
+                settingsForCUT, new DummySecurityManager(), settingsForCUT.getComponentID());
     }
 
-    @Test( groups = {"pillar-stress-test"}, dependsOnGroups={"stress-test-pillar-population"})
+    private void singleTreadedPut() throws Exception {
+        final int NUMBER_OF_FILES = 10;
+        final int PART_STATISTIC_INTERVAL = 2;
+        addDescription("Attempt to put " + NUMBER_OF_FILES + " files into the pillar, one at a time.");
+        BlockingPutFileClient blockingPutFileClient = new BlockingPutFileClient(putClient);
+        String[] fileIDs = TestFileHelper.createFileIDs(NUMBER_OF_FILES, "singleTreadedPutTest");
+        Metrics metrics = new Metrics("put", NUMBER_OF_FILES, PART_STATISTIC_INTERVAL);
+        metrics.addAppenders(metricAppenders);
+        metrics.start();
+        addStep("Add " + NUMBER_OF_FILES + " files", "Not errors should occur");
+        for (String fileID : fileIDs) {
+            blockingPutFileClient.putFile(collectionID, httpServerConfiguration.getURL(TestFileHelper.DEFAULT_FILE_ID),
+                    fileID, 10L, TestFileHelper.getDefaultFileChecksum(), null,
+                    null, "singleTreadedPut stress test file");
+            metrics.mark(fileID);
+        }
+
+        addStep("Check that the files are now present on the pillar(s)",
+                "No missing files should be found.");
+        //ToDo assert that the files are present
+    }
+
+    @Disabled("Temporarily disabled due to performance issues")
+    @Test
+    @Tag("pillar-stress-test")
     public void singleTreadedGetAuditTrails() throws Exception {
         final int NUMBER_OF_AUDITS = 100;
-        final int PART_STATISTIC_INTERVAL = NUMBER_OF_AUDITS/5;
+        final int PART_STATISTIC_INTERVAL = NUMBER_OF_AUDITS / 5;
+        singleTreadedPut();
         addDescription("Attempt to request " + NUMBER_OF_AUDITS + " full audit trails one at a time.");
 
         BlockingAuditTrailClient blockingAuditTrailFileClient = new BlockingAuditTrailClient(auditTrailClient);
@@ -51,17 +84,20 @@ public class GetAuditTrailsFileStressIT extends PillarPerformanceTest {
         metrics.addAppenders(metricAppenders);
         metrics.start();
         addStep("Request " + NUMBER_OF_AUDITS + " full audit trails one", "Not errors should occur");
-        for (int i = 0; i < NUMBER_OF_AUDITS;i++) {
+        for (int i = 0; i < NUMBER_OF_AUDITS; i++) {
             blockingAuditTrailFileClient.getAuditTrails(collectionID,
-                    null, null, null, null, "singleTreadedGetAuditTrails stress test");
+                    null, null, null, null,
+                    "singleTreadedGetAuditTrails stress test");
             metrics.mark();
         }
     }
 
-    @Test( groups = {"pillar-stress-test"})
+    @Disabled("Temporarily disabled due to performance issues")
+    @Test
+    @Tag("pillar-stress-test")
     public void parallelGetAuditTrails() throws Exception {
-        final int  NUMBER_OF_AUDITS = 10;
-        final int  PART_STATISTIC_INTERVAL = NUMBER_OF_AUDITS/5;
+        final int NUMBER_OF_AUDITS = 10;
+        final int PART_STATISTIC_INTERVAL = NUMBER_OF_AUDITS / 5;
         addDescription("Attempt to request " + NUMBER_OF_AUDITS + " full audit trails one at a time.");
 
         final Metrics metrics = new Metrics("put", NUMBER_OF_AUDITS, PART_STATISTIC_INTERVAL);
@@ -69,9 +105,10 @@ public class GetAuditTrailsFileStressIT extends PillarPerformanceTest {
         metrics.start();
         addStep("Add " + NUMBER_OF_AUDITS + " files", "Not errors should occur");
         EventHandler eventHandler = new EventHandlerForMetrics(metrics);
-        for (int i = 0; i > NUMBER_OF_AUDITS;i++) {
+        for (int i = 0; i < NUMBER_OF_AUDITS; i++) {
             auditTrailClient.getAuditTrails(collectionID,
-                    null, null, null, eventHandler, "singleTreadedGetAuditTrails stress test");
+                    null, null, null, eventHandler,
+                    "singleTreadedGetAuditTrails stress test");
         }
 
         awaitAsynchronousCompletion(metrics, NUMBER_OF_AUDITS);

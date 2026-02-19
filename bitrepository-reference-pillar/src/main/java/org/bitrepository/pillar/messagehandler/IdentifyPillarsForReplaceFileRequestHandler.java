@@ -65,12 +65,16 @@ public class IdentifyPillarsForReplaceFileRequestHandler extends IdentifyRequest
     }
 
     @Override
-    protected void validateRequest(IdentifyPillarsForReplaceFileRequest request, MessageContext messageContext)
+    protected boolean validateRequest(IdentifyPillarsForReplaceFileRequest request, MessageContext messageContext)
             throws RequestHandlerException {
         validateCollectionID(request);
+        if (!this.context.getPillarCollections().contains(request.getCollectionID())) {
+            return false;
+        }
         validateFileIDFormat(request.getFileID());
         checkThatRequestedFileIsAvailable(request);
         checkSpaceForStoringNewFile(request);
+        return true;
     }
 
     @Override

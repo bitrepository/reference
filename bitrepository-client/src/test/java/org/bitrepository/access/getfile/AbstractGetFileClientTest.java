@@ -40,7 +40,8 @@
 package org.bitrepository.access.getfile;
 
 import org.bitrepository.client.DefaultFixtureClientTest;
-import org.testng.annotations.BeforeMethod;
+import org.junit.jupiter.api.BeforeEach;
+
 
 /**
  * Runs the DefaultFixtureClient test using a TestGetFileMessageFactory as the message factory.
@@ -49,7 +50,7 @@ import org.testng.annotations.BeforeMethod;
 public abstract class AbstractGetFileClientTest extends DefaultFixtureClientTest {
     protected TestGetFileMessageFactory messageFactory;
 
-    @BeforeMethod(alwaysRun = true)
+    @BeforeEach
     public void beforeMethodSetup() throws Exception {
         messageFactory = new TestGetFileMessageFactory(settingsForTestClient.getComponentID());
     }

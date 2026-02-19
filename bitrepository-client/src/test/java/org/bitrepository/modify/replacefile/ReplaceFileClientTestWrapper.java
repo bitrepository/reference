@@ -36,9 +36,9 @@ import java.net.URL;
  */
 public class ReplaceFileClientTestWrapper implements ReplaceFileClient {
     /** The PutClient to wrap. */
-    private ReplaceFileClient wrappedReplaceClient;
+    private final ReplaceFileClient wrappedReplaceClient;
     /** The manager to monitor the operations.*/
-    private TestEventManager testEventManager;
+    private final TestEventManager testEventManager;
 
     /**
      * @param putClientInstance The instance to wrap and monitor.

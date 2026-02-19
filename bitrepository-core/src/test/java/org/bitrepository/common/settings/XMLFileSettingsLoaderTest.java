@@ -26,17 +26,19 @@ package org.bitrepository.common.settings;
 
 import org.bitrepository.settings.repositorysettings.RepositorySettings;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 public class XMLFileSettingsLoaderTest extends ExtendedTestCase{
     private static final String PATH_TO_SETTINGS = "settings/xml/bitrepository-devel";
     
-    @Test(groups = { "regressiontest" })
+    @Test
+    @Tag("regressiontest")
     public void testCollectionSettingsLoading() throws Exception {
         SettingsLoader settingsLoader = new XMLFileSettingsLoader(PATH_TO_SETTINGS);
         
         RepositorySettings repositorySettings = settingsLoader.loadSettings(RepositorySettings.class);
-        Assert.assertNotNull(repositorySettings, "RepositorySettings");
+        Assertions.assertNotNull(repositorySettings, "RepositorySettings");
     }
 }

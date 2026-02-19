@@ -6,12 +6,12 @@ import org.bitrepository.protocol.http.HttpFileExchange;
 import org.bitrepository.protocol.http.HttpsFileExchange;
 import org.bitrepository.settings.referencesettings.FileExchangeSettings;
 import org.bitrepository.settings.referencesettings.ProtocolType;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import static org.testng.Assert.assertEquals;
 
 public class FileExchangeResolverTest {
     @Test
@@ -19,7 +19,7 @@ public class FileExchangeResolverTest {
         FileExchangeSettings settings = new FileExchangeSettings();
         settings.setProtocolType(ProtocolType.FILE);
         FileExchange exchange = FileExchangeResolver.getFileExchange(settings);
-        assertEquals(exchange.getClass(), LocalFileExchange.class);
+        Assertions.assertEquals(LocalFileExchange.class, exchange.getClass());
     }
 
     @Test
@@ -27,7 +27,7 @@ public class FileExchangeResolverTest {
         FileExchangeSettings settings = new FileExchangeSettings();
         settings.setProtocolType(ProtocolType.HTTP);
         FileExchange exchange = FileExchangeResolver.getFileExchange(settings);
-        assertEquals(exchange.getClass(), HttpFileExchange.class);
+        Assertions.assertEquals(HttpFileExchange.class, exchange.getClass());
     }
 
     @Test
@@ -35,33 +35,35 @@ public class FileExchangeResolverTest {
         FileExchangeSettings settings = new FileExchangeSettings();
         settings.setProtocolType(ProtocolType.HTTPS);
         FileExchange exchange = FileExchangeResolver.getFileExchange(settings);
-        assertEquals(exchange.getClass(), HttpsFileExchange.class);
+        Assertions.assertEquals(HttpsFileExchange.class, exchange.getClass());
     }
 
     @Test
     public void resolveFileProtocolURL() throws MalformedURLException {
         URL url = new URL("file:///home/user/Desktop/my-cool-file.txt");
         FileExchange exchange = FileExchangeResolver.getBasicFileExchangeFromURL(url);
-        assertEquals(exchange.getClass(), LocalFileExchange.class);
+        Assertions.assertEquals(LocalFileExchange.class, exchange.getClass());
     }
 
     @Test
     public void resolveHttpProtocolURL() throws MalformedURLException {
         URL url = new URL("http://localhost:80/myfile.txt");
         FileExchange exchange = FileExchangeResolver.getBasicFileExchangeFromURL(url);
-        assertEquals(exchange.getClass(), HttpFileExchange.class);
+        Assertions.assertEquals(HttpFileExchange.class, exchange.getClass());
     }
 
     @Test
     public void resolveHttpsProtocolURL() throws MalformedURLException {
         URL url = new URL("https://localhost:443/myfile.txt");
         FileExchange exchange = FileExchangeResolver.getBasicFileExchangeFromURL(url);
-        assertEquals(exchange.getClass(), HttpsFileExchange.class);
+        Assertions.assertEquals(HttpsFileExchange.class, exchange.getClass());
     }
 
-    @Test(expectedExceptions = {IllegalArgumentException.class})
+    @Test
     public void resolveBadProtocolURL() throws MalformedURLException {
-        URL badURL = new URL("ftp://some/path");
-        FileExchangeResolver.getBasicFileExchangeFromURL(badURL);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            URL badURL = new URL("ftp://some/path");
+            FileExchangeResolver.getBasicFileExchangeFromURL(badURL);
+        });
     }
 }

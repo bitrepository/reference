@@ -1,18 +1,19 @@
 package org.bitrepository.integrityservice.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import static org.testng.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PillarDetailsDtoTest {
     private final ObjectMapper objectMapper = new ObjectMapper(); // Use ObjectMapper for JSON
 
     @Test
     void testSerialization() throws IOException {
-        PillarDetailsDto dto = new PillarDetailsDto("id", "pillar", "TYPE", "admin");
+        PillarDetailsDto dto =
+                new PillarDetailsDto("id", "pillar", "TYPE", "admin");
 
         String jsonOutput = objectMapper.writeValueAsString(dto);
 

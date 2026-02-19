@@ -197,7 +197,7 @@ public class BitrepositoryClientExample {
         
         public OperationEventType waitForFinish() throws InterruptedException {
             synchronized (finishLock) {
-                if(finished == false) {
+                if(!finished) {
                     finishLock.wait();
                 }
                 return finishEventType;
@@ -260,4 +260,4 @@ public class BitrepositoryClientExample {
     
     }
 }
-``` 
+```

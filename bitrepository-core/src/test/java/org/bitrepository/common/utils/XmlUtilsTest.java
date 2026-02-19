@@ -3,69 +3,65 @@ package org.bitrepository.common.utils;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositoryelements.TimeMeasureUnit;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import java.math.BigInteger;
 import java.time.Duration;
 
+
 public class XmlUtilsTest extends ExtendedTestCase {
 
     private DatatypeFactory factory;
 
-    @BeforeMethod(alwaysRun = true)
+    @BeforeEach
     public void setUpFactory() throws DatatypeConfigurationException {
         factory = DatatypeFactory.newInstance();
     }
 
-    @Test(groups = {"regressiontest"}, expectedExceptions = IllegalArgumentException.class)
+    @Test
+    @Tag("regressiontest")
     public void negativeDurationIsRejected() {
-        XmlUtils.validateNonNegative(factory.newDuration("-PT0.00001S"));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            XmlUtils.validateNonNegative(factory.newDuration("-PT0.00001S"));
+        });
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void testXmlDurationToDuration() {
         addDescription("Tests xmlDurationToDuration in sunshine scenario cases");
 
         addStep("Durations of 0 of some time unit", "Duration.ZERO");
-        Assert.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("P0Y")), Duration.ZERO);
-        Assert.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("P0M")), Duration.ZERO);
-        Assert.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("P0D")), Duration.ZERO);
-        Assert.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("PT0H")), Duration.ZERO);
-        Assert.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("PT0M")), Duration.ZERO);
-        Assert.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("PT0S")), Duration.ZERO);
-        Assert.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("PT0.0000S")),
-                Duration.ZERO);
+        Assertions.assertEquals(Duration.ZERO, XmlUtils.xmlDurationToDuration(factory.newDuration("P0Y")));
+        Assertions.assertEquals(Duration.ZERO, XmlUtils.xmlDurationToDuration(factory.newDuration("P0M")));
+        Assertions.assertEquals(Duration.ZERO, XmlUtils.xmlDurationToDuration(factory.newDuration("P0D")));
+        Assertions.assertEquals(Duration.ZERO, XmlUtils.xmlDurationToDuration(factory.newDuration("PT0H")));
+        Assertions.assertEquals(Duration.ZERO, XmlUtils.xmlDurationToDuration(factory.newDuration("PT0M")));
+        Assertions.assertEquals(Duration.ZERO, XmlUtils.xmlDurationToDuration(factory.newDuration("PT0S")));
+        Assertions.assertEquals(Duration.ZERO, XmlUtils.xmlDurationToDuration(factory.newDuration("PT0.0000S")));
 
         addStep("Test correct and precise conversion",
                 "Hours, minutes and seconds are converted with full precision");
-        Assert.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("PT3S")),
-                Duration.ofSeconds(3));
-        Assert.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("PT3.3S")),
-                Duration.ofSeconds(3, 300_000_000));
-        Assert.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("PT3.000000003S")),
-                Duration.ofSeconds(3, 3));
-        Assert.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("PT3.123456789S")),
-                Duration.ofSeconds(3, 123_456_789));
+        Assertions.assertEquals(Duration.ofSeconds(3), XmlUtils.xmlDurationToDuration(factory.newDuration("PT3S")));
+        Assertions.assertEquals(Duration.ofSeconds(3, 300_000_000), XmlUtils.xmlDurationToDuration(factory.newDuration("PT3.3S")));
+        Assertions.assertEquals(Duration.ofSeconds(3, 3), XmlUtils.xmlDurationToDuration(factory.newDuration("PT3.000000003S")));
+        Assertions.assertEquals(Duration.ofSeconds(3, 123_456_789), XmlUtils.xmlDurationToDuration(factory.newDuration("PT3.123456789S")));
 
-        Assert.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("PT4M")),
-                Duration.ofMinutes(4));
+        Assertions.assertEquals(Duration.ofMinutes(4), XmlUtils.xmlDurationToDuration(factory.newDuration("PT4M")));
 
-        Assert.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("PT5H")),
-                Duration.ofHours(5));
+        Assertions.assertEquals(Duration.ofHours(5), XmlUtils.xmlDurationToDuration(factory.newDuration("PT5H")));
 
-        Assert.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("PT6H7M8.9S")),
-                Duration.ofHours(6).plusMinutes(7).plusSeconds(8).plusMillis(900));
+        Assertions.assertEquals(Duration.ofHours(6).plusMinutes(7).plusSeconds(8).plusMillis(900), XmlUtils.xmlDurationToDuration(factory.newDuration("PT6H7M8.9S")));
 
         addStep("Test approximate conversion",
                 "Days, months and years are converted using estimated factors");
-        Assert.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("P2D")),
-                Duration.ofDays(2));
-        Assert.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("P3DT4M")),
-                Duration.ofDays(3).plusMinutes(4));
+        Assertions.assertEquals(Duration.ofDays(2), XmlUtils.xmlDurationToDuration(factory.newDuration("P2D")));
+        Assertions.assertEquals(Duration.ofDays(3).plusMinutes(4), XmlUtils.xmlDurationToDuration(factory.newDuration("P3DT4M")));
 
         // We require a month to be between 28 and 31 days exclusive
         Duration minMonthLengthExclusive = Duration.ofDays(28);
@@ -80,19 +76,16 @@ public class XmlUtilsTest extends ExtendedTestCase {
         assertBetweenExclusive(convertedTwoYears, minTwoYearsLengthExclusive, maxTwoYearsLengthExclusive);
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void testNegativeXmlDurationToDuration() {
         // WorkflowInterval may be negative (meaning don’t run automatically)
         addDescription("Tests that xmlDurationToDuration() accepts a negative duration and converts it correctly");
         addStep("Negative XML durations", "Corresponding negative java.time durations");
-        Assert.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("-PT3S")),
-                Duration.ofSeconds(-3));
-        Assert.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("-PT0.000001S")),
-                Duration.ofNanos(-1000));
-        Assert.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("-PT24H")),
-                Duration.ofHours(-24));
-        Assert.assertEquals(XmlUtils.xmlDurationToDuration(factory.newDuration("-P1D")),
-                Duration.ofDays(-1));
+        Assertions.assertEquals(Duration.ofSeconds(-3), XmlUtils.xmlDurationToDuration(factory.newDuration("-PT3S")));
+        Assertions.assertEquals(Duration.ofNanos(-1000), XmlUtils.xmlDurationToDuration(factory.newDuration("-PT0.000001S")));
+        Assertions.assertEquals(Duration.ofHours(-24), XmlUtils.xmlDurationToDuration(factory.newDuration("-PT24H")));
+        Assertions.assertEquals(Duration.ofDays(-1), XmlUtils.xmlDurationToDuration(factory.newDuration("-P1D")));
 
         // We require minus 1 month to be between -31 and -28 days exclusive
         Duration minNegativeMonthLengthExclusive = Duration.ofDays(-31);
@@ -108,51 +101,56 @@ public class XmlUtilsTest extends ExtendedTestCase {
     }
 
     private static <T extends Comparable<T>> void assertBetweenExclusive(T actual, T minExclusive, T maxExclusive) {
-        Assert.assertTrue(actual.compareTo(minExclusive) > 0);
-        Assert.assertTrue(actual.compareTo(maxExclusive) < 0);
+        Assertions.assertTrue(actual.compareTo(minExclusive) > 0);
+        Assertions.assertTrue(actual.compareTo(maxExclusive) < 0);
     }
 
-    @Test(groups = {"regressiontest"}, expectedExceptions = ArithmeticException.class)
+    @Test
+    @Tag("regressiontest")
     public void tooManyDecimalsAreRejected() {
-        addDescription("Tests that xmlDurationToDuration() rejects more than 9 decimals on seconds");
-        addStep("Duration with 10 decimals, PT2.0123456789S", "ArithmeticException");
-        XmlUtils.xmlDurationToDuration(factory.newDuration("PT2.0123456789S"));
+        Assertions.assertThrows(ArithmeticException.class, () -> {
+            addDescription("Tests that xmlDurationToDuration() rejects more than 9 decimals on seconds");
+            addStep("Duration with 10 decimals, PT2.0123456789S", "ArithmeticException");
+            XmlUtils.xmlDurationToDuration(factory.newDuration("PT2.0123456789S"));
+        });
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void testXmlDurationToMilliseconds() {
         addDescription("Tests xmlDurationToMilliseconds in sunshine scenario cases");
         addStep("Test correct and precise conversion",
                 "Hours, minutes and seconds are converted with full precision");
 
-        Assert.assertEquals(XmlUtils.xmlDurationToMilliseconds(factory.newDuration(1)), 1);
-        Assert.assertEquals(XmlUtils.xmlDurationToMilliseconds(factory.newDuration(1000)), 1000);
+        Assertions.assertEquals(1, XmlUtils.xmlDurationToMilliseconds(factory.newDuration(1)));
+        Assertions.assertEquals(1000, XmlUtils.xmlDurationToMilliseconds(factory.newDuration(1000)));
 
-        Assert.assertEquals(XmlUtils.xmlDurationToMilliseconds(factory.newDuration("PT0.001S")), 1);
-        Assert.assertEquals(XmlUtils.xmlDurationToMilliseconds(factory.newDuration("PT0.001999S")), 1);
-        Assert.assertEquals(XmlUtils.xmlDurationToMilliseconds(factory.newDuration("PT2S")), 2000);
+        Assertions.assertEquals(1, XmlUtils.xmlDurationToMilliseconds(factory.newDuration("PT0.001S")));
+        Assertions.assertEquals(1, XmlUtils.xmlDurationToMilliseconds(factory.newDuration("PT0.001999S")));
+        Assertions.assertEquals(2000, XmlUtils.xmlDurationToMilliseconds(factory.newDuration("PT2S")));
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void testNegativeXmlDurationToMilliseconds() {
-        Assert.assertEquals(XmlUtils.xmlDurationToMilliseconds(factory.newDuration("-PT1S")), -1000);
+        Assertions.assertEquals(-1000, XmlUtils.xmlDurationToMilliseconds(factory.newDuration("-PT1S")));
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void convertsToTimeMeasure() {
         TimeMeasureTYPE shortTimeMeasure = XmlUtils.xmlDurationToTimeMeasure(factory.newDuration(1));
-        Assert.assertEquals(shortTimeMeasure.getTimeMeasureUnit(), TimeMeasureUnit.MILLISECONDS);
-        Assert.assertEquals(shortTimeMeasure.getTimeMeasureValue(), BigInteger.ONE);
+        Assertions.assertEquals(TimeMeasureUnit.MILLISECONDS, shortTimeMeasure.getTimeMeasureUnit());
+        Assertions.assertEquals(BigInteger.ONE, shortTimeMeasure.getTimeMeasureValue());
 
         long hours = 2_562_047_788_015L;
         TimeMeasureTYPE longTimeMeasure = XmlUtils.xmlDurationToTimeMeasure(factory.newDurationDayTime(
                 true, BigInteger.ZERO, BigInteger.valueOf(hours), BigInteger.ZERO, BigInteger.ZERO));
         if (longTimeMeasure.getTimeMeasureUnit() == TimeMeasureUnit.HOURS) {
-            Assert.assertEquals(longTimeMeasure.getTimeMeasureValue(), BigInteger.valueOf(hours));
+            Assertions.assertEquals(BigInteger.valueOf(hours), longTimeMeasure.getTimeMeasureValue());
         } else {
-            Assert.assertEquals(longTimeMeasure.getTimeMeasureUnit(), TimeMeasureUnit.MILLISECONDS);
-            Assert.assertEquals(longTimeMeasure.getTimeMeasureValue(),
-                    BigInteger.valueOf(Duration.ofHours(hours).toMillis()));
+            Assertions.assertEquals(TimeMeasureUnit.MILLISECONDS, longTimeMeasure.getTimeMeasureUnit());
+            Assertions.assertEquals(BigInteger.valueOf(Duration.ofHours(hours).toMillis()), longTimeMeasure.getTimeMeasureValue());
         }
     }
 

@@ -22,10 +22,13 @@
 package org.bitrepository.commandline;
 
 import org.bitrepository.client.DefaultFixtureClientTest;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.util.Date;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class DeleteFileCmdTest extends DefaultFixtureClientTest {
     private static final String SETTINGS_DIR = "settings/xml/bitrepository-devel";
@@ -34,12 +37,13 @@ public class DeleteFileCmdTest extends DefaultFixtureClientTest {
 
     private String DEFAULT_COLLECTION_ID;
 
-    @BeforeMethod(alwaysRun = true)
+    @BeforeEach
     public void setupClient() throws Exception {
         DEFAULT_COLLECTION_ID = settingsForTestClient.getCollections().get(0).getID();
     }
 
-    @Test(groups = { "regressiontest" })
+    @Test
+    @Tag( "regressiontest")
     public void defaultSuccessScenarioTest() throws Exception {
         addDescription("Tests simplest arguments for running the CmdLineClient");
         String[] args = new String[]{"-s" + SETTINGS_DIR, 
@@ -51,52 +55,65 @@ public class DeleteFileCmdTest extends DefaultFixtureClientTest {
         new DeleteFileCmd(args);
     }
 
-    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
+    @Test
+    @Tag( "regressiontest")
     public void missingCollectionArgumentTest() throws Exception {
-        addDescription("Tests the scenario, where the collection arguments is missing.");
-        String[] args = new String[]{"-s" + SETTINGS_DIR, 
-                "-k" + KEY_FILE,
-                "-p" + PILLAR1_ID,
-                "-C" + DEFAULT_CHECKSUM,
-                "-i" + DEFAULT_FILE_ID};
-        new DeleteFileCmd(args);
+        assertThrows(IllegalArgumentException.class, () -> {
+            addDescription("Tests the scenario, where the collection arguments is missing.");
+            String[] args = new String[]{"-s" + SETTINGS_DIR,
+                    "-k" + KEY_FILE,
+                    "-p" + PILLAR1_ID,
+                    "-C" + DEFAULT_CHECKSUM,
+                    "-i" + DEFAULT_FILE_ID};
+            new DeleteFileCmd(args);
+        });
     }
 
-    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
+    @Test
+    @Tag( "regressiontest")
     public void missingPillarArgumentTest() throws Exception {
-        addDescription("Tests the different scenarios, with the pillar argument.");
-        String[] args = new String[]{"-s" + SETTINGS_DIR, 
-                "-k" + KEY_FILE,
-                "-C" + DEFAULT_CHECKSUM,
-                "-c" + DEFAULT_COLLECTION_ID,
-                "-i" + DEFAULT_FILE_ID};
-        new DeleteFileCmd(args);
+        assertThrows(IllegalArgumentException.class, () -> {
+            addDescription("Tests the different scenarios, with the pillar argument.");
+            String[] args = new String[]{"-s" + SETTINGS_DIR,
+                    "-k" + KEY_FILE,
+                    "-C" + DEFAULT_CHECKSUM,
+                    "-c" + DEFAULT_COLLECTION_ID,
+                    "-i" + DEFAULT_FILE_ID};
+            new DeleteFileCmd(args);
+        });
     }
 
-    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
+    @Test
+    @Tag( "regressiontest")
     public void unknownPillarArgumentTest() throws Exception {
-        addStep("Testing against a non-existing pillar id", "Should fail");
-        String[] args = new String[]{"-s" + SETTINGS_DIR, 
-                "-k" + KEY_FILE,
-                "-C" + DEFAULT_CHECKSUM,
-                "-c" + DEFAULT_COLLECTION_ID,
-                "-p" + "Random" + (new Date()).getTime() + "pillar",
-                "-i" + DEFAULT_FILE_ID};
-        new DeleteFileCmd(args);
+        assertThrows(IllegalArgumentException.class, () -> {
+            addStep("Testing against a non-existing pillar id", "Should fail");
+            String[] args = new String[]{"-s" + SETTINGS_DIR,
+                    "-k" + KEY_FILE,
+                    "-C" + DEFAULT_CHECKSUM,
+                    "-c" + DEFAULT_COLLECTION_ID,
+                    "-p" + "Random" + (new Date()).getTime() + "pillar",
+                    "-i" + DEFAULT_FILE_ID};
+            new DeleteFileCmd(args);
+        });
     }
 
-    @Test(groups = { "regressiontest" }, expectedExceptions = IllegalArgumentException.class)
+    @Test
+    @Tag( "regressiontest")
     public void missingFileIDArgumentTest() throws Exception {
-        addDescription("Tests the scenario, where no arguments for file id argument is given.");
-        String[] args = new String[]{"-s" + SETTINGS_DIR, 
-                "-k" + KEY_FILE,
-                "-p" + PILLAR1_ID,
-                "-c" + DEFAULT_COLLECTION_ID, 
-                "-C" + DEFAULT_CHECKSUM};
-        new DeleteFileCmd(args);
+        assertThrows(IllegalArgumentException.class, () -> {
+            addDescription("Tests the scenario, where no arguments for file id argument is given.");
+            String[] args = new String[]{"-s" + SETTINGS_DIR,
+                    "-k" + KEY_FILE,
+                    "-p" + PILLAR1_ID,
+                    "-c" + DEFAULT_COLLECTION_ID,
+                    "-C" + DEFAULT_CHECKSUM};
+            new DeleteFileCmd(args);
+        });
     }
 
-    @Test(groups = { "regressiontest" })
+    @Test
+    @Tag( "regressiontest")
     public void checksumArgumentNonSaltAlgorithmWitoutSaltTest() throws Exception {
         addDescription("Test MD5 checksum without salt -> no failure");
         String[] args = new String[]{"-s" + SETTINGS_DIR, 
@@ -109,7 +126,8 @@ public class DeleteFileCmdTest extends DefaultFixtureClientTest {
         new DeleteFileCmd(args);
     }
 
-    @Test(groups = { "regressiontest" })
+    @Test
+    @Tag( "regressiontest")
     public void checksumArgumentSaltAlgorithmWithSaltTest() throws Exception {
         addDescription("Test HMAC_SHA256 checksum with salt -> No failure");
         String[] args = new String[]{"-s" + SETTINGS_DIR, 

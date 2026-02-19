@@ -26,6 +26,8 @@ package org.bitrepository.protocol;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.util.StatusPrinter;
+import org.bitrepository.ExtendedTestInfoParameterResolver;
+import org.bitrepository.SuiteInfo;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.SettingsUtils;
@@ -41,22 +43,22 @@ import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.jaccept.TestEventManager;
 import org.jaccept.structure.ExtendedTestCase;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.slf4j.LoggerFactory;
-import org.testng.ITestContext;
-import org.testng.ITestResult;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.AfterSuite;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.BeforeTest;
 
 import javax.jms.JMSException;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
+import org.bitrepository.protocol.utils.TestWatcherExtension;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.TestWatcher;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@ExtendWith(ExtendedTestInfoParameterResolver.class)
 public abstract class IntegrationTest extends ExtendedTestCase {
     protected static TestEventManager testEventManager = TestEventManager.getInstance();
     public static LocalActiveMQBroker broker;
@@ -70,33 +72,37 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     protected static Settings settingsForCUT;
     protected static Settings settingsForTestClient;
     protected static String collectionID;
-    protected String NON_DEFAULT_FILE_ID;
-    protected static String DEFAULT_FILE_ID;
-    protected static URL DEFAULT_FILE_URL;
-    protected static String DEFAULT_DOWNLOAD_FILE_ADDRESS;
-    protected static String DEFAULT_UPLOAD_FILE_ADDRESS;
-    protected String DEFAULT_AUDIT_INFORMATION;
+    protected String nonDefaultFileId;
+    protected static String defaultFileId;
+    protected static URL defaultFileUrl;
+    protected static String defaultDownloadFileAddress;
+    protected static String defaultUploadFileAddress;
+    protected String defaultAuditInformation;
 
+    @RegisterExtension
+    TestWatcherExtension testWatcher = new TestWatcherExtension();
     protected String testMethodName;
 
-    @BeforeSuite(alwaysRun = true)
-    public void initializeSuite(ITestContext testContext) {
+    @BeforeAll
+    public void initializeSuite(SuiteInfo testInfo) {
         settingsForCUT = loadSettings(getComponentID());
         settingsForTestClient = loadSettings("TestSuiteInitialiser");
         makeUserSpecificSettings(settingsForCUT);
         makeUserSpecificSettings(settingsForTestClient);
-        httpServerConfiguration = new HttpServerConfiguration(settingsForTestClient.getReferenceSettings().getFileExchangeSettings());
+        httpServerConfiguration =
+                new HttpServerConfiguration(settingsForTestClient.getReferenceSettings().getFileExchangeSettings());
         collectionID = settingsForTestClient.getCollections().get(0).getID();
 
         securityManager = createSecurityManager();
-        DEFAULT_FILE_ID = "DefaultFile";
+        defaultFileId = "DefaultFile";
         try {
-            DEFAULT_FILE_URL = httpServerConfiguration.getURL(TestFileHelper.DEFAULT_FILE_ID);
-            DEFAULT_DOWNLOAD_FILE_ADDRESS = DEFAULT_FILE_URL.toExternalForm();
-            DEFAULT_UPLOAD_FILE_ADDRESS = DEFAULT_FILE_URL.toExternalForm() + "-" + DEFAULT_FILE_ID;
+            defaultFileUrl = httpServerConfiguration.getURL(TestFileHelper.DEFAULT_FILE_ID);
+            defaultDownloadFileAddress = defaultFileUrl.toExternalForm();
+            defaultUploadFileAddress = defaultFileUrl.toExternalForm() + "-" + defaultFileId;
         } catch (MalformedURLException e) {
             throw new RuntimeException("Never happens");
         }
+        initMessagebus();
     }
 
     /**
@@ -112,12 +118,11 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         receiverManager.addReceiver(receiver);
     }
 
-    @BeforeClass(alwaysRun = true)
     public void initMessagebus() {
         setupMessageBus();
     }
 
-    @AfterSuite(alwaysRun = true)
+    @AfterAll
     public void shutdownSuite() {
         teardownMessageBus();
         teardownHttpServer();
@@ -126,12 +131,12 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     /**
      * Defines the standard BitRepositoryCollection configuration
      */
-    @BeforeMethod(alwaysRun = true)
-    public final void beforeMethod(Method method) {
-        testMethodName = method.getName();
+    @BeforeEach
+    public final void beforeMethod(TestInfo testInfo) {
+        testMethodName = testInfo.getTestMethod().get().getName();
         setupSettings();
-        NON_DEFAULT_FILE_ID = TestFileHelper.createUniquePrefix(testMethodName);
-        DEFAULT_AUDIT_INFORMATION = testMethodName;
+        nonDefaultFileId = TestFileHelper.createUniquePrefix(testMethodName);
+        defaultAuditInformation = testMethodName;
         receiverManager = new MessageReceiverManager(messageBus);
         registerMessageReceivers();
         messageBus.setCollectionFilter(List.of());
@@ -141,14 +146,15 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     }
 
 
-    protected void initializeCUT() {}
+    protected void initializeCUT() {
+    }
 
-    @AfterMethod(alwaysRun = true)
-    public final void afterMethod(ITestResult testResult) {
+    @AfterEach
+    public final void afterMethod() {
         if (receiverManager != null) {
             receiverManager.stopListeners();
         }
-        if (testResult.isSuccess()) {
+        if (testWatcher.isTestSuccessful()) {
             afterMethodVerification();
         }
         shutdownCUT();
@@ -172,7 +178,8 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     /**
      * May be overridden by specific tests wishing to do stuff. Remember to call super if this is overridden.
      */
-    protected void shutdownCUT() {}
+    protected void shutdownCUT() {
+    }
 
     /**
      * Initializes the settings. Will postfix the alarm and collection topics with '-${user.name}
@@ -196,10 +203,11 @@ public abstract class IntegrationTest extends ExtendedTestCase {
     private void makeUserSpecificSettings(Settings settings) {
         settings.getRepositorySettings().getProtocolSettings()
                 .setCollectionDestination(settings.getCollectionDestination() + getTopicPostfix());
-        settings.getRepositorySettings().getProtocolSettings().setAlarmDestination(settings.getAlarmDestination() + getTopicPostfix());
+        settings.getRepositorySettings().getProtocolSettings()
+                .setAlarmDestination(settings.getAlarmDestination() + getTopicPostfix());
     }
 
-    @BeforeTest(alwaysRun = true)
+    @BeforeEach
     public void writeLogStatus() {
         if (System.getProperty("enableLogStatus", "false").equals("true")) {
             LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
@@ -228,6 +236,13 @@ public abstract class IntegrationTest extends ExtendedTestCase {
         if (useEmbeddedMessageBus()) {
             if (messageBus == null) {
                 messageBus = new SimpleMessageBus();
+            }
+            MessageBusManager.injectCustomMessageBus(MessageBusManager.DEFAULT_MESSAGE_BUS, messageBus);
+            if (settingsForTestClient != null) {
+                MessageBusManager.injectCustomMessageBus(settingsForTestClient.getComponentID(), messageBus);
+            }
+            if (settingsForCUT != null) {
+                MessageBusManager.injectCustomMessageBus(settingsForCUT.getComponentID(), messageBus);
             }
         }
     }

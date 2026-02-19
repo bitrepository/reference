@@ -1,23 +1,23 @@
 /*
  * #%L
  * Bitmagasin integrationstest
- * 
+ *
  * $Id$
  * $HeadURL$
  * %%
  * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -31,9 +31,10 @@ import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.bitrepository.protocol.messagebus.MessageListener;
-import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -43,16 +44,17 @@ import java.util.concurrent.TimeUnit;
  * Class for testing the interface with the message bus.
  */
 public class MultiThreadedMessageBusTest extends IntegrationTest {
-    /** The time to wait when sending a message before it definitely should 
-     * have been consumed by a listener.*/
+    /**
+     * The time to wait when sending a message before it definitely should
+     * have been consumed by a listener.
+     */
     static final int TIME_FOR_WAIT = 2500;
     private final static int threadCount = 3;
     private int count = 0;
     private final static String FINISH = "FINISH";
-    private BlockingQueue<String> finishQueue = new LinkedBlockingQueue<>(1);
+    private final BlockingQueue<String> finishQueue = new LinkedBlockingQueue<>(1);
     MultiMessageListener listener;
-    
-    @Override
+
     protected void setupMessageBus() {
         if (useEmbeddedMessageBus() && broker == null) {
             broker = new LocalActiveMQBroker(settingsForTestClient.getMessageBusConfiguration());
@@ -62,8 +64,9 @@ public class MultiThreadedMessageBusTest extends IntegrationTest {
                 settingsForTestClient, securityManager), testEventManager);
 
     }
-    
-    @Test(groups = { "regressiontest" })
+
+    @Test
+    @Tag("regressiontest")
     public final void manyTheadsBeforeFinish() throws Exception {
         addDescription("Tests whether it is possible to start the handling of many threads simultaneously.");
         IdentifyPillarsForGetFileRequest content =
@@ -71,37 +74,38 @@ public class MultiThreadedMessageBusTest extends IntegrationTest {
         listener = new MultiMessageListener();
         messageBus.addListener("BusActivityTest", listener);
         content.setDestination("BusActivityTest");
-        
-        addStep("Send one message for each listener", "When all have receiver, then they give respond on 'finishQueue'");
-        for(int i = 0; i < threadCount; i++) {
+
+        addStep("Send one message for each listener",
+                "When all have receiver, then they give respond on 'finishQueue'");
+        for (int i = 0; i < threadCount; i++) {
             messageBus.sendMessage(content);
         }
-        Assert.assertEquals(finishQueue.poll(TIME_FOR_WAIT, TimeUnit.MILLISECONDS), FINISH);
-        Assert.assertEquals(count, threadCount);
+        Assertions.assertEquals(FINISH, finishQueue.poll(TIME_FOR_WAIT, TimeUnit.MILLISECONDS));
+        Assertions.assertEquals(threadCount, count);
     }
 
-    @AfterMethod(alwaysRun = true)
+    @AfterEach
     public void removeListener() {
         messageBus.removeListener("BusActivityTest", listener);
     }
 
     protected class MultiMessageListener implements MessageListener {
-        private BlockingQueue<String> queue = new LinkedBlockingQueue<>(threadCount);
-        
+        private final BlockingQueue<String> queue = new LinkedBlockingQueue<>(threadCount);
+
         @Override
         public final void onMessage(Message message, MessageContext messageContext) {
             try {
                 testIfFinished();
-                Assert.assertNotNull(queue.poll(TIME_FOR_WAIT, TimeUnit.MILLISECONDS));
+                Assertions.assertNotNull(queue.poll(TIME_FOR_WAIT, TimeUnit.MILLISECONDS));
             } catch (InterruptedException e) {
-                Assert.fail("Should not throw an exception: ", e);
+                Assertions.fail("Should not throw an exception: ", e);
             }
         }
-        
+
         private void testIfFinished() throws InterruptedException {
             count++;
-            if(count >= threadCount) {
-                for(int i = 0; i < threadCount; i++) {
+            if (count >= threadCount) {
+                for (int i = 0; i < threadCount; i++) {
                     queue.put("Count '" + i + "'");
                 }
                 finishQueue.put(FINISH);

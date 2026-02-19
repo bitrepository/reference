@@ -34,9 +34,9 @@ import org.jaccept.TestEventManager;
  */
 public class DeleteFileClientTestWrapper implements DeleteFileClient {
     /** The PutClient to wrap. */
-    private DeleteFileClient wrappedDeleteClient;
+    private final DeleteFileClient wrappedDeleteClient;
     /** The manager to monitor the operations.*/
-    private TestEventManager testEventManager;
+    private final TestEventManager testEventManager;
 
     /**
      * Constructor.

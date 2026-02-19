@@ -234,25 +234,25 @@ public final class TimeUtils {
         }
 
         if (dur.toDays() > 0) {
-            parts.add("" + dur.toDays() + "d");
+            parts.add(dur.toDays() + "d");
         }
         if (dur.toHoursPart() > 0) {
-            parts.add("" + dur.toHoursPart() + "h");
+            parts.add(dur.toHoursPart() + "h");
         }
         if (dur.toMinutesPart() > 0) {
-            parts.add("" + dur.toMinutesPart() + "m");
+            parts.add(dur.toMinutesPart() + "m");
         }
         if (dur.toSecondsPart() > 0) {
-            parts.add("" + dur.toSecondsPart() + "s");
+            parts.add(dur.toSecondsPart() + "s");
         }
         if (dur.toNanosPart() > 0) {
             // If the fraction of second is a whole number of millis, print as such; otherwise print only as nanos
             Duration fraction = Duration.ofNanos(dur.getNano());
             Duration remainderAfterMillis = fraction.minusMillis(fraction.toMillisPart());
             if (remainderAfterMillis.isZero()) {
-                parts.add("" + fraction.toMillisPart() + " ms");
+                parts.add(fraction.toMillisPart() + " ms");
             } else {
-                parts.add("" + fraction.toNanosPart() + " ns");
+                parts.add(fraction.toNanosPart() + " ns");
             }
         }
 

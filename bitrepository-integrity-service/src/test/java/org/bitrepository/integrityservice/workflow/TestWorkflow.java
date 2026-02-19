@@ -64,9 +64,7 @@ public class TestWorkflow extends Workflow {
 
         TestWorkflow that = (TestWorkflow) o;
 
-        if (!jobID.equals(that.jobID)) return false;
-
-        return true;
+        return jobID.equals(that.jobID);
     }
 
     @Override

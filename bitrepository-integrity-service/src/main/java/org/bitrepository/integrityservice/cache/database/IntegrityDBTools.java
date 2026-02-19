@@ -65,7 +65,6 @@ public class IntegrityDBTools extends IntegrityDAOUtils {
 
         String removeCollectionSql = "DELETE FROM collections WHERE collectionID = ? CASCADE";
         DatabaseUtils.executeStatement(dbConnector, removeCollectionSql, collectionID);
-        ;
 
     }
 

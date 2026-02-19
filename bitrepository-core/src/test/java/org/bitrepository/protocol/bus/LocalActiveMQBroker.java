@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 public class LocalActiveMQBroker {
     private final Logger log = LoggerFactory.getLogger(getClass());
     
-    private BrokerService broker;
+    private final BrokerService broker;
     
     public LocalActiveMQBroker(MessageBusConfiguration configuration) {
         broker = new BrokerService();

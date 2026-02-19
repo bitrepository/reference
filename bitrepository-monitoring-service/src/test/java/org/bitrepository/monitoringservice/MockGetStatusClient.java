@@ -25,7 +25,7 @@ import org.bitrepository.access.getstatus.GetStatusClient;
 import org.bitrepository.client.eventhandler.EventHandler;
 
 public class MockGetStatusClient implements GetStatusClient {
-    private int callsToShutdown = 0;
+    private final int callsToShutdown = 0;
     public int getCallsToShutdown() {
         return callsToShutdown;
     }

@@ -27,11 +27,7 @@ import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResultingChecksums;
-import org.bitrepository.client.eventhandler.CompleteEvent;
-import org.bitrepository.client.eventhandler.ContributorEvent;
-import org.bitrepository.client.eventhandler.ContributorFailedEvent;
-import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.client.eventhandler.OperationFailedEvent;
+import org.bitrepository.client.eventhandler.*;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.Base16Utils;
@@ -43,22 +39,15 @@ import org.bitrepository.integrityservice.collector.IntegrityInformationCollecto
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.workflow.Workflow;
 import org.jaccept.structure.ExtendedTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
 import java.util.Arrays;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
 
@@ -75,7 +64,7 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
     protected IntegrityModel model;
     protected AuditTrailManager auditManager;
 
-    @BeforeMethod(alwaysRun = true)
+    @BeforeEach
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("IntegrityWorkflowTest");
 
@@ -93,7 +82,9 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         auditManager = mock(AuditTrailManager.class);
     }
 
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test
+    @Tag("regressiontest")
+    @Tag("integritytest")
     public void testNoFilesInCollection() {
         addDescription("Test that the workflow does nothing, when it has no files in the collection.");
         addStep("Prepare for calls to mocks", "");
@@ -116,7 +107,9 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         verifyNoMoreInteractions(model);
     }
 
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test
+    @Tag("regressiontest")
+    @Tag("integritytest")
     public void testSuccess() {
         addDescription("Test that the workflow works when both pillars deliver the same checksum.");
         addStep("Prepare for calls to mocks", "");
@@ -156,7 +149,9 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         verifyNoMoreInteractions(auditManager);
     }
 
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test
+    @Tag("regressiontest")
+    @Tag("integritytest")
     public void testOneComponentFailureAndTwoOtherAgreeOnChecksum() {
         addDescription("Test that the workflow works when both pillars deliver the same checksum.");
         addStep("Prepare for calls to mocks", "");
@@ -199,8 +194,10 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         verifyNoMoreInteractions(auditManager);
     }
 
-    @Test(groups = {"regressiontest", "integritytest"})
-    public void testOneComponentFailureAndTwoOtherDisagreeOnChecksum() throws Exception {
+    @Test
+    @Tag("regressiontest")
+    @Tag("integritytest")
+    public void testOneComponentFailureAndTwoOtherDisagreeOnChecksum() {
         addDescription("Test that the workflow works when both pillars deliver the same checksum.");
         addStep("Prepare for calls to mocks", "");
         when(model.getNumberOfFilesInCollection(anyString())).thenReturn(Long.valueOf(1));
@@ -218,7 +215,8 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
             eventHandler.handleEvent(e1);
             eventHandler.handleEvent(e2);
             eventHandler.handleEvent(e3);
-            eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "COMPONENT FAILED", Arrays.asList(e1, e2, e3)));
+            eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "COMPONENT FAILED",
+                    Arrays.asList(e1, e2, e3)));
             return null;
         }).when(collector).getChecksums(anyString(), any(), any(), anyString(), anyString(), any(), any(EventHandler.class));
 
@@ -239,11 +237,14 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         verify(model).getFileIDAtPosition(eq(TEST_COLLECTION), eq(0L));
         verifyNoMoreInteractions(model);
 
-        verify(auditManager).addAuditEvent(eq(TEST_COLLECTION), anyString(), anyString(), anyString(), anyString(), any(), any(), any());
+        verify(auditManager).addAuditEvent(eq(TEST_COLLECTION), anyString(), anyString(), anyString(), anyString(),
+                any(), any(), any());
         verifyNoMoreInteractions(auditManager);
     }
 
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test
+    @Tag("regressiontest")
+    @Tag("integritytest")
     public void testInconsistentChecksums() {
         addDescription("Test that the workflow discovers and handles inconsistent checksums");
         addStep("Prepare for calls to mocks", "");
@@ -271,7 +272,8 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         workflow.initialise(context, TEST_COLLECTION);
         workflow.start();
 
-        verify(collector).getChecksums(eq(TEST_COLLECTION), any(), any(), anyString(), anyString(), any(), any(EventHandler.class));
+        verify(collector).getChecksums(eq(TEST_COLLECTION), any(), any(), anyString(), anyString(), any(),
+                any(EventHandler.class));
         verifyNoMoreInteractions(collector);
 
         verify(model).getNumberOfFilesInCollection(eq(TEST_COLLECTION));
@@ -286,7 +288,9 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         verifyNoMoreInteractions(alerter);
     }
 
-    @Test(groups = {"regressiontest", "integritytest"})
+    @Test
+    @Tag("regressiontest")
+    @Tag("integritytest")
     public void testNoReceivedChecksums() {
         addDescription("Test that the workflow handles the case, when no checksums are received");
         addStep("Prepare for calls to mocks", "");
@@ -297,7 +301,8 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
             EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
             eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "", null));
             return null;
-        }).when(collector).getChecksums(anyString(), any(), any(), anyString(), anyString(), any(), any(EventHandler.class));
+        }).when(collector).getChecksums(anyString(), any(), any(), anyString(), anyString(), any(),
+                any(EventHandler.class));
 
         addStep("Run workflow for checking salted checksum.", "Should send alarm about failure");
 
@@ -306,7 +311,8 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
         workflow.initialise(context, TEST_COLLECTION);
         workflow.start();
 
-        verify(collector).getChecksums(eq(TEST_COLLECTION), any(), any(), anyString(), anyString(), any(), any(EventHandler.class));
+        verify(collector).getChecksums(eq(TEST_COLLECTION), any(), any(), anyString(), anyString(), any(),
+                any(EventHandler.class));
         verifyNoMoreInteractions(collector);
 
         verify(model).getNumberOfFilesInCollection(eq(TEST_COLLECTION));

@@ -31,7 +31,7 @@ import org.bitrepository.integrityservice.collector.IntegrityInformationCollecto
 import org.bitrepository.integrityservice.workflow.IntegrityContributors;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.annotations.BeforeMethod;
+import org.junit.jupiter.api.BeforeEach;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -50,7 +50,7 @@ public class WorkflowstepTest extends ExtendedTestCase {
     protected AuditTrailManager auditManager;
     protected IntegrityContributors integrityContributors;
 
-    @BeforeMethod(alwaysRun = true)
+    @BeforeEach
     public void setup() throws DatatypeConfigurationException {
         settings = TestSettingsProvider.reloadSettings(this.getClass().getSimpleName());
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();

@@ -1,23 +1,23 @@
 /*
  * #%L
  * Bitmagasin integrationstest
- * 
+ *
  * $Id$
  * $HeadURL$
  * %%
  * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -27,12 +27,12 @@ package org.bitrepository.protocol.bus;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
-import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.jaccept.TestEventManager;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
+import java.util.List;
 
 /**
  * Class for testing the interface with the message bus.
@@ -47,13 +47,14 @@ public class GeneralMessageBusTest extends IntegrationTest {
         addReceiver(collectionReceiver);
     }
 
-    @AfterMethod(alwaysRun = true)
+    @AfterEach
     public void tearDown() {
-        messageBus.setComponentFilter(Arrays.asList(new String[]{}));
-        messageBus.setCollectionFilter(Arrays.asList(new String[]{}));
+        messageBus.setComponentFilter(List.of());
+        messageBus.setCollectionFilter(List.of());
     }
 
-    @Test(groups = { "regressiontest" })
+    @Test
+    @Tag("regressiontest")
     public final void busActivityTest() throws Exception {
         addDescription("Tests whether it is possible to create a message listener, " +
                 "and then set it to listen to the topic. Then puts a message" +
@@ -70,12 +71,14 @@ public class GeneralMessageBusTest extends IntegrationTest {
         alarmReceiver.waitForMessage(message.getClass());
     }
 
-    @Test(groups = {"regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public final void twoListenersForTopicTest() throws Exception {
         addDescription("Verifies that two listeners on the same topic both receive the message");
         TestEventManager testEventManager = TestEventManager.getInstance();
 
-        addStep("Make a connection to the message bus and add two listeners", "No exceptions should be thrown");
+        addStep("Make a connection to the message bus and add two listeners",
+                "No exceptions should be thrown");
         MessageReceiver receiver1 = new MessageReceiver(alarmDestinationID, testEventManager);
         addReceiver(receiver1);
         messageBus.addListener(receiver1.getDestination(), receiver1.getMessageListener());
@@ -94,7 +97,8 @@ public class GeneralMessageBusTest extends IntegrationTest {
         receiver2.waitForMessage(AlarmMessage.class);
     }
 
-    @Test(groups = { "specificationonly" })
+    @Test
+    @Tag("specificationonly")
     public final void messageBusFailoverTest() {
         addDescription("Verifies that we can switch to at second message bus " +
                 "in the middle of a conversation, if the connection is lost. " +
@@ -102,7 +106,8 @@ public class GeneralMessageBusTest extends IntegrationTest {
                 "message bus");
     }
 
-    @Test(groups = { "specificationonly" })
+    @Test
+    @Tag("specificationonly")
     public final void messageBusReconnectTest() {
         addDescription("Test whether we are able to reconnect to the message " +
                 "bus if the connection is lost");

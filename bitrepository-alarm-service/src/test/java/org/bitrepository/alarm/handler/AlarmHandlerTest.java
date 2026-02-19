@@ -5,16 +5,16 @@
  * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
- * published by the Free Software Foundation, either version 2.1 of the 
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
- * You should have received a copy of the GNU General Lesser Public 
+ *
+ * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
@@ -26,60 +26,65 @@ import org.bitrepository.alarm.handling.AlarmMediator;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocol.IntegrationTest;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
-import static org.testng.AssertJUnit.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AlarmHandlerTest extends IntegrationTest {
-    @Test(groups = {"regressiontest"})
+    @Test
+    @Tag("regressiontest")
     public void alarmMediatorTest() throws Exception {
         addDescription("Test the mediator handling of alarm messages.");
         addStep("Setup mediator and create alarm handler.", "Should be ok.");
         AlarmMediator mediator = new AlarmMediator(messageBus, alarmDestinationID);
         MockAlarmHandler alarmHandler = new MockAlarmHandler();
         mediator.addHandler(alarmHandler);
-        Assert.assertEquals(alarmHandler.getCallsForClose(), 0);
-        Assert.assertEquals(alarmHandler.getCallsForHandleAlarm(), 0);
-        
+        assertEquals(0, alarmHandler.getCallsForClose());
+        assertEquals(0, alarmHandler.getCallsForHandleAlarm());
+
         addStep("Try giving it a non-alarm message", "Should not call the alarm handler.");
         Message msg = new Message();
         mediator.onMessage(msg, null);
-        assertEquals(alarmHandler.getCallsForClose(), 0);
-        Assert.assertEquals(alarmHandler.getCallsForHandleAlarm(), 0);
-        
+        assertEquals(0, alarmHandler.getCallsForClose());
+        assertEquals(0, alarmHandler.getCallsForHandleAlarm());
+
         addStep("Giv the mediator an AlarmMessage", "Should be sent to the alarm handler");
         AlarmMessage alarmMsg = new AlarmMessage();
         mediator.onMessage(alarmMsg, null);
-        Assert.assertEquals(alarmHandler.getCallsForClose(), 0);
-        Assert.assertEquals(alarmHandler.getCallsForHandleAlarm(), 1);
-        
+        assertEquals(0, alarmHandler.getCallsForClose());
+        assertEquals(1, alarmHandler.getCallsForHandleAlarm());
+
         addStep("Close the mediator.", "Should also close the alarm handler.");
         mediator.close();
-        Assert.assertEquals(alarmHandler.getCallsForClose(), 1);
-        Assert.assertEquals(alarmHandler.getCallsForHandleAlarm(), 1);
+        assertEquals(1, alarmHandler.getCallsForClose());
+        assertEquals(1, alarmHandler.getCallsForHandleAlarm());
     }
 
     protected class MockAlarmHandler implements AlarmHandler {
 
         private int callsForHandleAlarm = 0;
+
         @Override
         public void handleAlarm(AlarmMessage msg) {
             callsForHandleAlarm++;
         }
+
         public int getCallsForHandleAlarm() {
             return callsForHandleAlarm;
         }
 
         private int callsForClose = 0;
+
         @Override
         public void close() {
             callsForClose++;
         }
+
         public int getCallsForClose() {
             return callsForClose;
         }
-        
+
     }
 
     @Override

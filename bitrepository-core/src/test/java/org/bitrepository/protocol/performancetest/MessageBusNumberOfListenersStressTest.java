@@ -39,12 +39,15 @@ import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
 import org.jaccept.structure.ExtendedTestCase;
-import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -110,7 +113,7 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
     private static boolean sendMoreMessages = true;
     private Settings settings;
 
-    @BeforeMethod
+    @BeforeEach
     public void initializeSettings() {
         settings = TestSettingsProvider.getSettings(getClass().getSimpleName());
     }
@@ -121,7 +124,8 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
      *
      * @throws Exception Can possibly throw an exception.
      */
-    @Test(groups = {"StressTest"})
+    @Test
+    @Tag("StressTest")
     public void testManyListenersOnLocalMessageBus() throws Exception {
         addDescription("Tests how many messages can be handled within a given timeframe when a given number of "
                 + "listeners are receiving them.");
@@ -131,7 +135,8 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
         idReached = -1;
         sendMoreMessages = true;
 
-        addStep("Define the message to send.", "Should retrieve the Alarm message from examples and set the To.");
+        addStep("Define the message to send.",
+                "Should retrieve the Alarm message from examples and set the To.");
         alarmMessage = ExampleMessageFactory.createMessage(AlarmMessage.class);
         alarmMessage.setDestination(QUEUE);
 
@@ -151,11 +156,19 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
 
             testListeners(settings.getMessageBusConfiguration(), securityManager);
         } finally {
+            if (bus != null) {
+                try {
+                    bus.close();
+                } catch (Exception e) {
+                    // ignore
+                }
+            }
             broker.stop();
         }
     }
 
-    @Test(groups = {"StressTest"})
+    @Test
+    @Tag("StressTest")
     public void testManyListenersOnDistributedMessageBus() throws Exception {
         addDescription("Tests how many messages can be handled within a given timeframe when a given number of "
                 + "listeners are receiving them.");
@@ -165,30 +178,49 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
         idReached = -1;
         sendMoreMessages = true;
 
-        addStep("Define the message to send.", "Should retrieve the Alarm message from examples and set the To.");
+        addStep("Define the message to send.",
+                "Should retrieve the Alarm message from examples and set the To.");
         alarmMessage = ExampleMessageFactory.createMessage(AlarmMessage.class);
         alarmMessage.setDestination(QUEUE);
 
         addStep("Make configuration for the messagebus.", "Both should be created.");
-        MessageBusConfiguration conf = MessageBusConfigurationFactory.createDefaultConfiguration();
+        MessageBusConfiguration conf = new MessageBusConfiguration();
+        int port = getFreePort();
+        conf.setURL("tcp://localhost:" + port);
+        settings.getRepositorySettings().getProtocolSettings().setMessageBusConfiguration(conf);
         /* The mocked SecurityManager */
         SecurityManager securityManager = new DummySecurityManager();
+        LocalActiveMQBroker broker = new LocalActiveMQBroker(conf);
 
-        addStep("Start the broker and initialise the listeners.",
-                "Connections should be established.");
-        bus = new ActiveMQMessageBus(settings, securityManager);
+        try {
+            broker.start();
+            addStep("Start the broker and initialise the listeners.",
+                    "Connections should be established.");
+            bus = new ActiveMQMessageBus(settings, securityManager);
 
-        testListeners(conf, securityManager);
+            testListeners(conf, securityManager);
+        } finally {
+            if (bus != null) {
+                try {
+                    bus.close();
+                } catch (Exception e) {
+                    // ignore
+                }
+            }
+            broker.stop();
+        }
     }
-
 
     public void testListeners(MessageBusConfiguration conf, SecurityManager securityManager) throws Exception {
         List<NotificationMessageListener> listeners = new ArrayList<>(NUMBER_OF_LISTENERS);
 
         try {
-            addStep("Initialise the message listeners.", "Should be created and connected to the message bus.");
+            addStep("Initialise the message listeners.",
+                    "Should be created and connected to the message bus.");
             for (int i = 0; i < NUMBER_OF_LISTENERS; i++) {
-                listeners.add(new NotificationMessageListener(settings, securityManager));
+                Settings listenerSettings = TestSettingsProvider.getSettings(getClass().getSimpleName());
+                listenerSettings.getRepositorySettings().getProtocolSettings().setMessageBusConfiguration(conf);
+                listeners.add(new NotificationMessageListener(listenerSettings, securityManager));
             }
 
             addStep("Wait for setup", "We wait!");
@@ -228,12 +260,12 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
             addStep("Verifying the amount of message sent '" + idReached + "' has been received by all '"
                     + NUMBER_OF_LISTENERS + "' listeners", "Should be the same amount for each listener, and the same "
                     + "amount as the correlation ID of the message");
-            Assert.assertEquals(messageReceived, idReached * NUMBER_OF_LISTENERS,
-                    "Reached message Id " + idReached + " thus each message of the " + NUMBER_OF_LISTENERS + " listener "
-                            + "should have received " + idReached + " message, though they have received "
-                            + messageReceived + " message all together.");
+            Assertions.assertEquals(idReached * NUMBER_OF_LISTENERS, messageReceived, "Reached message Id " + idReached + " thus" +
+                    " each message of the " + NUMBER_OF_LISTENERS + " listener "
+                    + "should have received " + idReached + " message, though they have received "
+                    + messageReceived + " message all together.");
             for (NotificationMessageListener listener : listeners) {
-                Assert.assertTrue((listener.getCount() == idReached),
+                Assertions.assertTrue((listener.getCount() == idReached),
                         "Should have received " + idReached + " messages, but has received "
                                 + listener.getCount());
             }
@@ -242,7 +274,7 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
             // the console output (due to shutdown 'warnings'). Thus write the results in a file.
             if (WRITE_RESULTS_TO_FILE) {
                 FileOutputStream out = new FileOutputStream(new File(OUTPUT_FILE_NAME), true);
-                out.write(new String("idReached: " + idReached + ", NumberOfListeners: " + NUMBER_OF_LISTENERS
+                out.write(("idReached: " + idReached + ", NumberOfListeners: " + NUMBER_OF_LISTENERS
                         + ", messagesReceived: " + messageReceived + " on bus "
                         + conf.getURL() + "\n").getBytes());
                 out.flush();
@@ -261,6 +293,18 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
                     e.printStackTrace();
                 }
             }
+        }
+    }
+
+    /**
+     * Finds a free port on the localhost.
+     *
+     * @return A free port number.
+     * @throws IOException If an I/O error occurs.
+     */
+    private int getFreePort() throws IOException {
+        try (ServerSocket socket = new ServerSocket(0)) {
+            return socket.getLocalPort();
         }
     }
 
@@ -323,6 +367,11 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
          */
         public void stop() {
             bus.removeListener(QUEUE, this);
+            try {
+                bus.close();
+            } catch (javax.jms.JMSException e) {
+                // ignore
+            }
         }
 
         /**

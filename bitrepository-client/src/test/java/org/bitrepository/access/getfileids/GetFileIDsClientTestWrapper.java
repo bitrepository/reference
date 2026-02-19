@@ -55,8 +55,7 @@ public class GetFileIDsClientTestWrapper implements GetFileIDsClient {
                            URL addressForResult, EventHandler eventHandler) {
         eventManager.addStimuli("Calling getFileIDs(" +
                 (contributorQueries == null ? "null" : Arrays.asList(contributorQueries)) +
-                ", " + fileID + ", " +
-                "" + addressForResult + ", "
+                ", " + fileID + ", " + addressForResult + ", "
                 + eventHandler + ")");
         client.getFileIDs(collectionID, contributorQueries, fileID, addressForResult, eventHandler);
     }
