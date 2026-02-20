@@ -41,6 +41,7 @@ import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.messagebus.SimpleMessageBus;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.protocol.utils.TestWatcherExtension;
 import org.jaccept.TestEventManager;
 import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.*;
@@ -51,11 +52,7 @@ import org.slf4j.LoggerFactory;
 import javax.jms.JMSException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import org.bitrepository.protocol.utils.TestWatcherExtension;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.TestInfo;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.TestWatcher;
+import java.util.List;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(ExtendedTestInfoParameterResolver.class)
