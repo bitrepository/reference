@@ -40,13 +40,13 @@ import java.util.Objects;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 
-public class ArchiveDirectoryTest {
-    private static String DIR_NAME = "archive-directory";
-    private static String FILE_DIR_NAME = DIR_NAME + "/fileDir";
-    private static String FOLDER_DIR_NAME = DIR_NAME + "/" + ArchiveDirectory.FOLDER_DIR;
+class ArchiveDirectoryTest {
+    private static final String DIR_NAME = "archive-directory";
+    private static final String FILE_DIR_NAME = DIR_NAME + "/fileDir";
+    private static final String FOLDER_DIR_NAME = DIR_NAME + "/" + ArchiveDirectory.FOLDER_DIR;
 
-    private static String FILE_ID = "file1";
-    private static String FOLDER_FILE_ID = "folder1/folder2/file1";
+    private static final String FILE_ID = "file1";
+    private static final String FOLDER_FILE_ID = "folder1/folder2/file1";
 
     @AfterEach
     public void shutdownTests() throws Exception {
