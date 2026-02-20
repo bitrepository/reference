@@ -27,6 +27,7 @@ package org.bitrepository.protocol;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.util.StatusPrinter;
 import org.bitrepository.SuiteInfo;
+import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.SettingsUtils;
@@ -42,6 +43,7 @@ import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.protocol.utils.TestWatcherExtension;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +53,7 @@ import java.net.URL;
 import java.util.List;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@ExtendWith(SuiteInfoParameterResolver.class)
 public abstract class IntegrationTest {
     public static LocalActiveMQBroker broker;
     public static EmbeddedHttpServer server;
