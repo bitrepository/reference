@@ -21,6 +21,7 @@
  */
 package org.bitrepository.common.utils;
 
+import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.jaccept.structure.ExtendedTestCase;
