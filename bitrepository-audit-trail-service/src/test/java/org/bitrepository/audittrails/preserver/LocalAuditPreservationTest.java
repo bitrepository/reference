@@ -74,7 +74,6 @@ public class LocalAuditPreservationTest {
 
     }
 
-    @Disabled("Temporarily disabled due to performance issues")
     @Test
     // Fragile test, fails occasionally.
     @SuppressWarnings("rawtypes")

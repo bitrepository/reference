@@ -30,7 +30,10 @@ import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 import java.io.FileOutputStream;
 import java.nio.charset.StandardCharsets;
@@ -57,7 +60,6 @@ public class MessageBusDelayTest {
         securityManager = new DummySecurityManager();
     }
 
-    @Disabled("Temporarily disabled due to performance issues")
     @Test
     @Tag("StressTest")
     public void testManyTimes() {
