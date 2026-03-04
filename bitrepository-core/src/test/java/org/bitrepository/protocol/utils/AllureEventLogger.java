@@ -1,16 +1,16 @@
 package org.bitrepository.protocol.utils;
 
+import com.google.gson.Gson;
 import io.qameta.allure.Allure;
 import io.qameta.allure.Step;
 import io.qameta.allure.model.Status;
-import com.google.gson.Gson;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class AllureEventLogger {
@@ -32,7 +32,7 @@ public class AllureEventLogger {
 
         // Attach to Allure report
         Allure.addAttachment(
-                String.format("[%s] Event: %s", componentName, event.getType()),
+                String.format(Locale.ROOT, "[%s] Event: %s", componentName, event.getType()),
                 "application/json",
                 gson.toJson(Map.of(
                         "type", event.getType(),
@@ -54,7 +54,7 @@ public class AllureEventLogger {
             BitrepositoryEvent event = findEvent(eventType);
             if (event != null) {
                 Allure.step(
-                        String.format("✓ Event '%s' received after %dms",
+                        String.format(Locale.ROOT, "✓ Event '%s' received after %dms",
                                 eventType,
                                 Duration.between(event.getTimestamp(), Instant.now()).toMillis()),
                         Status.PASSED
@@ -79,12 +79,12 @@ public class AllureEventLogger {
                 .orElse("");
 
         Allure.step(
-                String.format("✗ Timeout waiting for '%s'. %s", eventType, capturedEvents),
+                String.format(Locale.ROOT, "✗ Timeout waiting for '%s'. %s", eventType, capturedEvents),
                 Status.FAILED
         );
 
         throw new AssertionError(
-                String.format("Event '%s' not received within %ds. %s",
+                String.format(Locale.ROOT, "Event '%s' not received within %ds. %s",
                         eventType, timeout.getSeconds(), capturedEvents)
         );
     }
@@ -147,11 +147,11 @@ public class AllureEventLogger {
         }
 
         StringBuilder summary = new StringBuilder();
-        summary.append(String.format("Total events: %d\n\n", events.size()));
+        summary.append(String.format(Locale.ROOT, "Total events: %d\n\n", events.size()));
 
         for (int i = 0; i < events.size(); i++) {
             BitrepositoryEvent event = events.get(i);
-            summary.append(String.format("%d. [%s] %s\n",
+            summary.append(String.format(Locale.ROOT, "%d. [%s] %s\n",
                     i + 1,
                     event.getTimestamp(),
                     event.getType()));

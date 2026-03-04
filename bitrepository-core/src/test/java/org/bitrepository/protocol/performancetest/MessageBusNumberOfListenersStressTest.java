@@ -49,7 +49,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -67,10 +66,6 @@ import java.util.List;
  * 'OUTPUT_FILE_NAME' which is the name of the file to write the output results.
  */
 public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
-    /**
-     * The queue name.
-     */
-    private static String QUEUE = "TEST-LISTENERS";
     /**
      * The default time to wait for a simple communication.
      */
@@ -112,10 +107,12 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
      */
     private static boolean sendMoreMessages = true;
     private Settings settings;
+    private String testQueue;
 
     @BeforeEach
     public void initializeSettings() {
         settings = TestSettingsProvider.getSettings(getClass().getSimpleName());
+        testQueue = "TEST-LISTENERS-" + System.currentTimeMillis();
     }
 
     /**
@@ -130,7 +127,6 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
         addDescription("Tests how many messages can be handled within a given timeframe when a given number of "
                 + "listeners are receiving them.");
         addStep("Define constants", "This should not be possible to fail.");
-        QUEUE += "-" + (new Date()).getTime();
         messageReceived = 0;
         idReached = -1;
         sendMoreMessages = true;
@@ -138,7 +134,7 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
         addStep("Define the message to send.",
                 "Should retrieve the Alarm message from examples and set the To.");
         alarmMessage = ExampleMessageFactory.createMessage(AlarmMessage.class);
-        alarmMessage.setDestination(QUEUE);
+        alarmMessage.setDestination(testQueue);
 
         addStep("Make configuration for the messagebus.", "Both should be created.");
         settings.getRepositorySettings().getProtocolSettings().setMessageBusConfiguration(
@@ -173,7 +169,6 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
         addDescription("Tests how many messages can be handled within a given timeframe when a given number of "
                 + "listeners are receiving them.");
         addStep("Define constants", "This should not be possible to fail.");
-        QUEUE += "-" + (new Date()).getTime();
         messageReceived = 0;
         idReached = -1;
         sendMoreMessages = true;
@@ -181,7 +176,7 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
         addStep("Define the message to send.",
                 "Should retrieve the Alarm message from examples and set the To.");
         alarmMessage = ExampleMessageFactory.createMessage(AlarmMessage.class);
-        alarmMessage.setDestination(QUEUE);
+        alarmMessage.setDestination(testQueue);
 
         addStep("Make configuration for the messagebus.", "Both should be created.");
         MessageBusConfiguration conf = new MessageBusConfiguration();
@@ -218,18 +213,16 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
             addStep("Initialise the message listeners.",
                     "Should be created and connected to the message bus.");
             for (int i = 0; i < NUMBER_OF_LISTENERS; i++) {
-                Settings listenerSettings = TestSettingsProvider.getSettings(getClass().getSimpleName());
+                Settings listenerSettings = TestSettingsProvider.getSettings(getClass().getSimpleName() + i);
                 listenerSettings.getRepositorySettings().getProtocolSettings().setMessageBusConfiguration(conf);
-                listeners.add(new NotificationMessageListener(listenerSettings, securityManager));
+                listeners.add(new NotificationMessageListener(listenerSettings, securityManager, testQueue));
             }
 
             addStep("Wait for setup", "We wait!");
-            synchronized (this) {
-                try {
-                    wait(DEFAULT_WAIT_TIME);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            try {
+                Thread.sleep(DEFAULT_WAIT_TIME);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
 
 
@@ -238,23 +231,19 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
 
             addStep("Wait for the timeframe on '" + TIME_FRAME + "' milliseconds.",
                     "We wait!");
-            synchronized (this) {
-                try {
-                    wait(TIME_FRAME);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            try {
+                Thread.sleep(TIME_FRAME);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
 
             addStep("Stop sending more messages and await all the messages to be received by all the listeners",
                     "Should be Ok");
             sendMoreMessages = false;
-            synchronized (this) {
-                try {
-                    wait(DEFAULT_WAIT_TIME);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            try {
+                Thread.sleep(DEFAULT_WAIT_TIME);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
 
             addStep("Verifying the amount of message sent '" + idReached + "' has been received by all '"
@@ -286,12 +275,10 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
             }
             listeners.clear();
 
-            synchronized (this) {
-                try {
-                    wait(DEFAULT_WAIT_TIME);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            try {
+                Thread.sleep(DEFAULT_WAIT_TIME);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -349,24 +336,26 @@ public class MessageBusNumberOfListenersStressTest extends ExtendedTestCase {
          * The amount of messages received.
          */
         private int count;
+        private final String queueName;
 
         /**
          * Constructor.
          *
          * @param settings The configuration for defining the message bus.
          */
-        public NotificationMessageListener(Settings settings, SecurityManager securityManager) {
+        public NotificationMessageListener(Settings settings, SecurityManager securityManager, String queueName) {
             this.bus = new ActiveMQMessageBus(settings, securityManager);
             this.count = 0;
+            this.queueName = queueName;
 
-            bus.addListener(QUEUE, this);
+            bus.addListener(queueName, this);
         }
 
         /**
          * Method for stopping interaction with the message listener.
          */
         public void stop() {
-            bus.removeListener(QUEUE, this);
+            bus.removeListener(queueName, this);
             try {
                 bus.close();
             } catch (javax.jms.JMSException e) {

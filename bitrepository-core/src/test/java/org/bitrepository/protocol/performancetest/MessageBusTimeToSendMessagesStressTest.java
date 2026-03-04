@@ -58,10 +58,6 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
      */
     static final int TIME_FOR_MESSAGE_TRANSFER_WAIT = 500;
     /**
-     * The name of the queue to send the messages.
-     */
-    private static String QUEUE = "TEST-QUEUE";
-    /**
      * The number of messages to send.
      */
     private static final int NUMBER_OF_MESSAGES = 1000;
@@ -70,10 +66,12 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
      */
     private static Date startSending;
     private Settings settings;
+    private String testQueue;
 
     @BeforeEach
     public void initializeSettings() {
         settings = TestSettingsProvider.getSettings(getClass().getSimpleName());
+        testQueue = "TEST-QUEUE-" + System.currentTimeMillis();
     }
 
     /**
@@ -85,7 +83,6 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
     public void SendManyMessagesDistributed() {
         addDescription("Tests how fast a given number of messages can be handled.");
         addStep("Define constants", "This should not be possible to fail.");
-        QUEUE += "-" + (new Date()).getTime();
 
         addStep("Make configuration for the messagebus.", "Both should be created.");
         MessageBusConfiguration conf = MessageBusConfigurationFactory.createDefaultConfiguration();
@@ -103,12 +100,10 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
             addStep("Sleep until the listeners have received all the messages.",
                     "Should be sleeping.");
             while (!listener.isFinished()) {
-                synchronized (this) {
-                    try {
-                        wait(TIME_FOR_MESSAGE_TRANSFER_WAIT);
-                    } catch (InterruptedException e) {
-                        /* e.printStackTrace(); */
-                    }
+                try {
+                    Thread.sleep(TIME_FOR_MESSAGE_TRANSFER_WAIT);
+                } catch (InterruptedException e) {
+                    /* e.printStackTrace(); */
                 }
             }
 
@@ -135,7 +130,6 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
     public void SendManyMessagesLocally() throws Exception {
         addDescription("Tests how many messages can be handled within a given timeframe.");
         addStep("Define constants", "This should not be possible to fail.");
-        QUEUE += "-" + (new Date()).getTime();
 
         addStep("Make configuration for the messagebus and define the local broker.",
                 "Both should be created.");
@@ -161,15 +155,13 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
             sendAllTheMessages(conf, securityManager);
 
             addStep("Sleep until the listeners has received all the messages.", "Should be sleeping.");
-            long startTime = new Date().getTime();
+            long startTime = System.currentTimeMillis();
             long oneMinuteInMillis = 60000;
-            while (!listener.isFinished() && (new Date().getTime() - startTime) < oneMinuteInMillis) {
-                synchronized (this) {
-                    try {
-                        wait(TIME_FOR_MESSAGE_TRANSFER_WAIT);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+            while (!listener.isFinished() && (System.currentTimeMillis() - startTime) < oneMinuteInMillis) {
+                try {
+                    Thread.sleep(TIME_FOR_MESSAGE_TRANSFER_WAIT);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
 
@@ -218,7 +210,7 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
         private final String id;
 
         public MessageSenderThread(MessageBusConfiguration conf, SecurityManager securityManager, int numberOfMessages, String id) {
-            Settings senderSettings = TestSettingsProvider.getSettings(MessageBusTimeToSendMessagesStressTest.class.getSimpleName());
+            Settings senderSettings = TestSettingsProvider.getSettings(MessageBusTimeToSendMessagesStressTest.class.getSimpleName() + id);
             senderSettings.getRepositorySettings().getProtocolSettings().setMessageBusConfiguration(conf);
             this.bus = new ActiveMQMessageBus(senderSettings, securityManager);
             this.numberOfMessages = numberOfMessages;
@@ -229,7 +221,7 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
         public void run() {
             try {
                 AlarmMessage message = ExampleMessageFactory.createMessage(AlarmMessage.class);
-                message.setDestination(QUEUE);
+                message.setDestination(testQueue);
                 for (int i = 0; i < numberOfMessages; i++) {
                     message.setCorrelationID(id + ":" + i);
                     bus.sendMessage(message);
@@ -264,14 +256,14 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
             this.bus = new ActiveMQMessageBus(settings, securityManager);
             this.count = 0;
 
-            bus.addListener(QUEUE, this);
+            bus.addListener(testQueue, this);
         }
 
         /**
          * Method for stopping interaction with the message-listener.
          */
         public void stop() {
-            bus.removeListener(QUEUE, this);
+            bus.removeListener(testQueue, this);
             try {
                 bus.close();
             } catch (javax.jms.JMSException e) {

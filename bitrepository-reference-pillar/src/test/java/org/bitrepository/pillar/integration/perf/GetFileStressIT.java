@@ -32,14 +32,22 @@ import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.integration.perf.metrics.Metrics;
 import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
 import org.bitrepository.protocol.bus.MessageReceiver;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 
 public class GetFileStressIT extends PillarPerformanceTest {
+    public static final String FOLDER_NAME = "src/test/resources";
     protected GetFileClient getFileClient;
 
     @BeforeEach
@@ -47,6 +55,23 @@ public class GetFileStressIT extends PillarPerformanceTest {
         getFileClient = AccessComponentFactory.getInstance().createGetFileClient(
                 settingsForTestClient, createSecurityManager(), settingsForTestClient.getComponentID()
         );
+    }
+
+    @AfterAll
+    static void removeUnnecessaryFiles() throws IOException {
+        removeFiles("noIdentfy", FOLDER_NAME);
+        removeFiles("parallel", FOLDER_NAME);
+        removeFiles("single", FOLDER_NAME);
+    }
+
+    private static void removeFiles(String fileStartsWith, String folderName) throws IOException {
+        Path directory = Paths.get(folderName);
+        String pathStr = directory.toAbsolutePath().toString();
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory, fileStartsWith + "*")) {
+            for (Path entry : stream) {
+                Files.delete(entry);
+            }
+        }
     }
 
     @Test
