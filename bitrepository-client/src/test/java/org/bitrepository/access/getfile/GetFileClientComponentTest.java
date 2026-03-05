@@ -49,7 +49,6 @@ import java.net.URL;
 import static javax.xml.datatype.DatatypeFactory.newInstance;
 import static org.bitrepository.protocol.utils.AllureTestUtils.*;
 
-
 /**
  * Test class for the 'GetFileClient'.
  */
@@ -162,10 +161,8 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
                 "participates. Also validate, that the 'FilePart' can be used.");
         addStep("Set the number of pillars to 1", "");
 
-        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()
-                .clear();
-        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()
-                .add(PILLAR1_ID);
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
 
         FilePart filePart = new FilePart();
         filePart.setPartLength(BigInteger.TEN);
@@ -174,14 +171,11 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         TestEventHandler testEventHandler = new TestEventHandler();
         GetFileClient client = createGetFileClient();
 
-        String chosenPillar =
-                settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs()
-                        .getPillarID().get(0);
+        String chosenPillar = settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().get(0);
 
         addStep("Request the delivery of a file from a specific pillar. A callback listener should be supplied.",
                 "A IdentifyPillarsForGetFileRequest will be sent to the pillar.");
-        client.getFileFromSpecificPillar(collectionID, DEFAULT_FILE_ID, filePart,
-                httpServerConfiguration.getURL(DEFAULT_FILE_ID),
+        client.getFileFromSpecificPillar(collectionID, DEFAULT_FILE_ID, filePart, httpServerConfiguration.getURL(DEFAULT_FILE_ID),
                 chosenPillar, testEventHandler, null);
         IdentifyPillarsForGetFileRequest receivedIdentifyRequestMessage =
                 collectionReceiver.waitForMessage(IdentifyPillarsForGetFileRequest.class);
@@ -189,8 +183,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
                 testEventHandler.waitForEvent().getEventType());
 
         addStep("The pillar sends a response to the identify message.",
-                "The callback listener should notify of the response and the client should send a GetFileRequest " +
-                        "message to " +
+                "The callback listener should notify of the response and the client should send a GetFileRequest message to " +
                         "the pillar");
 
         IdentifyPillarsForGetFileResponse identifyResponse = messageFactory.createIdentifyPillarsForGetFileResponse(
@@ -198,11 +191,8 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         messageBus.sendMessage(identifyResponse);
         GetFileRequest receivedGetFileRequest = pillar1Receiver.waitForMessage(GetFileRequest.class);
 
-        for (int i = 0; i <
-                settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs()
-                        .getPillarID().size(); i++) {
-            Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_IDENTIFIED,
-                    testEventHandler.waitForEvent().getEventType());
+        for (int i = 0; i < settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().size(); i++) {
+            Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_IDENTIFIED, testEventHandler.waitForEvent().getEventType());
         }
         Assertions.assertEquals(OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE,
                 testEventHandler.waitForEvent().getEventType());
@@ -244,14 +234,10 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         String averagePillarID = "THE-AVERAGE-PILLAR";
         String fastPillarID = "THE-FAST-PILLAR";
         String slowPillarID = "THE-SLOW-PILLAR";
-        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()
-                .clear();
-        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()
-                .add(averagePillarID);
-        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()
-                .add(fastPillarID);
-        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()
-                .add(slowPillarID);
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(averagePillarID);
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(fastPillarID);
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(slowPillarID);
         GetFileClient client = createGetFileClient();
         TestEventHandler testEventHandler = new TestEventHandler();
 
@@ -259,8 +245,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
                 "It should be possible to change the values of the configurations.");
 
         addStep("Make the GetClient ask for fastest pillar.",
-                "It should send message to identify which pillars and an IdentifyPillarsRequestSent notification " +
-                        "should be generated.");
+                "It should send message to identify which pillars and an IdentifyPillarsRequestSent notification should be generated.");
         client.getFileFromFastestPillar(collectionID, DEFAULT_FILE_ID, NO_FILE_PART,
                 httpServerConfiguration.getURL(DEFAULT_FILE_ID),
                 testEventHandler, null);
@@ -407,13 +392,10 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         addDescription("Tests the the GetFileClient handles lack of IdentifyPillarResponses gracefully  ");
         addStep("Set the number of pillars to 100ms and a 300 ms timeout for the conversation.", "");
 
-        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()
-                .clear();
-        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()
-                .add(PILLAR1_ID);
-        DatatypeFactory factory = newInstance();
-        settingsForCUT.getReferenceSettings().getClientSettings()
-                .setConversationTimeout(newInstance().newDuration(100));
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
+        DatatypeFactory factory = DatatypeFactory.newInstance();
+        settingsForCUT.getReferenceSettings().getClientSettings().setConversationTimeout(factory.newDuration(100));
         GetFileClient client = createGetFileClient();
 
         addStep("Request the delivery of a file from a specific pillar. A callback listener should be supplied.",
@@ -428,8 +410,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
                 testEventHandler.waitForEvent().getEventType());
 
         addStep("The pillar sends a response to the identify message.",
-                "The callback listener should notify of the response and the client should send a GetFileRequest " +
-                        "message to " +
+                "The callback listener should notify of the response and the client should send a GetFileRequest message to " +
                         "the pillar");
 
         IdentifyPillarsForGetFileResponse identifyResponse =
@@ -455,10 +436,8 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
     public void testNoSuchFileSpecificPillar() throws Exception {
         addDescription("Testing how a request for a non-existing file is handled on a specific pillar request.");
         addStep("Define 1 pillar.", "");
-        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()
-                .clear();
-        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()
-                .add(PILLAR1_ID);
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
         String fileName = "ERROR-NO-SUCH-FILE-ERROR";
         TestEventHandler testEventHandler = new TestEventHandler();
         URL url = httpServerConfiguration.getURL(DEFAULT_FILE_ID);
@@ -698,16 +677,11 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
         addDescription("Tests the getFiles client will correctly try to get from a second collection if required");
         addFixture("Configure collection1 to contain both pillars and collection 2 to only contain pillar2");
         settingsForCUT.getReferenceSettings().getClientSettings().setOperationRetryCount(BigInteger.valueOf(2));
-        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()
-                .clear();
-        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()
-                .add(PILLAR1_ID);
-        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()
-                .add(PILLAR2_ID);
-        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(1).getPillarIDs().getPillarID()
-                .clear();
-        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(1).getPillarIDs().getPillarID()
-                .add(PILLAR2_ID);
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR2_ID);
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(1).getPillarIDs().getPillarID().clear();
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(1).getPillarIDs().getPillarID().add(PILLAR2_ID);
         String otherCollection = settingsForCUT.getRepositorySettings().getCollections().getCollection().get(1).getID();
         TestEventHandler testEventHandler = new TestEventHandler();
         GetFileClient client = createGetFileClient();

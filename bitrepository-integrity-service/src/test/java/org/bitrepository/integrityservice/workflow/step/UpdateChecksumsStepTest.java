@@ -42,6 +42,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
+import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -316,8 +318,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         step.performStep();
 
         ContributorQuery[] expectedContributorQueries =
-                makeFullQueries(settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()
-                );
+                makeFullQueries(settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
 
         verify(collector).getChecksums(eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class),
                 any(), anyString(), eq(expectedContributorQueries), any(EventHandler.class));
