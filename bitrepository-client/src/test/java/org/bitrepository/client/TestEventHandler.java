@@ -27,18 +27,13 @@ package org.bitrepository.client;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 
-
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-
-
-/**
- * Used to listen for operation event and store them for later retrieval by a test.
- */
+/** Used to listen for operation event and store them for later retrieval by a test. */
 public class TestEventHandler implements EventHandler {
 
     /** The <code>TestEventManager</code> used to manage the event for the associated test. */
@@ -46,9 +41,7 @@ public class TestEventHandler implements EventHandler {
     /** The queue used to store the received operation events. */
     private final BlockingQueue<OperationEvent> eventQueue = new LinkedBlockingQueue<>();
 
-    /**
-     * The default time to wait for events
-     */
+    /** The default time to wait for events */
     private static final long DEFAULT_WAIT_SECONDS = 3;
 
     /** The constructor.
@@ -58,11 +51,27 @@ public class TestEventHandler implements EventHandler {
 
     }
 
+    /**
+     * Check if we're inside an active test context
+     */
+    private boolean isTestRunning() {
+        try {
+            io.qameta.allure.Allure.getLifecycle().getCurrentTestCase();
+            return true;
+        } catch (IllegalStateException e) {
+            return false;
+        }
+    }
+
     @Override
     public void handleEvent(OperationEvent event) {
-        io.qameta.allure.Allure.step("Received event: " + event, () -> {
+        if (isTestRunning()) {
+            io.qameta.allure.Allure.step("Received event: " + event, () -> {
+                eventQueue.add(event);
+            });
+        } else {
             eventQueue.add(event);
-        });
+        }
     }
 
     /**

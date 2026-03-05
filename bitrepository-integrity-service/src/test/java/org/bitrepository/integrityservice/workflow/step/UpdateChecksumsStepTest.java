@@ -44,14 +44,8 @@ import java.util.List;
 
 import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 @SuppressWarnings("rawtypes")
 public class UpdateChecksumsStepTest extends WorkflowstepTest {
@@ -324,8 +318,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         step.performStep();
 
         ContributorQuery[] expectedContributorQueries =
-                makeFullQueries(settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()
-                );
+                makeFullQueries(settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
 
         verify(collector).getChecksums(eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class),
                 any(), anyString(), eq(expectedContributorQueries), any(EventHandler.class));

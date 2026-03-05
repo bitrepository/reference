@@ -2,7 +2,6 @@ package org.bitrepository.protocol.utils;
 
 import com.google.gson.Gson;
 import io.qameta.allure.Allure;
-import io.qameta.allure.Step;
 import io.qameta.allure.model.Status;
 
 import java.time.Duration;
@@ -20,18 +19,65 @@ public class AllureEventLogger {
 
     public AllureEventLogger(String componentName) {
         this.componentName = componentName;
-        Allure.step("Initialize event logger for: " + componentName);
+        allureStep("Initialize event logger for: " + componentName);
+    }
+
+    /**
+     * Check if we're inside an active test context
+     */
+    private boolean isTestRunning() {
+        try {
+            Allure.getLifecycle().getCurrentTestCase();
+            return true;
+        } catch (IllegalStateException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Safely execute Allure step only if test context is active
+     */
+    private void allureStep(String stepName) {
+        if (isTestRunning()) {
+            Allure.step(stepName);
+        }
+    }
+
+    /**
+     * Safely execute Allure step with status only if test context is active
+     */
+    private void allureStep(String stepName, Status status) {
+        if (isTestRunning()) {
+            Allure.step(stepName, status);
+        }
+    }
+
+    /**
+     * Safely add attachment only if test context is active
+     */
+    private void allureAttachment(String name, String type, String content, String fileExtension) {
+        if (isTestRunning()) {
+            Allure.addAttachment(name, type, content, fileExtension);
+        }
+    }
+
+    /**
+     * Safely add attachment only if test context is active
+     */
+    private void allureAttachment(String name, String type, String content) {
+        if (isTestRunning()) {
+            Allure.addAttachment(name, type, content);
+        }
     }
 
     /**
      * Log an event (replaces TestEventHandler's event capturing)
      */
-    @Step("Event received: {event.type}")
     public void logEvent(BitrepositoryEvent event) {
+        allureStep("Event received: " + event.getType());
         events.add(event);
 
-        // Attach to Allure report
-        Allure.addAttachment(
+        allureAttachment(
                 String.format(Locale.ROOT, "[%s] Event: %s", componentName, event.getType()),
                 "application/json",
                 gson.toJson(Map.of(
@@ -46,14 +92,14 @@ public class AllureEventLogger {
     /**
      * Wait for a specific event (replaces TestEventHandler.waitForEvent)
      */
-    @Step("Waiting for event: {eventType} (timeout: {timeout.seconds}s)")
     public BitrepositoryEvent waitForEvent(String eventType, Duration timeout) {
+        allureStep(String.format(Locale.ROOT, "Waiting for event: %s (timeout: %ds)", eventType, timeout.getSeconds()));
         Instant deadline = Instant.now().plus(timeout);
 
         while (Instant.now().isBefore(deadline)) {
             BitrepositoryEvent event = findEvent(eventType);
             if (event != null) {
-                Allure.step(
+                allureStep(
                         String.format(Locale.ROOT, "✓ Event '%s' received after %dms",
                                 eventType,
                                 Duration.between(event.getTimestamp(), Instant.now()).toMillis()),
@@ -78,7 +124,7 @@ public class AllureEventLogger {
                 .reduce((a, b) -> a + ", " + b)
                 .orElse("");
 
-        Allure.step(
+        allureStep(
                 String.format(Locale.ROOT, "✗ Timeout waiting for '%s'. %s", eventType, capturedEvents),
                 Status.FAILED
         );
@@ -92,14 +138,14 @@ public class AllureEventLogger {
     /**
      * Check if event was received (replaces TestEventHandler.receivedEvent)
      */
-    @Step("Verify event received: {eventType}")
     public boolean receivedEvent(String eventType) {
+        allureStep("Verify event received: " + eventType);
         boolean received = findEvent(eventType) != null;
 
         if (received) {
-            Allure.step("✓ Event '" + eventType + "' was received", Status.PASSED);
+            allureStep("✓ Event '" + eventType + "' was received", Status.PASSED);
         } else {
-            Allure.step("✗ Event '" + eventType + "' was NOT received", Status.FAILED);
+            allureStep("✗ Event '" + eventType + "' was NOT received", Status.FAILED);
         }
 
         return received;
@@ -124,8 +170,8 @@ public class AllureEventLogger {
     /**
      * Clear all captured events
      */
-    @Step("Clear event log for {componentName}")
     public void clear() {
+        allureStep("Clear event log for " + componentName);
         events.clear();
     }
 
@@ -139,10 +185,11 @@ public class AllureEventLogger {
     /**
      * Attach event summary to Allure report
      */
-    @Step("Generate event summary")
     public void attachEventSummary() {
+        allureStep("Generate event summary");
+
         if (events.isEmpty()) {
-            Allure.addAttachment("Event Summary", "text/plain", "No events captured");
+            allureAttachment("Event Summary", "text/plain", "No events captured");
             return;
         }
 
@@ -157,5 +204,6 @@ public class AllureEventLogger {
                     event.getType()));
         }
 
-        Allure.addAttachment("Event Summary", "text/plain", summary.toString());
-    }}
+        allureAttachment("Event Summary", "text/plain", summary.toString());
+    }
+}

@@ -39,15 +39,31 @@ public class MessageSenderStub implements MessageSender {
     private static final long DEFAULT_WAIT_SECONDS = 10;  
     
     public MessageSenderStub() {
-        
+
+    }
+
+    /**
+     * Check if we're inside an active test context
+     */
+    private boolean isTestRunning() {
+        try {
+            io.qameta.allure.Allure.getLifecycle().getCurrentTestCase();
+            return true;
+        } catch (IllegalStateException e) {
+            return false;
+        }
     }
 
     @Override
     public void sendMessage(Message content) {
-        io.qameta.allure.Allure.step("Sent message: " + content.getClass().getSimpleName(), () -> {
-            io.qameta.allure.Allure.addAttachment("Message Content", content.toString());
+        if (isTestRunning()) {
+            io.qameta.allure.Allure.step("Sent message: " + content.getClass().getSimpleName(), () -> {
+                io.qameta.allure.Allure.addAttachment("Message Content", content.toString());
+                messageQueue.add(content);
+            });
+        } else {
             messageQueue.add(content);
-        });
+        }
     }
 
     public void clearMessages() {
