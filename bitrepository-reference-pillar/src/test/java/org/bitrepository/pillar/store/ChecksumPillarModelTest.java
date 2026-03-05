@@ -184,8 +184,7 @@ public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
         }
 
         addStep("Test retrieval of single checksum result set",
-                "Should return non-null object, unless asked for non-default checksum spec which must raise exception" +
-                        ".");
+                "Should return non-null object, unless asked for non-default checksum spec which must raise exception.");
         pillarModel.getSingleChecksumResultSet(defaultFileId, collectionID, null,
                 null, defaultCsType);
         try {

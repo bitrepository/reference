@@ -5,10 +5,7 @@
         </encoder>
     </appender>
 
-  <logger name="io.qameta.allure.AllureLifecycle" level="OFF" />
-
     <root level="INFO">
         <appender-ref ref="STDOUT" />
     </root>
 </configuration>
-
