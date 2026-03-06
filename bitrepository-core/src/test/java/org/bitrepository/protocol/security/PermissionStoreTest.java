@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 import java.math.BigInteger;
 import java.security.cert.X509Certificate;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.*;
+import static org.bitrepository.common.utils.AllureTestUtils.*;
 
 public class PermissionStoreTest {
     private static final String componentID = "TEST";

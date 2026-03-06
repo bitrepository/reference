@@ -30,7 +30,6 @@ import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +42,11 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-public class ChecksumDatabaseMigrationTest extends ExtendedTestCase {
+import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CHECKSUM_TABLE;
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+
+public class ChecksumDatabaseMigrationTest {
     protected Settings settings;
 
     static final String PATH_TO_DATABASE_UNPACKED = "target/test/referencepillar/checksumdb-for-migration";
@@ -91,7 +94,7 @@ public class ChecksumDatabaseMigrationTest extends ExtendedTestCase {
 
         addStep("Validate setup", "Checksums table has version 1");
         String extractVersionSql = "SELECT version FROM tableversions WHERE tablename = ?";
-        int versionBefore = DatabaseUtils.selectIntValue(connector, extractVersionSql, DatabaseConstants.CHECKSUM_TABLE);
+        int versionBefore = DatabaseUtils.selectIntValue(connector, extractVersionSql, CHECKSUM_TABLE);
         Assertions.assertEquals(1, versionBefore, "Table version before migration");
 
         addStep("Ingest a entry to the database without the collection id", "works only in version 1.");
@@ -102,7 +105,7 @@ public class ChecksumDatabaseMigrationTest extends ExtendedTestCase {
         addStep("Perform migration", "Checksums table has version 3");
         ChecksumDBMigrator migrator = new ChecksumDBMigrator(connector, settings);
         migrator.migrate();
-        int versionAfter = DatabaseUtils.selectIntValue(connector, extractVersionSql, DatabaseConstants.CHECKSUM_TABLE);
+        int versionAfter = DatabaseUtils.selectIntValue(connector, extractVersionSql, CHECKSUM_TABLE);
         Assertions.assertEquals(4, versionAfter, "Table version after migration");
 
         addStep("Validate the entry", "The collection id has been set to the default collection id");
@@ -131,7 +134,7 @@ public class ChecksumDatabaseMigrationTest extends ExtendedTestCase {
 
         addStep("Validate setup", "Checksums table has version 3");
         String extractVersionSql = "SELECT version FROM tableversions WHERE tablename = ?";
-        int versionBefore = DatabaseUtils.selectIntValue(connector, extractVersionSql, DatabaseConstants.CHECKSUM_TABLE);
+        int versionBefore = DatabaseUtils.selectIntValue(connector, extractVersionSql, CHECKSUM_TABLE);
         Assertions.assertEquals(3, versionBefore, "Table version before migration");
 
         addStep("Ingest a entry to the database with a date for the calculationdate", "works in version 3.");
@@ -142,7 +145,7 @@ public class ChecksumDatabaseMigrationTest extends ExtendedTestCase {
         addStep("Perform migration", "Checksums table has version 4");
         ChecksumDBMigrator migrator = new ChecksumDBMigrator(connector, settings);
         migrator.migrate();
-        int versionAfter = DatabaseUtils.selectIntValue(connector, extractVersionSql, DatabaseConstants.CHECKSUM_TABLE);
+        int versionAfter = DatabaseUtils.selectIntValue(connector, extractVersionSql, CHECKSUM_TABLE);
         Assertions.assertEquals(4, versionAfter, "Table version after migration");
 
         addStep("Validate the migration", "The timestamp is now the millis from epoch");

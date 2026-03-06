@@ -50,6 +50,8 @@ import javax.jms.JMSException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static org.bitrepository.common.utils.AllureTestUtils.isTestRunning;
+
 /**
  * Super class for all tests which should test functionality on a single pillar.
  * <p>
@@ -324,22 +326,10 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
             super();
         }
 
-        /**
-         * Check if we're inside an active test context
-         */
-        private boolean isTestRunning() {
-            try {
-                io.qameta.allure.Allure.getLifecycle().getCurrentTestCase();
-                return true;
-            } catch (IllegalStateException e) {
-                return false;
-            }
-        }
-
         @Override
         public void handleEvent(OperationEvent event) {
             if (!isTestRunning()) {
-                return; // Skip Allure logging if no test is running
+                return;
             }
             io.qameta.allure.Allure.step("Received event: " + event.getEventType(), () -> {
                 io.qameta.allure.Allure.addAttachment("Event Details", event.toString());

@@ -41,7 +41,6 @@ import org.bitrepository.protocol.messagebus.MessageListener;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -51,13 +50,16 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.Date;
 
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+
 /**
  * Stress testing of the messagebus.
  * <p>
  * The size is regulated by the 'BUFFER_TEXT' and the 'NUMBER_OF_REPEATS_OF_BUFFER_TEXT'.
  * Currently, the buffer text is 100 bytes, and it is repeated 100 times, thus generating a message of size 10 kB.
  */
-public class MessageBusSizeOfMessageStressTest extends ExtendedTestCase {
+public class MessageBusSizeOfMessageStressTest {
     private static String QUEUE = "TEST-QUEUE";
     private final long TIME_FRAME = 60000L;
     private Settings settings;

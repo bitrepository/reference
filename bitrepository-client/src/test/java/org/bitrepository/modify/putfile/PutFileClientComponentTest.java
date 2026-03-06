@@ -41,7 +41,7 @@ import javax.xml.datatype.DatatypeFactory;
 import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.*;
+import static org.bitrepository.common.utils.AllureTestUtils.*;
 
 @ExtendWith(SuiteInfoParameterResolver.class)
 public class PutFileClientComponentTest extends DefaultFixtureClientTest {

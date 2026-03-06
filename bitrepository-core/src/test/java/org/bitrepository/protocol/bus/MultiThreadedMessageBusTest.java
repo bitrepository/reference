@@ -42,6 +42,9 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+
 /**
  * Class for testing the interface with the message bus.
  */
@@ -64,7 +67,7 @@ public class MultiThreadedMessageBusTest extends IntegrationTest {
             broker.start();
         }
         messageBus = new MessageBusWrapper(ProtocolComponentFactory.getInstance().getMessageBus(
-                settingsForTestClient, securityManager), testEventManager);
+                settingsForTestClient, securityManager));
 
     }
 

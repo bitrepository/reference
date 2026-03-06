@@ -30,7 +30,6 @@ import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
@@ -49,13 +48,15 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Test whether we are able to create message objects from xml. The input XML is the example code defined in the
  * message-xml, thereby also testing whether this is valid. *
  */
-public class MessageCreationTest extends ExtendedTestCase {
+public class MessageCreationTest {
     @Test
     @Tag("regressiontest")
     public void messageCreationTest() throws Exception {

@@ -22,13 +22,19 @@
 package org.bitrepository.common.utils;
 
 import org.apache.activemq.util.ByteArrayInputStream;
-import org.jaccept.structure.ExtendedTestCase;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 
-public class FileUtilsTest extends ExtendedTestCase {
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+
+public class FileUtilsTest {    String DIR = "test-directory";
     String directory = "test-directory";
     String subDirectory = "sub-directory";
     String testFileName = "test.file.name";

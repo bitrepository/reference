@@ -32,20 +32,28 @@ import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.modify.putfile.PutFileClient;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.net.URL;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * Test that collecting integrity information has the desired effect.
  */
-public class IntegrityInformationCollectorTest extends ExtendedTestCase {
+public class IntegrityInformationCollectorTest {
 
     public final static String collectionID = "dummy-collection";
     public final static String fileId = "FILE_ID";
@@ -69,7 +77,6 @@ public class IntegrityInformationCollectorTest extends ExtendedTestCase {
         addStep("Call the getFileIDs on the collector.", "Should go directly to the GetFileIDsClient");
         collector.getFileIDs(collectionID, List.of(pillarID), auditTrailInformation, contributorQueries, eventHandler);
         verify(getFileIDsClient).getFileIDs(eq(collectionID), any(), any(), any(), any(EventHandler.class));
-
 
         addStep("Call the getFileIDs on the collector four times more.",
                 "The GetFileIDsClient should have been called 5 times.");

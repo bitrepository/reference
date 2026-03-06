@@ -32,8 +32,8 @@ import org.junit.jupiter.api.*;
 
 import java.io.File;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 
 // TODO: cannot test migration of version 1 to 2, since it requires a collection id.

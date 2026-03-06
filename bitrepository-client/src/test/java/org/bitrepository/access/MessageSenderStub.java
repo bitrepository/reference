@@ -24,10 +24,11 @@ package org.bitrepository.access;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocol.messagebus.MessageSender;
 
-
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+
+import static org.bitrepository.common.utils.AllureTestUtils.isTestRunning;
 
 public class MessageSenderStub implements MessageSender {
 
@@ -40,18 +41,6 @@ public class MessageSenderStub implements MessageSender {
     
     public MessageSenderStub() {
 
-    }
-
-    /**
-     * Check if we're inside an active test context
-     */
-    private boolean isTestRunning() {
-        try {
-            io.qameta.allure.Allure.getLifecycle().getCurrentTestCase();
-            return true;
-        } catch (IllegalStateException e) {
-            return false;
-        }
     }
 
     @Override

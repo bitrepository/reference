@@ -38,7 +38,6 @@ import org.bitrepository.integrityservice.cache.IntegrityModel;
 import org.bitrepository.integrityservice.collector.IntegrityInformationCollector;
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.workflow.Workflow;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -46,10 +45,20 @@ import org.mockito.stubbing.Answer;
 
 import java.util.Arrays;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
-public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
+public class SaltedChecksumWorkflowTest {
 
     private static final String PILLAR_1 = "pillar1";
     private static final String PILLAR_2 = "pillar2";
@@ -197,7 +206,7 @@ public class SaltedChecksumWorkflowTest extends ExtendedTestCase {
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testOneComponentFailureAndTwoOtherDisagreeOnChecksum() {
+    public void testOneComponentFailureAndTwoOtherDisagreeOnChecksum() throws Exception {
         addDescription("Test that the workflow works when both pillars deliver the same checksum.");
         addStep("Prepare for calls to mocks", "");
         when(model.getNumberOfFilesInCollection(anyString())).thenReturn(Long.valueOf(1));

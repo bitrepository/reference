@@ -47,7 +47,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addFixture;
+import static org.bitrepository.common.utils.AllureTestUtils.addFixture;
 
 public abstract class DefaultPillarTest extends DefaultFixturePillarTest {
     protected FileStore archives;

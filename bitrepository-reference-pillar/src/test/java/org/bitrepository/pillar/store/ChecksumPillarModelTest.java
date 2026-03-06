@@ -37,8 +37,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Date;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 
 @ExtendWith(SuiteInfoParameterResolver.class)

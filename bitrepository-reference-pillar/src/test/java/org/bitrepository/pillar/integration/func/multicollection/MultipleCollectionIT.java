@@ -34,6 +34,9 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 import java.util.Collections;
 
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+
 public class MultipleCollectionIT extends PillarIntegrationTest {
     /**
      * Used for receiving responses from the pillar
@@ -74,7 +77,7 @@ public class MultipleCollectionIT extends PillarIntegrationTest {
     protected void registerMessageReceivers() {
         super.registerMessageReceivers();
 
-        clientReceiver = new MessageReceiver(settingsForTestClient.getReceiverDestinationID(), testEventManager);
+        clientReceiver = new MessageReceiver(settingsForTestClient.getReceiverDestinationID());
         addReceiver(clientReceiver);
 
         Collection<String> pillarFilter = Collections.singletonList(testConfiguration.getPillarUnderTestID());

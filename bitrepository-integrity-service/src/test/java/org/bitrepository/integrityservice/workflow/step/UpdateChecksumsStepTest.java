@@ -42,8 +42,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 

@@ -1,8 +1,9 @@
-package org.bitrepository.protocol.utils;
+package org.bitrepository.common.utils;
 
 import com.google.gson.Gson;
 import io.qameta.allure.Allure;
 import io.qameta.allure.model.Status;
+import org.bitrepository.protocol.utils.BitrepositoryEvent;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -12,6 +13,8 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
+import static org.bitrepository.common.utils.AllureTestUtils.isTestRunning;
+
 public class AllureEventLogger {
     private final List<BitrepositoryEvent> events = new CopyOnWriteArrayList<>();
     private final String componentName;
@@ -20,18 +23,6 @@ public class AllureEventLogger {
     public AllureEventLogger(String componentName) {
         this.componentName = componentName;
         allureStep("Initialize event logger for: " + componentName);
-    }
-
-    /**
-     * Check if we're inside an active test context
-     */
-    private boolean isTestRunning() {
-        try {
-            Allure.getLifecycle().getCurrentTestCase();
-            return true;
-        } catch (IllegalStateException e) {
-            return false;
-        }
     }
 
     /**

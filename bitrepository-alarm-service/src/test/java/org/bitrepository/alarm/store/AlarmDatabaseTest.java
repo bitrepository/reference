@@ -40,8 +40,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 /**
  * Sees if alarms are correctly stored in the database.

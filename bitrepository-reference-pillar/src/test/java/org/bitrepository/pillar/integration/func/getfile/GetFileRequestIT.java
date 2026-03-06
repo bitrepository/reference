@@ -21,14 +21,17 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
-class GetFileRequestIT extends PillarFunctionTest {
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+
+public class GetFileRequestIT extends PillarFunctionTest {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     protected GetFileMessageFactory msgFactory;
     protected URL testFileURL = null;
     protected FileExchange fe = null;
 
     @BeforeEach
-    void initialiseReferenceTest() throws Exception {
+    public void initialiseReferenceTest() throws Exception {
         String pillarDestination = lookupGetFileDestination();
         msgFactory = new GetFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), pillarDestination);
         testFileURL = new URL(defaultFileUrl.toExternalForm() + System.currentTimeMillis());
@@ -36,7 +39,7 @@ class GetFileRequestIT extends PillarFunctionTest {
     }
 
     @AfterEach
-    void cleanUp(TestInfo testInfo) {
+    public void cleanUp(TestInfo testInfo) {
         try {
             fe.deleteFile(testFileURL);
         } catch (Exception e) {

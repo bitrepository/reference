@@ -25,18 +25,19 @@
 package org.bitrepository.common.utils;
 
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
-import org.jaccept.structure.ExtendedTestCase;
+import org.bitrepository.bitrepositoryelements.TimeMeasureUnit;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.bitrepository.bitrepositoryelements.TimeMeasureUnit;
 
 import java.math.BigInteger;
+
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 
 /**
  * Tests the <code>TimeMeasureComparator</code> class.
  */
-public class TimeMeasurementUtilsTest extends ExtendedTestCase {
+public class TimeMeasurementUtilsTest {
     @Test
     @Tag("regressiontest")
     public void testCompareMilliSeconds() {

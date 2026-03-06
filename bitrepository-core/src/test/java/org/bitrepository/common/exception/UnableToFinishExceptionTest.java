@@ -22,12 +22,15 @@
 package org.bitrepository.common.exception;
 
 import org.bitrepository.common.exceptions.UnableToFinishException;
-import org.jaccept.structure.ExtendedTestCase;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-public class UnableToFinishExceptionTest extends ExtendedTestCase {
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+
+public class UnableToFinishExceptionTest {
 
     @Test
     @Tag("regressiontest")
