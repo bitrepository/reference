@@ -65,47 +65,28 @@ public class AllureTestUtils {
      * Add a step that executes code
      */
     public static <T> T addStep(String stepDescription, StepBody<T> body) {
-        if (!isTestRunning()) {
-            try {
-                return body.execute();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
+        handleStepRunning(body);
         return Allure.step(stepDescription, body::execute);
     }
 
-    /**
-     * Add a step that executes code with expected result documentation
-     */
-    public static <T> T addStep(String stepDescription, String expectedResult, StepBody<T> body) {
-        if (!isTestRunning()) {
-            try {
-                return body.execute();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return Allure.step(stepDescription, () -> {
-            Allure.addAttachment("Expected Result", "text/plain", expectedResult);
-            return body.execute();
-        });
-    }
-
-    /**
-     * Add a step that executes code without return value
-     */
-    public static void addStepVoid(String stepDescription, VoidStepBody body) {
+    private static <T> void handleStepRunning(StepBody<T> body) {
         if (!isTestRunning()) {
             try {
                 body.execute();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-            return;
         }
-        Allure.step(stepDescription, () -> {
-            body.execute();
+    }
+
+    /**
+     * Add a step that executes code with expected result documentation
+     */
+    public static <T> T addStep(String stepDescription, String expectedResult, StepBody<T> body) {
+        handleStepRunning(body);
+        return Allure.step(stepDescription, () -> {
+            Allure.addAttachment("Expected Result", "text/plain", expectedResult);
+            return body.execute();
         });
     }
 
