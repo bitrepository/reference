@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 
 @ExtendWith(SuiteInfoParameterResolver.class)
 public class ChecksumExtractionUtilsTest extends DefaultFixtureClientTest {

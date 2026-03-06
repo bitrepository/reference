@@ -38,7 +38,6 @@ import org.bitrepository.protocol.messagebus.MessageListener;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -48,14 +47,15 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.Date;
 
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+
 /**
  * Stress testing of the messagebus.
  */
-public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
-    /**
-     * The time to wait when sending a message before it definitely should
-     * have been consumed by a listener.
-     */
+public class MessageBusTimeToSendMessagesStressTest {
+    /** The time to wait when sending a message before it definitely should
+     * have been consumed by a listener.*/
     static final int TIME_FOR_MESSAGE_TRANSFER_WAIT = 500;
     /**
      * The number of messages to send.
@@ -180,7 +180,6 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
 
     /**
      * Finds a free port on the localhost.
-     *
      * @return A free port number.
      * @throws IOException If an I/O error occurs.
      */

@@ -27,8 +27,11 @@ import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.service.scheduler.TimerBasedScheduler;
 import org.bitrepository.service.workflow.WorkflowManager;
-import org.bitrepository.settings.referencesettings.*;
-import org.jaccept.structure.ExtendedTestCase;
+import org.bitrepository.settings.referencesettings.Collections;
+import org.bitrepository.settings.referencesettings.Schedule;
+import org.bitrepository.settings.referencesettings.Schedules;
+import org.bitrepository.settings.referencesettings.WorkflowConfiguration;
+import org.bitrepository.settings.referencesettings.WorkflowSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -36,13 +39,15 @@ import org.junit.jupiter.api.Test;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-public class IntegrityWorkflowManagerTest extends ExtendedTestCase {
+public class IntegrityWorkflowManagerTest {
     private Settings settings;
     private WorkflowSettings workflowSettings;
     private TimerBasedScheduler scheduler;

@@ -29,12 +29,10 @@ import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigInteger;
 import java.text.ParseException;
@@ -44,10 +42,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class AuditDatabaseTest extends ExtendedTestCase {
-    /**
-     * The settings for the tests. Should be instantiated in the setup.
-     */
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+
+public class AuditDatabaseTest {
+    /** The settings for the tests. Should be instantiated in the setup.*/
     Settings settings;
     String fileID = "TEST-FILE-ID-" + new Date().getTime();
     String fileID2 = "ANOTHER-FILE-ID" + new Date().getTime();
@@ -60,7 +59,6 @@ public class AuditDatabaseTest extends ExtendedTestCase {
     static final String fingerprint2 = "baba";
     static final String operationID2 = "4321";
 
-
     @BeforeEach
     public void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("AuditDatabaseUnderTest");
@@ -72,7 +70,6 @@ public class AuditDatabaseTest extends ExtendedTestCase {
 
         collectionID = settings.getCollections().get(0).getID();
     }
-
 
     @Test
     @Tag("regressiontest")
@@ -437,7 +434,8 @@ public class AuditDatabaseTest extends ExtendedTestCase {
 
         database.addAuditTrails(events, collectionID, pillarID);
 
-
+        
+        
     }
 
     private AuditTrailEvents createEvents() {

@@ -46,6 +46,8 @@ import javax.xml.datatype.DatatypeFactory;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 @ExtendWith(SuiteInfoParameterResolver.class)
 public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
@@ -85,7 +87,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
 
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         ReplaceFileClient replaceClient = createReplaceFileClient();
         ChecksumSpecTYPE checksumRequest = new ChecksumSpecTYPE();
         checksumRequest.setChecksumType(ChecksumType.SHA1);
@@ -163,7 +165,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
         settingsForCUT.getRepositorySettings().getClientSettings()
                 .setIdentificationTimeoutDuration(datatypeFactory.newDuration(100));
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         ReplaceFileClient replaceClient = createReplaceFileClient();
         ChecksumSpecTYPE checksumRequest = new ChecksumSpecTYPE();
         checksumRequest.setChecksumType(ChecksumType.SHA1);
@@ -199,7 +201,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
         settingsForCUT.getRepositorySettings().getClientSettings()
                 .setOperationTimeoutDuration(datatypeFactory.newDuration(100));
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         ReplaceFileClient replaceClient = createReplaceFileClient();
 
         ChecksumSpecTYPE checksumRequest = new ChecksumSpecTYPE();
@@ -249,7 +251,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
 
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         ReplaceFileClient replaceClient = createReplaceFileClient();
 
         ChecksumSpecTYPE checksumRequest = new ChecksumSpecTYPE();
@@ -304,7 +306,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
         addDescription("Tests that the ReplaceClient handles the presence of a ChecksumPillar correctly, " +
                 "when a salted return checksum (which a checksum pillar can't provide) is requested for the new file.");
 
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         ReplaceFileClient replaceClient = createReplaceFileClient();
 
         addStep("Call replaceFile while requesting a salted checksum to be returned.",
@@ -348,8 +350,7 @@ public class ReplaceFileClientComponentTest extends DefaultFixtureClientTest {
      */
     private ReplaceFileClient createReplaceFileClient() {
         return new ReplaceFileClientTestWrapper(new ConversationBasedReplaceFileClient(
-                messageBus, conversationMediator, settingsForCUT, settingsForTestClient.getComponentID()),
-                testEventManager);
+                messageBus, conversationMediator, settingsForCUT, settingsForTestClient.getComponentID()));
     }
 
     private ChecksumDataForFileTYPE createChecksumData(String checksum) {

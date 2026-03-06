@@ -47,7 +47,7 @@ import java.math.BigInteger;
 import java.net.URL;
 
 import static javax.xml.datatype.DatatypeFactory.newInstance;
-import static org.bitrepository.protocol.utils.AllureTestUtils.*;
+import static org.bitrepository.common.utils.AllureTestUtils.*;
 
 /**
  * Test class for the 'GetFileClient'.

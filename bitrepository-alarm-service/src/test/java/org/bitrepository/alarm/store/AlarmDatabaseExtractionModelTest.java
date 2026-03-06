@@ -22,13 +22,14 @@
 package org.bitrepository.alarm.store;
 
 import org.bitrepository.bitrepositoryelements.AlarmCode;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 /**
  * Runs ExtendedTestCase with a regression test.

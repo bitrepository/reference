@@ -35,6 +35,8 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import static org.bitrepository.common.utils.AllureTestUtils.*;
+
 public class GetChecksumQueryTest extends PillarFunctionTest {
 
     @Test

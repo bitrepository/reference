@@ -38,12 +38,15 @@ import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.TimeUnit;
 
-class DeleteFileRequestIT extends DefaultPillarOperationTest {
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+
+public class DeleteFileRequestIT extends DefaultPillarOperationTest {
     protected DeleteFileMessageFactory msgFactory;
     private String pillarDestination;
 
     @BeforeEach
-    void initialiseReferenceTest() throws Exception {
+    public void initialiseReferenceTest() throws Exception {
         pillarDestination = lookupDeleteFileDestination();
         msgFactory = new DeleteFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), pillarDestination);
         clientProvider.getPutClient().putFile(
@@ -57,7 +60,7 @@ class DeleteFileRequestIT extends DefaultPillarOperationTest {
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    void normalDeleteFileTest() {
+    public void normalDeleteFileTest() {
         addDescription("Tests a normal DeleteFile sequence");
         addStep("Send a DeleteFile request to " + testConfiguration.getPillarUnderTestID(),
                 "The pillar should generate a OPERATION_ACCEPTED_PROGRESS progress response followed by a " +

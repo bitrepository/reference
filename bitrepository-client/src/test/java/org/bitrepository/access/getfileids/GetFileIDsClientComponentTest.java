@@ -24,6 +24,8 @@
  */
 package org.bitrepository.access.getfileids;
 
+import io.qameta.allure.junit5.AllureJunit5;
+import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEvent;
@@ -35,20 +37,22 @@ import org.bitrepository.client.TestEventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.protocol.bus.MessageReceiver;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import javax.xml.bind.JAXBException;
 import java.math.BigInteger;
 import java.net.URL;
 import java.util.Date;
 
+import static org.bitrepository.common.utils.AllureTestUtils.*;
+
 
 /**
  * Test class for the 'GetFileIDsClient'.
  */
+@ExtendWith(AllureJunit5.class)
+@ExtendWith(SuiteInfoParameterResolver.class)
 public class GetFileIDsClientComponentTest extends DefaultClientTest {
 
     private TestGetFileIDsMessageFactory messageFactory;
@@ -71,11 +75,12 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
                 AccessComponentFactory.getInstance().createGetFileIDsClient(settingsForCUT, securityManager,
                         settingsForTestClient.getComponentID()),
                 "The default GetFileClient from the Access factory should be of the type '" +
-                        ConversationBasedGetFileIDsClient.class.getName() + "'.");
+                ConversationBasedGetFileIDsClient.class.getName() + "'.");
     }
 
     @Test
     @Tag("regressiontest")
+    @DisplayName("Test that the GetFileIDsClient can be created from the AccessComponentFactory.")
     public void getFileIDsDeliveredAtUrl() throws Exception {
         addDescription("Tests the delivery of fileIDs from a pillar at a given URL.");
         addStep("Initialise the variables for this test.",
@@ -357,7 +362,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(1).getPillarIDs().getPillarID().clear();
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(1).getPillarIDs().getPillarID().add(PILLAR2_ID);
         String otherCollection = settingsForCUT.getRepositorySettings().getCollections().getCollection().get(1).getID();
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         GetFileIDsClient client = createGetFileIDsClient();
 
         addStep("Request the putting of a file through the PutClient for collection2",
@@ -398,8 +403,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
      */
     private GetFileIDsClient createGetFileIDsClient() {
         return new GetFileIDsClientTestWrapper(new ConversationBasedGetFileIDsClient(
-                messageBus, conversationMediator, settingsForCUT, settingsForTestClient.getComponentID()),
-                testEventManager);
+                messageBus, conversationMediator, settingsForCUT, settingsForTestClient.getComponentID()));
     }
 
     @Override

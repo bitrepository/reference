@@ -21,14 +21,17 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
-class GetFileRequestIT extends PillarFunctionTest {
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+
+public class GetFileRequestIT extends PillarFunctionTest {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     protected GetFileMessageFactory msgFactory;
     protected URL testFileURL = null;
     protected FileExchange fe = null;
 
     @BeforeEach
-    void initialiseReferenceTest() throws Exception {
+    public void initialiseReferenceTest() throws Exception {
         String pillarDestination = lookupGetFileDestination();
         msgFactory = new GetFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), pillarDestination);
         testFileURL = new URL(defaultFileUrl.toExternalForm() + System.currentTimeMillis());
@@ -36,7 +39,7 @@ class GetFileRequestIT extends PillarFunctionTest {
     }
 
     @AfterEach
-    void cleanUp(TestInfo testInfo) {
+    public void cleanUp(TestInfo testInfo) {
         try {
             fe.deleteFile(testFileURL);
         } catch (Exception e) {
@@ -98,8 +101,7 @@ class GetFileRequestIT extends PillarFunctionTest {
             String localFileContent = IOUtils.toString(localFileIS, StandardCharsets.UTF_8);
             String getFileContent = IOUtils.toString(getFileIS, StandardCharsets.UTF_8);
             Assertions.assertEquals(localFileContent, getFileContent,
-                    "Differing content between original file and file from " +
-                            "GetFileRequest");
+                    "Differing content between original file and file from GetFileRequest");
         }
     }
 
@@ -108,8 +110,8 @@ class GetFileRequestIT extends PillarFunctionTest {
     void getFileWithFilePartTest() throws IOException {
         addDescription("Tests that a pillar is able to return a specified FilePart in the final response");
         addStep("Send a getFile request to " + testConfiguration.getPillarUnderTestID() + " with a specified " +
-                "FilePart", "The pillar should send a final response with the FilePart element for the " +
-                "supplied file");
+                        "FilePart",
+                "The pillar should send a final response with the FilePart element for the supplied file");
         GetFileRequest getRequest = (GetFileRequest) createRequest();
 
         final int offsetAndLength = 5;

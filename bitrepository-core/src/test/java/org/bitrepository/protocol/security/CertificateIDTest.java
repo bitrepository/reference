@@ -26,7 +26,6 @@ import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.encoders.Base64;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -37,7 +36,10 @@ import java.nio.charset.StandardCharsets;
 import java.security.Security;
 import java.security.cert.X509Certificate;
 
-public class CertificateIDTest extends ExtendedTestCase {
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+
+public class CertificateIDTest {
 
     @Test
     @Tag("regressiontest")
@@ -105,7 +107,7 @@ public class CertificateIDTest extends ExtendedTestCase {
         Assertions.assertEquals(certificateID1, certificateID1);
 
         addStep("Test with a null as argument", "Should give negative result");
-        Assertions.assertNotEquals(null, certificateID1);
+        Assertions.assertNotNull(certificateID1);
 
         addStep("Test with another class", "Should give negative result");
         Assertions.assertNotEquals(new Object(), certificateID1);

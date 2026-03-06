@@ -29,7 +29,7 @@ import org.bitrepository.client.exceptions.NegativeResponseException;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
-import org.bitrepository.protocol.utils.AllureTestUtils;
+import org.bitrepository.common.utils.AllureTestUtils;
 import org.junit.jupiter.api.*;
 
 import java.util.List;

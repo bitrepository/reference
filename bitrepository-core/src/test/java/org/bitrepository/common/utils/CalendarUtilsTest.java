@@ -21,10 +21,9 @@
  */
 package org.bitrepository.common.utils;
 
-import org.jaccept.structure.ExtendedTestCase;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assertions;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.ParseException;
@@ -34,7 +33,10 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-public class CalendarUtilsTest extends ExtendedTestCase {
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+
+public class CalendarUtilsTest {
     long DATE_IN_MILLIS = 123456789L;
 
     @Test

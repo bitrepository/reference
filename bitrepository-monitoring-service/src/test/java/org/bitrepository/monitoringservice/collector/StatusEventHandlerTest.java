@@ -25,12 +25,15 @@ import org.bitrepository.access.getstatus.conversation.StatusCompleteContributor
 import org.bitrepository.client.eventhandler.*;
 import org.bitrepository.monitoringservice.MockAlerter;
 import org.bitrepository.monitoringservice.MockStatusStore;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-public class StatusEventHandlerTest extends ExtendedTestCase {
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+
+
+public class StatusEventHandlerTest {
 
     public static final String TEST_COLLECTION = "collection1";
 

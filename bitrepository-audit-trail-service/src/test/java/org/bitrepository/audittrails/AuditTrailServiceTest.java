@@ -38,7 +38,6 @@ import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.contributor.ContributorMediator;
 import org.bitrepository.settings.repositorysettings.Collection;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -49,14 +48,19 @@ import javax.xml.datatype.DatatypeFactory;
 import java.math.BigInteger;
 import java.util.concurrent.ThreadFactory;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class AuditTrailServiceTest extends ExtendedTestCase {
-    /**
-     * The settings for the tests. Should be instantiated in the setup.
-     */
+public class AuditTrailServiceTest {
+    /** The settings for the tests. Should be instantiated in the setup. */
     Settings settings;
 
     public static final String TEST_COLLECTION = "dummy-collection";

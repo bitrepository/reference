@@ -8,7 +8,12 @@ public class AllureTestUtils {
      * Check if we're inside an active test context
      */
     public static boolean isTestRunning() {
-        return Allure.getLifecycle().getCurrentTestCase().isPresent();
+        try {
+            Allure.getLifecycle().getCurrentTestCase();
+            return true;
+        } catch (IllegalStateException e) {
+            return false;
+        }
     }
 
     /**
@@ -24,61 +29,99 @@ public class AllureTestUtils {
      * Add a test step with expected result
      */
     public static void addStep(String stepDescription, String expectedResult) {
-        if (!isTestRunning())
-        {
-            return;
-        }
-        
-        // If the string does not start with a tag (e.g. <ol>, <p>), assume it is plain text 
-        // and preserve newlines by converting them to HTML line breaks.
-        String content = expectedResult.trim().startsWith("<") 
-                ? expectedResult 
-                : expectedResult.replace("\n", "<br>");
-
-        Allure.step(stepDescription, () -> 
-            Allure.addAttachment("Expected Result", "text/html", content));
+        if (!isTestRunning()) return;
+        Allure.step(stepDescription, () -> {
+            Allure.addAttachment("Expected Result", "text/plain", expectedResult);
+        });
     }
 
     /**
      * Add a fixture/setup description
      */
     public static void addFixture(String fixtureDescription) {
-        if (!isTestRunning()) {
-            return;
-        }
-        Allure.step("Fixture: " + fixtureDescription, () -> Allure.step("Setup: " + fixtureDescription));
+        if (!isTestRunning()) return;
+        Allure.step("Fixture: " + fixtureDescription, () -> {
+            Allure.step("Setup: " + fixtureDescription);
+        });
     }
 
     /**
-     * Add a reference, with a default link for BITMAG issues.
-     * @param reference The reference text to attach.
+     * Add a reference
      */
     public static void addReference(String reference) {
-        addReference(reference, "BITMAG-", "https://sbforge.org/jira/browse/");
-    }
-
-    /**
-     * Add a reference as an attachment. If the reference text contains a specific prefix,
-     * it also creates a URL link for it.
-     *
-     * @param reference The reference text to attach.
-     * @param linkPrefix The prefix to search for in the reference text, e.g., "BITMAG-". If null or empty, no link will be created.
-     * @param linkBaseUrl The base URL for the link. The found ID will be appended to this URL. If null, no link will be created.
-     */
-    public static void addReference(String reference, String linkPrefix, String linkBaseUrl) {
-        if (!isTestRunning()) {
-            return;
-        }
-        if (linkPrefix != null && !linkPrefix.isEmpty() && reference.contains(linkPrefix)) {
-            int startIdx = reference.indexOf(linkPrefix);
+        if (!isTestRunning()) return;
+        if (reference.contains("BITMAG-")) {
+            int startIdx = reference.indexOf("BITMAG-");
             int endIdx = reference.indexOf(">", startIdx);
-            if (endIdx != -1) {
-                String linkId = reference.substring(startIdx, endIdx);
-                if (linkBaseUrl != null) {
-                    Allure.link(linkId, linkBaseUrl + linkId);
-                }
+            if (endIdx > startIdx) {
+                String jiraIssue = reference.substring(startIdx, endIdx);
+                Allure.link(jiraIssue, "https://sbforge.org/jira/browse/" + jiraIssue);
             }
         }
         Allure.addAttachment("Reference", "text/html", reference);
+    }
+
+    /**
+     * Add a step that executes code
+     */
+    public static <T> T addStep(String stepDescription, StepBody<T> body) {
+        if (!isTestRunning()) {
+            try {
+                return body.execute();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return Allure.step(stepDescription, body::execute);
+    }
+
+    /**
+     * Add a step that executes code with expected result documentation
+     */
+    public static <T> T addStep(String stepDescription, String expectedResult, StepBody<T> body) {
+        if (!isTestRunning()) {
+            try {
+                return body.execute();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return Allure.step(stepDescription, () -> {
+            Allure.addAttachment("Expected Result", "text/plain", expectedResult);
+            return body.execute();
+        });
+    }
+
+    /**
+     * Add a step that executes code without return value
+     */
+    public static void addStepVoid(String stepDescription, VoidStepBody body) {
+        if (!isTestRunning()) {
+            try {
+                body.execute();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            return;
+        }
+        Allure.step(stepDescription, () -> {
+            body.execute();
+        });
+    }
+
+    /**
+     * Functional interface for steps that return a value
+     */
+    @FunctionalInterface
+    public interface StepBody<T> {
+        T execute() throws Exception;
+    }
+
+    /**
+     * Functional interface for steps that don't return a value
+     */
+    @FunctionalInterface
+    public interface VoidStepBody {
+        void execute() throws Exception;
     }
 }

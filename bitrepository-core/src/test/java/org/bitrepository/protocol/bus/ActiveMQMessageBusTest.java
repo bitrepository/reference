@@ -38,6 +38,10 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 /**
  * Runs the GeneralMessageBusTest using a LocalActiveMQBroker (if useEmbeddedMessageBus is true) and a suitable
@@ -53,7 +57,7 @@ public class ActiveMQMessageBusTest extends GeneralMessageBusTest {
             broker.start();
         }
         messageBus = new MessageBusWrapper(ProtocolComponentFactory.getInstance().getMessageBus(
-                settingsForTestClient, securityManager), testEventManager);
+                settingsForTestClient, securityManager));
 
     }
 
