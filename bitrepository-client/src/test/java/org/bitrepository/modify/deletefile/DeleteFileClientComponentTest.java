@@ -43,8 +43,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import javax.xml.datatype.DatatypeFactory;
 import java.nio.charset.StandardCharsets;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 @ExtendWith(SuiteInfoParameterResolver.class)
 public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {

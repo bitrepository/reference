@@ -46,8 +46,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 public class IntegrityDAOTest extends IntegrityDatabaseTestCase {
     String TEST_PILLAR_1 = "MY-TEST-PILLAR-1";

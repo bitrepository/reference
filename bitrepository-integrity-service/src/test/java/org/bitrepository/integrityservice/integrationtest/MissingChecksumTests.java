@@ -62,8 +62,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigInteger;
 import java.util.*;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 public class MissingChecksumTests {
     private static final String PILLAR_1 = "pillar1";

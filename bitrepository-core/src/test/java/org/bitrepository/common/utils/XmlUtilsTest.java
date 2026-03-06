@@ -12,8 +12,8 @@ import javax.xml.datatype.DatatypeFactory;
 import java.math.BigInteger;
 import java.time.Duration;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class XmlUtilsTest {

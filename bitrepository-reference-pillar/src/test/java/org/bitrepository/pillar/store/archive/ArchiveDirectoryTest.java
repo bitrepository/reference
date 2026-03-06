@@ -37,8 +37,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 class ArchiveDirectoryTest {
     private static final String DIR_NAME = "archive-directory";

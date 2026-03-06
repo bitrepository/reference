@@ -25,14 +25,13 @@ import org.apache.activemq.util.ByteArrayInputStream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.bitrepository.protocol.utils.AllureTestUtils;
 
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 public class StreamUtilsTest {
     String DATA = "The data for the streams.";

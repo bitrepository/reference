@@ -33,8 +33,8 @@ import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 
 public class HttpFileExchangeTest {

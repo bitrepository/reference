@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.*;
+import static org.bitrepository.common.utils.AllureTestUtils.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

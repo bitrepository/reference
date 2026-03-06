@@ -31,6 +31,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import static org.bitrepository.common.utils.AllureTestUtils.isTestRunning;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 /** Used to listen for operation event and store them for later retrieval by a test. */
@@ -49,18 +50,6 @@ public class TestEventHandler implements EventHandler {
     public TestEventHandler() {
         super();
 
-    }
-
-    /**
-     * Check if we're inside an active test context
-     */
-    private boolean isTestRunning() {
-        try {
-            io.qameta.allure.Allure.getLifecycle().getCurrentTestCase();
-            return true;
-        } catch (IllegalStateException e) {
-            return false;
-        }
     }
 
     @Override

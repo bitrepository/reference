@@ -48,8 +48,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.Date;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 /**
  * Stress testing of the messagebus.

@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.*;
+import static org.bitrepository.common.utils.AllureTestUtils.*;
 
 
 /**

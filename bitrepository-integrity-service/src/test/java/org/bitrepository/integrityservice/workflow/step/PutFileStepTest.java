@@ -33,7 +33,7 @@ import org.mockito.stubbing.Answer;
 
 import java.net.URL;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;

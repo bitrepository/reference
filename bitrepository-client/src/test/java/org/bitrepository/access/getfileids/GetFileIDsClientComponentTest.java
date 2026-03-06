@@ -45,7 +45,7 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.util.Date;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.*;
+import static org.bitrepository.common.utils.AllureTestUtils.*;
 
 
 /**

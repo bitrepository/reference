@@ -43,12 +43,8 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CHECKSUM_TABLE;
-import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_CHECKSUM;
-import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_COLLECTION_ID;
-import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_DATE;
-import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CS_FILE_ID;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 public class ChecksumDatabaseMigrationTest {
     protected Settings settings;

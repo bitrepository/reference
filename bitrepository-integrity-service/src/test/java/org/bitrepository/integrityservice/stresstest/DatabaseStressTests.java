@@ -48,7 +48,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigInteger;
 import java.util.Date;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 
 public class DatabaseStressTests {
 

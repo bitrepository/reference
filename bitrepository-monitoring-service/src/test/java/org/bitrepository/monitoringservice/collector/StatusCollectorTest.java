@@ -35,8 +35,8 @@ import org.junit.jupiter.api.TestInstance;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class StatusCollectorTest {

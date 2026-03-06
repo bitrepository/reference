@@ -36,8 +36,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.Security;
 import java.security.cert.X509Certificate;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.addDescription;
-import static org.bitrepository.protocol.utils.AllureTestUtils.addStep;
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 public class CertificateIDTest {
 

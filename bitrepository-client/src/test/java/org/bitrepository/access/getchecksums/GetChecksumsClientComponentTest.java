@@ -61,7 +61,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 
-import static org.bitrepository.protocol.utils.AllureTestUtils.*;
+import static org.bitrepository.common.utils.AllureTestUtils.*;
 
 /**
  * Test class for the 'GetFileClient'.

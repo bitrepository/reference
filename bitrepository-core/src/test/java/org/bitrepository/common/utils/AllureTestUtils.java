@@ -1,12 +1,13 @@
-package org.bitrepository.protocol.utils;
+package org.bitrepository.common.utils;
 
 import io.qameta.allure.Allure;
 
 public class AllureTestUtils {
+
     /**
      * Check if we're inside an active test context
      */
-    private static boolean isTestRunning() {
+    public static boolean isTestRunning() {
         try {
             Allure.getLifecycle().getCurrentTestCase();
             return true;
