@@ -339,7 +339,7 @@ public class ReplaceFileTest extends MockedPillarTest {
             try {
                 res.setChecksumValue(Base16Utils.encodeBase16(NON_DEFAULT_MD5_CHECKSUM));
             } catch (DecoderException e) {
-                e.printStackTrace();
+                Assertions.fail(e);
             }
             return res;
         }).when(model).getChecksumDataForFile(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.eq(otherCsSpec));

@@ -46,6 +46,8 @@ import org.jaccept.TestEventManager;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.suite.api.AfterSuite;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jms.JMSException;
 import java.io.IOException;
@@ -60,6 +62,7 @@ import java.io.InputStream;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(ExtendedTestInfoParameterResolver.class)
 public abstract class PillarIntegrationTest extends IntegrationTest {
+    private static final Logger log = LoggerFactory.getLogger(PillarIntegrationTest.class);
     /**
      * The path to the directory containing the integration test configuration files
      */
@@ -140,7 +143,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
                 try {
                     messageBus.close();
                 } catch (JMSException e) {
-                    e.printStackTrace();
+                    log.warn("Failed to close message bus", e);
                 }
                 messageBus = null;
             }
@@ -293,8 +296,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
             try (InputStream fis = getClass().getClassLoader().getResourceAsStream("default-test-file.txt")) {
                 fe.putFile(fis, defaultFileUrl);
             } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                Assertions.fail(e);
             }
 
 

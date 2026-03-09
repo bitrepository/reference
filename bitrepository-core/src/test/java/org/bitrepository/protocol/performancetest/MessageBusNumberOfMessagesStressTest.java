@@ -39,7 +39,11 @@ import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
 import org.jaccept.structure.ExtendedTestCase;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import javax.jms.JMSException;
 import java.io.IOException;
@@ -93,7 +97,7 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
                 try {
                     wait(timeFrame);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Assertions.fail(e);
                 }
             }
 
@@ -150,7 +154,7 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
                 try {
                     wait(timeFrame);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Assertions.fail(e);
                 }
             }
 

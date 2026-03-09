@@ -201,7 +201,6 @@ public final class ChecksumUtils {
 
             return messageAuthenticationCode.doFinal();
         } catch (Exception e) {
-            e.printStackTrace();
             throw new CoordinationLayerException(
                     "Cannot calculate the checksum with algorithm '" + algorithmName + "' and salt '" + Arrays.toString(salt) + "'", e);
         }
