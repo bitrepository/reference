@@ -24,6 +24,7 @@
  */
 package org.bitrepository.client;
 
+import io.qameta.allure.Allure;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 
@@ -55,7 +56,7 @@ public class TestEventHandler implements EventHandler {
     @Override
     public void handleEvent(OperationEvent event) {
         if (isTestRunning()) {
-            io.qameta.allure.Allure.step("Received event: " + event, () -> {
+            Allure.step("Received event: " + event, () -> {
                 eventQueue.add(event);
             });
         } else {
