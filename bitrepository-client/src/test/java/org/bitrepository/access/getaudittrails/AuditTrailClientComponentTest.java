@@ -24,15 +24,30 @@ package org.bitrepository.access.getaudittrails;
 import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
-import org.bitrepository.bitrepositoryelements.*;
-import org.bitrepository.bitrepositorymessages.*;
+import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
+import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
+import org.bitrepository.bitrepositoryelements.FileAction;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
+import org.bitrepository.bitrepositoryelements.ResultingAuditTrails;
+import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetAuditTrailsProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsResponse;
+import org.bitrepository.bitrepositorymessages.MessageRequest;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.DefaultClientTest;
 import org.bitrepository.client.TestEventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.protocol.bus.MessageReceiver;
 import org.bitrepository.settings.repositorysettings.Collection;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -46,12 +61,12 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
  * Test the default AuditTrailClient.
  */
 @ExtendWith(SuiteInfoParameterResolver.class)
-public class AuditTrailClientComponentTest extends DefaultClientTest {
+class AuditTrailClientComponentTest extends DefaultClientTest {
     private GetAuditTrailsMessageFactory testMessageFactory;
     private DatatypeFactory datatypeFactory;
 
     @BeforeEach
-    public void beforeMethodSetup() throws DatatypeConfigurationException {
+    void beforeMethodSetup() throws DatatypeConfigurationException {
         testMessageFactory = new GetAuditTrailsMessageFactory(settingsForTestClient.getComponentID());
 
         Collection c = settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0);
@@ -71,7 +86,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
     @Test
     @Tag("regressiontest")
     @DisplayName("Tests that the AuditTrailClient can be created from the AccessComponentFactory.")
-    public void verifyAuditTrailClientFromFactory() {
+    void verifyAuditTrailClientFromFactory() {
         Assertions.assertInstanceOf(ConversationBasedAuditTrailClient.class,
                 AccessComponentFactory.getInstance().createAuditTrailClient(
                 settingsForCUT, securityManager, settingsForTestClient.getComponentID()), "The default " +
@@ -82,7 +97,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
     @Test
     @Tag("regressiontest")
     @DisplayName("Tests that the AuditTrailClient can be created from the AccessComponentFactory.")
-    public void getAllAuditTrailsTest() throws InterruptedException {
+    void getAllAuditTrailsTest() throws InterruptedException {
         addDescription("Tests the simplest case of getting all audit trail event for all contributors.");
 
         addStep("Create a AuditTrailClient.", "");
@@ -172,7 +187,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void getSomeAuditTrailsTest() throws InterruptedException {
+    void getSomeAuditTrailsTest() throws InterruptedException {
         addDescription("Tests the client maps a AuditTrail query correctly to a GetAuditTrail request.");
 
         TestEventHandler testEventHandler = new TestEventHandler();
@@ -232,7 +247,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void negativeGetAuditTrailsResponseTest() throws InterruptedException {
+    void negativeGetAuditTrailsResponseTest() throws InterruptedException {
         addDescription("Verify that the GetAuditTrail client works correct when receiving a negative " +
                 "GetAuditTrails response from one contributors.");
 
@@ -308,7 +323,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void progressEventsTest() throws InterruptedException {
+    void progressEventsTest() throws InterruptedException {
         addDescription("Tests that progress events are handled correctly.");
 
         addStep("Create a AuditTrailClient.", "");
@@ -378,7 +393,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void incompleteSetOfFinalResponsesTest() throws Exception {
+    void incompleteSetOfFinalResponsesTest() throws Exception {
         addDescription("Verify that the GetAuditTrail client works correct without receiving responses from all " +
                 "contributors.");
         addStep("Configure 500 ms second timeout for the operation itself. " +
@@ -422,7 +437,7 @@ public class AuditTrailClientComponentTest extends DefaultClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void noFinalResponsesTest() throws Exception {
+    void noFinalResponsesTest() throws Exception {
         addDescription("Tests the the AuditTrailClient handles lack of Final Responses gracefully  ");
         addStep("Set a 100 ms timeout for the operation.", "");
 

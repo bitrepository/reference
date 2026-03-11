@@ -24,10 +24,10 @@
  */
 package org.bitrepository.protocol.bus;
 
+import io.qameta.allure.Allure;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageListener;
-
 
 import javax.jms.JMSException;
 import java.util.List;
@@ -43,9 +43,9 @@ public class MessageBusWrapper implements MessageBus {
 
     @Override
     public void sendMessage(Message content) {
-        if (io.qameta.allure.Allure.getLifecycle().getCurrentTestCase().isPresent()) {
-            io.qameta.allure.Allure.step("Sending message: " + content.getClass().getSimpleName(), () -> {
-                io.qameta.allure.Allure.addAttachment("Message Content", content.toString());
+        if (Allure.getLifecycle().getCurrentTestCase().isPresent()) {
+            Allure.step("Sending message: " + content.getClass().getSimpleName(), () -> {
+                Allure.addAttachment("Message Content", content.toString());
                 messageBus.sendMessage(content);
             });
         } else {
