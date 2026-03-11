@@ -29,7 +29,6 @@ import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.eventhandler.EventHandler;
 
-
 import java.net.URL;
 import java.util.Arrays;
 
@@ -37,7 +36,7 @@ import java.util.Arrays;
  * Wraps the <code>GetFileClient</code> adding test event logging and functionality for handling blocking calls.
  */
 public class GetChecksumsClientTestWrapper implements GetChecksumsClient {
-    private GetChecksumsClient getChecksumsClientInstance;
+    private final GetChecksumsClient getChecksumsClientInstance;
 
     public GetChecksumsClientTestWrapper(GetChecksumsClient createGetChecksumsClient) {
         this.getChecksumsClientInstance = createGetChecksumsClient;

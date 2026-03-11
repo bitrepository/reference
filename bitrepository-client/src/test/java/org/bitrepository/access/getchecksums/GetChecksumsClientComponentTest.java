@@ -42,8 +42,17 @@ package org.bitrepository.access.getchecksums;
 import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.ContributorQuery;
-import org.bitrepository.bitrepositoryelements.*;
-import org.bitrepository.bitrepositorymessages.*;
+import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumType;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
+import org.bitrepository.bitrepositoryelements.ResultingChecksums;
+import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
+import org.bitrepository.bitrepositorymessages.MessageRequest;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.DefaultClientTest;
 import org.bitrepository.client.TestEventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
@@ -61,7 +70,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 
-import static org.bitrepository.common.utils.AllureTestUtils.*;
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addFixture;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 /**
  * Test class for the 'GetFileClient'.
@@ -305,8 +316,8 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
     @Test
     @Tag("regressiontest")
     public void testPaging() throws Exception {
-        addDescription("Tests the GetChecksums client correctly handles functionality for limiting results, either by" +
-                "timestamp or result count.");
+        addDescription("Tests the GetChecksums client correctly handles functionality for limiting results, " +
+                "either by timestamp or result count.");
 
         GetChecksumsClient getChecksumsClient = createGetChecksumsClient();
         addStep("Request checksums from with MinTimestamp, MaxTimestamp, MaxNumberOfResults set for both pillars .",
