@@ -21,6 +21,7 @@
  */
 package org.bitrepository.access;
 
+import io.qameta.allure.Allure;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocol.messagebus.MessageSender;
 
@@ -46,8 +47,8 @@ public class MessageSenderStub implements MessageSender {
     @Override
     public void sendMessage(Message content) {
         if (isTestRunning()) {
-            io.qameta.allure.Allure.step("Sent message: " + content.getClass().getSimpleName(), () -> {
-                io.qameta.allure.Allure.addAttachment("Message Content", content.toString());
+            Allure.step("Sent message: " + content.getClass().getSimpleName(), () -> {
+                Allure.addAttachment("Message Content", content.toString());
                 messageQueue.add(content);
             });
         } else {

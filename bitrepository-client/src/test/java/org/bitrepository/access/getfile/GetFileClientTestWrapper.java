@@ -24,6 +24,7 @@
  */
 package org.bitrepository.access.getfile;
 
+import io.qameta.allure.Allure;
 import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.client.eventhandler.EventHandler;
 
@@ -50,8 +51,8 @@ public class GetFileClientTestWrapper implements GetFileClient {
                 + "Upload URL: " + uploadUrl + "\n"
                 + "Audit Info: " + auditTrailInformation;
 
-        io.qameta.allure.Allure.step(stepName, () -> {
-            io.qameta.allure.Allure.addAttachment("Request Parameters", details);
+        Allure.step(stepName, () -> {
+            Allure.addAttachment("Request Parameters", details);
             createGetFileClient.getFileFromFastestPillar(collectionID,
                     fileID, filePart, uploadUrl, eventHandler, auditTrailInformation);
         });
@@ -68,8 +69,8 @@ public class GetFileClientTestWrapper implements GetFileClient {
                 + "Pillar: " + pillarID + "\n"
                 + "Audit Info: " + auditTrailInformation;
 
-        io.qameta.allure.Allure.step(stepName, () -> {
-            io.qameta.allure.Allure.addAttachment("Request Parameters", details);
+        Allure.step(stepName, () -> {
+            Allure.addAttachment("Request Parameters", details);
             createGetFileClient.getFileFromSpecificPillar(collectionID,
                     fileID, filePart, uploadUrl, pillarID, eventHandler, auditTrailInformation);
         });

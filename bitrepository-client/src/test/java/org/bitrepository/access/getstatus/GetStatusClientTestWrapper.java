@@ -21,6 +21,7 @@
  */
 package org.bitrepository.access.getstatus;
 
+import io.qameta.allure.Allure;
 import org.bitrepository.client.eventhandler.EventHandler;
 
 public class GetStatusClientTestWrapper implements GetStatusClient {
@@ -33,8 +34,8 @@ public class GetStatusClientTestWrapper implements GetStatusClient {
 
     @Override
     public void getStatus(EventHandler eventHandler) {
-        if (io.qameta.allure.Allure.getLifecycle().getCurrentTestCase().isPresent()) {
-            io.qameta.allure.Allure.step("Calling getStatus", () -> {
+        if (Allure.getLifecycle().getCurrentTestCase().isPresent()) {
+            Allure.step("Calling getStatus", () -> {
                 getStatusClient.getStatus(eventHandler);
             });
         } else {
