@@ -25,7 +25,7 @@ import io.qameta.allure.Allure;
 import org.bitrepository.client.eventhandler.EventHandler;
 
 public class GetStatusClientTestWrapper implements GetStatusClient {
-    private GetStatusClient getStatusClient;
+    private final GetStatusClient getStatusClient;
 
     public GetStatusClientTestWrapper(GetStatusClient getStatusClient) {
         this.getStatusClient = getStatusClient;
