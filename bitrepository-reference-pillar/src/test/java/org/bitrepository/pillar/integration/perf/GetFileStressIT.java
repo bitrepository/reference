@@ -66,7 +66,6 @@ public class GetFileStressIT extends PillarPerformanceTest {
 
     private static void removeFiles(String fileStartsWith, String folderName) throws IOException {
         Path directory = Paths.get(folderName);
-        String pathStr = directory.toAbsolutePath().toString();
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory, fileStartsWith + "*")) {
             for (Path entry : stream) {
                 Files.delete(entry);

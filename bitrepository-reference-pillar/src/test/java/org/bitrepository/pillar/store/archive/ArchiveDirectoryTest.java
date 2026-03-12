@@ -49,7 +49,7 @@ class ArchiveDirectoryTest {
     private static final String FOLDER_FILE_ID = "folder1/folder2/file1";
 
     @AfterEach
-    public void shutdownTests() throws Exception {
+    void shutdownTests() throws Exception {
         File dir = new File(DIR_NAME);
         if (dir.exists()) {
             FileUtils.delete(new File(DIR_NAME));
@@ -59,7 +59,7 @@ class ArchiveDirectoryTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void testArchiveDirectoryExistingFile() throws Exception {
+    void testArchiveDirectoryExistingFile() throws Exception {
         addDescription("Test the ArchiveDirectory when the file exists");
         addStep("Setup", "Should place the 'existing file' in the directory.");
 
@@ -80,7 +80,7 @@ class ArchiveDirectoryTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void testArchiveDirectoryMissingFile() throws Exception {
+    void testArchiveDirectoryMissingFile() throws Exception {
         addDescription("Test the ArchiveDirectory when the file is missing.");
         addStep("Setup", "No file added to the directory.");
 
@@ -103,7 +103,7 @@ class ArchiveDirectoryTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void testArchiveDirectoryNewFile() throws Exception {
+    void testArchiveDirectoryNewFile() throws Exception {
         addDescription("Testing the ArchiveDirectory handling of a new file.");
         addStep("Setup", "No file added to the directory.");
         ArchiveDirectory directory = new ArchiveDirectory(DIR_NAME);
@@ -142,7 +142,7 @@ class ArchiveDirectoryTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void testArchiveDirectoryMoveFileToArchive() throws Exception {
+    void testArchiveDirectoryMoveFileToArchive() throws Exception {
         addDescription("Testing the error scenarios when moving a file from tmp to archive for the ArchiveDirectory.");
         addStep("Setup", "No file added to the directory.");
         ArchiveDirectory directory = new ArchiveDirectory(DIR_NAME);
@@ -185,7 +185,7 @@ class ArchiveDirectoryTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void testArchiveDirectoryRemoveFile() throws Exception {
+    void testArchiveDirectoryRemoveFile() throws Exception {
         addDescription("Testing the error scenarios when removing files from the archive.");
         addStep("Setup", "No file added to the directory.");
         ArchiveDirectory directory = new ArchiveDirectory(DIR_NAME);
@@ -224,7 +224,7 @@ class ArchiveDirectoryTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void testArchiveDirectoryExistingFolderFile() throws Exception {
+    void testArchiveDirectoryExistingFolderFile() throws Exception {
         addDescription("Test the ArchiveDirectory when the file exists");
         addStep("Setup", "Should place the 'existing file' in the directory.");
 
@@ -245,7 +245,7 @@ class ArchiveDirectoryTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void testArchiveDirectoryMissingFolderFile() throws Exception {
+    void testArchiveDirectoryMissingFolderFile() throws Exception {
         addDescription("Test the ArchiveDirectory when the file is missing.");
         addStep("Setup", "No file added to the directory.");
 
@@ -268,7 +268,7 @@ class ArchiveDirectoryTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void testArchiveDirectoryNewFolderFile() throws Exception {
+    void testArchiveDirectoryNewFolderFile() throws Exception {
         addDescription("Testing the ArchiveDirectory handling of a new file.");
         addStep("Setup", "No file added to the directory.");
         ArchiveDirectory directory = new ArchiveDirectory(DIR_NAME);
@@ -308,7 +308,7 @@ class ArchiveDirectoryTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void testArchiveDirectoryMoveFolderFileToArchive() throws Exception {
+    void testArchiveDirectoryMoveFolderFileToArchive() throws Exception {
         addDescription("Testing the error scenarios when moving a file from tmp to archive for the ArchiveDirectory.");
         addStep("Setup", "No file added to the directory.");
         ArchiveDirectory directory = new ArchiveDirectory(DIR_NAME);
@@ -352,7 +352,7 @@ class ArchiveDirectoryTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void testArchiveDirectoryRemoveFolderFile() throws Exception {
+    void testArchiveDirectoryRemoveFolderFile() throws Exception {
         addDescription("Testing the error scenarios when removing files from the archive.");
         addStep("Setup", "No file added to the directory.");
         ArchiveDirectory directory = new ArchiveDirectory(DIR_NAME);

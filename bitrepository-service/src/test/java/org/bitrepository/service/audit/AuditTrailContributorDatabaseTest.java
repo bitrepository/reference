@@ -42,7 +42,7 @@ import java.util.Locale;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-/** Run audit trail contributor database test using Derby.  Generates jaccept reports. */
+/** Run audit trail contributor database test using Derby.  Generates Allure reports. */
 
 public class AuditTrailContributorDatabaseTest {
     private Settings settings;
