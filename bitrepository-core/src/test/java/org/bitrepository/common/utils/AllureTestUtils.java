@@ -35,8 +35,15 @@ public class AllureTestUtils {
         {
             return;
         }
+        
+        // If the string does not start with a tag (e.g. <ol>, <p>), assume it is plain text 
+        // and preserve newlines by converting them to HTML line breaks.
+        String content = expectedResult.trim().startsWith("<") 
+                ? expectedResult 
+                : expectedResult.replace("\n", "<br>");
+
         Allure.step(stepDescription, () -> 
-            Allure.addAttachment("Expected Result", "text/plain", expectedResult));
+            Allure.addAttachment("Expected Result", "text/html", content));
     }
 
     /**
