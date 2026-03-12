@@ -134,38 +134,38 @@
         <tag>HEAD</tag>
     </scm>
 
-  <dependencyManagement>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-bom</artifactId>
+                <version>2.32.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>2.0.17</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>io.qameta.allure</groupId>
-        <artifactId>allure-bom</artifactId>
-        <version>2.32.0</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <version>2.0.17</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-  <dependencies>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>2.0.17</version>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>2.0.17</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-      <version>1.5.22</version>
+            <version>1.5.22</version>
         </dependency>
-    <!-- Logback Core -->
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-core</artifactId>
-      <version>1.5.22</version>
+        <!-- Logback Core -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>1.5.22</version>
         </dependency>
 
         <!-- Updating org.jvnet jaxb2 dependencies to 0.12.0 causes problems for the jaxb2-maven-plugin
@@ -232,40 +232,40 @@
             <artifactId>jcl-over-slf4j</artifactId>
             <version>${slf4j.version}</version>
         </dependency>
-    <!-- https://mvnrepository.com/artifact/io.qameta.allure/allure-junit5 -->
+        <!-- https://mvnrepository.com/artifact/io.qameta.allure/allure-junit5 -->
         <dependency>
-      <groupId>io.qameta.allure</groupId>
-      <artifactId>allure-junit5</artifactId>
-      <version>2.32.0</version>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-junit5</artifactId>
+            <version>2.32.0</version>
             <scope>test</scope>
         </dependency>
-    <dependency>
-      <groupId>com.google.code.gson</groupId>
-      <artifactId>gson</artifactId>
-      <version>2.10.1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>aspectjweaver</artifactId>
-      <version>${aspectj.version}</version>
-    </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.10.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>${aspectj.version}</version>
+        </dependency>
 
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
-        <groupId>io.qameta.allure</groupId>
-        <artifactId>allure-maven</artifactId>
-        <version>${allure.version}</version>
-        <configuration>
-          <reportVersion>2.20.1</reportVersion>
-          <reportDirectory>${project.basedir}/target/site/allure-maven-plugin</reportDirectory>
-          <resultsDirectory>${project.basedir}/target/allure-results</resultsDirectory>
-        </configuration>
-      </plugin>
-      <plugin>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-maven</artifactId>
+                <version>${allure.version}</version>
+                <configuration>
+                    <reportVersion>2.20.1</reportVersion>
+                    <reportDirectory>${project.basedir}/target/site/allure-maven-plugin</reportDirectory>
+                    <resultsDirectory>${project.basedir}/target/allure-results</resultsDirectory>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
                 <version>3.0.0-M3</version>
@@ -420,7 +420,8 @@
                     <version>3.5.4</version>
                     <configuration>
                         <systemPropertyVariables>
-                            <allure.results.directory>${project.basedir}/../target/allure-results</allure.results.directory>
+                            <allure.results.directory>${project.basedir}/../target/allure-results
+                            </allure.results.directory>
                         </systemPropertyVariables>
 
                         <argLine>@{argLine} -javaagent:${org.aspectj:aspectjweaver:jar}</argLine>
@@ -572,10 +573,11 @@
         <jakarta.ws.rs.version>2.1.6</jakarta.ws.rs.version>
         <javaee.web.version>8.0.1</javaee.web.version>
         <javax.servlet.version>4.0.1</javax.servlet.version>
-    <slf4j.version>1.7.36</slf4j.version>
-    <project.site.location>dav:https://sbforge.org/maven/bitrepository/sites/reference/${project.version}</project.site.location>
+        <slf4j.version>1.7.36</slf4j.version>
+        <project.site.location>dav:https://sbforge.org/maven/bitrepository/sites/reference/${project.version}
+        </project.site.location>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <aspectj.version>1.9.7</aspectj.version>
-    <allure.version>2.17.0</allure.version>
+        <aspectj.version>1.9.7</aspectj.version>
+        <allure.version>2.17.0</allure.version>
     </properties>
 </project>
