@@ -31,11 +31,9 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 
 /**
- * jaccept steps to validate that the exception thrown is the exception thrown.
+ * Allure steps to validate that the exception thrown is the exception thrown.
  */
 public class IdentifyContributorExceptionTest {
-    private final String TEST_COLLECTION_ID = "test-collection-id";
-
     @Test
     @Tag("regressiontest")
     public void testIdentifyContributor() throws Exception {

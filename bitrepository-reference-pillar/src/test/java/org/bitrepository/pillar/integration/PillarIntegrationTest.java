@@ -61,6 +61,7 @@ import org.junit.platform.suite.api.AfterSuite;
 import javax.jms.JMSException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 
 import static org.bitrepository.common.utils.AllureTestUtils.isTestRunning;
 
@@ -307,7 +308,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
             try (InputStream fis = getClass().getClassLoader().getResourceAsStream("default-test-file.txt")) {
                 fe.putFile(fis, defaultFileUrl);
             } catch (IOException e) {
-                throw new RuntimeException("Failed to upload default test file", e);
+                throw new UncheckedIOException("Failed to upload default test file", e);
             }
 
 
@@ -326,10 +327,6 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
      * Used to listen for operation event and log this.
      */
     public class ClientEventLogger implements EventHandler {
-
-        /**
-         * The <code>TestEventManager</code> used to manage the event for the associated test.
-         */
 
         /**
          * The constructor.

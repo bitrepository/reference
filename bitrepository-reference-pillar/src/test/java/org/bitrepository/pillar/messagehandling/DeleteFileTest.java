@@ -29,7 +29,12 @@ import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositorymessages.*;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
+import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.pillar.MockedPillarTest;
 import org.bitrepository.pillar.messagefactories.DeleteFileMessageFactory;
 import org.junit.jupiter.api.Tag;
@@ -42,7 +47,9 @@ import org.mockito.stubbing.Answer;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 
 
 /**
@@ -92,10 +99,10 @@ public class DeleteFileTest extends MockedPillarTest {
                 "The pillar should make a response.");
         IdentifyPillarsForDeleteFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForDeleteFileResponse.class);
-        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
-                receivedIdentifyResponse.getResponseInfo().getResponseCode());
-        Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID());
-        Assertions.assertEquals(FILE_ID, receivedIdentifyResponse.getFileID());
+        assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
+                ResponseCode.IDENTIFICATION_POSITIVE);
+        assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
+        assertEquals(FILE_ID, receivedIdentifyResponse.getFileID());
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
         assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
@@ -134,10 +141,10 @@ public class DeleteFileTest extends MockedPillarTest {
                 "The pillar should make a response.");
         IdentifyPillarsForDeleteFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForDeleteFileResponse.class);
-        Assertions.assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE,
-                receivedIdentifyResponse.getResponseInfo().getResponseCode());
-        Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID());
-        Assertions.assertEquals(FILE_ID, receivedIdentifyResponse.getFileID());
+        assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
+                ResponseCode.FILE_NOT_FOUND_FAILURE);
+        assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
+        assertEquals(FILE_ID, receivedIdentifyResponse.getFileID());
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
         assertEquals(0, audits.getCallsForAuditEvent(), "Should not deliver audits");
@@ -215,10 +222,9 @@ public class DeleteFileTest extends MockedPillarTest {
         addStep("Retrieve the FinalResponse for the DeleteFile request",
                 "The final response should tell about the error, and not contain the file.");
         DeleteFileFinalResponse finalResponse = clientReceiver.waitForMessage(DeleteFileFinalResponse.class);
-        Assertions.assertEquals(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE,
-                finalResponse.getResponseInfo().getResponseCode());
-        Assertions.assertEquals(getPillarID(), finalResponse.getPillarID());
-        Assertions.assertEquals(FILE_ID, finalResponse.getFileID());
+        assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
+        assertEquals(finalResponse.getPillarID(), getPillarID());
+        assertEquals(FILE_ID, finalResponse.getFileID());
 
         addStep("Pillar should have sent an alarm",
                 "Alarm contains information about the missing verification " +
@@ -258,8 +264,7 @@ public class DeleteFileTest extends MockedPillarTest {
             public String answer(InvocationOnMock invocation) {
                 return DEFAULT_MD5_CHECKSUM;
             }
-        }).when(model).getChecksumForFile(ArgumentMatchers.eq(FILE_ID), ArgumentMatchers.anyString(),
-                ArgumentMatchers.any(ChecksumSpecTYPE.class));
+        }).when(model).getChecksumForFile(eq(FILE_ID), anyString(), any(ChecksumSpecTYPE.class));
 
         addStep("Create and send the actual DeleteFile message to the pillar.",
                 "Should be received and handled by the pillar.");
