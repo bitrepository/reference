@@ -198,7 +198,8 @@ public class MessageBusTimeToSendMessagesStressTest {
         /* The number of threads to send the messages. */
         int NUMBER_OF_SENDERS = 10;
         for (int i = 0; i < NUMBER_OF_SENDERS; i++) {
-            Thread t = new MessageSenderThread(conf, securityManager, NUMBER_OF_MESSAGES / NUMBER_OF_SENDERS, "#" + i);
+            Thread t = new MessageSenderThread(conf, securityManager, NUMBER_OF_MESSAGES / NUMBER_OF_SENDERS,
+                    String.valueOf(i));
             t.start();
         }
     }
@@ -209,7 +210,8 @@ public class MessageBusTimeToSendMessagesStressTest {
         private final String id;
 
         public MessageSenderThread(MessageBusConfiguration conf, SecurityManager securityManager, int numberOfMessages, String id) {
-            Settings senderSettings = TestSettingsProvider.getSettings(MessageBusTimeToSendMessagesStressTest.class.getSimpleName() + id);
+            Settings senderSettings =
+                    TestSettingsProvider.getSettings(MessageBusTimeToSendMessagesStressTest.class.getSimpleName() + "-" + id);
             senderSettings.getRepositorySettings().getProtocolSettings().setMessageBusConfiguration(conf);
             this.bus = new ActiveMQMessageBus(senderSettings, securityManager);
             this.numberOfMessages = numberOfMessages;
