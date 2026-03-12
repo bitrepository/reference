@@ -248,7 +248,7 @@
     <dependency>
       <groupId>org.aspectj</groupId>
       <artifactId>aspectjweaver</artifactId>
-      <version>1.9.22</version>
+      <version>${aspectj.version}</version>
     </dependency>
 
     </dependencies>
@@ -376,6 +376,17 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>properties</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -412,7 +423,7 @@
                             <allure.results.directory>${project.basedir}/../target/allure-results</allure.results.directory>
                         </systemPropertyVariables>
 
-                        <argLine>@{argLine} -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"</argLine>
+                        <argLine>@{argLine} -javaagent:${org.aspectj:aspectjweaver:jar}</argLine>
                     </configuration>
                 </plugin>
                 <plugin>
