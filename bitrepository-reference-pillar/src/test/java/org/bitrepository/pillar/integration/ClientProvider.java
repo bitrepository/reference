@@ -34,7 +34,6 @@ import org.bitrepository.modify.deletefile.DeleteFileClientTestWrapper;
 import org.bitrepository.modify.putfile.BlockingPutFileClient;
 import org.bitrepository.modify.putfile.PutFileClientTestWrapper;
 import org.bitrepository.modify.replacefile.BlockingReplaceFileClient;
-import org.bitrepository.modify.replacefile.ReplaceFileClientTestWrapper;
 
 /**
  * Provides (blocking) reference client instances.
@@ -73,19 +72,6 @@ public class ClientProvider {
             );
         }
         return putFileClient;
-    }
-
-    public synchronized BlockingReplaceFileClient getReplaceFileClient() {
-        if (replaceFileClient == null) {
-            replaceFileClient = new BlockingReplaceFileClient(
-                    new ReplaceFileClientTestWrapper(
-                            ModifyComponentFactory.getInstance().retrieveReplaceFileClient(
-                                    settings, securityManager, settings.getComponentID()
-                            )
-                    )
-            );
-        }
-        return replaceFileClient;
     }
 
     public synchronized BlockingDeleteFileClient getDeleteFileClient() {

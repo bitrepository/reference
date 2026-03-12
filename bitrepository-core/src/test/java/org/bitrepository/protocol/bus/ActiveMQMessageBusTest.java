@@ -45,7 +45,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Runs the GeneralMessageBusTest using a LocalActiveMQBroker (if useEmbeddedMessageBus is true) and a suitable
- * MessageBus based on settingsForTestClient.  Regression tests utilized that uses JAccept to generate reports.
+ * MessageBus based on settingsForTestClient.  Regression tests utilized that uses Allure to generate reports.
  */
 
 public class ActiveMQMessageBusTest extends GeneralMessageBusTest {

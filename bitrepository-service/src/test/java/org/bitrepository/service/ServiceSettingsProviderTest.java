@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 /**
- * jaccept report generating test of whether ServiceSettingsProvider actually <i>knows</i> the enum ServiceType.
+ * Allure report generating test of whether ServiceSettingsProvider actually <i>knows</i> the enum ServiceType.
  */
 public class ServiceSettingsProviderTest {
 
