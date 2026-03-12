@@ -2,6 +2,8 @@ package org.bitrepository.common.utils;
 
 import io.qameta.allure.Allure;
 
+import java.util.NoSuchElementException;
+
 public class AllureTestUtils {
 
     /**
@@ -11,7 +13,7 @@ public class AllureTestUtils {
         try {
             Allure.getLifecycle().getCurrentTestCase();
             return true;
-        } catch (IllegalStateException e) {
+        } catch (NoSuchElementException e) {
             return false;
         }
     }
@@ -29,10 +31,12 @@ public class AllureTestUtils {
      * Add a test step with expected result
      */
     public static void addStep(String stepDescription, String expectedResult) {
-        if (!isTestRunning()) return;
-        Allure.step(stepDescription, () -> {
-            Allure.addAttachment("Expected Result", "text/plain", expectedResult);
-        });
+        if (!isTestRunning())
+        {
+            return;
+        }
+        Allure.step(stepDescription, () -> 
+            Allure.addAttachment("Expected Result", "text/plain", expectedResult));
     }
 
     /**
@@ -40,9 +44,7 @@ public class AllureTestUtils {
      */
     public static void addFixture(String fixtureDescription) {
         if (!isTestRunning()) return;
-        Allure.step("Fixture: " + fixtureDescription, () -> {
-            Allure.step("Setup: " + fixtureDescription);
-        });
+        Allure.step("Fixture: " + fixtureDescription, () -> Allure.step("Setup: " + fixtureDescription));
     }
 
     /**
@@ -53,56 +55,11 @@ public class AllureTestUtils {
         if (reference.contains("BITMAG-")) {
             int startIdx = reference.indexOf("BITMAG-");
             int endIdx = reference.indexOf(">", startIdx);
-            if (endIdx > startIdx) {
+            if (endIdx != -1) {
                 String jiraIssue = reference.substring(startIdx, endIdx);
                 Allure.link(jiraIssue, "https://sbforge.org/jira/browse/" + jiraIssue);
             }
         }
         Allure.addAttachment("Reference", "text/html", reference);
-    }
-
-    /**
-     * Add a step that executes code
-     */
-    public static <T> T addStep(String stepDescription, StepBody<T> body) {
-        handleStepRunning(body);
-        return Allure.step(stepDescription, body::execute);
-    }
-
-    private static <T> void handleStepRunning(StepBody<T> body) {
-        if (!isTestRunning()) {
-            try {
-                body.execute();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    /**
-     * Add a step that executes code with expected result documentation
-     */
-    public static <T> T addStep(String stepDescription, String expectedResult, StepBody<T> body) {
-        handleStepRunning(body);
-        return Allure.step(stepDescription, () -> {
-            Allure.addAttachment("Expected Result", "text/plain", expectedResult);
-            return body.execute();
-        });
-    }
-
-    /**
-     * Functional interface for steps that return a value
-     */
-    @FunctionalInterface
-    public interface StepBody<T> {
-        T execute() throws Exception;
-    }
-
-    /**
-     * Functional interface for steps that don't return a value
-     */
-    @FunctionalInterface
-    public interface VoidStepBody {
-        void execute() throws Exception;
     }
 }

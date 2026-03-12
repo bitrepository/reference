@@ -34,7 +34,7 @@ import java.nio.charset.StandardCharsets;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class FileUtilsTest {    String DIR = "test-directory";
+public class FileUtilsTest {
     String directory = "test-directory";
     String subDirectory = "sub-directory";
     String testFileName = "test.file.name";
