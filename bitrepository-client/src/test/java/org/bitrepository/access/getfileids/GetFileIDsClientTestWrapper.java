@@ -24,12 +24,13 @@
  */
 package org.bitrepository.access.getfileids;
 
+import io.qameta.allure.Allure;
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.jaccept.TestEventManager;
 
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Locale;
 
 /**
  * Wraps the <code>GetFileIDsClient</code> adding test event logging and functionality.
@@ -37,26 +38,28 @@ import java.util.Arrays;
 public class GetFileIDsClientTestWrapper implements GetFileIDsClient {
     /** The actual GetFileIDsClient to perform the operations.*/
     private final GetFileIDsClient client;
-    /** The EventManager to manage the events.*/
-    private final TestEventManager eventManager;
-    
+
     /**
-     * Constructor. 
+     * Constructor.
      * @param client The actual GetFileIDsClient.
-     * @param eventManager The EventManager to notify about the operations performed by this wrapper.
      */
-    public GetFileIDsClientTestWrapper(GetFileIDsClient client, TestEventManager eventManager) {
+    public GetFileIDsClientTestWrapper(GetFileIDsClient client) {
         this.client = client;
-        this.eventManager = eventManager;
     }
 
     @Override
     public void getFileIDs(String collectionID, ContributorQuery[] contributorQueries, String fileID,
                            URL addressForResult, EventHandler eventHandler) {
-        eventManager.addStimuli("Calling getFileIDs(" +
-                (contributorQueries == null ? "null" : Arrays.asList(contributorQueries)) +
-                ", " + fileID + ", " + addressForResult + ", "
-                + eventHandler + ")");
-        client.getFileIDs(collectionID, contributorQueries, fileID, addressForResult, eventHandler);
+        String stepName = "Calling getFileIDs for: " + (fileID != null ? fileID : "all files");
+        
+        String details = String.format(Locale.ROOT,
+                "Collection: %s%nContributor Queries: %s%nAddress for Result: %s%nEventHandler: %s",
+                collectionID, contributorQueries == null ? "null" : Arrays.asList(contributorQueries),
+                addressForResult, eventHandler);
+
+        Allure.step(stepName, () -> {
+            Allure.addAttachment("GetFileIDs Request Parameters", details);
+            client.getFileIDs(collectionID, contributorQueries, fileID, addressForResult, eventHandler);
+        });
     }
 }

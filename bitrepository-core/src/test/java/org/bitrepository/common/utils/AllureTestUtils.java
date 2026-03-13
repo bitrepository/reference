@@ -2,20 +2,13 @@ package org.bitrepository.common.utils;
 
 import io.qameta.allure.Allure;
 
-import java.util.NoSuchElementException;
-
 public class AllureTestUtils {
 
     /**
      * Check if we're inside an active test context
      */
     public static boolean isTestRunning() {
-        try {
-            Allure.getLifecycle().getCurrentTestCase();
-            return true;
-        } catch (NoSuchElementException e) {
-            return false;
-        }
+        return Allure.getLifecycle().getCurrentTestCase().isPresent();
     }
 
     /**

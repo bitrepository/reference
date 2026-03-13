@@ -39,7 +39,7 @@ class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
     protected GetFileMessageFactory msgFactory;
 
     @BeforeEach
-    public void initialiseReferenceTest() throws Exception {
+    void initialiseReferenceTest() {
         msgFactory = new GetFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
     }
 
@@ -76,7 +76,7 @@ class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
 
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
-    public void nonExistingFileIdentificationIT() {
+    void nonExistingFileIdentificationIT() {
         addDescription("Tests the  IdentifyPillarsForGetFile functionality of the pillar for a " +
                 "IdentificationForGetFile " +
                 "for a non existing file.");
