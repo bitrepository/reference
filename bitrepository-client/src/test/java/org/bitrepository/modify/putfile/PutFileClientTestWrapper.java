@@ -30,6 +30,7 @@ import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.eventhandler.EventHandler;
 
 import java.net.URL;
+import java.util.Locale;
 
 /**
  * Wrapper class for a PutFileClient adding test event logging.
@@ -49,15 +50,12 @@ public class PutFileClientTestWrapper implements PutFileClient {
     public void putFile(String collectionID, URL url, String fileID, long sizeOfFile,
                         ChecksumDataForFileTYPE checksumForValidationAtPillar,
                         ChecksumSpecTYPE checksumRequestsForValidation, EventHandler eventHandler, String auditTrailInformation) {
-        String stepName = "Calling putFile for file: " + fileID;
-        StringBuilder details = new StringBuilder();
-        details.append("Collection: ").append(collectionID).append("\n")
-                .append("URL: ").append(url).append("\n")
-                .append("Size: ").append(sizeOfFile).append("\n")
-                .append("Audit Info: ").append(auditTrailInformation);
+        String stepName = String.format(Locale.ROOT, "Calling putFile for file: %s", fileID);
+        String details = String.format(Locale.ROOT, "Collection: %s%nURL: %s%nSize: %d%nAudit Info: %s",
+                collectionID, url, sizeOfFile, auditTrailInformation);
 
         Allure.step(stepName, () -> {
-            Allure.addAttachment("Put Request Parameters", details.toString());
+            Allure.addAttachment("Put Request Parameters", details);
             wrappedPutClient.putFile(collectionID, url, fileID, sizeOfFile, checksumForValidationAtPillar,
                     checksumRequestsForValidation,
                     eventHandler, auditTrailInformation);

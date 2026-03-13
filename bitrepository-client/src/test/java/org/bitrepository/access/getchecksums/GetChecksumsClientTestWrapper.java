@@ -31,6 +31,7 @@ import org.bitrepository.client.eventhandler.EventHandler;
 
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Locale;
 
 /**
  * Wraps the <code>GetFileClient</code> adding test event logging and functionality for handling blocking calls.
@@ -40,7 +41,6 @@ public class GetChecksumsClientTestWrapper implements GetChecksumsClient {
 
     public GetChecksumsClientTestWrapper(GetChecksumsClient createGetChecksumsClient) {
         this.getChecksumsClientInstance = createGetChecksumsClient;
-
     }
 
     @Override
@@ -49,15 +49,13 @@ public class GetChecksumsClientTestWrapper implements GetChecksumsClient {
                              URL addressForResult, EventHandler eventHandler, String auditTrailInformation) {
         String stepName = "Calling getChecksums for: " + (fileID != null ? fileID : "all files");
 
-        StringBuilder details = new StringBuilder();
-        details.append("Collection: ").append(collectionID).append("\n")
-                .append("Contributor Queries: ").append(contributorQueries == null ? "null" : Arrays.asList(contributorQueries)).append("\n")
-                .append("Checksum Spec: ").append(checksumSpec).append("\n")
-                .append("Address for Result: ").append(addressForResult).append("\n")
-                .append("Audit Info: ").append(auditTrailInformation);
+        String details = String.format(Locale.ROOT, "Collection: %s\nContributor Queries: %s\nChecksum Spec: %s\n"
+                        + "Address for Result: %s\nAudit Info: %s",
+                collectionID, contributorQueries == null ? "null" : Arrays.asList(contributorQueries),
+                checksumSpec, addressForResult, auditTrailInformation);
 
         Allure.step(stepName, () -> {
-            Allure.addAttachment("GetChecksums Request Parameters", details.toString());
+            Allure.addAttachment("GetChecksums Request Parameters", details);
             getChecksumsClientInstance.getChecksums(collectionID, contributorQueries, fileID, checksumSpec,
                     addressForResult,
                     eventHandler, auditTrailInformation);

@@ -34,6 +34,9 @@ public class GetStatusClientTestWrapper implements GetStatusClient {
 
     @Override
     public void getStatus(EventHandler eventHandler) {
+        // Because JAccept's events are interpreted by Allure as threads, but Allure doesn't capture the start/stop
+        // times correctly, and the thread UUIDs don't match.
+        // Therefore, filtering that suppresses these irrelevant error messages is necessary.
         if (Allure.getLifecycle().getCurrentTestCase().isPresent()) {
             Allure.step("Calling getStatus", () -> {
                 getStatusClient.getStatus(eventHandler);

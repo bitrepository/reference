@@ -28,7 +28,7 @@ import java.util.Arrays;
 import java.util.Locale;
 
 public class AuditTrailClientTestWrapper implements AuditTrailClient {
-    private AuditTrailClient auditTrailClient;
+    private final AuditTrailClient auditTrailClient;
 
     public AuditTrailClientTestWrapper(AuditTrailClient auditTrailClient) {
         this.auditTrailClient = auditTrailClient;
@@ -44,10 +44,8 @@ public class AuditTrailClientTestWrapper implements AuditTrailClient {
             String details =
                     String.format(Locale.ROOT,
                             "Collection: %s%nComponent Queries: %s%nURL for Result: %s%nAudit Info: %s",
-                    collectionID,
-                    componentQueries == null ? "null" : Arrays.asList(componentQueries),
-                    urlForResult,
-                    auditTrailInformation);
+                    collectionID, componentQueries == null ? "null" : Arrays.asList(componentQueries),
+                    urlForResult, auditTrailInformation);
 
             Allure.step(stepName, () -> {
                 Allure.addAttachment("AuditTrails Request Parameters", details);

@@ -30,6 +30,7 @@ import org.bitrepository.client.eventhandler.EventHandler;
 
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Locale;
 
 /**
  * Wraps the <code>GetFileIDsClient</code> adding test event logging and functionality.
@@ -50,15 +51,14 @@ public class GetFileIDsClientTestWrapper implements GetFileIDsClient {
     public void getFileIDs(String collectionID, ContributorQuery[] contributorQueries, String fileID,
                            URL addressForResult, EventHandler eventHandler) {
         String stepName = "Calling getFileIDs for: " + (fileID != null ? fileID : "all files");
-
-        StringBuilder details = new StringBuilder();
-        details.append("Collection: ").append(collectionID).append("\n")
-                .append("Contributor Queries: ").append(contributorQueries == null ? "null" : Arrays.asList(contributorQueries)).append("\n")
-                .append("Address for Result: ").append(addressForResult).append("\n")
-                .append("EventHandler: ").append(eventHandler);
+        
+        String details = String.format(Locale.ROOT,
+                "Collection: %s%nContributor Queries: %s%nAddress for Result: %s%nEventHandler: %s",
+                collectionID, contributorQueries == null ? "null" : Arrays.asList(contributorQueries),
+                addressForResult, eventHandler);
 
         Allure.step(stepName, () -> {
-            Allure.addAttachment("GetFileIDs Request Parameters", details.toString());
+            Allure.addAttachment("GetFileIDs Request Parameters", details);
             client.getFileIDs(collectionID, contributorQueries, fileID, addressForResult, eventHandler);
         });
     }

@@ -16,16 +16,14 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static org.mockito.Mockito.mock;
-
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class AuditPackerTest {
+class AuditPackerTest {
     private String collectionID;
     private AuditTrailPreservation preservationSettings;
     private AuditTrailStore store;
 
     @BeforeAll
-    public void setup() {
+    void setup() {
         Settings settings = TestSettingsProvider.reloadSettings("LocalAuditPreservationUnderTest");
         preservationSettings =
                 settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailPreservation();
@@ -35,7 +33,7 @@ public class AuditPackerTest {
     }
 
     @Test
-    public void testCreateNewPackage() throws IOException {
+    void testCreateNewPackage() throws IOException {
         AuditPacker packer = new AuditPacker(store, preservationSettings, collectionID);
         Map<String, Long> seqNumsReached = packer.getSequenceNumbersReached();
         Assertions.assertEquals(3, seqNumsReached.size());
