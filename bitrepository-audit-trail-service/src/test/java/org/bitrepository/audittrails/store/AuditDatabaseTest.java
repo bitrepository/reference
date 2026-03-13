@@ -33,6 +33,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigInteger;
 import java.text.ParseException;
@@ -433,9 +434,6 @@ public class AuditDatabaseTest {
                 null, null));
 
         database.addAuditTrails(events, collectionID, pillarID);
-
-        
-        
     }
 
     private AuditTrailEvents createEvents() {

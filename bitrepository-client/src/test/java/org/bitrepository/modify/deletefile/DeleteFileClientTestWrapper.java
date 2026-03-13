@@ -29,6 +29,8 @@ import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.eventhandler.EventHandler;
 
+import java.util.Locale;
+
 /**
  * Wrapper class for a DeleteFileClient adding testmanager logging.
  */
@@ -52,17 +54,14 @@ public class DeleteFileClientTestWrapper implements DeleteFileClient {
     public void deleteFile(String collectionID, String fileID, String pillarID,
                            ChecksumDataForFileTYPE checksumForPillar,
                            ChecksumSpecTYPE checksumRequested, EventHandler eventHandler, String auditTrailInformation) {
-        String stepName = "Calling deleteFile for file: " + fileID;
-        String details = "Collection: " + collectionID + "\n"
-                + "Pillar: " + pillarID + "\n"
-                + "Checksum: " + checksumForPillar + "\n"
-                + "Audit Info: " + auditTrailInformation;
+        String stepName = String.format(Locale.ROOT, "Calling deleteFile for file: %s", fileID);
+        String details = String.format(Locale.ROOT, "Collection: %s%nPillar: %s%nChecksum: %s%nAudit Info: %s",
+                collectionID, pillarID, checksumForPillar, auditTrailInformation);
 
         Allure.step(stepName, () -> {
             Allure.addAttachment("Delete Request Parameters", details);
             wrappedDeleteClient.deleteFile(collectionID, fileID, pillarID, checksumForPillar, checksumRequested,
-                    eventHandler,
-                    auditTrailInformation);
+                    eventHandler, auditTrailInformation);
         });
     }
 }

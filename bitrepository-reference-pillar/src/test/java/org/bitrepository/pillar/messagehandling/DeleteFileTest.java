@@ -99,9 +99,9 @@ public class DeleteFileTest extends MockedPillarTest {
                 "The pillar should make a response.");
         IdentifyPillarsForDeleteFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForDeleteFileResponse.class);
-        assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.IDENTIFICATION_POSITIVE);
-        assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
+        assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode());
+        assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID());
         assertEquals(FILE_ID, receivedIdentifyResponse.getFileID());
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
@@ -141,9 +141,9 @@ public class DeleteFileTest extends MockedPillarTest {
                 "The pillar should make a response.");
         IdentifyPillarsForDeleteFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForDeleteFileResponse.class);
-        assertEquals(receivedIdentifyResponse.getResponseInfo().getResponseCode(),
-                ResponseCode.FILE_NOT_FOUND_FAILURE);
-        assertEquals(receivedIdentifyResponse.getPillarID(), getPillarID());
+        assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode());
+        assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID());
         assertEquals(FILE_ID, receivedIdentifyResponse.getFileID());
 
         alarmReceiver.checkNoMessageIsReceived(AlarmMessage.class);
@@ -222,8 +222,8 @@ public class DeleteFileTest extends MockedPillarTest {
         addStep("Retrieve the FinalResponse for the DeleteFile request",
                 "The final response should tell about the error, and not contain the file.");
         DeleteFileFinalResponse finalResponse = clientReceiver.waitForMessage(DeleteFileFinalResponse.class);
-        assertEquals(finalResponse.getResponseInfo().getResponseCode(), ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE);
-        assertEquals(finalResponse.getPillarID(), getPillarID());
+        assertEquals(ResponseCode.EXISTING_FILE_CHECKSUM_FAILURE, finalResponse.getResponseInfo().getResponseCode());
+        assertEquals(getPillarID(), finalResponse.getPillarID());
         assertEquals(FILE_ID, finalResponse.getFileID());
 
         addStep("Pillar should have sent an alarm",

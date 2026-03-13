@@ -31,14 +31,10 @@ import java.util.Date;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-/**
- * Runs ExtendedTestCase with a regression test.
- */
-
-public class AlarmDatabaseExtractionModelTest {
+class AlarmDatabaseExtractionModelTest {
     @Test
     @Tag("regressiontest")
-    public void alarmExceptionTest() throws Exception {
+    void alarmExceptionTest() throws Exception {
         addDescription("Test the AlarmDatabaseExtractionModel class");
         addStep("Define constants etc.", "Should be OK");
         boolean ascending = true;

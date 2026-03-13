@@ -29,12 +29,13 @@ import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.client.eventhandler.EventHandler;
 
 import java.net.URL;
+import java.util.Locale;
 
 /**
  * Wraps the <code>GetFileClient</code> adding test event logging and functionality for handling blocking calls.
  */
 public class GetFileClientTestWrapper implements GetFileClient {
-    private GetFileClient createGetFileClient;
+    private final GetFileClient createGetFileClient;
 
     public GetFileClientTestWrapper(GetFileClient createGetFileClient) {
         this.createGetFileClient = createGetFileClient;
@@ -45,11 +46,9 @@ public class GetFileClientTestWrapper implements GetFileClient {
     public void getFileFromFastestPillar(String collectionID, String fileID, FilePart filePart, URL uploadUrl,
                                          EventHandler eventHandler,
                                          String auditTrailInformation) {
-        String stepName = "Calling getFileFromFastestPillar for: " + fileID;
-        String details = "Collection: " + collectionID + "\n"
-                + "FilePart: " + filePart + "\n"
-                + "Upload URL: " + uploadUrl + "\n"
-                + "Audit Info: " + auditTrailInformation;
+        String stepName = String.format(Locale.ROOT, "Calling getFileFromFastestPillar for: %s", fileID);
+        String details = String.format(Locale.ROOT, "Collection: %s%nFilePart: %s%nUpload URL: %s%nAudit Info: %s",
+                collectionID, filePart, uploadUrl, auditTrailInformation);
 
         Allure.step(stepName, () -> {
             Allure.addAttachment("Request Parameters", details);
@@ -62,12 +61,10 @@ public class GetFileClientTestWrapper implements GetFileClient {
     public void getFileFromSpecificPillar(String collectionID, String fileID, FilePart filePart, URL uploadUrl,
                                           String pillarID,
                                           EventHandler eventHandler, String auditTrailInformation) {
-        String stepName = "Calling getFileFromSpecificPillar for: " + fileID + " on " + pillarID;
-        String details = "Collection: " + collectionID + "\n"
-                + "FilePart: " + filePart + "\n"
-                + "Upload URL: " + uploadUrl + "\n"
-                + "Pillar: " + pillarID + "\n"
-                + "Audit Info: " + auditTrailInformation;
+        String stepName = String.format(Locale.ROOT, "Calling getFileFromSpecificPillar for: %s on %s", fileID, pillarID);
+        String details = String.format(Locale.ROOT,
+                "Collection: %s%nFilePart: %s%nUpload URL: %s%nPillar: %s%nAudit Info: %s",
+                collectionID, filePart, uploadUrl, pillarID, auditTrailInformation);
 
         Allure.step(stepName, () -> {
             Allure.addAttachment("Request Parameters", details);

@@ -8,12 +8,7 @@ public class AllureTestUtils {
      * Check if we're inside an active test context
      */
     public static boolean isTestRunning() {
-        try {
-            Allure.getLifecycle().getCurrentTestCase();
-            return true;
-        } catch (IllegalStateException e) {
-            return false;
-        }
+        return Allure.getLifecycle().getCurrentTestCase().isPresent();
     }
 
     /**
@@ -29,10 +24,19 @@ public class AllureTestUtils {
      * Add a test step with expected result
      */
     public static void addStep(String stepDescription, String expectedResult) {
-        if (!isTestRunning()) return;
-        Allure.step(stepDescription, () -> {
-            Allure.addAttachment("Expected Result", "text/plain", expectedResult);
-        });
+        if (!isTestRunning())
+        {
+            return;
+        }
+        
+        // If the string does not start with a tag (e.g. <ol>, <p>), assume it is plain text 
+        // and preserve newlines by converting them to HTML line breaks.
+        String content = expectedResult.trim().startsWith("<") 
+                ? expectedResult 
+                : expectedResult.replace("\n", "<br>");
+
+        Allure.step(stepDescription, () -> 
+            Allure.addAttachment("Expected Result", "text/html", content));
     }
 
     /**
@@ -40,9 +44,7 @@ public class AllureTestUtils {
      */
     public static void addFixture(String fixtureDescription) {
         if (!isTestRunning()) return;
-        Allure.step("Fixture: " + fixtureDescription, () -> {
-            Allure.step("Setup: " + fixtureDescription);
-        });
+        Allure.step("Fixture: " + fixtureDescription, () -> Allure.step("Setup: " + fixtureDescription));
     }
 
     /**
@@ -53,75 +55,11 @@ public class AllureTestUtils {
         if (reference.contains("BITMAG-")) {
             int startIdx = reference.indexOf("BITMAG-");
             int endIdx = reference.indexOf(">", startIdx);
-            if (endIdx > startIdx) {
+            if (endIdx != -1) {
                 String jiraIssue = reference.substring(startIdx, endIdx);
                 Allure.link(jiraIssue, "https://sbforge.org/jira/browse/" + jiraIssue);
             }
         }
         Allure.addAttachment("Reference", "text/html", reference);
-    }
-
-    /**
-     * Add a step that executes code
-     */
-    public static <T> T addStep(String stepDescription, StepBody<T> body) {
-        if (!isTestRunning()) {
-            try {
-                return body.execute();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return Allure.step(stepDescription, body::execute);
-    }
-
-    /**
-     * Add a step that executes code with expected result documentation
-     */
-    public static <T> T addStep(String stepDescription, String expectedResult, StepBody<T> body) {
-        if (!isTestRunning()) {
-            try {
-                return body.execute();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return Allure.step(stepDescription, () -> {
-            Allure.addAttachment("Expected Result", "text/plain", expectedResult);
-            return body.execute();
-        });
-    }
-
-    /**
-     * Add a step that executes code without return value
-     */
-    public static void addStepVoid(String stepDescription, VoidStepBody body) {
-        if (!isTestRunning()) {
-            try {
-                body.execute();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-            return;
-        }
-        Allure.step(stepDescription, () -> {
-            body.execute();
-        });
-    }
-
-    /**
-     * Functional interface for steps that return a value
-     */
-    @FunctionalInterface
-    public interface StepBody<T> {
-        T execute() throws Exception;
-    }
-
-    /**
-     * Functional interface for steps that don't return a value
-     */
-    @FunctionalInterface
-    public interface VoidStepBody {
-        void execute() throws Exception;
     }
 }
