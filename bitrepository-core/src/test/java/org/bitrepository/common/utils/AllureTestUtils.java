@@ -43,7 +43,9 @@ public class AllureTestUtils {
      * Add a fixture/setup description
      */
     public static void addFixture(String fixtureDescription) {
-        if (!isTestRunning()) return;
+        if (!isTestRunning()) {
+            return;
+        }
         Allure.step("Fixture: " + fixtureDescription, () -> Allure.step("Setup: " + fixtureDescription));
     }
 
@@ -51,7 +53,9 @@ public class AllureTestUtils {
      * Add a reference
      */
     public static void addReference(String reference) {
-        if (!isTestRunning()) return;
+        if (!isTestRunning()) {
+            return;
+        }
         if (reference.contains("BITMAG-")) {
             int startIdx = reference.indexOf("BITMAG-");
             int endIdx = reference.indexOf(">", startIdx);
