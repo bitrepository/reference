@@ -48,12 +48,12 @@
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcprov-jdk18on</artifactId>
-      <version>1.75</version>
+      <version>1.83</version>
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcmail-jdk18on</artifactId>
-      <version>1.75</version>
+      <version>1.83</version>
     </dependency>
     <dependency>
       <groupId>org.apache.activemq</groupId>
@@ -74,7 +74,7 @@
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-server</artifactId>
-      <version>11.0.10</version>
+      <version>11.0.24</version>
       <scope>test</scope>
     </dependency>
     <dependency>
