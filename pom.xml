@@ -154,18 +154,18 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>2.0.17</version>
+            <version>${slf4j.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.5.22</version>
+            <version>1.5.32</version>
         </dependency>
         <!-- Logback Core -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
-            <version>1.5.22</version>
+            <version>1.5.32</version>
         </dependency>
 
         <!-- Updating org.jvnet jaxb2 dependencies to 0.12.0 causes problems for the jaxb2-maven-plugin
@@ -573,11 +573,11 @@
         <jakarta.ws.rs.version>2.1.6</jakarta.ws.rs.version>
         <javaee.web.version>8.0.1</javaee.web.version>
         <javax.servlet.version>4.0.1</javax.servlet.version>
-        <slf4j.version>1.7.36</slf4j.version>
+        <slf4j.version>2.0.17</slf4j.version>
         <project.site.location>dav:https://sbforge.org/maven/bitrepository/sites/reference/${project.version}
         </project.site.location>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <aspectj.version>1.9.7</aspectj.version>
-        <allure.version>2.17.0</allure.version>
+        <aspectj.version>1.9.22.1</aspectj.version>
+        <allure.version>2.20.1</allure.version>
     </properties>
 </project>
