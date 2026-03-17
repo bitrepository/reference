@@ -63,6 +63,7 @@ import javax.jms.JMSException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static org.apache.activemq.plugin.DiscardingDLQBrokerPlugin.log;
 import static org.bitrepository.common.utils.AllureTestUtils.isTestRunning;
 
 /**
