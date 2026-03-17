@@ -224,7 +224,7 @@ public class MessageBusNumberOfListenersStressTest {
             try {
                 Thread.sleep(DEFAULT_WAIT_TIME);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Assertions.fail(e);
             }
 
 
@@ -236,7 +236,7 @@ public class MessageBusNumberOfListenersStressTest {
             try {
                 Thread.sleep(TIME_FRAME);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Assertions.fail(e);
             }
 
             addStep("Stop sending more messages and await all the messages to be received by all the listeners",
@@ -245,7 +245,7 @@ public class MessageBusNumberOfListenersStressTest {
             try {
                 Thread.sleep(DEFAULT_WAIT_TIME);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Assertions.fail(e);
             }
 
             addStep("Verifying the amount of message sent '" + idReached + "' has been received by all '"
@@ -280,7 +280,7 @@ public class MessageBusNumberOfListenersStressTest {
             try {
                 Thread.sleep(DEFAULT_WAIT_TIME);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Assertions.fail(e);
             }
         }
     }

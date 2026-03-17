@@ -21,10 +21,14 @@
  */
 package org.bitrepository.pillar;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Launches a given pillar.
  */
 public final class PillarRunner {
+    private static final Logger log = LoggerFactory.getLogger(PillarRunner.class);
 
     private PillarRunner() {}
 
@@ -39,7 +43,7 @@ public final class PillarRunner {
                 pillar.wait();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.warn("PillarRunner caught exception: ", e);
             System.exit(0);
         }
     }

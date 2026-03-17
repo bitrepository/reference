@@ -98,7 +98,7 @@ public class MessageBusNumberOfMessagesStressTest {
                 try {
                     wait(timeFrame);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Assertions.fail(e);
                 }
             }
 
@@ -154,7 +154,7 @@ public class MessageBusNumberOfMessagesStressTest {
                 try {
                     wait(timeFrame);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Assertions.fail(e);
                 }
             }
 

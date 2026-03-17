@@ -103,7 +103,7 @@ public class MessageBusTimeToSendMessagesStressTest {
                 try {
                     Thread.sleep(TIME_FOR_MESSAGE_TRANSFER_WAIT);
                 } catch (InterruptedException e) {
-                    /* e.printStackTrace(); */
+                    Assertions.fail(e);
                 }
             }
 
@@ -161,7 +161,7 @@ public class MessageBusTimeToSendMessagesStressTest {
                 try {
                     Thread.sleep(TIME_FOR_MESSAGE_TRANSFER_WAIT);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Assertions.fail(e);
                 }
             }
 

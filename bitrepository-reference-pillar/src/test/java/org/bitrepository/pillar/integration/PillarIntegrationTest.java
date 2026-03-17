@@ -52,6 +52,7 @@ import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestInstance;
@@ -61,7 +62,6 @@ import org.junit.platform.suite.api.AfterSuite;
 import javax.jms.JMSException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UncheckedIOException;
 
 import static org.bitrepository.common.utils.AllureTestUtils.isTestRunning;
 
@@ -155,7 +155,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
                 try {
                     messageBus.close();
                 } catch (JMSException e) {
-                    e.printStackTrace();
+                    log.warn("Failed to close message bus", e);
                 }
                 messageBus = null;
             }
@@ -308,7 +308,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
             try (InputStream fis = getClass().getClassLoader().getResourceAsStream("default-test-file.txt")) {
                 fe.putFile(fis, defaultFileUrl);
             } catch (IOException e) {
-                throw new UncheckedIOException("Failed to upload default test file", e);
+                Assertions.fail(e);
             }
 
 
