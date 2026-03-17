@@ -57,13 +57,14 @@ import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.suite.api.AfterSuite;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jms.JMSException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 
-import static org.apache.activemq.plugin.DiscardingDLQBrokerPlugin.log;
 import static org.bitrepository.common.utils.AllureTestUtils.isTestRunning;
 
 /**
@@ -97,7 +98,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     protected static String nonDefaultCollectionId;
     protected static String irrelevantCollectionId;
     protected static ClientEventLogger clientEventHandler;
-
+    private static final Logger log = LoggerFactory.getLogger(PillarIntegrationTest.class);
     @Override
     protected void initializeCUT() {
         super.initializeCUT();
