@@ -28,8 +28,11 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.Period;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
@@ -50,7 +53,14 @@ public final class TimeUtils {
     public static final int MS_PER_HOUR = MS_PER_MINUTE * M_PER_H;
     public static final long MS_PER_DAY = MS_PER_HOUR * H_PER_D;
     public static final long MS_PER_YEAR = DAYS_PER_YEAR * MS_PER_DAY;
+
+    /**
+     * @deprecated Use {@link #DATETIME_FORMATTER} instead
+     */
+    @Deprecated
     public final static DateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.ROOT);
+
+    public final static DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm", Locale.ROOT);
 
     private TimeUtils() {
     }
@@ -259,12 +269,51 @@ public final class TimeUtils {
         return String.join(" ", parts);
     }
 
+    /**
+     * Format an Instant as a short date string.
+     *
+     * @param instant The instant to format
+     * @return The formatted date string
+     */
+    public static String shortDate(Instant instant) {
+        return DATETIME_FORMATTER.format(instant.atZone(ZoneId.systemDefault()));
+    }
+
+    /**
+     * Format a ZonedDateTime as a short date string.
+     *
+     * @param zonedDateTime The ZonedDateTime to format
+     * @return The formatted date string
+     */
+    public static String shortDate(ZonedDateTime zonedDateTime) {
+        return DATETIME_FORMATTER.format(zonedDateTime);
+    }
+
+    /**
+     * @deprecated Use {@link #shortDate(Instant)} instead
+     */
+    @Deprecated
     public static String shortDate(Date date) {
         return formatter.format(date);
     }
 
+    /**
+     * @deprecated Use {@link #shortDate(Instant)} or {@link CalendarUtils#convertFromXMLGregorianCalendarToInstant(XMLGregorianCalendar)} instead
+     */
+    @Deprecated
     public static String shortDate(XMLGregorianCalendar cal) {
         return formatter.format(cal.toGregorianCalendar().getTime());
+    }
+
+    /**
+     * Get the latest instant of the two inputs
+     *
+     * @param currentMax The current latest instant
+     * @param itemInstant The new candidate latest
+     * @return The instant that was the latest of the two inputs.
+     */
+    public static Instant getMaxInstant(Instant currentMax, Instant itemInstant) {
+        return itemInstant.isAfter(currentMax) ? itemInstant : currentMax;
     }
 
     /**
@@ -273,7 +322,9 @@ public final class TimeUtils {
      * @param currentMax The current latest date
      * @param itemDate   The new candidate latest
      * @return The date object that was the latest of the two inputs.
+     * @deprecated Use {@link #getMaxInstant(Instant, Instant)} instead
      */
+    @Deprecated
     public static Date getMaxDate(Date currentMax, Date itemDate) {
         if (itemDate.after(currentMax)) {
             return itemDate;
