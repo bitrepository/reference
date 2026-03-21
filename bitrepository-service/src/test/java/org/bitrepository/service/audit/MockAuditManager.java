@@ -26,8 +26,8 @@ import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.utils.CalendarUtils;
 
 import java.math.BigInteger;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -69,7 +69,7 @@ public class MockAuditManager implements AuditTrailManager {
 
     @Override
     public AuditTrailDatabaseResults getAudits(String collectionID, String fileID, Long minSeqNumber,
-                                               Long maxSeqNumber, Date minDate, Date maxDate, Long maxNumberOfResults) {
+                                               Long maxSeqNumber, Instant minDate, Instant maxDate, Long maxNumberOfResults) {
         callsForGetAudits++;
         AuditTrailDatabaseResults res = new AuditTrailDatabaseResults();
         for (AuditTrailEvent event : events) {
@@ -82,12 +82,11 @@ public class MockAuditManager implements AuditTrailManager {
             if (maxSeqNumber != null && event.getSequenceNumber().longValue() > maxSeqNumber) {
                 continue;
             }
-            if (minDate != null && CalendarUtils.convertFromXMLGregorianCalendar(
-                    event.getActionDateTime()).getTime() < minDate.getTime()) {
+            Instant eventInstant = CalendarUtils.convertFromXMLGregorianCalendarToInstant(event.getActionDateTime());
+            if (minDate != null && eventInstant.isBefore(minDate)) {
                 continue;
             }
-            if (maxDate != null && CalendarUtils.convertFromXMLGregorianCalendar(
-                    event.getActionDateTime()).getTime() > maxDate.getTime()) {
+            if (maxDate != null && eventInstant.isAfter(maxDate)) {
                 continue;
             }
             if (maxNumberOfResults != null && res.getAuditTrailEvents().getAuditTrailEvent().size() >= maxNumberOfResults) {

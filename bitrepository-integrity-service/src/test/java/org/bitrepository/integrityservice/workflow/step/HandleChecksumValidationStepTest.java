@@ -45,6 +45,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 import java.io.File;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -330,7 +331,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         @Override
         public AuditTrailDatabaseResults getAudits(String collectionID,
                                                    String fileID, Long minSeqNumber, Long maxSeqNumber,
-                                                   Date minDate, Date maxDate, Long maxNumberOfResults) {
+                                                   Instant minDate, Instant maxDate, Long maxNumberOfResults) {
             return null;
         }
     }

@@ -254,12 +254,12 @@ public class AuditDatabaseExtractor {
             res.append(AUDIT_TRAIL_TABLE + "." + AUDIT_TRAIL_OPERATION + " = ?");
         }
 
-        if (model.getStartDate() != null) {
+        if (model.getStartDateInstant() != null) {
             nextArgument(res);
             res.append(AUDIT_TRAIL_TABLE + "." + AUDIT_TRAIL_OPERATION_DATE + " >= ?");
         }
 
-        if (model.getEndDate() != null) {
+        if (model.getEndDateInstant() != null) {
             nextArgument(res);
             res.append(AUDIT_TRAIL_TABLE + "." + AUDIT_TRAIL_OPERATION_DATE + " <= ?");
         }
@@ -305,8 +305,8 @@ public class AuditDatabaseExtractor {
         return Stream.of(model.getFileID(), model.getCollectionID(), model.getContributorID(),
                         model.getMinSeqNumber(), model.getMaxSeqNumber(), model.getActorName(),
                         model.getOperation() == null ? null : model.getOperation().toString(),
-                        model.getStartDate() == null ? null : model.getStartDate().getTime(),
-                        model.getEndDate() == null ? null : model.getEndDate().getTime(),
+                        model.getStartDateInstant() == null ? null : model.getStartDateInstant().toEpochMilli(),
+                        model.getEndDateInstant() == null ? null : model.getEndDateInstant().toEpochMilli(),
                         model.getFingerprint(), model.getOperationID(), model.getMaxAuditTrails())
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());

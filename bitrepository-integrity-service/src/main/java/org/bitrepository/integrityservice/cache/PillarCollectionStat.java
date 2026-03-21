@@ -45,8 +45,8 @@ public class PillarCollectionStat {
     private Long checksumErrors = 0L;
     private String maxAgeForChecksums;
     private Instant oldestChecksumTimestamp;
-    private Date statsTime;
-    private Date updateTime;
+    private Instant statsTime;
+    private Instant updateTime;
 
     public PillarCollectionStat(String pillarID, String collectionID, String pillarName, String pillarType) {
         this.pillarID = pillarID;
@@ -59,7 +59,7 @@ public class PillarCollectionStat {
                                 Long fileCount, Long dataSize,
                                 Long missingFiles, Long checksumErrors, Long missingChecksums, Long obsoleteChecksum,
                                 String maxAgeForChecksums,
-                                Instant oldestChecksumTimestamp, Date statsTime, Date updateTime) {
+                                Instant oldestChecksumTimestamp, Instant statsTime, Instant updateTime) {
         this.pillarID = pillarID;
         this.collectionID = collectionID;
         this.pillarName = pillarName;
@@ -74,6 +74,18 @@ public class PillarCollectionStat {
         this.updateTime = updateTime;
         this.maxAgeForChecksums = maxAgeForChecksums;
         this.oldestChecksumTimestamp = oldestChecksumTimestamp;
+    }
+
+    @Deprecated(forRemoval = true)
+    public PillarCollectionStat(String pillarID, String collectionID, String pillarName, String pillarType,
+                                Long fileCount, Long dataSize,
+                                Long missingFiles, Long checksumErrors, Long missingChecksums, Long obsoleteChecksum,
+                                String maxAgeForChecksums,
+                                Instant oldestChecksumTimestamp, Date statsTime, Date updateTime) {
+        this(pillarID, collectionID, pillarName, pillarType, fileCount, dataSize, missingFiles, checksumErrors,
+                missingChecksums, obsoleteChecksum, maxAgeForChecksums, oldestChecksumTimestamp,
+                statsTime != null ? statsTime.toInstant() : null,
+                updateTime != null ? updateTime.toInstant() : null);
     }
 
     public String getPillarID() {
@@ -124,20 +136,40 @@ public class PillarCollectionStat {
         this.checksumErrors = checksumErrors;
     }
 
-    public Date getStatsTime() {
+    public Instant getStatsTimeInstant() {
         return statsTime;
     }
 
-    public void setStatsTime(Date statsTime) {
+    @Deprecated(forRemoval = true)
+    public Date getStatsTime() {
+        return statsTime != null ? Date.from(statsTime) : null;
+    }
+
+    public void setStatsTime(Instant statsTime) {
         this.statsTime = statsTime;
     }
 
-    public Date getUpdateTime() {
+    @Deprecated(forRemoval = true)
+    public void setStatsTime(Date statsTime) {
+        this.statsTime = statsTime != null ? statsTime.toInstant() : null;
+    }
+
+    public Instant getUpdateTimeInstant() {
         return updateTime;
     }
 
-    public void setUpdateTime(Date updateTime) {
+    @Deprecated(forRemoval = true)
+    public Date getUpdateTime() {
+        return updateTime != null ? Date.from(updateTime) : null;
+    }
+
+    public void setUpdateTime(Instant updateTime) {
         this.updateTime = updateTime;
+    }
+
+    @Deprecated(forRemoval = true)
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime != null ? updateTime.toInstant() : null;
     }
 
     public Long getObsoleteChecksums() {

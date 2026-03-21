@@ -65,7 +65,7 @@ public final class CalendarUtils {
      * @return The CalendarUtils instance for the non-standard timeZone
      * @deprecated Use {@link #getInstance(ZoneId)} instead
      */
-    @Deprecated
+    @Deprecated( forRemoval = true)
     public static CalendarUtils getInstance(TimeZone timeZone) {
         CalendarUtils cu = new CalendarUtils();
         cu.setTimeZone(timeZone);
@@ -87,7 +87,7 @@ public final class CalendarUtils {
     /**
      * @deprecated Use {@link #setZoneId(ZoneId)} instead
      */
-    @Deprecated
+    @Deprecated( forRemoval = true)
     private void setTimeZone(TimeZone timeZone) {
         log.debug("Using time zone: '{}'", getTimeZoneDisplayName(timeZone));
         this.localTimeZone = timeZone;
@@ -103,9 +103,18 @@ public final class CalendarUtils {
     /**
      * @deprecated Use {@link ZoneId#getId()} instead
      */
-    @Deprecated
-    static String getTimeZoneDisplayName(TimeZone timeZone) {
+    @Deprecated( forRemoval = true)
+    public static String getTimeZoneDisplayName(TimeZone timeZone) {
         return timeZone.getID();
+    }
+
+    /**
+     * Get the display name for the ZoneId.
+     * @param zoneId the ZoneId
+     * @return the ID
+     */
+    public static String getTimeZoneDisplayName(ZoneId zoneId) {
+        return zoneId.getId();
     }
 
     /**
@@ -136,7 +145,7 @@ public final class CalendarUtils {
      * @return The XMLGregorianCalendar.
      * @deprecated Use {@link #getXmlGregorianCalendar(Instant)} instead
      */
-    @Deprecated
+    @Deprecated( forRemoval = true)
     public static XMLGregorianCalendar getXmlGregorianCalendar(Date date) {
         if (date == null) {
             log.debug("Date is null. Returning epoch instead.");
@@ -175,7 +184,7 @@ public final class CalendarUtils {
      * @return The current date in XML format
      * @deprecated Use {@link #getXmlGregorianCalendar(Instant)} or {@link #getXmlGregorianCalendar(ZonedDateTime)} instead
      */
-    @Deprecated
+    @Deprecated( forRemoval = true)
     public static XMLGregorianCalendar getXmlGregorianCalendar(GregorianCalendar gregorianCalendar) {
         try {
             return DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
@@ -231,7 +240,7 @@ public final class CalendarUtils {
      * @return The date for the XML calendar converted into the default java date class.
      * @deprecated Use {@link #convertFromXMLGregorianCalendarToInstant(XMLGregorianCalendar)} instead
      */
-    @Deprecated
+    @Deprecated( forRemoval = true)
     public static Date convertFromXMLGregorianCalendar(XMLGregorianCalendar xmlCal) {
         ArgumentValidator.checkNotNull(xmlCal, "XMLGregorianCalendar xmlCal");
 
@@ -266,7 +275,7 @@ public final class CalendarUtils {
      * be turned into a date.
      * @deprecated Use {@link #makeStartInstant(String)} instead
      */
-    @Deprecated
+    @Deprecated( forRemoval = true)
     public Date makeStartDateObject(String dateStr) {
         Consumer<Calendar> dateAdjuster = (Calendar calendar) -> {
         };
@@ -308,7 +317,7 @@ public final class CalendarUtils {
      * be turned into a date.
      * @deprecated Use {@link #makeEndInstant(String)} instead
      */
-    @Deprecated
+    @Deprecated( forRemoval = true)
     public Date makeEndDateObject(String dateStr) {
         Consumer<Calendar> dateAdjuster = (Calendar calendar) -> {
             calendar.add(Calendar.DAY_OF_MONTH, 1);
@@ -331,7 +340,7 @@ public final class CalendarUtils {
      * or null if the input cannot be parsed.
      * @deprecated Use {@link #makeStartInstant(String)} or {@link #makeEndInstant(String)} instead
      */
-    @Deprecated
+    @Deprecated( forRemoval = true)
     private Calendar makeCalendarObject(String dateStr, Consumer<Calendar> dateAdjust) {
         if (dateStr == null || dateStr.trim().isEmpty()) {
             return null;

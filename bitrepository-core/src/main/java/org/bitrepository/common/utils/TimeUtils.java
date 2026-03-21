@@ -57,7 +57,7 @@ public final class TimeUtils {
     /**
      * @deprecated Use {@link #DATETIME_FORMATTER} instead
      */
-    @Deprecated
+    @Deprecated( forRemoval = true)
     public final static DateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.ROOT);
 
     public final static DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm", Locale.ROOT);
@@ -292,7 +292,7 @@ public final class TimeUtils {
     /**
      * @deprecated Use {@link #shortDate(Instant)} instead
      */
-    @Deprecated
+    @Deprecated( forRemoval = true)
     public static String shortDate(Date date) {
         return formatter.format(date);
     }
@@ -300,7 +300,7 @@ public final class TimeUtils {
     /**
      * @deprecated Use {@link #shortDate(Instant)} or {@link CalendarUtils#convertFromXMLGregorianCalendarToInstant(XMLGregorianCalendar)} instead
      */
-    @Deprecated
+    @Deprecated( forRemoval = true)
     public static String shortDate(XMLGregorianCalendar cal) {
         return formatter.format(cal.toGregorianCalendar().getTime());
     }
@@ -324,7 +324,7 @@ public final class TimeUtils {
      * @return The date object that was the latest of the two inputs.
      * @deprecated Use {@link #getMaxInstant(Instant, Instant)} instead
      */
-    @Deprecated
+    @Deprecated( forRemoval = true)
     public static Date getMaxDate(Date currentMax, Date itemDate) {
         if (itemDate.after(currentMax)) {
             return itemDate;

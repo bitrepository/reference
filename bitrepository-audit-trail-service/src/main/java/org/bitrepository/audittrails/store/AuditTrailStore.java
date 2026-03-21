@@ -27,6 +27,7 @@ package org.bitrepository.audittrails.store;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
 import org.bitrepository.bitrepositoryelements.FileAction;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
@@ -54,8 +55,37 @@ public interface AuditTrailStore {
      */
     AuditEventIterator getAuditTrailsByIterator(String fileID, String collectionID, String contributorID,
                                                 Long minSeqNumber, Long maxSeqNumber, String actorName, FileAction operation,
-                                                Date startDate,
-                                                Date endDate, String fingerprint, String operationID);
+                                                Instant startDate,
+                                                Instant endDate, String fingerprint, String operationID);
+
+    /**
+     * Obtain AuditEventIterator for extracting audit trails from the store.
+     * When done with the iterator, the user should ensure that it is closed.
+     *
+     * @param fileID        [OPTIONAL] The id of the file for restricting the extraction.
+     * @param collectionID  [OPTIONAL] The id of the collection from which to retrieve audit trails.
+     * @param contributorID [OPTIONAL] The id of the contributor for restricting the extraction.
+     * @param minSeqNumber  [OPTIONAL] The minimum sequence number for restricting the extraction.
+     * @param maxSeqNumber  [OPTIONAL] The maximum sequence number for restricting the extraction.
+     * @param actorName     [OPTIONAL] The name of the actor for restricting the extraction.
+     * @param operation     [OPTIONAL] The FileAction operation for restricting the extraction.
+     * @param startDate     [OPTIONAL] The earliest date for the audits for restricting the extraction.
+     * @param endDate       [OPTIONAL] The latest date for the audits for restricting the extraction.
+     * @param fingerprint   [OPTIONAL] The fingerprint of the certificate for the audits
+     * @param operationID   [OPTIONAL] The ID of the operation (conversationID) for the audits
+     * @return The requested audit trails from the store.
+     * @deprecated Use {@link #getAuditTrailsByIterator(String, String, String, Long, Long, String, FileAction, Instant, Instant, String, String)} instead
+     */
+    @Deprecated(forRemoval = true)
+    default AuditEventIterator getAuditTrailsByIterator(String fileID, String collectionID, String contributorID,
+                                                        Long minSeqNumber, Long maxSeqNumber, String actorName, FileAction operation,
+                                                        Date startDate,
+                                                        Date endDate, String fingerprint, String operationID) {
+        return getAuditTrailsByIterator(fileID, collectionID, contributorID, minSeqNumber, maxSeqNumber, actorName, operation,
+                startDate != null ? startDate.toInstant() : null,
+                endDate != null ? endDate.toInstant() : null,
+                fingerprint, operationID);
+    }
 
     /**
      * Obtain AuditEventIterator for extracting audit trails from the store.
@@ -77,8 +107,38 @@ public interface AuditTrailStore {
      */
     AuditEventIterator getAuditTrailsByIterator(String fileID, String collectionID, String contributorID,
                                                 Long minSeqNumber, Long maxSeqNumber, String actorName, FileAction operation,
-                                                Date startDate,
-                                                Date endDate, String fingerprint, String operationID, int maxAuditTrails);
+                                                Instant startDate,
+                                                Instant endDate, String fingerprint, String operationID, int maxAuditTrails);
+
+    /**
+     * Obtain AuditEventIterator for extracting audit trails from the store.
+     * When done with the iterator, the user should ensure that it is closed.
+     *
+     * @param fileID         [OPTIONAL] The id of the file for restricting the extraction.
+     * @param collectionID   [OPTIONAL] The id of the collection from which to retrieve audit trails.
+     * @param contributorID  [OPTIONAL] The id of the contributor for restricting the extraction.
+     * @param minSeqNumber   [OPTIONAL] The minimum sequence number for restricting the extraction.
+     * @param maxSeqNumber   [OPTIONAL] The maximum sequence number for restricting the extraction.
+     * @param actorName      [OPTIONAL] The name of the actor for restricting the extraction.
+     * @param operation      [OPTIONAL] The FileAction operation for restricting the extraction.
+     * @param startDate      [OPTIONAL] The earliest date for the audits for restricting the extraction.
+     * @param endDate        [OPTIONAL] The latest date for the audits for restricting the extraction.
+     * @param fingerprint    [OPTIONAL] The fingerprint of the certificate for the audits
+     * @param operationID    [OPTIONAL] The ID of the operation (conversationID) for the audits
+     * @param maxAuditTrails The max number of audit trails to fetch from database.
+     * @return The requested audit trails from the store.
+     * @deprecated Use {@link #getAuditTrailsByIterator(String, String, String, Long, Long, String, FileAction, Instant, Instant, String, String, int)} instead
+     */
+    @Deprecated(forRemoval = true)
+    default AuditEventIterator getAuditTrailsByIterator(String fileID, String collectionID, String contributorID,
+                                                        Long minSeqNumber, Long maxSeqNumber, String actorName, FileAction operation,
+                                                        Date startDate,
+                                                        Date endDate, String fingerprint, String operationID, int maxAuditTrails) {
+        return getAuditTrailsByIterator(fileID, collectionID, contributorID, minSeqNumber, maxSeqNumber, actorName, operation,
+                startDate != null ? startDate.toInstant() : null,
+                endDate != null ? endDate.toInstant() : null,
+                fingerprint, operationID, maxAuditTrails);
+    }
 
     /**
      * ingest audit trails into the store.
