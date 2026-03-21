@@ -84,7 +84,10 @@ public class RestAuditTrailService {
         Date to = calendarUtils.makeEndDateObject(toDate);
 
         final int maxAudits = maxResults;
-        final AuditEventIterator it = service.queryAuditTrailEventsByIterator(from, to, contentOrNull(fileID),
+        final AuditEventIterator it = service.queryAuditTrailEventsByIterator(
+                from != null ? from.toInstant() : null,
+                to != null ? to.toInstant() : null,
+                contentOrNull(fileID),
                 collectionID, contentOrNull(reportingComponent), contentOrNull(actor), filterAction(action),
                 contentOrNull(fingerprint), contentOrNull(operationID), maxAudits);
         if (it != null) {
@@ -167,7 +170,7 @@ public class RestAuditTrailService {
         jg.writeObjectField("actor", contentOrEmptyString(event.getActorOnFile()));
         jg.writeObjectField("action", event.getActionOnFile().toString());
         jg.writeObjectField("timeStamp",
-                TimeUtils.shortDate(CalendarUtils.convertFromXMLGregorianCalendar(event.getActionDateTime())));
+                TimeUtils.shortDate(CalendarUtils.convertFromXMLGregorianCalendarToInstant(event.getActionDateTime())));
         jg.writeObjectField("info", contentOrEmptyString(event.getInfo()));
         jg.writeObjectField("auditTrailInfo", contentOrEmptyString(event.getAuditTrailInformation()));
         jg.writeObjectField("fingerprint", contentOrEmptyString(event.getCertificateID()));

@@ -605,8 +605,8 @@ public abstract class IntegrityDAO {
                     Long checksumErrors = dbResult.getLong("checksum_errors_count");
                     Long missingChecksums = dbResult.getLong("missing_checksums_count");
                     Long obsoleteChecksums = dbResult.getLong("obsolete_checksums_count");
-                    Instant statsTime = null; // Will be set in CollectionStat
-                    Instant updateTime = null; // Will be set in CollectionStat
+                    Instant statsTime = null;
+                    Instant updateTime = null;
                     String pillarName = Objects.requireNonNullElse(SettingsUtils.getPillarName(pillarID), "N/A");
                     String pillarType = (SettingsUtils.getPillarType(pillarID) != null) ?
                             Objects.requireNonNull(SettingsUtils.getPillarType(pillarID)).value() : "Unknown";

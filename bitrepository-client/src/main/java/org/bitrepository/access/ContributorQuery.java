@@ -24,7 +24,9 @@
  */
 package org.bitrepository.access;
 
+import java.time.Instant;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * <p>Used to limit a request for information elements from components in a collection.
@@ -36,8 +38,8 @@ import java.util.Date;
  */
 public class ContributorQuery {
     private final String componentID;
-    private final Date minTimestamp;
-    private final Date maxTimestamp;
+    private final Instant minTimestamp;
+    private final Instant maxTimestamp;
     private final Integer maxNumberOfResults;
 
     /**
@@ -48,9 +50,27 @@ public class ContributorQuery {
      *                           requested.
      * @param maxNumberOfResults If set will limit the number of results returned. If the result set is limited, only
      *                           the oldest timestamps are returned
+     * @deprecated Use {@link #ContributorQuery(String, Instant, Instant, Integer)} instead
      */
+    @Deprecated(forRemoval = true)
     public ContributorQuery(String componentID, Date minTimestamp, Date maxTimestamp, Integer maxNumberOfResults) {
-        if (minTimestamp != null && maxTimestamp != null && minTimestamp.after(maxTimestamp)) {
+        this(componentID,
+                minTimestamp != null ? minTimestamp.toInstant() : null,
+                maxTimestamp != null ? maxTimestamp.toInstant() : null,
+                maxNumberOfResults);
+    }
+
+    /**
+     * @param componentID        If set, only results from the indicated component is requested.
+     * @param minTimestamp       If set, only elements with timestamp later than or equal to <code>minTimestamp</code> are
+     *                           requested.
+     * @param maxTimestamp       If set, only elements with timestamp earlier than or equal to <code>maxTimestamp</code> are
+     *                           requested.
+     * @param maxNumberOfResults If set will limit the number of results returned. If the result set is limited, only
+     *                           the oldest timestamps are returned
+     */
+    public ContributorQuery(String componentID, Instant minTimestamp, Instant maxTimestamp, Integer maxNumberOfResults) {
+        if (minTimestamp != null && maxTimestamp != null && minTimestamp.isAfter(maxTimestamp)) {
             throw new IllegalArgumentException(
                     "minTimestamp=" + minTimestamp + " can not be later than " + "maxTimestamp=" + maxTimestamp);
         }
@@ -64,11 +84,27 @@ public class ContributorQuery {
         return componentID;
     }
 
+    /**
+     * @deprecated Use {@link #getMinTimestampInstant()} instead
+     */
+    @Deprecated(forRemoval = true)
     public Date getMinTimestamp() {
+        return minTimestamp != null ? Date.from(minTimestamp) : null;
+    }
+
+    public Instant getMinTimestampInstant() {
         return minTimestamp;
     }
 
+    /**
+     * @deprecated Use {@link #getMaxTimestampInstant()} instead
+     */
+    @Deprecated(forRemoval = true)
     public Date getMaxTimestamp() {
+        return maxTimestamp != null ? Date.from(maxTimestamp) : null;
+    }
+
+    public Instant getMaxTimestampInstant() {
         return maxTimestamp;
     }
 
@@ -88,19 +124,7 @@ public class ContributorQuery {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result
-                + ((componentID == null) ? 0 : componentID.hashCode());
-        result = prime
-                * result
-                + ((maxNumberOfResults == null) ? 0 : maxNumberOfResults
-                .hashCode());
-        result = prime * result
-                + ((maxTimestamp == null) ? 0 : maxTimestamp.hashCode());
-        result = prime * result
-                + ((minTimestamp == null) ? 0 : minTimestamp.hashCode());
-        return result;
+        return Objects.hash(componentID, maxNumberOfResults, maxTimestamp, minTimestamp);
     }
 
     @Override
@@ -112,25 +136,9 @@ public class ContributorQuery {
         if (getClass() != obj.getClass())
             return false;
         ContributorQuery other = (ContributorQuery) obj;
-        if (componentID == null) {
-            if (other.componentID != null)
-                return false;
-        } else if (!componentID.equals(other.componentID))
-            return false;
-        if (maxNumberOfResults == null) {
-            if (other.maxNumberOfResults != null)
-                return false;
-        } else if (!maxNumberOfResults.equals(other.maxNumberOfResults))
-            return false;
-        if (maxTimestamp == null) {
-            if (other.maxTimestamp != null)
-                return false;
-        } else if (!maxTimestamp.equals(other.maxTimestamp))
-            return false;
-        if (minTimestamp == null) {
-            return other.minTimestamp == null;
-        } else {
-            return minTimestamp.equals(other.minTimestamp);
-        }
+        return Objects.equals(componentID, other.componentID) &&
+                Objects.equals(maxNumberOfResults, other.maxNumberOfResults) &&
+                Objects.equals(maxTimestamp, other.maxTimestamp) &&
+                Objects.equals(minTimestamp, other.minTimestamp);
     }
 }

@@ -31,11 +31,14 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import static org.bitrepository.common.utils.AllureTestUtils.*;
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addFixture;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 public class GetChecksumQueryTest extends PillarFunctionTest {
 
@@ -76,7 +79,7 @@ public class GetChecksumQueryTest extends PillarFunctionTest {
         addStep("Repeat the request checksums, this time with maxNumberOfResult set to one",
                 "A checksum result with a single checksum should be returned. " +
                         "The checksum should be the oldest/first checksum in the full list.");
-        ContributorQuery singleChecksumQuery = new ContributorQuery(getPillarID(), null, null, 1);
+        ContributorQuery singleChecksumQuery = new ContributorQuery(getPillarID(), (Instant) null, (Instant) null, 1);
         List<ChecksumDataForChecksumSpecTYPE> singleChecksumList = pillarFileManager.getChecksums(null,
                 singleChecksumQuery, null);
         Assertions.assertEquals(1, singleChecksumList.size(),

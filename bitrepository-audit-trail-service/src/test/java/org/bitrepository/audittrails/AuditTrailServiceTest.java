@@ -125,11 +125,11 @@ public class AuditTrailServiceTest {
 
         verify(store, times(1)).addAuditTrails(any(AuditTrailEvents.class), eq(TEST_COLLECTION),
                 eq(DEFAULT_CONTRIBUTOR));
-        service.queryAuditTrailEventsByIterator(null, null, null, null,
+        service.queryAuditTrailEventsByIterator((Instant) null, (Instant) null, null, null,
                 null, null, null, null, null, 10000);
         verify(store, times(1)).getAuditTrailsByIterator(isNull(), isNull(), isNull(), isNull(),
                 isNull(), isNull(), isNull(), (Instant)isNull(), (Instant)isNull(), isNull(), isNull(), eq(10000));
-        service.queryAuditTrailEventsByIterator(null, null, null, null,
+        service.queryAuditTrailEventsByIterator((Instant) null, (Instant) null, null, null,
                 null, null, FileAction.FAILURE, null, null, 100);
         verify(store, times(1)).getAuditTrailsByIterator(isNull(), isNull(), isNull(), isNull(),
                 isNull(), isNull(), eq(FileAction.FAILURE), (Instant)isNull(), (Instant)isNull(), isNull(), isNull(), eq(100));

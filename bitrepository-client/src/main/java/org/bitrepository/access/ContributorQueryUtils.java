@@ -20,6 +20,7 @@ package org.bitrepository.access;/*
  * #L%
  */
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -36,7 +37,7 @@ public class ContributorQueryUtils {
     public static ContributorQuery[] createFullContributorQuery(Collection<String> contributorIDs) {
         List<ContributorQuery> componentQueryList = new ArrayList<>(contributorIDs.size());
         for (String contributor : contributorIDs) {
-            componentQueryList.add(new ContributorQuery(contributor, null, null, null));
+            componentQueryList.add(new ContributorQuery(contributor, (Instant) null, (Instant) null, null));
         }
         return componentQueryList.toArray(new ContributorQuery[0]);
     }
