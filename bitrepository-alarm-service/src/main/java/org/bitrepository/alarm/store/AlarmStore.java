@@ -28,6 +28,7 @@ import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.service.LifeCycledService;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Date;
 
@@ -55,6 +56,29 @@ public interface AlarmStore extends LifeCycledService {
      * @param ascending    Whether the alarms should be delivered ascending.
      * @return The requested collection of alarms from the store.
      */
-    Collection<Alarm> extractAlarms(String componentID, AlarmCode alarmCode, Date minDate, Date maxDate,
+    Collection<Alarm> extractAlarms(String componentID, AlarmCode alarmCode, Instant minDate, Instant maxDate,
                                     String fileID, String collectionID, Integer count, boolean ascending);
+
+    /**
+     * Extracts the alarms based on the given optional restrictions.
+     *
+     * @param componentID  [OPTIONAL] The id of the component.
+     * @param alarmCode    [OPTIONAL] The alarm code.
+     * @param minDate      [OPTIONAL] The earliest date for the alarms.
+     * @param maxDate      [OPTIONAL] The latest date for the alarms.
+     * @param fileID       [OPTIONAL] The id of the file, which the alarms are connected.
+     * @param collectionID the ID of the collection. Perhaps it is optional
+     * @param count        [OPTIONAL] The maximum number of alarms to retrieve from the store.
+     * @param ascending    Whether the alarms should be delivered ascending.
+     * @return The requested collection of alarms from the store.
+     * @deprecated Use {@link #extractAlarms(String, AlarmCode, Instant, Instant, String, String, Integer, boolean)} instead
+     */
+    @Deprecated(forRemoval = true)
+    default Collection<Alarm> extractAlarms(String componentID, AlarmCode alarmCode, Date minDate, Date maxDate,
+                                    String fileID, String collectionID, Integer count, boolean ascending) {
+        return extractAlarms(componentID, alarmCode,
+                minDate != null ? minDate.toInstant() : null,
+                maxDate != null ? maxDate.toInstant() : null,
+                fileID, collectionID, count, ascending);
+    }
 }

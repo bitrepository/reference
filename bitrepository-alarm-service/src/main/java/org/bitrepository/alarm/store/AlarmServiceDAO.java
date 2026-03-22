@@ -26,7 +26,7 @@ import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseManager;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -54,7 +54,7 @@ public abstract class AlarmServiceDAO implements AlarmStore {
     }
 
     @Override
-    public abstract List<Alarm> extractAlarms(String componentID, AlarmCode alarmCode, Date minDate, Date maxDate,
+    public abstract List<Alarm> extractAlarms(String componentID, AlarmCode alarmCode, Instant minDate, Instant maxDate,
                                               String fileID, String collectionID, Integer count, boolean ascending);
 
     @Override

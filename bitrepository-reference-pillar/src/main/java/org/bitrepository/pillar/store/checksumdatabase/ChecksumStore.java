@@ -21,6 +21,8 @@
  */
 package org.bitrepository.pillar.store.checksumdatabase;
 
+import org.bitrepository.common.utils.CalendarUtils;
+
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.Instant;
 import java.util.Collection;
@@ -38,7 +40,21 @@ public interface ChecksumStore {
      * @param collectionID The id of the collection for the file.
      * @return The calculation date for the checksum of the file at the collection.
      */
-    Date getCalculationDate(String fileID, String collectionID);
+    Instant getCalculationDateInstant(String fileID, String collectionID);
+
+    /**
+     * Retrieve the calculation date for the checksum of the file.
+     *
+     * @param fileID       The id of the file.
+     * @param collectionID The id of the collection for the file.
+     * @return The calculation date for the checksum of the file at the collection.
+     * @deprecated Use {@link #getCalculationDateInstant(String, String)} instead
+     */
+    @Deprecated(forRemoval = true)
+    default Date getCalculationDate(String fileID, String collectionID) {
+        Instant instant = getCalculationDateInstant(fileID, collectionID);
+        return instant != null ? Date.from(instant) : null;
+    }
 
     /**
      * Retrieve the checksum for the given file.
@@ -65,8 +81,27 @@ public interface ChecksumStore {
      * @param collectionID       The id of the collection for the files.
      * @return The checksum entries from the store.
      */
-    ExtractedChecksumResultSet getChecksumResults(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp,
+    ExtractedChecksumResultSet getChecksumResults(Instant minTimeStamp, Instant maxTimeStamp,
                                                   Long maxNumberOfResults, String collectionID);
+
+    /**
+     * Retrieves the checksum result entries for the given restrictions from the store.
+     *
+     * @param minTimeStamp       The minimum date for the timestamp of the extracted checksum entries.
+     * @param maxTimeStamp       The maximum date for the timestamp of the extracted checksum entries.
+     * @param maxNumberOfResults The maximum number of results.
+     * @param collectionID       The id of the collection for the files.
+     * @return The checksum entries from the store.
+     * @deprecated Use {@link #getChecksumResults(Instant, Instant, Long, String)} instead
+     */
+    @Deprecated(forRemoval = true)
+    default ExtractedChecksumResultSet getChecksumResults(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp,
+                                                  Long maxNumberOfResults, String collectionID) {
+        return getChecksumResults(
+                minTimeStamp != null ? CalendarUtils.convertFromXMLGregorianCalendarToInstant(minTimeStamp) : null,
+                maxTimeStamp != null ? CalendarUtils.convertFromXMLGregorianCalendarToInstant(maxTimeStamp) : null,
+                maxNumberOfResults, collectionID);
+    }
 
     /**
      * Retrieves the checksum result entry for the given file from the store.
@@ -77,8 +112,27 @@ public interface ChecksumStore {
      * @param collectionID The id of the collection for the file.
      * @return The checksum entries from the store.
      */
-    ExtractedChecksumResultSet getChecksumResult(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp,
+    ExtractedChecksumResultSet getChecksumResult(Instant minTimeStamp, Instant maxTimeStamp,
                                                  String fileID, String collectionID);
+
+    /**
+     * Retrieves the checksum result entry for the given file from the store.
+     *
+     * @param minTimeStamp The minimum date for the timestamp of the extracted checksum entry.
+     * @param maxTimeStamp The maximum date for the timestamp of the extracted checksum entry.
+     * @param fileID       The id of the file to retrieve the checksum result for.
+     * @param collectionID The id of the collection for the file.
+     * @return The checksum entries from the store.
+     * @deprecated Use {@link #getChecksumResult(Instant, Instant, String, String)} instead
+     */
+    @Deprecated(forRemoval = true)
+    default ExtractedChecksumResultSet getChecksumResult(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp,
+                                                 String fileID, String collectionID) {
+        return getChecksumResult(
+                minTimeStamp != null ? CalendarUtils.convertFromXMLGregorianCalendarToInstant(minTimeStamp) : null,
+                maxTimeStamp != null ? CalendarUtils.convertFromXMLGregorianCalendarToInstant(maxTimeStamp) : null,
+                fileID, collectionID);
+    }
 
     /**
      * Inserts a checksum calculation for a given file.
@@ -88,7 +142,21 @@ public interface ChecksumStore {
      * @param checksum        The checksum of the file.
      * @param calculationDate The date for the calculation of the checksum for the file.
      */
-    void insertChecksumCalculation(String fileID, String collectionID, String checksum, Date calculationDate);
+    void insertChecksumCalculation(String fileID, String collectionID, String checksum, Instant calculationDate);
+
+    /**
+     * Inserts a checksum calculation for a given file.
+     *
+     * @param fileID          The id of the file.
+     * @param collectionID    The id of the collection for the file.
+     * @param checksum        The checksum of the file.
+     * @param calculationDate The date for the calculation of the checksum for the file.
+     * @deprecated Use {@link #insertChecksumCalculation(String, String, String, Instant)} instead
+     */
+    @Deprecated(forRemoval = true)
+    default void insertChecksumCalculation(String fileID, String collectionID, String checksum, Date calculationDate) {
+        insertChecksumCalculation(fileID, collectionID, checksum, calculationDate != null ? calculationDate.toInstant() : null);
+    }
 
     /**
      * Retrieval of file ids.
@@ -100,8 +168,28 @@ public interface ChecksumStore {
      * @param collectionID       The id of the collection for the file.
      * @return The file ids in the store within the restrictions.
      */
-    ExtractedFileIDsResultSet getFileIDs(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp,
+    ExtractedFileIDsResultSet getFileIDs(Instant minTimeStamp, Instant maxTimeStamp,
                                          Long maxNumberOfResults, String fileID, String collectionID);
+
+    /**
+     * Retrieval of file ids.
+     *
+     * @param minTimeStamp       The minimum date for the timestamp of the extracted file ids.
+     * @param maxTimeStamp       The maximum date for the timestamp of the extracted file ids.
+     * @param maxNumberOfResults The maximum number of results.
+     * @param fileID             The id of the file. If null or empty string, then all files.
+     * @param collectionID       The id of the collection for the file.
+     * @return The file ids in the store within the restrictions.
+     * @deprecated Use {@link #getFileIDs(Instant, Instant, Long, String, String)} instead
+     */
+    @Deprecated(forRemoval = true)
+    default ExtractedFileIDsResultSet getFileIDs(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp,
+                                         Long maxNumberOfResults, String fileID, String collectionID) {
+        return getFileIDs(
+                minTimeStamp != null ? CalendarUtils.convertFromXMLGregorianCalendarToInstant(minTimeStamp) : null,
+                maxTimeStamp != null ? CalendarUtils.convertFromXMLGregorianCalendarToInstant(maxTimeStamp) : null,
+                maxNumberOfResults, fileID, collectionID);
+    }
 
     /**
      * Retrieval of all the file ids in the store.

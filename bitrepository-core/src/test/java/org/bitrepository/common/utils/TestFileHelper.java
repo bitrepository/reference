@@ -29,8 +29,8 @@ import org.bitrepository.protocol.message.ClientTestMessageFactory;
 
 import java.io.File;
 import java.io.InputStream;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class TestFileHelper {
@@ -45,7 +45,7 @@ public class TestFileHelper {
 
     public static ChecksumDataForFileTYPE getDefaultFileChecksum() {
         ChecksumDataForFileTYPE checksumData = new ChecksumDataForFileTYPE();
-        checksumData.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
+        checksumData.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(Instant.now()));
         ChecksumSpecTYPE checksumSpecTYPE = new ChecksumSpecTYPE();
         checksumSpecTYPE.setChecksumType(ChecksumType.MD5);
         checksumData.setChecksumSpec(checksumSpecTYPE);

@@ -46,6 +46,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 import java.math.BigInteger;
 import java.net.URL;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -304,7 +305,7 @@ public class RepairMissingFilesWorkflowTest {
     private List<FileInfo> createMockFileInfo(String fileId, String checksum, String... pillars) {
         List<FileInfo> res = new ArrayList<>();
         for (String pillar : pillars) {
-            res.add(new FileInfo(fileId, null, checksum, 0L, null, pillar));
+            res.add(new FileInfo(fileId, (Instant) null, checksum, 0L, (Instant) null, pillar));
         }
         return res;
     }

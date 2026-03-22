@@ -67,6 +67,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.nio.file.Files;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -249,7 +250,7 @@ public class RestIntegrityService {
                 PillarType pillarTypeObject = SettingsUtils.getPillarType(pillar);
                 String pillarType = pillarTypeObject != null ? pillarTypeObject.value() : null;
                 PillarCollectionStat emptyStat = new PillarCollectionStat(pillar, collectionID, pillarName, pillarType,
-                        0L, 0L, 0L, 0L, 0L, 0L, "", null, new Date(0), new Date(0));
+                        0L, 0L, 0L, 0L, 0L, 0L, "", null, Instant.EPOCH, Instant.EPOCH);
                 stats.put(pillar, emptyStat);
             }
         }
@@ -458,7 +459,7 @@ public class RestIntegrityService {
         JsonFactory jf = new JsonFactory();
         JsonGenerator jg = jf.createGenerator(writer);
         List<CollectionStat> stats = model.getLatestCollectionStat(collectionID, 1);
-        Date lastIngest = model.getDateForNewestFileEntryForCollection(collectionID);
+        Instant lastIngest = model.getDateForNewestFileEntryForCollectionInstant(collectionID);
         String lastIngestStr = lastIngest == null ? "No files ingested yet" : TimeUtils.shortDate(lastIngest);
         Long collectionSize;
         Long numberOfFiles;

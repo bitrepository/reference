@@ -25,6 +25,7 @@ import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.service.database.DatabaseManager;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
@@ -35,13 +36,23 @@ public class PostgresAlarmServiceDAO extends AlarmServiceDAO {
     }
 
     @Override
-    public List<Alarm> extractAlarms(String componentID, AlarmCode alarmCode, Date minDate, Date maxDate,
+    public List<Alarm> extractAlarms(String componentID, AlarmCode alarmCode, Instant minDate, Instant maxDate,
                                      String fileID, String collectionID, Integer count, boolean ascending) {
         AlarmDatabaseExtractionModel extractModel = new AlarmDatabaseExtractionModel(collectionID, componentID, alarmCode,
                 minDate, maxDate, fileID, count, ascending);
 
         AlarmDatabaseExtractor extractor = new PostgresAlarmDatabaseExtractor(extractModel, dbConnector);
         return extractor.extractAlarms();
+    }
+
+    @Override
+    @Deprecated(forRemoval = true)
+    public List<Alarm> extractAlarms(String componentID, AlarmCode alarmCode, Date minDate, Date maxDate,
+                                     String fileID, String collectionID, Integer count, boolean ascending) {
+        return extractAlarms(componentID, alarmCode,
+                minDate != null ? minDate.toInstant() : null,
+                maxDate != null ? maxDate.toInstant() : null,
+                fileID, collectionID, count, ascending);
     }
 
 }

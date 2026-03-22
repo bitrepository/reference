@@ -26,6 +26,7 @@ package org.bitrepository.service.audit;
 
 import org.bitrepository.bitrepositoryelements.FileAction;
 
+import java.time.Instant;
 import java.util.Date;
 
 /**
@@ -60,6 +61,28 @@ public interface AuditTrailManager {
      * @param maxNumberOfResults [OPTIONAL] The maximum number of results.
      * @return The audit trails corresponding to the requested arguments.
      */
-    AuditTrailDatabaseResults getAudits(String collectionID, String fileID, Long minSeqNumber, Long maxSeqNumber, Date minDate,
-                                        Date maxDate, Long maxNumberOfResults);
+    AuditTrailDatabaseResults getAudits(String collectionID, String fileID, Long minSeqNumber, Long maxSeqNumber, Instant minDate,
+                                        Instant maxDate, Long maxNumberOfResults);
+
+    /**
+     * Method for extracting all the audit trails.
+     *
+     * @param collectionID       The id of the collection for whom the audit applies.
+     * @param fileID             [OPTIONAL] The id of the file to request audits for.
+     * @param minSeqNumber       [OPTIONAL] The lower sequence number requested.
+     * @param maxSeqNumber       [OPTIONAL] The upper sequence number requested.
+     * @param minDate            [OPTIONAL] The earliest date requested.
+     * @param maxDate            [OPTIONAL] The newest date requested.
+     * @param maxNumberOfResults [OPTIONAL] The maximum number of results.
+     * @return The audit trails corresponding to the requested arguments.
+     * @deprecated Use {@link #getAudits(String, String, Long, Long, Instant, Instant, Long)} instead
+     */
+    @Deprecated(forRemoval = true)
+    default AuditTrailDatabaseResults getAudits(String collectionID, String fileID, Long minSeqNumber, Long maxSeqNumber, Date minDate,
+                                        Date maxDate, Long maxNumberOfResults) {
+        return getAudits(collectionID, fileID, minSeqNumber, maxSeqNumber,
+                minDate != null ? minDate.toInstant() : null,
+                maxDate != null ? maxDate.toInstant() : null,
+                maxNumberOfResults);
+    }
 }

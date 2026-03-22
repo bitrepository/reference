@@ -13,6 +13,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -46,7 +47,7 @@ class AuditPackerTest {
         Mockito.when(store.getAuditTrailsByIterator(
                 ArgumentMatchers.any(), ArgumentMatchers.eq(collectionID), ArgumentMatchers.anyString(),
                 ArgumentMatchers.any(Long.class), ArgumentMatchers.any(), ArgumentMatchers.any(),
-                ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.any(Instant.class), ArgumentMatchers.any(Instant.class), ArgumentMatchers.any(),
                 ArgumentMatchers.any())
         ).thenReturn(iterators.get(0)).thenReturn(iterators.get(1)).thenReturn(iterators.get(2));
 

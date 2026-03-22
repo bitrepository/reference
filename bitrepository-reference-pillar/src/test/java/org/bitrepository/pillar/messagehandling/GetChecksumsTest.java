@@ -46,6 +46,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.time.Instant;
 import java.util.Date;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
@@ -175,12 +176,12 @@ public class GetChecksumsTest extends MockedPillarTest {
         Mockito.doAnswer(new Answer() {
             public ExtractedChecksumResultSet answer(InvocationOnMock invocation) {
                 ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
-                res.insertChecksumEntry(new ChecksumEntry(FILE_ID, DEFAULT_MD5_CHECKSUM, new Date()));
+                res.insertChecksumEntry(new ChecksumEntry(FILE_ID, DEFAULT_MD5_CHECKSUM, Instant.now()));
                 return res;
 
             }
         }).when(model).getSingleChecksumResultSet(ArgumentMatchers.eq(FILE_ID), ArgumentMatchers.anyString(),
-                ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(ChecksumSpecTYPE.class));
+                ArgumentMatchers.isNull(Instant.class), ArgumentMatchers.isNull(Instant.class), ArgumentMatchers.any(ChecksumSpecTYPE.class));
 
         addStep("Create and send the actual GetChecksums message to the pillar.",
                 "Should be received and handled by the pillar.");
@@ -224,11 +225,11 @@ public class GetChecksumsTest extends MockedPillarTest {
         Mockito.doAnswer(new Answer() {
             public ExtractedChecksumResultSet answer(InvocationOnMock invocation) {
                 ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
-                res.insertChecksumEntry(new ChecksumEntry(defaultFileId, DEFAULT_MD5_CHECKSUM, new Date()));
-                res.insertChecksumEntry(new ChecksumEntry(nonDefaultFileId, NON_DEFAULT_MD5_CHECKSUM, new Date(0)));
+                res.insertChecksumEntry(new ChecksumEntry(defaultFileId, DEFAULT_MD5_CHECKSUM, Instant.now()));
+                res.insertChecksumEntry(new ChecksumEntry(nonDefaultFileId, NON_DEFAULT_MD5_CHECKSUM, Instant.EPOCH));
                 return res;
             }
-        }).when(model).getChecksumResultSet(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(),
+        }).when(model).getChecksumResultSet(ArgumentMatchers.isNull(Instant.class), ArgumentMatchers.isNull(Instant.class), ArgumentMatchers.any(),
                 ArgumentMatchers.anyString(), ArgumentMatchers.any(ChecksumSpecTYPE.class));
 
         addStep("Create and send the actual GetChecksums message to the pillar.",
@@ -316,10 +317,12 @@ public class GetChecksumsTest extends MockedPillarTest {
         Mockito.doAnswer(new Answer() {
             public ExtractedChecksumResultSet answer(InvocationOnMock invocation) {
                 ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
-                res.insertChecksumEntry(new ChecksumEntry(defaultFileId, DEFAULT_MD5_CHECKSUM, new Date()));
+                res.insertChecksumEntry(new ChecksumEntry(defaultFileId, DEFAULT_MD5_CHECKSUM, Instant.now()));
                 return res;
             }
-        }).when(model).getChecksumResultSet(ArgumentMatchers.eq(MIN_DATE), ArgumentMatchers.eq(MAX_DATE),
+        }).when(model).getChecksumResultSet(
+                ArgumentMatchers.eq(CalendarUtils.convertFromXMLGregorianCalendarToInstant(MIN_DATE)),
+                ArgumentMatchers.eq(CalendarUtils.convertFromXMLGregorianCalendarToInstant(MAX_DATE)),
                 ArgumentMatchers.eq(MAX_RESULTS), ArgumentMatchers.eq(collectionID), ArgumentMatchers.eq(csSpec));
 
         addStep("Create and send the actual GetChecksums message to the pillar.",

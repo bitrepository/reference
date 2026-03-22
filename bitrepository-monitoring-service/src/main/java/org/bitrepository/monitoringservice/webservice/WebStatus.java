@@ -26,7 +26,7 @@ import org.bitrepository.monitoringservice.status.ComponentStatus;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.datatype.XMLGregorianCalendar;
+import java.time.Instant;
 
 @XmlRootElement
 public class WebStatus {
@@ -41,9 +41,9 @@ public class WebStatus {
         this.componentID = componentID;
         this.status = status.getStatus().toString();
         this.info = status.getInfo();
-        XMLGregorianCalendar cal = status.getLastReplyDate();
-        if (cal != null) {
-            timeStamp = TimeUtils.shortDate(cal);
+        Instant instant = status.getLastReplyInstant();
+        if (instant != null) {
+            timeStamp = TimeUtils.shortDate(instant);
         } else {
             timeStamp = "N/A";
         }

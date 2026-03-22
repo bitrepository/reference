@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.security.NoSuchAlgorithmException;
-import java.util.Date;
+import java.time.Instant;
 
 /**
  * Storage model for the file data.
@@ -150,7 +150,7 @@ public abstract class StorageModel {
             return cache.getEntry(fileID, collectionID);
         } else {
             String checksum = getNonDefaultChecksum(fileID, collectionID, csType);
-            return new ChecksumEntry(fileID, checksum, new Date());
+            return new ChecksumEntry(fileID, checksum, Instant.now());
         }
     }
 
@@ -167,7 +167,7 @@ public abstract class StorageModel {
             throws RequestHandlerException {
         ChecksumEntry entry = getChecksumEntryForFile(fileID, collectionID, csType);
         ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
-        res.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(entry.getCalculationDate()));
+        res.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(entry.getCalculationDateInstant()));
         res.setChecksumSpec(csType);
         try {
             res.setChecksumValue(Base16Utils.encodeBase16(entry.getChecksum()));
@@ -191,8 +191,8 @@ public abstract class StorageModel {
      * @throws RequestHandlerException If it is a non-default checksum specification, which is not supported (e.g. if
      *                                 it is a ChecksumPillar).
      */
-    public ExtractedChecksumResultSet getChecksumResultSet(XMLGregorianCalendar minTimestamp,
-            XMLGregorianCalendar maxTimestamp, Long maxResults, String collectionID, ChecksumSpecTYPE csSpec)
+    public ExtractedChecksumResultSet getChecksumResultSet(Instant minTimestamp,
+                                                           Instant maxTimestamp, Long maxResults, String collectionID, ChecksumSpecTYPE csSpec)
             throws RequestHandlerException {
         verifyFileToCacheConsistencyOfAllDataIfRequired(collectionID);
         if (csSpec.equals(defaultChecksumSpec)) {
@@ -203,6 +203,19 @@ public abstract class StorageModel {
             // We ignore minTimestamp and maxTimestamp when dealing with non-default checksums.
             return getNonDefaultChecksumResultSet(maxResults, collectionID, csSpec);
         }
+    }
+
+    /**
+     * @deprecated Use {@link #getChecksumResultSet(Instant, Instant, Long, String, ChecksumSpecTYPE)} instead
+     */
+    @Deprecated(forRemoval = true)
+    public ExtractedChecksumResultSet getChecksumResultSet(XMLGregorianCalendar minTimestamp,
+            XMLGregorianCalendar maxTimestamp, Long maxResults, String collectionID, ChecksumSpecTYPE csSpec)
+            throws RequestHandlerException {
+        return getChecksumResultSet(
+                minTimestamp != null ? CalendarUtils.convertFromXMLGregorianCalendarToInstant(minTimestamp) : null,
+                maxTimestamp != null ? CalendarUtils.convertFromXMLGregorianCalendarToInstant(maxTimestamp) : null,
+                maxResults, collectionID, csSpec);
     }
 
     /**
@@ -220,17 +233,30 @@ public abstract class StorageModel {
      *                                 checksum specification.
      */
     public ExtractedChecksumResultSet getSingleChecksumResultSet(String fileID, String collectionID,
-            XMLGregorianCalendar minTimestamp, XMLGregorianCalendar maxTimestamp, ChecksumSpecTYPE csSpec)
+                                                                 Instant minTimestamp, Instant maxTimestamp, ChecksumSpecTYPE csSpec)
             throws RequestHandlerException {
         ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
         ChecksumEntry entry = getChecksumEntryForFile(fileID, collectionID, csSpec);
 
-        boolean lowerBound = minTimestamp == null || getTime(minTimestamp) <= entry.getCalculationDate().getTime();
-        boolean upperBound = maxTimestamp == null || getTime(maxTimestamp) >= entry.getCalculationDate().getTime();
+        boolean lowerBound = minTimestamp == null || !minTimestamp.isAfter(entry.getCalculationDateInstant());
+        boolean upperBound = maxTimestamp == null || !maxTimestamp.isBefore(entry.getCalculationDateInstant());
         if (lowerBound && upperBound) {
             res.insertChecksumEntry(entry);
         }
         return res;
+    }
+
+    /**
+     * @deprecated Use {@link #getSingleChecksumResultSet(String, String, Instant, Instant, ChecksumSpecTYPE)} instead
+     */
+    @Deprecated(forRemoval = true)
+    public ExtractedChecksumResultSet getSingleChecksumResultSet(String fileID, String collectionID,
+            XMLGregorianCalendar minTimestamp, XMLGregorianCalendar maxTimestamp, ChecksumSpecTYPE csSpec)
+            throws RequestHandlerException {
+        return getSingleChecksumResultSet(fileID, collectionID,
+                minTimestamp != null ? CalendarUtils.convertFromXMLGregorianCalendarToInstant(minTimestamp) : null,
+                maxTimestamp != null ? CalendarUtils.convertFromXMLGregorianCalendarToInstant(maxTimestamp) : null,
+                csSpec);
     }
 
     /**
@@ -239,7 +265,9 @@ public abstract class StorageModel {
      * @param xmlGregorianCalendar The {@link XMLGregorianCalendar} timestamp to convert.
      * @return Returns the number of milliseconds since January 1, 1970, 00:00:00 GMT represented by this date, as a
      * {@link Long}.
+     * @deprecated Use {@link CalendarUtils#convertFromXMLGregorianCalendarToInstant(XMLGregorianCalendar)} instead
      */
+    @Deprecated(forRemoval = true)
     private long getTime(XMLGregorianCalendar xmlGregorianCalendar) {
         return CalendarUtils.convertFromXMLGregorianCalendar(xmlGregorianCalendar).getTime();
     }
@@ -309,7 +337,7 @@ public abstract class StorageModel {
     protected ChecksumEntry retrieveNonDefaultChecksumEntry(String fileID, String collectionID, ChecksumSpecTYPE csType)
             throws RequestHandlerException {
         String checksum = getNonDefaultChecksum(fileID, collectionID, csType);
-        return new ChecksumEntry(fileID, checksum, new Date());
+        return new ChecksumEntry(fileID, checksum, Instant.now());
     }
 
     /**
@@ -420,8 +448,28 @@ public abstract class StorageModel {
      * @param collectionID The id of the collection.
      * @return The extracted file ids.
      */
-    public abstract ExtractedFileIDsResultSet getFileIDsResultSet(String fileID, XMLGregorianCalendar minTimestamp,
-            XMLGregorianCalendar maxTimestamp, Long maxResults, String collectionID);
+    public abstract ExtractedFileIDsResultSet getFileIDsResultSet(String fileID, Instant minTimestamp,
+                                                                  Instant maxTimestamp, Long maxResults, String collectionID);
+
+    /**
+     * Extracts a set of file ids according to the given restrictions.
+     *
+     * @param fileID       The id of the file (thus only the id of a specific file).
+     * @param minTimestamp The minimum date for the LastModifiedDate of the files.
+     * @param maxTimestamp The maximum date for the LastModifiedDate of the files.
+     * @param maxResults   The maximum number of results.
+     * @param collectionID The id of the collection.
+     * @return The extracted file ids.
+     * @deprecated Use {@link #getFileIDsResultSet(String, Instant, Instant, Long, String)} instead
+     */
+    @Deprecated(forRemoval = true)
+    public ExtractedFileIDsResultSet getFileIDsResultSet(String fileID, XMLGregorianCalendar minTimestamp,
+            XMLGregorianCalendar maxTimestamp, Long maxResults, String collectionID) {
+        return getFileIDsResultSet(fileID,
+                minTimestamp != null ? CalendarUtils.convertFromXMLGregorianCalendarToInstant(minTimestamp) : null,
+                maxTimestamp != null ? CalendarUtils.convertFromXMLGregorianCalendarToInstant(maxTimestamp) : null,
+                maxResults, collectionID);
+    }
 
     /**
      * Retrieves the checksums with a non-default checksum specification for some files.

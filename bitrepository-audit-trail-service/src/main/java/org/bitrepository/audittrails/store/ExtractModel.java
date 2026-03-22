@@ -23,6 +23,7 @@ package org.bitrepository.audittrails.store;
 
 import org.bitrepository.bitrepositoryelements.FileAction;
 
+import java.time.Instant;
 import java.util.Date;
 
 /**
@@ -60,11 +61,11 @@ class ExtractModel {
     /**
      * @see #getStartDate().
      */
-    private Date startDate;
+    private Instant startDate;
     /**
      * @see #getEndDate().
      */
-    private Date endDate;
+    private Instant endDate;
     /**
      * @see #getFingerprint().
      */
@@ -177,30 +178,67 @@ class ExtractModel {
     /**
      * @return The startDate;
      */
-    public Date getStartDate() {
+    public Instant getStartDateInstant() {
         return startDate;
+    }
+
+    /**
+     * @return The startDate;
+     * @deprecated Use {@link #getStartDateInstant()} instead
+     */
+    @Deprecated(forRemoval = true)
+    public Date getStartDate() {
+        return startDate != null ? Date.from(startDate) : null;
     }
 
     /**
      * @param startDate The startDate.
      */
-    public void setStartDate(Date startDate) {
+    public void setStartDate(Instant startDate) {
         this.startDate = startDate;
+    }
+
+    /**
+     * @param startDate The startDate.
+     * @deprecated Use {@link #setStartDate(Instant)} instead
+     */
+    @Deprecated(forRemoval = true)
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate != null ? startDate.toInstant() : null;
     }
 
     /**
      * @return The endDate;
      */
-    public Date getEndDate() {
+    public Instant getEndDateInstant() {
         return endDate;
+    }
+
+    /**
+     * @return The endDate;
+     * @deprecated Use {@link #getEndDateInstant()} instead
+     */
+    @Deprecated(forRemoval = true)
+    public Date getEndDate() {
+        return endDate != null ? Date.from(endDate) : null;
     }
 
     /**
      * @param endDate The endDate.
      * @see #getEndDate();
      */
-    public void setEndDate(Date endDate) {
+    public void setEndDate(Instant endDate) {
         this.endDate = endDate;
+    }
+
+    /**
+     * @param endDate The endDate.
+     * @see #getEndDate();
+     * @deprecated Use {@link #setEndDate(Instant)} instead
+     */
+    @Deprecated(forRemoval = true)
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate != null ? endDate.toInstant() : null;
     }
 
     /**

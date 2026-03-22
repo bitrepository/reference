@@ -66,6 +66,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.math.BigInteger;
 import java.net.URL;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
@@ -117,9 +118,8 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
                         "and a IDENTIFY_REQUEST_SENT event should be generated.");
         Collection<String> pillar1AsCollection = new LinkedList<>();
         pillar1AsCollection.add(PILLAR1_ID);
-        getChecksumsClient.getChecksums(collectionID, new ContributorQuery[]{new ContributorQuery(PILLAR1_ID, null,
-                        null,
-                        null)},
+        getChecksumsClient.getChecksums(collectionID, new ContributorQuery[]{new ContributorQuery(PILLAR1_ID, (Instant) null,
+                        (Instant) null,null)},
                 DEFAULT_FILE_ID, DEFAULT_CHECKSUM_SPECS, null, testEventHandler,
                 "TEST-AUDIT");
 

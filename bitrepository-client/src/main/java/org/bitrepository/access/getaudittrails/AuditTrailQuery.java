@@ -26,6 +26,8 @@ package org.bitrepository.access.getaudittrails;
 
 import org.bitrepository.access.ContributorQuery;
 
+import java.time.Instant;
+
 /**
  * Encapsulates the information need to communicate with a Bit Repository component over the message bus.
  */
@@ -44,7 +46,7 @@ public class AuditTrailQuery extends ContributorQuery {
      */
     public AuditTrailQuery(String componentID, Long minSequenceNumber, Long maxSequenceNumber,
                            Integer maxNumberOfResults) {
-        super(componentID, null, null, maxNumberOfResults);
+        super(componentID, (Instant) null, (Instant) null, maxNumberOfResults);
         if (minSequenceNumber != null && maxSequenceNumber != null && minSequenceNumber > maxSequenceNumber)
             throw new IllegalArgumentException(
                     "minSequenceNumber=" + minSequenceNumber + " can not be greater than " +
