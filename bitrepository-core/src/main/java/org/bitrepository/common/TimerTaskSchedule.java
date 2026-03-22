@@ -21,6 +21,7 @@
  */
 package org.bitrepository.common;
 
+import java.time.Instant;
 import java.util.Date;
 
 /**
@@ -30,10 +31,10 @@ import java.util.Date;
  * When a task has been finished, the next run is updated so the interval is after a task has finished.
  */
 public class TimerTaskSchedule {
-    private Date nextRun;
-    private Date lastStart = null;
-    private Date lastFinish = null;
-    private Date currentStart = null;
+    private Instant nextRun;
+    private Instant lastStart = null;
+    private Instant lastFinish = null;
+    private Instant currentStart = null;
     private final long schedulingInterval;
 
     /**
@@ -44,35 +45,59 @@ public class TimerTaskSchedule {
      */
     public TimerTaskSchedule(long schedulingInterval, int gracePeriod) {
         this.schedulingInterval = schedulingInterval;
-        nextRun = new Date(System.currentTimeMillis() + gracePeriod);
+        nextRun = Instant.ofEpochMilli(System.currentTimeMillis() + gracePeriod);
     }
 
     /**
      * @return The date of the next scheduled task.
+     * @deprecated Use {@link #getNextRunInstant()} instead
      */
+    @Deprecated(forRemoval = true)
     public Date getNextRun() {
+        return nextRun != null ? Date.from(nextRun) : null;
+    }
+
+    public Instant getNextRunInstant() {
         return nextRun;
     }
 
     /**
      * @return The date of the last finished task, or the current run if none have finished yet.
      * May return null, if the first run has not yet been started.
+     * @deprecated Use {@link #getLastStartInstant()} instead
      */
+    @Deprecated(forRemoval = true)
     public Date getLastStart() {
+        return lastStart != null ? Date.from(lastStart) : null;
+    }
+
+    public Instant getLastStartInstant() {
         return lastStart;
     }
 
     /**
      * @return The date of the last finished task. Returns null if no run has finished yet.
+     * @deprecated Use {@link #getLastFinishInstant()} instead
      */
+    @Deprecated(forRemoval = true)
     public Date getLastFinish() {
+        return lastFinish != null ? Date.from(lastFinish) : null;
+    }
+
+    public Instant getLastFinishInstant() {
         return lastFinish;
     }
 
     /**
      * @return The date of the currently running task. Returns null, if no task is currently running.
+     * @deprecated Use {@link #getCurrentStartInstant()} instead
      */
+    @Deprecated(forRemoval = true)
     public Date getCurrentStart() {
+        return currentStart != null ? Date.from(currentStart) : null;
+    }
+
+    public Instant getCurrentStartInstant() {
         return currentStart;
     }
 
@@ -81,11 +106,11 @@ public class TimerTaskSchedule {
      * Updates the next scheduled run of the task.
      */
     public void start() {
-        currentStart = new Date(System.currentTimeMillis());
+        currentStart = Instant.now();
         if (lastStart == null) {
             lastStart = currentStart;
         }
-        nextRun = new Date(currentStart.getTime() + schedulingInterval);
+        nextRun = currentStart.plusMillis(schedulingInterval);
     }
 
     /**
@@ -93,10 +118,10 @@ public class TimerTaskSchedule {
      * Updates the next scheduled run.
      */
     public void finish() {
-        lastFinish = new Date(System.currentTimeMillis());
+        lastFinish = Instant.now();
         lastStart = currentStart;
         currentStart = null;
-        nextRun = new Date(lastFinish.getTime() + schedulingInterval);
+        nextRun = lastFinish.plusMillis(schedulingInterval);
     }
 
 }

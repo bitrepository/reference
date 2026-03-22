@@ -30,8 +30,8 @@ import org.bitrepository.commandline.outputformatter.GetFileIDsOutputFormatter;
 import org.bitrepository.commandline.resultmodel.GetFileIDsResultModel;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -79,7 +79,7 @@ public class PagingGetFileIDsClient {
     private ContributorQuery[] makeQuery(List<String> pillars) {
         List<ContributorQuery> res = new ArrayList<>();
         for (String pillar : pillars) {
-            Date latestResult = model.getLatestContribution(pillar);
+            Instant latestResult = model.getLatestContribution(pillar);
             res.add(new ContributorQuery(pillar, latestResult, null, pageSize));
         }
         return res.toArray(new ContributorQuery[pillars.size()]);

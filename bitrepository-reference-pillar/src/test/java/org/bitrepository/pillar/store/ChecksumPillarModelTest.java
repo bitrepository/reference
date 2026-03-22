@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.util.Date;
+import java.time.Instant;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
@@ -157,10 +157,10 @@ public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
 
         addStep("Check extraction of checksum result set",
                 "Should deliver non-null object when called with default checksum spec, otherwise throw exception.");
-        Assertions.assertNotNull(pillarModel.getChecksumResultSet(null, null,
+        Assertions.assertNotNull(pillarModel.getChecksumResultSet((Instant) null, (Instant) null,
                 null, collectionID, defaultCsType));
         try {
-            pillarModel.getChecksumResultSet(null, null, null,
+            pillarModel.getChecksumResultSet((Instant) null, (Instant) null, null,
                     collectionID, nonDefaultCsType);
             Assertions.fail("Must throw an exception here.");
         } catch (Exception e) {
@@ -185,11 +185,11 @@ public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
 
         addStep("Test retrieval of single checksum result set",
                 "Should return non-null object, unless asked for non-default checksum spec which must raise exception.");
-        pillarModel.getSingleChecksumResultSet(defaultFileId, collectionID, null,
-                null, defaultCsType);
+        pillarModel.getSingleChecksumResultSet(defaultFileId, collectionID, (Instant) null,
+                (Instant) null, defaultCsType);
         try {
-            pillarModel.getSingleChecksumResultSet(defaultFileId, collectionID, null,
-                    null, nonDefaultCsType);
+            pillarModel.getSingleChecksumResultSet(defaultFileId, collectionID, (Instant) null,
+                    (Instant) null, nonDefaultCsType);
             Assertions.fail("Must throw an exception here");
         } catch (Exception e) {
             // expected
@@ -224,6 +224,6 @@ public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
     }
 
     private void initializeWithDefaultFile() {
-        cache.insertChecksumCalculation(defaultFileId, collectionID, EMPTY_MD5_CHECKSUM, new Date());
+        cache.insertChecksumCalculation(defaultFileId, collectionID, EMPTY_MD5_CHECKSUM, Instant.now());
     }
 }

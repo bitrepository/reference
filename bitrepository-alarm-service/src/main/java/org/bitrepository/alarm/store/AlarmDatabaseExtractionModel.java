@@ -23,6 +23,7 @@ package org.bitrepository.alarm.store;
 
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.Objects;
 
@@ -44,12 +45,12 @@ public class AlarmDatabaseExtractionModel {
     /**
      * @see #getStartDate().
      */
-    private Date startDate;
+    private Instant startDate;
 
     /**
      * @see #getEndDate().
      */
-    private Date endDate;
+    private Instant endDate;
 
     /**
      * @see #getFileID(). .
@@ -83,7 +84,7 @@ public class AlarmDatabaseExtractionModel {
      * @param maxCount     The maximum count of alarms to extract. If null, then set to maximum value for Integer.
      * @param ascending    if true sorted in ascending order, otherwise descending
      */
-    public AlarmDatabaseExtractionModel(String collectionID, String componentId, AlarmCode alarmCode, Date startDate, Date endDate,
+    public AlarmDatabaseExtractionModel(String collectionID, String componentId, AlarmCode alarmCode, Instant startDate, Instant endDate,
                                         String fileID, Integer maxCount, boolean ascending) {
         this.collectionID = collectionID;
         this.componentId = componentId;
@@ -94,6 +95,28 @@ public class AlarmDatabaseExtractionModel {
         this.ascending = ascending;
 
         this.maxCount = Objects.requireNonNullElse(maxCount, Integer.MAX_VALUE);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param collectionID The id of the collection, may be null.
+     * @param componentId  The id of the component.
+     * @param alarmCode    The alarm code.
+     * @param startDate    The earliest date to restrict the extraction.
+     * @param endDate      The latest date to restrict the extraction.
+     * @param fileID       The id of the file.
+     * @param maxCount     The maximum count of alarms to extract. If null, then set to maximum value for Integer.
+     * @param ascending    if true sorted in ascending order, otherwise descending
+     * @deprecated Use {@link #AlarmDatabaseExtractionModel(String, String, AlarmCode, Instant, Instant, String, Integer, boolean)} instead
+     */
+    @Deprecated(forRemoval = true)
+    public AlarmDatabaseExtractionModel(String collectionID, String componentId, AlarmCode alarmCode, Date startDate, Date endDate,
+                                        String fileID, Integer maxCount, boolean ascending) {
+        this(collectionID, componentId, alarmCode,
+                startDate != null ? startDate.toInstant() : null,
+                endDate != null ? endDate.toInstant() : null,
+                fileID, maxCount, ascending);
     }
 
     /**
@@ -137,16 +160,37 @@ public class AlarmDatabaseExtractionModel {
      *
      * @return The startDate;
      */
-    public Date getStartDate() {
+    public Instant getStartDateInstant() {
         return startDate;
+    }
+
+    /**
+     * Return the starting date for this alarm.
+     *
+     * @return The startDate;
+     * @deprecated Use {@link #getStartDateInstant()} instead
+     */
+    @Deprecated(forRemoval = true)
+    public Date getStartDate() {
+        return startDate != null ? Date.from(startDate) : null;
     }
 
     /**
      * @param startDate The startDate.
      * @see #getStartDate()
      */
-    public void setStartDate(Date startDate) {
+    public void setStartDate(Instant startDate) {
         this.startDate = startDate;
+    }
+
+    /**
+     * @param startDate The startDate.
+     * @see #getStartDate()
+     * @deprecated Use {@link #setStartDate(Instant)} instead
+     */
+    @Deprecated(forRemoval = true)
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate != null ? startDate.toInstant() : null;
     }
 
     /**
@@ -154,8 +198,19 @@ public class AlarmDatabaseExtractionModel {
      *
      * @return The endDate;
      */
-    public Date getEndDate() {
+    public Instant getEndDateInstant() {
         return endDate;
+    }
+
+    /**
+     * Returns the end date for the alarm.
+     *
+     * @return The endDate;
+     * @deprecated Use {@link #getEndDateInstant()} instead
+     */
+    @Deprecated(forRemoval = true)
+    public Date getEndDate() {
+        return endDate != null ? Date.from(endDate) : null;
     }
 
     /**
@@ -164,8 +219,20 @@ public class AlarmDatabaseExtractionModel {
      * @param endDate The endDate.
      * @see #getEndDate()
      */
-    public void setEndDate(Date endDate) {
+    public void setEndDate(Instant endDate) {
         this.endDate = endDate;
+    }
+
+    /**
+     * Sets the end date for the alarm.
+     *
+     * @param endDate The endDate.
+     * @see #getEndDate()
+     * @deprecated Use {@link #setEndDate(Instant)} instead
+     */
+    @Deprecated(forRemoval = true)
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate != null ? endDate.toInstant() : null;
     }
 
     /**

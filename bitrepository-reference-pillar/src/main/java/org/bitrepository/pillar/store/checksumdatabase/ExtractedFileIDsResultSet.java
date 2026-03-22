@@ -29,6 +29,7 @@ import org.bitrepository.common.utils.CalendarUtils;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigInteger;
+import java.time.Instant;
 import java.util.Date;
 
 /**
@@ -60,8 +61,14 @@ public class ExtractedFileIDsResultSet {
      *
      * @param fileID       The id of the file.
      * @param lastModified The last modified timestamp.
+     * @deprecated Use {@link #insertFileID(String, Instant)} instead
      */
+    @Deprecated(forRemoval = true)
     public void insertFileID(String fileID, Date lastModified) {
+        insertFileID(fileID, lastModified != null ? lastModified.toInstant() : null);
+    }
+
+    public void insertFileID(String fileID, Instant lastModified) {
         insertFileID(fileID, null, CalendarUtils.getXmlGregorianCalendar(lastModified));
     }
 

@@ -53,6 +53,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Date;
 
 /**
@@ -137,15 +138,21 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
             log.trace("Maximum sequence value: {}", message.getMaxSequenceNumber().longValue());
             maxSeq = message.getMaxSequenceNumber().longValue();
         }
-        Date minDate = null;
+        Instant minDate = null;
         if (message.getMinTimestamp() != null) {
             log.trace("Minimum date value: {}", message.getMinTimestamp());
-            minDate = CalendarUtils.convertFromXMLGregorianCalendar(message.getMinTimestamp());
+            Date d = CalendarUtils.convertFromXMLGregorianCalendar(message.getMinTimestamp());
+            if (d != null) {
+                minDate = d.toInstant();
+            }
         }
-        Date maxDate = null;
+        Instant maxDate = null;
         if (message.getMaxTimestamp() != null) {
             log.trace("Maximum date value: {}", message.getMaxTimestamp());
-            maxDate = CalendarUtils.convertFromXMLGregorianCalendar(message.getMaxTimestamp());
+            Date d = CalendarUtils.convertFromXMLGregorianCalendar(message.getMaxTimestamp());
+            if (d != null) {
+                maxDate = d.toInstant();
+            }
         }
         Long maxNumberOfResults = null;
         if (message.getMaxNumberOfResults() != null) {

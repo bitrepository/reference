@@ -34,7 +34,11 @@ import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.settings.repositorysettings.Collection;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -44,6 +48,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 import java.io.FileInputStream;
 import java.net.URL;
+import java.time.Instant;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
@@ -97,6 +102,7 @@ public class LocalAuditPreservationTest {
         FileExchange fileExchangeMock = Mockito.mock(FileExchange.class);
         Mockito.when(fileExchangeMock.getURL(ArgumentMatchers.anyString())).thenReturn(testUploadUrl);
         AuditTrailStore store = Mockito.mock(AuditTrailStore.class);
+        Mockito.when(store.getPreservationSequenceNumber(PILLAR_ID, collectionID)).thenReturn(0L);
         final AuditEventIterator iterator = Mockito.spy(new StubAuditEventIterator());
 
         LocalAuditTrailPreserver preserver = new LocalAuditTrailPreserver(settings, store, client, fileExchangeMock);
@@ -115,7 +121,8 @@ public class LocalAuditPreservationTest {
             }
         }).when(store).getAuditTrailsByIterator(ArgumentMatchers.any(), ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyString(), ArgumentMatchers.any(Long.class), ArgumentMatchers.any(),
-                ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(),
+                ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(Instant.class),
+                ArgumentMatchers.any(Instant.class),
                 ArgumentMatchers.any(), ArgumentMatchers.any());
 
         preserver.start();
@@ -130,7 +137,7 @@ public class LocalAuditPreservationTest {
         Mockito.verify(store, Mockito.times(2)).getPreservationSequenceNumber(PILLAR_ID, collectionID);
         Mockito.verify(store).getAuditTrailsByIterator(
                 null, collectionID, PILLAR_ID, 1L, null, null,
-                null, null, null, null, null);
+                null, (Instant)null, (Instant)null, null, null);
         Mockito.verify(iterator, Mockito.times(2)).getNextAuditTrailEvent();
         Assertions.assertEquals(1, client.getCallsToPutFile());
     }
@@ -168,19 +175,29 @@ public class LocalAuditPreservationTest {
         addStep("Call the preservation of audit trails now.",
                 "Should make calls to the store, upload the file and call the client");
 
-        Mockito.doAnswer(invocation -> iterator).when(store).getAuditTrailsByIterator(ArgumentMatchers.any(),
-                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(Long.class),
-                ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(),
-                ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any());
+        Mockito.when(store.getPreservationSequenceNumber(PILLAR_ID, collectionID)).thenReturn(0L);
+
+        Mockito.doAnswer(invocation -> iterator).when(store).getAuditTrailsByIterator(
+                ArgumentMatchers.isNull(),
+                ArgumentMatchers.eq(collectionID),
+                ArgumentMatchers.eq(PILLAR_ID),
+                ArgumentMatchers.eq(1L),
+                ArgumentMatchers.isNull(),
+                ArgumentMatchers.isNull(),
+                ArgumentMatchers.isNull(),
+                ArgumentMatchers.isNull(Instant.class),
+                ArgumentMatchers.isNull(Instant.class),
+                ArgumentMatchers.isNull(),
+                ArgumentMatchers.isNull());
 
         Mockito.when(fileExchange.getURL(ArgumentMatchers.anyString())).thenReturn(testUploadUrl);
 
         preserver.preserveRepositoryAuditTrails();
-        // getPreservationSequenceNumber should be called twice, first to 'initialize' audit-packer, and second to
-        // run the preserver/packer...
-        Mockito.verify(store, Mockito.times(2)).getPreservationSequenceNumber(PILLAR_ID, collectionID);
+        // getPreservationSequenceNumber should be called at least twice more: once to 'initialize' audit-packer, and once to
+        // run the preserver/packer (on top of the initial call during LocalAuditTrailPreserver construction)
+        Mockito.verify(store, Mockito.atLeast(2)).getPreservationSequenceNumber(PILLAR_ID, collectionID);
         Mockito.verify(store).getAuditTrailsByIterator(null, collectionID, PILLAR_ID, 1L,
-                null, null, null, null, null, null,
+                null, null, null, (Instant)null, (Instant)null, null,
                 null);
 
         Assertions.assertEquals(1, client.getCallsToPutFile());

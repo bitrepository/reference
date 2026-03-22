@@ -37,6 +37,7 @@ import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.integration.ClientProvider;
 import org.bitrepository.protocol.fileexchange.HttpServerConfiguration;
 
+import java.time.Instant;
 import java.util.List;
 
 public class PillarFileManager {
@@ -117,7 +118,7 @@ public class PillarFileManager {
 
     public List<FileIDsDataItem> getFileIDs(ContributorQuery query) {
         if (query == null) {
-            query = new ContributorQuery(pillarID, null, null, null);
+            query = new ContributorQuery(pillarID, (Instant) null, (Instant) null, null);
         }
 
         try {
@@ -138,7 +139,7 @@ public class PillarFileManager {
         }
 
         if (query == null) {
-            query = new ContributorQuery(pillarID, null, null, null);
+            query = new ContributorQuery(pillarID, (Instant) null, (Instant) null, null);
         }
 
         try {

@@ -25,6 +25,7 @@ import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
 
+import java.time.Instant;
 import java.util.Date;
 
 import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CHECKSUM_TABLE;
@@ -56,10 +57,24 @@ public class ChecksumIngestor {
      * @param checksum     The checksum of the file.
      * @param date         The calculation timestamp for the file.
      */
-    public synchronized void insertNewEntry(String fileID, String collectionID, String checksum, Date date) {
+    public synchronized void insertNewEntry(String fileID, String collectionID, String checksum, Instant date) {
         String sql = "INSERT INTO " + CHECKSUM_TABLE + " ( " + CS_FILE_ID + " , "
                 + CS_CHECKSUM + " , " + CS_DATE + " , " + CS_COLLECTION_ID + " ) VALUES ( ? , ? , ? , ? )";
-        DatabaseUtils.executeStatement(connector, sql, fileID, checksum, date.getTime(), collectionID);
+        DatabaseUtils.executeStatement(connector, sql, fileID, checksum, date.toEpochMilli(), collectionID);
+    }
+
+    /**
+     * Inserts a new entry into the database.
+     *
+     * @param fileID       The id of the file for the entry.
+     * @param collectionID The id of the collection of the file.
+     * @param checksum     The checksum of the file.
+     * @param date         The calculation timestamp for the file.
+     * @deprecated Use {@link #insertNewEntry(String, String, String, Instant)} instead
+     */
+    @Deprecated(forRemoval = true)
+    public synchronized void insertNewEntry(String fileID, String collectionID, String checksum, Date date) {
+        insertNewEntry(fileID, collectionID, checksum, date != null ? date.toInstant() : null);
     }
 
     /**
@@ -70,10 +85,24 @@ public class ChecksumIngestor {
      * @param checksum     The new checksum for the file.
      * @param date         The new date for the calculation of the checksum of the file.
      */
-    public void updateEntry(String fileID, String collectionID, String checksum, Date date) {
+    public void updateEntry(String fileID, String collectionID, String checksum, Instant date) {
         String sql = "UPDATE " + CHECKSUM_TABLE + " SET " + CS_CHECKSUM + " = ? , " + CS_DATE + " = ? WHERE "
                 + CS_FILE_ID + " = ? AND " + CS_COLLECTION_ID + " = ?";
-        DatabaseUtils.executeStatement(connector, sql, checksum, date.getTime(), fileID, collectionID);
+        DatabaseUtils.executeStatement(connector, sql, checksum, date.toEpochMilli(), fileID, collectionID);
+    }
+
+    /**
+     * Updates an existing entry in the database.
+     *
+     * @param fileID       The id of the file to update.
+     * @param collectionID The id of the collection of the file.
+     * @param checksum     The new checksum for the file.
+     * @param date         The new date for the calculation of the checksum of the file.
+     * @deprecated Use {@link #updateEntry(String, String, String, Instant)} instead
+     */
+    @Deprecated(forRemoval = true)
+    public void updateEntry(String fileID, String collectionID, String checksum, Date date) {
+        updateEntry(fileID, collectionID, checksum, date != null ? date.toInstant() : null);
     }
 
     /**

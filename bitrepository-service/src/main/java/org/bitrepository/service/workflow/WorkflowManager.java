@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.xml.datatype.Duration;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -89,8 +90,17 @@ public abstract class WorkflowManager {
         } else return null;
     }
 
+    /**
+     * @deprecated Use {@link #getNextScheduledRunInstant(JobID)} instead
+     */
+    @Deprecated(forRemoval = true)
     public Date getNextScheduledRun(JobID jobID) {
-        Date nextRun = scheduler.getNextRun(jobID);
+        Instant nextRun = getNextScheduledRunInstant(jobID);
+        return nextRun != null ? Date.from(nextRun) : null;
+    }
+
+    public Instant getNextScheduledRunInstant(JobID jobID) {
+        Instant nextRun = scheduler.getNextRunInstant(jobID);
         if (nextRun == null) {
             if (workflows.containsKey(jobID)) { // Unscheduled job
                 return null;
@@ -129,8 +139,8 @@ public abstract class WorkflowManager {
                         Duration workflowInterval = schedule.getWorkflowInterval();
                         long workflowIntervalMillis = XmlUtils.xmlDurationToMilliseconds(workflowInterval);
                         for (String collectionID : collectionsToScheduleWorkflowFor) {
-                            Workflow workflow =
-                                    (Workflow) lookupClass(workflowConf.getWorkflowClass()).getDeclaredConstructor().newInstance();
+                            Class<?> clazz = lookupClass(workflowConf.getWorkflowClass());
+                            Workflow workflow = (Workflow) clazz.getDeclaredConstructor().newInstance();
                             workflow.initialise(context, collectionID);
                             scheduler.schedule(workflow, workflowIntervalMillis);
                             addWorkflow(collectionID, workflow);
@@ -140,8 +150,8 @@ public abstract class WorkflowManager {
                 }
                 // Create an instance of all workflows not explicitly scheduled.
                 for (String collectionID : unscheduledCollections) {
-                    Workflow workflow =
-                            (Workflow) Class.forName(workflowConf.getWorkflowClass()).getDeclaredConstructor().newInstance();
+                    Class<?> clazz = lookupClass(workflowConf.getWorkflowClass());
+                    Workflow workflow = (Workflow) clazz.getDeclaredConstructor().newInstance();
                     workflow.initialise(context, collectionID);
                     addWorkflow(collectionID, workflow);
                 }

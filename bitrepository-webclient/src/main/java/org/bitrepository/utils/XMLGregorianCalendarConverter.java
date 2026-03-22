@@ -24,6 +24,9 @@ package org.bitrepository.utils;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
@@ -54,7 +57,9 @@ public class XMLGregorianCalendarConverter {
      * @return XMLGregorianCalendar instance whose value is based upon the
      *  value in the date parameter. If the date parameter is null then
      *  this method will simply return null.
+     * @deprecated Use {@link #asXMLGregorianCalendar(Instant)} instead
      */
+    @Deprecated(forRemoval = true)
     public static XMLGregorianCalendar asXMLGregorianCalendar(Date date) {
         if (date == null) {
             return null;
@@ -66,18 +71,53 @@ public class XMLGregorianCalendarConverter {
     }
 
     /**
+     * Converts a java.time.Instant into an instance of XMLGregorianCalendar
+     *
+     * @param instant Instance of java.time.Instant or a null reference
+     * @return XMLGregorianCalendar instance whose value is based upon the
+     *  value in the instant parameter. If the instant parameter is null then
+     *  this method will simply return null.
+     */
+    public static XMLGregorianCalendar asXMLGregorianCalendar(Instant instant) {
+        if (instant == null) {
+            return null;
+        } else {
+            GregorianCalendar gc = GregorianCalendar.from(ZonedDateTime.ofInstant(instant, ZoneId.systemDefault()));
+            return df.newXMLGregorianCalendar(gc);
+        }
+    }
+
+    /**
      * Converts an XMLGregorianCalendar to an instance of java.util.Date
      *
      * @param xgc Instance of XMLGregorianCalendar or a null reference
      * @return java.util.Date instance whose value is based upon the
      *  value in the xgc parameter. If the xgc parameter is null then
      *  this method will simply return null.
+     * @deprecated Use {@link #asInstant(XMLGregorianCalendar)} instead
      */
+    @Deprecated(forRemoval = true)
     public static Date asDate(XMLGregorianCalendar xgc) {
         if (xgc == null) {
             return null;
         } else {
             return xgc.toGregorianCalendar().getTime();
+        }
+    }
+
+    /**
+     * Converts an XMLGregorianCalendar to an instance of java.time.Instant
+     *
+     * @param xgc Instance of XMLGregorianCalendar or a null reference
+     * @return java.time.Instant instance whose value is based upon the
+     *  value in the xgc parameter. If the xgc parameter is null then
+     *  this method will simply return null.
+     */
+    public static Instant asInstant(XMLGregorianCalendar xgc) {
+        if (xgc == null) {
+            return null;
+        } else {
+            return xgc.toGregorianCalendar().toZonedDateTime().toInstant();
         }
     }
 }

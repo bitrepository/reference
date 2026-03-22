@@ -34,9 +34,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
@@ -96,52 +96,52 @@ public class AuditTrailContributorDatabaseTest {
 
         addStep("Test extracting all the events", "Should be all 5 events.");
         AuditTrailDatabaseResults events = daba.getAudits(firstCollectionID, null, null,
-                null, null, null, null);
+                null, (Instant) null, (Instant) null, null);
         Assertions.assertEquals(5, events.getAuditTrailEvents().getAuditTrailEvent().size());
 
         addStep("Test extracting the events for fileID1", "Should be 2 events.");
-        events = daba.getAudits(firstCollectionID, FILE_ID_1, null, null, null,
-                null, null);
+        events = daba.getAudits(firstCollectionID, FILE_ID_1, null, null, (Instant) null,
+                (Instant) null, null);
         Assertions.assertEquals(2, events.getAuditTrailEvents().getAuditTrailEvent().size());
 
         addStep("Test extracting the events for fileID2", "Should be 3 events.");
-        events = daba.getAudits(firstCollectionID, FILE_ID_2, null, null, null,
-                null, null);
+        events = daba.getAudits(firstCollectionID, FILE_ID_2, null, null, (Instant) null,
+                (Instant) null, null);
         Assertions.assertEquals(3, events.getAuditTrailEvents().getAuditTrailEvent().size());
 
         addStep("Test extracting the events with the sequence number at least equal to the largest sequence number.",
                 "Should be 1 event.");
         Long seq = daba.extractLargestSequenceNumber();
-        events = daba.getAudits(firstCollectionID, null, seq, null, null, null,
+        events = daba.getAudits(firstCollectionID, null, seq, null, (Instant) null, (Instant) null,
                 null);
         Assertions.assertEquals(1, events.getAuditTrailEvents().getAuditTrailEvent().size());
 
         addStep("Test extracting the events for fileID1 with sequence number 2 or more",
                 "Should be 1 event.");
-        events = daba.getAudits(firstCollectionID, FILE_ID_1, seq - 3, null, null,
-                null, null);
+        events = daba.getAudits(firstCollectionID, FILE_ID_1, seq - 3, null, (Instant) null,
+                (Instant) null, null);
         Assertions.assertEquals(1, events.getAuditTrailEvents().getAuditTrailEvent().size());
 
         addStep("Test extracting the events for fileID1 with at most sequence number 2",
                 "Should be 2 events.");
-        events = daba.getAudits(firstCollectionID, FILE_ID_1, null, seq - 3, null,
-                null, null);
+        events = daba.getAudits(firstCollectionID, FILE_ID_1, null, seq - 3, (Instant) null,
+                (Instant) null, null);
         Assertions.assertEquals(2, events.getAuditTrailEvents().getAuditTrailEvent().size());
 
         addStep("Test extracting at most 3 events", "Should extract 3 events.");
-        events = daba.getAudits(firstCollectionID, null, null, null, null,
-                null, 3L);
+        events = daba.getAudits(firstCollectionID, null, null, null, (Instant) null,
+                (Instant) null, 3L);
         Assertions.assertEquals(3, events.getAuditTrailEvents().getAuditTrailEvent().size());
 
         addStep("Test extracting at most 1000 events", "Should extract all 5 events.");
-        events = daba.getAudits(firstCollectionID, null, null, null, null,
-                null, 1000L);
+        events = daba.getAudits(firstCollectionID, null, null, null, (Instant) null,
+                (Instant) null, 1000L);
         Assertions.assertEquals(5, events.getAuditTrailEvents().getAuditTrailEvent().size());
 
         addStep("Test extracting from another collection", "Should not extract anything.");
         String secondCollectionID = settings.getCollections().get(1).getID();
-        events = daba.getAudits(secondCollectionID, null, null, null, null,
-                null, 1000L);
+        events = daba.getAudits(secondCollectionID, null, null, null, (Instant) null,
+                (Instant) null, 1000L);
         Assertions.assertEquals(0, events.getAuditTrailEvents().getAuditTrailEvent().size());
 
         dm.getConnector().destroy();
@@ -170,7 +170,7 @@ public class AuditTrailContributorDatabaseTest {
                 FileAction.INCONSISTENCY, DEFAULT_OPERATION_ID, DEFAULT_CERTIFICATE_ID);
 
         addStep("Extract 3 audit-trails", "Should give first 3 audit-trails in order.");
-        AuditTrailDatabaseResults events = daba.getAudits(firstCollectionID, null, null, null, null, null, 3L);
+        AuditTrailDatabaseResults events = daba.getAudits(firstCollectionID, null, null, null, (Instant) null, (Instant) null, 3L);
         Assertions.assertEquals(3L, events.getAuditTrailEvents().getAuditTrailEvent().size());
         Assertions.assertEquals(FileAction.PUT_FILE, events.getAuditTrailEvents().getAuditTrailEvent().get(0).getActionOnFile());
         Assertions.assertEquals(1L, events.getAuditTrailEvents().getAuditTrailEvent().get(0).getSequenceNumber().longValue());
@@ -182,7 +182,7 @@ public class AuditTrailContributorDatabaseTest {
         long firstSeq = events.getAuditTrailEvents().getAuditTrailEvent().get(0).getSequenceNumber().longValue();
 
         addStep("Extract 3 audit-trails, with larger seq-number than the first", "Should give audit-trail #2, #3, #4");
-        events = daba.getAudits(firstCollectionID, null, firstSeq + 1, null, null, null, 3L);
+        events = daba.getAudits(firstCollectionID, null, firstSeq + 1, null, (Instant) null, (Instant) null, 3L);
         Assertions.assertEquals(3L, events.getAuditTrailEvents().getAuditTrailEvent().size());
         Assertions.assertEquals(FileAction.CHECKSUM_CALCULATED, events.getAuditTrailEvents().getAuditTrailEvent().get(0).getActionOnFile());
         Assertions.assertEquals(FileAction.FILE_MOVED, events.getAuditTrailEvents().getAuditTrailEvent().get(1).getActionOnFile());
@@ -191,19 +191,20 @@ public class AuditTrailContributorDatabaseTest {
         dm.getConnector().destroy();
     }
 
-    public void contributorDatabaseCorrectTimestampTest() throws ParseException {
+    @Test
+    public void contributorDatabaseCorrectTimestampTest() {
         addDescription("Testing the correct ingest and extraction of audittrail dates");
         DatabaseManager dm = new AuditDatabaseManager(databaseSpecifics);
         AuditTrailContributorDAO daba = new DerbyAuditTrailContributorDAO(dm);
         daba.initialize(settings.getComponentID());
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.ROOT);
-        Date summertimeTS = sdf.parse("2015-10-25T02:59:54.000+02:00");
-        Date summertimeUnix = new Date(1445734794000L);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.ROOT);
+        Instant summertimeTS = ZonedDateTime.parse("2015-10-25T02:59:54.000+02:00", formatter).toInstant();
+        Instant summertimeUnix = Instant.ofEpochMilli(1445734794000L);
         Assertions.assertEquals(summertimeUnix, summertimeTS);
 
-        Date wintertimeTS = sdf.parse("2015-10-25T02:59:54.000+01:00");
-        Date wintertimeUnix = new Date(1445738394000L);
+        Instant wintertimeTS = ZonedDateTime.parse("2015-10-25T02:59:54.000+01:00", formatter).toInstant();
+        Instant wintertimeUnix = Instant.ofEpochMilli(1445738394000L);
         Assertions.assertEquals(wintertimeUnix, wintertimeTS);
 
         daba.addAuditEvent(firstCollectionID, "summertime", summertimeTS, "actor", "info", "auditTrail",
@@ -211,14 +212,14 @@ public class AuditTrailContributorDatabaseTest {
         daba.addAuditEvent(firstCollectionID, "wintertime", wintertimeTS, "actor", "info", "auditTrail",
                 FileAction.OTHER, null, null);
 
-        AuditTrailDatabaseResults events = daba.getAudits(firstCollectionID, "summertime", null, null, null, null, 2L);
+        AuditTrailDatabaseResults events = daba.getAudits(firstCollectionID, "summertime", null, null, (Instant) null, (Instant) null, 2L);
         Assertions.assertEquals(1, events.getAuditTrailEvents().getAuditTrailEvent().size(), events.toString());
-        Assertions.assertEquals(summertimeUnix, CalendarUtils.convertFromXMLGregorianCalendar(
+        Assertions.assertEquals(summertimeUnix, CalendarUtils.convertFromXMLGregorianCalendarToInstant(
                 events.getAuditTrailEvents().getAuditTrailEvent().get(0).getActionDateTime()));
 
-        events = daba.getAudits(firstCollectionID, "wintertime", null, null, null, null, 2L);
+        events = daba.getAudits(firstCollectionID, "wintertime", null, null, (Instant) null, (Instant) null, 2L);
         Assertions.assertEquals(1, events.getAuditTrailEvents().getAuditTrailEvent().size(), events.toString());
-        Assertions.assertEquals(wintertimeUnix, CalendarUtils.convertFromXMLGregorianCalendar(
+        Assertions.assertEquals(wintertimeUnix, CalendarUtils.convertFromXMLGregorianCalendarToInstant(
                 events.getAuditTrailEvents().getAuditTrailEvent().get(0).getActionDateTime()));
 
     }

@@ -31,8 +31,8 @@ import org.bitrepository.integrityservice.statistics.StatisticsCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -95,17 +95,17 @@ public class IntegrityDatabase implements IntegrityModel {
     }
 
     @Override
-    public IntegrityIssueIterator findFilesWithMissingChecksum(String collectionID, String pillarID, Date cutoffDate) {
+    public IntegrityIssueIterator findFilesWithMissingChecksum(String collectionID, String pillarID, Instant cutoffDate) {
         return store.getFilesWithMissingChecksums(collectionID, pillarID, cutoffDate);
     }
 
     @Override
-    public IntegrityIssueIterator findChecksumsOlderThan(Date date, String pillarID, String collectionID) {
+    public IntegrityIssueIterator findChecksumsOlderThan(Instant date, String pillarID, String collectionID) {
         return store.getFilesWithOutdatedChecksums(collectionID, pillarID, date);
     }
 
     @Override
-    public IntegrityIssueIterator findOrphanFiles(String collectionID, String pillarID, Date cutoffDate) {
+    public IntegrityIssueIterator findOrphanFiles(String collectionID, String pillarID, Instant cutoffDate) {
         return store.getOrphanFilesOnPillar(collectionID, pillarID, cutoffDate);
     }
 
@@ -115,18 +115,18 @@ public class IntegrityDatabase implements IntegrityModel {
     }
 
     @Override
-    public Date getDateForNewestFileEntryForCollection(String collectionID) {
-        return store.getLatestFileDateInCollection(collectionID);
+    public Instant getDateForNewestFileEntryForCollectionInstant(String collectionID) {
+        return store.getLatestFileDateInCollectionInstant(collectionID);
     }
 
     @Override
-    public Date getDateForNewestFileEntryForPillar(String pillarID, String collectionID) {
-        return store.getLatestFileDate(collectionID, pillarID);
+    public Instant getDateForNewestFileEntryForPillarInstant(String pillarID, String collectionID) {
+        return store.getLatestFileDateInstant(collectionID, pillarID);
     }
 
     @Override
-    public Date getDateForNewestChecksumEntryForPillar(String pillarID, String collectionID) {
-        return store.getLatestChecksumDate(collectionID, pillarID);
+    public Instant getDateForNewestChecksumEntryForPillarInstant(String pillarID, String collectionID) {
+        return store.getLatestChecksumDateInstant(collectionID, pillarID);
     }
 
     @Override
@@ -155,8 +155,8 @@ public class IntegrityDatabase implements IntegrityModel {
     }
 
     @Override
-    public Date getEarliestFileDate(String collectionID, String fileID) {
-        return store.getEarliestFileDate(collectionID, fileID);
+    public Instant getEarliestFileDateInstant(String collectionID, String fileID) {
+        return store.getEarliestFileDateInstant(collectionID, fileID);
     }
 
     @Override

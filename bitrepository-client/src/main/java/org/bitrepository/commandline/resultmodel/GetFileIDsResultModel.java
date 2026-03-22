@@ -25,9 +25,9 @@ import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
 import org.bitrepository.common.utils.CalendarUtils;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -44,12 +44,12 @@ public class GetFileIDsResultModel {
     private List<FileIDsResult> completeResults;
     private Set<String> lastCompletedIDs;
     private final Map<String, FileIDsResult> incompleteResults;
-    private final Map<String, Date> latestContributorDate;
+    private final Map<String, Instant> latestContributorDate;
 
     public GetFileIDsResultModel(Collection<String> expectedContributors) {
         latestContributorDate = new HashMap<>();
         for (String contributor : expectedContributors) {
-            latestContributorDate.put(contributor, new Date(0));
+            latestContributorDate.put(contributor, Instant.EPOCH);
         }
         completeResults = new ArrayList<>();
         lastCompletedIDs = new HashSet<>();
@@ -63,7 +63,7 @@ public class GetFileIDsResultModel {
      * @param results     the results from the contributor.
      */
     public void addResults(String contributor, ResultingFileIDs results) {
-        Date latestContribution = latestContributorDate.get(contributor);
+        Instant latestContribution = latestContributorDate.get(contributor);
         for (FileIDsDataItem item : results.getFileIDsData().getFileIDsDataItems().getFileIDsDataItem()) {
             if (lastCompletedIDs.contains(item.getFileID())) {
                 continue;
@@ -77,8 +77,8 @@ public class GetFileIDsResultModel {
                 result = new FileIDsResult(item.getFileID(), item.getFileSize(), contributor);
             }
 
-            Date resultDate = CalendarUtils.convertFromXMLGregorianCalendar(item.getLastModificationTime());
-            if (resultDate.after(latestContribution)) {
+            Instant resultDate = CalendarUtils.convertFromXMLGregorianCalendarToInstant(item.getLastModificationTime());
+            if (resultDate.isAfter(latestContribution)) {
                 latestContribution = resultDate;
             }
 
@@ -123,9 +123,9 @@ public class GetFileIDsResultModel {
      * Get the Date of the latest fileID by the contributor
      *
      * @param contributor the contributor to get the Date of the latest contribution.
-     * @return Date the date of the latest contribution by the given contributor
+     * @return Instant the date of the latest contribution by the given contributor
      */
-    public Date getLatestContribution(String contributor) {
+    public Instant getLatestContribution(String contributor) {
         return latestContributorDate.get(contributor);
     }
 }

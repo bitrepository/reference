@@ -28,7 +28,7 @@ import org.bitrepository.common.utils.XmlUtils;
 import org.bitrepository.monitoringservice.alarm.MonitorAlerter;
 import org.bitrepository.monitoringservice.status.StatusStore;
 
-import javax.xml.datatype.Duration;
+import java.time.Duration;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -55,9 +55,10 @@ public class StatusCollector {
         this.getStatusClient = getStatusClient;
         eventHandler = new GetStatusEventHandler(statusStore, alerter);
         this.statusStore = statusStore;
-        Duration collectionIntervalXmlDuration =
+        javax.xml.datatype.Duration collectionIntervalXmlDuration =
                 settings.getReferenceSettings().getMonitoringServiceSettings().getCollectionInterval();
-        collectionInterval = XmlUtils.xmlDurationToMilliseconds(collectionIntervalXmlDuration);
+        Duration duration = XmlUtils.xmlDurationToDuration(collectionIntervalXmlDuration);
+        collectionInterval = duration.toMillis();
     }
 
     /**

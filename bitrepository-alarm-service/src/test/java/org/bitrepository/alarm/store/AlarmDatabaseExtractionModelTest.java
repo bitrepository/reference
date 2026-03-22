@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import java.util.Date;
+import java.time.Instant;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
@@ -34,21 +34,21 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 class AlarmDatabaseExtractionModelTest {
     @Test
     @Tag("regressiontest")
-    void alarmExceptionTest() throws Exception {
+    void alarmExceptionTest() {
         addDescription("Test the AlarmDatabaseExtractionModel class");
         addStep("Define constants etc.", "Should be OK");
         boolean ascending = true;
 
         addStep("Create an empty model", "Should be populated with nulls.");
         AlarmDatabaseExtractionModel model =
-                new AlarmDatabaseExtractionModel(null, null, null, null,
-                        null, null, null, ascending);
+                new AlarmDatabaseExtractionModel(null, null, null, (Instant) null,
+                        (Instant) null, null, null, ascending);
 
         Assertions.assertNull(model.getAlarmCode());
         Assertions.assertNull(model.getComponentId());
-        Assertions.assertNull(model.getEndDate());
+        Assertions.assertNull(model.getEndDateInstant());
         Assertions.assertNull(model.getFileID());
-        Assertions.assertNull(model.getStartDate());
+        Assertions.assertNull(model.getStartDateInstant());
         Assertions.assertNull(model.getCollectionID());
         Assertions.assertEquals(ascending, model.getAscending());
         Assertions.assertEquals(Integer.MAX_VALUE, model.getMaxCount().intValue());
@@ -69,9 +69,9 @@ class AlarmDatabaseExtractionModelTest {
         Assertions.assertEquals(defaultComponentID, model.getComponentId());
 
         addStep("Test the EndDate", "Should be able to put a new one in and extract it again.");
-        Date defaultEndDate = new Date(987654321);
+        Instant defaultEndDate = Instant.ofEpochMilli(987654321);
         model.setEndDate(defaultEndDate);
-        Assertions.assertEquals(defaultEndDate, model.getEndDate());
+        Assertions.assertEquals(defaultEndDate, model.getEndDateInstant());
 
         addStep("Test the FileID", "Should be able to put a new one in and extract it again.");
         String defaultFileID = "DefaultFileID";
@@ -84,9 +84,9 @@ class AlarmDatabaseExtractionModelTest {
         Assertions.assertEquals(defaultMaxCount, model.getMaxCount());
 
         addStep("Test the StartDate", "Should be able to put a new one in and extract it again.");
-        Date defaultStartDate = new Date(123456789);
+        Instant defaultStartDate = Instant.ofEpochMilli(123456789);
         model.setStartDate(defaultStartDate);
-        Assertions.assertEquals(defaultStartDate, model.getStartDate());
+        Assertions.assertEquals(defaultStartDate, model.getStartDateInstant());
 
         addStep("Test the CollectionID", "Should be able to put a new one in and extract it again.");
         String collectionID = "collection1";

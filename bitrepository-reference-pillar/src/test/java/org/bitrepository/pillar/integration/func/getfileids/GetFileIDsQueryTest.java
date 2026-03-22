@@ -32,11 +32,14 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import static org.bitrepository.common.utils.AllureTestUtils.*;
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addFixture;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 public class GetFileIDsQueryTest extends PillarFunctionTest {
 
@@ -80,7 +83,7 @@ public class GetFileIDsQueryTest extends PillarFunctionTest {
         addStep("Repeat the request file ids, this time with maxNumberOfResult set to one",
                 "A file id result with a single file id should be returned. " +
                         "The file id should be the oldest/first file id in the full list.");
-        ContributorQuery singleFileIDQuery = new ContributorQuery(getPillarID(), null, null, 1);
+        ContributorQuery singleFileIDQuery = new ContributorQuery(getPillarID(), (Instant) null, (Instant) null, 1);
         List<FileIDsDataItem> singleFileIDList = pillarFileManager.getFileIDs(singleFileIDQuery);
         Assertions.assertEquals(1, singleFileIDList.size(), "The result didn't contain a single file id");
         Assertions.assertEquals(originalFileIDsList.get(0), singleFileIDList.get(0),

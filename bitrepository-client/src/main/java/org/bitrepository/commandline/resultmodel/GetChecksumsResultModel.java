@@ -26,9 +26,9 @@ import org.bitrepository.bitrepositoryelements.ResultingChecksums;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -45,12 +45,12 @@ public class GetChecksumsResultModel {
     private List<ChecksumResult> completeResults;
     private Set<String> lastCompletedIDs;
     private final Map<String, ChecksumResult> incompleteResults;
-    private final Map<String, Date> latestContributorDate;
+    private final Map<String, Instant> latestContributorDate;
 
     public GetChecksumsResultModel(Collection<String> expectedContributors) {
         latestContributorDate = new HashMap<>();
         for (String contributor : expectedContributors) {
-            latestContributorDate.put(contributor, new Date(0));
+            latestContributorDate.put(contributor, Instant.EPOCH);
         }
         completeResults = new ArrayList<>();
         lastCompletedIDs = new HashSet<>();
@@ -64,7 +64,7 @@ public class GetChecksumsResultModel {
      * @param results     the results from the contributor.
      */
     public void addResults(String contributor, ResultingChecksums results) {
-        Date latestContribution = latestContributorDate.get(contributor);
+        Instant latestContribution = latestContributorDate.get(contributor);
         for (ChecksumDataForChecksumSpecTYPE item : results.getChecksumDataItems()) {
             if (lastCompletedIDs.contains(item.getFileID())) {
                 continue;
@@ -78,8 +78,8 @@ public class GetChecksumsResultModel {
                 result = new ChecksumResult(item.getFileID(), contributor, checksum);
             }
 
-            Date resultDate = CalendarUtils.convertFromXMLGregorianCalendar(item.getCalculationTimestamp());
-            if (resultDate.after(latestContribution)) {
+            Instant resultDate = CalendarUtils.convertFromXMLGregorianCalendarToInstant(item.getCalculationTimestamp());
+            if (resultDate.isAfter(latestContribution)) {
                 latestContribution = resultDate;
             }
 
@@ -124,9 +124,9 @@ public class GetChecksumsResultModel {
      * Get the Date of the latest checksum by the contributor
      *
      * @param contributor the contributor to get the Date of the latest contribution.
-     * @return Date the date of the latest contribution by the given contributor
+     * @return Instant the date of the latest contribution by the given contributor
      */
-    public Date getLatestContribution(String contributor) {
+    public Instant getLatestContribution(String contributor) {
         return latestContributorDate.get(contributor);
     }
 }

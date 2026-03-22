@@ -28,6 +28,7 @@ import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.utils.CalendarUtils;
 
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.time.Instant;
 import java.util.Date;
 
 /**
@@ -35,13 +36,25 @@ import java.util.Date;
  */
 public class FileInfo {
     private final String fileID;
-    private XMLGregorianCalendar fileCreationTimestamp;
+    private Instant fileCreationTimestamp;
     private String checksum;
-    private XMLGregorianCalendar checksumLastCheck;
+    private Instant checksumLastCheck;
     private final String pillarID;
     private final Long fileSize;
-    private Date lastSeenGetFileIDs;
-    private Date lastSeenGetChecksums;
+    private Instant lastSeenGetFileIDs;
+    private Instant lastSeenGetChecksums;
+
+    public FileInfo(String fileID, Instant fileLastCheck, String checksum, Long fileSize,
+                    Instant checksumLastCheck, String pillarID) {
+        ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
+        ArgumentValidator.checkNotNullOrEmpty(pillarID, "String pillarID");
+        this.fileID = fileID;
+        this.fileCreationTimestamp = fileLastCheck != null ? fileLastCheck : Instant.EPOCH;
+        this.checksum = checksum;
+        this.fileSize = fileSize;
+        this.checksumLastCheck = checksumLastCheck != null ? checksumLastCheck : Instant.EPOCH;
+        this.pillarID = pillarID;
+    }
 
     /**
      * @param fileID            The id of the file (may not be null)
@@ -51,26 +64,14 @@ public class FileInfo {
      * @param checksumLastCheck The date for the last check of the checksum (if null, replaced by Epoch).
      * @param pillarID          The id of the pillar (may not be null)
      */
+    @Deprecated(forRemoval = true)
     public FileInfo(String fileID, XMLGregorianCalendar fileLastCheck, String checksum, Long fileSize,
                     XMLGregorianCalendar checksumLastCheck, String pillarID) {
-        ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
-        ArgumentValidator.checkNotNullOrEmpty(pillarID, "String pillarID");
-        this.fileID = fileID;
-        this.fileCreationTimestamp = fileLastCheck;
-        this.checksum = checksum;
-        this.fileSize = fileSize;
-        this.checksumLastCheck = checksumLastCheck;
-        this.pillarID = pillarID;
-
-        // If file id date is null, then replace with epoch.
-        if (fileLastCheck == null) {
-            this.fileCreationTimestamp = CalendarUtils.getEpoch();
-        }
-
-        // If checksum date is null, then replace with epoch.
-        if (checksumLastCheck == null) {
-            this.checksumLastCheck = CalendarUtils.getEpoch();
-        }
+        this(fileID, 
+             fileLastCheck != null ? CalendarUtils.convertFromXMLGregorianCalendarToInstant(fileLastCheck) : null,
+             checksum, fileSize,
+             checksumLastCheck != null ? CalendarUtils.convertFromXMLGregorianCalendarToInstant(checksumLastCheck) : null,
+             pillarID);
     }
 
     /**
@@ -80,19 +81,30 @@ public class FileInfo {
      * @param pillarID The id of the pillar.
      */
     public FileInfo(String fileID, String pillarID) {
-        this(fileID, null, null, null, null, pillarID);
+        this(fileID, (Instant) null, null, null, (Instant) null, pillarID);
     }
 
     public String getFileId() {
         return fileID;
     }
 
-    public XMLGregorianCalendar getDateForLastFileIDCheck() {
+    public Instant getDateForLastFileIDCheckInstant() {
         return fileCreationTimestamp;
     }
 
-    public void setDateForLastFileIDCheck(XMLGregorianCalendar dateForLastFileIDCheck) {
+    @Deprecated(forRemoval = true)
+    public XMLGregorianCalendar getDateForLastFileIDCheck() {
+        return CalendarUtils.getXmlGregorianCalendar(fileCreationTimestamp);
+    }
+
+    public void setDateForLastFileIDCheck(Instant dateForLastFileIDCheck) {
         this.fileCreationTimestamp = dateForLastFileIDCheck;
+    }
+
+    @Deprecated(forRemoval = true)
+    public void setDateForLastFileIDCheck(XMLGregorianCalendar dateForLastFileIDCheck) {
+        this.fileCreationTimestamp = dateForLastFileIDCheck != null ? 
+            CalendarUtils.convertFromXMLGregorianCalendarToInstant(dateForLastFileIDCheck) : Instant.EPOCH;
     }
 
     public String getChecksum() {
@@ -103,12 +115,23 @@ public class FileInfo {
         this.checksum = checksum;
     }
 
-    public XMLGregorianCalendar getDateForLastChecksumCheck() {
+    public Instant getDateForLastChecksumCheckInstant() {
         return checksumLastCheck;
     }
 
-    public void setDateForLastChecksumCheck(XMLGregorianCalendar dateForLastChecksumCheck) {
+    @Deprecated(forRemoval = true)
+    public XMLGregorianCalendar getDateForLastChecksumCheck() {
+        return CalendarUtils.getXmlGregorianCalendar(checksumLastCheck);
+    }
+
+    public void setDateForLastChecksumCheck(Instant dateForLastChecksumCheck) {
         this.checksumLastCheck = dateForLastChecksumCheck;
+    }
+
+    @Deprecated(forRemoval = true)
+    public void setDateForLastChecksumCheck(XMLGregorianCalendar dateForLastChecksumCheck) {
+        this.checksumLastCheck = dateForLastChecksumCheck != null ?
+            CalendarUtils.convertFromXMLGregorianCalendarToInstant(dateForLastChecksumCheck) : Instant.EPOCH;
     }
 
     public String getPillarId() {
@@ -127,19 +150,39 @@ public class FileInfo {
                 + ", lastSeenGetChecksums: " + lastSeenGetChecksums + ")";
     }
 
-    public Date getLastSeenGetFileIDs() {
+    public Instant getLastSeenGetFileIDsInstant() {
         return lastSeenGetFileIDs;
     }
 
-    public void setLastSeenGetFileIDs(Date lastSeenGetFileIDs) {
+    @Deprecated(forRemoval = true)
+    public Date getLastSeenGetFileIDs() {
+        return lastSeenGetFileIDs != null ? Date.from(lastSeenGetFileIDs) : null;
+    }
+
+    public void setLastSeenGetFileIDs(Instant lastSeenGetFileIDs) {
         this.lastSeenGetFileIDs = lastSeenGetFileIDs;
     }
 
-    public Date getLastSeenGetChecksums() {
+    @Deprecated(forRemoval = true)
+    public void setLastSeenGetFileIDs(Date lastSeenGetFileIDs) {
+        this.lastSeenGetFileIDs = lastSeenGetFileIDs != null ? lastSeenGetFileIDs.toInstant() : null;
+    }
+
+    public Instant getLastSeenGetChecksumsInstant() {
         return lastSeenGetChecksums;
     }
 
-    public void setLastSeenGetChecksums(Date lastSeenGetChecksums) {
+    @Deprecated(forRemoval = true)
+    public Date getLastSeenGetChecksums() {
+        return lastSeenGetChecksums != null ? Date.from(lastSeenGetChecksums) : null;
+    }
+
+    public void setLastSeenGetChecksums(Instant lastSeenGetChecksums) {
         this.lastSeenGetChecksums = lastSeenGetChecksums;
+    }
+
+    @Deprecated(forRemoval = true)
+    public void setLastSeenGetChecksums(Date lastSeenGetChecksums) {
+        this.lastSeenGetChecksums = lastSeenGetChecksums != null ? lastSeenGetChecksums.toInstant() : null;
     }
 }
