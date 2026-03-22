@@ -23,6 +23,7 @@ package org.bitrepository.pillar.store.checksumdatabase;
 
 import org.bitrepository.common.ArgumentValidator;
 
+import java.time.Instant;
 import java.util.Date;
 
 /**
@@ -31,19 +32,30 @@ import java.util.Date;
 public class ChecksumEntry {
     protected final String fileID;
     protected final String checksum;
-    protected final Date calculationDate;
+    protected final Instant calculationDate;
 
     /**
      * @param fileID          The id of the file.
      * @param checksum        The checksum of the file.
      * @param calculationDate The calculation date for the checksum of the file.
      */
-    public ChecksumEntry(String fileID, String checksum, Date calculationDate) {
+    public ChecksumEntry(String fileID, String checksum, Instant calculationDate) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
 
         this.fileID = fileID;
         this.checksum = checksum;
-        this.calculationDate = new Date(calculationDate.getTime());
+        this.calculationDate = calculationDate;
+    }
+
+    /**
+     * @param fileID          The id of the file.
+     * @param checksum        The checksum of the file.
+     * @param calculationDate The calculation date for the checksum of the file.
+     * @deprecated Use {@link #ChecksumEntry(String, String, Instant)} instead
+     */
+    @Deprecated(forRemoval = true)
+    public ChecksumEntry(String fileID, String checksum, Date calculationDate) {
+        this(fileID, checksum, calculationDate != null ? calculationDate.toInstant() : null);
     }
 
     /**
@@ -62,8 +74,14 @@ public class ChecksumEntry {
 
     /**
      * @return The calculation date for the checksum of the file.
+     * @deprecated Use {@link #getCalculationDateInstant()} instead
      */
+    @Deprecated(forRemoval = true)
     public Date getCalculationDate() {
-        return new Date(calculationDate.getTime());
+        return calculationDate != null ? Date.from(calculationDate) : null;
+    }
+
+    public Instant getCalculationDateInstant() {
+        return calculationDate;
     }
 }

@@ -33,6 +33,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -66,8 +67,15 @@ public class ChecksumExtractor {
      * @param fileID       The id of the file to extract the date for.
      * @param collectionID The collection id for the file.
      * @return The date for the given file.
+     * @deprecated Use {@link #extractDateForFileInstant(String, String)} instead
      */
+    @Deprecated(forRemoval = true)
     public Date extractDateForFile(String fileID, String collectionID) {
+        Instant instant = extractDateForFileInstant(fileID, collectionID);
+        return instant != null ? Date.from(instant) : null;
+    }
+
+    public Instant extractDateForFileInstant(String fileID, String collectionID) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
 
         String sql = "SELECT " + CS_DATE + " FROM " + CHECKSUM_TABLE + " WHERE " + CS_FILE_ID + " = ? AND "
@@ -76,7 +84,7 @@ public class ChecksumExtractor {
         if (dateInMillis == null) {
             return null;
         }
-        return new Date(dateInMillis);
+        return Instant.ofEpochMilli(dateInMillis);
     }
 
     /**
@@ -142,9 +150,19 @@ public class ChecksumExtractor {
      * @param fileID       The id of the file.
      * @param collectionID The id of the collection.
      * @return The entry for the file, or null if it is not within the restrictions.
+     * @deprecated Use {@link #extractSingleEntryWithRestrictions(Instant, Instant, String, String)} instead
      */
+    @Deprecated(forRemoval = true)
     public ChecksumEntry extractSingleEntryWithRestrictions(XMLGregorianCalendar minTimeStamp,
-                                                            XMLGregorianCalendar maxTimeStamp, String fileID, String collectionID) {
+            XMLGregorianCalendar maxTimeStamp, String fileID, String collectionID) {
+        return extractSingleEntryWithRestrictions(
+                minTimeStamp != null ? CalendarUtils.convertFromXMLGregorianCalendarToInstant(minTimeStamp) : null,
+                maxTimeStamp != null ? CalendarUtils.convertFromXMLGregorianCalendarToInstant(maxTimeStamp) : null,
+                fileID, collectionID);
+    }
+
+    public ChecksumEntry extractSingleEntryWithRestrictions(Instant minTimeStamp,
+                                                            Instant maxTimeStamp, String fileID, String collectionID) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
 
         List<Object> args = new ArrayList<>();
@@ -157,11 +175,11 @@ public class ChecksumExtractor {
 
         if (minTimeStamp != null) {
             sql.append(" AND " + CS_DATE + " > ? ");
-            args.add(CalendarUtils.convertFromXMLGregorianCalendar(minTimeStamp).getTime());
+            args.add(minTimeStamp.toEpochMilli());
         }
         if (maxTimeStamp != null) {
             sql.append(" AND " + CS_DATE + " <= ? ");
-            args.add(CalendarUtils.convertFromXMLGregorianCalendar(maxTimeStamp).getTime());
+            args.add(maxTimeStamp.toEpochMilli());
         }
         sql.append(" ORDER BY " + CS_DATE + " ASC ");
 
@@ -189,8 +207,18 @@ public class ChecksumExtractor {
      * @param maxNumberOfResults The maximum number of results.
      * @param collectionID       The collection id for the extraction.
      * @return The requested collection of file ids.
+     * @deprecated Use {@link #getFileIDs(Instant, Instant, Long, String, String)} instead
      */
+    @Deprecated(forRemoval = true)
     public ExtractedFileIDsResultSet getFileIDs(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp,
+            Long maxNumberOfResults, String fileID, String collectionID) {
+        return getFileIDs(
+                minTimeStamp != null ? CalendarUtils.convertFromXMLGregorianCalendarToInstant(minTimeStamp) : null,
+                maxTimeStamp != null ? CalendarUtils.convertFromXMLGregorianCalendarToInstant(maxTimeStamp) : null,
+                maxNumberOfResults, fileID, collectionID);
+    }
+
+    public ExtractedFileIDsResultSet getFileIDs(Instant minTimeStamp, Instant maxTimeStamp,
                                                 Long maxNumberOfResults, String fileID, String collectionID) {
         List<Object> args = new ArrayList<>();
         StringBuilder sql = new StringBuilder();
@@ -200,11 +228,11 @@ public class ChecksumExtractor {
 
         if (minTimeStamp != null) {
             sql.append(" AND " + CS_DATE + " >= ? ");
-            args.add(CalendarUtils.convertFromXMLGregorianCalendar(minTimeStamp).getTime());
+            args.add(minTimeStamp.toEpochMilli());
         }
         if (maxTimeStamp != null) {
             sql.append(" AND " + CS_DATE + " <= ? ");
-            args.add(CalendarUtils.convertFromXMLGregorianCalendar(maxTimeStamp).getTime());
+            args.add(maxTimeStamp.toEpochMilli());
         }
         if (fileID != null) {
             sql.append(" AND " + CS_FILE_ID + " = ? ");
@@ -221,7 +249,7 @@ public class ChecksumExtractor {
                 int i = 0;
                 while (res.next() && (maxNumberOfResults == null || i < maxNumberOfResults)) {
                     results.insertFileID(res.getString(DatabaseConstants.CS_FILE_ID),
-                            new Date(res.getLong(DatabaseConstants.CS_DATE)));
+                            Instant.ofEpochMilli(res.getLong(DatabaseConstants.CS_DATE)));
                     i++;
                 }
 
@@ -260,9 +288,19 @@ public class ChecksumExtractor {
      * @param maxNumberOfResults The maximum number of results.
      * @param collectionID       The collection id for the extraction.
      * @return The requested collection of file ids.
+     * @deprecated Use {@link #extractEntries(Instant, Instant, Long, String)} instead
      */
+    @Deprecated(forRemoval = true)
     public ExtractedChecksumResultSet extractEntries(XMLGregorianCalendar minTimeStamp,
-                                                     XMLGregorianCalendar maxTimeStamp, Long maxNumberOfResults, String collectionID) {
+            XMLGregorianCalendar maxTimeStamp, Long maxNumberOfResults, String collectionID) {
+        return extractEntries(
+                minTimeStamp != null ? CalendarUtils.convertFromXMLGregorianCalendarToInstant(minTimeStamp) : null,
+                maxTimeStamp != null ? CalendarUtils.convertFromXMLGregorianCalendarToInstant(maxTimeStamp) : null,
+                maxNumberOfResults, collectionID);
+    }
+
+    public ExtractedChecksumResultSet extractEntries(Instant minTimeStamp,
+                                                     Instant maxTimeStamp, Long maxNumberOfResults, String collectionID) {
         List<Object> args = new ArrayList<>();
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT " + CS_FILE_ID + " , " + CS_CHECKSUM + " , " + CS_DATE + " FROM " + CHECKSUM_TABLE
@@ -271,11 +309,11 @@ public class ChecksumExtractor {
 
         if (minTimeStamp != null) {
             sql.append(" AND " + CS_DATE + " >= ? ");
-            args.add(CalendarUtils.convertFromXMLGregorianCalendar(minTimeStamp).getTime());
+            args.add(minTimeStamp.toEpochMilli());
         }
         if (maxTimeStamp != null) {
             sql.append(" AND " + CS_DATE + " <= ? ");
-            args.add(CalendarUtils.convertFromXMLGregorianCalendar(maxTimeStamp).getTime());
+            args.add(maxTimeStamp.toEpochMilli());
         }
         sql.append(" ORDER BY " + CS_DATE + " ASC ");
 
@@ -357,7 +395,7 @@ public class ChecksumExtractor {
     private ChecksumEntry extractChecksumEntry(ResultSet resSet) throws SQLException {
         String fileID = resSet.getString(DatabaseConstants.CS_FILE_ID);
         String checksum = resSet.getString(DatabaseConstants.CS_CHECKSUM);
-        Date date = new Date(resSet.getLong(DatabaseConstants.CS_DATE));
+        Instant date = Instant.ofEpochMilli(resSet.getLong(DatabaseConstants.CS_DATE));
         return new ChecksumEntry(fileID, checksum, date);
     }
 }

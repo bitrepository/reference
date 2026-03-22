@@ -25,6 +25,7 @@ import org.bitrepository.service.scheduler.JobEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.TimerTask;
@@ -35,7 +36,7 @@ import java.util.TimerTask;
  */
 public class JobTimerTask extends TimerTask {
     private final Logger log = LoggerFactory.getLogger(getClass());
-    private Date nextRun;
+    private Instant nextRun;
     private final long interval;
     private final SchedulableJob job;
     private final List<JobEventListener> jobListeners;
@@ -50,16 +51,29 @@ public class JobTimerTask extends TimerTask {
     public JobTimerTask(long interval, SchedulableJob job, List<JobEventListener> jobListeners) {
         this.interval = interval;
         this.job = job;
-        nextRun = new Date();
+        nextRun = Instant.now();
         this.jobListeners = jobListeners;
     }
 
     /**
      * @return The date for the next time the encapsulated workflow should run.
+     * @deprecated Use {@link #getNextRunInstant()} instead
      */
+    @Deprecated(forRemoval = true)
     public Date getNextRun() {
         if (interval > 0) {
-            return new Date(nextRun.getTime());
+            return Date.from(nextRun);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * @return The instant for the next time the encapsulated workflow should run.
+     */
+    public Instant getNextRunInstant() {
+        if (interval > 0) {
+            return nextRun;
         } else {
             return null;
         }
@@ -87,7 +101,7 @@ public class JobTimerTask extends TimerTask {
                 job.setCurrentState(WorkflowState.WAITING);
                 job.start();
                 if (interval > 0) {
-                    nextRun = new Date(System.currentTimeMillis() + interval);
+                    nextRun = Instant.now().plusMillis(interval);
                 }
                 notifyListenersAboutFinishedJob(job);
             } else {
@@ -117,8 +131,8 @@ public class JobTimerTask extends TimerTask {
 
     @Override
     public void run() {
-        if (nextRun != null && (getNextRun() == null ||
-                getNextRun().getTime() <= System.currentTimeMillis())) {
+        if (nextRun != null && (getNextRunInstant() == null ||
+                getNextRunInstant().toEpochMilli() <= System.currentTimeMillis())) {
             runJob();
         }
     }

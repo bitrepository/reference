@@ -22,13 +22,15 @@
 package org.bitrepository.monitoringservice.status;
 
 import org.bitrepository.bitrepositoryelements.ResultingStatus;
+import org.bitrepository.common.utils.CalendarUtils;
 
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.time.Instant;
 
 public class ComponentStatus {
     private int numberOfMissingReplies;
     private ComponentStatusCode status;
-    private XMLGregorianCalendar lastReply;
+    private Instant lastReply;
     private String info;
     private Boolean alarmed;
 
@@ -48,7 +50,7 @@ public class ComponentStatus {
     public void updateStatus(ResultingStatus resultingStatus) {
         numberOfMissingReplies = 0;
         status = ComponentStatusCode.valueOf(resultingStatus.getStatusInfo().getStatusCode().toString());
-        lastReply = resultingStatus.getStatusTimestamp();
+        lastReply = CalendarUtils.convertFromXMLGregorianCalendarToInstant(resultingStatus.getStatusTimestamp());
         info = resultingStatus.getStatusInfo().getStatusText();
         alarmed = false;
     }
@@ -84,8 +86,17 @@ public class ComponentStatus {
     /**
      * @return The date for the latest reply.
      */
-    public XMLGregorianCalendar getLastReplyDate() {
+    public Instant getLastReplyInstant() {
         return lastReply;
+    }
+
+    /**
+     * @return The date for the latest reply.
+     * @deprecated Use {@link #getLastReplyInstant()} instead
+     */
+    @Deprecated(forRemoval = true)
+    public XMLGregorianCalendar getLastReplyDate() {
+        return CalendarUtils.getXmlGregorianCalendar(lastReply);
     }
 
     /**

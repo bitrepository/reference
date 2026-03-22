@@ -38,8 +38,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,9 +65,14 @@ public class RestStatisticsService {
         List<StatisticsDataSize> data = new ArrayList<>();
         for (CollectionStat stat : stats) {
             StatisticsDataSize obj = new StatisticsDataSize();
-            Date statTime = stat.getStatsTime();
-            obj.setDateMillis(statTime.getTime());
-            obj.setDateString(TimeUtils.shortDate(statTime));
+            Instant statTime = stat.getStatsTimeInstant();
+            if (statTime != null) {
+                obj.setDateMillis(statTime.toEpochMilli());
+                obj.setDateString(TimeUtils.shortDate(statTime));
+            } else {
+                obj.setDateMillis(0L);
+                obj.setDateString("N/A");
+            }
             obj.setDataSize(stat.getDataSize());
             obj.setFileCount(stat.getFileCount());
             data.add(obj);

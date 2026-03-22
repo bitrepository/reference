@@ -26,11 +26,9 @@ import org.bitrepository.pillar.store.checksumdatabase.ChecksumStore;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedFileIDsResultSet;
 
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,11 +56,11 @@ public class MemoryCacheMock implements ChecksumStore {
     }
     
     @Override
-    public ExtractedFileIDsResultSet getFileIDs(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
+    public ExtractedFileIDsResultSet getFileIDs(Instant minTimeStamp, Instant maxTimeStamp, 
             Long maxNumberOfResults, String fileID, String collectionID) {
         ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
         for(String s : checksumMap.keySet()) {
-            res.insertFileID(s, new Date(0));
+            res.insertFileID(s, Instant.EPOCH);
         }
         return res;
     }
@@ -86,8 +84,8 @@ public class MemoryCacheMock implements ChecksumStore {
     }
 
     @Override
-    public Date getCalculationDate(String fileID, String collectionID) {
-        return checksumMap.get(fileID).getCalculationDate();
+    public Instant getCalculationDateInstant(String fileID, String collectionID) {
+        return checksumMap.get(fileID).getCalculationDateInstant();
     }
 
     @Override
@@ -96,7 +94,7 @@ public class MemoryCacheMock implements ChecksumStore {
     }
 
     @Override
-    public ExtractedChecksumResultSet getChecksumResults(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp, 
+    public ExtractedChecksumResultSet getChecksumResults(Instant minTimeStamp, Instant maxTimeStamp, 
             Long maxNumberOfResults, String collectionID) {
         ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
         for(ChecksumEntry cs : checksumMap.values()) {
@@ -107,7 +105,7 @@ public class MemoryCacheMock implements ChecksumStore {
     }
 
     @Override
-    public void insertChecksumCalculation(String fileID, String collectionID, String checksum, Date calculationDate) {
+    public void insertChecksumCalculation(String fileID, String collectionID, String checksum, Instant calculationDate) {
         checksumMap.put(fileID, new ChecksumEntry(fileID, checksum, calculationDate));
     }
 
@@ -122,8 +120,8 @@ public class MemoryCacheMock implements ChecksumStore {
     }
 
     @Override
-    public ExtractedChecksumResultSet getChecksumResult(XMLGregorianCalendar minTimeStamp,
-            XMLGregorianCalendar maxTimeStamp, String fileID, String collectionID) {
+    public ExtractedChecksumResultSet getChecksumResult(Instant minTimeStamp,
+            Instant maxTimeStamp, String fileID, String collectionID) {
         ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
         res.insertChecksumEntry(checksumMap.get(fileID));
 
@@ -134,7 +132,7 @@ public class MemoryCacheMock implements ChecksumStore {
     public List<String> getFileIDsWithOldChecksums(Instant checksumDate, String collectionID) {
         List<String> res = new ArrayList<>();
         for(ChecksumEntry ce : checksumMap.values()) {
-            if(ce.getCalculationDate().toInstant().isBefore(checksumDate)) {
+            if(ce.getCalculationDateInstant().isBefore(checksumDate)) {
                 res.add(ce.getFileId());
             }
         }

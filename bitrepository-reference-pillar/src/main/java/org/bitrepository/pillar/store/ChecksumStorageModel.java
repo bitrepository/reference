@@ -44,10 +44,9 @@ import org.bitrepository.settings.referencesettings.ChecksumPillarFileDownload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Date;
+import java.time.Instant;
 
 /**
  * The storage model for a pillar without a file store.
@@ -79,7 +78,7 @@ public class ChecksumStorageModel extends StorageModel {
             ChecksumDataForFileTYPE expectedChecksum) throws RequestHandlerException {
         String calculatedChecksum = retrieveChecksumFromDownloadOrVerificationData(fileID, collectionID, fileAddress,
                 expectedChecksum);
-        cache.insertChecksumCalculation(fileID, collectionID, calculatedChecksum, new Date());
+        cache.insertChecksumCalculation(fileID, collectionID, calculatedChecksum, Instant.now());
     }
 
     @Override
@@ -87,7 +86,7 @@ public class ChecksumStorageModel extends StorageModel {
             ChecksumDataForFileTYPE expectedChecksum) throws RequestHandlerException {
         String calculatedChecksum = retrieveChecksumFromDownloadOrVerificationData(fileID, collectionID, fileAddress,
                 expectedChecksum);
-        cache.insertChecksumCalculation(fileID, collectionID, calculatedChecksum, new Date());
+        cache.insertChecksumCalculation(fileID, collectionID, calculatedChecksum, Instant.now());
     }
 
     @Override
@@ -114,8 +113,8 @@ public class ChecksumStorageModel extends StorageModel {
     }
 
     @Override
-    public ExtractedFileIDsResultSet getFileIDsResultSet(String fileID, XMLGregorianCalendar minTimestamp,
-            XMLGregorianCalendar maxTimestamp, Long maxResults, String collectionID) {
+    public ExtractedFileIDsResultSet getFileIDsResultSet(String fileID, Instant minTimestamp,
+                                                         Instant maxTimestamp, Long maxResults, String collectionID) {
         return cache.getFileIDs(minTimestamp, maxTimestamp, maxResults, fileID, collectionID);
     }
 

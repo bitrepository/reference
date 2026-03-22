@@ -25,10 +25,8 @@ import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseManager;
 
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.Instant;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -52,7 +50,7 @@ public class ChecksumDAO implements ChecksumStore {
     }
 
     @Override
-    public void insertChecksumCalculation(String fileID, String collectionID, String checksum, Date calculationDate) {
+    public void insertChecksumCalculation(String fileID, String collectionID, String checksum, Instant calculationDate) {
         ArgumentValidator.checkNotNull(fileID, "String fileID");
         ArgumentValidator.checkNotNull(collectionID, "String collectionID");
 
@@ -83,27 +81,26 @@ public class ChecksumDAO implements ChecksumStore {
     }
 
     @Override
-    public ExtractedChecksumResultSet getChecksumResults(XMLGregorianCalendar minTimeStamp,
-                                                         XMLGregorianCalendar maxTimeStamp, Long maxNumberOfResults, String collectionID) {
+    public ExtractedChecksumResultSet getChecksumResults(Instant minTimeStamp,
+                                                         Instant maxTimeStamp, Long maxNumberOfResults, String collectionID) {
         ArgumentValidator.checkNotNull(collectionID, "String collectionID");
         return extractor.extractEntries(minTimeStamp, maxTimeStamp, maxNumberOfResults, collectionID);
     }
 
     @Override
-    public Date getCalculationDate(String fileID, String collectionID) {
+    public Instant getCalculationDateInstant(String fileID, String collectionID) {
         ArgumentValidator.checkNotNull(fileID, "String fileID");
         ArgumentValidator.checkNotNull(collectionID, "String collectionID");
 
-        Date res = extractor.extractDateForFile(fileID, collectionID);
+        Instant res = extractor.extractDateForFileInstant(fileID, collectionID);
         if (res == null) {
             throw new IllegalStateException("No entry for file '" + fileID + "' to delete.");
         }
         return res;
-
     }
 
     @Override
-    public ExtractedFileIDsResultSet getFileIDs(XMLGregorianCalendar minTimeStamp, XMLGregorianCalendar maxTimeStamp,
+    public ExtractedFileIDsResultSet getFileIDs(Instant minTimeStamp, Instant maxTimeStamp,
                                                 Long maxNumberOfResults, String fileID, String collectionID) {
         ArgumentValidator.checkNotNull(collectionID, "String collectionID");
         return extractor.getFileIDs(minTimeStamp, maxTimeStamp, maxNumberOfResults, fileID, collectionID);
@@ -141,8 +138,8 @@ public class ChecksumDAO implements ChecksumStore {
     }
 
     @Override
-    public ExtractedChecksumResultSet getChecksumResult(XMLGregorianCalendar minTimeStamp,
-                                                        XMLGregorianCalendar maxTimeStamp, String fileID, String collectionID) {
+    public ExtractedChecksumResultSet getChecksumResult(Instant minTimeStamp,
+                                                        Instant maxTimeStamp, String fileID, String collectionID) {
         ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
         ChecksumEntry entry = extractor.extractSingleEntryWithRestrictions(minTimeStamp, maxTimeStamp, fileID,
                 collectionID);
@@ -154,7 +151,7 @@ public class ChecksumDAO implements ChecksumStore {
 
     @Override
     public List<String> getFileIDsWithOldChecksums(Instant checksumDate, String collectionID) {
-        ArgumentValidator.checkNotNull(checksumDate, "Date checksumDate");
+        ArgumentValidator.checkNotNull(checksumDate, "Instant checksumDate");
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
         return extractor.extractFileIDsWithMaxChecksumDate(checksumDate.toEpochMilli(), collectionID);
     }
