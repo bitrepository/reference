@@ -54,7 +54,6 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.Date;
 
 /**
  * Class for handling the GetAuditTrails operation.
@@ -141,18 +140,12 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
         Instant minDate = null;
         if (message.getMinTimestamp() != null) {
             log.trace("Minimum date value: {}", message.getMinTimestamp());
-            Date d = CalendarUtils.convertFromXMLGregorianCalendar(message.getMinTimestamp());
-            if (d != null) {
-                minDate = d.toInstant();
-            }
+            minDate = CalendarUtils.convertFromXMLGregorianCalendarToInstant(message.getMinTimestamp());
         }
         Instant maxDate = null;
         if (message.getMaxTimestamp() != null) {
             log.trace("Maximum date value: {}", message.getMaxTimestamp());
-            Date d = CalendarUtils.convertFromXMLGregorianCalendar(message.getMaxTimestamp());
-            if (d != null) {
-                maxDate = d.toInstant();
-            }
+            maxDate = CalendarUtils.convertFromXMLGregorianCalendarToInstant(message.getMaxTimestamp());
         }
         Long maxNumberOfResults = null;
         if (message.getMaxNumberOfResults() != null) {
@@ -204,7 +197,7 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
      */
     protected File createAuditTrailFile(GetAuditTrailsRequest request, AuditTrailDatabaseResults extractedAuditTrails)
             throws IOException, JAXBException, SAXException {
-        File checksumResultFile = File.createTempFile(request.getCorrelationID(), new Date().getTime() + ".at");
+        File checksumResultFile = File.createTempFile(request.getCorrelationID(), Instant.now().toEpochMilli() + ".at");
 
         GetAuditTrailsResults results = new GetAuditTrailsResults();
         results.setVersion(ProtocolVersionLoader.loadProtocolVersion().getVersion());

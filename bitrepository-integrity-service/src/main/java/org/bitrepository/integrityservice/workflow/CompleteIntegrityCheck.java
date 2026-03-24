@@ -27,7 +27,7 @@ import org.bitrepository.integrityservice.workflow.step.FullUpdateFileIDsStep;
 import org.bitrepository.integrityservice.workflow.step.UpdateChecksumsStep;
 import org.bitrepository.integrityservice.workflow.step.UpdateFileIDsStep;
 
-import java.util.Date;
+import java.time.Instant;
 
 /**
  * Simple workflow for performing integrity checks of the system.
@@ -66,7 +66,7 @@ public class CompleteIntegrityCheck extends IntegrityCheckWorkflow {
 
 
     @Override
-    protected Date getChecksumUpdateCutoffDate() {
+    protected Instant getChecksumUpdateCutoffDate() {
         return workflowStart;
     }
 }

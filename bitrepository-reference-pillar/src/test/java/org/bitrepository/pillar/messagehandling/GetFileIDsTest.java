@@ -28,7 +28,12 @@ package org.bitrepository.pillar.messagehandling;
 import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositorymessages.*;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
+import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.pillar.MockedPillarTest;
@@ -44,7 +49,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import javax.xml.datatype.XMLGregorianCalendar;
-import java.util.Date;
+import java.time.Instant;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
@@ -173,12 +178,12 @@ public class GetFileIDsTest extends MockedPillarTest {
         Mockito.doAnswer(new Answer() {
                     public ExtractedFileIDsResultSet answer(InvocationOnMock invocation) {
                         ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
-                        res.insertFileID(FILE_ID, new Date(0));
+                        res.insertFileID(FILE_ID, Instant.EPOCH);
                         return res;
                     }
                 }).when(model)
-                .getFileIDsResultSet(ArgumentMatchers.anyString(), ArgumentMatchers.any(XMLGregorianCalendar.class),
-                        ArgumentMatchers.any(XMLGregorianCalendar.class), ArgumentMatchers.anyLong(),
+                .getFileIDsResultSet(ArgumentMatchers.anyString(), ArgumentMatchers.any(Instant.class),
+                        ArgumentMatchers.any(Instant.class), ArgumentMatchers.anyLong(),
                         ArgumentMatchers.anyString());
 
         addStep("Create and send the actual GetFileIDs message to the pillar.",
@@ -231,12 +236,12 @@ public class GetFileIDsTest extends MockedPillarTest {
         Mockito.doAnswer(new Answer() {
             public ExtractedFileIDsResultSet answer(InvocationOnMock invocation) {
                 ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
-                res.insertFileID(defaultFileId, new Date(0));
-                res.insertFileID(nonDefaultFileId, new Date());
+                res.insertFileID(defaultFileId, Instant.EPOCH);
+                res.insertFileID(nonDefaultFileId, Instant.now());
                 return res;
             }
-        }).when(model).getFileIDsResultSet(ArgumentMatchers.isNull(), ArgumentMatchers.any(XMLGregorianCalendar.class),
-                ArgumentMatchers.any(XMLGregorianCalendar.class), ArgumentMatchers.anyLong(),
+        }).when(model).getFileIDsResultSet(ArgumentMatchers.isNull(), ArgumentMatchers.any(Instant.class),
+                ArgumentMatchers.any(Instant.class), ArgumentMatchers.anyLong(),
                 ArgumentMatchers.anyString());
 
         addStep("Create and send the actual GetFileIDs message to the pillar.",
@@ -313,8 +318,10 @@ public class GetFileIDsTest extends MockedPillarTest {
         final String FILE_ID = defaultFileId + testMethodName;
         FileIDs fileids = FileIDsUtils.getAllFileIDs();
 
-        final XMLGregorianCalendar MIN_DATE = CalendarUtils.getXmlGregorianCalendar(new Date(12345));
-        final XMLGregorianCalendar MAX_DATE = CalendarUtils.getXmlGregorianCalendar(new Date());
+        final Instant minInstant = Instant.ofEpochMilli(12345);
+        final Instant maxInstant = Instant.now();
+        final XMLGregorianCalendar MIN_DATE = CalendarUtils.getXmlGregorianCalendar(minInstant);
+        final XMLGregorianCalendar MAX_DATE = CalendarUtils.getXmlGregorianCalendar(maxInstant);
         final Long MAX_RESULTS = 12345L;
 
         Mockito.doAnswer(new Answer() {
@@ -332,11 +339,11 @@ public class GetFileIDsTest extends MockedPillarTest {
         Mockito.doAnswer(new Answer() {
             public ExtractedFileIDsResultSet answer(InvocationOnMock invocation) {
                 ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
-                res.insertFileID(FILE_ID, new Date(1234567890));
+                res.insertFileID(FILE_ID, Instant.ofEpochMilli(1234567890));
                 return res;
             }
-        }).when(model).getFileIDsResultSet(ArgumentMatchers.isNull(), ArgumentMatchers.eq(MIN_DATE),
-                ArgumentMatchers.eq(MAX_DATE), ArgumentMatchers.eq(MAX_RESULTS), ArgumentMatchers.eq(collectionID));
+        }).when(model).getFileIDsResultSet(ArgumentMatchers.isNull(), ArgumentMatchers.eq(minInstant),
+                ArgumentMatchers.eq(maxInstant), ArgumentMatchers.eq(MAX_RESULTS), ArgumentMatchers.eq(collectionID));
 
         addStep("Create and send the actual GetFileIDs message to the pillar.",
                 "Should be received and handled by the pillar.");

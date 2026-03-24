@@ -29,6 +29,7 @@ import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.service.LifeCycledService;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Date;
 
@@ -56,7 +57,14 @@ public interface AlarmService extends LifeCycledService {
      * @param ascending    Whether the alarms should be delivered ascending.
      * @return The requested collection of alarms from the store.
      */
-    Collection<Alarm> extractAlarms(String componentID, AlarmCode alarmCode, Date minDate, Date maxDate,
-                                    String fileID, String collectionID, Integer maxResults, boolean ascending);
+    @Deprecated(forRemoval = true)
+    default Collection<Alarm> extractAlarms(String componentID, AlarmCode alarmCode, Date minDate, Date maxDate,
+                                    String fileID, String collectionID, Integer maxResults, boolean ascending) {
+        Instant min = minDate != null ? minDate.toInstant() : null;
+        Instant max = maxDate != null ? maxDate.toInstant() : null;
+        return extractAlarms(componentID, alarmCode, min, max, fileID, collectionID, maxResults, ascending);
+    }
 
+    Collection<Alarm> extractAlarms(String componentID, AlarmCode alarmCode, Instant instant, Instant instant1,
+                                    String fileID, String collectionID, Integer maxResults, boolean ascending);
 }

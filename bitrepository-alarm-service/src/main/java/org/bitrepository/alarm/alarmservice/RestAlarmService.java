@@ -37,17 +37,17 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 @Path("/AlarmService")
 public class RestAlarmService {
     private final AlarmService alarmService;
-    private final CalendarUtils calendarUtils = CalendarUtils.getInstance(TimeZone.getDefault());
+    private final CalendarUtils calendarUtils = CalendarUtils.getInstance(ZoneId.systemDefault());
 
     public RestAlarmService() {
         alarmService = AlarmServiceFactory.getAlarmService();
@@ -63,7 +63,7 @@ public class RestAlarmService {
     @Path("/getShortAlarmList/")
     @Produces("application/json")
     public List<Alarm> getShortAlarmList() {
-        return new ArrayList<>(alarmService.extractAlarms(null, null, null, null,
+        return new ArrayList<>(alarmService.extractAlarms(null, null, (Instant) null, (Instant) null,
                 null, null, 10, false));
     }
 
@@ -76,7 +76,7 @@ public class RestAlarmService {
     @Path("/getFullAlarmList/")
     @Produces("application/json")
     public List<Alarm> getFullAlarmList() {
-        return new ArrayList<>(alarmService.extractAlarms(null, null, null, null,
+        return new ArrayList<>(alarmService.extractAlarms(null, null, (Instant) null, (Instant) null,
                 null, null, null, true));
     }
 
@@ -103,8 +103,8 @@ public class RestAlarmService {
             @DefaultValue("true")
             @FormParam("oldestAlarmFirst")
                     boolean oldestAlarmFirst) {
-        Date from = calendarUtils.makeStartDateObject(fromDate);
-        Date to = calendarUtils.makeEndDateObject(toDate);
+        Instant from = calendarUtils.makeStartInstant(fromDate);
+        Instant to = calendarUtils.makeEndInstant(toDate);
 
         Collection<Alarm> alarms = alarmService.extractAlarms(contentOrNull(reportingComponent), makeAlarmCode(alarmCode), from, to,
                 contentOrNull(fileID), makeCollectionID(collectionID), maxAlarms, oldestAlarmFirst);
@@ -117,8 +117,8 @@ public class RestAlarmService {
     @Consumes("application/json")
     @Produces("application/json")
     public List<Alarm> queryAlarms(AlarmServiceInput input) {
-        Date from = calendarUtils.makeStartDateObject(input.getFromDate());
-        Date to = calendarUtils.makeEndDateObject(input.getToDate());
+        Instant from = calendarUtils.makeStartInstant(input.getFromDate());
+        Instant to = calendarUtils.makeEndInstant(input.getToDate());
 
         Collection<Alarm> alarms = alarmService.extractAlarms(contentOrNull(input.getReportingComponent()),
                 makeAlarmCode(input.getAlarmCode()), from, to, contentOrNull(input.getFileID()), makeCollectionID(input.getCollectionID()),

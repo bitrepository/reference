@@ -30,7 +30,7 @@ import org.bitrepository.service.exception.StepFailedException;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 
 import java.io.IOException;
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -41,10 +41,10 @@ public class HandleMissingChecksumsStep extends AbstractWorkFlowStep {
     private final IntegrityModel store;
     private final IntegrityReporter reporter;
     private final StatisticsCollector sc;
-    private final Date cutoffDate;
+    private final Instant cutoffDate;
 
     public HandleMissingChecksumsStep(IntegrityModel store, IntegrityReporter reporter, StatisticsCollector statisticsCollector,
-                                      Date latestChecksumUpdate) {
+                                      Instant latestChecksumUpdate) {
         this.store = store;
         this.reporter = reporter;
         this.sc = statisticsCollector;
@@ -90,4 +90,3 @@ public class HandleMissingChecksumsStep extends AbstractWorkFlowStep {
         return "Detects and reports files that are missing a checksum from one or more pillars in the collection.";
     }
 }
-

@@ -184,7 +184,7 @@ public final class CalendarUtils {
      * @return The current date in XML format
      * @deprecated Use {@link #getXmlGregorianCalendar(Instant)} or {@link #getXmlGregorianCalendar(ZonedDateTime)} instead
      */
-    @Deprecated( forRemoval = true)
+    @Deprecated(forRemoval = true)
     public static XMLGregorianCalendar getXmlGregorianCalendar(GregorianCalendar gregorianCalendar) {
         try {
             return DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
@@ -230,7 +230,7 @@ public final class CalendarUtils {
     public static Instant convertFromXMLGregorianCalendarToInstant(XMLGregorianCalendar xmlCal) {
         ArgumentValidator.checkNotNull(xmlCal, "XMLGregorianCalendar xmlCal");
 
-        return xmlCal.toGregorianCalendar().toInstant();
+        return xmlCal.toGregorianCalendar().toZonedDateTime().toInstant();
     }
 
     /**
