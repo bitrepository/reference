@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Date;
+import java.time.Instant;
 
 /**
  * Simple workflow for performing integrity checks of the system.
@@ -61,7 +61,7 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
     protected IntegrityWorkflowContext context;
     protected String collectionID;
     protected IntegrityContributors integrityContributors;
-    protected Date workflowStart;
+    protected Instant workflowStart;
 
     /**
      * Remember to call the initialise method needs to be called before the start method.
@@ -81,11 +81,11 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
 
     protected abstract boolean cleanDeletedFiles();
 
-    protected abstract Date getChecksumUpdateCutoffDate();
+    protected abstract Instant getChecksumUpdateCutoffDate();
 
     @Override
     public void start() {
-        workflowStart = new Date();
+        workflowStart = Instant.now();
 
         if (context == null) {
             throw new IllegalStateException(
@@ -116,7 +116,7 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
                 performStep(handleDeletedFilesStep);
             }
 
-            statisticsCollector.getCollectionStat().setStatsTime(new Date());
+            statisticsCollector.getCollectionStat().setStatsTime(Instant.now());
             javax.xml.datatype.Duration timeBeforeMissingFileCheck = context.getSettings().getReferenceSettings()
                     .getIntegrityServiceSettings().getTimeBeforeMissingFileCheck();
             Duration missingFileGracePeriod = XmlUtils.xmlDurationToDuration(timeBeforeMissingFileCheck);

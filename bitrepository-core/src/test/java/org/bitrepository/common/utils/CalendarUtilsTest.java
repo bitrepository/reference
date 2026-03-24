@@ -101,8 +101,8 @@ public class CalendarUtilsTest {
     public void endDateTest() {
         addDescription("Test that the end date is considered as localtime and converted into UTC.");
         CalendarUtils cu = CalendarUtils.getInstance(ZoneId.of("Europe/Copenhagen"));
-        Instant expectedEndOfDay = ZonedDateTime.parse("2015-02-26T22:59:59.999Z",
-                DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneId.of("UTC"))).toInstant();
+        DateTimeFormatter sdf = DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneId.of("UTC"));
+        Instant expectedEndOfDay = ZonedDateTime.parse("2015-02-26T22:59:59.999Z", sdf).toInstant();
 
         Instant parsedEndOfDay = cu.makeEndInstant("2015/02/26");
         Assertions.assertEquals(expectedEndOfDay, parsedEndOfDay);
@@ -113,8 +113,8 @@ public class CalendarUtilsTest {
     public void endDateRolloverTest() {
         addDescription("Test that the end date is correctly rolls over a year and month change.");
         CalendarUtils cu = CalendarUtils.getInstance(ZoneId.of("Europe/Copenhagen"));
-        Instant expectedEndOfDay = ZonedDateTime.parse("2015-12-31T22:59:59.999Z",
-                DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneId.of("UTC"))).toInstant();
+        DateTimeFormatter sdf = DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneId.of("UTC"));
+        Instant expectedEndOfDay = ZonedDateTime.parse("2015-12-31T22:59:59.999Z", sdf).toInstant();
 
         // Note: New implementation uses strict parsing, so 2015/12/32 is invalid. 
         // Changed to 2015/12/31 to test end-of-year.

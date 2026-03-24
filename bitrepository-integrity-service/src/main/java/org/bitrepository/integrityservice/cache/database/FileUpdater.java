@@ -32,7 +32,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Date;
+import java.time.Instant;
 
 /**
  * Class to handle the update of fileIDs information in the integrity database.
@@ -106,11 +106,11 @@ public class FileUpdater {
             init();
             log.debug("Initialized fileUpdater");
             try {
-                Date maxDate = new Date(0);
+                Instant maxDate = Instant.EPOCH;
                 for (FileIDsDataItem item : dataItems.getFileIDsDataItem()) {
                     updateFileInfo(item);
                     addFileInfo(item);
-                    maxDate = TimeUtils.getMaxDate(maxDate, CalendarUtils.convertFromXMLGregorianCalendar(item.getLastModificationTime()));
+                    maxDate = TimeUtils.getMaxInstant(maxDate, CalendarUtils.convertFromXMLGregorianCalendarToInstant(item.getLastModificationTime()));
                 }
                 updateMaxTime(maxDate);
                 log.debug("Done building file update batch");
@@ -125,7 +125,7 @@ public class FileUpdater {
     }
 
     private void addFileInfo(FileIDsDataItem item) throws SQLException {
-        Date now = new Date();
+        Instant now = Instant.now();
         insertFileInfoPS.setString(1, pillar);
         insertFileInfoPS.setString(2, item.getFileID());
         if (item.getFileSize() == null) {
@@ -133,9 +133,9 @@ public class FileUpdater {
         } else {
             insertFileInfoPS.setLong(3, item.getFileSize().longValue());
         }
-        long time = CalendarUtils.convertFromXMLGregorianCalendar(item.getLastModificationTime()).getTime();
+        long time = CalendarUtils.convertFromXMLGregorianCalendarToInstant(item.getLastModificationTime()).toEpochMilli();
         insertFileInfoPS.setLong(4, time);
-        insertFileInfoPS.setLong(5, now.getTime());
+        insertFileInfoPS.setLong(5, now.toEpochMilli());
         insertFileInfoPS.setString(6, collectionID);
         insertFileInfoPS.setString(7, item.getFileID());
         insertFileInfoPS.setString(8, collectionID);
@@ -144,28 +144,28 @@ public class FileUpdater {
     }
 
     private void updateFileInfo(FileIDsDataItem item) throws SQLException {
-        Date now = new Date();
+        Instant now = Instant.now();
         if (item.getFileSize() == null) {
             updateFileInfoPS.setNull(1, Types.BIGINT);
         } else {
             updateFileInfoPS.setLong(1, item.getFileSize().longValue());
         }
-        long time = CalendarUtils.convertFromXMLGregorianCalendar(item.getLastModificationTime()).getTime();
+        long time = CalendarUtils.convertFromXMLGregorianCalendarToInstant(item.getLastModificationTime()).toEpochMilli();
         updateFileInfoPS.setLong(2, time);
-        updateFileInfoPS.setLong(3, now.getTime());
+        updateFileInfoPS.setLong(3, now.toEpochMilli());
         updateFileInfoPS.setString(4, item.getFileID());
         updateFileInfoPS.setString(5, collectionID);
         updateFileInfoPS.setString(6, pillar);
         updateFileInfoPS.addBatch();
     }
 
-    private void updateMaxTime(Date maxDate) throws SQLException {
-        updateLatestFileTimePS.setLong(1, maxDate.getTime());
+    private void updateMaxTime(Instant maxDate) throws SQLException {
+        updateLatestFileTimePS.setLong(1, maxDate.toEpochMilli());
         updateLatestFileTimePS.setString(2, collectionID);
         updateLatestFileTimePS.setString(3, pillar);
 
         insertLatestFileTimePS.setString(1, pillar);
-        insertLatestFileTimePS.setLong(2, maxDate.getTime());
+        insertLatestFileTimePS.setLong(2, maxDate.toEpochMilli());
         insertLatestFileTimePS.setString(3, collectionID);
         insertLatestFileTimePS.setString(4, collectionID);
         insertLatestFileTimePS.setString(5, pillar);

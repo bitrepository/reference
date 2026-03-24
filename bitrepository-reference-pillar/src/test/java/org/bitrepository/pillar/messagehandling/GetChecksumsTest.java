@@ -29,7 +29,12 @@ import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositorymessages.*;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
+import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.pillar.MockedPillarTest;
@@ -47,7 +52,6 @@ import org.mockito.stubbing.Answer;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.Instant;
-import java.util.Date;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
@@ -113,7 +117,7 @@ public class GetChecksumsTest extends MockedPillarTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void badCaseIdentification() throws Exception {
+    void badCaseIdentification() throws Exception {
         addDescription("Tests the identification for a GetChecksums operation on the pillar for the failure scenario," +
                 " when the file is missing.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -156,7 +160,7 @@ public class GetChecksumsTest extends MockedPillarTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void goodCaseOperationSingleFile() throws Exception {
+    void goodCaseOperationSingleFile() throws Exception {
         addDescription("Tests the GetChecksums operation on the pillar for the successful scenario when requesting " +
                 "one specific file.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -210,7 +214,7 @@ public class GetChecksumsTest extends MockedPillarTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void goodCaseOperationAllFiles() throws Exception {
+    void goodCaseOperationAllFiles() throws Exception {
         addDescription("Tests the GetChecksums operation on the pillar for the successful scenario, " +
                 "when requesting all files.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -257,7 +261,7 @@ public class GetChecksumsTest extends MockedPillarTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void badCaseOperationNoFile() throws Exception {
+    void badCaseOperationNoFile() throws Exception {
         addDescription("Tests the GetChecksums functionality of the pillar for the failure scenario, where it does " +
                 "not have the file.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -297,14 +301,14 @@ public class GetChecksumsTest extends MockedPillarTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void testRestrictions() throws Exception {
+    void testRestrictions() throws Exception {
         addDescription("Tests that the restrictions are correctly passed on to the cache.");
 
         addStep("Set up constants and variables.", "Should not fail here!");
         FileIDs fileids = FileIDsUtils.getAllFileIDs();
 
-        final XMLGregorianCalendar MIN_DATE = CalendarUtils.getXmlGregorianCalendar(new Date(12345));
-        final XMLGregorianCalendar MAX_DATE = CalendarUtils.getXmlGregorianCalendar(new Date());
+        final XMLGregorianCalendar MIN_DATE = CalendarUtils.getXmlGregorianCalendar(Instant.ofEpochMilli(12345));
+        final XMLGregorianCalendar MAX_DATE = CalendarUtils.getXmlGregorianCalendar(Instant.now());
         final Long MAX_RESULTS = 12345L;
 
         Mockito.doAnswer(new Answer() {
