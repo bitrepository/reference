@@ -66,7 +66,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-public class RepairMissingFilesWorkflowTest {
+class RepairMissingFilesWorkflowTest {
 
     private static final String PILLAR_1 = "pillar1";
     private static final String PILLAR_2 = "pillar2";
@@ -82,7 +82,7 @@ public class RepairMissingFilesWorkflowTest {
     protected AuditTrailManager auditManager;
 
     @BeforeEach
-    public void setup() throws Exception {
+    void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("IntegrityWorkflowTest");
 
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
@@ -108,7 +108,7 @@ public class RepairMissingFilesWorkflowTest {
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testNoMissingFiles() {
+    void testNoMissingFiles() {
         addDescription("Test that the workflow does nothing, when it has no missing files.");
         addStep("Prepare for calls to mocks", "");
         when(model.findFilesWithMissingCopies(anyString(), anyInt(), anyLong(), anyLong()))
@@ -133,7 +133,7 @@ public class RepairMissingFilesWorkflowTest {
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testSuccessRepair() {
+    void testSuccessRepair() {
         addDescription("Test that the workflow makes calls to the collector, when a file is missing");
         addStep("Prepare for calls to mocks to handle a repair", "");
         when(model.findFilesWithMissingCopies(eq(TEST_COLLECTION), anyInt(), anyLong(), anyLong()))
@@ -187,7 +187,7 @@ public class RepairMissingFilesWorkflowTest {
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testFailedGetFile() {
+    void testFailedGetFile() {
         addDescription("Test that the workflow does not try to put a file, if it fails to get it.");
         addStep("Prepare for calls to mocks to fail when performing get-file", "");
         when(model.findFilesWithMissingCopies(eq(TEST_COLLECTION), anyInt(), anyLong(), anyLong()))
@@ -230,7 +230,7 @@ public class RepairMissingFilesWorkflowTest {
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testFailedPutFile() {
+    void testFailedPutFile() {
         addDescription("Test that the workflow makes calls to the collector for get and put file, even when put file fails.");
         addStep("Prepare for calls to mocks", "");
         when(model.findFilesWithMissingCopies(eq(TEST_COLLECTION), anyInt(), anyLong(), anyLong()))
@@ -305,7 +305,7 @@ public class RepairMissingFilesWorkflowTest {
     private List<FileInfo> createMockFileInfo(String fileId, String checksum, String... pillars) {
         List<FileInfo> res = new ArrayList<>();
         for (String pillar : pillars) {
-            res.add(new FileInfo(fileId, (Instant) null, checksum, 0L, (Instant) null, pillar));
+            res.add(new FileInfo(fileId, (Instant) null, checksum, 0L, (Instant) null, pillar, null, null));
         }
         return res;
     }

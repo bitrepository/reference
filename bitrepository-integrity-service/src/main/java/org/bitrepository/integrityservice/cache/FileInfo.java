@@ -45,7 +45,7 @@ public class FileInfo {
     private Instant lastSeenGetChecksums;
 
     public FileInfo(String fileID, Instant fileLastCheck, String checksum, Long fileSize,
-                    Instant checksumLastCheck, String pillarID) {
+                    Instant checksumLastCheck, String pillarID, Instant lastSeenGetFileIDs, Instant lastSeenGetChecksums) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
         ArgumentValidator.checkNotNullOrEmpty(pillarID, "String pillarID");
         this.fileID = fileID;
@@ -54,6 +54,8 @@ public class FileInfo {
         this.fileSize = fileSize;
         this.checksumLastCheck = checksumLastCheck != null ? checksumLastCheck : Instant.EPOCH;
         this.pillarID = pillarID;
+        this.lastSeenGetFileIDs = lastSeenGetFileIDs;
+        this.lastSeenGetChecksums = lastSeenGetChecksums;
     }
 
     /**
@@ -63,6 +65,7 @@ public class FileInfo {
      * @param fileSize          The size for the file, in Bytes
      * @param checksumLastCheck The date for the last check of the checksum (if null, replaced by Epoch).
      * @param pillarID          The id of the pillar (may not be null)
+     * @deprecated Use {@link #FileInfo(String, Instant, String, Long, Instant, String, Instant, Instant)} instead
      */
     @Deprecated(forRemoval = true)
     public FileInfo(String fileID, XMLGregorianCalendar fileLastCheck, String checksum, Long fileSize,
@@ -71,7 +74,7 @@ public class FileInfo {
              fileLastCheck != null ? CalendarUtils.convertFromXMLGregorianCalendarToInstant(fileLastCheck) : null,
              checksum, fileSize,
              checksumLastCheck != null ? CalendarUtils.convertFromXMLGregorianCalendarToInstant(checksumLastCheck) : null,
-             pillarID);
+             pillarID, null, null);
     }
 
     /**
@@ -81,7 +84,7 @@ public class FileInfo {
      * @param pillarID The id of the pillar.
      */
     public FileInfo(String fileID, String pillarID) {
-        this(fileID, (Instant) null, null, null, (Instant) null, pillarID);
+        this(fileID, (Instant) null, null, null, (Instant) null, pillarID, null, null);
     }
 
     public String getFileId() {

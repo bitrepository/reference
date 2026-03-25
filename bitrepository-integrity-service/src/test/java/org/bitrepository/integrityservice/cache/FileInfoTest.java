@@ -21,61 +21,59 @@
  */
 package org.bitrepository.integrityservice.cache;
 
-import org.bitrepository.common.utils.CalendarUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import javax.xml.datatype.DatatypeConstants;
-import javax.xml.datatype.XMLGregorianCalendar;
+import java.time.Instant;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class FileInfoTest {
+class FileInfoTest {
 
     private static final String FILE_ID = "TEST-FILE";
     private static final long LAST_FILE_CHECK_MILLIS = 1000000;
-    private static final XMLGregorianCalendar LAST_FILE_CHECK = CalendarUtils.getFromMillis(LAST_FILE_CHECK_MILLIS);
+    private static final Instant LAST_FILE_CHECK = Instant.ofEpochMilli(LAST_FILE_CHECK_MILLIS);
     private static final String CHECKSUM = "CHECKSUM";
     private static final long LAST_CHECKSUM_CHECK_MILLIS = 2000000;
-    private static final XMLGregorianCalendar LAST_CHECKSUM_CHECK = CalendarUtils.getFromMillis(LAST_CHECKSUM_CHECK_MILLIS);
+    private static final Instant LAST_CHECKSUM_CHECK = Instant.ofEpochMilli(LAST_CHECKSUM_CHECK_MILLIS);
     private static final String PILLAR_ID = "test-pillar";
     private static final Long FILE_SIZE = 12345L;
 
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testFileInfo() {
+    void testFileInfo() {
         addDescription("Tests the FileInfo element. Adds all data and extracts it again.");
         addStep("Setup the file info.", "Should be possible to extract all the data again.");
-        FileInfo fi = new FileInfo(FILE_ID, LAST_FILE_CHECK, CHECKSUM, FILE_SIZE, LAST_CHECKSUM_CHECK, PILLAR_ID);
+        FileInfo fi = new FileInfo(FILE_ID, LAST_FILE_CHECK, CHECKSUM, FILE_SIZE, LAST_CHECKSUM_CHECK, PILLAR_ID, null, null);
 
         Assertions.assertEquals(FILE_ID, fi.getFileId());
-        Assertions.assertEquals(LAST_FILE_CHECK_MILLIS, fi.getDateForLastFileIDCheck().toGregorianCalendar().getTimeInMillis());
+        Assertions.assertEquals(LAST_FILE_CHECK_MILLIS, fi.getDateForLastFileIDCheckInstant().toEpochMilli());
         Assertions.assertEquals(CHECKSUM, fi.getChecksum());
-        Assertions.assertEquals(LAST_CHECKSUM_CHECK_MILLIS, fi.getDateForLastChecksumCheck().toGregorianCalendar().getTimeInMillis());
+        Assertions.assertEquals(LAST_CHECKSUM_CHECK_MILLIS, fi.getDateForLastChecksumCheckInstant().toEpochMilli());
         Assertions.assertEquals(PILLAR_ID, fi.getPillarId());
         Assertions.assertEquals(FILE_SIZE, fi.getFileSize());
 
         addStep("Change the checksum", "Should be possible to extract it again.");
         String newChecksum = "NEW-CHECKSUM";
         fi.setChecksum(newChecksum);
-        Assertions.assertNotEquals(CHECKSUM, newChecksum);
+        Assertions.assertNotEquals(CHECKSUM, fi.getChecksum());
         Assertions.assertEquals(newChecksum, fi.getChecksum());
 
         addStep("Change the date for last file id check", "Should be possible to extract it again.");
         long newLastFileMillis = 1234567;
-        XMLGregorianCalendar newLastFileCheck = CalendarUtils.getFromMillis(newLastFileMillis);
+        Instant newLastFileCheck = Instant.ofEpochMilli(newLastFileMillis);
         fi.setDateForLastFileIDCheck(newLastFileCheck);
-        Assertions.assertNotEquals(DatatypeConstants.EQUAL, LAST_FILE_CHECK.compare(newLastFileCheck));
-        Assertions.assertEquals(newLastFileMillis, fi.getDateForLastFileIDCheck().toGregorianCalendar().getTimeInMillis());
+        Assertions.assertNotEquals(LAST_FILE_CHECK, fi.getDateForLastFileIDCheckInstant());
+        Assertions.assertEquals(newLastFileMillis, fi.getDateForLastFileIDCheckInstant().toEpochMilli());
 
         addStep("Change the date for last checksum check", "Should be possible to extract it again.");
         long newLastChecksumMillis = 7654321;
-        XMLGregorianCalendar newLastChecksumCheck = CalendarUtils.getFromMillis(newLastChecksumMillis);
+        Instant newLastChecksumCheck = Instant.ofEpochMilli(newLastChecksumMillis);
         fi.setDateForLastChecksumCheck(newLastChecksumCheck);
-        Assertions.assertNotEquals(DatatypeConstants.EQUAL, LAST_CHECKSUM_CHECK.compare(newLastChecksumCheck));
-        Assertions.assertEquals(newLastChecksumMillis, fi.getDateForLastChecksumCheck().toGregorianCalendar().getTimeInMillis());
+        Assertions.assertNotEquals(LAST_CHECKSUM_CHECK, fi.getDateForLastChecksumCheckInstant());
+        Assertions.assertEquals(newLastChecksumMillis, fi.getDateForLastChecksumCheckInstant().toEpochMilli());
     }
 }
