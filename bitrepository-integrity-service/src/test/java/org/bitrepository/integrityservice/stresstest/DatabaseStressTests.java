@@ -46,7 +46,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigInteger;
-import java.util.Date;
+import java.time.Instant;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 
@@ -129,7 +129,7 @@ public class DatabaseStressTests {
 
         startTime = System.currentTimeMillis();
         for (String pillar : settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()) {
-            cache.getFilesWithMissingChecksums(collection, pillar, new Date(0));
+            cache.getFilesWithMissingChecksums(collection, pillar, Instant.EPOCH);
         }
         System.err.println("Time to find missing checksums: " + TimeUtils.millisecondsToHuman(System.currentTimeMillis() - startTime));
     }

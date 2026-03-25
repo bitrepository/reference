@@ -45,7 +45,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.util.Date;
+import java.time.Instant;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
@@ -53,7 +53,7 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 /**
  * Stress testing of the messagebus.
  */
-public class MessageBusTimeToSendMessagesStressTest {
+class MessageBusTimeToSendMessagesStressTest {
     /** The time to wait when sending a message before it definitely should
      * have been consumed by a listener.*/
     static final int TIME_FOR_MESSAGE_TRANSFER_WAIT = 500;
@@ -64,12 +64,12 @@ public class MessageBusTimeToSendMessagesStressTest {
     /**
      * The date for start sending the messages.
      */
-    private static Date startSending;
+    private static Instant startSending;
     private Settings settings;
     private String testQueue;
 
     @BeforeEach
-    public void initializeSettings() {
+    void initializeSettings() {
         settings = TestSettingsProvider.getSettings(getClass().getSimpleName());
         testQueue = "TEST-QUEUE-" + System.currentTimeMillis();
     }
@@ -93,7 +93,7 @@ public class MessageBusTimeToSendMessagesStressTest {
             addStep("Initialise the message-listener", "Should be allowed.");
             listener = new CountMessagesListener(securityManager);
 
-            startSending = new Date();
+            startSending = Instant.now();
             addStep("Start sending at '" + startSending + "'", "Should just be waiting.");
             sendAllTheMessages(conf, securityManager);
 
@@ -107,12 +107,12 @@ public class MessageBusTimeToSendMessagesStressTest {
                 }
             }
 
-            Date endDate = listener.getStopSending();
+            Instant endDate = listener.getStopSending();
             addStep("Validating the count. Started at '" + startSending + "' and ended at '"
                     + endDate + "'", "Should not be wrong.");
 
             int count = listener.getCount();
-            long timeFrame = (endDate.getTime() - startSending.getTime()) / 1000;
+            long timeFrame = (endDate.toEpochMilli() - startSending.toEpochMilli()) / 1000;
             System.out.println("Sent '" + count + "' messages in '" + timeFrame + "' seconds.");
         } finally {
             if (listener != null) {
@@ -127,7 +127,7 @@ public class MessageBusTimeToSendMessagesStressTest {
      */
     @Test
     @Tag("StressTest")
-    public void SendManyMessagesLocally() throws Exception {
+    void SendManyMessagesLocally() throws Exception {
         addDescription("Tests how many messages can be handled within a given timeframe.");
         addStep("Define constants", "This should not be possible to fail.");
 
@@ -150,7 +150,7 @@ public class MessageBusTimeToSendMessagesStressTest {
             addStep("Initialise the message-listener", "Should be allowed.");
             listener = new CountMessagesListener(securityManager);
 
-            startSending = new Date();
+            startSending = Instant.now();
             addStep("Start sending at '" + startSending + "'", "Should just be waiting.");
             sendAllTheMessages(conf, securityManager);
 
@@ -168,7 +168,7 @@ public class MessageBusTimeToSendMessagesStressTest {
             addStep("Validating the count. Started at '" + startSending + "' and ended at '"
                     + listener.getStopSending() + "'", "Should not be wrong.");
             int count = listener.getCount();
-            long timeFrame = (listener.getStopSending().getTime() - startSending.getTime()) / 1000;
+            long timeFrame = (listener.getStopSending().toEpochMilli() - startSending.toEpochMilli()) / 1000;
             System.out.println("Sent '" + count + "' messages in '" + timeFrame + "' seconds.");
         } finally {
             if (listener != null) {
@@ -249,7 +249,7 @@ public class MessageBusTimeToSendMessagesStressTest {
 
         private boolean awaitingMore = true;
 
-        private Date stopSending;
+        private Instant stopSending;
 
         public CountMessagesListener(SecurityManager securityManager) {
             this.bus = new ActiveMQMessageBus(settings, securityManager);
@@ -283,12 +283,12 @@ public class MessageBusTimeToSendMessagesStressTest {
         public void onMessage(Message message, MessageContext messageContext) {
             count++;
             if (count >= NUMBER_OF_MESSAGES) {
-                stopSending = new Date();
+                stopSending = Instant.now();
                 awaitingMore = false;
             }
         }
 
-        public Date getStopSending() {
+        public Instant getStopSending() {
             return stopSending;
         }
 
