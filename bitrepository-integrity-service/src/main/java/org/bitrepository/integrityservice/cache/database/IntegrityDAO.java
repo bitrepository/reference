@@ -24,7 +24,6 @@ package org.bitrepository.integrityservice.cache.database;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.common.ArgumentValidator;
-import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.integrityservice.cache.CollectionStat;
@@ -478,10 +477,8 @@ public abstract class IntegrityDAO {
                     Instant lastSeenGetFileIDs = Instant.ofEpochMilli(dbResult.getLong("last_seen_getfileids"));
                     Instant lastSeenGetChecksums = Instant.ofEpochMilli(dbResult.getLong("last_seen_getchecksums"));
 
-                    FileInfo f = new FileInfo(fileID, CalendarUtils.getXmlGregorianCalendar(lastFileCheck), checksum,
-                            fileSize, CalendarUtils.getXmlGregorianCalendar(lastChecksumCheck), pillarID);
-                    f.setLastSeenGetFileIDs(Date.from(lastSeenGetFileIDs));
-                    f.setLastSeenGetChecksums(Date.from(lastSeenGetChecksums));
+                    FileInfo f = new FileInfo(fileID, lastFileCheck, checksum,
+                            fileSize, lastChecksumCheck, pillarID, lastSeenGetFileIDs, lastSeenGetChecksums);
                     res.add(f);
                 }
             }
