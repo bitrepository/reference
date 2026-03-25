@@ -46,7 +46,7 @@ import org.junit.jupiter.api.Test;
 import javax.jms.JMSException;
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.util.Date;
+import java.time.Instant;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
@@ -54,7 +54,7 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 /**
  * Stress testing of the messagebus.
  */
-public class MessageBusNumberOfMessagesStressTest {
+class MessageBusNumberOfMessagesStressTest {
     /**
      * The name of the queue to send the messages.
      */
@@ -62,7 +62,7 @@ public class MessageBusNumberOfMessagesStressTest {
     private Settings settings;
 
     @BeforeEach
-    public void initializeSettings() {
+    void initializeSettings() {
         settings = TestSettingsProvider.getSettings(getClass().getSimpleName());
     }
 
@@ -72,12 +72,12 @@ public class MessageBusNumberOfMessagesStressTest {
      */
     @Test
     @Tag("StressTest")
-    public void SendManyMessagesDistributed() throws Exception {
+    void SendManyMessagesDistributed() throws Exception {
         addDescription("Tests how many messages can be handled within a given timeframe.");
         addStep("Define constants", "This should not be possible to fail.");
         long timeFrame = 60000L; // one minute in millis
         long messagePerSec = 5;
-        QUEUE += "-" + (new Date()).getTime();
+        QUEUE += "-" + Instant.now().toEpochMilli();
 
         addStep("Make configuration for the messagebus.", "Both should be created.");
         MessageBusConfiguration conf = new MessageBusConfiguration();
@@ -92,7 +92,7 @@ public class MessageBusNumberOfMessagesStressTest {
             addStep("Initialise the message-listener", "Should be allowed.");
             listener = new ResendMessageListener(settings);
 
-            addStep("Start sending at '" + new Date() + "'", "Should just be waiting.");
+            addStep("Start sending at '" + Instant.now() + "'", "Should just be waiting.");
             listener.startSending();
             synchronized (this) {
                 try {
@@ -102,7 +102,7 @@ public class MessageBusNumberOfMessagesStressTest {
                 }
             }
 
-            addStep("Stopped sending at '" + new Date() + "'", "Should have send more than '" + messagePerSec
+            addStep("Stopped sending at '" + Instant.now() + "'", "Should have send more than '" + messagePerSec
                     + "' messages per sec.");
             int count = listener.getCount();
             Assertions.assertTrue(count > (messagePerSec * timeFrame / 1000), "There where send '" + count
@@ -124,12 +124,12 @@ public class MessageBusNumberOfMessagesStressTest {
      */
     @Test
     @Tag("StressTest")
-    public void SendManyMessagesLocally() throws Exception {
+    void SendManyMessagesLocally() throws Exception {
         addDescription("Tests how many messages can be handled within a given timeframe.");
         addStep("Define constants", "This should not be possible to fail.");
         long timeFrame = 60000L; // one minute in millis
         long messagePerSec = 10;
-        QUEUE += "-" + (new Date()).getTime();
+        QUEUE += "-" + Instant.now().toEpochMilli();
 
         addStep("Make configuration for the messagebus and define the local broker.",
                 "Both should be created.");
@@ -148,7 +148,7 @@ public class MessageBusNumberOfMessagesStressTest {
             addStep("Initialise the message-listener", "Should be allowed.");
             listener = new ResendMessageListener(settings);
 
-            addStep("Start sending at '" + new Date() + "'", "Should just be waiting.");
+            addStep("Start sending at '" + Instant.now() + "'", "Should just be waiting.");
             listener.startSending();
             synchronized (this) {
                 try {
@@ -158,7 +158,7 @@ public class MessageBusNumberOfMessagesStressTest {
                 }
             }
 
-            addStep("Stopped sending at '" + new Date() + "'", "Should have send more than '" + messagePerSec
+            addStep("Stopped sending at '" + Instant.now() + "'", "Should have send more than '" + messagePerSec
                     + "' messages per sec.");
             int count = listener.getCount();
             Assertions.assertTrue(count > (messagePerSec * timeFrame / 1000), "There where send '" + count

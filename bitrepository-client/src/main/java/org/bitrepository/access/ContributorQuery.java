@@ -115,8 +115,8 @@ public class ContributorQuery {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "{" +
-                "componentID='" + componentID +
-                "', minTimestamp=" + minTimestamp +
+                "componentID='" + componentID + '\'' +
+                ", minTimestamp=" + minTimestamp +
                 ", maxTimestamp=" + maxTimestamp +
                 ", maxNumberOfResults=" + maxNumberOfResults +
                 '}';

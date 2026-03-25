@@ -24,8 +24,16 @@ package org.bitrepository.integrityservice.workflow.step;
 import org.apache.commons.codec.DecoderException;
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
-import org.bitrepository.bitrepositoryelements.*;
-import org.bitrepository.client.eventhandler.*;
+import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumType;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResultingChecksums;
+import org.bitrepository.client.eventhandler.CompleteEvent;
+import org.bitrepository.client.eventhandler.ContributorFailedEvent;
+import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.client.eventhandler.IdentificationCompleteEvent;
+import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.SettingsUtils;
@@ -37,15 +45,21 @@ import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @SuppressWarnings("rawtypes")
 public class UpdateChecksumsStepTest extends WorkflowstepTest {
@@ -55,7 +69,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
 
     @Test
     @Tag("regressiontest")
-    public void testPositiveReply() throws WorkflowAbortedException {
+    void testPositiveReply() throws WorkflowAbortedException {
         addDescription("Test the step for updating the checksums can handle COMPLETE operation event.");
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) {
@@ -80,7 +94,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
 
     @Test
     @Tag("regressiontest")
-    public void testAbortWorkflowWhenNegativeReply() {
+    void testAbortWorkflowWhenNegativeReply() {
         addDescription("Test the step for updating the checksums will abort the workflow in case "
                 + "of FAILURE operation event and AbortOnFailedContributor = true .");
         doAnswer(new Answer() {
@@ -116,7 +130,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
 
     @Test
     @Tag("regressiontest")
-    public void testRetryCollectionWhenNegativeReply() throws WorkflowAbortedException {
+    void testRetryCollectionWhenNegativeReply() throws WorkflowAbortedException {
         addDescription("Test the step for updating the file ids will retry on a FAILED event");
 
         final ResultingChecksums resultingChecksums = createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1);
@@ -161,7 +175,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
 
     @Test
     @Tag("regressiontest")
-    public void testContinueWorkflowNegativeReply() throws WorkflowAbortedException {
+    void testContinueWorkflowNegativeReply() throws WorkflowAbortedException {
         addDescription("Test the step for updating the checksums will continue the workflow in case "
                 + "of FAILURE operation event and AbortOnFailedContributor = false .");
         doAnswer(new Answer() {
@@ -193,7 +207,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
 
     @Test
     @Tag("regressiontest")
-    public void testIngestOfResults() throws WorkflowAbortedException {
+    void testIngestOfResults() throws WorkflowAbortedException {
         addDescription("Test the step for updating the checksums delivers the results to the integrity model.");
         final ResultingChecksums resultingChecksums = createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1);
         doAnswer(new Answer() {
@@ -225,7 +239,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
 
     @Test
     @Tag("regressiontest")
-    public void testCallForChangingChecksumStates() throws WorkflowAbortedException {
+    void testCallForChangingChecksumStates() throws WorkflowAbortedException {
         addDescription("Test the step for updating the checksums delivers the results to the integrity model.");
         final ResultingChecksums resultingChecksums = createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1);
         doAnswer(new Answer() {
@@ -256,7 +270,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
 
     @Test
     @Tag("regressiontest")
-    public void testPartialResults() throws WorkflowAbortedException {
+    void testPartialResults() throws WorkflowAbortedException {
         addDescription("Test that the number of partial is used for generating more than one request.");
         final ResultingChecksums resultingChecksums = createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1);
 
@@ -296,7 +310,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
 
     @Test
     @Tag("regressiontest")
-    public void testFullChecksumCollection() throws WorkflowAbortedException {
+    void testFullChecksumCollection() throws WorkflowAbortedException {
         addDescription("Test that the full list of checksums is requested.");
 
         doAnswer(new Answer() {
@@ -309,7 +323,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
                 eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class), any(),
                 anyString(), any(ContributorQuery[].class), any(EventHandler.class));
 
-        when(model.getDateForNewestChecksumEntryForPillar(anyString(), anyString())).thenReturn(new Date(0));
+        when(model.getDateForNewestChecksumEntryForPillarInstant(anyString(), anyString())).thenReturn(Instant.EPOCH);
         when(integrityContributors.getActiveContributors())
                 .thenReturn(new HashSet<>(List.of(TEST_PILLAR_1))).thenReturn(new HashSet<>());
 
@@ -327,7 +341,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
 
     @Test
     @Tag("regressiontest")
-    public void testIncrementalChecksumCollection() throws WorkflowAbortedException {
+    void testIncrementalChecksumCollection() throws WorkflowAbortedException {
         addDescription("Test that only the list of new checksums is requested.");
 
         doAnswer(new Answer() {
@@ -358,7 +372,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
     private ContributorQuery[] makeFullQueries(List<String> pillars) {
         List<ContributorQuery> res = new ArrayList<>();
         for (String pillar : pillars) {
-            Date latestChecksumDate = new Date(0);
+            Instant latestChecksumDate = null;
             res.add(new ContributorQuery(pillar, latestChecksumDate, null, SettingsUtils.DEFAULT_MAX_CLIENT_PAGE_SIZE));
         }
 
@@ -368,7 +382,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
     private ContributorQuery[] makeQueries(List<String> pillars, IntegrityModel store) {
         List<ContributorQuery> res = new ArrayList<>();
         for (String pillar : pillars) {
-            Date latestChecksumDate = store.getDateForNewestChecksumEntryForPillar(pillar, TEST_COLLECTION);
+            Instant latestChecksumDate = store.getDateForNewestChecksumEntryForPillarInstant(pillar, TEST_COLLECTION);
             res.add(new ContributorQuery(pillar, latestChecksumDate, null, SettingsUtils.DEFAULT_MAX_CLIENT_PAGE_SIZE));
         }
 
@@ -386,7 +400,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<>();
         for (String fileID : fileids) {
             ChecksumDataForChecksumSpecTYPE csData = new ChecksumDataForChecksumSpecTYPE();
-            csData.setCalculationTimestamp(CalendarUtils.getNow());
+            csData.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(Instant.now()));
             try {
                 csData.setChecksumValue(Base16Utils.encodeBase16(checksum));
             } catch (DecoderException e) {
