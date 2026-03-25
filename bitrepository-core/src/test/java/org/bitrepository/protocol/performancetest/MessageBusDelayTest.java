@@ -37,9 +37,9 @@ import org.junit.jupiter.api.TestInstance;
 
 import java.io.FileOutputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -47,7 +47,7 @@ import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class MessageBusDelayTest {
+class MessageBusDelayTest {
     private Settings settings;
     private SecurityManager securityManager;
     private static final int PERFORMANCE_COUNT = 1000;
@@ -55,14 +55,14 @@ public class MessageBusDelayTest {
     private static final boolean WRITE_RESULTS_TO_DISC = true;
 
     @BeforeAll
-    public void setup() {
+    void setup() {
         settings = TestSettingsProvider.reloadSettings(getClass().getSimpleName());
         securityManager = new DummySecurityManager();
     }
 
     @Test
     @Tag("StressTest")
-    public void testManyTimes() {
+    void testManyTimes() {
         for (int i = 0; i < NUMBER_OF_TESTS; i++) {
             try {
                 performStatisticalAnalysisOfMessageDelay();
@@ -79,7 +79,7 @@ public class MessageBusDelayTest {
         addStep("Setup the variables and connections for the test.", "Should connect to the messagebus.");
         MessageBus messageBus = MessageBusManager.getMessageBus(settings, securityManager);
         MessageReceiver destinationReceiver;
-        String destination = "DelayPerformanceTestDestination-" + new Date().getTime();
+        String destination = "DelayPerformanceTestDestination-" + Instant.now().toEpochMilli();
         destinationReceiver = new MessageReceiver("Performance test topic receiver");
         messageBus.addListener(destination, destinationReceiver.getMessageListener());
 
@@ -89,15 +89,15 @@ public class MessageBusDelayTest {
 
         addStep("Sending the message and calculating the time.", "Should be done '" + PERFORMANCE_COUNT + "' times.");
         for (int i = 0; i < PERFORMANCE_COUNT; i++) {
-            Date before = new Date();
+            Instant before = Instant.now();
             messageBus.sendMessage(message);
             AlarmMessage received = destinationReceiver.waitForMessage(AlarmMessage.class, 100, TimeUnit.SECONDS);
-            Date after = new Date();
+            Instant after = Instant.now();
             if (received == null) {
                 System.err.println("No message received within 100 seconds");
             }
 
-            long delay = after.getTime() - before.getTime();
+            long delay = after.toEpochMilli() - before.toEpochMilli();
             delayList.add(delay);
         }
 
@@ -114,7 +114,7 @@ public class MessageBusDelayTest {
         double deviation = calculateStdDeviation(list, average);
 
         if (WRITE_RESULTS_TO_DISC) {
-            try (FileOutputStream fos = new FileOutputStream("statistic-" + new Date().getTime())) {
+            try (FileOutputStream fos = new FileOutputStream("statistic-" + Instant.now().toEpochMilli())) {
                 fos.write(("Maximum;" + maximum + "\n").getBytes(StandardCharsets.UTF_8));
                 fos.write(("Minimum;" + minimum + "\n").getBytes(StandardCharsets.UTF_8));
                 fos.write(("Median;" + median + "\n").getBytes(StandardCharsets.UTF_8));

@@ -47,9 +47,9 @@ import org.mockito.ArgumentCaptor;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigInteger;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
@@ -72,13 +72,13 @@ public class IncrementalCollectorTest{
     private DefaultThreadFactory threadFactory;
 
     @BeforeAll
-    public void setup() throws Exception {
+    void setup() {
         threadFactory = new DefaultThreadFactory(this.getClass().getSimpleName(), Thread.NORM_PRIORITY, false);
     }
 
     @Test
     @Tag("regressiontest")
-    public void singleIncrementTest() throws InterruptedException {
+    void singleIncrementTest() throws InterruptedException {
         addDescription("Verifies the behaviour in the simplest case with just one result set ");
         AuditTrailClient client = mock(AuditTrailClient.class);
         AuditTrailStore store = mock(AuditTrailStore.class);
@@ -90,7 +90,7 @@ public class IncrementalCollectorTest{
                         "sequence number to continue from");
         IncrementalCollector collector = new IncrementalCollector(TEST_COLLECTION, "Client1", client, store,
                 1, alarmDispatcher);
-        Collection<String> contributors = Arrays.asList("Contributor1", "Contributors2");
+        Collection<String> contributors = Arrays.asList(TEST_CONTRIBUTOR1, TEST_CONTRIBUTOR2);
         CollectionRunner collectionRunner = new CollectionRunner(collector, contributors);
         Thread t = threadFactory.newThread(collectionRunner);
         t.start();
@@ -131,22 +131,21 @@ public class IncrementalCollectorTest{
 
     @Test
     @Tag("regressiontest")
-    public void multipleIncrementTest() throws Exception {
+    void multipleIncrementTest() throws Exception {
         addDescription("Verifies the behaviour in the case where the adit trails needs to be reteived in multiple " +
             "requests because of MaxNumberOfResults limits.");
         AuditTrailClient client = mock(AuditTrailClient.class);
         AuditTrailStore store = mock(AuditTrailStore.class);
 
-        long callsToLargestSequenceNumber = 0L;
         when(store.largestSequenceNumber(any(String.class), eq(TEST_COLLECTION)))
-            .thenReturn(callsToLargestSequenceNumber++);
+            .thenReturn(0L);
         
         AlarmDispatcher alarmDispatcher = mock(AlarmDispatcher.class);
 
         addStep("Start a collection with two contributors",
                 "A call should be made to the store to find out which " +
                         "sequence number to continue from");
-        IncrementalCollector collector = new IncrementalCollector("dummy-collection", "Client1", client, store,
+        IncrementalCollector collector = new IncrementalCollector(TEST_COLLECTION, "Client1", client, store,
                 1, alarmDispatcher);
         Collection<String> contributors = Arrays.asList(TEST_CONTRIBUTOR1, TEST_CONTRIBUTOR2);
         CollectionRunner collectionRunner = new CollectionRunner(collector, contributors);
@@ -209,7 +208,7 @@ public class IncrementalCollectorTest{
 
     @Test
     @Tag("regressiontest")
-    public void contributorFailureTest() throws Exception {
+    void contributorFailureTest() throws Exception {
         addDescription("Tests that the collector is able to collect from the remaining contributors if a " +
             "contributor fails.");
 
@@ -217,16 +216,15 @@ public class IncrementalCollectorTest{
         AuditTrailClient client = mock(AuditTrailClient.class);
         AuditTrailStore store = mock(AuditTrailStore.class);
 
-        long callsToLargestSequenceNumber = 0L;
         when(store.largestSequenceNumber(any(String.class), eq(TEST_COLLECTION)))
-            .thenReturn(callsToLargestSequenceNumber++);
+            .thenReturn(0L);
         
         AlarmDispatcher alarmDispatcher = mock(AlarmDispatcher.class);
 
         addStep("Start a collection with two contributors",
                 "A call should be made to the store to find out which " +
                         "sequence number to continue from");
-        IncrementalCollector collector = new IncrementalCollector("dummy-collection", "Client1", client, store,
+        IncrementalCollector collector = new IncrementalCollector(TEST_COLLECTION, "Client1", client, store,
                 1, alarmDispatcher);
         Collection<String> contributors = Arrays.asList(TEST_CONTRIBUTOR1, TEST_CONTRIBUTOR2);
 
@@ -281,17 +279,16 @@ public class IncrementalCollectorTest{
 
     @Test
     @Tag("regressiontest")
-    public void collectionIDFailureTest() throws Exception {
+    void collectionIDFailureTest() throws Exception {
         addDescription("Tests what happens when a wrong collection id is received.");
-        String FALSE_COLLECTION = "FalseCollection" + new Date().getTime();
+        String FALSE_COLLECTION = "FalseCollection" + Instant.now().toEpochMilli();
 
         addStep("", "");
         AuditTrailClient client = mock(AuditTrailClient.class);
         AuditTrailStore store = mock(AuditTrailStore.class);
 
-        long callsToLargestSequenceNumber = 0L;
         when(store.largestSequenceNumber(any(String.class), eq(TEST_COLLECTION)))
-            .thenReturn(callsToLargestSequenceNumber++);
+            .thenReturn(0L);
         
         AlarmDispatcher alarmDispatcher = mock(AlarmDispatcher.class);
 
@@ -328,7 +325,7 @@ public class IncrementalCollectorTest{
     private ResultingAuditTrails getResultingAuditTrailsWithSingleAudit(String contributor, BigInteger seq) {
         ResultingAuditTrails rats = new ResultingAuditTrails();
         AuditTrailEvents ates = new AuditTrailEvents();
-        ates.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.OTHER,
+        ates.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getXmlGregorianCalendar(Instant.now()), FileAction.OTHER,
                 "actor", "auditInfo", "fileID", "info", contributor, seq, "1234", "abab"));
         rats.setAuditTrailEvents(ates);
         return rats;
@@ -351,7 +348,7 @@ public class IncrementalCollectorTest{
         return res;
     }
 
-    public class CollectionRunner implements Runnable {
+    private static class CollectionRunner implements Runnable {
         private final IncrementalCollector collector;
         private final Collection<String> contributors;
         boolean finished = false;
@@ -361,6 +358,7 @@ public class IncrementalCollectorTest{
             this.contributors = contributors;
         }
 
+        @Override
         public void run() {
             collector.performCollection(contributors);
             finished = true;

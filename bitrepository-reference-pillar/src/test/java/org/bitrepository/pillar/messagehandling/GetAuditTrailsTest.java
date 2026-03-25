@@ -25,7 +25,11 @@ import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositorymessages.*;
+import org.bitrepository.bitrepositorymessages.GetAuditTrailsFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetAuditTrailsProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetAuditTrailsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetAuditTrailsResponse;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.MockedPillarTest;
 import org.bitrepository.pillar.messagefactories.GetAuditTrailsMessageFactory;
@@ -36,13 +40,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigInteger;
-import java.util.Date;
+import java.time.Instant;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 @ExtendWith(SuiteInfoParameterResolver.class)
-public class GetAuditTrailsTest extends MockedPillarTest {
+class GetAuditTrailsTest extends MockedPillarTest {
     private GetAuditTrailsMessageFactory msgFactory;
 
     @Override
@@ -54,7 +58,7 @@ public class GetAuditTrailsTest extends MockedPillarTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void checksumPillarGetAuditTrailsSuccessful() {
+    void checksumPillarGetAuditTrailsSuccessful() {
         addDescription("Tests the GetAuditTrails functionality of the pillar for the successful scenario, "
                 + "where all audit trails are requested.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -107,12 +111,12 @@ public class GetAuditTrailsTest extends MockedPillarTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void checksumPillarGetAuditTrailsSpecificRequests() {
+    void checksumPillarGetAuditTrailsSpecificRequests() {
         addDescription("Tests the GetAuditTrails functionality of the pillar for the successful scenario, "
                 + "where a specific audit trail are requested.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String auditTrail = "";
-        String FILE_ID = "fileID" + new Date().getTime();
+        String FILE_ID = "fileID" + Instant.now().toEpochMilli();
         String ACTOR = "ACTOR";
         String INFO = "InFo";
         String AUDITTRAIL = "auditTrails";
@@ -187,12 +191,12 @@ public class GetAuditTrailsTest extends MockedPillarTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void checksumPillarGetAuditTrailsMaximumNumberOfResults() {
+    void checksumPillarGetAuditTrailsMaximumNumberOfResults() {
         addDescription("Tests the GetAuditTrails functionality of the pillar for the successful scenario, "
                 + "where a limited number of audit trails are requested.");
         addStep("Set up constants and variables.", "Should not fail here!");
         final String auditTrail = "";
-        final String FILE_ID = "fileID" + new Date().getTime();
+        final String FILE_ID = "fileID" + Instant.now().toEpochMilli();
         final String ACTOR = "ACTOR";
         final String INFO = "InFo";
         final String AUDITTRAIL = "auditTrails";
