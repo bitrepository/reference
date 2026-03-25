@@ -45,7 +45,7 @@ import org.bitrepository.service.contributor.ResponseDispatcher;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
+import java.time.Instant;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addFixture;
 
@@ -62,7 +62,7 @@ public abstract class DefaultPillarTest extends DefaultFixturePillarTest {
 
     static {
         EMPTY_FILE_CHECKSUM_DATA = new ChecksumDataForFileTYPE();
-        EMPTY_FILE_CHECKSUM_DATA.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(new Date()));
+        EMPTY_FILE_CHECKSUM_DATA.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(Instant.now()));
         ChecksumSpecTYPE checksumSpecTYPE = new ChecksumSpecTYPE();
         checksumSpecTYPE.setChecksumType(ChecksumType.MD5);
         EMPTY_FILE_CHECKSUM_DATA.setChecksumSpec(checksumSpecTYPE);
@@ -129,6 +129,6 @@ public abstract class DefaultPillarTest extends DefaultFixturePillarTest {
                 collectionID);
         archives.downloadFileForValidation(defaultFileId, collectionID, new ByteArrayInputStream(new byte[0]));
         archives.moveToArchive(defaultFileId, collectionID);
-        csCache.insertChecksumCalculation(defaultFileId, collectionID, EMPTY_FILE_CHECKSUM, new Date());
+        csCache.insertChecksumCalculation(defaultFileId, collectionID, EMPTY_FILE_CHECKSUM, Instant.now());
     }
 }

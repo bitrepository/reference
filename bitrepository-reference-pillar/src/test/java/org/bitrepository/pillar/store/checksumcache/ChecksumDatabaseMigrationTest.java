@@ -37,16 +37,14 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.time.Instant;
+import java.time.ZoneId;
 
-import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CHECKSUM_TABLE;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+import static org.bitrepository.pillar.store.checksumdatabase.DatabaseConstants.CHECKSUM_TABLE;
 
-public class ChecksumDatabaseMigrationTest {
+class ChecksumDatabaseMigrationTest {
     protected Settings settings;
 
     static final String PATH_TO_DATABASE_UNPACKED = "target/test/referencepillar/checksumdb-for-migration";
@@ -59,7 +57,7 @@ public class ChecksumDatabaseMigrationTest {
     static DBConnector connector = null;
 
     @BeforeEach
-    public void setup() throws Exception {
+    void setup() {
         settings = TestSettingsProvider.reloadSettings("ReferencePillarTest");
 
         settings.getReferenceSettings().getPillarSettings().getChecksumDatabase().setDatabaseURL(
@@ -71,7 +69,7 @@ public class ChecksumDatabaseMigrationTest {
     }
 
     @AfterEach
-    public void cleanup() throws Exception {
+    void cleanup() throws Exception {
         FileUtils.deleteDirIfExists(new File(PATH_TO_DATABASE_UNPACKED));
         if (connector != null && !connector.getConnection().isClosed()) {
             connector.getConnection().close();
@@ -100,7 +98,7 @@ public class ChecksumDatabaseMigrationTest {
         addStep("Ingest a entry to the database without the collection id", "works only in version 1.");
         String insertSql = "INSERT INTO " + DatabaseConstants.CHECKSUM_TABLE + " ( " + DatabaseConstants.CS_FILE_ID + " , " + DatabaseConstants.CS_CHECKSUM + " , " + DatabaseConstants.CS_DATE
                 + " ) VALUES ( ? , ? , ? )";
-        DatabaseUtils.executeStatement(connector, insertSql, FILE_ID, CHECKSUM, new Date());
+        DatabaseUtils.executeStatement(connector, insertSql, FILE_ID, CHECKSUM, Instant.now());
 
         addStep("Perform migration", "Checksums table has version 3");
         ChecksumDBMigrator migrator = new ChecksumDBMigrator(connector, settings);
@@ -118,7 +116,7 @@ public class ChecksumDatabaseMigrationTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void testMigratingChecksumDatabaseFromV3ToV4() throws Exception {
+    void testMigratingChecksumDatabaseFromV3ToV4() throws Exception {
         addDescription("Tests that the checksums table can be migrated from version 3 to 4, e.g. changing the column "
                 + "calculatedchecksumdate from timestamp to bigint.");
         addStep("Ensure cleanup", "");
@@ -129,7 +127,7 @@ public class ChecksumDatabaseMigrationTest {
 
         connector = new DBConnector(
                 settings.getReferenceSettings().getPillarSettings().getChecksumDatabase());
-        Date testDate = new Date(1453984303527L);
+        Instant testInstant = Instant.ofEpochMilli(1453984303527L);
         Assertions.assertFalse(connector.getConnection().isClosed());
 
         addStep("Validate setup", "Checksums table has version 3");
@@ -140,7 +138,7 @@ public class ChecksumDatabaseMigrationTest {
         addStep("Ingest a entry to the database with a date for the calculationdate", "works in version 3.");
         String insertSql = "INSERT INTO " + DatabaseConstants.CHECKSUM_TABLE + " ( " + DatabaseConstants.CS_FILE_ID + " , " + DatabaseConstants.CS_CHECKSUM + " , " + DatabaseConstants.CS_DATE
                 + " , " + DatabaseConstants.CS_COLLECTION_ID + " ) VALUES ( ? , ? , ? , ? )";
-        DatabaseUtils.executeStatement(connector, insertSql, FILE_ID, CHECKSUM, testDate, settings.getCollections().get(0).getID());
+        DatabaseUtils.executeStatement(connector, insertSql, FILE_ID, CHECKSUM, testInstant, settings.getCollections().get(0).getID());
 
         addStep("Perform migration", "Checksums table has version 4");
         ChecksumDBMigrator migrator = new ChecksumDBMigrator(connector, settings);
@@ -153,10 +151,10 @@ public class ChecksumDatabaseMigrationTest {
                 + DatabaseConstants.CS_FILE_ID + " = ?";
         Long extractedDate = DatabaseUtils.selectFirstLongValue(connector, retrieveCollectionIdSql, FILE_ID);
 
-        Date testDateAtTimeZone = new Date(testDate.getTime()
-                + Calendar.getInstance(TimeZone.getDefault(), Locale.ROOT).getTimeZone().getRawOffset());
+        long testDateAtTimeZone = testInstant.toEpochMilli()
+                + ZoneId.systemDefault().getRules().getStandardOffset(testInstant).getTotalSeconds() * 1000L;
 
         Assertions.assertNotNull(extractedDate);
-        Assertions.assertEquals(testDateAtTimeZone.getTime(), extractedDate.longValue());
+        Assertions.assertEquals(testDateAtTimeZone, extractedDate.longValue());
     }
 }

@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.util.Date;
+import java.time.Instant;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -41,13 +41,13 @@ public class GetFileCmdTest extends DefaultFixtureClientTest {
     private String DEFAULT_COLLECTION_ID;
 
     @BeforeEach
-    public void setupClient() throws Exception {
+    public void setupClient() {
         DEFAULT_COLLECTION_ID = settingsForTestClient.getCollections().get(0).getID();
     }
 
     @Test
     @Tag("regressiontest")
-    public void defaultSuccessScenarioTest() throws Exception {
+    public void defaultSuccessScenarioTest() {
         addDescription("Tests simplest arguments for running the CmdLineClient");
         String[] args = new String[]{"-s" + SETTINGS_DIR,
                 "-k" + KEY_FILE,
@@ -58,7 +58,7 @@ public class GetFileCmdTest extends DefaultFixtureClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void missingCollectionArgumentTest() throws Exception {
+    public void missingCollectionArgumentTest() {
         assertThrows(IllegalArgumentException.class, () -> {
             addDescription("Tests the scenario, where the collection arguments is missing.");
             String[] args = new String[]{"-s" + SETTINGS_DIR,
@@ -70,7 +70,7 @@ public class GetFileCmdTest extends DefaultFixtureClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void specificPillarArgumentTest() throws Exception {
+    public void specificPillarArgumentTest() {
         addDescription("Test argument for a specific pillar");
         String[] args = new String[]{"-s" + SETTINGS_DIR,
                 "-k" + KEY_FILE,
@@ -82,13 +82,13 @@ public class GetFileCmdTest extends DefaultFixtureClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void unknownPillarArgumentTest() throws Exception {
+    public void unknownPillarArgumentTest() {
         assertThrows(IllegalArgumentException.class, () -> {
             addDescription("Testing against a non-existing pillar id -> Should fail");
             String[] args = new String[]{"-s" + SETTINGS_DIR,
                     "-k" + KEY_FILE,
                     "-c" + DEFAULT_COLLECTION_ID,
-                    "-p" + "Random" + (new Date()).getTime() + "pillar",
+                    "-p" + "Random" + Instant.now().toEpochMilli() + "pillar",
                     "-i" + DEFAULT_FILE_ID};
             new GetFileCmd(args);
         });
@@ -96,7 +96,7 @@ public class GetFileCmdTest extends DefaultFixtureClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void missingFileIDArgumentTest() throws Exception {
+    public void missingFileIDArgumentTest() {
         assertThrows(IllegalArgumentException.class, () -> {
             addDescription("Tests the scenario, where no arguments for file id argument is given.");
             String[] args = new String[]{"-s" + SETTINGS_DIR,
