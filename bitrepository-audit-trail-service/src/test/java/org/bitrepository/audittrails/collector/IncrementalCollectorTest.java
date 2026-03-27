@@ -45,9 +45,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.mockito.ArgumentCaptor;
 
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigInteger;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -325,17 +325,17 @@ public class IncrementalCollectorTest{
     private ResultingAuditTrails getResultingAuditTrailsWithSingleAudit(String contributor, BigInteger seq) {
         ResultingAuditTrails rats = new ResultingAuditTrails();
         AuditTrailEvents ates = new AuditTrailEvents();
-        ates.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getXmlGregorianCalendar(Instant.now()), FileAction.OTHER,
+        ates.getAuditTrailEvent().add(createSingleEvent(Instant.now().truncatedTo(ChronoUnit.MILLIS), FileAction.OTHER,
                 "actor", "auditInfo", "fileID", "info", contributor, seq, "1234", "abab"));
         rats.setAuditTrailEvents(ates);
         return rats;
     }
 
-    private AuditTrailEvent createSingleEvent(XMLGregorianCalendar datetime, FileAction action, String actor,
+    private AuditTrailEvent createSingleEvent(Instant datetime, FileAction action, String actor,
                                               String auditInfo, String fileID, String info, String component, BigInteger seqNumber, String operationID,
                                               String fingerprint) {
         AuditTrailEvent res = new AuditTrailEvent();
-        res.setActionDateTime(datetime);
+        res.setActionDateTime(CalendarUtils.getXmlGregorianCalendar(datetime));
         res.setActionOnFile(action);
         res.setActorOnFile(actor);
         res.setAuditTrailInformation(auditInfo);

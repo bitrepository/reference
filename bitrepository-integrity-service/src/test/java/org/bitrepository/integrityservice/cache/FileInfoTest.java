@@ -21,7 +21,6 @@
  */
 package org.bitrepository.integrityservice.cache;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -29,14 +28,16 @@ import java.time.Instant;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class FileInfoTest {
 
     private static final String FILE_ID = "TEST-FILE";
-    private static final long LAST_FILE_CHECK_MILLIS = 1000000;
+    private static final long LAST_FILE_CHECK_MILLIS = 1000000L;
     private static final Instant LAST_FILE_CHECK = Instant.ofEpochMilli(LAST_FILE_CHECK_MILLIS);
     private static final String CHECKSUM = "CHECKSUM";
-    private static final long LAST_CHECKSUM_CHECK_MILLIS = 2000000;
+    private static final long LAST_CHECKSUM_CHECK_MILLIS = 2000000L;
     private static final Instant LAST_CHECKSUM_CHECK = Instant.ofEpochMilli(LAST_CHECKSUM_CHECK_MILLIS);
     private static final String PILLAR_ID = "test-pillar";
     private static final Long FILE_SIZE = 12345L;
@@ -49,31 +50,31 @@ class FileInfoTest {
         addStep("Setup the file info.", "Should be possible to extract all the data again.");
         FileInfo fi = new FileInfo(FILE_ID, LAST_FILE_CHECK, CHECKSUM, FILE_SIZE, LAST_CHECKSUM_CHECK, PILLAR_ID, null, null);
 
-        Assertions.assertEquals(FILE_ID, fi.getFileId());
-        Assertions.assertEquals(LAST_FILE_CHECK_MILLIS, fi.getDateForLastFileIDCheckInstant().toEpochMilli());
-        Assertions.assertEquals(CHECKSUM, fi.getChecksum());
-        Assertions.assertEquals(LAST_CHECKSUM_CHECK_MILLIS, fi.getDateForLastChecksumCheckInstant().toEpochMilli());
-        Assertions.assertEquals(PILLAR_ID, fi.getPillarId());
-        Assertions.assertEquals(FILE_SIZE, fi.getFileSize());
+        assertEquals(FILE_ID, fi.getFileId());
+        assertEquals(LAST_FILE_CHECK, fi.getDateForLastFileIDCheckInstant());
+        assertEquals(CHECKSUM, fi.getChecksum());
+        assertEquals(LAST_CHECKSUM_CHECK, fi.getDateForLastChecksumCheckInstant());
+        assertEquals(PILLAR_ID, fi.getPillarId());
+        assertEquals(FILE_SIZE, fi.getFileSize());
 
         addStep("Change the checksum", "Should be possible to extract it again.");
         String newChecksum = "NEW-CHECKSUM";
         fi.setChecksum(newChecksum);
-        Assertions.assertNotEquals(CHECKSUM, fi.getChecksum());
-        Assertions.assertEquals(newChecksum, fi.getChecksum());
+        assertNotEquals(CHECKSUM, fi.getChecksum());
+        assertEquals(newChecksum, fi.getChecksum());
 
         addStep("Change the date for last file id check", "Should be possible to extract it again.");
-        long newLastFileMillis = 1234567;
+        long newLastFileMillis = 1234567L;
         Instant newLastFileCheck = Instant.ofEpochMilli(newLastFileMillis);
         fi.setDateForLastFileIDCheck(newLastFileCheck);
-        Assertions.assertNotEquals(LAST_FILE_CHECK, fi.getDateForLastFileIDCheckInstant());
-        Assertions.assertEquals(newLastFileMillis, fi.getDateForLastFileIDCheckInstant().toEpochMilli());
+        assertNotEquals(LAST_FILE_CHECK, fi.getDateForLastFileIDCheckInstant());
+        assertEquals(newLastFileCheck, fi.getDateForLastFileIDCheckInstant());
 
         addStep("Change the date for last checksum check", "Should be possible to extract it again.");
-        long newLastChecksumMillis = 7654321;
+        long newLastChecksumMillis = 7654321L;
         Instant newLastChecksumCheck = Instant.ofEpochMilli(newLastChecksumMillis);
         fi.setDateForLastChecksumCheck(newLastChecksumCheck);
-        Assertions.assertNotEquals(LAST_CHECKSUM_CHECK, fi.getDateForLastChecksumCheckInstant());
-        Assertions.assertEquals(newLastChecksumMillis, fi.getDateForLastChecksumCheckInstant().toEpochMilli());
+        assertNotEquals(LAST_CHECKSUM_CHECK, fi.getDateForLastChecksumCheckInstant());
+        assertEquals(newLastChecksumCheck, fi.getDateForLastChecksumCheckInstant());
     }
 }
