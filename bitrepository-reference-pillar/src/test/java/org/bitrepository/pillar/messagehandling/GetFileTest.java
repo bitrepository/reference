@@ -25,6 +25,7 @@
  */
 package org.bitrepository.pillar.messagehandling;
 
+import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.*;
 import org.bitrepository.common.filestore.FileInfo;
@@ -37,6 +38,7 @@ import org.bitrepository.service.exception.RequestHandlerException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -44,10 +46,14 @@ import org.mockito.stubbing.Answer;
 
 import java.io.ByteArrayInputStream;
 
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+
 
 /**
  * Tests the PutFile functionality on the ReferencePillar.
  */
+@ExtendWith(SuiteInfoParameterResolver.class)
 public class GetFileTest extends MockedPillarTest {
     private GetFileMessageFactory msgFactory;
 
@@ -83,7 +89,8 @@ public class GetFileTest extends MockedPillarTest {
                 "The pillar should make a response.");
         IdentifyPillarsForGetFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetFileResponse.class);
-        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE, receivedIdentifyResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode());
         Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID());
         Assertions.assertEquals(FILE_ID, receivedIdentifyResponse.getFileID());
 
@@ -123,7 +130,8 @@ public class GetFileTest extends MockedPillarTest {
                 "The pillar should make a response.");
         IdentifyPillarsForGetFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetFileResponse.class);
-        Assertions.assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE, receivedIdentifyResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode());
         Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID());
         Assertions.assertEquals(FILE_ID, receivedIdentifyResponse.getFileID());
 

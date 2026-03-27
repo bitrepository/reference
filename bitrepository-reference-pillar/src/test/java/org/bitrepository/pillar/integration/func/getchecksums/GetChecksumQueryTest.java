@@ -35,6 +35,8 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import static org.bitrepository.common.utils.AllureTestUtils.*;
+
 public class GetChecksumQueryTest extends PillarFunctionTest {
 
     @Test
@@ -62,8 +64,7 @@ public class GetChecksumQueryTest extends PillarFunctionTest {
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
     public void maxNumberOfResultTest() {
-        addDescription("Verifies the size of the result set can be limited by setting the maxNumberOfResult parameter" +
-                ".");
+        addDescription("Verifies the size of the result set can be limited by setting the maxNumberOfResult parameter.");
         addFixture("Ensure at least two files are present on the pillar");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 

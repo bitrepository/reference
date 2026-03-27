@@ -23,13 +23,14 @@ package org.bitrepository.audittrails.preserver;
 
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.client.eventhandler.CompleteEvent;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -37,7 +38,7 @@ import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class AuditPreservationEventHandlerTest extends ExtendedTestCase {
+public class AuditPreservationEventHandlerTest {
     String PILLARID = "pillarID";
     public static final String TEST_COLLECTION = "dummy-collection";
 

@@ -34,6 +34,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+
 public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest {
     protected PutFileMessageFactory msgFactory;
 
@@ -118,9 +121,8 @@ public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest
                 "the put operation for the pillars not yet containing the file. The client can easily " +
                 "implement idempotent behaviour based on this response.");
         addStep("Sending a putFile identification for a file already in the pillar.",
-                "The pillar under test should send a DUPLICATE_FILE_FAILURE response with the (default type) checksum" +
-                        " " +
-                        "of the existing file.");
+                "The pillar under test should send a DUPLICATE_FILE_FAILURE response " +
+                        "with the (default type) checksum of the existing file.");
         IdentifyPillarsForPutFileRequest identifyRequest = msgFactory.createIdentifyPillarsForPutFileRequest(
                 defaultFileId, 0L);
         messageBus.sendMessage(identifyRequest);

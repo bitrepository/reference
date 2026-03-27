@@ -21,6 +21,7 @@
  */
 package org.bitrepository.monitoringservice.alarm;
 
+import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.bitrepositoryelements.ResultingStatus;
 import org.bitrepository.bitrepositoryelements.StatusCode;
 import org.bitrepository.bitrepositoryelements.StatusInfo;
@@ -34,11 +35,16 @@ import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+
+@ExtendWith(SuiteInfoParameterResolver.class)
 public class MonitorAlerterTest extends IntegrationTest {
 
     @Test

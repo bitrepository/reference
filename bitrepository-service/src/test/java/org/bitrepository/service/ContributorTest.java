@@ -42,12 +42,12 @@ public abstract class ContributorTest extends IntegrationTest {
         super.registerMessageReceivers();
 
         clientDestinationId = settingsForTestClient.getReceiverDestinationID();
-        clientReceiver = new MessageReceiver(clientDestinationId, testEventManager);
+        clientReceiver = new MessageReceiver(clientDestinationId);
         addReceiver(clientReceiver);
 
         contributorDestinationId =
                 settingsForCUT.getCollectionDestination() + "-" +  getContributorID() + "-" + getTopicPostfix();
-        contributorReceiver = new MessageReceiver(contributorDestinationId + " topic receiver", testEventManager);
+        contributorReceiver = new MessageReceiver(contributorDestinationId + " topic receiver");
         addReceiver(contributorReceiver);
     }
 

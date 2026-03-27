@@ -36,8 +36,11 @@ import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
-import org.jaccept.structure.ExtendedTestCase;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
@@ -45,7 +48,9 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigInteger;
 import java.util.Date;
 
-public class DatabaseStressTests extends ExtendedTestCase {
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+
+public class DatabaseStressTests {
 
     private static final String PILLAR_1 = "pillar1";
     private static final String PILLAR_2 = "pillar2";

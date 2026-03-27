@@ -23,18 +23,18 @@ package org.bitrepository.common.utils;
 
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class FileIDValidatorTest extends ExtendedTestCase {
-    /**
-     * The settings for the tests. Should be instantiated in the setup.
-     */
+public class FileIDValidatorTest {
+    /** The settings for the tests. Should be instantiated in the setup.*/
     Settings settings;
 
     @BeforeAll
@@ -119,7 +119,6 @@ public class FileIDValidatorTest extends ExtendedTestCase {
         validator = new TestFileIDValidator(settings);
         Assertions.assertNull(validator.getRegex());
     }
-
     private class TestFileIDValidator extends FileIDValidator {
 
         public TestFileIDValidator(Settings settings) {

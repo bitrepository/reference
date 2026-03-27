@@ -24,7 +24,6 @@ package org.bitrepository.pillar.store.archive;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.store.filearchive.ArchiveDirectory;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
@@ -38,8 +37,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-class ArchiveDirectoryTest extends ExtendedTestCase {
+class ArchiveDirectoryTest {
     private static final String DIR_NAME = "archive-directory";
     private static final String FILE_DIR_NAME = DIR_NAME + "/fileDir";
     private static final String FOLDER_DIR_NAME = DIR_NAME + "/" + ArchiveDirectory.FOLDER_DIR;

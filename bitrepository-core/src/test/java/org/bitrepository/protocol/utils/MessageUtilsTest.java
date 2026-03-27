@@ -24,12 +24,15 @@ package org.bitrepository.protocol.utils;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
-import org.jaccept.structure.ExtendedTestCase;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-public class MessageUtilsTest extends ExtendedTestCase {
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+
+public class MessageUtilsTest {
     @Test
     @Tag("regressiontest")
     public void testPositiveIdentification() {

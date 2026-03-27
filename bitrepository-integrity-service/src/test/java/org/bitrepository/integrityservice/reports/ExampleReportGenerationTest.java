@@ -21,14 +21,13 @@
  */
 package org.bitrepository.integrityservice.reports;
 
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 
-public class ExampleReportGenerationTest extends ExtendedTestCase {
+public class ExampleReportGenerationTest {
 
     private final String CHECKSUM_ISSUE1 = "checksum-issue-file1";
     private final String CHECKSUM_ISSUE2 = "checksum-issue-file2";

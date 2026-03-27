@@ -34,7 +34,6 @@ import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.settings.repositorysettings.Collection;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.*;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -46,8 +45,11 @@ import javax.xml.datatype.Duration;
 import java.io.FileInputStream;
 import java.net.URL;
 
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class LocalAuditPreservationTest extends ExtendedTestCase {
+public class LocalAuditPreservationTest {
     /**
      * The settings for the tests. Should be instantiated in the setup.
      */
@@ -72,7 +74,6 @@ public class LocalAuditPreservationTest extends ExtendedTestCase {
 
     }
 
-    @Disabled("Temporarily disabled due to performance issues")
     @Test
     // Fragile test, fails occasionally.
     @SuppressWarnings("rawtypes")

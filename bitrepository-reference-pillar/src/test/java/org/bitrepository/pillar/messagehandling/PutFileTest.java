@@ -25,6 +25,7 @@
  */
 package org.bitrepository.pillar.messagehandling;
 
+import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -37,14 +38,19 @@ import org.bitrepository.pillar.messagefactories.PutFileMessageFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+
 /**
  * Tests the PutFile functionality on the ReferencePillar.
  */
+@ExtendWith(SuiteInfoParameterResolver.class)
 public class PutFileTest extends MockedPillarTest {
     PutFileMessageFactory msgFactory;
     Long FILE_SIZE = 1L;
@@ -90,7 +96,8 @@ public class PutFileTest extends MockedPillarTest {
                 "The pillar should make a response.");
         IdentifyPillarsForPutFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForPutFileResponse.class);
-        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE, receivedIdentifyResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode());
         Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID());
         Assertions.assertEquals(FILE_ID, receivedIdentifyResponse.getFileID());
 
@@ -131,7 +138,8 @@ public class PutFileTest extends MockedPillarTest {
                 "The pillar should make a response.");
         IdentifyPillarsForPutFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForPutFileResponse.class);
-        Assertions.assertEquals(ResponseCode.DUPLICATE_FILE_FAILURE, receivedIdentifyResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(ResponseCode.DUPLICATE_FILE_FAILURE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode());
         Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID());
         Assertions.assertEquals(FILE_ID, receivedIdentifyResponse.getFileID());
 
@@ -214,7 +222,8 @@ public class PutFileTest extends MockedPillarTest {
         addStep("Retrieve the FinalResponse for the PutFile request",
                 "The final response should say 'operation_complete', and give the requested data.");
         PutFileFinalResponse finalResponse = clientReceiver.waitForMessage(PutFileFinalResponse.class);
-        Assertions.assertEquals(ResponseCode.NEW_FILE_CHECKSUM_FAILURE, finalResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(ResponseCode.NEW_FILE_CHECKSUM_FAILURE,
+                finalResponse.getResponseInfo().getResponseCode());
         Assertions.assertEquals(getPillarID(), finalResponse.getPillarID());
         Assertions.assertEquals(FILE_ID, finalResponse.getFileID());
 
@@ -295,7 +304,8 @@ public class PutFileTest extends MockedPillarTest {
             res.setCalculationTimestamp(CalendarUtils.getNow());
             res.setChecksumValue(Base16Utils.encodeBase16(DEFAULT_MD5_CHECKSUM));
             return res;
-        }).when(model).getChecksumDataForFile(ArgumentMatchers.eq(FILE_ID), ArgumentMatchers.anyString(), ArgumentMatchers.any(ChecksumSpecTYPE.class));
+        }).when(model).getChecksumDataForFile(ArgumentMatchers.eq(FILE_ID), ArgumentMatchers.anyString(),
+                ArgumentMatchers.any(ChecksumSpecTYPE.class));
 
         addStep("Create and send the identify request message.",
                 "Should be received and handled by the pillar.");

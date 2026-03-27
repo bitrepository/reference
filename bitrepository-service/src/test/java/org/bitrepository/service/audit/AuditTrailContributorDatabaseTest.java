@@ -29,7 +29,6 @@ import org.bitrepository.service.database.DatabaseCreator;
 import org.bitrepository.service.database.DatabaseManager;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -40,11 +39,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-/**
- * Run audit trail contributor database test using Derby.  Generates jaccept reports.
- */
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class AuditTrailContributorDatabaseTest extends ExtendedTestCase {
+/** Run audit trail contributor database test using Derby.  Generates Allure reports. */
+
+public class AuditTrailContributorDatabaseTest {
     private Settings settings;
     private DatabaseSpecifics databaseSpecifics;
     private String firstCollectionID;
@@ -190,7 +190,6 @@ public class AuditTrailContributorDatabaseTest extends ExtendedTestCase {
 
         dm.getConnector().destroy();
     }
-
 
     public void contributorDatabaseCorrectTimestampTest() throws ParseException {
         addDescription("Testing the correct ingest and extraction of audittrail dates");

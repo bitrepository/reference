@@ -38,7 +38,6 @@ import org.bitrepository.protocol.messagebus.MessageListener;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -48,19 +47,24 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.Date;
 
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+
 /**
  * Stress testing of the messagebus.
  */
-public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
-    /**
-     * The time to wait when sending a message before it definitely should
-     * have been consumed by a listener.
-     */
+public class MessageBusTimeToSendMessagesStressTest {
+    /** The time to wait when sending a message before it definitely should
+     * have been consumed by a listener.*/
     static final int TIME_FOR_MESSAGE_TRANSFER_WAIT = 500;
     /**
      * The number of messages to send.
      */
     private static final int NUMBER_OF_MESSAGES = 1000;
+    /**
+     * The date for start sending the messages.
+     */
+    private static Date startSending;
     private Settings settings;
     private String testQueue;
 
@@ -78,12 +82,12 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
     @Tag("StressTest"} ) */
     public void SendManyMessagesDistributed() {
         addDescription("Tests how fast a given number of messages can be handled.");
+        addStep("Define constants", "This should not be possible to fail.");
 
         addStep("Make configuration for the messagebus.", "Both should be created.");
         MessageBusConfiguration conf = MessageBusConfigurationFactory.createDefaultConfiguration();
         SecurityManager securityManager = new DummySecurityManager();
         CountMessagesListener listener = null;
-        Date startSending;
 
         try {
             addStep("Initialise the message-listener", "Should be allowed.");
@@ -99,7 +103,7 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
                 try {
                     Thread.sleep(TIME_FOR_MESSAGE_TRANSFER_WAIT);
                 } catch (InterruptedException e) {
-                    Assertions.fail(e);
+                    /* e.printStackTrace(); */
                 }
             }
 
@@ -125,6 +129,7 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
     @Tag("StressTest")
     public void SendManyMessagesLocally() throws Exception {
         addDescription("Tests how many messages can be handled within a given timeframe.");
+        addStep("Define constants", "This should not be possible to fail.");
 
         addStep("Make configuration for the messagebus and define the local broker.",
                 "Both should be created.");
@@ -145,7 +150,7 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
             addStep("Initialise the message-listener", "Should be allowed.");
             listener = new CountMessagesListener(securityManager);
 
-            Date startSending = new Date();
+            startSending = new Date();
             addStep("Start sending at '" + startSending + "'", "Should just be waiting.");
             sendAllTheMessages(conf, securityManager);
 
@@ -156,7 +161,7 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
                 try {
                     Thread.sleep(TIME_FOR_MESSAGE_TRANSFER_WAIT);
                 } catch (InterruptedException e) {
-                    Assertions.fail(e);
+                    e.printStackTrace();
                 }
             }
 
@@ -175,7 +180,6 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
 
     /**
      * Finds a free port on the localhost.
-     *
      * @return A free port number.
      * @throws IOException If an I/O error occurs.
      */
@@ -194,7 +198,8 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
         /* The number of threads to send the messages. */
         int NUMBER_OF_SENDERS = 10;
         for (int i = 0; i < NUMBER_OF_SENDERS; i++) {
-            Thread t = new MessageSenderThread(conf, securityManager, NUMBER_OF_MESSAGES / NUMBER_OF_SENDERS, "#" + i);
+            Thread t = new MessageSenderThread(conf, securityManager, NUMBER_OF_MESSAGES / NUMBER_OF_SENDERS,
+                    String.valueOf(i));
             t.start();
         }
     }
@@ -205,8 +210,8 @@ public class MessageBusTimeToSendMessagesStressTest extends ExtendedTestCase {
         private final String id;
 
         public MessageSenderThread(MessageBusConfiguration conf, SecurityManager securityManager, int numberOfMessages, String id) {
-            Settings senderSettings = TestSettingsProvider.getSettings(
-                    MessageBusTimeToSendMessagesStressTest.class.getSimpleName() + id);
+            Settings senderSettings =
+                    TestSettingsProvider.getSettings(MessageBusTimeToSendMessagesStressTest.class.getSimpleName() + "-" + id);
             senderSettings.getRepositorySettings().getProtocolSettings().setMessageBusConfiguration(conf);
             this.bus = new ActiveMQMessageBus(senderSettings, securityManager);
             this.numberOfMessages = numberOfMessages;

@@ -21,12 +21,15 @@
  */
 package org.bitrepository.protocol.security.exception;
 
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-public class CertificateUseExceptionTest extends ExtendedTestCase {
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+
+
+public class CertificateUseExceptionTest {
 
     @Test
     @Tag("regressiontest")

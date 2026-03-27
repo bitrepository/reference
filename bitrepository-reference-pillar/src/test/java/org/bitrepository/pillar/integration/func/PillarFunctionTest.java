@@ -50,7 +50,7 @@ public abstract class PillarFunctionTest extends PillarIntegrationTest {
     protected void registerMessageReceivers() {
         super.registerMessageReceivers();
 
-        clientReceiver = new MessageReceiver(settingsForTestClient.getReceiverDestinationID(), testEventManager);
+        clientReceiver = new MessageReceiver(settingsForTestClient.getReceiverDestinationID());
         addReceiver(clientReceiver);
 
         Collection<String> pillarFilter = Collections.singletonList(testConfiguration.getPillarUnderTestID());

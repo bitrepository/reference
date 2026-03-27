@@ -49,7 +49,6 @@ import org.bitrepository.integrityservice.workflow.step.HandleMissingChecksumsSt
 import org.bitrepository.integrityservice.workflow.step.UpdateChecksumsStep;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.service.exception.WorkflowAbortedException;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -63,8 +62,10 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigInteger;
 import java.util.*;
 
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class MissingChecksumTests extends ExtendedTestCase {
+public class MissingChecksumTests {
     private static final String PILLAR_1 = "pillar1";
     private static final String PILLAR_2 = "pillar2";
 

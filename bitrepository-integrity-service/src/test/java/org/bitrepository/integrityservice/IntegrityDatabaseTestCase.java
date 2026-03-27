@@ -33,7 +33,6 @@ import org.bitrepository.integrityservice.cache.database.IntegrityDatabaseCreato
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -41,7 +40,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import java.math.BigInteger;
 import java.util.List;
 
-public abstract class IntegrityDatabaseTestCase extends ExtendedTestCase {
+public abstract class IntegrityDatabaseTestCase {
     protected Settings settings;
     
     @BeforeEach

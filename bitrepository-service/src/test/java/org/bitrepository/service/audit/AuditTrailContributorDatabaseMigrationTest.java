@@ -28,16 +28,22 @@ import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
-import org.jaccept.structure.ExtendedTestCase;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+
 /**
- * Test database migration.  Generates jaccept reports.
+ * Test database migration.  Generates Allure reports.
  *
  */
-public class AuditTrailContributorDatabaseMigrationTest extends ExtendedTestCase {
+public class AuditTrailContributorDatabaseMigrationTest {
     protected Settings settings;
 
     static final String PATH_TO_DATABASE_UNPACKED = "target/test/audits/auditcontributerdb-v1";

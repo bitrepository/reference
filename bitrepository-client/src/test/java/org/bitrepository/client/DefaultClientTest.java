@@ -21,11 +21,12 @@ package org.bitrepository.client;
  * #L%
  */
 
+import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.eventhandler.OperationEvent;
-import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.protocol.bus.MessageReceiver;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -33,14 +34,15 @@ import org.junit.jupiter.api.Test;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
-import org.junit.jupiter.api.Assertions;
+import static org.bitrepository.common.utils.AllureTestUtils.*;
+
 
 /**
  * Tests the general client functionality. A number of abstract methods with needs to be implemented with concrete
  * functionality by the test for the specific operations.
  */
 public abstract class DefaultClientTest extends DefaultFixtureClientTest {
-    protected final TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+    protected final TestEventHandler testEventHandler = new TestEventHandler();
     private DatatypeFactory datatypeFactory;
 
     @BeforeEach
@@ -57,7 +59,8 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
                 "A IDENTIFY_REQUEST_SENT should be generate and a identification request should be sent.");
         startOperation(testEventHandler);
         MessageRequest identifyRequest = waitForIdentifyRequest();
-        Assertions.assertEquals(OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT, testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT,
+                testEventHandler.waitForEvent().getEventType());
 
         addStep("Send a identification response from contributor1 with a IDENTIFICATION_NEGATIVE response code .",
                 "A component failed event should be generated.");
@@ -65,30 +68,36 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
         MessageResponse identifyResponse1 = createIdentifyResponse(identifyRequest, PILLAR1_ID, pillar1DestinationId);
         identifyResponse1.getResponseInfo().setResponseCode(ResponseCode.IDENTIFICATION_NEGATIVE);
         messageBus.sendMessage(identifyResponse1);
-        Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_FAILED, testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_FAILED,
+                testEventHandler.waitForEvent().getEventType());
 
         addStep("Send a identification response from contributor2 with a IDENTIFICATION_POSITIVE response code .",
                 "A component COMPONENT_IDENTIFIED event should be generated followed by a IDENTIFICATION_COMPLETE.");
         MessageResponse identifyResponse2 = createIdentifyResponse(identifyRequest, PILLAR2_ID, pillar2DestinationId);
         identifyResponse2.getResponseInfo().setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);
         messageBus.sendMessage(identifyResponse2);
-        Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_IDENTIFIED, testEventHandler.waitForEvent().getEventType());
-        Assertions.assertEquals(OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE, testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_IDENTIFIED,
+                testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE,
+                testEventHandler.waitForEvent().getEventType());
 
         addStep("Verify that the client continues to the performing phase.",
                 "A REQUEST_SENT event should be generated and a OperationRequest should be sent only to contributor2" +
                         ".");
         checkNoRequestIsReceived(pillar1Receiver);
         MessageRequest request = waitForRequest(pillar2Receiver);
-        Assertions.assertEquals(OperationEvent.OperationEventType.REQUEST_SENT, testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.REQUEST_SENT,
+                testEventHandler.waitForEvent().getEventType());
 
         addStep("Send a final response message from contributor2",
                 "A COMPONENT_COMPLETE event should be generated followed by at COMPLETE event.");
         MessageResponse completeMsg = createFinalResponse(request, PILLAR2_ID, pillar2DestinationId);
         completeMsg.getResponseInfo().setResponseCode(ResponseCode.OPERATION_COMPLETED);
         messageBus.sendMessage(completeMsg);
-        Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_COMPLETE, testEventHandler.waitForEvent().getEventType());
-        Assertions.assertEquals(OperationEvent.OperationEventType.FAILED, testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_COMPLETE,
+                testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.FAILED,
+                testEventHandler.waitForEvent().getEventType());
     }
 
     @Test
@@ -100,14 +109,16 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
                 "A IDENTIFY_REQUEST_SENT should be generate and a identification request should be sent.");
         startOperation(testEventHandler);
         MessageRequest identifyRequest = waitForIdentifyRequest();
-        Assertions.assertEquals(OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT, testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT,
+                testEventHandler.waitForEvent().getEventType());
 
         addStep("Send a identification response from contributor1 with a FAILURE response code.",
                 "A component failed event should be generated.");
         MessageResponse identifyResponse1 = createIdentifyResponse(identifyRequest, PILLAR1_ID, pillar1DestinationId);
         identifyResponse1.getResponseInfo().setResponseCode(ResponseCode.FAILURE);
         messageBus.sendMessage(identifyResponse1);
-        Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_FAILED, testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_FAILED,
+                testEventHandler.waitForEvent().getEventType());
 
         addStep("Send a identification response from contributor2 with a IDENTIFICATION_POSITIVE response code .",
                 "A component COMPONENT_IDENTIFIED event should be generated followed by a IDENTIFICATION_COMPLETE.");
@@ -115,22 +126,27 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
                 identifyRequest, PILLAR2_ID, pillar2DestinationId);
         identifyResponse2.getResponseInfo().setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);
         messageBus.sendMessage(identifyResponse2);
-        Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_IDENTIFIED, testEventHandler.waitForEvent().getEventType());
-        Assertions.assertEquals(OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE, testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_IDENTIFIED,
+                testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE,
+                testEventHandler.waitForEvent().getEventType());
 
         addStep("Verify that the client continues to the performing phase.",
                 "A REQUEST_SENT event should be generated and a Request should be sent only to contributor2.");
         checkNoRequestIsReceived(pillar1Receiver);
         MessageRequest request = waitForRequest(pillar2Receiver);
-        Assertions.assertEquals(OperationEvent.OperationEventType.REQUEST_SENT, testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.REQUEST_SENT,
+                testEventHandler.waitForEvent().getEventType());
 
         addStep("Send a final response message from contributor2",
                 "A COMPONENT_COMPLETE event should be generated followed by at COMPLETE event.");
         MessageResponse completeMsg = createFinalResponse(request, PILLAR2_ID, pillar2DestinationId);
         completeMsg.getResponseInfo().setResponseCode(ResponseCode.OPERATION_COMPLETED);
         messageBus.sendMessage(completeMsg);
-        Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_COMPLETE, testEventHandler.waitForEvent().getEventType());
-        Assertions.assertEquals(OperationEvent.OperationEventType.FAILED, testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_COMPLETE,
+                testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.FAILED,
+                testEventHandler.waitForEvent().getEventType());
     }
 
     @Test
@@ -146,32 +162,41 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
                 "A IDENTIFY_REQUEST_SENT should be generate and a identification request should be sent.");
         startOperation(testEventHandler);
         MessageRequest identifyRequest = waitForIdentifyRequest();
-        Assertions.assertEquals(OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT, testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT,
+                testEventHandler.waitForEvent().getEventType());
 
-        addStep("Send a identification response from contributor1.", "A COMPONENT_IDENTIFIED event should be generated.");
+        addStep("Send a identification response from contributor1.",
+                "A COMPONENT_IDENTIFIED event should be generated.");
         MessageResponse identifyResponse1 = createIdentifyResponse(identifyRequest, PILLAR1_ID, pillar1DestinationId);
         identifyResponse1.getResponseInfo().setResponseCode(ResponseCode.IDENTIFICATION_POSITIVE);
         messageBus.sendMessage(identifyResponse1);
-        Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_IDENTIFIED, testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_IDENTIFIED,
+                testEventHandler.waitForEvent().getEventType());
 
         addStep("Wait 1 second.",
                 "A IDENTIFY_TIMEOUT event should be generated, followed by a IDENTIFICATION_COMPLETE.");
-        Assertions.assertEquals(OperationEvent.OperationEventType.IDENTIFY_TIMEOUT, testEventHandler.waitForEvent().getEventType());
-        Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_FAILED, testEventHandler.waitForEvent().getEventType());
-        Assertions.assertEquals(OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE, testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.IDENTIFY_TIMEOUT,
+                testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_FAILED,
+                testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE,
+                testEventHandler.waitForEvent().getEventType());
 
         addStep("Verify that the client continues to the performing phase.",
                 "A REQUEST_SENT event should be generated and a Request should be sent to pillar1.");
         MessageRequest request = waitForRequest(pillar1Receiver);
-        Assertions.assertEquals(OperationEvent.OperationEventType.REQUEST_SENT, testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.REQUEST_SENT,
+                testEventHandler.waitForEvent().getEventType());
 
         addStep("Send a final response upload message",
                 "A COMPONENT_COMPLETE event should be generated followed by at COMPLETE event.");
         MessageResponse completeMsg = createFinalResponse(request, PILLAR1_ID, pillar1DestinationId);
         completeMsg.getResponseInfo().setResponseCode(ResponseCode.OPERATION_COMPLETED);
         messageBus.sendMessage(completeMsg);
-        Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_COMPLETE, testEventHandler.waitForEvent().getEventType());
-        Assertions.assertEquals(OperationEvent.OperationEventType.FAILED, testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_COMPLETE,
+                testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.FAILED,
+                testEventHandler.waitForEvent().getEventType());
 
     }
 
@@ -187,13 +212,18 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
 
         addStep("Start the operation.", "A IDENTIFY_REQUEST_SENT event should be generated.");
         startOperation(testEventHandler);
-        Assertions.assertEquals(OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT, testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT,
+                testEventHandler.waitForEvent().getEventType());
 
         addStep("Wait for 1 second", "An IdentifyPillarTimeout event should be received followed by a FAILED event");
-        Assertions.assertEquals(OperationEvent.OperationEventType.IDENTIFY_TIMEOUT, testEventHandler.waitForEvent().getEventType());
-        Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_FAILED, testEventHandler.waitForEvent().getEventType());
-        Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_FAILED, testEventHandler.waitForEvent().getEventType());
-        Assertions.assertEquals(OperationEvent.OperationEventType.FAILED, testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.IDENTIFY_TIMEOUT,
+                testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_FAILED,
+                testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_FAILED,
+                testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.FAILED,
+                testEventHandler.waitForEvent().getEventType());
     }
 
 
@@ -209,7 +239,8 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
         addStep("Start the operation",
                 "A IDENTIFY_REQUEST_SENT event should be received.");
         startOperation(testEventHandler);
-        Assertions.assertEquals(OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT, testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT,
+                testEventHandler.waitForEvent().getEventType());
         MessageRequest identifyRequest = waitForIdentifyRequest();
 
         addStep("Send positive responses from the pillar1 and a negative response from pillar2",
@@ -218,17 +249,22 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
                         "Finally a operation request should be sent to pillar1 and a REQUEST_SENT event be " +
                         "generated");
         messageBus.sendMessage(createIdentifyResponse(identifyRequest, PILLAR1_ID, pillar1DestinationId));
-        Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_IDENTIFIED, testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_IDENTIFIED,
+                testEventHandler.waitForEvent().getEventType());
         MessageResponse identifyResponse2 = createIdentifyResponse(identifyRequest, PILLAR2_ID, pillar2DestinationId);
         identifyResponse2.getResponseInfo().setResponseCode(ResponseCode.IDENTIFICATION_NEGATIVE);
         messageBus.sendMessage(identifyResponse2);
-        Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_FAILED, testEventHandler.waitForEvent().getEventType());
-        Assertions.assertEquals(OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE, testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_FAILED,
+                testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE,
+                testEventHandler.waitForEvent().getEventType());
         waitForRequest(pillar1Receiver);
-        Assertions.assertEquals(OperationEvent.OperationEventType.REQUEST_SENT, testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.REQUEST_SENT,
+                testEventHandler.waitForEvent().getEventType());
 
         addStep("Wait for 1 second", "An FAILED event should be received");
-        Assertions.assertEquals(OperationEvent.OperationEventType.FAILED, testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.FAILED,
+                testEventHandler.waitForEvent().getEventType());
     }
 
     @Test
@@ -297,9 +333,11 @@ public abstract class DefaultClientTest extends DefaultFixtureClientTest {
         addStep("Start the operation",
                 "A IDENTIFY_REQUEST_SENT event should be generated followed by a FAILED event after 100 ms.");
         startOperation(testEventHandler);
-        Assertions.assertEquals(OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT, testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT,
+                testEventHandler.waitForEvent().getEventType());
         Assertions.assertNotNull(waitForIdentifyRequest());
-        Assertions.assertEquals(OperationEvent.OperationEventType.FAILED, testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.FAILED,
+                testEventHandler.waitForEvent().getEventType());
     }
 
 

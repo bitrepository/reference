@@ -24,39 +24,41 @@
  */
 package org.bitrepository.modify.putfile;
 
+import io.qameta.allure.Allure;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.jaccept.TestEventManager;
 
 import java.net.URL;
+import java.util.Locale;
 
 /**
  * Wrapper class for a PutFileClient adding test event logging.
  */
 public class PutFileClientTestWrapper implements PutFileClient {
     private final PutFileClient wrappedPutClient;
-    private final TestEventManager testEventManager;
 
     /**
      * Constructor.
      * @param putClientInstance The instance to wrap and monitor.
-     * @param eventManager The manager to monitor the operations.
      */
-    public PutFileClientTestWrapper(PutFileClient putClientInstance, TestEventManager eventManager) {
+    public PutFileClientTestWrapper(PutFileClient putClientInstance) {
         this.wrappedPutClient = putClientInstance;
-        this.testEventManager = eventManager;
     }
 
     @Override
     public void putFile(String collectionID, URL url, String fileID, long sizeOfFile,
                         ChecksumDataForFileTYPE checksumForValidationAtPillar,
-            ChecksumSpecTYPE checksumRequestsForValidation, EventHandler eventHandler, String auditTrailInformation) {
-        testEventManager.addStimuli("Calling PutFileWithId(" + url + ", " + fileID + ", " + sizeOfFile + ", "
-            + checksumForValidationAtPillar + ", " + checksumRequestsForValidation + ", " + eventHandler + ", "
-            + auditTrailInformation + ")");
-        wrappedPutClient.putFile(collectionID, url, fileID, sizeOfFile, checksumForValidationAtPillar,
-                checksumRequestsForValidation,
-                eventHandler, auditTrailInformation);
+                        ChecksumSpecTYPE checksumRequestsForValidation, EventHandler eventHandler, String auditTrailInformation) {
+        String stepName = String.format(Locale.ROOT, "Calling putFile for file: %s", fileID);
+        String details = String.format(Locale.ROOT, "Collection: %s%nURL: %s%nSize: %d%nAudit Info: %s",
+                collectionID, url, sizeOfFile, auditTrailInformation);
+
+        Allure.step(stepName, () -> {
+            Allure.addAttachment("Put Request Parameters", details);
+            wrappedPutClient.putFile(collectionID, url, fileID, sizeOfFile, checksumForValidationAtPillar,
+                    checksumRequestsForValidation,
+                    eventHandler, auditTrailInformation);
+        });
     }
 }

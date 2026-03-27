@@ -2,7 +2,6 @@ package org.bitrepository.common.utils;
 
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositoryelements.TimeMeasureUnit;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -13,8 +12,11 @@ import javax.xml.datatype.DatatypeFactory;
 import java.math.BigInteger;
 import java.time.Duration;
 
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class XmlUtilsTest extends ExtendedTestCase {
+public class XmlUtilsTest {
 
     private DatatypeFactory factory;
 

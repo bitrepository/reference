@@ -22,15 +22,17 @@
 package org.bitrepository.common.utils;
 
 import org.apache.commons.codec.DecoderException;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+
 /**
  * Utility class for handling encoding and decoding of base64 bytes.
  */
-public class Base16UtilsTest extends ExtendedTestCase {
+public class Base16UtilsTest {
 
     private final String DECODED_CHECKSUM = "ff5aca7ae8c80c9a3aeaf9173e4dfd27";
     private final byte[] ENCODED_CHECKSUM =

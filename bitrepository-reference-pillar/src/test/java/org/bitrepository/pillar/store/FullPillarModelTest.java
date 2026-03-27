@@ -21,6 +21,7 @@
  */
 package org.bitrepository.pillar.store;
 
+import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.common.filestore.FileInfo;
@@ -35,10 +36,15 @@ import org.bitrepository.service.exception.RequestHandlerException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+
+@ExtendWith(SuiteInfoParameterResolver.class)
 public class FullPillarModelTest extends DefaultFixturePillarTest {
     FileStorageModel pillarModel;
     ChecksumStore cache;

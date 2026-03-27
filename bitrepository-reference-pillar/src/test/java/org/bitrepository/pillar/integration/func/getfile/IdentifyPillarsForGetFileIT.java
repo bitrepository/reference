@@ -31,13 +31,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
     protected GetFileMessageFactory msgFactory;
 
     @BeforeEach
-    void initialiseReferenceTest() throws Exception {
+    void initialiseReferenceTest() {
         msgFactory = new GetFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
     }
 
@@ -74,7 +76,7 @@ class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
 
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
-    public void nonExistingFileIdentificationIT() {
+    void nonExistingFileIdentificationIT() {
         addDescription("Tests the  IdentifyPillarsForGetFile functionality of the pillar for a " +
                 "IdentificationForGetFile " +
                 "for a non existing file.");

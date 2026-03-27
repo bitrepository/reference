@@ -21,8 +21,9 @@
  */
 package org.bitrepository.pillar.integration;
 
-import org.bitrepository.ExtendedTestInfoParameterResolver;
+import io.qameta.allure.Allure;
 import org.bitrepository.SuiteInfo;
+import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
 import org.bitrepository.client.conversation.mediator.ConversationMediatorManager;
 import org.bitrepository.client.eventhandler.EventHandler;
@@ -40,10 +41,20 @@ import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.messagebus.SimpleMessageBus;
-import org.bitrepository.protocol.security.*;
+import org.bitrepository.protocol.security.BasicMessageAuthenticator;
+import org.bitrepository.protocol.security.BasicMessageSigner;
+import org.bitrepository.protocol.security.BasicOperationAuthorizer;
+import org.bitrepository.protocol.security.BasicSecurityManager;
+import org.bitrepository.protocol.security.MessageAuthenticator;
+import org.bitrepository.protocol.security.MessageSigner;
+import org.bitrepository.protocol.security.OperationAuthorizer;
+import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
-import org.jaccept.TestEventManager;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.suite.api.AfterSuite;
 import org.slf4j.Logger;
@@ -52,6 +63,9 @@ import org.slf4j.LoggerFactory;
 import javax.jms.JMSException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
+
+import static org.bitrepository.common.utils.AllureTestUtils.isTestRunning;
 
 /**
  * Super class for all tests which should test functionality on a single pillar.
@@ -60,9 +74,8 @@ import java.io.InputStream;
  * to be invariant against the initial pillar state.
  */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@ExtendWith(ExtendedTestInfoParameterResolver.class)
+@ExtendWith(SuiteInfoParameterResolver.class)
 public abstract class PillarIntegrationTest extends IntegrationTest {
-    private static final Logger log = LoggerFactory.getLogger(PillarIntegrationTest.class);
     /**
      * The path to the directory containing the integration test configuration files
      */
@@ -85,15 +98,15 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     protected static String nonDefaultCollectionId;
     protected static String irrelevantCollectionId;
     protected static ClientEventLogger clientEventHandler;
-
+    private static final Logger log = LoggerFactory.getLogger(PillarIntegrationTest.class);
     @Override
     protected void initializeCUT() {
         super.initializeCUT();
         reloadMessageBus();
-        clientProvider = new ClientProvider(securityManager, settingsForTestClient, testEventManager);
+        clientProvider = new ClientProvider(securityManager, settingsForTestClient);
         pillarFileManager = new PillarFileManager(collectionID,
-                getPillarID(), settingsForTestClient, clientProvider, testEventManager, httpServerConfiguration);
-        clientEventHandler = new ClientEventLogger(testEventManager);
+                getPillarID(), settingsForTestClient, clientProvider, httpServerConfiguration);
+        clientEventHandler = new ClientEventLogger();
     }
 
     /**
@@ -114,7 +127,8 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     @BeforeAll
     public void initializeSuite(SuiteInfo testInfo) {
         if (testConfiguration == null) {
-            testConfiguration = new PillarIntegrationTestConfiguration(PATH_TO_TESTPROPS_DIR + "/" + TEST_CONFIGURATION_FILE_NAME);
+            testConfiguration =
+                    new PillarIntegrationTestConfiguration(PATH_TO_TESTPROPS_DIR + "/" + TEST_CONFIGURATION_FILE_NAME);
         }
         super.initializeSuite(testInfo);
 
@@ -123,7 +137,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
 
         startEmbeddedPillar(testInfo);
         reloadMessageBus();
-        clientProvider = new ClientProvider(securityManager, settingsForTestClient, testEventManager);
+        clientProvider = new ClientProvider(securityManager, settingsForTestClient);
         nonDefaultCollectionId = settingsForTestClient.getCollections().get(1).getID();
         irrelevantCollectionId = settingsForTestClient.getCollections().get(2).getID();
         putDefaultFile();
@@ -143,7 +157,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
                 try {
                     messageBus.close();
                 } catch (JMSException e) {
-                    log.warn("Failed to close message bus", e);
+                    e.printStackTrace();
                 }
                 messageBus = null;
             }
@@ -202,7 +216,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
      * <code>checksumPillarTest</code> a checksum pillar is started, else a normal 'full' reference pillar is started.
      * </p>
      *
-     * @param testInfo
+     * @param testInfo The suite info containing the pillar type.
      */
     protected void startEmbeddedPillar(SuiteInfo testInfo) {
         if (testConfiguration.useEmbeddedPillar()) {
@@ -296,7 +310,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
             try (InputStream fis = getClass().getClassLoader().getResourceAsStream("default-test-file.txt")) {
                 fe.putFile(fis, defaultFileUrl);
             } catch (IOException e) {
-                Assertions.fail(e);
+                throw new UncheckedIOException("Failed to upload default test file", e);
             }
 
 
@@ -317,23 +331,20 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
     public class ClientEventLogger implements EventHandler {
 
         /**
-         * The <code>TestEventManager</code> used to manage the event for the associated test.
-         */
-        private final TestEventManager testEventManager;
-
-        /**
          * The constructor.
-         *
-         * @param testEventManager The <code>TestEventManager</code> used to manage the event for the associated test.
          */
-        public ClientEventLogger(TestEventManager testEventManager) {
+        public ClientEventLogger() {
             super();
-            this.testEventManager = testEventManager;
         }
 
         @Override
         public void handleEvent(OperationEvent event) {
-            testEventManager.addResult("Received event: " + event);
+            if (!isTestRunning()) {
+                return;
+            }
+            Allure.step("Received event: " + event.getEventType(), () -> {
+                Allure.addAttachment("Event Details", event.toString());
+            });
         }
     }
 }

@@ -21,6 +21,7 @@
  */
 package org.bitrepository.pillar.store;
 
+import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.common.utils.ChecksumUtils;
@@ -32,10 +33,15 @@ import org.bitrepository.settings.referencesettings.ChecksumPillarFileDownload;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Date;
 
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
+
+@ExtendWith(SuiteInfoParameterResolver.class)
 public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
     ChecksumStorageModel pillarModel;
     ChecksumStore cache;
@@ -82,12 +88,14 @@ public class ChecksumPillarModelTest extends DefaultFixturePillarTest {
                 "It should say as it is in settings, or return default");
         settingsForCUT.getReferenceSettings().getPillarSettings().setChecksumPillarFileDownload(
                 ChecksumPillarFileDownload.ALWAYS_DOWNLOAD);
-        Assertions.assertEquals(ChecksumPillarFileDownload.ALWAYS_DOWNLOAD, pillarModel.getChecksumPillarFileDownload());
+        Assertions.assertEquals(ChecksumPillarFileDownload.ALWAYS_DOWNLOAD,
+                pillarModel.getChecksumPillarFileDownload());
         settingsForCUT.getReferenceSettings().getPillarSettings().setChecksumPillarFileDownload(
                 ChecksumPillarFileDownload.NEVER_DOWNLOAD);
         Assertions.assertEquals(ChecksumPillarFileDownload.NEVER_DOWNLOAD, pillarModel.getChecksumPillarFileDownload());
         settingsForCUT.getReferenceSettings().getPillarSettings().setChecksumPillarFileDownload(null);
-        Assertions.assertEquals(ChecksumPillarFileDownload.DOWNLOAD_WHEN_MISSING_FROM_MESSAGE, pillarModel.getChecksumPillarFileDownload());
+        Assertions.assertEquals(ChecksumPillarFileDownload.DOWNLOAD_WHEN_MISSING_FROM_MESSAGE,
+                pillarModel.getChecksumPillarFileDownload());
 
     }
 

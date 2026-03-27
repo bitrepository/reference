@@ -39,10 +39,20 @@
  */
 package org.bitrepository.access.getchecksums;
 
+import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.ContributorQuery;
-import org.bitrepository.bitrepositoryelements.*;
-import org.bitrepository.bitrepositorymessages.*;
+import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumType;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
+import org.bitrepository.bitrepositoryelements.ResultingChecksums;
+import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
+import org.bitrepository.bitrepositorymessages.MessageRequest;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.DefaultClientTest;
 import org.bitrepository.client.TestEventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
@@ -52,6 +62,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.math.BigInteger;
 import java.net.URL;
@@ -59,9 +70,14 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addFixture;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+
 /**
  * Test class for the 'GetFileClient'.
  */
+@ExtendWith(SuiteInfoParameterResolver.class)
 public class GetChecksumsClientComponentTest extends DefaultClientTest {
     private TestGetChecksumsMessageFactory messageFactory;
 
@@ -93,7 +109,7 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
     public void getChecksumsFromSinglePillar() throws Exception {
         addDescription("Tests that the client can retrieve checksums from a single pillar.");
 
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         GetChecksumsClient getChecksumsClient = createGetChecksumsClient();
 
         addStep("Request the delivery of the checksum of a file from pillar1.",
@@ -165,7 +181,7 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
 
         String deliveryFilename = "TEST-CHECKSUM-DELIVERY.xml";
 
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         GetChecksumsClient getChecksumsClient = createGetChecksumsClient();
 
         addStep("Ensure the delivery file isn't already present on the http server",
@@ -241,7 +257,7 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()
                 .add(PILLAR1_ID);
 
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         GetChecksumsClient getChecksumsClient = createGetChecksumsClient();
 
         addStep("Request the delivery of the checksum of a file from the pillar(s). A callback listener should be " +
@@ -300,9 +316,8 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
     @Test
     @Tag("regressiontest")
     public void testPaging() throws Exception {
-        addDescription("Tests the GetChecksums client correctly handles functionality for limiting results, either by" +
-                " " +
-                "timestamp or result count.");
+        addDescription("Tests the GetChecksums client correctly handles functionality for limiting results, " +
+                "either by timestamp or result count.");
 
         GetChecksumsClient getChecksumsClient = createGetChecksumsClient();
         addStep("Request checksums from with MinTimestamp, MaxTimestamp, MaxNumberOfResults set for both pillars .",
@@ -319,8 +334,7 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
                 IdentifyPillarsForGetChecksumsRequest.class);
 
         addStep("Send a IdentifyPillarsForGetChecksumsResponse from both pillars.",
-                "A GetChecksumsRequest should be sent to both pillars with the appropriate MinTimestamp, " +
-                        "MaxTimestamp, " +
+                "A GetChecksumsRequest should be sent to both pillars with the appropriate MinTimestamp, MaxTimestamp, " +
                         "MaxNumberOfResults values.");
         messageBus.sendMessage(messageFactory.createIdentifyPillarsForGetChecksumsResponse(
                 receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId));
@@ -367,7 +381,7 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(1).getPillarIDs().getPillarID()
                 .add(PILLAR2_ID);
         String otherCollection = settingsForCUT.getRepositorySettings().getCollections().getCollection().get(1).getID();
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         GetChecksumsClient client = createGetChecksumsClient();
 
         addStep("Request the putting of a file through the PutClient for collection2",
@@ -416,8 +430,7 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
      */
     private GetChecksumsClient createGetChecksumsClient() {
         return new GetChecksumsClientTestWrapper(new ConversationBasedGetChecksumsClient(
-                messageBus, conversationMediator, settingsForCUT, settingsForTestClient.getComponentID()),
-                testEventManager);
+                messageBus, conversationMediator, settingsForCUT, settingsForTestClient.getComponentID()));
     }
 
 

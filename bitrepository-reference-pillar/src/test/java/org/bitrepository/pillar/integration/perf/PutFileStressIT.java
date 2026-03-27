@@ -29,12 +29,14 @@ import org.bitrepository.modify.putfile.BlockingPutFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.pillar.integration.perf.metrics.Metrics;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 public class PutFileStressIT extends PillarPerformanceTest {
     protected PutFileClient putClient;
@@ -46,7 +48,6 @@ public class PutFileStressIT extends PillarPerformanceTest {
         );
     }
 
-    @Disabled("Temporarily disabled due to performance issues")
     @Test
     @Tag("pillar-stress-test")
     @Tag("stress-test-pillar-population")
@@ -71,7 +72,6 @@ public class PutFileStressIT extends PillarPerformanceTest {
         //ToDo assert that the files are present
     }
 
-    @Disabled("Temporarily disabled due to performance issues")
     @Test
     @Tag("pillar-stress-test")
     public void parallelPut() throws Exception {

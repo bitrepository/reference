@@ -21,6 +21,7 @@
  */
 package org.bitrepository.access.getstatus;
 
+import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getstatus.conversation.StatusCompleteContributorEvent;
 import org.bitrepository.bitrepositoryelements.ResultingStatus;
@@ -40,11 +41,15 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import javax.xml.datatype.DatatypeFactory;
 import java.util.List;
 
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
+@ExtendWith(SuiteInfoParameterResolver.class)
 public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
 
     private TestGetStatusMessageFactory testMessageFactory;
@@ -82,7 +87,7 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
         DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
         settingsForCUT.getRepositorySettings().getClientSettings()
                 .setIdentificationTimeoutDuration(datatypeFactory.newDuration(1000));
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         GetStatusClient client = createGetStatusClient();
 
         client.getStatus(testEventHandler);
@@ -116,7 +121,7 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
         addDescription("Tests the simplest case of getting status for all contributors.");
 
         addStep("Create a GetStatusClient.", "");
-        TestEventHandler testEventHandler = new TestEventHandler(testEventManager);
+        TestEventHandler testEventHandler = new TestEventHandler();
         GetStatusClient client = createGetStatusClient();
 
         addStep("Retrieve from all contributors in the collection",
@@ -188,7 +193,7 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
      */
     private GetStatusClient createGetStatusClient() {
         return new GetStatusClientTestWrapper(new ConversationBasedGetStatusClient(
-                messageBus, conversationMediator, settingsForCUT, settingsForTestClient.getComponentID()), testEventManager);
+                messageBus, conversationMediator, settingsForCUT, settingsForTestClient.getComponentID()));
     }
 
     private ResultingStatus createTestResultingStatus(String componentID) {

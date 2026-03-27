@@ -28,19 +28,17 @@ import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
-import org.jaccept.structure.ExtendedTestCase;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.io.File;
+
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 
 // TODO: cannot test migration of version 1 to 2, since it requires a collection id.
 // Therefore this is only tested with version 2 of the database.
-public class AuditServiceDatabaseMigrationTest extends ExtendedTestCase {
+public class AuditServiceDatabaseMigrationTest {
     protected Settings settings;
 
     static final String PATH_TO_DATABASE_UNPACKED = "target/test/audits/auditservicedb-v2";

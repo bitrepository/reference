@@ -30,23 +30,29 @@ import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
+import org.bitrepository.common.utils.AllureTestUtils;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.settings.repositorysettings.Collection;
-import org.jaccept.structure.ExtendedTestCase;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 
 import javax.xml.datatype.DatatypeFactory;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class AuditCollectorTest extends ExtendedTestCase {
-    /**
-     * The settings for the tests. Should be instantiated in the setup.
-     */
+public class AuditCollectorTest {
+    /** The settings for the tests. Should be instantiated in the setup.*/
     Settings settings;
 
     public static final String TEST_COLLECTION = "dummy-collection";
@@ -64,7 +70,7 @@ public class AuditCollectorTest extends ExtendedTestCase {
     @Test
     @Tag("regressiontest")
     public void auditCollectorIntervalTest() throws Exception {
-        addDescription("Test that the collector calls the AuditClient at the correct intervals.");
+        AllureTestUtils.addDescription("Test that the collector calls the AuditClient at the correct intervals.");
         DatatypeFactory factory = DatatypeFactory.newInstance();
         settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().clear();
         settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().add(DEFAULT_CONTRIBUTOR);
@@ -73,16 +79,16 @@ public class AuditCollectorTest extends ExtendedTestCase {
         settings.getReferenceSettings().getAuditTrailServiceSettings().setGracePeriod(factory.newDuration(800));
 
         SettingsUtils.initialize(settings);
-        AuditTrailClient client = mock(AuditTrailClient.class);
-        AuditTrailStore store = mock(AuditTrailStore.class);
-        AlarmDispatcher alarmDispatcher = mock(AlarmDispatcher.class);
+        AuditTrailClient client = Mockito.mock(AuditTrailClient.class);
+        AuditTrailStore store = Mockito.mock(AuditTrailStore.class);
+        AlarmDispatcher alarmDispatcher = Mockito.mock(AlarmDispatcher.class);
         AuditTrailCollector collector = new AuditTrailCollector(settings, client, store, alarmDispatcher);
 
         ArgumentCaptor<EventHandler> eventHandlerCaptor = ArgumentCaptor.forClass(EventHandler.class);
         verify(client, timeout(3000).times(1)).getAuditTrails(eq(TEST_COLLECTION),
                 any(AuditTrailQuery[].class), isNull(), isNull(), eventHandlerCaptor.capture(), any(String.class));
-        EventHandler eventHandler = eventHandlerCaptor.getValue();
-
+        EventHandler eventHandler = eventHandlerCaptor.getValue(); 
+        
         Assertions.assertNotNull(eventHandler, "Should have an event handler");
         eventHandler.handleEvent(new AuditTrailResult(DEFAULT_CONTRIBUTOR, TEST_COLLECTION,
                 new ResultingAuditTrails(), false));
@@ -95,7 +101,7 @@ public class AuditCollectorTest extends ExtendedTestCase {
         eventHandler.handleEvent(new AuditTrailResult(DEFAULT_CONTRIBUTOR, TEST_COLLECTION,
                 new ResultingAuditTrails(), false));
         eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
-
+        
         collector.close();
     }
 }

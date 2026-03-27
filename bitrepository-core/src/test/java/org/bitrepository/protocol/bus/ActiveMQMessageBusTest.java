@@ -27,8 +27,8 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRespo
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import javax.jms.Message;
@@ -38,10 +38,12 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 /**
  * Runs the GeneralMessageBusTest using a LocalActiveMQBroker (if useEmbeddedMessageBus is true) and a suitable
- * MessageBus based on settingsForTestClient.  Regression tests utilized that uses JAccept to generate reports.
+ * MessageBus based on settingsForTestClient.  Regression tests utilized that uses Allure to generate reports.
  */
 
 public class ActiveMQMessageBusTest extends GeneralMessageBusTest {
@@ -53,7 +55,8 @@ public class ActiveMQMessageBusTest extends GeneralMessageBusTest {
             broker.start();
         }
         messageBus = new MessageBusWrapper(ProtocolComponentFactory.getInstance().getMessageBus(
-                settingsForTestClient, securityManager), testEventManager);
+                settingsForTestClient, securityManager));
+
     }
 
     @Test

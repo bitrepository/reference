@@ -44,8 +44,8 @@ public class SettingsLoaderTest extends ExtendedTestCase {
                 new SettingsProvider(new XMLFileSettingsLoader(PATH_TO_SETTINGS), getClass().getSimpleName());
 
         Settings settings = settingsLoader.getSettings();
-        List<String> expectedPillarIDs = of("Pillar1", "Pillar2");
-        assertEquals(expectedPillarIDs, settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
+        List<String> expectedPillarIDs = List.of("Pillar1", "Pillar2");
+        Assertions.assertEquals(expectedPillarIDs, settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
     }
 
     @Test

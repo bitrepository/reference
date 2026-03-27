@@ -36,7 +36,6 @@ import org.bitrepository.integrityservice.collector.IntegrityInformationCollecto
 import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.workflow.Workflow;
 import org.bitrepository.settings.referencesettings.ProtocolType;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -52,10 +51,21 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
-public class RepairMissingFilesWorkflowTest extends ExtendedTestCase {
+public class RepairMissingFilesWorkflowTest {
 
     private static final String PILLAR_1 = "pillar1";
     private static final String PILLAR_2 = "pillar2";

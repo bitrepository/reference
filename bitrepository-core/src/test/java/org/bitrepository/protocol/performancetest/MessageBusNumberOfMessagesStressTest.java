@@ -38,10 +38,8 @@ import org.bitrepository.protocol.messagebus.MessageListener;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -50,10 +48,13 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.Date;
 
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+
 /**
  * Stress testing of the messagebus.
  */
-public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
+public class MessageBusNumberOfMessagesStressTest {
     /**
      * The name of the queue to send the messages.
      */
@@ -97,7 +98,7 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
                 try {
                     wait(timeFrame);
                 } catch (InterruptedException e) {
-                    Assertions.fail(e);
+                    e.printStackTrace();
                 }
             }
 
@@ -121,7 +122,6 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
      * Tests the amount of messages send through a local messagebus.
      * It should be at least 20 per second.
      */
-    @Disabled("Temporarily disabled due to performance issues in the message bus handling")
     @Test
     @Tag("StressTest")
     public void SendManyMessagesLocally() throws Exception {
@@ -154,7 +154,7 @@ public class MessageBusNumberOfMessagesStressTest extends ExtendedTestCase {
                 try {
                     wait(timeFrame);
                 } catch (InterruptedException e) {
-                    Assertions.fail(e);
+                    e.printStackTrace();
                 }
             }
 

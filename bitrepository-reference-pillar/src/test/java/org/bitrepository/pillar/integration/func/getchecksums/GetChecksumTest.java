@@ -29,6 +29,7 @@ import org.bitrepository.client.exceptions.NegativeResponseException;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -36,8 +37,8 @@ import org.junit.jupiter.api.TestInstance;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class GetChecksumTest extends PillarFunctionTest {
@@ -60,7 +61,7 @@ public class GetChecksumTest extends PillarFunctionTest {
         checksumSpec.setChecksumType(ChecksumType.MD5);
         List<ChecksumDataForChecksumSpecTYPE> checksums = pillarFileManager.getChecksums(checksumSpec,
                 null, null);
-        assertTrue(checksums.size() >= 2, "The length of the returned checksums were less that 2");
+        Assertions.assertTrue(checksums.size() >= 2, "The length of the returned checksums were less that 2");
 
         addStep("Retrieve the first two files and verify that the checksums are correct",
                 "Not implemented");
@@ -79,7 +80,7 @@ public class GetChecksumTest extends PillarFunctionTest {
         checksumSpec.setChecksumType(ChecksumType.SHA1);
         List<ChecksumDataForChecksumSpecTYPE> checksums = pillarFileManager.getChecksums(
                 checksumSpec, null, defaultFileId);
-        assertNotNull(checksums.get(0));
+        Assertions.assertNotNull(checksums.get(0));
     }
 
     @Test
@@ -99,7 +100,7 @@ public class GetChecksumTest extends PillarFunctionTest {
         }
         List<ChecksumDataForChecksumSpecTYPE> checksums = pillarFileManager.getChecksums(
                 checksumSpec, null, defaultFileId);
-        assertNotNull(checksums.get(0));
+        Assertions.assertNotNull(checksums.get(0));
     }
 
     @Test
@@ -119,6 +120,6 @@ public class GetChecksumTest extends PillarFunctionTest {
         }
         List<ChecksumDataForChecksumSpecTYPE> checksums = pillarFileManager.getChecksums(
                 checksumSpec, null, defaultFileId);
-        assertNotNull(checksums.get(0));
+        Assertions.assertNotNull(checksums.get(0));
     }
 }

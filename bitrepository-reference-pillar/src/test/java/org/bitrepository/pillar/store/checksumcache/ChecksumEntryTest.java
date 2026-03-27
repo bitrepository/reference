@@ -22,14 +22,16 @@ package org.bitrepository.pillar.store.checksumcache;
  */
 
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumEntry;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 
-public class ChecksumEntryTest extends ExtendedTestCase {
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+
+class ChecksumEntryTest {
     private static final String CE_FILE = "file";
     private static final String CE_CHECKSUM = "checksum";
     private static final Date CE_DATE = new Date(1234567890);
@@ -37,7 +39,7 @@ public class ChecksumEntryTest extends ExtendedTestCase {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void testExtendedTestCase() throws Exception {
+    void testExtendedTestCase() throws Exception {
         addDescription("Test the ChecksumEntry");
         addStep("Create a ChecksumEntry", "The data should be extractable again.");
         ChecksumEntry ce = new ChecksumEntry(CE_FILE, CE_CHECKSUM, CE_DATE);

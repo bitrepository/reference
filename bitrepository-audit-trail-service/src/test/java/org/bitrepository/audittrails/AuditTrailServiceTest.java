@@ -35,10 +35,10 @@ import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.DefaultThreadFactory;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
+import org.bitrepository.common.utils.AllureTestUtils;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.contributor.ContributorMediator;
 import org.bitrepository.settings.repositorysettings.Collection;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -49,14 +49,17 @@ import javax.xml.datatype.DatatypeFactory;
 import java.math.BigInteger;
 import java.util.concurrent.ThreadFactory;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class AuditTrailServiceTest extends ExtendedTestCase {
-    /**
-     * The settings for the tests. Should be instantiated in the setup.
-     */
+public class AuditTrailServiceTest {
+    /** The settings for the tests. Should be instantiated in the setup. */
     Settings settings;
 
     public static final String TEST_COLLECTION = "dummy-collection";
@@ -76,7 +79,7 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
     @Test
     @Tag("unstable")
     public void auditTrailServiceTest() throws Exception {
-        addDescription("Test the Audit Trail Service");
+        AllureTestUtils.addDescription("Test the Audit Trail Service");
         DatatypeFactory factory = DatatypeFactory.newInstance();
         settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().clear();
         settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs()
@@ -93,11 +96,11 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
         ContributorMediator mediator = mock(ContributorMediator.class);
         AuditTrailCollector collector = new AuditTrailCollector(settings, client, store, alarmDispatcher);
 
-        addStep("Instantiate the service.", "Should work.");
+        AllureTestUtils.addStep("Instantiate the service.", "Should work.");
         AuditTrailService service = new AuditTrailService(store, collector, mediator, settings);
         service.start();
 
-        addStep("Try to collect audit trails.", "Should make a call to the client.");
+        AllureTestUtils.addStep("Try to collect audit trails.", "Should make a call to the client.");
         CollectionRunner collectionRunner = new CollectionRunner(service);
         Thread t = threadFactory.newThread(collectionRunner);
         t.start();
@@ -117,7 +120,7 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
         eventHandlerCaptor.getValue().handleEvent(event);
         eventHandlerCaptor.getValue().handleEvent(new CompleteEvent(TEST_COLLECTION, null));
 
-        addStep("Retrieve audit trails with and without an action", "Should work.");
+        AllureTestUtils.addStep("Retrieve audit trails with and without an action", "Should work.");
 
         verify(store, times(1)).addAuditTrails(any(AuditTrailEvents.class), eq(TEST_COLLECTION),
                 eq(DEFAULT_CONTRIBUTOR));
@@ -130,7 +133,7 @@ public class AuditTrailServiceTest extends ExtendedTestCase {
         verify(store, times(1)).getAuditTrailsByIterator(isNull(), isNull(), isNull(), isNull(),
                 isNull(), isNull(), eq(FileAction.FAILURE), isNull(), isNull(), isNull(), isNull(), eq(100));
 
-        addStep("Shutdown", "");
+        AllureTestUtils.addStep("Shutdown", "");
         service.shutdown();
     }
 

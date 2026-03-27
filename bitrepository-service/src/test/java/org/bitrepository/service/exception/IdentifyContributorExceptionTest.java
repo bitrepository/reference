@@ -22,17 +22,18 @@
 package org.bitrepository.service.exception;
 
 import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.jaccept.structure.ExtendedTestCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-/**
- * jaccept steps to validate that the exception thrown is the exception thrown.
- */
-public class IdentifyContributorExceptionTest extends ExtendedTestCase {
-    private final String TEST_COLLECTION_ID = "test-collection-id";
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
+
+/**
+ * Allure steps to validate that the exception thrown is the exception thrown.
+ */
+public class IdentifyContributorExceptionTest {
     @Test
     @Tag("regressiontest")
     public void testIdentifyContributor() throws Exception {

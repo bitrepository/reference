@@ -25,6 +25,7 @@
  */
 package org.bitrepository.pillar.messagehandling;
 
+import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -38,6 +39,7 @@ import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSe
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -46,9 +48,13 @@ import org.mockito.stubbing.Answer;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.Date;
 
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+
 /**
  * Tests the PutFile functionality on the ReferencePillar.
  */
+@ExtendWith(SuiteInfoParameterResolver.class)
 public class GetChecksumsTest extends MockedPillarTest {
     private GetChecksumsMessageFactory msgFactory;
 
@@ -93,7 +99,8 @@ public class GetChecksumsTest extends MockedPillarTest {
                 "The pillar should make a response.");
         IdentifyPillarsForGetChecksumsResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetChecksumsResponse.class);
-        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE, receivedIdentifyResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode());
         Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID());
         Assertions.assertEquals(fileids, receivedIdentifyResponse.getFileIDs());
 
@@ -135,7 +142,8 @@ public class GetChecksumsTest extends MockedPillarTest {
                 "The pillar should make a response.");
         IdentifyPillarsForGetChecksumsResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
                 IdentifyPillarsForGetChecksumsResponse.class);
-        Assertions.assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE, receivedIdentifyResponse.getResponseInfo().getResponseCode());
+        Assertions.assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE,
+                receivedIdentifyResponse.getResponseInfo().getResponseCode());
         Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getPillarID());
         Assertions.assertEquals(fileids, receivedIdentifyResponse.getFileIDs());
 
@@ -193,7 +201,8 @@ public class GetChecksumsTest extends MockedPillarTest {
         Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
         Assertions.assertEquals(getPillarID(), finalResponse.getPillarID());
         Assertions.assertEquals(1, finalResponse.getResultingChecksums().getChecksumDataItems().size());
-        Assertions.assertEquals(FILE_ID, finalResponse.getResultingChecksums().getChecksumDataItems().get(0).getFileID());
+        Assertions.assertEquals(FILE_ID,
+                finalResponse.getResultingChecksums().getChecksumDataItems().get(0).getFileID());
     }
 
     @SuppressWarnings("rawtypes")
@@ -333,6 +342,7 @@ public class GetChecksumsTest extends MockedPillarTest {
         Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
         Assertions.assertEquals(getPillarID(), finalResponse.getPillarID());
         Assertions.assertEquals(1, finalResponse.getResultingChecksums().getChecksumDataItems().size());
-        Assertions.assertEquals(defaultFileId, finalResponse.getResultingChecksums().getChecksumDataItems().get(0).getFileID());
+        Assertions.assertEquals(defaultFileId,
+                finalResponse.getResultingChecksums().getChecksumDataItems().get(0).getFileID());
     }
 }

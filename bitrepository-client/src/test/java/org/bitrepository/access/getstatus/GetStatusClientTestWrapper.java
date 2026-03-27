@@ -21,21 +21,28 @@
  */
 package org.bitrepository.access.getstatus;
 
+import io.qameta.allure.Allure;
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.jaccept.TestEventManager;
 
 public class GetStatusClientTestWrapper implements GetStatusClient {
     private final GetStatusClient getStatusClient;
-    private final TestEventManager testEventManager;
 
-    public GetStatusClientTestWrapper(GetStatusClient getStatusClient,
-                                    TestEventManager testEventManager) {
+    public GetStatusClientTestWrapper(GetStatusClient getStatusClient) {
         this.getStatusClient = getStatusClient;
-        this.testEventManager = testEventManager;
+
     }
+
     @Override
     public void getStatus(EventHandler eventHandler) {
-        testEventManager.addStimuli("Calling getAuditTrails()");
-        getStatusClient.getStatus(eventHandler);
+        // Because JAccept's events are interpreted by Allure as threads, but Allure doesn't capture the start/stop
+        // times correctly, and the thread UUIDs don't match.
+        // Therefore, filtering that suppresses these irrelevant error messages is necessary.
+        if (Allure.getLifecycle().getCurrentTestCase().isPresent()) {
+            Allure.step("Calling getStatus", () -> {
+                getStatusClient.getStatus(eventHandler);
+            });
+        } else {
+            getStatusClient.getStatus(eventHandler);
+        }
     }
 }
