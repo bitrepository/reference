@@ -175,7 +175,8 @@ class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         for (FileInfo fi : fileinfos) {
             Assertions.assertEquals(TEST_FILE_ID, fi.getFileId());
             Assertions.assertEquals(TEST_CHECKSUM, fi.getChecksum());
-            Assertions.assertEquals(csData.get(0).getCalculationTimestamp(), fi.getDateForLastChecksumCheck());
+            Assertions.assertEquals(CalendarUtils.convertFromXMLGregorianCalendarToInstant(csData.get(0).getCalculationTimestamp()),
+                    fi.getDateForLastChecksumCheckInstant());
         }
     }
 

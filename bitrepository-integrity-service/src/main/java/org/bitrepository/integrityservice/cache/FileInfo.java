@@ -59,22 +59,16 @@ public class FileInfo {
     }
 
     /**
-     * @param fileID            The id of the file (may not be null)
-     * @param fileLastCheck     The date for the last check of the file id (if null, replaced by Epoch).
-     * @param checksum          The checksum of the file.
-     * @param fileSize          The size for the file, in Bytes
-     * @param checksumLastCheck The date for the last check of the checksum (if null, replaced by Epoch).
-     * @param pillarID          The id of the pillar (may not be null)
      * @deprecated Use {@link #FileInfo(String, Instant, String, Long, Instant, String, Instant, Instant)} instead
      */
     @Deprecated(forRemoval = true)
     public FileInfo(String fileID, XMLGregorianCalendar fileLastCheck, String checksum, Long fileSize,
                     XMLGregorianCalendar checksumLastCheck, String pillarID) {
-        this(fileID, 
-             fileLastCheck != null ? CalendarUtils.convertFromXMLGregorianCalendarToInstant(fileLastCheck) : null,
-             checksum, fileSize,
-             checksumLastCheck != null ? CalendarUtils.convertFromXMLGregorianCalendarToInstant(checksumLastCheck) : null,
-             pillarID, null, null);
+        this(fileID,
+                fileLastCheck != null ? CalendarUtils.convertFromXMLGregorianCalendarToInstant(fileLastCheck) : null,
+                checksum, fileSize,
+                checksumLastCheck != null ? CalendarUtils.convertFromXMLGregorianCalendarToInstant(checksumLastCheck) : null,
+                pillarID, null, null);
     }
 
     /**
@@ -95,6 +89,9 @@ public class FileInfo {
         return fileCreationTimestamp;
     }
 
+    /**
+     * @deprecated Use {@link #getDateForLastFileIDCheckInstant()} instead
+     */
     @Deprecated(forRemoval = true)
     public XMLGregorianCalendar getDateForLastFileIDCheck() {
         return CalendarUtils.getXmlGregorianCalendar(fileCreationTimestamp);
@@ -104,10 +101,12 @@ public class FileInfo {
         this.fileCreationTimestamp = dateForLastFileIDCheck;
     }
 
+    /**
+     * @deprecated Use {@link #setDateForLastFileIDCheck(Instant)} instead
+     */
     @Deprecated(forRemoval = true)
     public void setDateForLastFileIDCheck(XMLGregorianCalendar dateForLastFileIDCheck) {
-        this.fileCreationTimestamp = dateForLastFileIDCheck != null ? 
-            CalendarUtils.convertFromXMLGregorianCalendarToInstant(dateForLastFileIDCheck) : Instant.EPOCH;
+        this.fileCreationTimestamp = CalendarUtils.convertFromXMLGregorianCalendarToInstant(dateForLastFileIDCheck);
     }
 
     public String getChecksum() {
@@ -122,6 +121,9 @@ public class FileInfo {
         return checksumLastCheck;
     }
 
+    /**
+     * @deprecated Use {@link #getDateForLastChecksumCheckInstant()} instead
+     */
     @Deprecated(forRemoval = true)
     public XMLGregorianCalendar getDateForLastChecksumCheck() {
         return CalendarUtils.getXmlGregorianCalendar(checksumLastCheck);
@@ -131,10 +133,12 @@ public class FileInfo {
         this.checksumLastCheck = dateForLastChecksumCheck;
     }
 
+    /**
+     * @deprecated Use {@link #setDateForLastChecksumCheck(Instant)} instead
+     */
     @Deprecated(forRemoval = true)
     public void setDateForLastChecksumCheck(XMLGregorianCalendar dateForLastChecksumCheck) {
-        this.checksumLastCheck = dateForLastChecksumCheck != null ?
-            CalendarUtils.convertFromXMLGregorianCalendarToInstant(dateForLastChecksumCheck) : Instant.EPOCH;
+        this.checksumLastCheck = CalendarUtils.convertFromXMLGregorianCalendarToInstant(dateForLastChecksumCheck);
     }
 
     public String getPillarId() {
@@ -157,33 +161,53 @@ public class FileInfo {
         return lastSeenGetFileIDs;
     }
 
+    /**
+     * @deprecated Use {@link #getLastSeenGetFileIDsInstant()} instead
+     */
     @Deprecated(forRemoval = true)
-    public Date getLastSeenGetFileIDs() {
-        return lastSeenGetFileIDs != null ? Date.from(lastSeenGetFileIDs) : null;
+    public XMLGregorianCalendar getLastSeenGetFileIDs() {
+        return lastSeenGetFileIDs != null ? CalendarUtils.getXmlGregorianCalendar(lastSeenGetFileIDs) : null;
     }
 
     public void setLastSeenGetFileIDs(Instant lastSeenGetFileIDs) {
         this.lastSeenGetFileIDs = lastSeenGetFileIDs;
     }
 
+    /**
+     * @deprecated Use {@link #setLastSeenGetFileIDs(Instant)} instead
+     */
     @Deprecated(forRemoval = true)
-    public void setLastSeenGetFileIDs(Date lastSeenGetFileIDs) {
-        this.lastSeenGetFileIDs = lastSeenGetFileIDs != null ? lastSeenGetFileIDs.toInstant() : null;
+    public void setLastSeenGetFileIDs(XMLGregorianCalendar lastSeenGetFileIDs) {
+        this.lastSeenGetFileIDs = CalendarUtils.convertFromXMLGregorianCalendarToInstant(lastSeenGetFileIDs);
     }
 
     public Instant getLastSeenGetChecksumsInstant() {
         return lastSeenGetChecksums;
     }
 
+    /**
+     * @deprecated Use {@link #getLastSeenGetChecksumsInstant()} instead
+     */
     @Deprecated(forRemoval = true)
-    public Date getLastSeenGetChecksums() {
-        return lastSeenGetChecksums != null ? Date.from(lastSeenGetChecksums) : null;
+    public XMLGregorianCalendar getLastSeenGetChecksums() {
+        return lastSeenGetChecksums != null ? CalendarUtils.getXmlGregorianCalendar(lastSeenGetChecksums) : null;
     }
 
     public void setLastSeenGetChecksums(Instant lastSeenGetChecksums) {
         this.lastSeenGetChecksums = lastSeenGetChecksums;
     }
 
+    /**
+     * @deprecated Use {@link #setLastSeenGetChecksums(Instant)} instead
+     */
+    @Deprecated(forRemoval = true)
+    public void setLastSeenGetChecksums(XMLGregorianCalendar lastSeenGetChecksums) {
+        this.lastSeenGetChecksums = CalendarUtils.convertFromXMLGregorianCalendarToInstant(lastSeenGetChecksums);
+    }
+
+    /**
+     * @deprecated Use {@link #setLastSeenGetChecksums(Instant)} instead
+     */
     @Deprecated(forRemoval = true)
     public void setLastSeenGetChecksums(Date lastSeenGetChecksums) {
         this.lastSeenGetChecksums = lastSeenGetChecksums != null ? lastSeenGetChecksums.toInstant() : null;

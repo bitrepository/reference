@@ -572,6 +572,6 @@
         </project.site.location>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <aspectj.version>1.9.22.1</aspectj.version>
-        <allure.version>2.20.1</allure.version>
+        <allure.version>2.17.0</allure.version>
     </properties>
 </project>
