@@ -52,6 +52,7 @@ import org.bitrepository.protocol.security.PermissionStore;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestInstance;
@@ -64,6 +65,8 @@ import javax.jms.JMSException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+
+import static org.bitrepository.common.utils.AllureTestUtils.isTestRunning;
 
 import static org.bitrepository.common.utils.AllureTestUtils.isTestRunning;
 

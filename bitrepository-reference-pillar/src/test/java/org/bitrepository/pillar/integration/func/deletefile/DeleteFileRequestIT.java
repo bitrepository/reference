@@ -25,7 +25,13 @@ import org.apache.commons.codec.DecoderException;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositorymessages.*;
+import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
+import org.bitrepository.bitrepositorymessages.MessageRequest;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.PillarTestGroups;
@@ -41,7 +47,7 @@ import java.util.concurrent.TimeUnit;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class DeleteFileRequestIT extends DefaultPillarOperationTest {
+class DeleteFileRequestIT extends DefaultPillarOperationTest {
     protected DeleteFileMessageFactory msgFactory;
     private String pillarDestination;
 
@@ -87,7 +93,7 @@ public class DeleteFileRequestIT extends DefaultPillarOperationTest {
 
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
-    public void requestNewChecksumDeleteFileTest() {
+    void requestNewChecksumDeleteFileTest() {
         addDescription("Tests a normal DeleteFile sequence");
         addStep("Send a DeleteFile request to " + testConfiguration.getPillarUnderTestID(),
                 "The pillar should generate a OPERATION_ACCEPTED_PROGRESS progress response followed by a " +

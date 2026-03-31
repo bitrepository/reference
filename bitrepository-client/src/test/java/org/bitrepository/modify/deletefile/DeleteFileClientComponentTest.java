@@ -25,8 +25,16 @@
 package org.bitrepository.modify.deletefile;
 
 import org.bitrepository.SuiteInfoParameterResolver;
-import org.bitrepository.bitrepositoryelements.*;
-import org.bitrepository.bitrepositorymessages.*;
+import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumType;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
+import org.bitrepository.bitrepositorymessages.DeleteFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.DeleteFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
 import org.bitrepository.client.DefaultFixtureClientTest;
 import org.bitrepository.client.TestEventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
@@ -81,10 +89,6 @@ public class DeleteFileClientComponentTest extends DefaultFixtureClientTest {
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()
                 .add(PILLAR1_ID);
         TestEventHandler testEventHandler = new TestEventHandler();
-        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()
-                .clear();
-        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()
-                .add(PILLAR1_ID);
         DeleteFileClient deleteClient = createDeleteFileClient();
 
         String checksum = "123checksum321";

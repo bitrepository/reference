@@ -27,8 +27,8 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRespo
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import javax.jms.Message;

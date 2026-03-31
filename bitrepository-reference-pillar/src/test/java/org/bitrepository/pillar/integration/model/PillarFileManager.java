@@ -26,11 +26,9 @@ import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
 import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.client.eventhandler.ContributorEvent;
-import org.bitrepository.common.exceptions.OperationFailedException;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.TestFileHelper;
@@ -45,7 +43,6 @@ public class PillarFileManager {
     private final String pillarID;
     private final Settings mySettings;
     private final ClientProvider clientProvider;
-    @SuppressWarnings("unused")
 
     private final HttpServerConfiguration httpServerConfiguration;
     private int knownNumberOfFilesOnPillar = -1;
@@ -64,23 +61,6 @@ public class PillarFileManager {
 
     }
 
-    /**
-     * Deletes the files one by one on the pillar.
-     */
-    public void deleteAllFiles() {
-        List<ChecksumDataForChecksumSpecTYPE> filesWithChecksums = getChecksums(null, null, null);
-        for (ChecksumDataForChecksumSpecTYPE checksumData : filesWithChecksums) {
-            ChecksumDataForFileTYPE checksumDataForFile = new ChecksumDataForFileTYPE();
-            checksumDataForFile.setCalculationTimestamp(checksumData.getCalculationTimestamp());
-            checksumDataForFile.setChecksumSpec(ChecksumUtils.getDefault(mySettings));
-            checksumDataForFile.setChecksumValue(checksumData.getChecksumValue());
-            try {
-                clientProvider.getDeleteFileClient().deleteFile(collectionID,
-                        checksumData.getFileID(), pillarID, checksumDataForFile, null, null, "");
-            } catch (OperationFailedException e) {
-                throw new RuntimeException("Failed to delete from pillar " + pillarID, e);
-            }
-        }
     }
 
     /**
