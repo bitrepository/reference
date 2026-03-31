@@ -34,7 +34,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigInteger;
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -254,11 +253,11 @@ public class AuditDatabaseTest {
         Assertions.assertEquals(wintertimeUnix, wintertimeTS);
 
         AuditTrailEvents events = new AuditTrailEvents();
-        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getXmlGregorianCalendar(summertimeTS),
+        events.getAuditTrailEvent().add(createSingleEvent(summertimeTS,
                 FileAction.CHECKSUM_CALCULATED, "actor", "auditInfo", "summertime", "info",
                 pillarID, new BigInteger("1"),
                 operationID1, fingerprint1));
-        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getXmlGregorianCalendar(wintertimeTS),
+        events.getAuditTrailEvent().add(createSingleEvent(wintertimeTS,
                 FileAction.CHECKSUM_CALCULATED, "actor", "auditInfo", "wintertime", "info",
                 pillarID, new BigInteger("1"),
                 operationID1, fingerprint1));
@@ -297,7 +296,7 @@ public class AuditDatabaseTest {
 
         addStep("Test ingesting with all data", "No failure");
         events = new AuditTrailEvents();
-        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED,
+        events.getAuditTrailEvent().add(createSingleEvent(Instant.now(), FileAction.CHECKSUM_CALCULATED,
                 "actor", "auditInfo", "fileID", "info", pillarID, new BigInteger("1"),
                 operationID1, fingerprint1));
         database.addAuditTrails(events, collectionID, pillarID);
@@ -317,7 +316,7 @@ public class AuditDatabaseTest {
 
         addStep("Test ingesting with no file action", "No failure");
         events = new AuditTrailEvents();
-        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), null,
+        events.getAuditTrailEvent().add(createSingleEvent(Instant.now(), null,
                 "actor", "auditInfo", "fileID", "info", pillarID, new BigInteger("3"),
                 operationID1, fingerprint1));
         try {
@@ -329,7 +328,7 @@ public class AuditDatabaseTest {
 
         addStep("Test ingesting with no actor", "Throws exception");
         events = new AuditTrailEvents();
-        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED,
+        events.getAuditTrailEvent().add(createSingleEvent(Instant.now(), FileAction.CHECKSUM_CALCULATED,
                 null, "auditInfo", "fileID", "info", pillarID, new BigInteger("4"),
                 operationID1, fingerprint1));
         try {
@@ -341,14 +340,14 @@ public class AuditDatabaseTest {
 
         addStep("Test ingesting with no audit info", "No failure");
         events = new AuditTrailEvents();
-        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED,
+        events.getAuditTrailEvent().add(createSingleEvent(Instant.now(), FileAction.CHECKSUM_CALCULATED,
                 "actor", null, "fileID", "info", pillarID, new BigInteger("5"),
                 operationID1, fingerprint1));
         database.addAuditTrails(events, collectionID, pillarID);
 
         addStep("Test ingesting with no file id", "Throws exception");
         events = new AuditTrailEvents();
-        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED,
+        events.getAuditTrailEvent().add(createSingleEvent(Instant.now(), FileAction.CHECKSUM_CALCULATED,
                 "actor", "auditInfo", null, "info", pillarID, new BigInteger("6"),
                 operationID1, fingerprint1));
         try {
@@ -360,14 +359,14 @@ public class AuditDatabaseTest {
 
         addStep("Test ingesting with no info", "No failure");
         events = new AuditTrailEvents();
-        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED,
+        events.getAuditTrailEvent().add(createSingleEvent(Instant.now(), FileAction.CHECKSUM_CALCULATED,
                 "actor", "auditInfo", "fileID", null, pillarID, new BigInteger("7"),
                 operationID1, fingerprint1));
         database.addAuditTrails(events, collectionID, pillarID);
 
         addStep("Test ingesting with no component id", "Throws exception");
         events = new AuditTrailEvents();
-        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED,
+        events.getAuditTrailEvent().add(createSingleEvent(Instant.now(), FileAction.CHECKSUM_CALCULATED,
                 "actor", "auditInfo", "fileID", "info", null, new BigInteger("8"),
                 operationID1, fingerprint1));
         try {
@@ -381,7 +380,7 @@ public class AuditDatabaseTest {
         // broken (null-pointer)
         addStep("Test ingesting with no sequence number", "Throws exception");
         events = new AuditTrailEvents();
-        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED,
+        events.getAuditTrailEvent().add(createSingleEvent(Instant.now(), FileAction.CHECKSUM_CALCULATED,
                 "actor", "auditInfo", "fileID", "info", pillarID, null,
                 operationID1, fingerprint1));
         try {
@@ -393,14 +392,14 @@ public class AuditDatabaseTest {
 
         addStep("Test ingest with very long auditInfo (255+)", "Not failing any more");
         events = new AuditTrailEvents();
-        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED,
+        events.getAuditTrailEvent().add(createSingleEvent(Instant.now(), FileAction.CHECKSUM_CALCULATED,
                 "actor", veryLongString, "fileID", "info", pillarID, new BigInteger("9"),
                 operationID1, fingerprint1));
         database.addAuditTrails(events, collectionID, pillarID);
 
         addStep("Test ingest with very long info (255+)", "Not failing any more");
         events = new AuditTrailEvents();
-        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED,
+        events.getAuditTrailEvent().add(createSingleEvent(Instant.now(), FileAction.CHECKSUM_CALCULATED,
                 "actor", "auditInfo", "fileID", veryLongString, pillarID, new BigInteger("10"),
                 operationID1, fingerprint1));
         database.addAuditTrails(events, collectionID, pillarID);
@@ -420,16 +419,16 @@ public class AuditDatabaseTest {
 
         addStep("Build test data", "No failure");
         AuditTrailEvents events = new AuditTrailEvents();
-        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.PUT_FILE,
+        events.getAuditTrailEvent().add(createSingleEvent(Instant.now(), FileAction.PUT_FILE,
                 "actor", "auditInfo", "fileID", "info", pillarID, new BigInteger("1"),
                 operationID1, fingerprint1));
-        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED,
+        events.getAuditTrailEvent().add(createSingleEvent(Instant.now(), FileAction.CHECKSUM_CALCULATED,
                 "actor", "auditInfo", "fileID", "info", pillarID, new BigInteger("2"),
                 operationID1, null));
-        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.REPLACE_FILE,
+        events.getAuditTrailEvent().add(createSingleEvent(Instant.now(), FileAction.REPLACE_FILE,
                 "actor", "auditInfo", "fileID", "info", pillarID, new BigInteger("3"),
                 null, fingerprint1));
-        events.getAuditTrailEvent().add(createSingleEvent(CalendarUtils.getNow(), FileAction.CHECKSUM_CALCULATED,
+        events.getAuditTrailEvent().add(createSingleEvent(Instant.now(), FileAction.CHECKSUM_CALCULATED,
                 "actor", "auditInfo", "fileID", "info", pillarID, new BigInteger("4"),
                 null, null));
 
@@ -439,23 +438,25 @@ public class AuditDatabaseTest {
     private AuditTrailEvents createEvents() {
         AuditTrailEvents events = new AuditTrailEvents();
 
-        AuditTrailEvent event1 = createSingleEvent(CalendarUtils.getEpoch(), FileAction.INCONSISTENCY, actor1,
+        AuditTrailEvent event1 = createSingleEvent(Instant.EPOCH, FileAction.INCONSISTENCY, actor1,
                 "I AM AUDIT", fileID, null, pillarID, new BigInteger("1"), operationID1, fingerprint1);
         events.getAuditTrailEvent().add(event1);
 
-        AuditTrailEvent event2 = createSingleEvent(CalendarUtils.getNow(), FileAction.FAILURE, actor2, null, fileID2,
+        AuditTrailEvent event2 = createSingleEvent(Instant.now(), FileAction.FAILURE, actor2, null, fileID2,
                 "WHAT AM I DOING?", pillarID, new BigInteger("10"), operationID2, fingerprint2);
         events.getAuditTrailEvent().add(event2);
 
         return events;
     }
 
-    private AuditTrailEvent createSingleEvent(XMLGregorianCalendar datetime, FileAction action, String actor,
+    private AuditTrailEvent createSingleEvent(Instant datetime, FileAction action, String actor,
                                               String auditInfo, String fileID, String info, String component,
                                               BigInteger seqNumber, String operationID,
                                               String fingerprint) {
         AuditTrailEvent res = new AuditTrailEvent();
-        res.setActionDateTime(datetime);
+        if (datetime != null) {
+            res.setActionDateTime(CalendarUtils.getXmlGregorianCalendar(datetime));
+        }
         res.setActionOnFile(action);
         res.setActorOnFile(actor);
         res.setAuditTrailInformation(auditInfo);

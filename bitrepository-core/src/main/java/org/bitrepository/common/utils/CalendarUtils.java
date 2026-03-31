@@ -166,7 +166,9 @@ public final class CalendarUtils {
      *
      * @param zonedDateTime The ZonedDateTime.
      * @return The XMLGregorianCalendar.
+     * @deprecated Use modern Java 8 time types directly.
      */
+    @Deprecated(forRemoval = true)
     public static XMLGregorianCalendar getXmlGregorianCalendar(ZonedDateTime zonedDateTime) {
         ArgumentValidator.checkNotNull(zonedDateTime, "ZonedDateTime zonedDateTime");
         GregorianCalendar gc = GregorianCalendar.from(zonedDateTime);
@@ -197,7 +199,9 @@ public final class CalendarUtils {
      * Method for easier retrieving the current date in XML format.
      *
      * @return The current date in XML format
+     * @deprecated Use {@link Instant#now()}
      */
+    @Deprecated(forRemoval = true)
     public static XMLGregorianCalendar getNow() {
         return getXmlGregorianCalendar(Instant.now());
     }
@@ -206,7 +210,9 @@ public final class CalendarUtils {
      * Method for easier retrieving the date for Epoch (January 1, 1970 00:00:00.000 GMT).
      *
      * @return Epoch in XMLGregorianCalendar format.
+     * @deprecated Use {@link Instant#EPOCH}
      */
+    @Deprecated(forRemoval = true)
     public static XMLGregorianCalendar getEpoch() {
         return getXmlGregorianCalendar(Instant.EPOCH);
     }
@@ -216,7 +222,9 @@ public final class CalendarUtils {
      *
      * @param millis The amount of milliseconds since Epoch.
      * @return The date in XMLGregorianCalendar format.
+     * @deprecated Use {@link Instant#ofEpochMilli(long)}
      */
+    @Deprecated(forRemoval = true)
     public static XMLGregorianCalendar getFromMillis(long millis) {
         return getXmlGregorianCalendar(Instant.ofEpochMilli(millis));
     }
@@ -357,6 +365,24 @@ public final class CalendarUtils {
                 log.warn("Received something that could not be parsed: '{}'", dateStr, e);
                 return null;
             }
+        }
+    }
+
+    /**
+     * Parses the input string and returns a LocalDate.
+     *
+     * @param dateStr The string representation of the date, in the form '2015/02/26'
+     * @return LocalDate representation of the date, or null if it cannot be parsed.
+     */
+    public static LocalDate makeLocalDate(String dateStr) {
+        if (dateStr == null || dateStr.trim().isEmpty()) {
+            return null;
+        }
+        try {
+            return LocalDate.parse(dateStr, DATE_FORMATTER);
+        } catch (DateTimeParseException e) {
+            log.warn("Received something that could not be parsed: '{}'", dateStr, e);
+            return null;
         }
     }
 
