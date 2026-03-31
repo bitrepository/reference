@@ -61,8 +61,6 @@ public class PillarFileManager {
 
     }
 
-    }
-
     /**
      * Will ensure that at least <code>desiredNumberOfFiles</code> are present on the pillar. Maintains a counter of
      * how many files where found last time, based on the assumation that the number of files between calls will
