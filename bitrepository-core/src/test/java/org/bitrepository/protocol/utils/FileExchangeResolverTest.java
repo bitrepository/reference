@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 
@@ -39,30 +41,30 @@ public class FileExchangeResolverTest {
     }
 
     @Test
-    public void resolveFileProtocolURL() throws MalformedURLException {
-        URL url = new URL("file:///home/user/Desktop/my-cool-file.txt");
+    public void resolveFileProtocolURL() throws MalformedURLException, URISyntaxException {
+        URL url = new URI("file:///home/user/Desktop/my-cool-file.txt").toURL();
         FileExchange exchange = FileExchangeResolver.getBasicFileExchangeFromURL(url);
         Assertions.assertEquals(LocalFileExchange.class, exchange.getClass());
     }
 
     @Test
-    public void resolveHttpProtocolURL() throws MalformedURLException {
-        URL url = new URL("http://localhost:80/myfile.txt");
+    public void resolveHttpProtocolURL() throws MalformedURLException, URISyntaxException {
+        URL url = new URI("http://localhost:80/myfile.txt").toURL();
         FileExchange exchange = FileExchangeResolver.getBasicFileExchangeFromURL(url);
         Assertions.assertEquals(HttpFileExchange.class, exchange.getClass());
     }
 
     @Test
-    public void resolveHttpsProtocolURL() throws MalformedURLException {
-        URL url = new URL("https://localhost:443/myfile.txt");
+    public void resolveHttpsProtocolURL() throws MalformedURLException, URISyntaxException {
+        URL url = new URI("https://localhost:443/myfile.txt").toURL();
         FileExchange exchange = FileExchangeResolver.getBasicFileExchangeFromURL(url);
         Assertions.assertEquals(HttpsFileExchange.class, exchange.getClass());
     }
 
     @Test
-    public void resolveBadProtocolURL() throws MalformedURLException {
+    public void resolveBadProtocolURL() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            URL badURL = new URL("ftp://some/path");
+            URL badURL = new URI("ftp://some/path").toURL();
             FileExchangeResolver.getBasicFileExchangeFromURL(badURL);
         });
     }

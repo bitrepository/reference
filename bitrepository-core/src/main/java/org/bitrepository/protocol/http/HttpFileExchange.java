@@ -52,6 +52,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -110,12 +111,12 @@ public class HttpFileExchange implements FileExchange {
     public void getFile(File outputFile, String fileAddress) {
         try {
             // retrieve the url and the output-stream for the file.
-            URL url = new URL(fileAddress);
+            URL url = new URI(fileAddress).toURL();
             try (OutputStream out = new BufferedOutputStream(new FileOutputStream(outputFile))) {
                 // download the file.
                 performDownload(out, url);
             }
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             throw new CoordinationLayerException("Could not download data from '" + fileAddress + "' to the file '" +
                     outputFile.getAbsolutePath() + "'.", e);
         }
@@ -190,11 +191,31 @@ public class HttpFileExchange implements FileExchange {
         ArgumentValidator.checkNotNullOrEmpty(filename, "String fileName");
         ArgumentValidator.checkNotNull(settings,
                 "The ReferenceSettings are missing the settings for the file exchange.");
-        String urlEncodedFilename = URLEncoder.encode(filename, StandardCharsets.UTF_8);
-        log.debug("URL for file '{}' encoded to '{}'", filename, urlEncodedFilename);
 
-        return new URL(settings.getProtocolType().value(), settings.getServerName(), settings.getPort().intValue(),
-                settings.getPath() + "/" + urlEncodedFilename);
+        String path = settings.getPath() == null ? "" : settings.getPath();
+        if (!path.startsWith("/")) {
+            path = "/" + path;
+        }
+        if (!path.endsWith("/")) {
+            path += "/";
+        }
+
+        // URI constructor with individual components automatically encodes special characters in the path segment.
+        // However, it does NOT encode characters like '+' if they are part of the path segment, as they are technically allowed.
+        // But the existing tests and many WebDAV servers expect '+' to be encoded as %2B in the filename.
+        // Therefore, we manually encode the filename and then construct the full URI.
+        String encodedFilename = URLEncoder.encode(filename, StandardCharsets.UTF_8).replace("+", "%20");
+        log.debug("URL for file '{}' encoded to '{}'", filename, encodedFilename);
+
+        try {
+            // First construct the base URI (everything except the filename) to ensure correct encoding of components.
+            URI baseURI = new URI(settings.getProtocolType().value(), null, settings.getServerName(),
+                    settings.getPort().intValue(), path, null, null);
+            // Then append the manually encoded filename. toASCIIString() ensures we don't double-encode.
+            return baseURI.resolve(encodedFilename).toURL();
+        } catch (URISyntaxException e) {
+            throw new MalformedURLException(e.getMessage());
+        }
     }
 
     /**

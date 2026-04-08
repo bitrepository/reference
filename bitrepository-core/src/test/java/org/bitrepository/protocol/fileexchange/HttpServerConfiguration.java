@@ -14,7 +14,7 @@
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
  * GNU General Lesser Public License for more details.
  * 
  * You should have received a copy of the GNU General Lesser Public 
@@ -27,6 +27,8 @@ package org.bitrepository.protocol.fileexchange;
 import org.bitrepository.settings.referencesettings.FileExchangeSettings;
 
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 /**
@@ -65,9 +67,13 @@ public class HttpServerConfiguration {
      * @param filename
      */
     public URL getURL(String filename) throws MalformedURLException {
-        if (getHttpServerName() == null) {
-            return new URL(getProtocol(), null, 0, getHttpServerPath() + "/" + filename);
+        try {
+            if (getHttpServerName() == null) {
+                return new URI(getProtocol(), null, null, 0, getHttpServerPath() + "/" + filename, null, null).toURL();
+            }
+            return new URI(getProtocol(), null, getHttpServerName(), getPortNumber(), getHttpServerPath() + "/" + filename, null, null).toURL();
+        } catch (URISyntaxException e) {
+            throw new MalformedURLException(e.getMessage());
         }
-        return new URL(getProtocol(), getHttpServerName(), getPortNumber(), getHttpServerPath() + "/" + filename);
     }
 }

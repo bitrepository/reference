@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -48,11 +49,11 @@ public class LocalFileExchangeTest {
 
     @Test
     @Tag("regressiontest")
-    public void getUrlTest() throws MalformedURLException {
+    public void getUrlTest() throws MalformedURLException, URISyntaxException {
         String testFile = "getUrlTestfile";
 
         File basedir = new File(BASE_FILE_EXCHANGE_DIR);
-        URL expectedUrl = new URL("file:" + basedir.getAbsolutePath() + "/" + testFile);
+        URL expectedUrl = new URI("file:" + basedir.getAbsolutePath() + "/" + testFile).toURL();
 
         URL actualUrl = exchange.getURL(testFile);
         Assertions.assertEquals(expectedUrl, actualUrl);
@@ -73,8 +74,8 @@ public class LocalFileExchangeTest {
         File testFile = createTestFile(testFileLocation, testFileContent);
 
         File basedir = new File(BASE_FILE_EXCHANGE_DIR);
-        URL expectedUrl = new URL("file:" + basedir.getAbsolutePath() + "/" + URLEncoder.encode(testFileName,
-                StandardCharsets.UTF_8));
+        URL expectedUrl = new URI("file:" + basedir.getAbsolutePath() + "/" + URLEncoder.encode(testFileName,
+                StandardCharsets.UTF_8)).toURL();
 
         URL fileExchangeUrl = exchange.putFile(testFile);
         Assertions.assertEquals(expectedUrl, fileExchangeUrl);
@@ -86,14 +87,14 @@ public class LocalFileExchangeTest {
     }
 
     @Test
-    public void putFileByFileTest() throws IOException {
+    public void putFileByFileTest() throws IOException, URISyntaxException {
         String testFileName = "putFileByFileTestFile";
         String testFileLocation = "target/" + testFileName;
         String testFileContent = "lorem ipsum1";
         File testFile = createTestFile(testFileLocation, testFileContent);
 
         File basedir = new File(BASE_FILE_EXCHANGE_DIR);
-        URL expectedUrl = new URL("file:" + basedir.getAbsolutePath() + "/" + testFileName);
+        URL expectedUrl = new URI("file:" + basedir.getAbsolutePath() + "/" + testFileName).toURL();
 
         URL fileExchangeUrl = exchange.putFile(testFile);
         Assertions.assertEquals(expectedUrl, fileExchangeUrl);

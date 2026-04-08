@@ -28,6 +28,8 @@ package org.bitrepository.protocol.fileexchange;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 /**
@@ -66,10 +68,10 @@ public class HttpServerConnector {
      * @throws MalformedURLException
      */
     public URL getURL(String filename) throws MalformedURLException {
-        return new URL(
-                config.getProtocol(), 
-                config.getHttpServerName(), 
-                config.getPortNumber(), 
-                config.getHttpServerPath() + "/" + filename);
+        try {
+            return new URI(config.getProtocol(), null, config.getHttpServerName(), config.getPortNumber(), config.getHttpServerPath() + "/" + filename, null, null).toURL();
+        } catch (URISyntaxException e) {
+            throw new MalformedURLException(e.getMessage());
+        }
     }
 }

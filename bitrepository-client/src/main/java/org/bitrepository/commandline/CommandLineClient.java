@@ -47,13 +47,11 @@ import org.bitrepository.settings.referencesettings.ProtocolType;
 
 import javax.jms.JMSException;
 import java.io.File;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.HttpURLConnection;import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.util.List;
 import java.util.Locale;
-
 /**
  * Defines the common functionality for command-line-clients.
  */
@@ -325,8 +323,7 @@ public abstract class CommandLineClient {
             fileexchange.deleteFile(url);
         } catch (Exception e) {
             output.error("Issue regarding removing file from server: " + e.getMessage());
-        }
-    }
+        }    }
 
     /**
      * Retrieves the URL for the PutFile operation.

@@ -381,6 +381,30 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>de.thetaphi</groupId>
+                <artifactId>forbiddenapis</artifactId>
+                <version>3.8</version>
+                <configuration>
+                    <targetVersion>${maven.compiler.release}</targetVersion>
+                    <failOnUnsupportedJava>false</failOnUnsupportedJava>
+                    <bundledSignatures>
+                        <bundledSignature>jdk-unsafe</bundledSignature>
+                        <bundledSignature>jdk-deprecated</bundledSignature>
+                        <bundledSignature>jdk-non-portable</bundledSignature>
+                        <bundledSignature>jdk-reflection</bundledSignature>
+                    </bundledSignatures>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>${api.check.phase}</phase>
+                        <goals>
+                            <goal>check</goal>
+                            <goal>testCheck</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -391,7 +415,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.1</version>
+                    <version>3.15.0</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-source-plugin</artifactId>
@@ -471,6 +495,11 @@
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>exec-maven-plugin</artifactId>
                     <version>3.0.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>de.thetaphi</groupId>
+                    <artifactId>forbiddenapis</artifactId>
+                    <version>3.8</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -553,9 +582,7 @@
 
     <properties>
         <!-- Specify java version here, to support forbiddenapis plugin -->
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-        <!-- Enable forbiddenapis plugin, do disable set to none -->
+        <maven.compiler.release>21</maven.compiler.release>
         <api.check.phase>process-classes
         </api.check.phase> <!-- forbidden-apis dislikes TestValidationUtils #validateUtilityClass -->
         <message.xml.version>31</message.xml.version>
@@ -572,6 +599,6 @@
         </project.site.location>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <aspectj.version>1.9.22.1</aspectj.version>
-        <allure.version>2.20.1</allure.version>
+        <allure.version>2.17.0</allure.version>
     </properties>
 </project>

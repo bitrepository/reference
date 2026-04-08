@@ -94,7 +94,7 @@ public abstract class IntegrationTest {
             defaultDownloadFileAddress = defaultFileUrl.toExternalForm();
             defaultUploadFileAddress = defaultFileUrl.toExternalForm() + "-" + defaultFileId;
         } catch (MalformedURLException e) {
-            throw new RuntimeException("Never happens");
+            throw new RuntimeException("Failed to construct default file URLs for test setup", e);
         }
         initMessagebus();
     }
