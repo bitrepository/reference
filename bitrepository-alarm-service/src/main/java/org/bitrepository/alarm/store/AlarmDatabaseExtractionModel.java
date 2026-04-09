@@ -43,12 +43,12 @@ public class AlarmDatabaseExtractionModel {
     private AlarmCode alarmCode;
 
     /**
-     * @see #getStartDate().
+     * @see #getStartDateInstant() ().
      */
     private Instant startDate;
 
     /**
-     * @see #getEndDate().
+     * @see #getEndDateInstant() ().
      */
     private Instant endDate;
 
@@ -177,7 +177,7 @@ public class AlarmDatabaseExtractionModel {
 
     /**
      * @param startDate The startDate.
-     * @see #getStartDate()
+     * @see #getStartDateInstant() ()
      */
     public void setStartDate(Instant startDate) {
         this.startDate = startDate;
@@ -217,7 +217,7 @@ public class AlarmDatabaseExtractionModel {
      * Sets the end date for the alarm.
      *
      * @param endDate The endDate.
-     * @see #getEndDate()
+     * @see #getEndDateInstant ()
      */
     public void setEndDate(Instant endDate) {
         this.endDate = endDate;

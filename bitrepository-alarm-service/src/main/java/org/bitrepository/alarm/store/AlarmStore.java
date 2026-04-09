@@ -62,13 +62,13 @@ public interface AlarmStore extends LifeCycledService {
     /**
      * Extracts the alarms based on the given optional restrictions.
      *
-     * @param componentID  [OPTIONAL] The id of the component.
-     * @param alarmCode    [OPTIONAL] The alarm code.
-     * @param minDate      [OPTIONAL] The earliest date for the alarms.
-     * @param maxDate      [OPTIONAL] The latest date for the alarms.
-     * @param fileID       [OPTIONAL] The id of the file, which the alarms are connected.
+     * @param componentID  The id of the component or null.
+     * @param alarmCode    The alarm code or null.
+     * @param minDate      The earliest date for the alarms or null.
+     * @param maxDate      The latest date for the alarms or null.
+     * @param fileID       The id of the file, which the alarms are connected or null.
      * @param collectionID the ID of the collection. Perhaps it is optional
-     * @param count        [OPTIONAL] The maximum number of alarms to retrieve from the store.
+     * @param count        The maximum number of alarms to retrieve from the store or null.
      * @param ascending    Whether the alarms should be delivered ascending.
      * @return The requested collection of alarms from the store.
      * @deprecated Use {@link #extractAlarms(String, AlarmCode, Instant, Instant, String, String, Integer, boolean)} instead
