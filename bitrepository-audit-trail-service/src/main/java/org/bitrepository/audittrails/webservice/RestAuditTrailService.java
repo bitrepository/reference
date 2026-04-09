@@ -51,7 +51,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -80,13 +80,13 @@ public class RestAuditTrailService {
             @FormParam("fingerprint") String fingerprint,
             @FormParam("operationID") String operationID,
             @DefaultValue("1000") @FormParam("maxAuditTrails") Integer maxResults) {
-        Date from = calendarUtils.makeStartDateObject(fromDate);
-        Date to = calendarUtils.makeEndDateObject(toDate);
+        Instant from = calendarUtils.makeStartInstant(fromDate);
+        Instant to = calendarUtils.makeEndInstant(toDate);
 
         final int maxAudits = maxResults;
         final AuditEventIterator it = service.queryAuditTrailEventsByIterator(
-                from != null ? from.toInstant() : null,
-                to != null ? to.toInstant() : null,
+                from != null ? from : null,
+                to != null ? to : null,
                 contentOrNull(fileID),
                 collectionID, contentOrNull(reportingComponent), contentOrNull(actor), filterAction(action),
                 contentOrNull(fingerprint), contentOrNull(operationID), maxAudits);

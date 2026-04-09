@@ -40,11 +40,9 @@ import org.junit.jupiter.api.TestInstance;
 
 import java.io.File;
 import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
@@ -249,14 +247,13 @@ public class AlarmDatabaseTest {
                 settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase());
 
         addStep("Prepare, check and ingest alarms", "");
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.ROOT);
 
-        ZonedDateTime summertimeZDT = ZonedDateTime.parse("2015-10-25T02:59:54.000+02:00", formatter);
-        Instant summertimeTS = summertimeZDT.toInstant();
+        OffsetDateTime summertimeODT = OffsetDateTime.parse("2015-10-25T02:59:54.000+02:00");
+        Instant summertimeTS = summertimeODT.toInstant();
         Instant summertimeUnix = Instant.ofEpochMilli(1445734794000L);
         Assertions.assertEquals(summertimeUnix, summertimeTS);
 
-        ZonedDateTime wintertimeZDT = ZonedDateTime.parse("2015-10-25T02:59:54.000+01:00", formatter);
+        OffsetDateTime wintertimeZDT = OffsetDateTime.parse("2015-10-25T02:59:54.000+01:00");
         Instant wintertimeTS = wintertimeZDT.toInstant();
         Instant wintertimeUnix = Instant.ofEpochMilli(1445738394000L);
         Assertions.assertEquals(wintertimeUnix, wintertimeTS);
