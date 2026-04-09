@@ -128,11 +128,12 @@ public class AuditTrailServiceTest {
         service.queryAuditTrailEventsByIterator((Instant) null, (Instant) null, null, null,
                 null, null, null, null, null, 10000);
         verify(store, times(1)).getAuditTrailsByIterator(isNull(), isNull(), isNull(), isNull(),
-                isNull(), isNull(), isNull(), (Instant)isNull(), (Instant)isNull(), isNull(), isNull(), eq(10000));
+                isNull(), isNull(), isNull(), (Instant) isNull(), (Instant) isNull(), isNull(), isNull(), eq(10000));
         service.queryAuditTrailEventsByIterator((Instant) null, (Instant) null, null, null,
                 null, null, FileAction.FAILURE, null, null, 100);
         verify(store, times(1)).getAuditTrailsByIterator(isNull(), isNull(), isNull(), isNull(),
-                isNull(), isNull(), eq(FileAction.FAILURE), (Instant)isNull(), (Instant)isNull(), isNull(), isNull(), eq(100));
+                isNull(), isNull(), eq(FileAction.FAILURE), (Instant) isNull(), (Instant) isNull(), isNull(), isNull()
+                , eq(100));
 
         AllureTestUtils.addStep("Shutdown", "");
         service.shutdown();

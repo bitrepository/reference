@@ -159,7 +159,7 @@ public class AuditPacker {
         log.debug("Starting to pack AuditTrails at seq-number {} for contributor: {} for collection: {}",
                 nextSeqNumber, contributorID, collectionID);
         AuditEventIterator iterator = store.getAuditTrailsByIterator(null, collectionID, contributorID, nextSeqNumber, null,
-                null, null, (Instant)null, (Instant)null, null, null);
+                null, null, (Instant) null, (Instant) null, null, null);
         long timeStart = System.currentTimeMillis();
         long logInterval = 1000;
 

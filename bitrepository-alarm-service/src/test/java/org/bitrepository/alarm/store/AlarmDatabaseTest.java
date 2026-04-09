@@ -117,13 +117,13 @@ public class AlarmDatabaseTest {
 
         addStep("Try to extract all the data from the database.", "Should deliver both alarms.");
         List<Alarm> extractedAlarms =
-                database.extractAlarms(null, null, (Instant)null, (Instant)null, null,
+                database.extractAlarms(null, null, (Instant) null, (Instant) null, null,
                         null, null, false);
         Assertions.assertEquals(2, extractedAlarms.size());
 
         addStep("Try to extract the alarms for component 1.", "Should deliver one alarm.");
         extractedAlarms =
-                database.extractAlarms(component1, null, (Instant)null, (Instant)null, null,
+                database.extractAlarms(component1, null, (Instant) null, (Instant) null, null,
                         null, null, false);
         Assertions.assertEquals(1, extractedAlarms.size());
         Assertions.assertEquals(component1, extractedAlarms.get(0).getAlarmRaiser());
@@ -132,7 +132,7 @@ public class AlarmDatabaseTest {
 
         addStep("Try to extract the alarms for component 2.", "Should deliver one alarm.");
         extractedAlarms =
-                database.extractAlarms(component2, null, (Instant)null, (Instant)null, null,
+                database.extractAlarms(component2, null, (Instant) null, (Instant) null, null,
                         null, null, false);
         Assertions.assertEquals(1, extractedAlarms.size());
         Assertions.assertEquals(component2, extractedAlarms.get(0).getAlarmRaiser());
@@ -140,8 +140,8 @@ public class AlarmDatabaseTest {
         Assertions.assertEquals(fileID, extractedAlarms.get(0).getFileID());
 
         addStep("Try to extract the alarms for the alarm code 'COMPONENT_FAILURE'.", "Should deliver one alarm.");
-        extractedAlarms = database.extractAlarms(null, AlarmCode.COMPONENT_FAILURE, (Instant)null,
-                (Instant)null, null, null, null, false);
+        extractedAlarms = database.extractAlarms(null, AlarmCode.COMPONENT_FAILURE, (Instant) null,
+                (Instant) null, null, null, null, false);
         Assertions.assertEquals(1, extractedAlarms.size());
         Assertions.assertEquals(component1, extractedAlarms.get(0).getAlarmRaiser());
         Assertions.assertEquals(AlarmCode.COMPONENT_FAILURE, extractedAlarms.get(0).getAlarmCode());
@@ -149,8 +149,8 @@ public class AlarmDatabaseTest {
 
         addStep("Try to extract the alarms for the alarm code 'CHECKSUM_ALARM'.",
                 "Should deliver one alarm.");
-        extractedAlarms = database.extractAlarms(null, AlarmCode.CHECKSUM_ALARM, (Instant)null,
-                (Instant)null, null, null, null, false);
+        extractedAlarms = database.extractAlarms(null, AlarmCode.CHECKSUM_ALARM, (Instant) null,
+                (Instant) null, null, null, null, false);
         Assertions.assertEquals(1, extractedAlarms.size());
         Assertions.assertEquals(component2, extractedAlarms.get(0).getAlarmRaiser());
         Assertions.assertEquals(AlarmCode.CHECKSUM_ALARM, extractedAlarms.get(0).getAlarmCode());
@@ -158,14 +158,14 @@ public class AlarmDatabaseTest {
 
         addStep("Try to extract the new alarm.", "Should deliver one alarm.");
         extractedAlarms = database.extractAlarms(null, null, restrictionDate,
-                (Instant)null, null, null, null, false);
+                (Instant) null, null, null, null, false);
         Assertions.assertEquals(1, extractedAlarms.size());
         Assertions.assertEquals(component2, extractedAlarms.get(0).getAlarmRaiser());
         Assertions.assertEquals(AlarmCode.CHECKSUM_ALARM, extractedAlarms.get(0).getAlarmCode());
         Assertions.assertEquals(fileID, extractedAlarms.get(0).getFileID());
 
         addStep("Try to extract the old alarm.", "Should deliver one alarm.");
-        extractedAlarms = database.extractAlarms(null, null, (Instant)null, restrictionDate,
+        extractedAlarms = database.extractAlarms(null, null, (Instant) null, restrictionDate,
                 null, null, null, false);
         Assertions.assertEquals(1, extractedAlarms.size());
         Assertions.assertEquals(component1, extractedAlarms.get(0).getAlarmRaiser());
@@ -173,7 +173,7 @@ public class AlarmDatabaseTest {
         Assertions.assertNull(extractedAlarms.get(0).getFileID());
 
         addStep("Try to extract the alarms for the file id.", "Should deliver one alarm.");
-        extractedAlarms = database.extractAlarms(null, null, (Instant)null, (Instant)null, fileID,
+        extractedAlarms = database.extractAlarms(null, null, (Instant) null, (Instant) null, fileID,
                 null, null, false);
         Assertions.assertEquals(1, extractedAlarms.size());
         Assertions.assertEquals(component2, extractedAlarms.get(0).getAlarmRaiser());
@@ -181,7 +181,7 @@ public class AlarmDatabaseTest {
         Assertions.assertEquals(fileID, extractedAlarms.get(0).getFileID());
 
         addStep("Try to extract the alarms for the collection id.", "Should deliver one alarm.");
-        extractedAlarms = database.extractAlarms(null, null, (Instant)null, (Instant)null,
+        extractedAlarms = database.extractAlarms(null, null, (Instant) null, (Instant) null,
                 null, collection1, null, false);
         Assertions.assertEquals(1, extractedAlarms.size());
         Assertions.assertEquals(component1, extractedAlarms.get(0).getAlarmRaiser());
@@ -189,7 +189,7 @@ public class AlarmDatabaseTest {
         Assertions.assertEquals(AlarmCode.COMPONENT_FAILURE, extractedAlarms.get(0).getAlarmCode());
 
         addStep("Try to extract the oldest alarm from the database.", "Should deliver one alarm.");
-        extractedAlarms = database.extractAlarms(null, null, (Instant)null, (Instant)null,
+        extractedAlarms = database.extractAlarms(null, null, (Instant) null, (Instant) null,
                 null, null, 1, true);
         Assertions.assertEquals(1, extractedAlarms.size());
         Assertions.assertEquals(component1, extractedAlarms.get(0).getAlarmRaiser());
@@ -197,7 +197,7 @@ public class AlarmDatabaseTest {
         Assertions.assertNull(extractedAlarms.get(0).getFileID());
 
         addStep("Try to extract the newest alarm from the database.", "Should deliver one alarm.");
-        extractedAlarms = database.extractAlarms(null, null, (Instant)null, (Instant)null,
+        extractedAlarms = database.extractAlarms(null, null, (Instant) null, (Instant) null,
                 null, null, 1, false);
         Assertions.assertEquals(1, extractedAlarms.size());
         Assertions.assertEquals(component2, extractedAlarms.get(0).getAlarmRaiser());
@@ -233,8 +233,8 @@ public class AlarmDatabaseTest {
         addStep("Insert the data into the database", "Should be extractable again.");
         database.addAlarm(alarm);
 
-        List<Alarm> extractedAlarms = database.extractAlarms(null, null, (Instant)null,
-                (Instant)null, null, null, null, true);
+        List<Alarm> extractedAlarms = database.extractAlarms(null, null, (Instant) null,
+                (Instant) null, null, null, null, true);
         Assertions.assertEquals(1, extractedAlarms.size());
         Assertions.assertEquals(alarm, extractedAlarms.get(0));
     }
@@ -279,13 +279,13 @@ public class AlarmDatabaseTest {
         database.addAlarm(wintertimeAlarm);
 
         addStep("Extract and check alarms", "");
-        List<Alarm> summertimeAlarms = database.extractAlarms(null, null, (Instant)null,
-                (Instant)null, "summertime", null, null, true);
+        List<Alarm> summertimeAlarms = database.extractAlarms(null, null, (Instant) null,
+                (Instant) null, "summertime", null, null, true);
         Assertions.assertEquals(1, summertimeAlarms.size());
         Assertions.assertEquals(summertimeUnix, CalendarUtils.convertFromXMLGregorianCalendarToInstant(summertimeAlarms.get(0).getOrigDateTime()));
 
-        List<Alarm> wintertimeAlarms = database.extractAlarms(null, null, (Instant)null,
-                (Instant)null, "wintertime", null, null, true);
+        List<Alarm> wintertimeAlarms = database.extractAlarms(null, null, (Instant) null,
+                (Instant) null, "wintertime", null, null, true);
         Assertions.assertEquals(1, wintertimeAlarms.size());
         Assertions.assertEquals(wintertimeUnix,
                 CalendarUtils.convertFromXMLGregorianCalendarToInstant(wintertimeAlarms.get(0).getOrigDateTime()));

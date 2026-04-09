@@ -137,7 +137,7 @@ public class LocalAuditPreservationTest {
         Mockito.verify(store, Mockito.times(2)).getPreservationSequenceNumber(PILLAR_ID, collectionID);
         Mockito.verify(store).getAuditTrailsByIterator(
                 null, collectionID, PILLAR_ID, 1L, null, null,
-                null, (Instant)null, (Instant)null, null, null);
+                null, (Instant) null, (Instant) null, null, null);
         Mockito.verify(iterator, Mockito.times(2)).getNextAuditTrailEvent();
         Assertions.assertEquals(1, client.getCallsToPutFile());
     }
@@ -197,7 +197,7 @@ public class LocalAuditPreservationTest {
         // run the preserver/packer (on top of the initial call during LocalAuditTrailPreserver construction)
         Mockito.verify(store, Mockito.atLeast(2)).getPreservationSequenceNumber(PILLAR_ID, collectionID);
         Mockito.verify(store).getAuditTrailsByIterator(null, collectionID, PILLAR_ID, 1L,
-                null, null, null, (Instant)null, (Instant)null, null,
+                null, null, null, (Instant) null, (Instant) null, null,
                 null);
 
         Assertions.assertEquals(1, client.getCallsToPutFile());

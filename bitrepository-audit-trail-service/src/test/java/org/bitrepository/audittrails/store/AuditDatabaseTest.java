@@ -93,55 +93,55 @@ public class AuditDatabaseTest {
         addStep("Extract the audit trails", "");
         List<AuditTrailEvent> res =
                 getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null, null,
-                        null, null, null, (Instant)null, (Instant)null, null, null));
+                        null, null, null, (Instant) null, (Instant) null, null, null));
         Assertions.assertEquals(2, res.size(), res.toString());
 
         addStep("Test the extraction of FileID", "Should be able to extract the audit of each file individually.");
         res = getEventsFromIterator(database.getAuditTrailsByIterator(fileID, null, null,
                 null, null, null, null,
-                (Instant)null, (Instant)null, null, null));
+                (Instant) null, (Instant) null, null, null));
         Assertions.assertEquals(1, res.size(), res.toString());
         Assertions.assertEquals(fileID, res.get(0).getFileID());
 
         res = getEventsFromIterator(database.getAuditTrailsByIterator(fileID2, null, null,
                 null, null, null, null,
-                (Instant)null, (Instant)null, null, null));
+                (Instant) null, (Instant) null, null, null));
         Assertions.assertEquals(1, res.size(), res.toString());
         Assertions.assertEquals(fileID2, res.get(0).getFileID());
 
         addStep("Test the extraction of CollectionID", "Only results when the defined collection is used");
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, collectionID, null,
                 null, null, null, null,
-                (Instant)null, (Instant)null, null, null));
+                (Instant) null, (Instant) null, null, null));
         Assertions.assertEquals(2, res.size(), res.toString());
 
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null,
                 "NOT-THE-CORRECT-COLLECTION-ID" + System.currentTimeMillis(), null,
                 null, null, null, null,
-                (Instant)null, (Instant)null, null, null));
+                (Instant) null, (Instant) null, null, null));
         Assertions.assertEquals(0, res.size(), res.toString());
 
         addStep("Perform extraction based on the component id.", "");
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, pillarID,
                 null, null, null, null,
-                (Instant)null, (Instant)null, null, null));
+                (Instant) null, (Instant) null, null, null));
         Assertions.assertEquals(2, res.size(), res.toString());
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null,
                 "NO COMPONENT", null, null, null,
                 null,
-                (Instant)null, (Instant)null, null, null));
+                (Instant) null, (Instant) null, null, null));
         Assertions.assertEquals(0, res.size(), res.toString());
 
         addStep("Perform extraction based on the sequence number restriction",
                 "Should be possible to have both lower and upper sequence number restrictions.");
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null,
-                5L, null, null, null, (Instant)null,
-                (Instant)null, null, null));
+                5L, null, null, null, (Instant) null,
+                (Instant) null, null, null));
         Assertions.assertEquals(1, res.size(), res.toString());
         Assertions.assertEquals(fileID2, res.get(0).getFileID());
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null,
-                null, 5L, null, null, (Instant)null,
-                (Instant)null, null, null));
+                null, 5L, null, null, (Instant) null,
+                (Instant) null, null, null));
         Assertions.assertEquals(1, res.size(), res.toString());
         Assertions.assertEquals(fileID, res.get(0).getFileID());
 
@@ -149,12 +149,12 @@ public class AuditDatabaseTest {
                 "Should be possible to restrict on the id of the actor.");
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null,
                 null, null, actor1, null,
-                (Instant)null, (Instant)null, null, null));
+                (Instant) null, (Instant) null, null, null));
         Assertions.assertEquals(1, res.size(), res.toString());
         Assertions.assertEquals(actor1, res.get(0).getActorOnFile());
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null,
                 null, null, actor2, null,
-                (Instant)null, (Instant)null, null, null));
+                (Instant) null, (Instant) null, null, null));
         Assertions.assertEquals(1, res.size(), res.toString());
         Assertions.assertEquals(actor2, res.get(0).getActorOnFile());
 
@@ -162,12 +162,12 @@ public class AuditDatabaseTest {
                 "Should be possible to restrict on the FileAction operation.");
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null,
                 null, null, null,
-                FileAction.INCONSISTENCY, (Instant)null, (Instant)null, null, null));
+                FileAction.INCONSISTENCY, (Instant) null, (Instant) null, null, null));
         Assertions.assertEquals(1, res.size(), res.toString());
         Assertions.assertEquals(FileAction.INCONSISTENCY, res.get(0).getActionOnFile());
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null,
                 null, null, null,
-                FileAction.FAILURE, (Instant)null, (Instant)null, null, null));
+                FileAction.FAILURE, (Instant) null, (Instant) null, null, null));
         Assertions.assertEquals(1, res.size(), res.toString());
         Assertions.assertEquals(FileAction.FAILURE, res.get(0).getActionOnFile());
 
@@ -188,7 +188,7 @@ public class AuditDatabaseTest {
                 "Should be possible to restrict on the fingerprint of the audit.");
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null,
                 null, null, null, null,
-                (Instant)null, (Instant)null, fingerprint1, null));
+                (Instant) null, (Instant) null, fingerprint1, null));
         Assertions.assertEquals(1, res.size(), res.toString());
         Assertions.assertEquals(fileID, res.get(0).getFileID());
         Assertions.assertEquals(fingerprint1, res.get(0).getCertificateID());
@@ -197,7 +197,7 @@ public class AuditDatabaseTest {
                 "Should be possible to restrict on the operationID of the audit.");
         res = getEventsFromIterator(database.getAuditTrailsByIterator(null, null, null,
                 null, null, null, null,
-                (Instant)null, (Instant)null, null, operationID2));
+                (Instant) null, (Instant) null, null, operationID2));
         Assertions.assertEquals(1, res.size(), res.toString());
         Assertions.assertEquals(fileID2, res.get(0).getFileID());
         Assertions.assertEquals(operationID2, res.get(0).getOperationID());
@@ -266,13 +266,13 @@ public class AuditDatabaseTest {
         List<AuditTrailEvent> res = getEventsFromIterator(database.getAuditTrailsByIterator("summertime",
                 null, null,
                 null,
-                null, null, null, (Instant)null, (Instant)null, null, null));
+                null, null, null, (Instant) null, (Instant) null, null, null));
         Assertions.assertEquals(1, res.size(), res.toString());
         Assertions.assertEquals(summertimeUnix, CalendarUtils.convertFromXMLGregorianCalendarToInstant(res.get(0).getActionDateTime()));
 
         res = getEventsFromIterator(database.getAuditTrailsByIterator("wintertime", null,
                 null, null, null, null, null,
-                (Instant)null, (Instant)null, null, null));
+                (Instant) null, (Instant) null, null, null));
         Assertions.assertEquals(1, res.size(), res.toString());
         Assertions.assertEquals(wintertimeUnix, CalendarUtils.convertFromXMLGregorianCalendarToInstant(res.get(0).getActionDateTime()));
 
