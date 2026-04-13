@@ -79,7 +79,7 @@ public class PagingGetFileIDsClient {
     private ContributorQuery[] makeQuery(List<String> pillars) {
         List<ContributorQuery> res = new ArrayList<>();
         for (String pillar : pillars) {
-            Instant latestResult = model.getLatestContribution(pillar);
+            Instant latestResult = model.getLatestContributionInstant(pillar);
             res.add(new ContributorQuery(pillar, latestResult, null, pageSize));
         }
         return res.toArray(new ContributorQuery[pillars.size()]);

@@ -29,6 +29,7 @@ import org.bitrepository.common.utils.CalendarUtils;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -121,12 +122,21 @@ public class GetChecksumsResultModel {
     }
 
     /**
-     * Get the Date of the latest checksum by the contributor
+     * Get the Instant of the latest checksum by the contributor
      *
      * @param contributor the contributor to get the Date of the latest contribution.
      * @return Instant the date of the latest contribution by the given contributor
      */
-    public Instant getLatestContribution(String contributor) {
+    public Instant getLatestContributionInstant(String contributor) {
         return latestContributorDate.get(contributor);
+    }
+
+    /**
+     * @deprecated Use {@link #getLatestContributionInstant(String)} instead.
+     */
+    @Deprecated
+    public Date getLatestContribution(String contributor) {
+        Instant latest = getLatestContributionInstant(contributor);
+        return latest != null ? Date.from(latest) : null;
     }
 }

@@ -45,7 +45,7 @@ public class TimerTaskSchedule {
      */
     public TimerTaskSchedule(long schedulingInterval, int gracePeriod) {
         this.schedulingInterval = schedulingInterval;
-        nextRun = Instant.ofEpochMilli(System.currentTimeMillis() + gracePeriod);
+        nextRun = Instant.now().plusMillis(gracePeriod);
     }
 
     /**

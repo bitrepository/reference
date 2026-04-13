@@ -72,17 +72,23 @@ class MessageBusSizeOfMessageStressTest {
      * Tests the amount of messages sent over a message bus, which is not placed locally.
      * Requires sending at least five per second.
      */
-    /* @Test
-    @Tag("StressTest"} ) */
+    @Test
+    @Tag("StressTest")
     void SendLargeMessagesDistributed() throws Exception {
         addDescription("Tests how many messages can be handled within a given timeframe.");
         addStep("Define constants", "This should not be possible to fail.");
         QUEUE += "-" + Instant.now().toEpochMilli();
 
         addStep("Make configuration for the messagebus.", "Both should be created.");
+        MessageBusConfiguration conf = settings.getRepositorySettings().getProtocolSettings().getMessageBusConfiguration();
+        LocalActiveMQBroker broker = new LocalActiveMQBroker(conf);
+
         ResendMessageListener listener = null;
 
         try {
+            addStep("Starting the broker.", "Should be allowed");
+            broker.start();
+
             addStep("Initialise the message-listener", "Should be allowed.");
             listener = new ResendMessageListener();
 
@@ -94,7 +100,7 @@ class MessageBusSizeOfMessageStressTest {
                 try {
                     wait(TIME_FRAME);
                 } catch (InterruptedException e) {
-                    /* e.printStackTrace(); */
+                    Assertions.fail(e);
                 }
             }
 
@@ -106,6 +112,7 @@ class MessageBusSizeOfMessageStressTest {
             if (listener != null) {
                 listener.stop();
             }
+            broker.stop();
         }
     }
 

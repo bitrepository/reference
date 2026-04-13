@@ -58,9 +58,9 @@ public final class TimeUtils {
      * @deprecated Use {@link #DATETIME_FORMATTER} instead
      */
     @Deprecated( forRemoval = true)
-    public final static DateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.ROOT);
+    public static final DateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.ROOT);
 
-    public final static DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm", Locale.ROOT);
+    public static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm", Locale.ROOT);
 
     private TimeUtils() {
     }

@@ -43,6 +43,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static java.time.temporal.ChronoUnit.MILLIS;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
@@ -97,8 +98,7 @@ class MessageBusDelayTest {
                 System.err.println("No message received within 100 seconds");
             }
 
-            long delay = after.toEpochMilli() - before.toEpochMilli();
-            delayList.add(delay);
+            long delay = MILLIS.between(before, after);            delayList.add(delay);
         }
 
         addStep("Perform the statistical analysis on the delay results.", "TODO !!!!");

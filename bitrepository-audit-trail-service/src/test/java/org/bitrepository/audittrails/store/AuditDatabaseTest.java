@@ -36,11 +36,9 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
@@ -243,12 +241,11 @@ public class AuditDatabaseTest {
                 settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase());
         AuditTrailServiceDAO database = new AuditTrailServiceDAO(dm);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.ROOT);
-        Instant summertimeTS = ZonedDateTime.parse("2015-10-25T02:59:54.000+02:00", formatter).toInstant();
+        Instant summertimeTS = OffsetDateTime.parse("2015-10-25T02:59:54.000+02:00").toInstant();
         Instant summertimeUnix = Instant.ofEpochMilli(1445734794000L);
         Assertions.assertEquals(summertimeUnix, summertimeTS);
 
-        Instant wintertimeTS = ZonedDateTime.parse("2015-10-25T02:59:54.000+01:00", formatter).toInstant();
+        Instant wintertimeTS = OffsetDateTime.parse("2015-10-25T02:59:54.000+01:00").toInstant();
         Instant wintertimeUnix = Instant.ofEpochMilli(1445738394000L);
         Assertions.assertEquals(wintertimeUnix, wintertimeTS);
 

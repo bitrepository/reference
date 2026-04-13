@@ -11,7 +11,7 @@ import java.math.BigInteger;
  * AuditEventIterator that will only return an event on first iteration.
  */
 public class StubAuditEventIterator extends AuditEventIterator {
-    int called = 0;
+    boolean called = false;
     public StubAuditEventIterator() {
         super(null);
     }
@@ -21,10 +21,10 @@ public class StubAuditEventIterator extends AuditEventIterator {
         String pillarID = "pillarID";
         String actor = "actor";
 
-        if(called > 0) {
+        if (called) {
             return null;
         } else {
-            called++;
+            called = true;
             AuditTrailEvent e1 = new AuditTrailEvent();
             e1.setActionDateTime(CalendarUtils.getNow());
             e1.setActionOnFile(FileAction.FAILURE);

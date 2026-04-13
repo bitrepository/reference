@@ -30,20 +30,15 @@ import org.slf4j.LoggerFactory;
 
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
-import java.util.TimeZone;
-import java.util.function.Consumer;
 
 /**
  * Utility class for calendar issues.
@@ -52,8 +47,7 @@ public final class CalendarUtils {
     private static final Logger log = LoggerFactory.getLogger(CalendarUtils.class);
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd", Locale.ROOT);
 
-    private TimeZone localTimeZone = TimeZone.getDefault();
-    private ZoneId localZoneId = ZoneId.systemDefault();
+    private static ZoneId localZoneId = ZoneId.systemDefault();
 
     private CalendarUtils() {
     }
@@ -66,9 +60,9 @@ public final class CalendarUtils {
      * @deprecated Use {@link #getInstance(ZoneId)} instead
      */
     @Deprecated( forRemoval = true)
-    public static CalendarUtils getInstance(TimeZone timeZone) {
+    public static CalendarUtils getInstance(java.util.TimeZone timeZone) {
         CalendarUtils cu = new CalendarUtils();
-        cu.setTimeZone(timeZone);
+        cu.setZoneId(timeZone.toZoneId());
         return cu;
     }
 
@@ -84,28 +78,9 @@ public final class CalendarUtils {
         return cu;
     }
 
-    /**
-     * @deprecated Use {@link #setZoneId(ZoneId)} instead
-     */
-    @Deprecated( forRemoval = true)
-    private void setTimeZone(TimeZone timeZone) {
-        log.debug("Using time zone: '{}'", getTimeZoneDisplayName(timeZone));
-        this.localTimeZone = timeZone;
-        this.localZoneId = timeZone.toZoneId();
-    }
-
     private void setZoneId(ZoneId zoneId) {
         log.debug("Using zone id: '{}'", zoneId.getId());
-        this.localZoneId = zoneId;
-        this.localTimeZone = TimeZone.getTimeZone(zoneId);
-    }
-
-    /**
-     * @deprecated Use {@link ZoneId#getId()} instead
-     */
-    @Deprecated( forRemoval = true)
-    public static String getTimeZoneDisplayName(TimeZone timeZone) {
-        return timeZone.getID();
+        localZoneId = zoneId;
     }
 
     /**
@@ -129,7 +104,7 @@ public final class CalendarUtils {
             instant = Instant.EPOCH;
         }
 
-        ZonedDateTime zdt = instant.atZone(ZoneId.systemDefault());
+        ZonedDateTime zdt = instant.atZone(localZoneId);
         GregorianCalendar gc = GregorianCalendar.from(zdt);
         try {
             return DatatypeFactory.newInstance().newXMLGregorianCalendar(gc);
@@ -152,7 +127,7 @@ public final class CalendarUtils {
             date = new Date(0);
         }
 
-        GregorianCalendar gc = new GregorianCalendar(TimeZone.getDefault(), Locale.ROOT);
+        GregorianCalendar gc = new GregorianCalendar(java.util.TimeZone.getTimeZone(localZoneId), Locale.ROOT);
         try {
             gc.setTime(date);
             return DatatypeFactory.newInstance().newXMLGregorianCalendar(gc);
@@ -285,14 +260,11 @@ public final class CalendarUtils {
      */
     @Deprecated( forRemoval = true)
     public Date makeStartDateObject(String dateStr) {
-        Consumer<Calendar> dateAdjuster = (Calendar calendar) -> {
-        };
-
-        Calendar cal = makeCalendarObject(dateStr, dateAdjuster);
-        if (cal == null) {
+        Instant instant = makeStartInstant(dateStr);
+        if (instant == null) {
             return null;
         } else {
-            return cal.getTime();
+            return Date.from(instant);
         }
     }
 
@@ -327,44 +299,11 @@ public final class CalendarUtils {
      */
     @Deprecated( forRemoval = true)
     public Date makeEndDateObject(String dateStr) {
-        Consumer<Calendar> dateAdjuster = (Calendar calendar) -> {
-            calendar.add(Calendar.DAY_OF_MONTH, 1);
-            calendar.add(Calendar.MILLISECOND, -1);
-        };
-
-        Calendar cal = makeCalendarObject(dateStr, dateAdjuster);
-        if (cal == null) {
+        Instant instant = makeEndInstant(dateStr);
+        if (instant == null) {
             return null;
         } else {
-            return cal.getTime();
-        }
-    }
-
-    /**
-     * Parses the input string and returns a calendar representation of the day in UTC.
-     *
-     * @param dateStr The string representation of the date, in the form '2015/02/26'
-     * @return Calendar A calendar object representing the start of the date in UTC,
-     * or null if the input cannot be parsed.
-     * @deprecated Use {@link #makeStartInstant(String)} or {@link #makeEndInstant(String)} instead
-     */
-    @Deprecated( forRemoval = true)
-    private Calendar makeCalendarObject(String dateStr, Consumer<Calendar> dateAdjust) {
-        if (dateStr == null || dateStr.trim().isEmpty()) {
-            return null;
-        } else {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd", Locale.ROOT);
-            sdf.setTimeZone(localTimeZone);
-            try {
-                Date baseDate = sdf.parse(dateStr);
-                Calendar time = Calendar.getInstance(localTimeZone, Locale.ROOT);
-                time.setTime(baseDate);
-                dateAdjust.accept(time);
-                return time;
-            } catch (ParseException e) {
-                log.warn("Received something that could not be parsed: '{}'", dateStr, e);
-                return null;
-            }
+            return Date.from(instant);
         }
     }
 

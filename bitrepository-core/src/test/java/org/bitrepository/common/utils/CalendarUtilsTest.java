@@ -12,7 +12,7 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Lesser License for more details.
+ * GNU General Lesser Public License for more details.
  *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
@@ -26,12 +26,12 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Locale;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
@@ -69,7 +69,7 @@ class CalendarUtilsTest {
         Assertions.assertFalse(nowInCalendar.isBefore(beforeNow), "Time in calendar should not be before 'beforeNow'");
         Assertions.assertFalse(nowInCalendar.isAfter(afterNow), "Time in calendar should not be after 'afterNow'");
 
-        addStep("Test the reverse conversion, from XMLCalendar to Date",
+        addStep("Test the reverse conversion, from XMLCalendar to Instant",
                 "Should give the same value");
         testInstant = CalendarUtils.convertFromXMLGregorianCalendarToInstant(calendar);
         Assertions.assertEquals(nowInCalendar, testInstant);
@@ -88,8 +88,7 @@ class CalendarUtilsTest {
     void startDateTest() {
         addDescription("Test that the start date is considered as localtime and converted into UTC.");
         CalendarUtils cu = CalendarUtils.getInstance(ZoneId.of("Europe/Copenhagen"));
-        DateTimeFormatter sdf = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.ROOT);
-        Instant expectedStartOfDay = ZonedDateTime.parse("2015-02-25T23:00:00.000Z", sdf.withZone(ZoneId.of("UTC"))).toInstant();
+        Instant expectedStartOfDay = Instant.parse("2015-02-25T23:00:00.000Z");
 
         Instant parsedStartOfDay = cu.makeStartInstant("2015/02/26");
         Assertions.assertEquals(expectedStartOfDay, parsedStartOfDay);
@@ -100,8 +99,7 @@ class CalendarUtilsTest {
     void endDateTest() {
         addDescription("Test that the end date is considered as localtime and converted into UTC.");
         CalendarUtils cu = CalendarUtils.getInstance(ZoneId.of("Europe/Copenhagen"));
-        DateTimeFormatter sdf = DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneId.of("UTC"));
-        Instant expectedEndOfDay = ZonedDateTime.parse("2015-02-26T22:59:59.999Z", sdf).toInstant();
+        Instant expectedEndOfDay = Instant.parse("2015-02-26T22:59:59.999Z");
 
         Instant parsedEndOfDay = cu.makeEndInstant("2015/02/26");
         Assertions.assertEquals(expectedEndOfDay, parsedEndOfDay);
@@ -112,8 +110,7 @@ class CalendarUtilsTest {
     void endDateRolloverTest() {
         addDescription("Test that the end date is correctly rolls over a year and month change.");
         CalendarUtils cu = CalendarUtils.getInstance(ZoneId.of("Europe/Copenhagen"));
-        DateTimeFormatter sdf = DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneId.of("UTC"));
-        Instant expectedEndOfDay = ZonedDateTime.parse("2015-12-31T22:59:59.999Z", sdf).toInstant();
+        Instant expectedEndOfDay = Instant.parse("2015-12-31T22:59:59.999Z");
 
         // Note: New implementation uses strict parsing, so 2015/12/32 is invalid. 
         // Changed to 2015/12/31 to test end-of-year.
@@ -153,8 +150,8 @@ class CalendarUtilsTest {
         Assertions.assertNotNull(startDate);
         Instant endDate = cu.makeEndInstant("2015/10/25");
         Assertions.assertNotNull(endDate);
-        long expectedIntervalLength = (ChronoUnit.HOURS.getDuration().toMillis() * 25) - 1;
-        Assertions.assertEquals(expectedIntervalLength, endDate.toEpochMilli() - startDate.toEpochMilli());
+        Duration expectedIntervalLength = Duration.ofHours(25).minusMillis(1);
+        Assertions.assertEquals(expectedIntervalLength, Duration.between(startDate, endDate));
     }
 
     @Test
@@ -167,8 +164,8 @@ class CalendarUtilsTest {
         Assertions.assertNotNull(startDate);
         Instant endDate = cu.makeEndInstant("2016/03/27");
         Assertions.assertNotNull(endDate);
-        long expectedIntervalLength = (ChronoUnit.HOURS.getDuration().toMillis() * 23) - 1;
-        Assertions.assertEquals(expectedIntervalLength, endDate.toEpochMilli() - startDate.toEpochMilli());
+        Duration expectedIntervalLength = Duration.ofHours(23).minusMillis(1);
+        Assertions.assertEquals(expectedIntervalLength, Duration.between(startDate, endDate));
     }
 
 }

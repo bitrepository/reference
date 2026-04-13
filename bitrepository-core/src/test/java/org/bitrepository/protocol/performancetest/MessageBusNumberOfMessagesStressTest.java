@@ -47,6 +47,8 @@ import javax.jms.JMSException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
@@ -102,8 +104,8 @@ class MessageBusNumberOfMessagesStressTest {
                 }
             }
 
-            addStep("Stopped sending at '" + Instant.now() + "'", "Should have send more than '" + messagePerSec
-                    + "' messages per sec.");
+            addStep("Stopped sending at '" + OffsetDateTime.now(ZoneId.systemDefault()) + "'",
+                    "Should have sent more than '" + messagePerSec + "' messages per sec.");
             int count = listener.getCount();
             Assertions.assertTrue(count > (messagePerSec * timeFrame / 1000), "There where send '" + count
                     + "' messages in '" + timeFrame / 1000 + "' seconds, but it is required to handle at least '"
@@ -148,7 +150,8 @@ class MessageBusNumberOfMessagesStressTest {
             addStep("Initialise the message-listener", "Should be allowed.");
             listener = new ResendMessageListener(settings);
 
-            addStep("Start sending at '" + Instant.now() + "'", "Should just be waiting.");
+            addStep("Start sending at '" + Instant.now() + "'",
+                    "Should just be waiting.");
             listener.startSending();
             synchronized (this) {
                 try {
@@ -158,8 +161,8 @@ class MessageBusNumberOfMessagesStressTest {
                 }
             }
 
-            addStep("Stopped sending at '" + Instant.now() + "'", "Should have send more than '" + messagePerSec
-                    + "' messages per sec.");
+            addStep("Stopped sending at '" + OffsetDateTime.now(ZoneId.systemDefault()) + "'",
+                    "Should have send more than '" + messagePerSec + "' messages per sec.");
             int count = listener.getCount();
             Assertions.assertTrue(count > (messagePerSec * timeFrame / 1000), "There where send '" + count
                     + "' messages in '" + timeFrame / 1000 + "' seconds, but it is required to handle at least '"
