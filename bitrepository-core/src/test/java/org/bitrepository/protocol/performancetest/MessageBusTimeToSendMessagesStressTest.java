@@ -46,6 +46,8 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
@@ -61,10 +63,6 @@ class MessageBusTimeToSendMessagesStressTest {
      * The number of messages to send.
      */
     private static final int NUMBER_OF_MESSAGES = 1000;
-    /**
-     * The date for start sending the messages.
-     */
-    private static Instant startSending;
     private Settings settings;
     private String testQueue;
 
@@ -78,8 +76,8 @@ class MessageBusTimeToSendMessagesStressTest {
      * Tests the amount of messages sent over a message bus, which is not placed locally.
      * Require sending at least five per second.
      */
-    /* @Test
-    @Tag("StressTest"} ) */
+    @Test
+    @Tag("StressTest")
     public void SendManyMessagesDistributed() {
         addDescription("Tests how fast a given number of messages can be handled.");
         addStep("Define constants", "This should not be possible to fail.");
@@ -93,8 +91,9 @@ class MessageBusTimeToSendMessagesStressTest {
             addStep("Initialise the message-listener", "Should be allowed.");
             listener = new CountMessagesListener(securityManager);
 
-            startSending = Instant.now();
-            addStep("Start sending at '" + startSending + "'", "Should just be waiting.");
+            Instant startSending = Instant.now();
+            addStep("Start sending at '" + startSending.atZone(ZoneId.systemDefault()) + "'",
+                    "Should just be waiting.");
             sendAllTheMessages(conf, securityManager);
 
             addStep("Sleep until the listeners have received all the messages.",
@@ -103,16 +102,16 @@ class MessageBusTimeToSendMessagesStressTest {
                 try {
                     Thread.sleep(TIME_FOR_MESSAGE_TRANSFER_WAIT);
                 } catch (InterruptedException e) {
-                    /* e.printStackTrace(); */
+                    e.printStackTrace();
                 }
             }
 
-            Instant endDate = listener.getStopSending();
-            addStep("Validating the count. Started at '" + startSending + "' and ended at '"
-                    + endDate + "'", "Should not be wrong.");
+            Instant messageStopTime = listener.getStopSending();
+            addStep("Validating the count. Started at '" + startSending.atZone(ZoneId.systemDefault()) + "' and ended at '"
+                    + messageStopTime.atZone(ZoneId.systemDefault()) + "'", "Should not be wrong.");
 
             int count = listener.getCount();
-            long timeFrame = (endDate.toEpochMilli() - startSending.toEpochMilli()) / 1000;
+            long timeFrame = ChronoUnit.SECONDS.between(startSending, messageStopTime);
             System.out.println("Sent '" + count + "' messages in '" + timeFrame + "' seconds.");
         } finally {
             if (listener != null) {
@@ -150,11 +149,13 @@ class MessageBusTimeToSendMessagesStressTest {
             addStep("Initialise the message-listener", "Should be allowed.");
             listener = new CountMessagesListener(securityManager);
 
-            startSending = Instant.now();
-            addStep("Start sending at '" + startSending + "'", "Should just be waiting.");
+            Instant startSending = Instant.now();
+            addStep("Start sending at '" + startSending.atZone(ZoneId.systemDefault()) + "'",
+                    "Should just be waiting.");
             sendAllTheMessages(conf, securityManager);
 
-            addStep("Sleep until the listeners has received all the messages.", "Should be sleeping.");
+            addStep("Sleep until the listeners has received all the messages.",
+                    "Should be sleeping.");
             long startTime = System.currentTimeMillis();
             long oneMinuteInMillis = 60000;
             while (!listener.isFinished() && (System.currentTimeMillis() - startTime) < oneMinuteInMillis) {
@@ -165,10 +166,10 @@ class MessageBusTimeToSendMessagesStressTest {
                 }
             }
 
-            addStep("Validating the count. Started at '" + startSending + "' and ended at '"
-                    + listener.getStopSending() + "'", "Should not be wrong.");
+            addStep("Validating the count. Started at '" + startSending.atZone(ZoneId.systemDefault()) + "' and ended at '"
+                    + listener.getStopSending().atZone(ZoneId.systemDefault()) + "'", "Should not be wrong.");
             int count = listener.getCount();
-            long timeFrame = (listener.getStopSending().toEpochMilli() - startSending.toEpochMilli()) / 1000;
+            long timeFrame = ChronoUnit.SECONDS.between(startSending, listener.getStopSending());
             System.out.println("Sent '" + count + "' messages in '" + timeFrame + "' seconds.");
         } finally {
             if (listener != null) {
@@ -241,9 +242,7 @@ class MessageBusTimeToSendMessagesStressTest {
     }
 
     /**
-     * Message-listener which only resends the messages it receives.
-     * It does not reply, it sent to the same destination, thus receiving it again.
-     * It keeps track of the amount of messages received.
+     * Message-listener which keeps track of the amount of messages received.
      */
     private class CountMessagesListener implements MessageListener {
         private final MessageBus bus;

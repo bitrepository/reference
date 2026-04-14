@@ -681,8 +681,8 @@ class IntegrityDAOTest extends IntegrityDatabaseTestCase {
 
         addStep("Create data", "Should be ingested into the database");
 
-        Assertions.assertNull(cache.getLatestFileDateInstant(TEST_COLLECTIONID, TEST_PILLAR_1));
-        Assertions.assertNull(cache.getLatestFileDateInstant(TEST_COLLECTIONID, TEST_PILLAR_2));
+        Assertions.assertNull(cache.getLatestFileInstant(TEST_COLLECTIONID, TEST_PILLAR_1));
+        Assertions.assertNull(cache.getLatestFileInstant(TEST_COLLECTIONID, TEST_PILLAR_2));
 
         FileIDsData fidsPillar1 = getFileIDsData(TEST_FILE_ID);
         Instant expectedLatestFileDatePillar1 = CalendarUtils.convertFromXMLGregorianCalendarToInstant(
@@ -695,15 +695,15 @@ class IntegrityDAOTest extends IntegrityDatabaseTestCase {
                 .setLastModificationTime(CalendarUtils.getXmlGregorianCalendar(expectedLatestFileDatePillar2));
         cache.updateFileIDs(fidsPillar2, TEST_PILLAR_2, TEST_COLLECTIONID);
 
-        Assertions.assertEquals(expectedLatestFileDatePillar1, cache.getLatestFileDateInstant(TEST_COLLECTIONID, TEST_PILLAR_1));
-        Assertions.assertEquals(expectedLatestFileDatePillar2, cache.getLatestFileDateInstant(TEST_COLLECTIONID, TEST_PILLAR_2));
+        Assertions.assertEquals(expectedLatestFileDatePillar1, cache.getLatestFileInstant(TEST_COLLECTIONID, TEST_PILLAR_1));
+        Assertions.assertEquals(expectedLatestFileDatePillar2, cache.getLatestFileInstant(TEST_COLLECTIONID, TEST_PILLAR_2));
 
-        Assertions.assertEquals(cache.getLatestFileDateInCollectionInstant(TEST_COLLECTIONID),
-                cache.getLatestFileDateInstant(TEST_COLLECTIONID, TEST_PILLAR_2));
+        Assertions.assertEquals(cache.getLatestFileInstantInCollectionInstant(TEST_COLLECTIONID),
+                cache.getLatestFileInstant(TEST_COLLECTIONID, TEST_PILLAR_2));
 
         cache.resetFileCollectionProgress(TEST_COLLECTIONID);
-        Assertions.assertNull(cache.getLatestFileDateInstant(TEST_COLLECTIONID, TEST_PILLAR_1));
-        Assertions.assertNull(cache.getLatestFileDateInstant(TEST_COLLECTIONID, TEST_PILLAR_2));
+        Assertions.assertNull(cache.getLatestFileInstant(TEST_COLLECTIONID, TEST_PILLAR_1));
+        Assertions.assertNull(cache.getLatestFileInstant(TEST_COLLECTIONID, TEST_PILLAR_2));
     }
 
     @Test

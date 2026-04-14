@@ -124,7 +124,7 @@ public class ChecksumUpdater {
             init();
             log.debug("Initialized checksumUpdater");
             try {
-                Instant maxDate = Instant.EPOCH;
+                Instant maxDate = Instant.MIN;
                 for (ChecksumDataForChecksumSpecTYPE csData : data) {
                     updateChecksum(csData);
                     addFileInfoWithChecksum(csData);
@@ -144,7 +144,8 @@ public class ChecksumUpdater {
     }
 
     private void addFileInfoWithChecksum(ChecksumDataForChecksumSpecTYPE item) throws SQLException {
-        long calculationTime = CalendarUtils.convertFromXMLGregorianCalendarToInstant(item.getCalculationTimestamp()).toEpochMilli();
+        long calculationTime =
+                CalendarUtils.convertFromXMLGregorianCalendarToInstant(item.getCalculationTimestamp()).toEpochMilli();
 
         Instant now = Instant.now();
         insertFileInfoPS.setString(1, pillar);

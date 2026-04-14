@@ -106,7 +106,7 @@ public class FileUpdater {
             init();
             log.debug("Initialized fileUpdater");
             try {
-                Instant maxDate = Instant.EPOCH;
+                Instant maxDate = Instant.MIN;
                 for (FileIDsDataItem item : dataItems.getFileIDsDataItem()) {
                     updateFileInfo(item);
                     addFileInfo(item);

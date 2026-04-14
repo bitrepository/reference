@@ -116,12 +116,12 @@ public class IntegrityDatabase implements IntegrityModel {
 
     @Override
     public Instant getDateForNewestFileEntryForCollectionInstant(String collectionID) {
-        return store.getLatestFileDateInCollectionInstant(collectionID);
+        return store.getLatestFileInstantInCollectionInstant(collectionID);
     }
 
     @Override
     public Instant getDateForNewestFileEntryForPillarInstant(String pillarID, String collectionID) {
-        return store.getLatestFileDateInstant(collectionID, pillarID);
+        return store.getLatestFileInstant(collectionID, pillarID);
     }
 
     @Override
@@ -156,7 +156,7 @@ public class IntegrityDatabase implements IntegrityModel {
 
     @Override
     public Instant getEarliestFileDateInstant(String collectionID, String fileID) {
-        return store.getEarliestFileDateInstant(collectionID, fileID);
+        return store.getEarliestFileInstant(collectionID, fileID);
     }
 
     @Override

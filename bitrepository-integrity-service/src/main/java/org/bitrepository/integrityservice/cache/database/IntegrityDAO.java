@@ -151,7 +151,7 @@ public abstract class IntegrityDAO {
      * @param pillarID     The ID of the pillar
      * @return The date for the latest file in the collection on the pillar
      */
-    public Instant getLatestFileDateInstant(String collectionID, String pillarID) {
+    public Instant getLatestFileInstant(String collectionID, String pillarID) {
         ArgumentValidator.checkNotNullOrEmpty(pillarID, "String pillarID");
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
 
@@ -163,11 +163,11 @@ public abstract class IntegrityDAO {
     }
 
     /**
-     * @deprecated Use {@link #getLatestFileDateInstant(String, String)} instead
+     * @deprecated Use {@link #getLatestFileInstant(String, String)} instead
      */
     @Deprecated(forRemoval = true)
     public Date getLatestFileDate(String collectionID, String pillarID) {
-        Instant instant = getLatestFileDateInstant(collectionID, pillarID);
+        Instant instant = getLatestFileInstant(collectionID, pillarID);
         return instant != null ? Date.from(instant) : null;
     }
 
@@ -177,7 +177,7 @@ public abstract class IntegrityDAO {
      * @param collectionID The ID of the collection
      * @return The date of the latest file in the collection.
      */
-    public Instant getLatestFileDateInCollectionInstant(String collectionID) {
+    public Instant getLatestFileInstantInCollectionInstant(String collectionID) {
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
 
         String retrieveSql = "SELECT MAX(latest_file_timestamp) FROM collection_progress WHERE collectionID = ?";
@@ -187,11 +187,11 @@ public abstract class IntegrityDAO {
     }
 
     /**
-     * @deprecated Use {@link #getLatestFileDateInCollectionInstant(String)} instead
+     * @deprecated Use {@link #getLatestFileInstantInCollectionInstant(String)} instead
      */
     @Deprecated(forRemoval = true)
     public Date getLatestFileDateInCollection(String collectionID) {
-        Instant instant = getLatestFileDateInCollectionInstant(collectionID);
+        Instant instant = getLatestFileInstantInCollectionInstant(collectionID);
         return instant != null ? Date.from(instant) : null;
     }
 
@@ -255,7 +255,7 @@ public abstract class IntegrityDAO {
      *
      * @param collectionID The ID of the collection to get fileIDs from
      * @param pillarID     The ID of the pillar to get fileIDs from
-     * @param maxDate      The date prior to which checksums are considered outdated
+     * @param maxDate      The date prior to which checksums are considered outdated. Not allowed to be null.
      * @return an Iterator of the fileIDs for those files which have outdated checksums
      */
     public IntegrityIssueIterator getFilesWithOutdatedChecksums(String collectionID, String pillarID, Instant maxDate) {
@@ -272,11 +272,14 @@ public abstract class IntegrityDAO {
     }
 
     /**
+     * @param collectionID The ID of the collection to get fileIDs from
+     * @param pillarID     The ID of the pillar to get fileIDs from
+     * @param maxDate      The date prior to which checksums are considered outdated. Not allowed to be null.
      * @deprecated Use {@link #getFilesWithOutdatedChecksums(String, String, Instant)} instead
      */
     @Deprecated(forRemoval = true)
     public IntegrityIssueIterator getFilesWithOutdatedChecksums(String collectionID, String pillarID, Date maxDate) {
-        return getFilesWithOutdatedChecksums(collectionID, pillarID, maxDate != null ? maxDate.toInstant() : null);
+        return getFilesWithOutdatedChecksums(collectionID, pillarID, maxDate.toInstant());
     }
 
     /**
@@ -286,12 +289,16 @@ public abstract class IntegrityDAO {
      *
      * @param collectionID The ID of the collection to look for missing checksums
      * @param pillarID     The ID of the pillar on which to look for missing checksums
-     * @param cutoffDate   The date after which the checksum should have been seen to not be considered missing
-     * @return an Iterator of the fileIDs of the files on a given pillar in a given collection which is missing their checksum.
+     * @param cutoffDate   The date after which the checksum should have been seen to not be considered missing. Not
+     *                     allowed to be null.
+     * @return an Iterator of the fileIDs of the files on a given pillar in a given collection
+     * which is missing their checksum.
      */
-    public IntegrityIssueIterator getFilesWithMissingChecksums(String collectionID, String pillarID, Instant cutoffDate) {
+    public IntegrityIssueIterator getFilesWithMissingChecksums(String collectionID, String pillarID,
+                                                               Instant cutoffDate) {
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
         ArgumentValidator.checkNotNullOrEmpty(pillarID, "String pillarID");
+        ArgumentValidator.checkNotNull(cutoffDate, "Instant cutoffDate");
 
         String retrieveSql = "SELECT fileID FROM fileinfo" +
                 " WHERE collectionID = ?" +
@@ -302,11 +309,15 @@ public abstract class IntegrityDAO {
     }
 
     /**
+     * @param collectionID The ID of the collection to look for missing checksums
+     * @param pillarID     The ID of the pillar on which to look for missing checksums
+     * @param cutoffDate   The date after which the checksum should have been seen to not be considered missing.
+     *                     Not allowed to be null.
      * @deprecated Use {@link #getFilesWithMissingChecksums(String, String, Instant)} instead
      */
     @Deprecated(forRemoval = true)
     public IntegrityIssueIterator getFilesWithMissingChecksums(String collectionID, String pillarID, Date cutoffDate) {
-        return getFilesWithMissingChecksums(collectionID, pillarID, cutoffDate != null ? cutoffDate.toInstant() : null);
+        return getFilesWithMissingChecksums(collectionID, pillarID, cutoffDate.toInstant());
     }
 
     /**
@@ -314,7 +325,8 @@ public abstract class IntegrityDAO {
      *
      * @param collectionID The ID of the collection to look for orphan files
      * @param pillarID     The ID of the pillar to look for orphan files
-     * @param cutoffDate   The date that a file should have been seen to not be considered orphan
+     * @param cutoffDate   The date that a file should have been seen to not be considered orphan. Not allowed to be
+     *                     null.
      * @return an Iterator of the fileIDs of files that are no longer on the given pillar in the given collection
      */
     public IntegrityIssueIterator getOrphanFilesOnPillar(String collectionID, String pillarID, Instant cutoffDate) {
@@ -331,11 +343,15 @@ public abstract class IntegrityDAO {
     }
 
     /**
+     * @param collectionID The ID of the collection to look for orphan files
+     * @param pillarID     The ID of the pillar to look for orphan files
+     * @param cutoffDate   The date that a file should have been seen to not be considered orphan. Not allowed to be
+     *                     null.
      * @deprecated Use {@link #getOrphanFilesOnPillar(String, String, Instant)} instead
      */
     @Deprecated(forRemoval = true)
     public IntegrityIssueIterator getOrphanFilesOnPillar(String collectionID, String pillarID, Date cutoffDate) {
-        return getOrphanFilesOnPillar(collectionID, pillarID, cutoffDate != null ? cutoffDate.toInstant() : null);
+        return getOrphanFilesOnPillar(collectionID, pillarID, cutoffDate.toInstant());
     }
 
     /**
@@ -373,7 +389,8 @@ public abstract class IntegrityDAO {
      * @param maxResults     maxResults
      * @return Iterator with the fileIDs that could not be found on the pillar
      */
-    public IntegrityIssueIterator findFilesWithMissingCopies(String collectionID, int expectedCopies, Long firstIndex, Long maxResults) {
+    public IntegrityIssueIterator findFilesWithMissingCopies(String collectionID, int expectedCopies, Long firstIndex
+            , Long maxResults) {
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
 
         long first = firstIndex == null ? 0 : firstIndex;
@@ -419,7 +436,8 @@ public abstract class IntegrityDAO {
      * @param maxResults   the maximum number of results
      * @return The iterator with fileIDs present on the pillar in the given collection.
      */
-    public IntegrityIssueIterator getAllFileIDsOnPillar(String collectionID, String pillarID, Long firstIndex, Long maxResults) {
+    public IntegrityIssueIterator getAllFileIDsOnPillar(String collectionID, String pillarID, Long firstIndex,
+                                                        Long maxResults) {
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
         ArgumentValidator.checkNotNullOrEmpty(pillarID, "String pillarID");
         long first;
@@ -531,7 +549,8 @@ public abstract class IntegrityDAO {
                 long oldestChecksumTimestampMillis = dbResult.getLong("oldest_checksum_timestamp");
                 Instant oldestChecksumTimestamp =
                         dbResult.wasNull() ? null : Instant.ofEpochMilli(oldestChecksumTimestampMillis);
-                PillarCollectionMetric metric = new PillarCollectionMetric(fileSize, fileCount, oldestChecksumTimestamp);
+                PillarCollectionMetric metric =
+                        new PillarCollectionMetric(fileSize, fileCount, oldestChecksumTimestamp);
                 metrics.put(pillarID, metric);
             }
         } catch (SQLException e) {
@@ -694,24 +713,24 @@ public abstract class IntegrityDAO {
      * @param fileID       The ID of the file
      * @return the earliest date that a file has on any pillar in the specific collection
      */
-    public Instant getEarliestFileDateInstant(String collectionID, String fileID) {
+    public Instant getEarliestFileInstant(String collectionID, String fileID) {
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
 
         String getEarliestFileDateSql = "SELECT MIN(file_timestamp) FROM fileinfo" +
                 " WHERE collectionID = ? AND fileID = ?";
         long time = Optional.ofNullable(
-                DatabaseUtils.selectFirstLongValue(dbConnector, getEarliestFileDateSql, collectionID, fileID))
+                        DatabaseUtils.selectFirstLongValue(dbConnector, getEarliestFileDateSql, collectionID, fileID))
                 .orElse(0L);
         return Instant.ofEpochMilli(time);
     }
 
     /**
-     * @deprecated Use {@link #getEarliestFileDateInstant(String, String)} instead
+     * @deprecated Use {@link #getEarliestFileInstant(String, String)} instead
      */
     @Deprecated(forRemoval = true)
     public Date getEarliestFileDate(String collectionID, String fileID) {
-        Instant instant = getEarliestFileDateInstant(collectionID, fileID);
+        Instant instant = getEarliestFileInstant(collectionID, fileID);
         return instant != null ? Date.from(instant) : null;
     }
 
