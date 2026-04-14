@@ -202,7 +202,7 @@ public abstract class IntegrityDAO {
      * @param pillarID     The ID of the pillar
      * @return The date for the latest checksum in the collection on the pillar
      */
-    public Instant getLatestChecksumDateInstant(String collectionID, String pillarID) {
+    public Instant getLatestChecksumInstant(String collectionID, String pillarID) {
         ArgumentValidator.checkNotNullOrEmpty(pillarID, "String pillarID");
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
 
@@ -214,11 +214,11 @@ public abstract class IntegrityDAO {
     }
 
     /**
-     * @deprecated Use {@link #getLatestChecksumDateInstant(String, String)} instead
+     * @deprecated Use {@link #getLatestChecksumInstant(String, String)} instead
      */
     @Deprecated(forRemoval = true)
     public Date getLatestChecksumDate(String collectionID, String pillarID) {
-        Instant instant = getLatestChecksumDateInstant(collectionID, pillarID);
+        Instant instant = getLatestChecksumInstant(collectionID, pillarID);
         return instant != null ? Date.from(instant) : null;
     }
 

@@ -78,7 +78,7 @@ public class ChecksumDatabaseTest {
         Assertions.assertTrue(cache.hasFile(DEFAULT_FILE_ID, collectionID));
 
         addStep("Extract calculation date", "Should be identical to the default date.");
-        Assertions.assertEquals(DEFAULT_DATE, cache.getCalculationDateInstant(DEFAULT_FILE_ID, collectionID));
+        Assertions.assertEquals(DEFAULT_DATE, cache.getCalculationInstant(DEFAULT_FILE_ID, collectionID));
 
         addStep("Extract the checksum", "Should be identical to the default checksum");
         Assertions.assertEquals(DEFAULT_CHECKSUM, cache.getChecksum(DEFAULT_FILE_ID, collectionID));
@@ -87,7 +87,7 @@ public class ChecksumDatabaseTest {
         ChecksumEntry entry = cache.getEntry(DEFAULT_FILE_ID, collectionID);
         Assertions.assertEquals(DEFAULT_FILE_ID, entry.getFileId());
         Assertions.assertEquals(DEFAULT_CHECKSUM, entry.getChecksum());
-        Assertions.assertEquals(DEFAULT_DATE, entry.getCalculationDateInstant());
+        Assertions.assertEquals(DEFAULT_DATE, entry.getCalculationInstant());
 
         addStep("Extract all entries", "Should only be the one default.");
         List<ChecksumDataForChecksumSpecTYPE> entries = cache.getChecksumResults((Instant) null, (Instant) null, null,
@@ -133,7 +133,7 @@ public class ChecksumDatabaseTest {
         ChecksumEntry oldEntry = cache.getEntry(DEFAULT_FILE_ID, collectionID);
         Assertions.assertEquals(DEFAULT_FILE_ID, oldEntry.getFileId());
         Assertions.assertEquals(DEFAULT_CHECKSUM, oldEntry.getChecksum());
-        Assertions.assertEquals(DEFAULT_DATE, oldEntry.getCalculationDateInstant());
+        Assertions.assertEquals(DEFAULT_DATE, oldEntry.getCalculationInstant());
 
         addStep("Replace the checksum and date", "Should still exist, but have different values.");
         cache.insertChecksumCalculation(DEFAULT_FILE_ID, collectionID, newChecksum, newDate);
@@ -142,7 +142,7 @@ public class ChecksumDatabaseTest {
         Assertions.assertEquals(DEFAULT_FILE_ID, newEntry.getFileId());
         Assertions.assertEquals(newChecksum, newEntry.getChecksum());
         Assertions.assertNotEquals(oldEntry.getChecksum(), newEntry.getChecksum());
-        Assertions.assertNotEquals(oldEntry.getCalculationDateInstant().toEpochMilli(), newEntry.getCalculationDateInstant().toEpochMilli());
+        Assertions.assertNotEquals(oldEntry.getCalculationInstant().toEpochMilli(), newEntry.getCalculationInstant().toEpochMilli());
     }
 
     @Test
@@ -155,7 +155,7 @@ public class ChecksumDatabaseTest {
 
         addStep("Try to get the date of a wrong file id.", "Should throw an exception");
         try {
-            cache.getCalculationDateInstant(badFileId, collectionID);
+            cache.getCalculationInstant(badFileId, collectionID);
             Assertions.fail("Should throw an exception here.");
         } catch (IllegalStateException e) {
             // expected

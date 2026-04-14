@@ -74,14 +74,14 @@ public class ChecksumEntry {
 
     /**
      * @return The calculation date for the checksum of the file.
-     * @deprecated Use {@link #getCalculationDateInstant()} instead
+     * @deprecated Use {@link #getCalculationInstant()} instead
      */
     @Deprecated(forRemoval = true)
     public Date getCalculationDate() {
         return calculationDate != null ? Date.from(calculationDate) : null;
     }
 
-    public Instant getCalculationDateInstant() {
+    public Instant getCalculationInstant() {
         return calculationDate;
     }
 }

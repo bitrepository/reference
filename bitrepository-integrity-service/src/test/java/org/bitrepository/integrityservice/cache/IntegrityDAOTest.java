@@ -716,19 +716,19 @@ class IntegrityDAOTest extends IntegrityDatabaseTestCase {
 
         addStep("Create data", "Should be ingested into the database");
 
-        Assertions.assertNull(cache.getLatestChecksumDateInstant(TEST_COLLECTIONID, TEST_PILLAR_1));
-        Assertions.assertNull(cache.getLatestChecksumDateInstant(TEST_COLLECTIONID, TEST_PILLAR_2));
+        Assertions.assertNull(cache.getLatestChecksumInstant(TEST_COLLECTIONID, TEST_PILLAR_1));
+        Assertions.assertNull(cache.getLatestChecksumInstant(TEST_COLLECTIONID, TEST_PILLAR_2));
 
         List<ChecksumDataForChecksumSpecTYPE> csData = getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM);
         cache.updateChecksums(csData, TEST_PILLAR_1, TEST_COLLECTIONID);
         cache.updateChecksums(csData, TEST_PILLAR_2, TEST_COLLECTIONID);
         Instant expectedLatestChecksum = CalendarUtils.convertFromXMLGregorianCalendarToInstant(csData.get(0).getCalculationTimestamp());
-        Assertions.assertEquals(expectedLatestChecksum, cache.getLatestChecksumDateInstant(TEST_COLLECTIONID, TEST_PILLAR_1));
-        Assertions.assertEquals(expectedLatestChecksum, cache.getLatestChecksumDateInstant(TEST_COLLECTIONID, TEST_PILLAR_2));
+        Assertions.assertEquals(expectedLatestChecksum, cache.getLatestChecksumInstant(TEST_COLLECTIONID, TEST_PILLAR_1));
+        Assertions.assertEquals(expectedLatestChecksum, cache.getLatestChecksumInstant(TEST_COLLECTIONID, TEST_PILLAR_2));
 
         cache.resetChecksumCollectionProgress(TEST_COLLECTIONID);
-        Assertions.assertNull(cache.getLatestChecksumDateInstant(TEST_COLLECTIONID, TEST_PILLAR_1));
-        Assertions.assertNull(cache.getLatestChecksumDateInstant(TEST_COLLECTIONID, TEST_PILLAR_2));
+        Assertions.assertNull(cache.getLatestChecksumInstant(TEST_COLLECTIONID, TEST_PILLAR_1));
+        Assertions.assertNull(cache.getLatestChecksumInstant(TEST_COLLECTIONID, TEST_PILLAR_2));
     }
 
     @Test

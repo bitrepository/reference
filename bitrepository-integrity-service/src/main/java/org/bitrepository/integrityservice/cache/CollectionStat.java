@@ -73,7 +73,7 @@ public class CollectionStat {
         return checksumErrors;
     }
 
-    public Instant getStatsTimeInstant() {
+    public Instant getStatsInstant() {
         return statsTime;
     }
 
@@ -82,7 +82,7 @@ public class CollectionStat {
         return statsTime != null ? Date.from(statsTime) : null;
     }
 
-    public Instant getUpdateTimeInstant() {
+    public Instant getUpdateInstant() {
         return updateTime;
     }
 
@@ -121,7 +121,7 @@ public class CollectionStat {
         this.updateTime = updateTime != null ? updateTime.toInstant() : null;
     }
 
-    public Instant getLatestFileTimeInstant() {
+    public Instant getLatestFileInstant() {
         return latestFileTime;
     }
 

@@ -136,7 +136,7 @@ public class PillarCollectionStat {
         this.checksumErrors = checksumErrors;
     }
 
-    public Instant getStatsTimeInstant() {
+    public Instant getStatsInstant() {
         return statsTime;
     }
 
@@ -154,7 +154,7 @@ public class PillarCollectionStat {
         this.statsTime = statsTime != null ? statsTime.toInstant() : null;
     }
 
-    public Instant getUpdateTimeInstant() {
+    public Instant getUpdateInstant() {
         return updateTime;
     }
 

@@ -40,7 +40,7 @@ public interface ChecksumStore {
      * @param collectionID The id of the collection for the file.
      * @return The calculation date for the checksum of the file at the collection.
      */
-    Instant getCalculationDateInstant(String fileID, String collectionID);
+    Instant getCalculationInstant(String fileID, String collectionID);
 
     /**
      * Retrieve the calculation date for the checksum of the file.
@@ -48,11 +48,11 @@ public interface ChecksumStore {
      * @param fileID       The id of the file.
      * @param collectionID The id of the collection for the file.
      * @return The calculation date for the checksum of the file at the collection.
-     * @deprecated Use {@link #getCalculationDateInstant(String, String)} instead
+     * @deprecated Use {@link #getCalculationInstant(String, String)} instead
      */
     @Deprecated(forRemoval = true)
     default Date getCalculationDate(String fileID, String collectionID) {
-        Instant instant = getCalculationDateInstant(fileID, collectionID);
+        Instant instant = getCalculationInstant(fileID, collectionID);
         return instant != null ? Date.from(instant) : null;
     }
 

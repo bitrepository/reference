@@ -178,13 +178,13 @@ class ExtractModel {
     /**
      * @return The startDate;
      */
-    public Instant getStartDateInstant() {
+    public Instant getStartInstant() {
         return startDate;
     }
 
     /**
      * @return The startDate;
-     * @deprecated Use {@link #getStartDateInstant()} instead
+     * @deprecated Use {@link #getStartInstant()} instead
      */
     @Deprecated(forRemoval = true)
     public Date getStartDate() {
@@ -210,13 +210,13 @@ class ExtractModel {
     /**
      * @return The endDate;
      */
-    public Instant getEndDateInstant() {
+    public Instant getEndInstant() {
         return endDate;
     }
 
     /**
      * @return The endDate;
-     * @deprecated Use {@link #getEndDateInstant()} instead
+     * @deprecated Use {@link #getEndInstant()} instead
      */
     @Deprecated(forRemoval = true)
     public Date getEndDate() {

@@ -167,7 +167,7 @@ public abstract class StorageModel {
             throws RequestHandlerException {
         ChecksumEntry entry = getChecksumEntryForFile(fileID, collectionID, csType);
         ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
-        res.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(entry.getCalculationDateInstant()));
+        res.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(entry.getCalculationInstant()));
         res.setChecksumSpec(csType);
         try {
             res.setChecksumValue(Base16Utils.encodeBase16(entry.getChecksum()));
@@ -238,8 +238,8 @@ public abstract class StorageModel {
         ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
         ChecksumEntry entry = getChecksumEntryForFile(fileID, collectionID, csSpec);
 
-        boolean lowerBound = minTimestamp == null || !minTimestamp.isAfter(entry.getCalculationDateInstant());
-        boolean upperBound = maxTimestamp == null || !maxTimestamp.isBefore(entry.getCalculationDateInstant());
+        boolean lowerBound = minTimestamp == null || !minTimestamp.isAfter(entry.getCalculationInstant());
+        boolean upperBound = maxTimestamp == null || !maxTimestamp.isBefore(entry.getCalculationInstant());
         if (lowerBound && upperBound) {
             res.insertChecksumEntry(entry);
         }

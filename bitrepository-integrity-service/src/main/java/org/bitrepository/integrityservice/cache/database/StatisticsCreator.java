@@ -83,7 +83,7 @@ public class StatisticsCreator {
             init();
             log.debug("Initialized statisticsCreator");
             try {
-                Instant statisticsTime = statisticsCollector.getCollectionStat().getStatsTimeInstant();
+                Instant statisticsTime = statisticsCollector.getCollectionStat().getStatsInstant();
                 Instant now = Instant.now();
                 insertStatisticsEntryPS.setLong(1, statisticsTime.toEpochMilli());
                 insertStatisticsEntryPS.setLong(2, now.toEpochMilli());
@@ -109,7 +109,7 @@ public class StatisticsCreator {
         insertCollectionStatPS.setLong(1, cs.getFileCount());
         insertCollectionStatPS.setLong(2, cs.getDataSize());
         insertCollectionStatPS.setLong(3, cs.getChecksumErrors());
-        insertCollectionStatPS.setLong(4, cs.getLatestFileTimeInstant().toEpochMilli());
+        insertCollectionStatPS.setLong(4, cs.getLatestFileInstant().toEpochMilli());
         insertCollectionStatPS.setString(5, cs.getCollectionID());
     }
 

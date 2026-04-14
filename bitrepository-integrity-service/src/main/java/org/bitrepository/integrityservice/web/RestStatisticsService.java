@@ -65,14 +65,9 @@ public class RestStatisticsService {
         List<StatisticsDataSize> data = new ArrayList<>();
         for (CollectionStat stat : stats) {
             StatisticsDataSize obj = new StatisticsDataSize();
-            Instant statTime = stat.getStatsTimeInstant();
-            if (statTime != null) {
-                obj.setDateMillis(statTime.toEpochMilli());
-                obj.setDateString(TimeUtils.shortDate(statTime));
-            } else {
-                obj.setDateMillis(0L);
-                obj.setDateString("N/A");
-            }
+            Instant statTime = stat.getStatsInstant();
+            obj.setDateMillis(statTime.toEpochMilli());
+            obj.setDateString(TimeUtils.shortDate(statTime));
             obj.setDataSize(stat.getDataSize());
             obj.setFileCount(stat.getFileCount());
             data.add(obj);

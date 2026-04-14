@@ -100,8 +100,8 @@ public class IntegrityDatabase implements IntegrityModel {
     }
 
     @Override
-    public IntegrityIssueIterator findChecksumsOlderThan(Instant date, String pillarID, String collectionID) {
-        return store.getFilesWithOutdatedChecksums(collectionID, pillarID, date);
+    public IntegrityIssueIterator findChecksumsOlderThan(Instant checksumAtLeastThatOld, String pillarID, String collectionID) {
+        return store.getFilesWithOutdatedChecksums(collectionID, pillarID, checksumAtLeastThatOld);
     }
 
     @Override
@@ -126,7 +126,7 @@ public class IntegrityDatabase implements IntegrityModel {
 
     @Override
     public Instant getDateForNewestChecksumEntryForPillarInstant(String pillarID, String collectionID) {
-        return store.getLatestChecksumDateInstant(collectionID, pillarID);
+        return store.getLatestChecksumInstant(collectionID, pillarID);
     }
 
     @Override
@@ -155,7 +155,7 @@ public class IntegrityDatabase implements IntegrityModel {
     }
 
     @Override
-    public Instant getEarliestFileDateInstant(String collectionID, String fileID) {
+    public Instant getEarliestFileInstant(String collectionID, String fileID) {
         return store.getEarliestFileInstant(collectionID, fileID);
     }
 

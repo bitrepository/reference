@@ -34,30 +34,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.ACTOR_KEY;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.ACTOR_NAME;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.ACTOR_TABLE;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDIT_TRAIL_ACTOR_KEY;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDIT_TRAIL_AUDIT;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDIT_TRAIL_CONTRIBUTOR_KEY;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDIT_TRAIL_FILE_KEY;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDIT_TRAIL_FINGERPRINT;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDIT_TRAIL_INFORMATION;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDIT_TRAIL_OPERATION;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDIT_TRAIL_OPERATION_DATE;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDIT_TRAIL_OPERATION_ID;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDIT_TRAIL_SEQUENCE_NUMBER;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.AUDIT_TRAIL_TABLE;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.COLLECTION_ID;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.COLLECTION_KEY;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.COLLECTION_TABLE;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_ID;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_KEY;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.CONTRIBUTOR_TABLE;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_COLLECTION_KEY;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_FILE_ID;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_KEY;
-import static org.bitrepository.audittrails.store.AuditDatabaseConstants.FILE_TABLE;
+import static org.bitrepository.audittrails.store.AuditDatabaseConstants.*;
 
 /**
  * Extractor for the audit trail events from the AuditTrailServiceDatabase.
@@ -254,12 +231,12 @@ public class AuditDatabaseExtractor {
             res.append(AUDIT_TRAIL_TABLE + "." + AUDIT_TRAIL_OPERATION + " = ?");
         }
 
-        if (model.getStartDateInstant() != null) {
+        if (model.getStartInstant() != null) {
             nextArgument(res);
             res.append(AUDIT_TRAIL_TABLE + "." + AUDIT_TRAIL_OPERATION_DATE + " >= ?");
         }
 
-        if (model.getEndDateInstant() != null) {
+        if (model.getEndInstant() != null) {
             nextArgument(res);
             res.append(AUDIT_TRAIL_TABLE + "." + AUDIT_TRAIL_OPERATION_DATE + " <= ?");
         }
@@ -305,8 +282,8 @@ public class AuditDatabaseExtractor {
         return Stream.of(model.getFileID(), model.getCollectionID(), model.getContributorID(),
                         model.getMinSeqNumber(), model.getMaxSeqNumber(), model.getActorName(),
                         model.getOperation() == null ? null : model.getOperation().toString(),
-                        model.getStartDateInstant() == null ? null : model.getStartDateInstant().toEpochMilli(),
-                        model.getEndDateInstant() == null ? null : model.getEndDateInstant().toEpochMilli(),
+                        model.getStartInstant() == null ? null : model.getStartInstant().toEpochMilli(),
+                        model.getEndInstant() == null ? null : model.getEndInstant().toEpochMilli(),
                         model.getFingerprint(), model.getOperationID(), model.getMaxAuditTrails())
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());

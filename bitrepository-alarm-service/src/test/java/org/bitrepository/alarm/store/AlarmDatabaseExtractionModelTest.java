@@ -46,9 +46,9 @@ class AlarmDatabaseExtractionModelTest {
 
         Assertions.assertNull(model.getAlarmCode());
         Assertions.assertNull(model.getComponentId());
-        Assertions.assertNull(model.getEndDateInstant());
+        Assertions.assertNull(model.getEnd());
         Assertions.assertNull(model.getFileID());
-        Assertions.assertNull(model.getStartDateInstant());
+        Assertions.assertNull(model.getStart());
         Assertions.assertNull(model.getCollectionID());
         Assertions.assertEquals(ascending, model.getAscending());
         Assertions.assertEquals(Integer.MAX_VALUE, model.getMaxCount().intValue());
@@ -70,8 +70,8 @@ class AlarmDatabaseExtractionModelTest {
 
         addStep("Test the EndDate", "Should be able to put a new one in and extract it again.");
         Instant defaultEndDate = Instant.ofEpochMilli(987654321);
-        model.setEndDate(defaultEndDate);
-        Assertions.assertEquals(defaultEndDate, model.getEndDateInstant());
+        model.setEnd(defaultEndDate);
+        Assertions.assertEquals(defaultEndDate, model.getEnd());
 
         addStep("Test the FileID", "Should be able to put a new one in and extract it again.");
         String defaultFileID = "DefaultFileID";
@@ -85,8 +85,8 @@ class AlarmDatabaseExtractionModelTest {
 
         addStep("Test the StartDate", "Should be able to put a new one in and extract it again.");
         Instant defaultStartDate = Instant.ofEpochMilli(123456789);
-        model.setStartDate(defaultStartDate);
-        Assertions.assertEquals(defaultStartDate, model.getStartDateInstant());
+        model.setStart(defaultStartDate);
+        Assertions.assertEquals(defaultStartDate, model.getStart());
 
         addStep("Test the CollectionID", "Should be able to put a new one in and extract it again.");
         String collectionID = "collection1";

@@ -84,8 +84,8 @@ public class MemoryCacheMock implements ChecksumStore {
     }
 
     @Override
-    public Instant getCalculationDateInstant(String fileID, String collectionID) {
-        return checksumMap.get(fileID).getCalculationDateInstant();
+    public Instant getCalculationInstant(String fileID, String collectionID) {
+        return checksumMap.get(fileID).getCalculationInstant();
     }
 
     @Override
@@ -132,7 +132,7 @@ public class MemoryCacheMock implements ChecksumStore {
     public List<String> getFileIDsWithOldChecksums(Instant checksumDate, String collectionID) {
         List<String> res = new ArrayList<>();
         for(ChecksumEntry ce : checksumMap.values()) {
-            if(ce.getCalculationDateInstant().isBefore(checksumDate)) {
+            if(ce.getCalculationInstant().isBefore(checksumDate)) {
                 res.add(ce.getFileId());
             }
         }

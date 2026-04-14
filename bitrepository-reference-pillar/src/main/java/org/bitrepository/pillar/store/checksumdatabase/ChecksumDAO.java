@@ -88,7 +88,7 @@ public class ChecksumDAO implements ChecksumStore {
     }
 
     @Override
-    public Instant getCalculationDateInstant(String fileID, String collectionID) {
+    public Instant getCalculationInstant(String fileID, String collectionID) {
         ArgumentValidator.checkNotNull(fileID, "String fileID");
         ArgumentValidator.checkNotNull(collectionID, "String collectionID");
 

@@ -45,6 +45,6 @@ class ChecksumEntryTest {
         ChecksumEntry ce = new ChecksumEntry(CE_FILE, CE_CHECKSUM, CE_DATE);
         Assertions.assertEquals(CE_FILE, ce.getFileId());
         Assertions.assertEquals(CE_CHECKSUM, ce.getChecksum());
-        Assertions.assertEquals(CE_DATE, ce.getCalculationDateInstant());
+        Assertions.assertEquals(CE_DATE, ce.getCalculationInstant());
     }
 }
