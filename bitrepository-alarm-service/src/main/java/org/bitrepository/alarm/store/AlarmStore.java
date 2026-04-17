@@ -71,9 +71,7 @@ public interface AlarmStore extends LifeCycledService {
      * @param count        The maximum number of alarms to retrieve from the store or null.
      * @param ascending    Whether the alarms should be delivered ascending.
      * @return The requested collection of alarms from the store.
-     * @deprecated Use {@link #extractAlarms(String, AlarmCode, Instant, Instant, String, String, Integer, boolean)} instead
      */
-    @Deprecated(forRemoval = true)
     default Collection<Alarm> extractAlarms(String componentID, AlarmCode alarmCode, Date minDate, Date maxDate,
                                     String fileID, String collectionID, Integer count, boolean ascending) {
         return extractAlarms(componentID, alarmCode,

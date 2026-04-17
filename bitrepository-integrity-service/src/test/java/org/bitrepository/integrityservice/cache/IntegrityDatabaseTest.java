@@ -107,7 +107,8 @@ class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         addStep("Test the 'findMissingChecksums'", "Should deliver an empty collection");
         for (String pillar : SettingsUtils.getPillarIDsForCollection(TEST_COLLECTIONID)) {
             Collection<String> missingChecksums
-                    = getIssuesFromIterator(model.findFilesWithMissingChecksum(TEST_COLLECTIONID, pillar, Instant.EPOCH));
+                    =
+                    getIssuesFromIterator(model.findFilesWithMissingChecksum(TEST_COLLECTIONID, pillar, Instant.EPOCH));
             Assertions.assertNotNull(missingChecksums);
             Assertions.assertEquals(0, missingChecksums.size());
         }
@@ -151,7 +152,10 @@ class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
             Assertions.assertEquals(TEST_FILE_ID, fi.getFileId());
             Assertions.assertNull(fi.getChecksum());
             Assertions.assertEquals(Instant.EPOCH, fi.getDateForLastChecksumCheckInstant());
-            Assertions.assertEquals(CalendarUtils.convertFromXMLGregorianCalendarToInstant(data1.getFileIDsDataItems().getFileIDsDataItem().get(0).getLastModificationTime()),
+            Assertions.assertEquals(CalendarUtils.
+                            convertFromXMLGregorianCalendarToInstant(
+                                    data1.getFileIDsDataItems().
+                                            getFileIDsDataItem().get(0).getLastModificationTime()),
                     fi.getDateForLastFileIDCheckInstant());
         }
     }
@@ -175,7 +179,8 @@ class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         for (FileInfo fi : fileinfos) {
             Assertions.assertEquals(TEST_FILE_ID, fi.getFileId());
             Assertions.assertEquals(TEST_CHECKSUM, fi.getChecksum());
-            Assertions.assertEquals(CalendarUtils.convertFromXMLGregorianCalendarToInstant(csData.get(0).getCalculationTimestamp()),
+            Assertions.assertEquals(
+                    CalendarUtils.convertFromXMLGregorianCalendarToInstant(csData.get(0).getCalculationTimestamp()),
                     fi.getDateForLastChecksumCheckInstant());
         }
     }

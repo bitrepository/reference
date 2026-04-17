@@ -524,7 +524,7 @@ class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         addDescription("Testing the checksum validation, when only one pillar has a checksum for a file.");
         IntegrityDAO cache = createDAO();
 
-        Instant maxDate = Instant.now().minusMillis(10000);
+        Instant maxDate = Instant.now().minusSeconds(1);
 
         addStep("Update the database with one file, one pillar having an outdated checksum.",
                 "Ingesting the data into the database");

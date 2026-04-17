@@ -57,9 +57,7 @@ public final class CalendarUtils {
      *
      * @param timeZone The TimeZone to use
      * @return The CalendarUtils instance for the non-standard timeZone
-     * @deprecated Use {@link #getInstance(ZoneId)} instead
      */
-    @Deprecated( forRemoval = true)
     public static CalendarUtils getInstance(java.util.TimeZone timeZone) {
         CalendarUtils cu = new CalendarUtils();
         cu.setZoneId(timeZone.toZoneId());
@@ -118,9 +116,7 @@ public final class CalendarUtils {
      *
      * @param date The date. If the argument is null, then epoch is returned.
      * @return The XMLGregorianCalendar.
-     * @deprecated Use {@link #getXmlGregorianCalendar(Instant)} instead
      */
-    @Deprecated( forRemoval = true)
     public static XMLGregorianCalendar getXmlGregorianCalendar(Date date) {
         if (date == null) {
             log.debug("Date is null. Returning epoch instead.");
@@ -141,9 +137,7 @@ public final class CalendarUtils {
      *
      * @param zonedDateTime The ZonedDateTime.
      * @return The XMLGregorianCalendar.
-     * @deprecated Use modern Java 8 time types directly.
      */
-    @Deprecated(forRemoval = true)
     public static XMLGregorianCalendar getXmlGregorianCalendar(ZonedDateTime zonedDateTime) {
         ArgumentValidator.checkNotNull(zonedDateTime, "ZonedDateTime zonedDateTime");
         GregorianCalendar gc = GregorianCalendar.from(zonedDateTime);
@@ -159,9 +153,7 @@ public final class CalendarUtils {
      *
      * @param gregorianCalendar the calendar
      * @return The current date in XML format
-     * @deprecated Use {@link #getXmlGregorianCalendar(Instant)} or {@link #getXmlGregorianCalendar(ZonedDateTime)} instead
      */
-    @Deprecated(forRemoval = true)
     public static XMLGregorianCalendar getXmlGregorianCalendar(GregorianCalendar gregorianCalendar) {
         try {
             return DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
@@ -174,9 +166,7 @@ public final class CalendarUtils {
      * Method for easier retrieving the current date in XML format.
      *
      * @return The current date in XML format
-     * @deprecated Use {@link Instant#now()}
      */
-    @Deprecated(forRemoval = true)
     public static XMLGregorianCalendar getNow() {
         return getXmlGregorianCalendar(Instant.now());
     }
@@ -185,9 +175,7 @@ public final class CalendarUtils {
      * Method for easier retrieving the date for Epoch (January 1, 1970 00:00:00.000 GMT).
      *
      * @return Epoch in XMLGregorianCalendar format.
-     * @deprecated Use {@link Instant#EPOCH}
      */
-    @Deprecated(forRemoval = true)
     public static XMLGregorianCalendar getEpoch() {
         return getXmlGregorianCalendar(Instant.EPOCH);
     }
@@ -197,9 +185,7 @@ public final class CalendarUtils {
      *
      * @param millis The amount of milliseconds since Epoch.
      * @return The date in XMLGregorianCalendar format.
-     * @deprecated Use {@link Instant#ofEpochMilli(long)}
      */
-    @Deprecated(forRemoval = true)
     public static XMLGregorianCalendar getFromMillis(long millis) {
         return getXmlGregorianCalendar(Instant.ofEpochMilli(millis));
     }
@@ -221,9 +207,7 @@ public final class CalendarUtils {
      *
      * @param xmlCal The XML calendar to convert from.
      * @return The date for the XML calendar converted into the default java date class.
-     * @deprecated Use {@link #convertFromXMLGregorianCalendarToInstant(XMLGregorianCalendar)} instead
      */
-    @Deprecated( forRemoval = true)
     public static Date convertFromXMLGregorianCalendar(XMLGregorianCalendar xmlCal) {
         ArgumentValidator.checkNotNull(xmlCal, "XMLGregorianCalendar xmlCal");
 
@@ -256,7 +240,6 @@ public final class CalendarUtils {
      * @param dateStr The string representation of the date, in the form '02/26/2015'
      * @return Date A date object representing the start of the day, or null if the input cannot
      * be turned into a date.
-     * @deprecated Use {@link #makeStartInstant(String)} instead
      */
     @Deprecated( forRemoval = true)
     public Date makeStartDateObject(String dateStr) {

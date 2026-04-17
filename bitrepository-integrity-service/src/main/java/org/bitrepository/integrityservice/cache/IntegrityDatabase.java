@@ -100,8 +100,8 @@ public class IntegrityDatabase implements IntegrityModel {
     }
 
     @Override
-    public IntegrityIssueIterator findChecksumsOlderThan(Instant checksumAtLeastThatOld, String pillarID, String collectionID) {
-        return store.getFilesWithOutdatedChecksums(collectionID, pillarID, checksumAtLeastThatOld);
+    public IntegrityIssueIterator findChecksumsOlderThan(Instant checksumAgeThreshold, String pillarID, String collectionID) {
+        return store.getFilesWithOutdatedChecksums(collectionID, pillarID, checksumAgeThreshold);
     }
 
     @Override

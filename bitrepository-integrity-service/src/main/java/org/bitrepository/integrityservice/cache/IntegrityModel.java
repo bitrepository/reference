@@ -150,14 +150,14 @@ public interface IntegrityModel {
     }
 
     /**
-     * Locates the id of all the files which are older than a given checksumAtLeastThatOld.
+     * Locates the id of all the files which are older than a given checksumAgeThreshold.
      *
-     * @param checksumAtLeastThatOld   The checksumAtLeastThatOld for the checksum to be older than. Not allowed to be null.
+     * @param checksumAgeThreshold   The checksumAgeThreshold for the checksum to be older than. Not allowed to be null.
      * @param pillarID     The pillar to get checksums from
      * @param collectionID The collection to where the files belong
      * @return The IntegrityIssueIterator of ids for the files which have an old checksum.
      */
-    IntegrityIssueIterator findChecksumsOlderThan(Instant checksumAtLeastThatOld, String pillarID, String collectionID);
+    IntegrityIssueIterator findChecksumsOlderThan(Instant checksumAgeThreshold, String pillarID, String collectionID);
 
     /**
      * Locates the id of all the files which are older than a given checksumAtLeastThatOld.
@@ -207,7 +207,7 @@ public interface IntegrityModel {
 
     /**
      * Retrieves the date for the latest file entry for a given collection.
-     * E.g. the date for the latest file which has been positively identified as existing in the collection.
+     * E.g. the date for the latest file that has been positively identified as existing in the collection.
      *
      * @param collectionID The ID of the collection to look in
      * @return The requested date.

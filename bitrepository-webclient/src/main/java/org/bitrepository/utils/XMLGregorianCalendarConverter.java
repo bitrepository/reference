@@ -57,9 +57,7 @@ public class XMLGregorianCalendarConverter {
      * @return XMLGregorianCalendar instance whose value is based upon the
      *  value in the date parameter. If the date parameter is null then
      *  this method will simply return null.
-     * @deprecated Use {@link #asXMLGregorianCalendar(Instant)} instead
      */
-    @Deprecated(forRemoval = true)
     public static XMLGregorianCalendar asXMLGregorianCalendar(Date date) {
         if (date == null) {
             return null;

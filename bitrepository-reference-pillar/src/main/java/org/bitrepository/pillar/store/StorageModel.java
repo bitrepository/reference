@@ -72,7 +72,8 @@ public abstract class StorageModel {
      * @param alarmDispatcher The alarm dispatcher.
      * @param settings        The configuration to use.
      */
-    protected StorageModel(FileStore archives, ChecksumStore cache, AlarmDispatcher alarmDispatcher, Settings settings) {
+    protected StorageModel(FileStore archives, ChecksumStore cache, AlarmDispatcher alarmDispatcher,
+                           Settings settings) {
         this.fileArchive = archives;
         this.cache = cache;
         this.alarmDispatcher = alarmDispatcher;
@@ -191,8 +192,9 @@ public abstract class StorageModel {
      * @throws RequestHandlerException If it is a non-default checksum specification, which is not supported (e.g. if
      *                                 it is a ChecksumPillar).
      */
-    public ExtractedChecksumResultSet getChecksumResultSet(Instant minTimestamp,
-                                                           Instant maxTimestamp, Long maxResults, String collectionID, ChecksumSpecTYPE csSpec)
+    public ExtractedChecksumResultSet getChecksumResultSet(Instant minTimestamp, Instant maxTimestamp,
+                                                           Long maxResults, String collectionID,
+                                                           ChecksumSpecTYPE csSpec)
             throws RequestHandlerException {
         verifyFileToCacheConsistencyOfAllDataIfRequired(collectionID);
         if (csSpec.equals(defaultChecksumSpec)) {
@@ -205,12 +207,9 @@ public abstract class StorageModel {
         }
     }
 
-    /**
-     * @deprecated Use {@link #getChecksumResultSet(Instant, Instant, Long, String, ChecksumSpecTYPE)} instead
-     */
-    @Deprecated(forRemoval = true)
     public ExtractedChecksumResultSet getChecksumResultSet(XMLGregorianCalendar minTimestamp,
-            XMLGregorianCalendar maxTimestamp, Long maxResults, String collectionID, ChecksumSpecTYPE csSpec)
+                                                           XMLGregorianCalendar maxTimestamp, Long maxResults,
+                                                           String collectionID, ChecksumSpecTYPE csSpec)
             throws RequestHandlerException {
         return getChecksumResultSet(
                 minTimestamp != null ? CalendarUtils.convertFromXMLGregorianCalendarToInstant(minTimestamp) : null,
@@ -233,7 +232,8 @@ public abstract class StorageModel {
      *                                 checksum specification.
      */
     public ExtractedChecksumResultSet getSingleChecksumResultSet(String fileID, String collectionID,
-                                                                 Instant minTimestamp, Instant maxTimestamp, ChecksumSpecTYPE csSpec)
+                                                                 Instant minTimestamp, Instant maxTimestamp,
+                                                                 ChecksumSpecTYPE csSpec)
             throws RequestHandlerException {
         ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
         ChecksumEntry entry = getChecksumEntryForFile(fileID, collectionID, csSpec);
@@ -246,12 +246,10 @@ public abstract class StorageModel {
         return res;
     }
 
-    /**
-     * @deprecated Use {@link #getSingleChecksumResultSet(String, String, Instant, Instant, ChecksumSpecTYPE)} instead
-     */
-    @Deprecated(forRemoval = true)
     public ExtractedChecksumResultSet getSingleChecksumResultSet(String fileID, String collectionID,
-            XMLGregorianCalendar minTimestamp, XMLGregorianCalendar maxTimestamp, ChecksumSpecTYPE csSpec)
+                                                                 XMLGregorianCalendar minTimestamp,
+                                                                 XMLGregorianCalendar maxTimestamp,
+                                                                 ChecksumSpecTYPE csSpec)
             throws RequestHandlerException {
         return getSingleChecksumResultSet(fileID, collectionID,
                 minTimestamp != null ? CalendarUtils.convertFromXMLGregorianCalendarToInstant(minTimestamp) : null,
@@ -265,9 +263,7 @@ public abstract class StorageModel {
      * @param xmlGregorianCalendar The {@link XMLGregorianCalendar} timestamp to convert.
      * @return Returns the number of milliseconds since January 1, 1970, 00:00:00 GMT represented by this date, as a
      * {@link Long}.
-     * @deprecated Use {@link CalendarUtils#convertFromXMLGregorianCalendarToInstant(XMLGregorianCalendar)} instead
      */
-    @Deprecated(forRemoval = true)
     private long getTime(XMLGregorianCalendar xmlGregorianCalendar) {
         return CalendarUtils.convertFromXMLGregorianCalendar(xmlGregorianCalendar).getTime();
     }
@@ -370,7 +366,7 @@ public abstract class StorageModel {
      *                                 checksum.
      */
     public abstract void replaceFile(String fileID, String collectionID, String fileAddress,
-            ChecksumDataForFileTYPE validationChecksum) throws RequestHandlerException;
+                                     ChecksumDataForFileTYPE validationChecksum) throws RequestHandlerException;
 
     /**
      * Handles the PutFile operation.
@@ -383,7 +379,7 @@ public abstract class StorageModel {
      *                                 checksum.
      */
     public abstract void putFile(String collectionID, String fileID, String fileAddress,
-            ChecksumDataForFileTYPE expectedChecksum) throws RequestHandlerException;
+                                 ChecksumDataForFileTYPE expectedChecksum) throws RequestHandlerException;
 
     /**
      * Verify the consistency between all the data in the file archive and in the cache, if it is required by the
@@ -449,22 +445,12 @@ public abstract class StorageModel {
      * @return The extracted file ids.
      */
     public abstract ExtractedFileIDsResultSet getFileIDsResultSet(String fileID, Instant minTimestamp,
-                                                                  Instant maxTimestamp, Long maxResults, String collectionID);
+                                                                  Instant maxTimestamp, Long maxResults,
+                                                                  String collectionID);
 
-    /**
-     * Extracts a set of file ids according to the given restrictions.
-     *
-     * @param fileID       The id of the file (thus only the id of a specific file).
-     * @param minTimestamp The minimum date for the LastModifiedDate of the files.
-     * @param maxTimestamp The maximum date for the LastModifiedDate of the files.
-     * @param maxResults   The maximum number of results.
-     * @param collectionID The id of the collection.
-     * @return The extracted file ids.
-     * @deprecated Use {@link #getFileIDsResultSet(String, Instant, Instant, Long, String)} instead
-     */
-    @Deprecated(forRemoval = true)
     public ExtractedFileIDsResultSet getFileIDsResultSet(String fileID, XMLGregorianCalendar minTimestamp,
-            XMLGregorianCalendar maxTimestamp, Long maxResults, String collectionID) {
+                                                         XMLGregorianCalendar maxTimestamp, Long maxResults,
+                                                         String collectionID) {
         return getFileIDsResultSet(fileID,
                 minTimestamp != null ? CalendarUtils.convertFromXMLGregorianCalendarToInstant(minTimestamp) : null,
                 maxTimestamp != null ? CalendarUtils.convertFromXMLGregorianCalendarToInstant(maxTimestamp) : null,
@@ -482,7 +468,7 @@ public abstract class StorageModel {
      *                                 ChecksumPillar.
      */
     protected abstract ExtractedChecksumResultSet getNonDefaultChecksumResultSet(Long maxResults, String collectionID,
-            ChecksumSpecTYPE csSpec) throws RequestHandlerException;
+                                                                                 ChecksumSpecTYPE csSpec) throws RequestHandlerException;
 
     /**
      * Throws an exception unless the actual file exists and is available.

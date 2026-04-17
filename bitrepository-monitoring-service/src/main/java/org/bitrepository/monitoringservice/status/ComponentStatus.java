@@ -92,9 +92,7 @@ public class ComponentStatus {
 
     /**
      * @return The date for the latest reply.
-     * @deprecated Use {@link #getLastReplyInstant()} instead
      */
-    @Deprecated(forRemoval = true)
     public XMLGregorianCalendar getLastReplyDate() {
         return CalendarUtils.getXmlGregorianCalendar(lastReply);
     }
