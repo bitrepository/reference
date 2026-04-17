@@ -45,7 +45,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -55,12 +54,16 @@ import java.time.Instant;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 
 /**
  * Tests the PutFile functionality on the ReferencePillar.
  */
 @ExtendWith(SuiteInfoParameterResolver.class)
-public class GetChecksumsTest extends MockedPillarTest {
+class GetChecksumsTest extends MockedPillarTest {
     private GetChecksumsMessageFactory msgFactory;
 
     @Override
@@ -74,7 +77,7 @@ public class GetChecksumsTest extends MockedPillarTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void goodCaseIdentification() throws Exception {
+    void goodCaseIdentification() throws Exception {
         addDescription("Tests the identification for a GetChecksums operation on the pillar for the successful " +
                 "scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -87,7 +90,7 @@ public class GetChecksumsTest extends MockedPillarTest {
             public Boolean answer(InvocationOnMock invocation) {
                 return true;
             }
-        }).when(model).hasFileID(ArgumentMatchers.eq(FILE_ID), ArgumentMatchers.anyString());
+        }).when(model).hasFileID(eq(FILE_ID), anyString());
         Mockito.doAnswer(new Answer() {
             public String answer(InvocationOnMock invocation) {
                 return settingsForCUT.getComponentID();
@@ -130,7 +133,7 @@ public class GetChecksumsTest extends MockedPillarTest {
             public Boolean answer(InvocationOnMock invocation) {
                 return false;
             }
-        }).when(model).hasFileID(ArgumentMatchers.eq(FILE_ID), ArgumentMatchers.anyString());
+        }).when(model).hasFileID(eq(FILE_ID), anyString());
         Mockito.doAnswer(new Answer() {
             public String answer(InvocationOnMock invocation) {
                 return settingsForCUT.getComponentID();
@@ -171,7 +174,7 @@ public class GetChecksumsTest extends MockedPillarTest {
             public Boolean answer(InvocationOnMock invocation) {
                 return true;
             }
-        }).when(model).hasFileID(ArgumentMatchers.eq(FILE_ID), ArgumentMatchers.anyString());
+        }).when(model).hasFileID(eq(FILE_ID), anyString());
         Mockito.doAnswer(new Answer() {
             public String answer(InvocationOnMock invocation) {
                 return settingsForCUT.getComponentID();
@@ -184,8 +187,9 @@ public class GetChecksumsTest extends MockedPillarTest {
                 return res;
 
             }
-        }).when(model).getSingleChecksumResultSet(ArgumentMatchers.eq(FILE_ID), ArgumentMatchers.anyString(),
-                ArgumentMatchers.isNull(Instant.class), ArgumentMatchers.isNull(Instant.class), ArgumentMatchers.any(ChecksumSpecTYPE.class));
+        }).when(model).getSingleChecksumResultSet(eq(FILE_ID), anyString(),
+                (Instant) isNull(), (Instant) isNull(),
+                any(ChecksumSpecTYPE.class));
 
         addStep("Create and send the actual GetChecksums message to the pillar.",
                 "Should be received and handled by the pillar.");
@@ -233,8 +237,8 @@ public class GetChecksumsTest extends MockedPillarTest {
                 res.insertChecksumEntry(new ChecksumEntry(nonDefaultFileId, NON_DEFAULT_MD5_CHECKSUM, Instant.EPOCH));
                 return res;
             }
-        }).when(model).getChecksumResultSet(ArgumentMatchers.isNull(Instant.class), ArgumentMatchers.isNull(Instant.class), ArgumentMatchers.any(),
-                ArgumentMatchers.anyString(), ArgumentMatchers.any(ChecksumSpecTYPE.class));
+        }).when(model).getChecksumResultSet((Instant) isNull(), (Instant) isNull(), any(),
+                anyString(), any(ChecksumSpecTYPE.class));
 
         addStep("Create and send the actual GetChecksums message to the pillar.",
                 "Should be received and handled by the pillar.");
@@ -273,7 +277,7 @@ public class GetChecksumsTest extends MockedPillarTest {
             public Boolean answer(InvocationOnMock invocation) {
                 return false;
             }
-        }).when(model).hasFileID(ArgumentMatchers.eq(FILE_ID), ArgumentMatchers.anyString());
+        }).when(model).hasFileID(eq(FILE_ID), anyString());
         Mockito.doAnswer(new Answer() {
             public String answer(InvocationOnMock invocation) {
                 return settingsForCUT.getComponentID();
@@ -307,8 +311,8 @@ public class GetChecksumsTest extends MockedPillarTest {
         addStep("Set up constants and variables.", "Should not fail here!");
         FileIDs fileids = FileIDsUtils.getAllFileIDs();
 
-        final XMLGregorianCalendar MIN_DATE = CalendarUtils.getXmlGregorianCalendar(Instant.ofEpochMilli(12345));
-        final XMLGregorianCalendar MAX_DATE = CalendarUtils.getXmlGregorianCalendar(Instant.now());
+        final XMLGregorianCalendar minDate = CalendarUtils.getXmlGregorianCalendar(Instant.ofEpochMilli(12345));
+        final XMLGregorianCalendar maxDate = CalendarUtils.getXmlGregorianCalendar(Instant.now());
         final Long MAX_RESULTS = 12345L;
 
         Mockito.doAnswer(new Answer() {
@@ -324,15 +328,14 @@ public class GetChecksumsTest extends MockedPillarTest {
                 res.insertChecksumEntry(new ChecksumEntry(defaultFileId, DEFAULT_MD5_CHECKSUM, Instant.now()));
                 return res;
             }
-        }).when(model).getChecksumResultSet(
-                ArgumentMatchers.eq(CalendarUtils.convertFromXMLGregorianCalendarToInstant(MIN_DATE)),
-                ArgumentMatchers.eq(CalendarUtils.convertFromXMLGregorianCalendarToInstant(MAX_DATE)),
-                ArgumentMatchers.eq(MAX_RESULTS), ArgumentMatchers.eq(collectionID), ArgumentMatchers.eq(csSpec));
+        }).when(model).getChecksumResultSet(any(Instant.class), // minDate
+                any(Instant.class), any(),
+                eq(collectionID), eq(csSpec));
 
         addStep("Create and send the actual GetChecksums message to the pillar.",
                 "Should be received and handled by the pillar.");
         GetChecksumsRequest getChecksumsRequest = msgFactory.createGetChecksumsRequest(csSpec, fileids, null,
-                MIN_DATE, MAX_DATE, MAX_RESULTS);
+                minDate, maxDate, MAX_RESULTS);
         messageBus.sendMessage(getChecksumsRequest);
 
         addStep("Retrieve the ProgressResponse for the GetChecksums request",

@@ -35,6 +35,7 @@ import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.bus.MessageReceiver;
 import org.bitrepository.protocol.messagebus.MessageListener;
+import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +76,7 @@ public class PillarPerformanceTest extends PillarIntegrationTest {
             try {
                 Thread.sleep(6000);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Assertions.fail(e);
             }
             System.out.println("...waiting for the last " + (numberOfOperations - metrics.getCount()) +
                     " operations to finish " +

@@ -41,7 +41,7 @@ class GetFileRequestIT extends PillarFunctionTest {
     protected FileExchange fe = null;
 
     @BeforeEach
-    public void initialiseReferenceTest() throws Exception {
+    void initialiseReferenceTest() throws Exception {
         String pillarDestination = lookupGetFileDestination();
         msgFactory = new GetFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), pillarDestination);
         testFileURL = new URL(defaultFileUrl.toExternalForm() + System.currentTimeMillis());
@@ -49,7 +49,7 @@ class GetFileRequestIT extends PillarFunctionTest {
     }
 
     @AfterEach
-    public void cleanUp(TestInfo testInfo) {
+    void cleanUp(TestInfo testInfo) {
         try {
             fe.deleteFile(testFileURL);
         } catch (Exception e) {
