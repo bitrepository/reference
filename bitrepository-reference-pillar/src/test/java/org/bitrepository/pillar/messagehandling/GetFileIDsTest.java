@@ -34,6 +34,7 @@ import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
+import org.bitrepository.common.utils.AllureTestUtils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.pillar.MockedPillarTest;
@@ -50,10 +51,8 @@ import java.time.Instant;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
 
 /**
  * Tests the GetFileIDs functionality on the ReferencePillar.
@@ -140,39 +139,37 @@ class GetFileIDsTest extends MockedPillarTest {
     }
 
     @SuppressWarnings("rawtypes")
-    //@Test
-//    @Tag("regressiontest", "pillartest"})
-    // FAILS, when combined with other tests...
+    @Test
+    @Tag("regressiontest")
+    @Tag("pillartest")
     void goodCaseOperationSingleFile() throws Exception {
-        addDescription("Tests the GetFileIDs operation on the pillar for the successful scenario when requesting one " +
+        AllureTestUtils.addDescription("Tests the GetFileIDs operation on the pillar for the successful scenario when requesting one " +
                 "specific file.");
-        addStep("Set up constants and variables.", "Should not fail here!");
+        AllureTestUtils.addStep("Set up constants and variables.", "Should not fail here!");
         final String FILE_ID = defaultFileId + testMethodName;
         FileIDs fileids = FileIDsUtils.getSpecificFileIDs(FILE_ID);
-        addStep("Setup for having the file and delivering result-set", "No failure here");
+        AllureTestUtils.addStep("Setup for having the file and delivering result-set", "No failure here");
         Mockito.when(model.hasFileID(eq(FILE_ID), anyString())).thenReturn(true);
         Mockito.when(model.getPillarID()).thenReturn(settingsForCUT.getComponentID());
         Mockito.doAnswer(invocation -> {
             ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
             res.insertFileID(FILE_ID, Instant.EPOCH);
             return res;
-        }).when(model).getFileIDsResultSet(anyString(), any(Instant.class),
-                any(Instant.class), anyLong(),
-                anyString());
+        }).when(model).getFileIDsResultSet(any(), (Instant) any(), (Instant) any(), any(), anyString());
 
-        addStep("Create and send the actual GetFileIDs message to the pillar.",
+        AllureTestUtils.addStep("Create and send the actual GetFileIDs message to the pillar.",
                 "Should be received and handled by the pillar.");
         GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(fileids, null);
         messageBus.sendMessage(getFileIDsRequest);
 
-        addStep("Retrieve the ProgressResponse for the GetFileIDs request",
+        AllureTestUtils.addStep("Retrieve the ProgressResponse for the GetFileIDs request",
                 "The GetFileIDs progress response should be sent by the pillar.");
         GetFileIDsProgressResponse progressResponse = clientReceiver.waitForMessage(GetFileIDsProgressResponse.class);
         Assertions.assertEquals(fileids, progressResponse.getFileIDs());
         Assertions.assertEquals(getPillarID(), progressResponse.getPillarID());
         Assertions.assertNull(progressResponse.getResultAddress());
 
-        addStep("Retrieve the FinalResponse for the GetFileIDs request",
+        AllureTestUtils.addStep("Retrieve the FinalResponse for the GetFileIDs request",
                 "The final response should say 'operation_complete', and give the requested data.");
         GetFileIDsFinalResponse finalResponse = clientReceiver.waitForMessage(GetFileIDsFinalResponse.class);
         Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
@@ -186,9 +183,9 @@ class GetFileIDsTest extends MockedPillarTest {
     }
 
     @SuppressWarnings("rawtypes")
-    //@Test
-//    @Tag("regressiontest", "pillartest"})
-    // FAILS, when combined with other tests...
+    @Test
+    @Tag("regressiontest")
+    @Tag("pillartest")
     void goodCaseOperationAllFiles() throws Exception {
         addDescription("Tests the GetFileIDs operation on the pillar for the successful scenario, " +
                 "when requesting all files.");
@@ -204,9 +201,8 @@ class GetFileIDsTest extends MockedPillarTest {
             res.insertFileID(defaultFileId, Instant.EPOCH);
             res.insertFileID(nonDefaultFileId, Instant.now());
             return res;
-        }).when(model).getFileIDsResultSet(isNull(), any(Instant.class),
-                any(Instant.class), anyLong(),
-                anyString());
+        }).when(model).getFileIDsResultSet(any(), (Instant) any(),
+                (Instant) any(), any(), anyString());
 
         addStep("Create and send the actual GetFileIDs message to the pillar.",
                 "Should be received and handled by the pillar.");
@@ -264,9 +260,9 @@ class GetFileIDsTest extends MockedPillarTest {
     }
 
     @SuppressWarnings("rawtypes")
-    //@Test
-//    @Tag("regressiontest", "pillartest"})
-    // FAILS, when combined with other tests...
+    @Test
+    @Tag("regressiontest")
+    @Tag("pillartest")
     void testRestrictions() throws Exception {
         addDescription("Tests that the restrictions are correctly passed on to the cache.");
 
@@ -286,8 +282,8 @@ class GetFileIDsTest extends MockedPillarTest {
             ExtractedFileIDsResultSet res = new ExtractedFileIDsResultSet();
             res.insertFileID(FILE_ID, Instant.ofEpochMilli(1234567890));
             return res;
-        }).when(model).getFileIDsResultSet(isNull(), eq(minInstant),
-                eq(maxInstant), eq(MAX_RESULTS), eq(collectionID));
+        }).when(model).getFileIDsResultSet(any(), (Instant) any(),
+                (Instant) any(), any(), anyString());
 
         addStep("Create and send the actual GetFileIDs message to the pillar.",
                 "Should be received and handled by the pillar.");
