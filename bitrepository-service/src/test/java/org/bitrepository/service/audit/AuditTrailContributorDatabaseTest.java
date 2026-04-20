@@ -35,16 +35,16 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
+import java.time.OffsetDateTime;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-/** Run audit trail contributor database test using Derby.  Generates Allure reports. */
+/**
+ * Run audit trail contributor database test using Derby.  Generates Allure reports.
+ */
 
-public class AuditTrailContributorDatabaseTest {
+class AuditTrailContributorDatabaseTest {
     private Settings settings;
     private DatabaseSpecifics databaseSpecifics;
     private String firstCollectionID;
@@ -58,7 +58,7 @@ public class AuditTrailContributorDatabaseTest {
     private static final String FILE_ID_2 = "FILE-ID-2";
 
     @BeforeEach
-    public void setup() throws Exception {
+    void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings(getClass().getSimpleName());
 
         databaseSpecifics = new DatabaseSpecifics();
@@ -75,7 +75,7 @@ public class AuditTrailContributorDatabaseTest {
     @Test
     @Tag("regressiontest")
     @Tag("databasetest")
-    public void testAuditTrailDatabaseExtraction() throws Exception {
+    void testAuditTrailDatabaseExtraction() throws Exception {
         addDescription("Testing the basic functions of the audit trail database interface.");
         addStep("Setup varibles and the database connection.", "No errors.");
         DatabaseManager dm = new AuditDatabaseManager(databaseSpecifics);
@@ -150,7 +150,7 @@ public class AuditTrailContributorDatabaseTest {
     @Test
     @Tag("regressiontest")
     @Tag("databasetest")
-    public void testAuditTrailDatabaseExtractionOrder() throws Exception {
+    void testAuditTrailDatabaseExtractionOrder() throws Exception {
         addDescription("Test the order of extraction");
         addStep("Setup variables and database connection", "No errors");
         DatabaseManager dm = new AuditDatabaseManager(databaseSpecifics);
@@ -170,54 +170,69 @@ public class AuditTrailContributorDatabaseTest {
                 FileAction.INCONSISTENCY, DEFAULT_OPERATION_ID, DEFAULT_CERTIFICATE_ID);
 
         addStep("Extract 3 audit-trails", "Should give first 3 audit-trails in order.");
-        AuditTrailDatabaseResults events = daba.getAudits(firstCollectionID, null, null, null, (Instant) null, (Instant) null, 3L);
+        AuditTrailDatabaseResults events =
+                daba.getAudits(firstCollectionID, null, null, null,
+                        null, (Instant) null, 3L);
         Assertions.assertEquals(3L, events.getAuditTrailEvents().getAuditTrailEvent().size());
-        Assertions.assertEquals(FileAction.PUT_FILE, events.getAuditTrailEvents().getAuditTrailEvent().get(0).getActionOnFile());
-        Assertions.assertEquals(1L, events.getAuditTrailEvents().getAuditTrailEvent().get(0).getSequenceNumber().longValue());
-        Assertions.assertEquals(FileAction.CHECKSUM_CALCULATED, events.getAuditTrailEvents().getAuditTrailEvent().get(1).getActionOnFile());
-        Assertions.assertEquals(2L, events.getAuditTrailEvents().getAuditTrailEvent().get(1).getSequenceNumber().longValue());
-        Assertions.assertEquals(FileAction.FILE_MOVED, events.getAuditTrailEvents().getAuditTrailEvent().get(2).getActionOnFile());
-        Assertions.assertEquals(3L, events.getAuditTrailEvents().getAuditTrailEvent().get(2).getSequenceNumber().longValue());
+        Assertions.assertEquals(FileAction.PUT_FILE,
+                events.getAuditTrailEvents().getAuditTrailEvent().get(0).getActionOnFile());
+        Assertions.assertEquals(1L,
+                events.getAuditTrailEvents().getAuditTrailEvent().get(0).getSequenceNumber().longValue());
+        Assertions.assertEquals(FileAction.CHECKSUM_CALCULATED,
+                events.getAuditTrailEvents().getAuditTrailEvent().get(1).getActionOnFile());
+        Assertions.assertEquals(2L,
+                events.getAuditTrailEvents().getAuditTrailEvent().get(1).getSequenceNumber().longValue());
+        Assertions.assertEquals(FileAction.FILE_MOVED,
+                events.getAuditTrailEvents().getAuditTrailEvent().get(2).getActionOnFile());
+        Assertions.assertEquals(3L,
+                events.getAuditTrailEvents().getAuditTrailEvent().get(2).getSequenceNumber().longValue());
 
         long firstSeq = events.getAuditTrailEvents().getAuditTrailEvent().get(0).getSequenceNumber().longValue();
 
-        addStep("Extract 3 audit-trails, with larger seq-number than the first", "Should give audit-trail #2, #3, #4");
-        events = daba.getAudits(firstCollectionID, null, firstSeq + 1, null, (Instant) null, (Instant) null, 3L);
+        addStep("Extract 3 audit-trails, with larger seq-number than the first",
+                "Should give audit-trail #2, #3, #4");
+        events = daba.getAudits(firstCollectionID, null, firstSeq + 1, null,
+                null, (Instant) null, 3L);
         Assertions.assertEquals(3L, events.getAuditTrailEvents().getAuditTrailEvent().size());
-        Assertions.assertEquals(FileAction.CHECKSUM_CALCULATED, events.getAuditTrailEvents().getAuditTrailEvent().get(0).getActionOnFile());
-        Assertions.assertEquals(FileAction.FILE_MOVED, events.getAuditTrailEvents().getAuditTrailEvent().get(1).getActionOnFile());
-        Assertions.assertEquals(FileAction.FAILURE, events.getAuditTrailEvents().getAuditTrailEvent().get(2).getActionOnFile());
+        Assertions.assertEquals(FileAction.CHECKSUM_CALCULATED,
+                events.getAuditTrailEvents().getAuditTrailEvent().get(0).getActionOnFile());
+        Assertions.assertEquals(FileAction.FILE_MOVED,
+                events.getAuditTrailEvents().getAuditTrailEvent().get(1).getActionOnFile());
+        Assertions.assertEquals(FileAction.FAILURE,
+                events.getAuditTrailEvents().getAuditTrailEvent().get(2).getActionOnFile());
 
         dm.getConnector().destroy();
     }
 
     @Test
-    public void contributorDatabaseCorrectTimestampTest() {
+    void contributorDatabaseCorrectTimestampTest() {
         addDescription("Testing the correct ingest and extraction of audittrail dates");
         DatabaseManager dm = new AuditDatabaseManager(databaseSpecifics);
         AuditTrailContributorDAO daba = new DerbyAuditTrailContributorDAO(dm);
         daba.initialize(settings.getComponentID());
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.ROOT);
-        Instant summertimeTS = ZonedDateTime.parse("2015-10-25T02:59:54.000+02:00", formatter).toInstant();
+        Instant summertimeTS = OffsetDateTime.parse("2015-10-25T02:59:54.000+02:00").toInstant();
         Instant summertimeUnix = Instant.ofEpochMilli(1445734794000L);
         Assertions.assertEquals(summertimeUnix, summertimeTS);
 
-        Instant wintertimeTS = ZonedDateTime.parse("2015-10-25T02:59:54.000+01:00", formatter).toInstant();
+        Instant wintertimeTS = OffsetDateTime.parse("2015-10-25T02:59:54.000+01:00").toInstant();
         Instant wintertimeUnix = Instant.ofEpochMilli(1445738394000L);
         Assertions.assertEquals(wintertimeUnix, wintertimeTS);
 
-        daba.addAuditEvent(firstCollectionID, "summertime", summertimeTS, "actor", "info", "auditTrail",
-                FileAction.OTHER, null, null);
-        daba.addAuditEvent(firstCollectionID, "wintertime", wintertimeTS, "actor", "info", "auditTrail",
-                FileAction.OTHER, null, null);
+        daba.addAuditEvent(firstCollectionID, "summertime", summertimeTS, "actor", "info",
+                "auditTrail", FileAction.OTHER, null, null);
+        daba.addAuditEvent(firstCollectionID, "wintertime", wintertimeTS, "actor", "info"
+                , "auditTrail", FileAction.OTHER, null, null);
 
-        AuditTrailDatabaseResults events = daba.getAudits(firstCollectionID, "summertime", null, null, (Instant) null, (Instant) null, 2L);
+        AuditTrailDatabaseResults events =
+                daba.getAudits(firstCollectionID, "summertime", null, null,
+                        null, (Instant) null, 2L);
         Assertions.assertEquals(1, events.getAuditTrailEvents().getAuditTrailEvent().size(), events.toString());
         Assertions.assertEquals(summertimeUnix, CalendarUtils.convertFromXMLGregorianCalendarToInstant(
                 events.getAuditTrailEvents().getAuditTrailEvent().get(0).getActionDateTime()));
 
-        events = daba.getAudits(firstCollectionID, "wintertime", null, null, (Instant) null, (Instant) null, 2L);
+        events = daba.getAudits(firstCollectionID, "wintertime", null, null,
+                null, (Instant) null, 2L);
         Assertions.assertEquals(1, events.getAuditTrailEvents().getAuditTrailEvent().size(), events.toString());
         Assertions.assertEquals(wintertimeUnix, CalendarUtils.convertFromXMLGregorianCalendarToInstant(
                 events.getAuditTrailEvents().getAuditTrailEvent().get(0).getActionDateTime()));
@@ -227,7 +242,7 @@ public class AuditTrailContributorDatabaseTest {
     @Test
     @Tag("regressiontest")
     @Tag("databasetest")
-    public void testAuditTrailDatabaseIngest() throws Exception {
+    void testAuditTrailDatabaseIngest() throws Exception {
         addDescription("Testing the ingest of data.");
         addStep("Setup varibles and the database connection.", "No errors.");
         String fileID1 = "FILE-ID-1";
@@ -318,10 +333,10 @@ public class AuditTrailContributorDatabaseTest {
     }
 
     /**
-     * Helper class which knows how to create a Derby database with an enclosed script.
+     * Helper class that knows how to create a Derby database with an enclosed script.
      */
 
-    private class TestAuditTrailContributorDBCreator extends DatabaseCreator {
+    private static class TestAuditTrailContributorDBCreator extends DatabaseCreator {
         public static final String DEFAULT_AUDIT_TRAIL_DB_SCRIPT = "sql/derby/auditContributorDBCreation.sql";
 
         public void createAuditTrailContributorDatabase(DatabaseSpecifics databaseSpecifics) {

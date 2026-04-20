@@ -131,8 +131,8 @@ public class JobTimerTask extends TimerTask {
 
     @Override
     public void run() {
-        if (nextRun != null && (getNextRunInstant() == null ||
-                getNextRunInstant().toEpochMilli() <= System.currentTimeMillis())) {
+        if (nextRun != null &&
+                (getNextRunInstant() == null || ! getNextRunInstant().isAfter(Instant.now()))) {
             runJob();
         }
     }

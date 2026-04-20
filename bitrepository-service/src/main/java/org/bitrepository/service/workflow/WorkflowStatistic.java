@@ -25,6 +25,7 @@ package org.bitrepository.service.workflow;
 import org.bitrepository.common.utils.TimeUtils;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -196,7 +197,7 @@ public class WorkflowStatistic {
         if (getFinishInstant() == null) {
             return System.currentTimeMillis() - start.toEpochMilli();
         } else {
-            return finish.toEpochMilli() - start.toEpochMilli();
+            return ChronoUnit.MILLIS.between(start, finish);
         }
     }
 

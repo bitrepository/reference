@@ -97,14 +97,18 @@ public class TimerBasedScheduler implements JobScheduler {
     public Date getNextRun(JobID jobId) {
         if (intervalTasks.containsKey(jobId)) {
             return intervalTasks.get(jobId).getNextRun();
-        } else return null;
+        } else {
+            return null;
+        }
     }
 
     @Override
     public Instant getNextRunInstant(JobID jobId) {
         if (intervalTasks.containsKey(jobId)) {
             return intervalTasks.get(jobId).getNextRunInstant();
-        } else return null;
+        } else {
+            return null;
+        }
     }
 
     @Override
