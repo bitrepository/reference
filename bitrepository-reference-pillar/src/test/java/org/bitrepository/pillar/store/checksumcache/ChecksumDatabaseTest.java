@@ -46,7 +46,7 @@ import java.util.List;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class ChecksumDatabaseTest {
+class ChecksumDatabaseTest {
     private String collectionID;
     protected Settings settings;
 
@@ -55,7 +55,7 @@ public class ChecksumDatabaseTest {
     private static final Instant DEFAULT_DATE = Instant.ofEpochMilli(System.currentTimeMillis());
 
     @BeforeEach
-    public void setup() throws Exception {
+    void setup() throws Exception {
         loadSettings();
         collectionID = settings.getCollections().get(0).getID();
 
@@ -70,7 +70,7 @@ public class ChecksumDatabaseTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void testChecksumDatabaseExtraction() {
+    void testChecksumDatabaseExtraction() {
         addDescription("Test the extraction of data from the checksum database.");
         ChecksumDAO cache = getCacheWithData();
 
@@ -90,26 +90,29 @@ public class ChecksumDatabaseTest {
         Assertions.assertEquals(DEFAULT_DATE, entry.getCalculationInstant());
 
         addStep("Extract all entries", "Should only be the one default.");
-        List<ChecksumDataForChecksumSpecTYPE> entries = cache.getChecksumResults((Instant) null, (Instant) null, null,
-                collectionID).getEntries();
+        List<ChecksumDataForChecksumSpecTYPE> entries = cache.getChecksumResults((Instant) null, (Instant) null,
+                null, collectionID).getEntries();
         Assertions.assertEquals(1, entries.size());
         Assertions.assertEquals(DEFAULT_FILE_ID, entries.get(0).getFileID());
         Assertions.assertEquals(DEFAULT_CHECKSUM, Base16Utils.decodeBase16(entries.get(0).getChecksumValue()));
-        Assertions.assertEquals(DEFAULT_DATE, CalendarUtils.convertFromXMLGregorianCalendarToInstant(entries.get(0).getCalculationTimestamp()));
+        Assertions.assertEquals(DEFAULT_DATE,
+                CalendarUtils.convertFromXMLGregorianCalendarToInstant(entries.get(0).getCalculationTimestamp()));
     }
 
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void testDeletion() {
+    void testDeletion() {
         addDescription("Test that data can be deleted from the database.");
         ChecksumDAO cache = getCacheWithData();
 
         addStep("Check whether the default entry exists.", "It does!");
         Assertions.assertTrue(cache.hasFile(DEFAULT_FILE_ID, collectionID));
-        ExtractedFileIDsResultSet res = cache.getFileIDs((Instant) null, (Instant) null, null, null, collectionID);
+        ExtractedFileIDsResultSet res =
+                cache.getFileIDs((Instant) null, (Instant) null, null, null, collectionID);
         Assertions.assertEquals(1, res.getEntries().getFileIDsDataItems().getFileIDsDataItem().size());
-        Assertions.assertEquals(DEFAULT_FILE_ID, res.getEntries().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID());
+        Assertions.assertEquals(DEFAULT_FILE_ID,
+                res.getEntries().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID());
 
         addStep("Remove the default entry", "Should no longer exist");
         cache.deleteEntry(DEFAULT_FILE_ID, collectionID);
@@ -121,12 +124,12 @@ public class ChecksumDatabaseTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void testReplacingExistingEntry() {
+    void testReplacingExistingEntry() {
         addDescription("Test that an entry can be replaced by another in the database.");
         ChecksumDAO cache = getCacheWithData();
 
         String newChecksum = "new-checksum";
-        Instant newDate = Instant.ofEpochMilli(System.currentTimeMillis() + 123456789L);
+        Instant newDate = Instant.now().plusMillis(123456789L);
 
         addStep("Check whether the default entry exists.", "It does!");
         Assertions.assertTrue(cache.hasFile(DEFAULT_FILE_ID, collectionID));
@@ -135,20 +138,22 @@ public class ChecksumDatabaseTest {
         Assertions.assertEquals(DEFAULT_CHECKSUM, oldEntry.getChecksum());
         Assertions.assertEquals(DEFAULT_DATE, oldEntry.getCalculationInstant());
 
-        addStep("Replace the checksum and date", "Should still exist, but have different values.");
+        addStep("Replace the checksum and date",
+                "Should still exist, but have different values.");
         cache.insertChecksumCalculation(DEFAULT_FILE_ID, collectionID, newChecksum, newDate);
         Assertions.assertTrue(cache.hasFile(DEFAULT_FILE_ID, collectionID));
         ChecksumEntry newEntry = cache.getEntry(DEFAULT_FILE_ID, collectionID);
         Assertions.assertEquals(DEFAULT_FILE_ID, newEntry.getFileId());
         Assertions.assertEquals(newChecksum, newEntry.getChecksum());
         Assertions.assertNotEquals(oldEntry.getChecksum(), newEntry.getChecksum());
-        Assertions.assertNotEquals(oldEntry.getCalculationInstant().toEpochMilli(), newEntry.getCalculationInstant().toEpochMilli());
+        Assertions.assertNotEquals(oldEntry.getCalculationInstant().toEpochMilli(),
+                newEntry.getCalculationInstant().toEpochMilli());
     }
 
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void testExtractionOfMissingData() {
+    void testExtractionOfMissingData() {
         addDescription("Test the handling of bad arguments.");
         ChecksumDAO cache = getCacheWithData();
         String badFileId = "BAD-FILE-ID";
@@ -181,38 +186,42 @@ public class ChecksumDatabaseTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void testSpecifiedEntryExtraction() {
+    void testSpecifiedEntryExtraction() {
         addDescription("Test that specific entries can be extracted. Has two entries in the database: "
                 + "one for the current timestamp and one for the epoch.");
         addStep("Instantiate database with appropriate data.", "");
-        Instant beforeTest = Instant.ofEpochMilli(System.currentTimeMillis() - 100000);
+        Instant beforeTest = Instant.now().minusSeconds(100);
         String oldFile = "VeryOldFile";
         ChecksumDAO cache = getCacheWithData();
         cache.insertChecksumCalculation(oldFile, collectionID, DEFAULT_CHECKSUM, Instant.EPOCH);
 
         addStep("Extract with out restrictions", "Both entries.");
-        ExtractedChecksumResultSet extractedResults = cache.getChecksumResults((Instant) null, (Instant) null, null, collectionID);
+        ExtractedChecksumResultSet extractedResults =
+                cache.getChecksumResults((Instant) null, (Instant) null, null, collectionID);
         Assertions.assertEquals(2, extractedResults.getEntries().size());
 
         addStep("Extract with a maximum of 1 entry", "The oldest entry");
         extractedResults = cache.getChecksumResults((Instant) null, (Instant) null, 1L, collectionID);
         Assertions.assertEquals(1, extractedResults.getEntries().size());
         ChecksumDataForChecksumSpecTYPE dataEntry = extractedResults.getEntries().get(0);
-        Assertions.assertEquals(0, CalendarUtils.convertFromXMLGregorianCalendar(dataEntry.getCalculationTimestamp()).getTime());
+        Assertions.assertEquals(0,
+                CalendarUtils.convertFromXMLGregorianCalendar(dataEntry.getCalculationTimestamp()).getTime());
         Assertions.assertEquals(oldFile, dataEntry.getFileID());
 
         addStep("Extract all dates older than this tests instantiation", "The oldest entry");
         extractedResults = cache.getChecksumResults((Instant) null, beforeTest, null, collectionID);
         Assertions.assertEquals(1, extractedResults.getEntries().size());
         dataEntry = extractedResults.getEntries().get(0);
-        Assertions.assertEquals(0, CalendarUtils.convertFromXMLGregorianCalendar(dataEntry.getCalculationTimestamp()).getTime());
+        Assertions.assertEquals(0,
+                CalendarUtils.convertFromXMLGregorianCalendar(dataEntry.getCalculationTimestamp()).getTime());
         Assertions.assertEquals(oldFile, dataEntry.getFileID());
 
         addStep("Extract all dates newer than this tests instantiation", "The default entry");
         extractedResults = cache.getChecksumResults(beforeTest, (Instant) null, null, collectionID);
         Assertions.assertEquals(1, extractedResults.getEntries().size());
         dataEntry = extractedResults.getEntries().get(0);
-        Assertions.assertEquals(DEFAULT_DATE, CalendarUtils.convertFromXMLGregorianCalendarToInstant(dataEntry.getCalculationTimestamp()));
+        Assertions.assertEquals(DEFAULT_DATE,
+                CalendarUtils.convertFromXMLGregorianCalendarToInstant(dataEntry.getCalculationTimestamp()));
         Assertions.assertEquals(DEFAULT_FILE_ID, dataEntry.getFileID());
 
         addStep("Extract all dates older than the newest instance", "Both entries");
@@ -227,7 +236,7 @@ public class ChecksumDatabaseTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void testGetFileIDsRestrictions() {
+    void testGetFileIDsRestrictions() {
         addDescription("Tests the restrictions on the GetFileIDs call to the database.");
         addStep("Instantiate database with appropriate data.", "");
         ChecksumDAO cache = new ChecksumDAO(new ChecksumDatabaseManager(settings));
@@ -239,8 +248,10 @@ public class ChecksumDatabaseTest {
         cache.insertChecksumCalculation(FILE_ID_1, collectionID, DEFAULT_CHECKSUM, FILE_1_DATE);
         cache.insertChecksumCalculation(FILE_ID_2, collectionID, DEFAULT_CHECKSUM, FILE_2_DATE);
 
-        addStep("Test with no time restrictions and 10000 max_results", "Delivers both files.");
-        ExtractedFileIDsResultSet efirs = cache.getFileIDs((Instant) null, (Instant) null, 100000L, null, collectionID);
+        addStep("Test with no time restrictions and 10000 max_results",
+                "Delivers both files.");
+        ExtractedFileIDsResultSet efirs =
+                cache.getFileIDs((Instant) null, (Instant) null, 100000L, null, collectionID);
         Assertions.assertEquals(2, efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().size());
 
         addStep("Test with minimum-date earlier than first file", "Delivers both files.");
@@ -262,27 +273,34 @@ public class ChecksumDatabaseTest {
         addStep("Test with minimum-date set to middle date.", "Delivers second file.");
         efirs = cache.getFileIDs(MIDDLE_DATE, (Instant) null, 100000L, null, collectionID);
         Assertions.assertEquals(1, efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().size());
-        Assertions.assertEquals(FILE_ID_2, efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID());
+        Assertions.assertEquals(FILE_ID_2,
+                efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID());
 
         addStep("Test with maximum-date set to middle date.", "Delivers first file.");
         efirs = cache.getFileIDs((Instant) null, MIDDLE_DATE, 100000L, null, collectionID);
         Assertions.assertEquals(1, efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().size());
-        Assertions.assertEquals(FILE_ID_1, efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID());
+        Assertions.assertEquals(FILE_ID_1,
+                efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID());
 
-        addStep("Test with both minimum-date and maximum-date set to middle date.", "Delivers no files.");
+        addStep("Test with both minimum-date and maximum-date set to middle date.",
+                "Delivers no files.");
         efirs = cache.getFileIDs(MIDDLE_DATE,
                 MIDDLE_DATE, 100000L, null, collectionID);
         Assertions.assertEquals(0, efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().size());
 
-        addStep("Test the first file-id, with no other restrictions", "Only delivers the requested file-id");
+        addStep("Test the first file-id, with no other restrictions",
+                "Only delivers the requested file-id");
         efirs = cache.getFileIDs((Instant) null, (Instant) null, 100000L, FILE_ID_1, collectionID);
         Assertions.assertEquals(1, efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().size());
-        Assertions.assertEquals(FILE_ID_1, efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID());
+        Assertions.assertEquals(FILE_ID_1,
+                efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID());
 
-        addStep("Test the second file-id, with no other restrictions", "Only delivers the requested file-id");
+        addStep("Test the second file-id, with no other restrictions",
+                "Only delivers the requested file-id");
         efirs = cache.getFileIDs((Instant) null, (Instant) null, 100000L, FILE_ID_2, collectionID);
         Assertions.assertEquals(1, efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().size());
-        Assertions.assertEquals(FILE_ID_2, efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID());
+        Assertions.assertEquals(FILE_ID_2,
+                efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().get(0).getFileID());
 
         addStep("Test the date for the first file-id, while requesting the second file-id",
                 "Should not deliver anything");
@@ -294,7 +312,7 @@ public class ChecksumDatabaseTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void testGetChecksumResult() {
+    void testGetChecksumResult() {
         addDescription("Tests the restrictions on the GetChecksumResult call to the database.");
         addStep("Instantiate database with appropriate data.", "");
         ChecksumDAO cache = getCacheWithData();
@@ -310,7 +328,8 @@ public class ChecksumDatabaseTest {
                 DEFAULT_FILE_ID, collectionID);
         Assertions.assertEquals(1, extractedChecksums.getEntries().size());
 
-        addStep("Test with very strict time restrictions around the default date", "Retrieves the file");
+        addStep("Test with very strict time restrictions around the default date",
+                "Retrieves the file");
         extractedChecksums = cache.getChecksumResult(DEFAULT_DATE.minusMillis(1),
                 DEFAULT_DATE.plusMillis(1), DEFAULT_FILE_ID, collectionID);
         Assertions.assertEquals(1, extractedChecksums.getEntries().size());
@@ -320,7 +339,8 @@ public class ChecksumDatabaseTest {
                 Instant.now(), DEFAULT_FILE_ID, collectionID);
         Assertions.assertEquals(0, extractedChecksums.getEntries().size());
 
-        addStep("Test with exact date as both upper and lower limit", "Does not retrieve the file");
+        addStep("Test with exact date as both upper and lower limit",
+                "Does not retrieve the file");
         extractedChecksums = cache.getChecksumResult(DEFAULT_DATE,
                 DEFAULT_DATE, DEFAULT_FILE_ID, collectionID);
         Assertions.assertEquals(0, extractedChecksums.getEntries().size());
@@ -346,7 +366,7 @@ public class ChecksumDatabaseTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void testGetFileIDsWithOldChecksums() {
+    void testGetFileIDsWithOldChecksums() {
         addDescription("Tests the restrictions on the GetFileIDsWithOldChecksums call to the database.");
         addStep("Instantiate database with appropriate data.", "");
         ChecksumDAO cache = new ChecksumDAO(new ChecksumDatabaseManager(settings));
@@ -358,13 +378,15 @@ public class ChecksumDatabaseTest {
         cache.insertChecksumCalculation(FILE_ID_1, collectionID, DEFAULT_CHECKSUM, FILE_1_DATE);
         cache.insertChecksumCalculation(FILE_ID_2, collectionID, DEFAULT_CHECKSUM, FILE_2_DATE);
 
-        addStep("Extract all entries with checksum date older than now", "Returns both file ids");
+        addStep("Extract all entries with checksum date older than now",
+                "Returns both file ids");
         List<String> extractedFileIDs = cache.getFileIDsWithOldChecksums(Instant.now(), collectionID);
         Assertions.assertEquals(2, extractedFileIDs.size());
         Assertions.assertTrue(extractedFileIDs.contains(FILE_ID_1));
         Assertions.assertTrue(extractedFileIDs.contains(FILE_ID_2));
 
-        addStep("Extract all entries with checksum date older than epoch", "Returns no file ids");
+        addStep("Extract all entries with checksum date older than epoch",
+                "Returns no file ids");
         extractedFileIDs = cache.getFileIDsWithOldChecksums(Instant.EPOCH, collectionID);
         Assertions.assertEquals(0, extractedFileIDs.size());
 
