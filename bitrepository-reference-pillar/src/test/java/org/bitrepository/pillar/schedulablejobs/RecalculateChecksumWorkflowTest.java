@@ -38,19 +38,19 @@ import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 @ExtendWith(SuiteInfoParameterResolver.class)
-public class RecalculateChecksumWorkflowTest extends DefaultPillarTest {
+class RecalculateChecksumWorkflowTest extends DefaultPillarTest {
 
     DatatypeFactory factory;
 
     @BeforeEach
-    public void setUpFactory() throws DatatypeConfigurationException {
+    void setUpFactory() throws DatatypeConfigurationException {
         factory = DatatypeFactory.newInstance();
     }
 
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void testWorkflowRecalculatesChecksum() throws Exception {
+    void testWorkflowRecalculatesChecksum() throws Exception {
         addDescription("Test that the workflow recalculates the workflows, when the maximum age has been met.");
         Date beforeWorkflowDate = csCache.getCalculationDate(defaultFileId, collectionID);
         Assertions.assertEquals(1, csCache.getAllFileIDs(collectionID).size());
@@ -73,7 +73,7 @@ public class RecalculateChecksumWorkflowTest extends DefaultPillarTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void testWorkflowDoesNotRecalculateWhenNotNeeded() throws Exception {
+    void testWorkflowDoesNotRecalculateWhenNotNeeded() throws Exception {
         addDescription("Test that the workflow does not recalculates the workflows, when the maximum age has "
                 + "not yet been met.");
         Date beforeWorkflowDate = csCache.getCalculationDate(defaultFileId, collectionID);

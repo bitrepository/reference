@@ -30,7 +30,12 @@ import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositorymessages.*;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
+import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.MockedPillarTest;
@@ -51,7 +56,7 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
  * Tests the PutFile functionality on the ReferencePillar.
  */
 @ExtendWith(SuiteInfoParameterResolver.class)
-public class PutFileTest extends MockedPillarTest {
+class PutFileTest extends MockedPillarTest {
     PutFileMessageFactory msgFactory;
     Long FILE_SIZE = 1L;
 
@@ -66,7 +71,7 @@ public class PutFileTest extends MockedPillarTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void goodCaseIdentification() throws Exception {
+    void goodCaseIdentification() throws Exception {
         addDescription("Tests the identification for a PutFile operation on the pillar for the successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
         String FILE_ID = defaultFileId + testMethodName;
@@ -109,7 +114,7 @@ public class PutFileTest extends MockedPillarTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void badCaseIdentification() throws Exception {
+    void badCaseIdentification() throws Exception {
         addDescription("Tests the identification for a PutFile operation on the pillar for the failure scenario, when" +
                 " the file already exists.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -151,7 +156,7 @@ public class PutFileTest extends MockedPillarTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void badCaseOperationFileAlreadyExists() throws Exception {
+    void badCaseOperationFileAlreadyExists() throws Exception {
         addDescription("Tests the PutFile operation on the pillar for the failure scenario, " +
                 "when the file already exists.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -193,7 +198,7 @@ public class PutFileTest extends MockedPillarTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void badCasePutOperationNoValidationChecksum() throws Exception {
+    void badCasePutOperationNoValidationChecksum() throws Exception {
         addDescription("Tests the PutFile operation on the pillar for the failure scenario, when no validation " +
                 "checksum is given but required.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -287,7 +292,7 @@ public class PutFileTest extends MockedPillarTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void goodCaseOperationWithChecksumReturn() throws Exception {
+    void goodCaseOperationWithChecksumReturn() throws Exception {
         addDescription("Tests the PutFile operation on the pillar for the success scenario, when requesting the " +
                 "cheksum of the file returned.");
         addStep("Set up constants and variables.", "Should not fail here!");

@@ -30,11 +30,11 @@ import org.junit.jupiter.api.Test;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class UnableToFinishExceptionTest {
+class UnableToFinishExceptionTest {
 
     @Test
     @Tag("regressiontest")
-    public void testUnableToFinish() throws Exception {
+    void testUnableToFinish() throws Exception {
         addDescription("Test the instantiation of the exception");
         addStep("Setup", "");
         String errMsg = "TEST-ERROR";

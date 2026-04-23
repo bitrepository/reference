@@ -45,19 +45,19 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(SuiteInfoParameterResolver.class)
-public class GeneralMessageHandlingTest extends MockedPillarTest {
+class GeneralMessageHandlingTest extends MockedPillarTest {
 
     MockRequestHandler requestHandler;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         this.requestHandler = new MockRequestHandler(context, model);
     }
 
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void testPillarMessageHandler() {
+    void testPillarMessageHandler() {
         addDescription("Test the handling of the PillarMessageHandler super-class.");
         addStep("Setup", "Should be OK.");
 
@@ -75,7 +75,7 @@ public class GeneralMessageHandlingTest extends MockedPillarTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void testPillarMessageHandlerValidateFileIDFormatDefaultFileId() throws Exception {
+    void testPillarMessageHandlerValidateFileIDFormatDefaultFileId() throws Exception {
         addDescription("Test the validation of file id formats of the PillarMessageHandler super-class on the default file id");
         requestHandler.validateFileIDFormat(defaultFileId);
     }
@@ -83,7 +83,7 @@ public class GeneralMessageHandlingTest extends MockedPillarTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void testPillarMessageHandlerValidateFileIDFormatFolderFileId() throws Exception {
+    void testPillarMessageHandlerValidateFileIDFormatFolderFileId() throws Exception {
         addDescription("Test the validation of file id formats of the PillarMessageHandler super-class on a file id with directory path");
         requestHandler.validateFileIDFormat("path/" + defaultFileId);
     }
@@ -91,7 +91,7 @@ public class GeneralMessageHandlingTest extends MockedPillarTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void testPillarMessageHandlerValidateFileIDFormatParentFolderFileId() throws Exception {
+    void testPillarMessageHandlerValidateFileIDFormatParentFolderFileId() {
         assertThrows(RequestHandlerException.class, () -> {
             addDescription("Test the validation of file id formats of the PillarMessageHandler super-class on " +
                     "a file id containing path to a parent directory");
@@ -102,7 +102,7 @@ public class GeneralMessageHandlingTest extends MockedPillarTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void testPillarMessageHandlerValidateFileIDFormatRootPathFileId() throws Exception {
+    void testPillarMessageHandlerValidateFileIDFormatRootPathFileId() {
         assertThrows(RequestHandlerException.class, () -> {
             addDescription("Test the validation of file id formats of the PillarMessageHandler super-class on a " +
                     "file id containing path from the root folder");
@@ -113,7 +113,7 @@ public class GeneralMessageHandlingTest extends MockedPillarTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void testPillarMessageHandlerValidateFileIDFormatSubFolderToParentFolderFileId() throws Exception {
+    void testPillarMessageHandlerValidateFileIDFormatSubFolderToParentFolderFileId() throws Exception {
         assertThrows(RequestHandlerException.class, () -> {
             addDescription("Test the validation of file id formats of the PillarMessageHandler super-class on a file id " +
                             "containing path to a parent directory, but starting with a sub-folder");
@@ -124,7 +124,7 @@ public class GeneralMessageHandlingTest extends MockedPillarTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void testPillarMessageHandlerValidateFileIDFormatEnvHomePathFileId() throws Exception {
+    void testPillarMessageHandlerValidateFileIDFormatEnvHomePathFileId() {
         assertThrows(RequestHandlerException.class, () -> {
             addDescription("Test the validation of file id formats of the PillarMessageHandler super-class on a file id " +
                             "containing path relative paths from the environment variable home folder");
@@ -135,7 +135,7 @@ public class GeneralMessageHandlingTest extends MockedPillarTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void testPillarMessageHandlerValidateFileIDFormatTildeHomePathFileId() throws Exception {
+    void testPillarMessageHandlerValidateFileIDFormatTildeHomePathFileId() {
         assertThrows(RequestHandlerException.class, () -> {
             addDescription("Test the validation of file id formats of the PillarMessageHandler super-class on a file id " +
                             "containing path relative paths from the tilde home folder");
@@ -146,7 +146,7 @@ public class GeneralMessageHandlingTest extends MockedPillarTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void testPillarMessageHandlerValidateFileIDFormatTooLong() throws Exception {
+    void testPillarMessageHandlerValidateFileIDFormatTooLong() {
         assertThrows(RequestHandlerException.class, () -> {
             addDescription("Test the validation of file id formats of the PillarMessageHandler super-class on a file id " +
                             "which has more characters than required");

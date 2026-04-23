@@ -698,7 +698,7 @@ class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Assertions.assertEquals(expectedLatestFileDatePillar1, cache.getLatestFileInstant(TEST_COLLECTIONID, TEST_PILLAR_1));
         Assertions.assertEquals(expectedLatestFileDatePillar2, cache.getLatestFileInstant(TEST_COLLECTIONID, TEST_PILLAR_2));
 
-        Assertions.assertEquals(cache.getLatestFileInstantInCollectionInstant(TEST_COLLECTIONID),
+        Assertions.assertEquals(cache.getLatestFileInstantInCollection(TEST_COLLECTIONID),
                 cache.getLatestFileInstant(TEST_COLLECTIONID, TEST_PILLAR_2));
 
         cache.resetFileCollectionProgress(TEST_COLLECTIONID);

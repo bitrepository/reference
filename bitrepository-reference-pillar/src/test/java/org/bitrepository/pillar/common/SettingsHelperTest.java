@@ -32,10 +32,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class SettingsHelperTest {
+class SettingsHelperTest {
     @Test
     @Tag("regressiontest")
-    public void getPillarCollectionsTest() {
+    void getPillarCollectionsTest() {
         String myPillarID = "myPillarID";
         String otherPillarID = "OtherPillar";
         List<Collection> collection = new ArrayList<>();

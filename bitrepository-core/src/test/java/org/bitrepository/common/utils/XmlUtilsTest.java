@@ -14,20 +14,19 @@ import java.time.Duration;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class XmlUtilsTest {
+class XmlUtilsTest {
 
     private DatatypeFactory factory;
 
     @BeforeEach
-    public void setUpFactory() throws DatatypeConfigurationException {
+    void setUpFactory() throws DatatypeConfigurationException {
         factory = DatatypeFactory.newInstance();
     }
 
     @Test
     @Tag("regressiontest")
-    public void negativeDurationIsRejected() {
+    void negativeDurationIsRejected() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             XmlUtils.validateNonNegative(factory.newDuration("-PT0.00001S"));
         });
@@ -35,7 +34,7 @@ public class XmlUtilsTest {
 
     @Test
     @Tag("regressiontest")
-    public void testXmlDurationToDuration() {
+    void testXmlDurationToDuration() {
         addDescription("Tests xmlDurationToDuration in sunshine scenario cases");
 
         addStep("Durations of 0 of some time unit", "Duration.ZERO");
@@ -80,7 +79,7 @@ public class XmlUtilsTest {
 
     @Test
     @Tag("regressiontest")
-    public void testNegativeXmlDurationToDuration() {
+    void testNegativeXmlDurationToDuration() {
         // WorkflowInterval may be negative (meaning don’t run automatically)
         addDescription("Tests that xmlDurationToDuration() accepts a negative duration and converts it correctly");
         addStep("Negative XML durations", "Corresponding negative java.time durations");
@@ -109,7 +108,7 @@ public class XmlUtilsTest {
 
     @Test
     @Tag("regressiontest")
-    public void tooManyDecimalsAreRejected() {
+    void tooManyDecimalsAreRejected() {
         Assertions.assertThrows(ArithmeticException.class, () -> {
             addDescription("Tests that xmlDurationToDuration() rejects more than 9 decimals on seconds");
             addStep("Duration with 10 decimals, PT2.0123456789S", "ArithmeticException");
@@ -119,7 +118,7 @@ public class XmlUtilsTest {
 
     @Test
     @Tag("regressiontest")
-    public void testXmlDurationToMilliseconds() {
+    void testXmlDurationToMilliseconds() {
         addDescription("Tests xmlDurationToMilliseconds in sunshine scenario cases");
         addStep("Test correct and precise conversion",
                 "Hours, minutes and seconds are converted with full precision");
@@ -134,13 +133,13 @@ public class XmlUtilsTest {
 
     @Test
     @Tag("regressiontest")
-    public void testNegativeXmlDurationToMilliseconds() {
+    void testNegativeXmlDurationToMilliseconds() {
         Assertions.assertEquals(-1000, XmlUtils.xmlDurationToMilliseconds(factory.newDuration("-PT1S")));
     }
 
     @Test
     @Tag("regressiontest")
-    public void convertsToTimeMeasure() {
+    void convertsToTimeMeasure() {
         TimeMeasureTYPE shortTimeMeasure = XmlUtils.xmlDurationToTimeMeasure(factory.newDuration(1));
         Assertions.assertEquals(TimeMeasureUnit.MILLISECONDS, shortTimeMeasure.getTimeMeasureUnit());
         Assertions.assertEquals(BigInteger.ONE, shortTimeMeasure.getTimeMeasureValue());

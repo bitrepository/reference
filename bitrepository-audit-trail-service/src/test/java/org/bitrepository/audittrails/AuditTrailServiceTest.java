@@ -68,7 +68,7 @@ public class AuditTrailServiceTest {
     private ThreadFactory threadFactory;
 
     @BeforeAll
-    public void setup() {
+    void setup() {
         settings = TestSettingsProvider.reloadSettings("AuditTrailServiceUnderTest");
         Collection c = settings.getRepositorySettings().getCollections().getCollection().get(0);
         settings.getRepositorySettings().getCollections().getCollection().clear();
@@ -79,7 +79,7 @@ public class AuditTrailServiceTest {
 
     @Test
     @Tag("unstable")
-    public void auditTrailServiceTest() throws Exception {
+    void auditTrailServiceTest() throws Exception {
         AllureTestUtils.addDescription("Test the Audit Trail Service");
         DatatypeFactory factory = DatatypeFactory.newInstance();
         settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().clear();
@@ -132,8 +132,8 @@ public class AuditTrailServiceTest {
         service.queryAuditTrailEventsByIterator((Instant) null, (Instant) null, null, null,
                 null, null, FileAction.FAILURE, null, null, 100);
         verify(store, times(1)).getAuditTrailsByIterator(isNull(), isNull(), isNull(), isNull(),
-                isNull(), isNull(), eq(FileAction.FAILURE), (Instant) isNull(), (Instant) isNull(), isNull(), isNull()
-                , eq(100));
+                isNull(), isNull(), eq(FileAction.FAILURE), (Instant) isNull(), (Instant) isNull(), isNull(),
+                isNull(), eq(100));
 
         AllureTestUtils.addStep("Shutdown", "");
         service.shutdown();

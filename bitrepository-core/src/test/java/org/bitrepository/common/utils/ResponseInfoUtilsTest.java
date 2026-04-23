@@ -31,10 +31,10 @@ import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 
-public class ResponseInfoUtilsTest {
+class ResponseInfoUtilsTest {
     @Test
     @Tag("regressiontest")
-    public void responseInfoTester() throws Exception {
+    void responseInfoTester() throws Exception {
         addDescription("Test the response info.");
         addStep("Validate the positive identification response", "Should be 'IDENTIFICATION_POSITIVE'");
         ResponseInfo ri = ResponseInfoUtils.getPositiveIdentification();

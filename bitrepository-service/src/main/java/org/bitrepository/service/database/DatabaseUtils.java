@@ -365,14 +365,11 @@ public class DatabaseUtils {
                             " Returning a null.", query, Arrays.asList(args), conn);
                     return null;
                 }
-                Timestamp resultDate = res.getTimestamp(1);
-                if (res.wasNull()) {
-                    resultDate = null;
-                }
+                Instant resultInstant = res.getObject(1, Instant.class);
                 if (mustHaveOnlyOneResult && res.next()) {
                     throw new IllegalStateException("Too many results from " + ps);
                 }
-                return resultDate != null ? resultDate.toInstant() : null;
+                return resultInstant;
             }
         } catch (SQLException e) {
             throw failedExecutionOfStatement(e, query, args);

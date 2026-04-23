@@ -37,10 +37,10 @@ import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 /**
  * Tests the <code>TimeMeasureComparator</code> class.
  */
-public class TimeMeasurementUtilsTest {
+class TimeMeasurementUtilsTest {
     @Test
     @Tag("regressiontest")
-    public void testCompareMilliSeconds() {
+    void testCompareMilliSeconds() {
         addDescription("Test the comparison between TimeMeasure units.");
         TimeMeasureTYPE referenceTime = new TimeMeasureTYPE();
         referenceTime.setTimeMeasureValue(new BigInteger("2"));
@@ -64,7 +64,7 @@ public class TimeMeasurementUtilsTest {
 
     @Test
     @Tag("regressiontest")
-    public void testCompareMilliSecondsToHours() {
+    void testCompareMilliSecondsToHours() {
         addDescription("Test the comparison between milliseconds and hours.");
         long millis = 7200000L;
         TimeMeasureTYPE referenceTime = new TimeMeasureTYPE();
@@ -91,7 +91,7 @@ public class TimeMeasurementUtilsTest {
 
     @Test
     @Tag("regressiontest")
-    public void testMaxValue() {
+    void testMaxValue() {
         addDescription("Test the Maximum value");
         TimeMeasureTYPE time = TimeMeasurementUtils.getMaximumTime();
         Assertions.assertEquals(Long.MAX_VALUE, time.getTimeMeasureValue().longValue());

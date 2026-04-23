@@ -50,7 +50,7 @@ import java.time.Instant;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 
-public class DatabaseStressTests {
+class DatabaseStressTests {
 
     private static final String PILLAR_1 = "pillar1";
     private static final String PILLAR_2 = "pillar2";
@@ -62,7 +62,7 @@ public class DatabaseStressTests {
     protected Settings settings;
 
     @BeforeEach
-    public void setup() throws Exception {
+    void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("IntegrityCheckingUnderTest");
 
         DerbyDatabaseDestroyer.deleteDatabase(
@@ -101,7 +101,7 @@ public class DatabaseStressTests {
     }
 
     @AfterEach
-    public void clearDatabase() {
+    void clearDatabase() {
         DBConnector connector =
                 new DBConnector(settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
         DatabaseUtils.executeStatement(connector, "DELETE FROM fileinfo");
@@ -111,7 +111,7 @@ public class DatabaseStressTests {
     @Test
     @Tag("stresstest")
     @Tag("integritytest")
-    public void testDatabasePerformance() {
+    void testDatabasePerformance() {
         addDescription("Testing the performance of the SQL queries to the database.");
         IntegrityDAO cache = createDAO();
         Assertions.assertNotNull(cache);

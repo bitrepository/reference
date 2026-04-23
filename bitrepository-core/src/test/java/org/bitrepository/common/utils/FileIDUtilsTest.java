@@ -29,12 +29,12 @@ import org.junit.jupiter.api.Test;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class FileIDUtilsTest {
+class FileIDUtilsTest {
     String FILE_ID = "Test-File-Id";
 
     @Test
     @Tag("regressiontest")
-    public void fileIDsTest() throws Exception {
+    void fileIDsTest() throws Exception {
         addDescription("Test the utility class for generating FileIDs");
         addStep("Test 'all file ids'", "is only AllFileIDs");
         FileIDs allFileIDs = FileIDsUtils.getAllFileIDs();

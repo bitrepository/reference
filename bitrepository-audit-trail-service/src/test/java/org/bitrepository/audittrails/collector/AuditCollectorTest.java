@@ -59,7 +59,7 @@ public class AuditCollectorTest {
     public static final String DEFAULT_CONTRIBUTOR = "Contributor1";
 
     @BeforeAll
-    public void setup() throws Exception {
+    void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("AuditCollectorUnderTest");
         Collection c = settings.getRepositorySettings().getCollections().getCollection().get(0);
         c.setID(TEST_COLLECTION);
@@ -69,7 +69,7 @@ public class AuditCollectorTest {
 
     @Test
     @Tag("regressiontest")
-    public void auditCollectorIntervalTest() throws Exception {
+    void auditCollectorIntervalTest() throws Exception {
         AllureTestUtils.addDescription("Test that the collector calls the AuditClient at the correct intervals.");
         DatatypeFactory factory = DatatypeFactory.newInstance();
         settings.getRepositorySettings().getGetAuditTrailSettings().getNonPillarContributorIDs().clear();

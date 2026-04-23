@@ -27,7 +27,11 @@ import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResultingChecksums;
-import org.bitrepository.client.eventhandler.*;
+import org.bitrepository.client.eventhandler.CompleteEvent;
+import org.bitrepository.client.eventhandler.ContributorEvent;
+import org.bitrepository.client.eventhandler.ContributorFailedEvent;
+import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
@@ -44,7 +48,9 @@ import java.util.Arrays;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 
 /**
  * Performs the validation of the integrity for the checksums.
@@ -78,7 +84,7 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testNoResults() throws Exception {
+    void testNoResults() throws Exception {
         addDescription("Test step for retrieving the checksum of a single file, when no results are delivered.");
         ChecksumSpecTYPE checksumType = ChecksumUtils.getDefault(settings);
 
@@ -110,7 +116,7 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testFullData() throws Exception {
+    void testFullData() throws Exception {
         addDescription(
                 "Test step for retrieving the checksum of a single file, when all three pillars deliver results.");
         ChecksumSpecTYPE checksumType = ChecksumUtils.getDefault(settings);
@@ -161,7 +167,7 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testComponentFailure() throws Exception {
+    void testComponentFailure() throws Exception {
         addDescription("Test step for retrieving the checksum of a single file, when one pillar fails.");
         ChecksumSpecTYPE checksumType = ChecksumUtils.getDefault(settings);
 

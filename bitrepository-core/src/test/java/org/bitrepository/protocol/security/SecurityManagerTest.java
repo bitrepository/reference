@@ -29,7 +29,13 @@ import org.bitrepository.protocol.security.exception.CertificateUseException;
 import org.bitrepository.protocol.security.exception.MessageAuthenticationException;
 import org.bitrepository.protocol.security.exception.MessageSigningException;
 import org.bitrepository.protocol.security.exception.OperationAuthorizationException;
-import org.bitrepository.settings.repositorysettings.*;
+import org.bitrepository.settings.repositorysettings.Certificate;
+import org.bitrepository.settings.repositorysettings.Collection;
+import org.bitrepository.settings.repositorysettings.ComponentIDs;
+import org.bitrepository.settings.repositorysettings.Operation;
+import org.bitrepository.settings.repositorysettings.OperationPermission;
+import org.bitrepository.settings.repositorysettings.Permission;
+import org.bitrepository.settings.repositorysettings.PermissionSet;
 import org.bouncycastle.util.encoders.Base64;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,14 +50,14 @@ import java.util.List;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class SecurityManagerTest {
+class SecurityManagerTest {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private org.bitrepository.protocol.security.SecurityManager securityManager;
     private PermissionStore permissionStore;
     private Settings settings;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         settings = TestSettingsProvider.reloadSettings(getClass().getSimpleName());
         settings.getRepositorySettings().getProtocolSettings().setRequireMessageAuthentication(true);
         settings.getRepositorySettings().getProtocolSettings().setRequireOperationAuthorization(true);
@@ -75,7 +81,7 @@ public class SecurityManagerTest {
 
     @Test
     @Tag("regressiontest")
-    public void operationAuthorizationBehaviourTest() throws Exception {
+    void operationAuthorizationBehaviourTest() throws Exception {
         addDescription("Tests that a signature only allows the correct requests.");
 
         List<Collection> collections = settings.getRepositorySettings().getCollections().getCollection();
@@ -120,7 +126,7 @@ public class SecurityManagerTest {
 
     @Test
     @Tag("regressiontest")
-    public void certificateAuthorizationBehaviourTest() throws Exception {
+    void certificateAuthorizationBehaviourTest() throws Exception {
         addDescription("Tests that a certificate is only allowed by registered users (component).");
         addStep("Check that the registered component is allowed.",
                 "The registered component is allowed.");
@@ -147,7 +153,7 @@ public class SecurityManagerTest {
 
     @Test
     @Tag("regressiontest")
-    public void positiveSigningAuthenticationRoundtripTest() throws Exception {
+    void positiveSigningAuthenticationRoundtripTest() throws Exception {
         addDescription("Tests that a roundtrip of signing a request and afterwards authenticating is succeeds.");
         addStep("Sign a chunk of data.", "Data is signed successfully");
         String signature = null;
@@ -173,7 +179,7 @@ public class SecurityManagerTest {
 
     @Test
     @Tag("regressiontest")
-    public void negativeSigningAuthenticationRoundtripUnkonwnCertificateTest() throws Exception {
+    void negativeSigningAuthenticationRoundtripUnkonwnCertificateTest() throws Exception {
         addDescription("Tests that a roundtrip of signing a request and afterwards authenticating it fails due to " +
                 "a unknown certificate.");
         addStep("Sign a chunk of data.", "Data is signed successfully");
@@ -200,7 +206,7 @@ public class SecurityManagerTest {
 
     @Test
     @Tag("regressiontest")
-    public void negativeSigningAuthenticationRoundtripBadDataTest() throws Exception {
+    void negativeSigningAuthenticationRoundtripBadDataTest() throws Exception {
         addDescription("Tests that a roundtrip of signing a request and afterwards authenticating it fails " +
                 "due to bad data");
         addDescription("Tests that a roundtrip of signing a request and afterwards authenticating is succeeds.");

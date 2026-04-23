@@ -53,6 +53,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -234,16 +235,16 @@ public class LocalAuditTrailPreserver extends AuditTrailTaskStarter implements A
         PreservationInfo info = new PreservationInfo();
         info.setCollectionID(preservationSettings.getAuditTrailPreservationCollection());
 
-        Date lastStart = preservationTask.getLastPreservationStart();
-        Date lastFinish = preservationTask.getLastPreservationFinish();
-        Date nextStart = preservationTask.getNextScheduledRun();
+        Instant lastStart = preservationTask.getLastPreservationStartInstant();
+        Instant lastFinish = preservationTask.getLastPreservationFinishInstant();
+        Instant nextStart = preservationTask.getNextScheduledRunInstant();
 
         // Need to handle the case where preservation has not started/finished yet.
         if (lastStart != null) {
             info.setLastStart(TimeUtils.shortDate(lastStart));
             if (lastFinish != null) {
-                long lastDurationMS = lastFinish.getTime() - lastStart.getTime();
-                info.setLastDuration(TimeUtils.millisecondsToHuman(lastDurationMS));
+                Duration lastDuration = Duration.between(lastStart, lastFinish);
+                info.setLastDuration(TimeUtils.durationToHuman(lastDuration));
             } else {
                 info.setLastDuration("Preservation has not finished yet");
             }
@@ -266,21 +267,47 @@ public class LocalAuditTrailPreserver extends AuditTrailTaskStarter implements A
         /**
          * @param interval The interval between running this timer task.
          */
-        // TODO: Replace old time representation (https://sbforge.org/jira/browse/BITMAG-1180)
         private AuditPreservationTimerTask(long interval, int gracePeriod) {
             this.schedule = new TimerTaskSchedule(interval, gracePeriod);
         }
 
+        /**
+         * @deprecated Use {@link #getNextScheduledRunInstant()} instead.
+         */
+        @Deprecated
         public Date getNextScheduledRun() {
-            return schedule.getNextRun();
+            Instant nextRun = getNextScheduledRunInstant();
+            return nextRun != null ? Date.from(nextRun) : null;
         }
 
+        public Instant getNextScheduledRunInstant() {
+            return schedule.getNextRunInstant();
+        }
+
+        /**
+         * @deprecated Use {@link #getLastPreservationStartInstant()} instead.
+         */
+        @Deprecated
         public Date getLastPreservationStart() {
-            return schedule.getLastStart();
+            Instant lastStart = getLastPreservationStartInstant();
+            return lastStart != null ? Date.from(lastStart) : null;
         }
 
+        public Instant getLastPreservationStartInstant() {
+            return schedule.getLastStartInstant();
+        }
+
+        /**
+         * @deprecated Use {@link #getLastPreservationFinishInstant()} instead.
+         */
+        @Deprecated
         public Date getLastPreservationFinish() {
-            return schedule.getLastFinish();
+            Instant lastFinish = getLastPreservationFinishInstant();
+            return lastFinish != null ? Date.from(lastFinish) : null;
+        }
+
+        public Instant getLastPreservationFinishInstant() {
+            return schedule.getLastFinishInstant();
         }
 
         @Override
@@ -289,7 +316,7 @@ public class LocalAuditTrailPreserver extends AuditTrailTaskStarter implements A
             schedule.start();
             preserveRepositoryAuditTrails();
             schedule.finish();
-            log.info("Finished preservation. Scheduled new preservation task to start {}", getNextScheduledRun());
+            log.info("Finished preservation. Scheduled new preservation task to start {}", getNextScheduledRunInstant());
         }
     }
 }

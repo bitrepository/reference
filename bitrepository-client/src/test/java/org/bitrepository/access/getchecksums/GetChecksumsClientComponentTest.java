@@ -175,7 +175,7 @@ class GetChecksumsClientComponentTest extends DefaultClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void getChecksumsDeliveredAtUrl() throws Exception {
+    void getChecksumsDeliveredAtUrl() throws Exception {
         addDescription("Tests the delivery of checksums from all pillars at a given URL.");
 
         String deliveryFilename = "TEST-CHECKSUM-DELIVERY.xml";

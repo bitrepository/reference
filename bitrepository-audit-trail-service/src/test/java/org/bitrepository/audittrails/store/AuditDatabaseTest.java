@@ -43,7 +43,7 @@ import java.util.List;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class AuditDatabaseTest {
+class AuditDatabaseTest {
     /** The settings for the tests. Should be instantiated in the setup.*/
     Settings settings;
     String fileID = "TEST-FILE-ID-" + Instant.now().toEpochMilli();
@@ -58,7 +58,7 @@ public class AuditDatabaseTest {
     static final String operationID2 = "4321";
 
     @BeforeEach
-    public void setup() throws Exception {
+    void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("AuditDatabaseUnderTest");
         DerbyDatabaseDestroyer.deleteDatabase(
                 settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase());
@@ -72,7 +72,7 @@ public class AuditDatabaseTest {
     @Test
     @Tag("regressiontest")
     @Tag("databasetest")
-    public void AuditDatabaseExtractionTest() throws Exception {
+    void AuditDatabaseExtractionTest() throws Exception {
         addDescription("Testing the connection to the audit trail service database especially with regards to "
                 + "extracting the data from it.");
         addStep("Setup the variables and constants.", "Should be ok.");
@@ -206,7 +206,7 @@ public class AuditDatabaseTest {
     @Test
     @Tag("regressiontest")
     @Tag("databasetest")
-    public void AuditDatabasePreservationTest() throws Exception {
+    void AuditDatabasePreservationTest() throws Exception {
         addDescription("Tests the functions related to the preservation of the database.");
         addStep("Adds the variables to the settings and instantaites the database cache",
                 "Should be connected.");
@@ -235,7 +235,7 @@ public class AuditDatabaseTest {
     @Test
     @Tag("regressiontest")
     @Tag("databasetest")
-    public void auditDatabaseCorrectTimestampTest() {
+    void auditDatabaseCorrectTimestampTest() {
         addDescription("Testing the correct ingest and extraction of audittrail dates");
         DatabaseManager dm = new AuditTrailDatabaseManager(
                 settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase());
@@ -278,7 +278,7 @@ public class AuditDatabaseTest {
     @Test
     @Tag("regressiontest")
     @Tag("databasetest")
-    public void AuditDatabaseIngestTest() throws Exception {
+    void AuditDatabaseIngestTest() throws Exception {
         addDescription("Testing ingest of audittrails into the database");
         addStep("Adds the variables to the settings and instantaites the database cache",
                 "Should be connected.");
@@ -406,7 +406,7 @@ public class AuditDatabaseTest {
     @Test
     @Tag("regressiontest")
     @Tag("databasetest")
-    public void AuditDatabaseGoodIngestTest() throws Exception {
+    void AuditDatabaseGoodIngestTest() throws Exception {
         addDescription("Testing good case ingest of audittrails into the database");
         addStep("Adds the variables to the settings and instantaites the database cache",
                 "Should be connected.");

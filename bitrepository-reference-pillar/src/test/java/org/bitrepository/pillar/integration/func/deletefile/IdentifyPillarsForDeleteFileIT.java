@@ -38,18 +38,18 @@ import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 
-public class IdentifyPillarsForDeleteFileIT extends DefaultPillarIdentificationTest {
+class IdentifyPillarsForDeleteFileIT extends DefaultPillarIdentificationTest {
     protected DeleteFileMessageFactory msgFactory;
 
     @BeforeEach
-    public void initialiseReferenceTest() throws Exception {
+    void initialiseReferenceTest() throws Exception {
         msgFactory = new DeleteFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
 
     }
 
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
-    public void normalIdentificationTest() {
+    void normalIdentificationTest() {
         addDescription("Verifies the normal behaviour for deleteFile identification");
         addStep("Sending a deleteFile identification.",
                 "The pillar under test should make a response with the correct elements.");
@@ -70,7 +70,7 @@ public class IdentifyPillarsForDeleteFileIT extends DefaultPillarIdentificationT
 
     @Test
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    public void identificationTestForChecksumPillar() {
+    void identificationTestForChecksumPillar() {
         addDescription("Verifies the normal behaviour for deleteFile identification for a checksum pillar");
         addStep("Sending a deleteFile identification.",
                 "The pillar under test should make a response with the correct elements. The only different from a " +
@@ -92,7 +92,7 @@ public class IdentifyPillarsForDeleteFileIT extends DefaultPillarIdentificationT
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    public void fileDoesNotExistsTest() {
+    void fileDoesNotExistsTest() {
         addDescription("Verifies that a request for a non-existing file is handled correctly");
         addStep("Sending a deleteFile identification for a file not in the pillar.",
                 "The pillar under test should send a FILE_NOT_FOUND_FAILURE response.");

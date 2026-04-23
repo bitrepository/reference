@@ -56,7 +56,7 @@ import static org.mockito.ArgumentMatchers.eq;
  * Tests the PutFile functionality on the ReferencePillar.
  */
 @ExtendWith(SuiteInfoParameterResolver.class)
-public class DeleteFileTest extends MockedPillarTest {
+class DeleteFileTest extends MockedPillarTest {
     private DeleteFileMessageFactory msgFactory;
 
     @Override
@@ -70,7 +70,7 @@ public class DeleteFileTest extends MockedPillarTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void goodCaseIdentification() throws Exception {
+    void goodCaseIdentification() throws Exception {
         addDescription(
                 "Tests the identification for a DeleteFile operation on the pillar for the successful scenario.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -112,7 +112,7 @@ public class DeleteFileTest extends MockedPillarTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void badCaseIdentification() throws Exception {
+    void badCaseIdentification() throws Exception {
         addDescription("Tests the identification for a DeleteFile operation on the checksum pillar for the failure " +
                 "scenario, when the file is missing.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -154,7 +154,7 @@ public class DeleteFileTest extends MockedPillarTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void badCaseOperationNoFile() throws Exception {
+    void badCaseOperationNoFile() throws Exception {
         addDescription("Tests the DeleteFile functionality of the pillar for the failure scenario, where it does not " +
                 "have the file.");
         addStep("Set up constants and variables.", "Should not fail here!");
@@ -194,7 +194,7 @@ public class DeleteFileTest extends MockedPillarTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void badCaseOperationMissingVerification() throws Exception {
+    void badCaseOperationMissingVerification() throws Exception {
         addDescription("Tests the DeleteFile functionality of the pillar for the failure scenario, where it does not " +
                 "have the file.");
         addStep("Set up constants and variables.", "Should not fail here!");

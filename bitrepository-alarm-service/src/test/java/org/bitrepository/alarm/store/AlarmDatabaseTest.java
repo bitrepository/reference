@@ -51,7 +51,7 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
  * Sees if alarms are correctly stored in the database.
  */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class AlarmDatabaseTest {
+class AlarmDatabaseTest {
     /**
      * The settings for the tests. Should be instantiated in the setup.
      */
@@ -67,7 +67,7 @@ public class AlarmDatabaseTest {
     File dbDir = null;
 
     @BeforeAll
-    public void setup() {
+    void setup() {
         settings = TestSettingsProvider.reloadSettings("AlarmDatabaseUnderTest");
 
         DerbyDatabaseDestroyer.deleteDatabase(
@@ -78,7 +78,7 @@ public class AlarmDatabaseTest {
     }
 
     @AfterEach
-    public void cleanupDatabase() {
+    void cleanupDatabase() {
         // TODO
         DBConnector connector = new DBConnector(settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase());
         DatabaseUtils.executeStatement(connector, "DELETE FROM " + AlarmDatabaseConstants.ALARM_TABLE);
@@ -86,7 +86,7 @@ public class AlarmDatabaseTest {
     }
 
     @AfterAll
-    public void shutdown() {
+    void shutdown() {
         addStep("Cleanup after test.", "Should remove directory with test material.");
         if (dbDir != null) {
             FileUtils.delete(dbDir);
@@ -96,7 +96,7 @@ public class AlarmDatabaseTest {
     @Test
     @Tag("regressiontest")
     @Tag("databasetest")
-    public void AlarmDatabaseExtractionTest() {
+    void AlarmDatabaseExtractionTest() {
         addDescription("Testing the connection to the alarm service database especially with regards to "
                 + "extracting the data from it.");
         addStep("Setup the variables and constants.", "Should be ok.");
@@ -206,7 +206,7 @@ public class AlarmDatabaseTest {
     @Test
     @Tag("regressiontest")
     @Tag("databasetest")
-    public void AlarmDatabaseLargeIngestionTest() {
+    void AlarmDatabaseLargeIngestionTest() {
         addDescription("Testing the ingestion of a large texts into the database");
         addStep("Setup and create alarm", "");
         AlarmDAOFactory alarmDAOFactory = new AlarmDAOFactory();
@@ -240,7 +240,7 @@ public class AlarmDatabaseTest {
     @Test
     @Tag("regressiontest")
     @Tag("databasetest")
-    public void alarmDatabaseCorrectTimestampTest() {
+    void alarmDatabaseCorrectTimestampTest() {
         addDescription("Testing the correct ingest and extraction of alarm dates");
         AlarmDAOFactory alarmDAOFactory = new AlarmDAOFactory();
         AlarmServiceDAO database = alarmDAOFactory.getAlarmServiceDAOInstance(

@@ -40,12 +40,12 @@ import java.util.concurrent.TimeUnit;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class TimeUtilsTest {
+class TimeUtilsTest {
     private static final ZonedDateTime BASE = Instant.EPOCH.atZone(ZoneOffset.UTC);
 
     @Test
     @Tag("regressiontest")
-    public void timeTester() {
+    void timeTester() {
         addDescription("Tests the TimeUtils. Pi days = 271433605 milliseconds");
         addStep("Test that milliseconds can be converted into human readable seconds",
                 "Pi days % minutes");
@@ -82,7 +82,7 @@ public class TimeUtilsTest {
 
     @Test
     @Tag("regressiontest")
-    public void printsHumanDuration() {
+    void printsHumanDuration() {
         Assertions.assertEquals("1y", TimeUtils.durationToHumanUsingEstimates(ChronoUnit.YEARS.getDuration()));
         Assertions.assertEquals("1m", TimeUtils.durationToHumanUsingEstimates(ChronoUnit.MONTHS.getDuration()));
         Assertions.assertEquals("1d", TimeUtils.durationToHumanUsingEstimates(ChronoUnit.DAYS.getDuration()));
@@ -99,7 +99,7 @@ public class TimeUtilsTest {
 
     @Test
     @Tag("regressiontest")
-    public void zeroIntervalTest() {
+    void zeroIntervalTest() {
         addDescription("Verifies that a 0 ms interval is represented correctly");
         addStep("Call millisecondsToHuman with 0 ms", "The output should be '0 ms'");
         String zeroTimeString = TimeUtils.millisecondsToHuman(0);
@@ -108,7 +108,7 @@ public class TimeUtilsTest {
 
     @Test
     @Tag("regressiontest")
-    public void durationsPrintHumanly() {
+    void durationsPrintHumanly() {
         addDescription("Tests durationToHuman()");
 
         Assertions.assertTrue(TimeUtils.durationToHuman(Duration.ZERO).contains("0"),
@@ -132,7 +132,7 @@ public class TimeUtilsTest {
 
     @Test
     @Tag("regressiontest")
-    public void differencesPrintHumanly() {
+    void differencesPrintHumanly() {
         addDescription("TimeUtils.humanDifference() should return" +
                 " similar human readable strings to those from millisecondsToHuman()");
 
@@ -177,7 +177,7 @@ public class TimeUtilsTest {
 
     @Test
     @Tag("regressiontest")
-    public void differencesPrintsWithAppropriatePrecision() {
+    void differencesPrintsWithAppropriatePrecision() {
         // Include hours if months are 6 or less.
         testHumanDifference("11m", Period.ofMonths(11), Duration.ofHours(23));
         testHumanDifference("1y 1d", Period.of(1, 0, 1), Duration.ofHours(23));
@@ -223,7 +223,7 @@ public class TimeUtilsTest {
      */
     @Test
     @Tag("regressiontest")
-    public void shortDateTest() {
+    void shortDateTest() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm", Locale.ROOT).withZone(ZoneId.systemDefault());
         Instant date = Instant.ofEpochMilli(1360069129256L);
         String shortDateString = TimeUtils.shortDate(date);
@@ -232,7 +232,7 @@ public class TimeUtilsTest {
 
     @Test
     @Tag("regressiontest")
-    public void rejectsNegativeDuration() {
+    void rejectsNegativeDuration() {
         Assertions.assertThrows(IllegalArgumentException.class,
                 () -> TimeUtils.durationToCountAndTimeUnit(Duration.ofSeconds(Long.MIN_VALUE)));
         Assertions.assertThrows(IllegalArgumentException.class,
@@ -241,7 +241,7 @@ public class TimeUtilsTest {
 
     @Test
     @Tag("regressiontest")
-    public void convertsDurationToCountAndTimeUnit() {
+    void convertsDurationToCountAndTimeUnit() {
         CountAndTimeUnit expectedZero = TimeUtils.durationToCountAndTimeUnit(Duration.ZERO);
         Assertions.assertEquals(0, expectedZero.getCount());
         Assertions.assertNotNull(expectedZero.getUnit());

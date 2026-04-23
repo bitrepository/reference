@@ -50,7 +50,7 @@ public class WorkflowstepTest {
     protected IntegrityContributors integrityContributors;
 
     @BeforeEach
-    public void setup() throws DatatypeConfigurationException {
+    void setup() throws DatatypeConfigurationException {
         settings = TestSettingsProvider.reloadSettings(this.getClass().getSimpleName());
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(TEST_PILLAR_1);

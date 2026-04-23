@@ -39,12 +39,12 @@ import org.junit.jupiter.api.Test;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class GetAuditTrailsFileStressIT extends PillarPerformanceTest {
+class GetAuditTrailsFileStressIT extends PillarPerformanceTest {
     protected AuditTrailClient auditTrailClient;
     PutFileClient putClient;
 
     @BeforeEach
-    public void initialiseReferenceTest() throws Exception {
+    void initialiseReferenceTest() throws Exception {
         putClient = ModifyComponentFactory.getInstance().retrievePutClient(
                 settingsForTestClient, createSecurityManager(), settingsForTestClient.getComponentID());
         auditTrailClient = AccessComponentFactory.getInstance().createAuditTrailClient(
@@ -76,7 +76,7 @@ public class GetAuditTrailsFileStressIT extends PillarPerformanceTest {
     @Disabled("Temporarily disabled due to performance issues")
     @Test
     @Tag("pillar-stress-test")
-    public void singleTreadedGetAuditTrails() throws Exception {
+    void singleTreadedGetAuditTrails() throws Exception {
         final int NUMBER_OF_AUDITS = 100;
         final int PART_STATISTIC_INTERVAL = NUMBER_OF_AUDITS / 5;
         singleTreadedPut();
@@ -98,7 +98,7 @@ public class GetAuditTrailsFileStressIT extends PillarPerformanceTest {
     @Disabled("Temporarily disabled due to performance issues")
     @Test
     @Tag("pillar-stress-test")
-    public void parallelGetAuditTrails() throws Exception {
+    void parallelGetAuditTrails() throws Exception {
         final int NUMBER_OF_AUDITS = 10;
         final int PART_STATISTIC_INTERVAL = NUMBER_OF_AUDITS / 5;
         addDescription("Attempt to request " + NUMBER_OF_AUDITS + " full audit trails one at a time.");

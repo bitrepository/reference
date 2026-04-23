@@ -34,7 +34,7 @@ import java.nio.charset.StandardCharsets;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class FileUtilsTest {    String DIR = "test-directory";
+class FileUtilsTest {    String DIR = "test-directory";
     String directory = "test-directory";
     String subDirectory = "sub-directory";
     String testFileName = "test.file.name";
@@ -42,7 +42,7 @@ public class FileUtilsTest {    String DIR = "test-directory";
     String data = "The data for the stream.";
 
     @BeforeEach
-    public void setupTest() throws Exception {
+    void setupTest() throws Exception {
         File dir = new File(directory);
         if (dir.exists()) {
             FileUtils.delete(dir);
@@ -50,7 +50,7 @@ public class FileUtilsTest {    String DIR = "test-directory";
     }
 
     @AfterEach
-    public void teardownTest() throws Exception {
+    void teardownTest() throws Exception {
         File dir = new File(directory);
         if (dir.exists()) {
             FileUtils.delete(dir);
@@ -59,7 +59,7 @@ public class FileUtilsTest {    String DIR = "test-directory";
 
     @Test
     @Tag("regressiontest")
-    public void createDirectoryTester() throws Exception {
+    void createDirectoryTester() throws Exception {
         addDescription("Test the ability to create directories.");
         addStep("Test the ability to create a directory", "Should be created by utility.");
         File dir = new File(directory);
@@ -84,7 +84,7 @@ public class FileUtilsTest {    String DIR = "test-directory";
 
     @Test
     @Tag("regressiontest")
-    public void createSubDirectoryTester() throws Exception {
+    void createSubDirectoryTester() throws Exception {
         addDescription("Test the ability to create sub directories.");
         addStep("Test the ability to create sub-directories", "Should be created by utility");
         File dir = FileUtils.retrieveDirectory(directory);
@@ -123,7 +123,7 @@ public class FileUtilsTest {    String DIR = "test-directory";
 
     @Test
     @Tag("regressiontest")
-    public void createDeleteDirectoryTester() throws Exception {
+    void createDeleteDirectoryTester() throws Exception {
         addDescription("Test the ability to delete directories.");
         addStep("Test deleting a directory with file and subdirectory",
                 "Removes directory, sub-directory and file");
@@ -143,7 +143,7 @@ public class FileUtilsTest {    String DIR = "test-directory";
 
     @Test
     @Tag("regressiontest")
-    public void deprecateFileTester() throws Exception {
+    void deprecateFileTester() throws Exception {
         addDescription("Test the deprecation of a file.");
         addStep("Setup", "");
         File dir = FileUtils.retrieveDirectory(directory);
@@ -161,7 +161,7 @@ public class FileUtilsTest {    String DIR = "test-directory";
 
     @Test
     @Tag("regressiontest")
-    public void moveFileTester() throws Exception {
+    void moveFileTester() throws Exception {
         addDescription("Test the moving of a file.");
         addStep("Setup", "");
         File dir = FileUtils.retrieveDirectory(directory);
@@ -180,7 +180,7 @@ public class FileUtilsTest {    String DIR = "test-directory";
 
     @Test
     @Tag("regressiontest")
-    public void writeInputstreamTester() throws Exception {
+    void writeInputstreamTester() throws Exception {
         addDescription("Test writing an inputstream to a file.");
         addStep("Setup", "");
         File dir = FileUtils.retrieveDirectory(directory);
@@ -197,7 +197,7 @@ public class FileUtilsTest {    String DIR = "test-directory";
 
     @Test
     @Tag("regressiontest")
-    public void unzipFileTester() throws Exception {
+    void unzipFileTester() throws Exception {
         addDescription("Test unzipping a file.");
         addStep("Setup", "");
         File dir = FileUtils.retrieveDirectory(directory);
@@ -213,7 +213,7 @@ public class FileUtilsTest {    String DIR = "test-directory";
 
     @Test
     @Tag("regressiontest")
-    public void cleanupEmptyDirectoriesTester() throws Exception {
+    void cleanupEmptyDirectoriesTester() throws Exception {
         addDescription("Test the cleanup of empty directories.");
         File dir = FileUtils.retrieveDirectory(directory);
         File subDir = FileUtils.retrieveSubDirectory(dir, subDirectory);

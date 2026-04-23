@@ -30,14 +30,14 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
-public class AuditTrailQueryTest {
+class AuditTrailQueryTest {
     private static final int DEFAULT_MAX_NUMBER_OF_RESULTS = 10000;
 
     String componentId = "componentId";
 
     @Test
     @Tag("regressiontest")
-    public void testNoSequenceNumbers() throws Exception {
+    void testNoSequenceNumbers() throws Exception {
         addDescription("Test that a AuditTrailQuery can be created without any sequence numbers.");
         AuditTrailQuery query = new AuditTrailQuery(componentId, null, null, DEFAULT_MAX_NUMBER_OF_RESULTS);
         assertEquals(componentId, query.getComponentID());
@@ -47,7 +47,7 @@ public class AuditTrailQueryTest {
 
     @Test
     @Tag("regressiontest")
-    public void testOnlyMinSequenceNumber() throws Exception {
+    void testOnlyMinSequenceNumber() throws Exception {
         addDescription("Test the creation of a AuditTrailQuery with only the minSequenceNumber");
         Long minSeq = 1L;
         AuditTrailQuery query = new AuditTrailQuery(componentId, minSeq, null, DEFAULT_MAX_NUMBER_OF_RESULTS);
@@ -58,7 +58,7 @@ public class AuditTrailQueryTest {
 
     @Test
     @Tag("regressiontest")
-    public void testBothSequenceNumberSuccess() throws Exception {
+    void testBothSequenceNumberSuccess() throws Exception {
         addDescription("Test the creation of a AuditTrailQuery with both SequenceNumber, where max is larger than min.");
         Long minSeq = 1L;
         Long maxSeq = 2L;
@@ -70,7 +70,7 @@ public class AuditTrailQueryTest {
 
     @Test
     @Tag("regressiontest")
-    public void testBothSequenceNumberFailure() throws Exception {
+    void testBothSequenceNumberFailure() throws Exception {
         assertThrows(IllegalArgumentException.class, () -> {
             addDescription("Test the creation of a AuditTrailQuery with both SequenceNumber, where max is smalle than min.");
             Long minSeq = 2L;

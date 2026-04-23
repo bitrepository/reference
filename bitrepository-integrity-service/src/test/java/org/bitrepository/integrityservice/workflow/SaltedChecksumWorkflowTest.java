@@ -27,7 +27,11 @@ import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResultingChecksums;
-import org.bitrepository.client.eventhandler.*;
+import org.bitrepository.client.eventhandler.CompleteEvent;
+import org.bitrepository.client.eventhandler.ContributorEvent;
+import org.bitrepository.client.eventhandler.ContributorFailedEvent;
+import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.Base16Utils;
@@ -58,7 +62,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-public class SaltedChecksumWorkflowTest {
+class SaltedChecksumWorkflowTest {
 
     private static final String PILLAR_1 = "pillar1";
     private static final String PILLAR_2 = "pillar2";
@@ -74,7 +78,7 @@ public class SaltedChecksumWorkflowTest {
     protected AuditTrailManager auditManager;
 
     @BeforeEach
-    public void setup() throws Exception {
+    void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("IntegrityWorkflowTest");
 
         settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
@@ -94,7 +98,7 @@ public class SaltedChecksumWorkflowTest {
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testNoFilesInCollection() {
+    void testNoFilesInCollection() {
         addDescription("Test that the workflow does nothing, when it has no files in the collection.");
         addStep("Prepare for calls to mocks", "");
         when(model.getNumberOfFilesInCollection(anyString())).thenReturn(Long.valueOf(0));
@@ -119,7 +123,7 @@ public class SaltedChecksumWorkflowTest {
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testSuccess() {
+    void testSuccess() {
         addDescription("Test that the workflow works when both pillars deliver the same checksum.");
         addStep("Prepare for calls to mocks", "");
         when(model.getNumberOfFilesInCollection(anyString())).thenReturn(Long.valueOf(1));
@@ -161,7 +165,7 @@ public class SaltedChecksumWorkflowTest {
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testOneComponentFailureAndTwoOtherAgreeOnChecksum() {
+    void testOneComponentFailureAndTwoOtherAgreeOnChecksum() {
         addDescription("Test that the workflow works when both pillars deliver the same checksum.");
         addStep("Prepare for calls to mocks", "");
         when(model.getNumberOfFilesInCollection(anyString())).thenReturn(Long.valueOf(1));
@@ -206,7 +210,7 @@ public class SaltedChecksumWorkflowTest {
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testOneComponentFailureAndTwoOtherDisagreeOnChecksum() throws Exception {
+    void testOneComponentFailureAndTwoOtherDisagreeOnChecksum() throws Exception {
         addDescription("Test that the workflow works when both pillars deliver the same checksum.");
         addStep("Prepare for calls to mocks", "");
         when(model.getNumberOfFilesInCollection(anyString())).thenReturn(Long.valueOf(1));
@@ -254,7 +258,7 @@ public class SaltedChecksumWorkflowTest {
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testInconsistentChecksums() {
+    void testInconsistentChecksums() {
         addDescription("Test that the workflow discovers and handles inconsistent checksums");
         addStep("Prepare for calls to mocks", "");
         when(model.getNumberOfFilesInCollection(anyString())).thenReturn(Long.valueOf(1));
@@ -300,7 +304,7 @@ public class SaltedChecksumWorkflowTest {
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testNoReceivedChecksums() {
+    void testNoReceivedChecksums() {
         addDescription("Test that the workflow handles the case, when no checksums are received");
         addStep("Prepare for calls to mocks", "");
         when(model.getNumberOfFilesInCollection(anyString())).thenReturn(Long.valueOf(1));

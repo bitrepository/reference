@@ -188,7 +188,7 @@ public class WorkflowStatistic {
     }
 
     /**
-     * @return The duration of the workflow if it has been started, else 0.
+     * @return The duration (millisecends) of the workflow if it has been started, else 0.
      */
     private long getDuration() {
         if (start == null) {

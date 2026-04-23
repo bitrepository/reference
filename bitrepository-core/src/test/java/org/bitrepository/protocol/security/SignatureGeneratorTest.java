@@ -5,12 +5,12 @@ import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.protocol.security.exception.MessageSigningException;
 import org.junit.jupiter.api.Test;
 
-public class SignatureGeneratorTest {
+class SignatureGeneratorTest {
     /*
      * Test to generate new signature for SecurityTestConstants 
      */
     @Test
-    public void generateSignature() throws MessageSigningException {
+    void generateSignature() throws MessageSigningException {
         PermissionStore permissionStore = new PermissionStore();
         MessageAuthenticator authenticator = new BasicMessageAuthenticator(permissionStore);
         OperationAuthorizer authorizer = new BasicOperationAuthorizer(permissionStore);

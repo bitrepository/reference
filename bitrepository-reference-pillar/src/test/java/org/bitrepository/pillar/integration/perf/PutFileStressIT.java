@@ -38,11 +38,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class PutFileStressIT extends PillarPerformanceTest {
+class PutFileStressIT extends PillarPerformanceTest {
     protected PutFileClient putClient;
 
     @BeforeEach
-    public void initialiseReferenceTest() throws Exception {
+    void initialiseReferenceTest() throws Exception {
         putClient = ModifyComponentFactory.getInstance().retrievePutClient(
                 settingsForTestClient, createSecurityManager(), settingsForTestClient.getComponentID()
         );
@@ -51,7 +51,7 @@ public class PutFileStressIT extends PillarPerformanceTest {
     @Test
     @Tag("pillar-stress-test")
     @Tag("stress-test-pillar-population")
-    public void singleTreadedPut() throws Exception {
+    void singleTreadedPut() throws Exception {
         final int NUMBER_OF_FILES = 10;
         final int PART_STATISTIC_INTERVAL = 2;
         addDescription("Attempt to put " + NUMBER_OF_FILES + " files into the pillar, one at a time.");
@@ -74,7 +74,7 @@ public class PutFileStressIT extends PillarPerformanceTest {
 
     @Test
     @Tag("pillar-stress-test")
-    public void parallelPut() throws Exception {
+    void parallelPut() throws Exception {
         final int numberOfFiles =
                 testConfiguration.getInt("pillarintegrationtest.PutFileStressIT.parallelPut.numberOfFiles");
         final int partStatisticsInterval =

@@ -39,11 +39,11 @@ import java.security.cert.X509Certificate;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class CertificateIDTest {
+class CertificateIDTest {
 
     @Test
     @Tag("regressiontest")
-    public void positiveCertificateIdentificationTest() throws Exception {
+    void positiveCertificateIdentificationTest() throws Exception {
         addDescription("Tests that a certificate can be identified based on the correct signature.");
         addStep("Create CertificateID object based on the certificate used to sign the data",
                 "CertificateID object not null");
@@ -66,7 +66,7 @@ public class CertificateIDTest {
 
     @Test
     @Tag("regressiontest")
-    public void negativeCertificateIdentificationTest() throws Exception {
+    void negativeCertificateIdentificationTest() throws Exception {
         addDescription("Tests that a certificate is not identified based on a incorrect signature.");
         addStep("Create CertificateID object based on a certificate not used for signing the data",
                 "CertificateID object not null");
@@ -89,7 +89,7 @@ public class CertificateIDTest {
 
     @Test
     @Tag("regressiontest")
-    public void equalTest() throws Exception {
+    void equalTest() throws Exception {
         addDescription("Tests the equality of CertificateIDs");
         addStep("Setup", "");
         Security.addProvider(new BouncyCastleProvider());

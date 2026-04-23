@@ -43,12 +43,12 @@ import java.util.concurrent.TimeUnit;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class ReplaceFileRequestIT extends DefaultPillarOperationTest {
+class ReplaceFileRequestIT extends DefaultPillarOperationTest {
     protected ReplaceFileMessageFactory msgFactory;
     private String pillarDestination;
 
     @BeforeEach
-    public void initialiseReferenceTest() throws Exception {
+    void initialiseReferenceTest() throws Exception {
         pillarDestination = lookupReplaceFileDestination();
         msgFactory = new ReplaceFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), pillarDestination);
         clientProvider.getPutClient().putFile(
@@ -62,7 +62,7 @@ public class ReplaceFileRequestIT extends DefaultPillarOperationTest {
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    public void normalReplaceFileTest() {
+    void normalReplaceFileTest() {
         addDescription("Tests a normal ReplaceFile sequence");
         addStep("Send a ReplaceFile request to " + testConfiguration.getPillarUnderTestID(),
                 "The pillar should generate a OPERATION_ACCEPTED_PROGRESS progress response followed by a " +

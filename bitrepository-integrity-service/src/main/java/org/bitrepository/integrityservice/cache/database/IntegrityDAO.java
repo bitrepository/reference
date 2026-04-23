@@ -177,7 +177,7 @@ public abstract class IntegrityDAO {
      * @param collectionID The ID of the collection
      * @return The date of the latest file in the collection.
      */
-    public Instant getLatestFileInstantInCollectionInstant(String collectionID) {
+    public Instant getLatestFileInstantInCollection(String collectionID) {
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
 
         String retrieveSql = "SELECT MAX(latest_file_timestamp) FROM collection_progress WHERE collectionID = ?";
@@ -187,11 +187,11 @@ public abstract class IntegrityDAO {
     }
 
     /**
-     * @deprecated Use {@link #getLatestFileInstantInCollectionInstant(String)} instead
+     * @deprecated Use {@link #getLatestFileInstantInCollection(String)} instead
      */
     @Deprecated(forRemoval = true)
     public Date getLatestFileDateInCollection(String collectionID) {
-        Instant instant = getLatestFileInstantInCollectionInstant(collectionID);
+        Instant instant = getLatestFileInstantInCollection(collectionID);
         return instant != null ? Date.from(instant) : null;
     }
 

@@ -41,10 +41,10 @@ import java.security.NoSuchAlgorithmException;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class ChecksumUtilsTest {
+class ChecksumUtilsTest {
     @Test
     @Tag("regressiontest")
-    public void calculateHmacChecksums() throws Exception {
+    void calculateHmacChecksums() throws Exception {
         addDescription("Tests whether the utility class for calculating checksums with HMAC is able to "
                 + "correctly calculate predefined examples from : "
                 + "http://en.wikipedia.org/wiki/HMAC#Examples_of_HMAC_.28MD5.2C_SHA1.2C_SHA256_.29");
@@ -100,7 +100,7 @@ public class ChecksumUtilsTest {
 
     @Test
     @Tag("regressiontest")
-    public void calculateDigestChecksums() throws Exception {
+    void calculateDigestChecksums() throws Exception {
         addDescription("Tests whether the utility class for calculating checksums with MessageDigest is able to "
                 + "correctly calculate the checksums.");
         addStep("Setup variables.", "Should be OK");
@@ -146,7 +146,7 @@ public class ChecksumUtilsTest {
 
     @Test
     @Tag("regressiontest")
-    public void testChecksumOnFile() throws Exception {
+    void testChecksumOnFile() throws Exception {
         addDescription("Test the checksum calculation on a file");
         addStep("Setup", "");
         ChecksumSpecTYPE csMD5 = new ChecksumSpecTYPE();
@@ -168,7 +168,7 @@ public class ChecksumUtilsTest {
 
     @Test
     @Tag("regressiontest")
-    public void testChecksumAlgorithmValidation() throws Exception {
+    void testChecksumAlgorithmValidation() throws Exception {
         addDescription("Test the algorithm validation for every single possible checksum algorithm.");
         for (ChecksumType csType : ChecksumType.values()) {
             if (csType == ChecksumType.OTHER) {
@@ -266,7 +266,7 @@ public class ChecksumUtilsTest {
 
     @Test
     @Tag("regressiontest")
-    public void testDefaultChecksum() {
+    void testDefaultChecksum() {
         addDescription("Test the extraction of the default checksum from settings.");
         addStep("Setup the settings", "Loading the test settings");
         Settings settings = TestSettingsProvider.reloadSettings("ChecksumUtils");

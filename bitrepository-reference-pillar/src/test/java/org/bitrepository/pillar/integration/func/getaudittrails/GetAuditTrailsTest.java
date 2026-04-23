@@ -32,13 +32,15 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.bitrepository.common.utils.AllureTestUtils.*;
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addFixture;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Tag(PillarTestGroups.FULL_PILLAR_TEST)
 @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-public class GetAuditTrailsTest extends PillarFunctionTest {
+class GetAuditTrailsTest extends PillarFunctionTest {
     @Override
     protected void initializeCUT() {
         super.initializeCUT();
@@ -48,7 +50,7 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    public void eventSortingTest() throws NegativeResponseException {
+    void eventSortingTest() throws NegativeResponseException {
         addDescription("Test whether the audit trails are sorted based on sequence numbers, with the largest " +
                 "sequence number last..");
         addFixture("Ensure at least two files are present on the pillar.");
@@ -71,7 +73,7 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    public void maxNumberOfResultTest() {
+    void maxNumberOfResultTest() {
         addDescription(
                 "Verifies the size of the result set can be limited by setting the maxNumberOfResult parameter.");
         addFixture("Ensure at least two files are present on the pillar");
@@ -96,7 +98,7 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    public void minSequenceNumberTest() {
+    void minSequenceNumberTest() {
         addDescription("Test the pillar support for only retrieving events with sequence number higher than the " +
                 "provided MinSequenceNumber" +
                 ". " +
@@ -133,7 +135,7 @@ public class GetAuditTrailsTest extends PillarFunctionTest {
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    public void maxSequenceNumberTest() {
+    void maxSequenceNumberTest() {
         addDescription("Test the pillar support for only retrieving audit event with SequenceNumbers lower than " +
                 "MaxSequenceNumber.");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);

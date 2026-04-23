@@ -54,7 +54,7 @@ import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class LocalAuditPreservationTest {
+class LocalAuditPreservationTest {
     /**
      * The settings for the tests. Should be instantiated in the setup.
      */
@@ -66,7 +66,7 @@ public class LocalAuditPreservationTest {
     private DefaultThreadFactory threadFactory;
 
     @BeforeAll
-    public void setup() throws Exception {
+    void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("LocalAuditPreservationUnderTest");
 
         Collection c = settings.getRepositorySettings().getCollections().getCollection().get(0);
@@ -82,7 +82,7 @@ public class LocalAuditPreservationTest {
     @Test
     // Fragile test, fails occasionally.
     @SuppressWarnings("rawtypes")
-    public void auditPreservationSchedulingTest() throws Exception {
+    void auditPreservationSchedulingTest() throws Exception {
         addDescription("Tests the scheduling of the audit trail preservation.");
         addStep("Setup variables and settings for the test", "");
         //MockAuditStore store = new MockAuditStore();
@@ -145,7 +145,7 @@ public class LocalAuditPreservationTest {
     @Test
     @Tag("regressiontest")
     @SuppressWarnings("rawtypes")
-    public void auditPreservationIngestTest() throws Exception {
+    void auditPreservationIngestTest() throws Exception {
         addDescription("Tests the ingest of the audit trail preservation.");
         addStep("Setup variables and settings for the test", "");
         MockPutClient client = new MockPutClient();

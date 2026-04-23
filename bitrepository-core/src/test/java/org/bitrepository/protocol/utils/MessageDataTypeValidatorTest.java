@@ -10,10 +10,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class MessageDataTypeValidatorTest {
+class MessageDataTypeValidatorTest {
 
     @Test
-    public void validateChecksumSpecTest() {
+    void validateChecksumSpecTest() {
         assertThrows(IllegalArgumentException.class, () -> {
             ChecksumSpecTYPE noChecksumTypeSpec = new ChecksumSpecTYPE();
             MessageDataTypeValidator.validate(noChecksumTypeSpec, "noChecksumTypeSpec");
@@ -21,7 +21,7 @@ public class MessageDataTypeValidatorTest {
     }
 
     @Test
-    public void validateChecksumDataForFileNoChecksumTest() {
+    void validateChecksumDataForFileNoChecksumTest() {
         assertThrows(IllegalArgumentException.class, () -> {
                     ChecksumDataForFileTYPE noChecksumSpec = new ChecksumDataForFileTYPE();
                     ChecksumSpecTYPE checksumTypeSpec = new ChecksumSpecTYPE();
@@ -33,7 +33,7 @@ public class MessageDataTypeValidatorTest {
     }
 
     @Test
-    public void validateChecksumDataForFileNoTimestampTest() throws DecoderException {
+    void validateChecksumDataForFileNoTimestampTest() {
         assertThrows(IllegalArgumentException.class, () -> {
             ChecksumDataForFileTYPE noChecksumSpec = new ChecksumDataForFileTYPE();
             ChecksumSpecTYPE checksumTypeSpec = new ChecksumSpecTYPE();
@@ -46,7 +46,7 @@ public class MessageDataTypeValidatorTest {
     }
 
     @Test
-    public void validateChecksumDataForFileNoChecksumSpecTest() throws DecoderException {
+    void validateChecksumDataForFileNoChecksumSpecTest() {
         assertThrows(IllegalArgumentException.class, () -> {
             ChecksumDataForFileTYPE noChecksumSpec = new ChecksumDataForFileTYPE();
             noChecksumSpec.setChecksumValue(Base16Utils.encodeBase16("abab"));

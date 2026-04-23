@@ -36,18 +36,18 @@ import org.junit.jupiter.api.Test;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class IdentifyContributorsForGetStatusIT extends PillarFunctionTest {
+class IdentifyContributorsForGetStatusIT extends PillarFunctionTest {
     protected GetStatusMessageFactory msgFactory;
 
     @BeforeEach
-    public void initialiseReferenceTest() throws Exception {
+    void initialiseReferenceTest() throws Exception {
         msgFactory = new GetStatusMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
     }
 
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    public void normalGetStatusTest() {
+    void normalGetStatusTest() {
         addDescription("Tests the GetStatus functionality of a pillar for the successful scenario.");
 
         addStep("Send a IdentifyContributorsForGetStatusRequest.",

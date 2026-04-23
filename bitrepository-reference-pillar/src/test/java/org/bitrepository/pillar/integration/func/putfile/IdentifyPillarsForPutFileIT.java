@@ -37,17 +37,17 @@ import org.junit.jupiter.api.Test;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest {
+class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest {
     protected PutFileMessageFactory msgFactory;
 
     @BeforeEach
-    public void initialiseReferenceTest() throws Exception {
+    void initialiseReferenceTest() throws Exception {
         msgFactory = new PutFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
     }
 
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
-    public void normalIdentificationTest() {
+    void normalIdentificationTest() {
         addDescription("Verifies the normal behaviour for putFile identification");
         addStep("Sending a putFile identification request.",
                 "The pillar under test should make a response with the following elements: <ol>" +
@@ -91,7 +91,7 @@ public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest
 
     @Test
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    public void identificationTestForChecksumPillar() {
+    void identificationTestForChecksumPillar() {
         addDescription("Verifies the normal behaviour for putFile identification for a checksum pillar");
         addStep("Sending a putFile identification.",
                 "The pillar under test should make a response with the correct elements. The only different from a " +
@@ -115,7 +115,7 @@ public class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    public void fileExistsTest() {
+    void fileExistsTest() {
         addDescription("Verifies the exists of a file with the same ID is handled correctly. " +
                 "This means that a checksum for the existing file is returned, enabling the client to continue with " +
                 "the put operation for the pillars not yet containing the file. The client can easily " +

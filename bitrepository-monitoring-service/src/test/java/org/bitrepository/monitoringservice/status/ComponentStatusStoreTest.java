@@ -41,17 +41,17 @@ import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class ComponentStatusStoreTest {
+class ComponentStatusStoreTest {
     Settings settings;
 
     @BeforeAll
-    public void setup() {
+    void setup() {
         settings = TestSettingsProvider.reloadSettings("ComponentStatusStoreUnderTest");
     }
 
     @Test
     @Tag("regressiontest")
-    public void testComponentStatus() throws Exception {
+    void testComponentStatus() throws Exception {
         addDescription("Tests the compontent status");
         addStep("Setup", "");
         String componentId = "componentId";

@@ -34,7 +34,7 @@ import java.io.File;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class ConfigLoaderTest {
+class ConfigLoaderTest {
     String goodFilePath = "logback-test.xml";
 
     @BeforeEach

@@ -43,11 +43,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 
-public class ReceivedMessageHandlerTest {
+class ReceivedMessageHandlerTest {
 
     @Test
     @Tag("regressiontest")
-    public void singleMessageDispatch() {
+    void singleMessageDispatch() {
         addDescription("Tests that a single message is dispatched correctly");
         ReceivedMessageHandler handler = new ReceivedMessageHandler(null);
         MessageListener defaultListener = mock(MessageListener.class);
@@ -59,7 +59,7 @@ public class ReceivedMessageHandlerTest {
 
     @Test
     @Tag("regressiontest")
-    public void parallelMessageDispatch() {
+    void parallelMessageDispatch() {
         addDescription("Tests that two messages can be handled in parallel in the default pool configuration.");
         addFixture("Create a ReceivedMessageHandler with a null configuration. This should create a " +
                 "ReceivedMessageHandler with a single CachedThreadPool.");
@@ -84,7 +84,7 @@ public class ReceivedMessageHandlerTest {
 
     @Test
     @Tag("regressiontest")
-    public void manyMessageDispatch() {
+    void manyMessageDispatch() {
         addDescription("Tests that many (50) messages can be handled in parallel in the default pool configuration.");
         addFixture("Create a ReceivedMessageHandler with a null configuration. This should create a " +
                 "ReceivedMessageHandler with a single CachedThreadPool.");
@@ -113,7 +113,7 @@ public class ReceivedMessageHandlerTest {
 
     @Test
     @Tag("regressiontest")
-    public void singleThreadMessageDispatch() {
+    void singleThreadMessageDispatch() {
         addDescription("Tests that two messages will be handled in sequence if a singleThreaded pool is configured.");
         addFixture("Create a ReceivedMessageHandler with a single pool of size 1.");
         ReceivedMessageHandler handler = new ReceivedMessageHandler(createMessageThreadPools(
@@ -136,7 +136,7 @@ public class ReceivedMessageHandlerTest {
 
     @Test
     @Tag("regressiontest")
-    public void specificMessagePools() {
+    void specificMessagePools() {
         addDescription("Tests that different message types can be handled by different executors.");
         addFixture("Create a ReceivedMessageHandler with a two pools, " +
                 "one for status requests and one for put requests. The put file pool should be limited to 1 thread.");
@@ -171,7 +171,7 @@ public class ReceivedMessageHandlerTest {
 
     @Test
     @Tag("regressiontest")
-    public void specificMessageNamePoolAndDefaultPool() {
+    void specificMessageNamePoolAndDefaultPool() {
         addDescription("Tests it is possible to specify a pool for a specific message type, with a " +
                 "default pool for the remainder.");
         addFixture("Create a ReceivedMessageHandler with a one specific pool for put requests. " +
@@ -205,7 +205,7 @@ public class ReceivedMessageHandlerTest {
 
     @Test
     @Tag("regressiontest")
-    public void specificMessageCategoryPoolAndDefaultPool() {
+    void specificMessageCategoryPoolAndDefaultPool() {
         addDescription("Tests it is possible to specify a pool for a specific message category, with a " +
                 "default pool for the remainder.");
         addFixture("Create a ReceivedMessageHandler with a one specific pool for slow requests. " +
@@ -238,7 +238,7 @@ public class ReceivedMessageHandlerTest {
 
     @Test
     @Tag("regressiontest")
-    public void specificCollectionPoolAndDefaultPool() {
+    void specificCollectionPoolAndDefaultPool() {
         addDescription("Tests it is possible to specify a pool for a specific collection, with a " +
                 "default pool for the remainder.");
         addFixture("Create a ReceivedMessageHandler with a one specific pool for Collection1. " +
@@ -280,7 +280,7 @@ public class ReceivedMessageHandlerTest {
 
     @Test
     @Tag("regressiontest")
-    public void specificCollectionPoolWithSpecificMessageTypePool() {
+    void specificCollectionPoolWithSpecificMessageTypePool() {
         addDescription("Tests it is possible to specify a pool for a specific collection for only a specific" +
                 "message type.");
         addFixture("Create a ReceivedMessageHandler with a one specific pool for Collection1 and PutFileRequests. " +

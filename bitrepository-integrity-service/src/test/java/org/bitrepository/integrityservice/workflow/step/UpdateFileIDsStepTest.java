@@ -63,7 +63,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
 
     @Test
     @Tag("regressiontest")
-    public void testPositiveReply() throws WorkflowAbortedException {
+    void testPositiveReply() throws WorkflowAbortedException {
         addDescription("Test the step for updating the file ids can handle COMPLETE operation event.");
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) {
@@ -89,7 +89,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
     
     @Test
     @Tag("regressiontest")
-    public void testAbortWorkflowWhenNegativeReply() {
+    void testAbortWorkflowWhenNegativeReply() {
         addDescription("Test the step for updating the file ids will throw an WorkflowAbortedException"
                 + "when AbortOnFailedContributor is set to true and a FAILED event is received.");
         doAnswer(new Answer() {
@@ -128,7 +128,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
 
     @Test
     @Tag("regressiontest")
-    public void testRetryCollectionWhenNegativeReply() throws WorkflowAbortedException {
+    void testRetryCollectionWhenNegativeReply() throws WorkflowAbortedException {
         addDescription("Test the step for updating the file ids will retry on a FAILED event");
         final ResultingFileIDs resultingFileIDs = createResultingFileIDs(TEST_FILE_1);
         Answer callbackAnswer = new Answer() {
@@ -173,7 +173,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
     
     @Test
     @Tag("regressiontest")
-    public void testContinueWorkflowWhenNegativeReply() throws WorkflowAbortedException {
+    void testContinueWorkflowWhenNegativeReply() throws WorkflowAbortedException {
         addDescription("Test the step for updating the file ids will continue when getting an FAILED operation event"
                 + " when AbortOnFailedContributor is set to false");
         doAnswer(new Answer() {
@@ -207,7 +207,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
 
     @Test
     @Tag("regressiontest")
-    public void testIngestOfResults() throws WorkflowAbortedException {
+    void testIngestOfResults() throws WorkflowAbortedException {
         addDescription("Test the step for updating the file ids can ingest the data correctly into the store.");
         final ResultingFileIDs resultingFileIDs = createResultingFileIDs(TEST_FILE_1);
         doAnswer(new Answer() {
@@ -236,7 +236,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
 
     @Test
     @Tag("regressiontest")
-    public void testPartialResults() throws WorkflowAbortedException {
+    void testPartialResults() throws WorkflowAbortedException {
         addDescription("Test that the number of partial is used for generating more than one request.");
         final ResultingFileIDs resultingFileIDs = createResultingFileIDs(TEST_FILE_1);
 

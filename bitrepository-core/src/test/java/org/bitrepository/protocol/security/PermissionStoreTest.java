@@ -34,21 +34,23 @@ import org.junit.jupiter.api.Test;
 import java.math.BigInteger;
 import java.security.cert.X509Certificate;
 
-import static org.bitrepository.common.utils.AllureTestUtils.*;
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addFixture;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class PermissionStoreTest {
+class PermissionStoreTest {
     private static final String componentID = "TEST";
     private PermissionStore permissionStore;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         permissionStore = new PermissionStore();
         permissionStore.loadPermissions(SecurityTestConstants.getDefaultPermissions(), componentID);
     }
 
     @Test
     @Tag("regressiontest")
-    public void positiveCertificateRetrievalTest() throws Exception {
+    void positiveCertificateRetrievalTest() throws Exception {
         addDescription("Tests that a certificate can be retrieved based on the correct signerId.");
         addStep("Create signer to lookup certificate", "No exceptions");
         byte[] decodeSig =
@@ -64,7 +66,7 @@ public class PermissionStoreTest {
 
     @Test
     @Tag("regressiontest")
-    public void negativeCertificateRetrievalTest() throws Exception {
+    void negativeCertificateRetrievalTest() throws Exception {
         addDescription("Tests that a certificate cannot be retrieved based on the wrong signerId.");
         addStep("Create signer and modify its ID so lookup will fail", "No exceptions");
         byte[] decodeSig =
@@ -96,7 +98,7 @@ public class PermissionStoreTest {
 
     @Test
     @Tag("regressiontest")
-    public void certificateFingerprintTest() throws Exception {
+    void certificateFingerprintTest() throws Exception {
         addDescription("Tests that a certificate fingerprint can correctly be retrieved for a signer.");
         addFixture("Create signer to lookup fingerprint");
         byte[] decodeSig =

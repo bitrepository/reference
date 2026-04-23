@@ -28,12 +28,12 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-public class SettingsProviderTest {
+class SettingsProviderTest {
     private static final String PATH_TO_TEST_SETTINGS = "settings/xml/bitrepository-devel";
 
     @Test
     @Tag("regressiontest")
-    public void componentIDTest() {
+    void componentIDTest() {
         String myComponentID = "TestComponentID";
         SettingsProvider settingsLoader =
                 new SettingsProvider(new XMLFileSettingsLoader(PATH_TO_TEST_SETTINGS), myComponentID);
@@ -44,7 +44,7 @@ public class SettingsProviderTest {
 
     @Test
     @Tag("regressiontest")
-    public void reloadTest() {
+    void reloadTest() {
         String myComponentID = "TestComponentID";
         SettingsProvider settingsLoader =
                 new SettingsProvider(new XMLFileSettingsLoader(PATH_TO_TEST_SETTINGS), myComponentID);

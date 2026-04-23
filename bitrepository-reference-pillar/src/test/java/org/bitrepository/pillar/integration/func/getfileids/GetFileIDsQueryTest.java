@@ -41,12 +41,12 @@ import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addFixture;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class GetFileIDsQueryTest extends PillarFunctionTest {
+class GetFileIDsQueryTest extends PillarFunctionTest {
 
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    public void fileidsSortingTest() {
+    void fileidsSortingTest() {
         addDescription("Test whether the file id result is sorted oldest to newest.");
         addFixture("Ensure at least two files are present on the pillar");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
@@ -69,7 +69,7 @@ public class GetFileIDsQueryTest extends PillarFunctionTest {
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    public void maxNumberOfResultTest() {
+    void maxNumberOfResultTest() {
         addDescription("Verifies the size of the result set can be limited by setting the maxNumberOfResult parameter.");
         addFixture("Ensure at least two files are present on the pillar");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
@@ -93,7 +93,7 @@ public class GetFileIDsQueryTest extends PillarFunctionTest {
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    public void minTimeStampTest() {
+    void minTimeStampTest() {
         addDescription("Test the pillar support for only retrieving file ids newer that a given time. " +
                 "Note that this test assumes there is at least 2 file ids with different timestamps.");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
@@ -144,7 +144,7 @@ public class GetFileIDsQueryTest extends PillarFunctionTest {
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    public void maxTimeStampTest() {
+    void maxTimeStampTest() {
         addDescription("Test the pillar support for only retrieving file ids older that a given time. " +
                 "Note that this test assumes there is at least 2 file ids with different timestamps.");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);

@@ -116,7 +116,7 @@ public class IntegrityDatabase implements IntegrityModel {
 
     @Override
     public Instant getDateForNewestFileEntryForCollectionInstant(String collectionID) {
-        return store.getLatestFileInstantInCollectionInstant(collectionID);
+        return store.getLatestFileInstantInCollection(collectionID);
     }
 
     @Override

@@ -41,17 +41,17 @@ import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class GetChecksumTest extends PillarFunctionTest {
+class GetChecksumTest extends PillarFunctionTest {
 
     @BeforeAll
-    public void retrieveFirst2Files() {
+    void retrieveFirst2Files() {
         //ToDo
     }
 
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    public void md5ChecksumsForAllFilesTest() throws NegativeResponseException {
+    void md5ChecksumsForAllFilesTest() throws NegativeResponseException {
         addDescription("Test the pillar support for MD5 type checksums");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
@@ -70,7 +70,7 @@ public class GetChecksumTest extends PillarFunctionTest {
 
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
-    public void sha1ChecksumsForDefaultTest() throws NegativeResponseException {
+    void sha1ChecksumsForDefaultTest() throws NegativeResponseException {
         addDescription("Test the pillar support for SHA1 type checksums");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
@@ -85,7 +85,7 @@ public class GetChecksumTest extends PillarFunctionTest {
 
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
-    public void md5SaltChecksumsForDefaultTest() throws NegativeResponseException {
+    void md5SaltChecksumsForDefaultTest() throws NegativeResponseException {
         addDescription("Test the pillar support for MD5 type checksums with a salt");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 
@@ -105,7 +105,7 @@ public class GetChecksumTest extends PillarFunctionTest {
 
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
-    public void sha1SaltChecksumsForDefaultTest() throws NegativeResponseException {
+    void sha1SaltChecksumsForDefaultTest() throws NegativeResponseException {
         addDescription("Test the pillar support for SHA1 type checksums with a salt");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
 

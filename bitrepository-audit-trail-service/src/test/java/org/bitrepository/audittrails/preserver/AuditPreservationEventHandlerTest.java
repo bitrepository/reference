@@ -44,7 +44,7 @@ public class AuditPreservationEventHandlerTest {
 
     @Test
     @Tag("regressiontest")
-    public void auditPreservationEventHandlerTest() throws Exception {
+    void auditPreservationEventHandlerTest() throws Exception {
         addDescription("Test the handling of the audit trail event handler.");
         addStep("Setup", "");
         Map<String, Long> map = new HashMap<>();

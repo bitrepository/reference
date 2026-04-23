@@ -39,7 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
-import java.util.Date;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
@@ -88,14 +88,16 @@ public class AuditTrailCollector extends AuditTrailTaskStarter {
     public CollectorInfo getCollectorInfo(String collectionID) {
         CollectorInfo info = new CollectorInfo();
         info.setCollectionID(collectionID);
-        Date lastStart = collectorTasks.get(collectionID).getLastCollectionStart();
-        Date lastFinish = collectorTasks.get(collectionID).getLastCollectionFinish();
-        Date nextRun = collectorTasks.get(collectionID).getNextScheduledRun();
+        AuditTrailCollectionTimerTask task = collectorTasks.get(collectionID);
+        Instant lastStart = task.getLastCollectionStartInstant();
+        Instant lastFinish = task.getLastCollectionFinishInstant();
+        Instant nextRun = task.getNextScheduledRunInstant();
+        
         if (lastStart != null) {
             info.setLastStart(TimeUtils.shortDate(lastStart));
             if (lastFinish != null) {
-                long duration = lastFinish.getTime() - lastStart.getTime();
-                info.setLastDuration(TimeUtils.millisecondsToHuman(duration));
+                Duration duration = Duration.between(lastStart, lastFinish);
+                info.setLastDuration(TimeUtils.durationToHuman(duration));
             } else {
                 info.setLastDuration("Collection has not finished yet");
             }
@@ -104,7 +106,7 @@ public class AuditTrailCollector extends AuditTrailTaskStarter {
             info.setLastDuration("Not available");
         }
         info.setNextStart(TimeUtils.shortDate(nextRun));
-        info.setCollectedAudits(collectorTasks.get(collectionID).getLastNumberOfCollectedAudits());
+        info.setCollectedAudits(task.getLastNumberOfCollectedAudits());
         return info;
     }
 

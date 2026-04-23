@@ -30,13 +30,13 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-public class SettingsLoaderTest {
+class SettingsLoaderTest {
     private static final String PATH_TO_SETTINGS = "settings/xml/bitrepository-devel";
     private static final String PATH_TO_EXAMPLE_SETTINGS = "examples/settings";
 
     @Test
     @Tag("regressiontest")
-    public void testDevelopmentCollectionSettingsLoading() {
+    void testDevelopmentCollectionSettingsLoading() {
         SettingsProvider settingsLoader =
                 new SettingsProvider(new XMLFileSettingsLoader(PATH_TO_SETTINGS), getClass().getSimpleName());
 
@@ -47,7 +47,7 @@ public class SettingsLoaderTest {
 
     @Test
     @Tag("regressiontest")
-    public void testExampleSettingsLoading() {
+    void testExampleSettingsLoading() {
         SettingsProvider settingsLoader =
                 new SettingsProvider(new XMLFileSettingsLoader(PATH_TO_EXAMPLE_SETTINGS), getClass().getSimpleName());
 

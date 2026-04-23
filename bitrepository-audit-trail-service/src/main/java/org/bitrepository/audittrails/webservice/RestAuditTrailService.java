@@ -52,15 +52,15 @@ import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Locale;
-import java.util.TimeZone;
 
 @Path("/AuditTrailService")
 public class RestAuditTrailService {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final AuditTrailService service;
-    private final CalendarUtils calendarUtils = CalendarUtils.getInstance(TimeZone.getDefault());
+    private final CalendarUtils calendarUtils = CalendarUtils.getInstance(ZoneId.systemDefault());
 
     public RestAuditTrailService() {
         service = AuditTrailServiceFactory.getAuditTrailService();

@@ -35,8 +35,12 @@ import java.net.URL;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 @SuppressWarnings("rawtypes")
 public class PutFileStepTest extends WorkflowstepTest {
@@ -46,7 +50,7 @@ public class PutFileStepTest extends WorkflowstepTest {
 
     @Test
     @Tag("regressiontest")
-    public void testPositiveReply() throws Exception {
+    void testPositiveReply() throws Exception {
         addDescription("Test the step for getting the file can handle COMPLETE operation event.");
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) {
@@ -72,7 +76,7 @@ public class PutFileStepTest extends WorkflowstepTest {
 
     @Test
     @Tag("regressiontest")
-    public void testNegativeReply() throws Exception {
+    void testNegativeReply() throws Exception {
         assertThrows(IllegalStateException.class, () -> {
 
             addDescription("Test the step for getting the file can handle FAILURE operation event.");

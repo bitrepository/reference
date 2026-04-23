@@ -37,12 +37,12 @@ import static org.junit.jupiter.api.Assertions.assertNull;
  * Test that IllegalOperationException behaves as expected.
  */
 
-public class IllegalOperationExceptionTest {
+class IllegalOperationExceptionTest {
     private final String TEST_COLLECTION_ID = "test-collection-id";
 
     @Test
     @Tag("regressiontest")
-    public void testIdentifyContributor() throws Exception {
+    void testIdentifyContributor() throws Exception {
         addDescription("Test the instantiation of the exception");
         addStep("Setup", "");
         String errMsg = "TEST-ERROR";

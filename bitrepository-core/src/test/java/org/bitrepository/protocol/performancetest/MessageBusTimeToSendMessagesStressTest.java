@@ -78,7 +78,7 @@ class MessageBusTimeToSendMessagesStressTest {
      */
     @Test
     @Tag("StressTest")
-    public void SendManyMessagesDistributed() {
+    void SendManyMessagesDistributed() {
         addDescription("Tests how fast a given number of messages can be handled.");
         addStep("Define constants", "This should not be possible to fail.");
 
@@ -102,7 +102,7 @@ class MessageBusTimeToSendMessagesStressTest {
                 try {
                     Thread.sleep(TIME_FOR_MESSAGE_TRANSFER_WAIT);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Assertions.fail(e);
                 }
             }
 
@@ -162,7 +162,7 @@ class MessageBusTimeToSendMessagesStressTest {
                 try {
                     Thread.sleep(TIME_FOR_MESSAGE_TRANSFER_WAIT);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Assertions.fail(e);
                 }
             }
 

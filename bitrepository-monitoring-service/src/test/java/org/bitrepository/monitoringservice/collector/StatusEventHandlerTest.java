@@ -22,7 +22,11 @@
 package org.bitrepository.monitoringservice.collector;
 
 import org.bitrepository.access.getstatus.conversation.StatusCompleteContributorEvent;
-import org.bitrepository.client.eventhandler.*;
+import org.bitrepository.client.eventhandler.AbstractOperationEvent;
+import org.bitrepository.client.eventhandler.CompleteEvent;
+import org.bitrepository.client.eventhandler.DefaultEvent;
+import org.bitrepository.client.eventhandler.OperationEvent;
+import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.monitoringservice.MockAlerter;
 import org.bitrepository.monitoringservice.MockStatusStore;
 import org.junit.jupiter.api.Assertions;
@@ -39,7 +43,7 @@ public class StatusEventHandlerTest {
 
     @Test
     @Tag("regressiontest")
-    public void testStatusEventHandler() throws Exception {
+    void testStatusEventHandler() throws Exception {
         addDescription("Test the GetStatusEventHandler handling of events");
         addStep("Setup", "");
         MockStatusStore store = new MockStatusStore();

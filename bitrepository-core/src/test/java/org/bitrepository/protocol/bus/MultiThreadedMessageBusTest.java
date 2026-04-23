@@ -24,12 +24,12 @@
  */
 package org.bitrepository.protocol.bus;
 
+import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocol.IntegrationTest;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.ProtocolComponentFactory;
-import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.bitrepository.protocol.messagebus.MessageListener;
 import org.junit.jupiter.api.AfterEach;
@@ -49,7 +49,7 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
  * Class for testing the interface with the message bus.
  */
 @ExtendWith(SuiteInfoParameterResolver.class)
-public class MultiThreadedMessageBusTest extends IntegrationTest {
+class MultiThreadedMessageBusTest extends IntegrationTest {
     /**
      * The time to wait when sending a message before it definitely should
      * have been consumed by a listener.
@@ -73,7 +73,7 @@ public class MultiThreadedMessageBusTest extends IntegrationTest {
 
     @Test
     @Tag("regressiontest")
-    public final void manyTheadsBeforeFinish() throws Exception {
+    final void manyTheadsBeforeFinish() throws Exception {
         addDescription("Tests whether it is possible to start the handling of many threads simultaneously.");
         IdentifyPillarsForGetFileRequest content =
                 ExampleMessageFactory.createMessage(IdentifyPillarsForGetFileRequest.class);
@@ -91,7 +91,7 @@ public class MultiThreadedMessageBusTest extends IntegrationTest {
     }
 
     @AfterEach
-    public void removeListener() {
+    void removeListener() {
         messageBus.removeListener("BusActivityTest", listener);
     }
 
