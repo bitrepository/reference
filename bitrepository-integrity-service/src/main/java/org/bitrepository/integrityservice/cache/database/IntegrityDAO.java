@@ -389,8 +389,8 @@ public abstract class IntegrityDAO {
      * @param maxResults     maxResults
      * @return Iterator with the fileIDs that could not be found on the pillar
      */
-    public IntegrityIssueIterator findFilesWithMissingCopies(String collectionID, int expectedCopies, Long firstIndex
-            , Long maxResults) {
+    public IntegrityIssueIterator findFilesWithMissingCopies(String collectionID, int expectedCopies,
+                                                             Long firstIndex, Long maxResults) {
         ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
 
         long first = firstIndex == null ? 0 : firstIndex;

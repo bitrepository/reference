@@ -152,10 +152,9 @@ class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
             Assertions.assertEquals(TEST_FILE_ID, fi.getFileId());
             Assertions.assertNull(fi.getChecksum());
             Assertions.assertEquals(Instant.EPOCH, fi.getDateForLastChecksumCheckInstant());
-            Assertions.assertEquals(CalendarUtils.
-                            convertFromXMLGregorianCalendarToInstant(
-                                    data1.getFileIDsDataItems().
-                                            getFileIDsDataItem().get(0).getLastModificationTime()),
+            Assertions.assertEquals(
+                    CalendarUtils.convertFromXMLGregorianCalendarToInstant(
+                            data1.getFileIDsDataItems().getFileIDsDataItem().get(0).getLastModificationTime()),
                     fi.getDateForLastFileIDCheckInstant());
         }
     }

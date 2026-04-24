@@ -57,7 +57,9 @@ public final class CalendarUtils {
      *
      * @param timeZone The TimeZone to use
      * @return The CalendarUtils instance for the non-standard timeZone
+     * @deprecated Use {@link #getInstance(ZoneId)} instead
      */
+    @Deprecated( forRemoval = true)
     public static CalendarUtils getInstance(java.util.TimeZone timeZone) {
         CalendarUtils cu = new CalendarUtils();
         cu.setZoneId(timeZone.toZoneId());
@@ -78,8 +80,7 @@ public final class CalendarUtils {
 
     private void setZoneId(ZoneId zoneId) {
         log.debug("Using zone id: '{}'", zoneId.getId());
-        localZoneId = zoneId;
-    }
+        localZoneId = zoneId;    }
 
     /**
      * Get the display name for the ZoneId.

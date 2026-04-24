@@ -98,7 +98,8 @@ class MessageBusDelayTest {
                 System.err.println("No message received within 100 seconds");
             }
 
-            long delay = MILLIS.between(before, after);            delayList.add(delay);
+            long delay = MILLIS.between(before, after);
+            delayList.add(delay);
         }
 
         addStep("Perform the statistical analysis on the delay results.", "TODO !!!!");
