@@ -39,6 +39,7 @@ public class DeleteFileClientTestWrapper implements DeleteFileClient {
      * The PutClient to wrap.
      */
     private final DeleteFileClient wrappedDeleteClient;
+    /** The manager to monitor the operations.*/
 
     /**
      * Constructor.

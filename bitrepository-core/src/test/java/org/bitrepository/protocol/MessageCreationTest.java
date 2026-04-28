@@ -56,10 +56,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * Test whether we are able to create message objects from xml. The input XML is the example code defined in the
  * message-xml, thereby also testing whether this is valid. *
  */
-public class MessageCreationTest {
+class MessageCreationTest {
     @Test
     @Tag("regressiontest")
-    public void messageCreationTest() throws Exception {
+    void messageCreationTest() throws Exception {
         addDescription("Tests if we are able to create message objects from xml. The input XML is the example code " +
                 "defined in the message-xml, thereby also testing whether this is valid.");
         String[] messageNames = getMessageNames();
@@ -73,7 +73,7 @@ public class MessageCreationTest {
 
     @Test
     @Tag("regressiontest")
-    public void badDateMessageTest() throws IOException, SAXException, JAXBException {
+    void badDateMessageTest() throws IOException, SAXException, JAXBException {
         assertThrows(SAXException.class, () -> {
 
             addDescription("Test to ensure that messages carrying dates must provide offset.");

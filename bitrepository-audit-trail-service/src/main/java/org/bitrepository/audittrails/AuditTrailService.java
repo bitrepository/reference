@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.time.Instant;
 
 /**
  * Class to expose the functionality of the AuditTrailService.
@@ -110,8 +111,35 @@ public class AuditTrailService implements LifeCycledService {
      * @param operationID        Restrict the results to only this operationID
      * @param maxAuditTrails     The max number of audit trails to fetch from database
      * @return an iterator to all AuditTrailEvents matching the criteria from the parameters
+     * @deprecated Use {@link #queryAuditTrailEventsByIterator(Instant, Instant, String, String, String, String, FileAction, String, String, int)} instead
      */
+    @Deprecated(forRemoval = true)
     public AuditEventIterator queryAuditTrailEventsByIterator(Date fromDate, Date toDate, String fileID,
+                                                              String collectionID, String reportingComponent, String actor,
+                                                              FileAction action,
+                                                              String fingerprint, String operationID, int maxAuditTrails) {
+        return queryAuditTrailEventsByIterator(fromDate != null ? fromDate.toInstant() : null,
+                toDate != null ? toDate.toInstant() : null, fileID, collectionID, reportingComponent, actor, action,
+                fingerprint, operationID, maxAuditTrails);
+    }
+
+    /**
+     * Retrieve an iterator to all AuditTrailEvents matching the criteria from the parameters.
+     * All parameters are allowed to be null, meaning that the parameter imposes no restriction on the result
+     *
+     * @param fromDate           Restrict the results to only provide events after this point in time
+     * @param toDate             Restrict the results to only provide events up till this point in time
+     * @param fileID             Restrict the results to only be about this fileID
+     * @param collectionID       restrict the results to this collection
+     * @param reportingComponent Restrict the results to only be reported by this component
+     * @param actor              Restrict the results to only be events caused by this actor
+     * @param action             Restrict the results to only be about this type of action
+     * @param fingerprint        The fingerprint
+     * @param operationID        Restrict the results to only this operationID
+     * @param maxAuditTrails     The max number of audit trails to fetch from database
+     * @return an iterator to all AuditTrailEvents matching the criteria from the parameters
+     */
+    public AuditEventIterator queryAuditTrailEventsByIterator(Instant fromDate, Instant toDate, String fileID,
                                                               String collectionID, String reportingComponent, String actor,
                                                               FileAction action,
                                                               String fingerprint, String operationID, int maxAuditTrails) {

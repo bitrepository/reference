@@ -27,12 +27,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class LocalFileExchangeTest {
+class LocalFileExchangeTest {
     final static String BASE_FILE_EXCHANGE_DIR = "target/fileexchange/";
     private FileExchange exchange;
 
     @BeforeAll
-    public void setup() throws IOException {
+    void setup() throws IOException {
         createFileExchangeDir();
         FileExchangeSettings settings = new FileExchangeSettings();
         settings.setPath(BASE_FILE_EXCHANGE_DIR);
@@ -49,7 +49,7 @@ public class LocalFileExchangeTest {
 
     @Test
     @Tag("regressiontest")
-    public void getUrlTest() throws MalformedURLException, URISyntaxException {
+    void getUrlTest() throws MalformedURLException, URISyntaxException {
         String testFile = "getUrlTestfile";
 
         File basedir = new File(BASE_FILE_EXCHANGE_DIR);
@@ -67,7 +67,7 @@ public class LocalFileExchangeTest {
      * "getUrlTestfileHashchar%23Testfragment" instead of getUrlTestfileHashchar#Testfragment
      */
     @Test
-    public void putFileByFileContainingHashTest() throws Exception {
+    void putFileByFileContainingHashTest() throws Exception {
         String testFileName = "getUrlTestfileHashchar#Testfragment";
         String testFileLocation = "target/" + testFileName;
         String testFileContent = "lorem ipsum1";
@@ -87,7 +87,7 @@ public class LocalFileExchangeTest {
     }
 
     @Test
-    public void putFileByFileTest() throws IOException, URISyntaxException {
+    void putFileByFileTest() throws IOException, URISyntaxException {
         String testFileName = "putFileByFileTestFile";
         String testFileLocation = "target/" + testFileName;
         String testFileContent = "lorem ipsum1";

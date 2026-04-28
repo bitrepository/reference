@@ -33,18 +33,18 @@ import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class FileIDValidatorTest {
+class FileIDValidatorTest {
     /** The settings for the tests. Should be instantiated in the setup.*/
     Settings settings;
 
     @BeforeAll
-    public void setup() {
+    void setup() {
         settings = TestSettingsProvider.reloadSettings(getClass().getSimpleName());
     }
 
     @Test
     @Tag("regressiontest")
-    public void validatorTest() throws Exception {
+    void validatorTest() throws Exception {
         addDescription("Tests the FileIDValidator class for the input handling based on a given regex.");
         addStep("Setup the validator", "Should be ok.");
         settings.getRepositorySettings().getProtocolSettings().setAllowedFileIDPattern("[a-zA-z0-9\\-_.]{5,250}");
@@ -74,7 +74,7 @@ public class FileIDValidatorTest {
 
     @Test
     @Tag("regressiontest")
-    public void validatorDefaultTest() throws Exception {
+    void validatorDefaultTest() throws Exception {
         addDescription("Tests the FileIDValidator class default restrictions. Only the length should fail.");
         addStep("Setup the validator, where all file ids are allowed at default.", "Should be ok.");
         settings.getRepositorySettings().getProtocolSettings().setAllowedFileIDPattern(".+");
@@ -105,7 +105,7 @@ public class FileIDValidatorTest {
 
     @Test
     @Tag("regressiontest")
-    public void badRegexTest() throws Exception {
+    void badRegexTest() throws Exception {
         addDescription("Tests the FileIDValidator handling of bad file id pattern.");
         addStep("Give the validator a 'null' as allowed file id pattern",
                 "Should be a null stored as regex.");

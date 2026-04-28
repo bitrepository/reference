@@ -23,7 +23,11 @@
 package org.bitrepository.pillar.integration.func.getstatus;
 
 import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositorymessages.*;
+import org.bitrepository.bitrepositorymessages.AlarmMessage;
+import org.bitrepository.bitrepositorymessages.GetStatusFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetStatusRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.PillarFunctionTest;
 import org.bitrepository.pillar.messagefactories.GetStatusMessageFactory;
@@ -36,12 +40,12 @@ import org.junit.jupiter.api.Test;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class GetStatusRequestIT extends PillarFunctionTest {
+class GetStatusRequestIT extends PillarFunctionTest {
     protected GetStatusMessageFactory msgFactory;
     private String pillarDestination;
 
     @BeforeEach
-    public void initialiseReferenceTest() throws Exception {
+    void initialiseReferenceTest() throws Exception {
         msgFactory = new GetStatusMessageFactory(null, settingsForTestClient, getPillarID(), null);
         pillarDestination = lookupPillarDestination();
         msgFactory = new GetStatusMessageFactory(null, settingsForTestClient, getPillarID(), pillarDestination);
@@ -50,7 +54,7 @@ public class GetStatusRequestIT extends PillarFunctionTest {
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    public void normalGetStatusTest() {
+    void normalGetStatusTest() {
         addDescription("Tests the GetStatus functionality of a pillar for the successful scenario.");
 
         addStep("Send a GetStatusRequest",
@@ -67,7 +71,7 @@ public class GetStatusRequestIT extends PillarFunctionTest {
     }
 
     @Test
-    public void checksumPillarGetStatusWrongContributor() {
+    void checksumPillarGetStatusWrongContributor() {
         addDescription("Tests the GetStatus functionality of the reference pillar for the bad scenario, where a wrong "
                 + "contributor id is given.");
         settingsForCUT.getReferenceSettings().getPillarSettings().setAlarmLevel(AlarmLevel.WARNING);

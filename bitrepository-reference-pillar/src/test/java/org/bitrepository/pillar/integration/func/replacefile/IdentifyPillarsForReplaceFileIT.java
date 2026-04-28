@@ -37,11 +37,11 @@ import org.junit.jupiter.api.Test;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class IdentifyPillarsForReplaceFileIT extends DefaultPillarIdentificationTest {
+class IdentifyPillarsForReplaceFileIT extends DefaultPillarIdentificationTest {
     protected ReplaceFileMessageFactory msgFactory;
 
     @BeforeEach
-    public void initialiseReferenceTest() throws Exception {
+    void initialiseReferenceTest() throws Exception {
         msgFactory = new ReplaceFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
 
         msgFactory = new ReplaceFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
@@ -50,7 +50,7 @@ public class IdentifyPillarsForReplaceFileIT extends DefaultPillarIdentification
 
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
-    public void normalIdentificationTest() {
+    void normalIdentificationTest() {
         addDescription("Verifies the normal behaviour for replaceFile identification");
         addStep("Sending a replaceFile identification.",
                 "The pillar under test should make a response with the correct elements.");
@@ -72,7 +72,7 @@ public class IdentifyPillarsForReplaceFileIT extends DefaultPillarIdentification
 
     @Test
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    public void identificationTestForChecksumPillar() {
+    void identificationTestForChecksumPillar() {
         addDescription("Verifies the normal behaviour for replaceFile identification for a checksum pillar");
         addStep("Sending a replaceFile identification.",
                 "The pillar under test should make a response with the correct elements. The only different from a " +
@@ -94,7 +94,7 @@ public class IdentifyPillarsForReplaceFileIT extends DefaultPillarIdentification
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    public void fileDoesNotExistsTest() {
+    void fileDoesNotExistsTest() {
         addDescription("Verifies that a request for a non-existing file is handled correctly");
         addStep("Sending a replaceFile identification for a file not in the pillar.",
                 "The pillar under test should send a FILE_NOT_FOUND_FAILURE response.");

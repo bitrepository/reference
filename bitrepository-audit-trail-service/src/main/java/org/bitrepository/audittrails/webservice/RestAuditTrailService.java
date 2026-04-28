@@ -51,16 +51,16 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Date;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Locale;
-import java.util.TimeZone;
 
 @Path("/AuditTrailService")
 public class RestAuditTrailService {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final AuditTrailService service;
-    private final CalendarUtils calendarUtils = CalendarUtils.getInstance(TimeZone.getDefault());
+    private final CalendarUtils calendarUtils = CalendarUtils.getInstance(ZoneId.systemDefault());
 
     public RestAuditTrailService() {
         service = AuditTrailServiceFactory.getAuditTrailService();
@@ -80,11 +80,14 @@ public class RestAuditTrailService {
             @FormParam("fingerprint") String fingerprint,
             @FormParam("operationID") String operationID,
             @DefaultValue("1000") @FormParam("maxAuditTrails") Integer maxResults) {
-        Date from = calendarUtils.makeStartDateObject(fromDate);
-        Date to = calendarUtils.makeEndDateObject(toDate);
+        Instant from = calendarUtils.makeStartInstant(fromDate);
+        Instant to = calendarUtils.makeEndInstant(toDate);
 
         final int maxAudits = maxResults;
-        final AuditEventIterator it = service.queryAuditTrailEventsByIterator(from, to, contentOrNull(fileID),
+        final AuditEventIterator it = service.queryAuditTrailEventsByIterator(
+                from != null ? from : null,
+                to != null ? to : null,
+                contentOrNull(fileID),
                 collectionID, contentOrNull(reportingComponent), contentOrNull(actor), filterAction(action),
                 contentOrNull(fingerprint), contentOrNull(operationID), maxAudits);
         if (it != null) {
@@ -167,7 +170,7 @@ public class RestAuditTrailService {
         jg.writeObjectField("actor", contentOrEmptyString(event.getActorOnFile()));
         jg.writeObjectField("action", event.getActionOnFile().toString());
         jg.writeObjectField("timeStamp",
-                TimeUtils.shortDate(CalendarUtils.convertFromXMLGregorianCalendar(event.getActionDateTime())));
+                TimeUtils.shortDate(CalendarUtils.convertFromXMLGregorianCalendarToInstant(event.getActionDateTime())));
         jg.writeObjectField("info", contentOrEmptyString(event.getInfo()));
         jg.writeObjectField("auditTrailInfo", contentOrEmptyString(event.getAuditTrailInformation()));
         jg.writeObjectField("fingerprint", contentOrEmptyString(event.getCertificateID()));

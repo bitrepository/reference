@@ -26,6 +26,7 @@ import org.bitrepository.common.utils.SettingsUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.TimerTask;
 
@@ -43,19 +44,46 @@ public class AuditTrailCollectionTimerTask extends TimerTask {
     public AuditTrailCollectionTimerTask(IncrementalCollector collector, long interval, int gracePeriod) {
         this.schedule = new TimerTaskSchedule(interval, gracePeriod);
         this.collector = collector;
-        log.info("Scheduled next collection of audit trails for {}", schedule.getNextRun());
+        log.info("Scheduled next collection of audit trails for {}", schedule.getNextRunInstant());
     }
 
+    /**
+     * @deprecated Use {@link #getNextScheduledRunInstant()} instead.
+     */
+    @Deprecated
     public Date getNextScheduledRun() {
-        return schedule.getNextRun();
+        Instant nextRun = getNextScheduledRunInstant();
+        return nextRun != null ? Date.from(nextRun) : null;
     }
 
+    public Instant getNextScheduledRunInstant() {
+        return schedule.getNextRunInstant();
+    }
+
+    /**
+     * @deprecated Use {@link #getLastCollectionStartInstant()} instead.
+     */
+    @Deprecated
     public Date getLastCollectionStart() {
-        return schedule.getLastStart();
+        Instant lastStart = getLastCollectionStartInstant();
+        return lastStart != null ? Date.from(lastStart) : null;
     }
 
+    public Instant getLastCollectionStartInstant() {
+        return schedule.getLastStartInstant();
+    }
+
+    /**
+     * @deprecated Use {@link #getLastCollectionFinishInstant()} instead.
+     */
+    @Deprecated
     public Date getLastCollectionFinish() {
-        return schedule.getLastFinish();
+        Instant lastFinish = getLastCollectionFinishInstant();
+        return lastFinish != null ? Date.from(lastFinish) : null;
+    }
+
+    public Instant getLastCollectionFinishInstant() {
+        return schedule.getLastFinishInstant();
     }
 
     public long getLastNumberOfCollectedAudits() {
@@ -70,7 +98,7 @@ public class AuditTrailCollectionTimerTask extends TimerTask {
         schedule.start();
         collector.performCollection(SettingsUtils.getAuditContributorsForCollection(collector.getCollectionID()));
         schedule.finish();
-        log.info("Scheduled next collection of audit trails from {} for {}", collector.getCollectionID(), schedule.getNextRun());
+        log.info("Scheduled next collection of audit trails from {} for {}", collector.getCollectionID(), schedule.getNextRunInstant());
     }
 
     @Override

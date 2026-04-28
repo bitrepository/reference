@@ -159,7 +159,7 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
 
         addStep("Send a final response from pillar 1",
                 "A COMPONENT_COMPLETE event should be generated with the audit trail results.");
-        ResultingStatus status1 = createTestResultingStatus(PILLAR1_ID);
+        ResultingStatus status1 = createTestResultingStatus();
         GetStatusFinalResponse resultPillar1 =
                 testMessageFactory.createGetStatusFinalResponse(requestPillar1,
                         PILLAR1_ID, pillar1DestinationId, status1);
@@ -171,7 +171,7 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
         addStep("Send a final response from pillar 2",
                 "A COMPONENT_COMPLETE event should be generated with the audit trail results." +
                         "This should be followed by a COMPLETE event");
-        ResultingStatus status2 = createTestResultingStatus(PILLAR2_ID);
+        ResultingStatus status2 = createTestResultingStatus();
         GetStatusFinalResponse resultPillar2 =
                 testMessageFactory.createGetStatusFinalResponse(requestPillar1,
                         PILLAR2_ID, pillar2DestinationId, status2);
@@ -196,7 +196,7 @@ public class GetStatusClientComponentTest extends DefaultFixtureClientTest {
                 messageBus, conversationMediator, settingsForCUT, settingsForTestClient.getComponentID()));
     }
 
-    private ResultingStatus createTestResultingStatus(String componentID) {
+    private ResultingStatus createTestResultingStatus() {
         ResultingStatus resultingStatus = new ResultingStatus();
         StatusInfo info = new StatusInfo();
         info.setStatusCode(StatusCode.OK);

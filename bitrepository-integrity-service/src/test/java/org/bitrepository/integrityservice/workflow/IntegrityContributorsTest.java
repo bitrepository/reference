@@ -28,14 +28,14 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Set;
 
-public class IntegrityContributorsTest {
+class IntegrityContributorsTest {
 
     private final static String PILLAR1 = "pillar1";
     private final static String PILLAR2 = "pillar2";
 
     @Test
     @Tag("regressiontest")
-    public void testConstructor() {
+    void testConstructor() {
         IntegrityContributors ic = new IntegrityContributors(Arrays.asList(PILLAR1, PILLAR2), 3);
         Set<String> activeContributors = ic.getActiveContributors();
         Assertions.assertTrue(activeContributors.contains(PILLAR1));
@@ -46,7 +46,7 @@ public class IntegrityContributorsTest {
 
     @Test
     @Tag("regressiontest")
-    public void testFailContributor() {
+    void testFailContributor() {
         IntegrityContributors ic = new IntegrityContributors(Arrays.asList(PILLAR1, PILLAR2), 1);
         ic.failContributor(PILLAR1);
         Assertions.assertTrue(ic.getFailedContributors().contains(PILLAR1));
@@ -56,7 +56,7 @@ public class IntegrityContributorsTest {
 
     @Test
     @Tag("regressiontest")
-    public void testRetry() {
+    void testRetry() {
         IntegrityContributors ic = new IntegrityContributors(Arrays.asList(PILLAR1, PILLAR2), 3);
         ic.failContributor(PILLAR1);
         Assertions.assertTrue(ic.getActiveContributors().contains(PILLAR1));
@@ -71,7 +71,7 @@ public class IntegrityContributorsTest {
 
     @Test
     @Tag("regressiontest")
-    public void testSucceed() {
+    void testSucceed() {
         IntegrityContributors ic = new IntegrityContributors(Arrays.asList(PILLAR1, PILLAR2), 2);
         ic.failContributor(PILLAR1);
         ic.failContributor(PILLAR2);
@@ -86,7 +86,7 @@ public class IntegrityContributorsTest {
 
     @Test
     @Tag("regressiontest")
-    public void testFinishContributor() {
+    void testFinishContributor() {
         IntegrityContributors ic = new IntegrityContributors(Arrays.asList(PILLAR1, PILLAR2), 3);
         ic.finishContributor(PILLAR1);
         Assertions.assertTrue(ic.getFinishedContributors().contains(PILLAR1));
@@ -96,7 +96,7 @@ public class IntegrityContributorsTest {
 
     @Test
     @Tag("regressiontest")
-    public void testReloadContributors() {
+    void testReloadContributors() {
         IntegrityContributors ic = new IntegrityContributors(Arrays.asList(PILLAR1, PILLAR2), 1);
         ic.finishContributor(PILLAR1);
         ic.failContributor(PILLAR2);

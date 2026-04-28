@@ -29,13 +29,13 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-public class PillarSettingsProviderTest {
+class PillarSettingsProviderTest {
 
     private static final String PATH_TO_TEST_SETTINGS = "settings/xml/bitrepository-devel";
 
     @Test
     @Tag("regressiontest")
-    public void componentIDTest() {
+    void componentIDTest() {
         SettingsProvider settingsLoader =
                 new PillarSettingsProvider(new XMLFileSettingsLoader(PATH_TO_TEST_SETTINGS),
                         null);

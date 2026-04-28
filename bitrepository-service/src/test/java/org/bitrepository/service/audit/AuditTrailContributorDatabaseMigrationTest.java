@@ -43,7 +43,7 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
  * Test database migration.  Generates Allure reports.
  *
  */
-public class AuditTrailContributorDatabaseMigrationTest {
+class AuditTrailContributorDatabaseMigrationTest {
     protected Settings settings;
 
     static final String PATH_TO_DATABASE_UNPACKED = "target/test/audits/auditcontributerdb-v1";
@@ -52,7 +52,7 @@ public class AuditTrailContributorDatabaseMigrationTest {
     static final String FILE_ID = "default-file-id";
 
     @BeforeEach
-    public void setup() throws Exception {
+    void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("ReferencePillarTest");
 
         settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase().setDatabaseURL(
@@ -66,14 +66,14 @@ public class AuditTrailContributorDatabaseMigrationTest {
     }
 
     @AfterEach
-    public void cleanup() throws Exception {
+    void cleanup() throws Exception {
         FileUtils.deleteDirIfExists(new File(PATH_TO_DATABASE_UNPACKED));
     }
 
     @Test
     @Tag("regressiontest")
     @Tag("databasetest")
-    public void testMigratingAuditContributorDatabase() {
+    void testMigratingAuditContributorDatabase() {
         addDescription("Tests that the database can be migrated to latest version with the provided scripts.");
         DBConnector connector = new DBConnector(
                 settings.getReferenceSettings().getPillarSettings().getAuditTrailContributerDatabase());

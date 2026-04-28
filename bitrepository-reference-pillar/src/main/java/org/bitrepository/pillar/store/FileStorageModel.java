@@ -33,7 +33,6 @@ import org.bitrepository.common.filestore.FileInfo;
 import org.bitrepository.common.filestore.FileStore;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.Base16Utils;
-import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.XmlUtils;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumEntry;
@@ -51,11 +50,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.xml.datatype.Duration;
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.IOException;
 import java.net.URI;
 import java.time.Instant;
-import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 
@@ -106,17 +103,10 @@ public class FileStorageModel extends StorageModel {
     }
 
     @Override
-    public ExtractedFileIDsResultSet getFileIDsResultSet(String fileID, XMLGregorianCalendar minTimestamp,
-                                                         XMLGregorianCalendar maxTimestamp, Long maxResults,
-                                                         String collectionID) {
-        Long minTime = null;
-        if (minTimestamp != null) {
-            minTime = CalendarUtils.convertFromXMLGregorianCalendar(minTimestamp).getTime();
-        }
-        Long maxTime = null;
-        if (maxTimestamp != null) {
-            maxTime = CalendarUtils.convertFromXMLGregorianCalendar(maxTimestamp).getTime();
-        }
+    public ExtractedFileIDsResultSet getFileIDsResultSet(String fileID, Instant minTimestamp,
+                                                         Instant maxTimestamp, Long maxResults, String collectionID) {
+        Long minTime = minTimestamp != null ? minTimestamp.toEpochMilli() : null;
+        Long maxTime = maxTimestamp != null ? maxTimestamp.toEpochMilli() : null;
 
         if (fileID == null) {
             return getFileIds(minTime, maxTime, maxResults, collectionID);
@@ -129,7 +119,6 @@ public class FileStorageModel extends StorageModel {
             res.insertFileInfo(entry);
         }
         return res;
-
     }
 
     @Override
@@ -157,7 +146,7 @@ public class FileStorageModel extends StorageModel {
             i++;
 
             String checksum = getNonDefaultChecksum(fileID, collectionID, csSpec);
-            ChecksumEntry entry = new ChecksumEntry(fileID, checksum, new Date());
+            ChecksumEntry entry = new ChecksumEntry(fileID, checksum, Instant.now());
             res.insertChecksumEntry(entry);
         }
         return res;
@@ -206,7 +195,7 @@ public class FileStorageModel extends StorageModel {
         log.info("Recalculating the checksum of file '{}'", fileID);
         FileInfo fi = fileArchive.getFileInfo(fileID, collectionID);
         String checksum = ChecksumUtils.generateChecksum(fi, defaultChecksumSpec);
-        cache.insertChecksumCalculation(fileID, collectionID, checksum, new Date());
+        cache.insertChecksumCalculation(fileID, collectionID, checksum, Instant.now());
     }
 
     /**

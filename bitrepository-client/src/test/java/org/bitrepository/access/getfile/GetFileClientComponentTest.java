@@ -30,43 +30,39 @@ import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositoryelements.TimeMeasureUnit;
-import org.bitrepository.bitrepositorymessages.*;
+import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.client.TestEventHandler;
 import org.bitrepository.client.eventhandler.ContributorEvent;
 import org.bitrepository.client.eventhandler.IdentificationCompleteEvent;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import java.math.BigInteger;
 import java.net.URL;
 
-import static javax.xml.datatype.DatatypeFactory.newInstance;
-import static org.bitrepository.common.utils.AllureTestUtils.*;
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addFixture;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 /**
  * Test class for the 'GetFileClient'.
  */
 @ExtendWith(SuiteInfoParameterResolver.class)
-public class GetFileClientComponentTest extends AbstractGetFileClientTest {
+class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
     private static final FilePart NO_FILE_PART = null;
 
-    private DatatypeFactory datatypeFactory;
-
-    @BeforeEach
-    public void setUpFactory() throws DatatypeConfigurationException {
-        datatypeFactory = newInstance();
-    }
-
     @Test
     @Tag("regressiontest")
-    public void verifyGetFileClientFromFactory() {
+    void verifyGetFileClientFromFactory() {
         Assertions.assertInstanceOf(ConversationBasedGetFileClient.class,
                 AccessComponentFactory.getInstance().createGetFileClient(
                         settingsForCUT, securityManager, settingsForTestClient.getComponentID()),
@@ -76,7 +72,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void getFileFromSpecificPillar() throws Exception {
+    void getFileFromSpecificPillar() throws Exception {
         addDescription("Tests that the GetClient client works correctly when requesting a file from a specific pillar");
 
         TestEventHandler testEventHandler = new TestEventHandler();
@@ -156,7 +152,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void getFileFromSpecificPillarWithFilePart() throws Exception {
+    void getFileFromSpecificPillarWithFilePart() throws Exception {
         addDescription("Tests that the GetClient client works for a single pillar " +
                 "participates. Also validate, that the 'FilePart' can be used.");
         addStep("Set the number of pillars to 1", "");
@@ -224,7 +220,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void chooseFastestPillarGetFileClient() throws Exception {
+    void chooseFastestPillarGetFileClient() throws Exception {
         addDescription("Set the GetClient to retrieve a file as fast as "
                 + "possible, where it has to choose between to pillars with "
                 + "different times. The messages should be delivered at the "
@@ -299,11 +295,11 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void getFileClientWithIdentifyTimeout() throws Exception {
+    void getFileClientWithIdentifyTimeout() throws Exception {
         addDescription("Verify that the GetFile works correct without receiving responses from all pillars.");
         addFixture("Set the identification timeout to 500ms");
         settingsForCUT.getRepositorySettings().getClientSettings()
-                .setIdentificationTimeoutDuration(datatypeFactory.newDuration(500));
+                .setIdentificationTimeoutDuration(DatatypeFactory.newInstance().newDuration(500));
 
 
         addStep("Call getFile form fastest pillar.",
@@ -357,12 +353,12 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void noIdentifyResponse() throws Exception {
+    void noIdentifyResponse() throws Exception {
         addDescription("Tests the the GetFileClient handles lack of IdentifyPillarResponses gracefully  ");
         addStep("Set a 500 ms timeout for identifying pillar.", "");
 
         settingsForCUT.getRepositorySettings().getClientSettings()
-                .setIdentificationTimeoutDuration(datatypeFactory.newDuration(500));
+                .setIdentificationTimeoutDuration(DatatypeFactory.newInstance().newDuration(500));
         GetFileClient client = createGetFileClient();
 
         addStep("Make the GetClient ask for fastest pillar.",
@@ -388,14 +384,13 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void conversationTimeout() throws Exception {
+    void conversationTimeout() throws Exception {
         addDescription("Tests the the GetFileClient handles lack of IdentifyPillarResponses gracefully  ");
         addStep("Set the number of pillars to 100ms and a 300 ms timeout for the conversation.", "");
 
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR1_ID);
-        DatatypeFactory factory = DatatypeFactory.newInstance();
-        settingsForCUT.getReferenceSettings().getClientSettings().setConversationTimeout(factory.newDuration(100));
+        settingsForCUT.getReferenceSettings().getClientSettings().setConversationTimeout(DatatypeFactory.newInstance().newDuration(100));
         GetFileClient client = createGetFileClient();
 
         addStep("Request the delivery of a file from a specific pillar. A callback listener should be supplied.",
@@ -433,7 +428,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void testNoSuchFileSpecificPillar() throws Exception {
+    void testNoSuchFileSpecificPillar() throws Exception {
         addDescription("Testing how a request for a non-existing file is handled on a specific pillar request.");
         addStep("Define 1 pillar.", "");
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
@@ -470,7 +465,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void testNoSuchFileMultiplePillars() throws Exception {
+    void testNoSuchFileMultiplePillars() throws Exception {
         addDescription("Testing how a request for a non-existing file is handled when all pillars miss the file.");
 
         String fileName = "ERROR-NO-SUCH-FILE-ERROR";
@@ -515,7 +510,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void getFileClientWithChecksumPillarInvolved() throws Exception {
+    void getFileClientWithChecksumPillarInvolved() throws Exception {
         addDescription("Verify that the GetFile works correctly when a checksum pillar respond.");
 
         addStep("Call getFile form fastest pillar.",
@@ -570,7 +565,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void singleComponentFailureDuringIdentify() throws Exception {
+    void singleComponentFailureDuringIdentify() throws Exception {
         addDescription("Verify that the GetFile reports a complete (not failed), in case of a component failing " +
                 "during the identify phase.");
 
@@ -627,7 +622,7 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void failureDuringPerform() throws Exception {
+    void failureDuringPerform() throws Exception {
         addDescription("Verify that the GetFile reports a failed operation, in case of a component failing " +
                 "during the performing phase.");
 
@@ -670,10 +665,9 @@ public class GetFileClientComponentTest extends AbstractGetFileClientTest {
                 testEventHandler.waitForEvent().getEventType());
     }
 
-
     @Test
     @Tag("regressiontest")
-    public void getFileFromOtherCollection() throws Exception {
+    void getFileFromOtherCollection() throws Exception {
         addDescription("Tests the getFiles client will correctly try to get from a second collection if required");
         addFixture("Configure collection1 to contain both pillars and collection 2 to only contain pillar2");
         settingsForCUT.getReferenceSettings().getClientSettings().setOperationRetryCount(BigInteger.valueOf(2));

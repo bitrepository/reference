@@ -51,7 +51,7 @@ public class GetFileStressIT extends PillarPerformanceTest {
     protected GetFileClient getFileClient;
 
     @BeforeEach
-    public void initialiseReferenceTest() throws Exception {
+    void initialiseReferenceTest() throws Exception {
         getFileClient = AccessComponentFactory.getInstance().createGetFileClient(
                 settingsForTestClient, createSecurityManager(), settingsForTestClient.getComponentID()
         );
@@ -75,7 +75,7 @@ public class GetFileStressIT extends PillarPerformanceTest {
 
     @Test
     @Tag("pillar-stress-test")
-    public void singleGetFilePerformanceTest() throws Exception {
+    void singleGetFilePerformanceTest() throws Exception {
         final int NUMBER_OF_FILES = 1000;
         final int PART_STATISTIC_INTERVAL = 100;
         addDescription("Attempt to get " + NUMBER_OF_FILES + " files from the pillar, one at a time.");
@@ -95,7 +95,7 @@ public class GetFileStressIT extends PillarPerformanceTest {
 
     @Test
     @Tag("pillar-stress-test")
-    public void parallelGetFilePerformanceTest() throws Exception {
+    void parallelGetFilePerformanceTest() throws Exception {
         final int numberOfFiles =
                 testConfiguration.getInt("pillarintegrationtest.GetFileStressIT.parallelGet.numberOfFiles");
         final int partStatisticsInterval =
@@ -121,7 +121,7 @@ public class GetFileStressIT extends PillarPerformanceTest {
 
     @Test
     @Tag("pillar-stress-test")
-    public void noIdentfyGetFilePerformanceTest() throws Exception {
+    void noIdentfyGetFilePerformanceTest() throws Exception {
         final int numberOfFiles =
                 testConfiguration.getInt("pillarintegrationtest.GetFileStressIT.parallelGet.numberOfFiles");
         final int partStatisticsInterval =

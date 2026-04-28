@@ -32,7 +32,7 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 /**
  * Utility class for handling encoding and decoding of base64 bytes.
  */
-public class Base16UtilsTest {
+class Base16UtilsTest {
 
     private final String DECODED_CHECKSUM = "ff5aca7ae8c80c9a3aeaf9173e4dfd27";
     private final byte[] ENCODED_CHECKSUM =
@@ -40,7 +40,7 @@ public class Base16UtilsTest {
 
     @Test
     @Tag("regressiontest")
-    public void encodeChecksum() throws Exception {
+    void encodeChecksum() throws Exception {
         addDescription("Validating the encoding of the checksums.");
         addStep("Encode the checksum and validate", "It should match the precalculated constant.");
         byte[] encodedChecksum = Base16Utils.encodeBase16(DECODED_CHECKSUM);
@@ -55,7 +55,7 @@ public class Base16UtilsTest {
 
     @Test
     @Tag("regressiontest")
-    public void decodeChecksum() {
+    void decodeChecksum() {
         addDescription("Validating the decoding of the checksums.");
         addStep("Decode the checksum and validate.", "It should match the precalculated constant.");
         String decodedChecksum = Base16Utils.decodeBase16(ENCODED_CHECKSUM);
@@ -63,7 +63,7 @@ public class Base16UtilsTest {
     }
 
     @Test
-    public void decodesNull() {
+    void decodesNull() {
         addDescription("Test decoding null");
         byte[] data = null;
         String decoded = Base16Utils.decodeBase16(data);
@@ -72,7 +72,7 @@ public class Base16UtilsTest {
 
     @Test
     @Tag("regressiontest")
-    public void badArgumentTest() {
+    void badArgumentTest() {
         addDescription("Test bad arguments");
         Assertions.assertThrows(IllegalArgumentException.class, () -> Base16Utils.encodeBase16(null));
 

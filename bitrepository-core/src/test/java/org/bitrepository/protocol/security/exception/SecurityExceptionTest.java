@@ -28,11 +28,11 @@ import org.junit.jupiter.api.Test;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class SecurityExceptionTest {
+class SecurityExceptionTest {
 
     @Test
     @Tag("regressiontest")
-    public void testSecurityException() throws Exception {
+    void testSecurityException() throws Exception {
         addDescription("Test the instantiation of the exception");
         addStep("Setup", "");
         String errMsg = "TEST-ERROR";

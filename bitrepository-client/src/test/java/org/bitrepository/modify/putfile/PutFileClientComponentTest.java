@@ -24,24 +24,43 @@
  */
 package org.bitrepository.modify.putfile;
 
-import io.qameta.allure.*;
+import io.qameta.allure.Allure;
+import io.qameta.allure.Description;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import org.bitrepository.SuiteInfoParameterResolver;
-import org.bitrepository.bitrepositoryelements.*;
-import org.bitrepository.bitrepositorymessages.*;
+import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumType;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
+import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.client.DefaultFixtureClientTest;
 import org.bitrepository.client.TestEventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent.OperationEventType;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.modify.ModifyComponentFactory;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import javax.xml.datatype.DatatypeFactory;
 import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
 
-import static org.bitrepository.common.utils.AllureTestUtils.*;
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addFixture;
+import static org.bitrepository.common.utils.AllureTestUtils.addReference;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 @ExtendWith(SuiteInfoParameterResolver.class)
 public class PutFileClientComponentTest extends DefaultFixtureClientTest {
@@ -219,56 +238,6 @@ public class PutFileClientComponentTest extends DefaultFixtureClientTest {
         Assertions.assertEquals(OperationEventType.FAILED, testEventHandler.waitForEvent().getEventType());
         });
     }
-
-//    @Test
-//    @Tag("regressiontest")
-//    public void onePillarRespondingWithPartialPutAllowed() throws Exception {
-//        addReference("<a href=https://sbforge.org/jira/browse/BITMAG-598>" +
-//                "BITMAG-598 It should be possible to putFiles, even though only a subset of the pillars are available</a>");
-//        addDescription("Tests the handling of missing identification responses from one pillar, " +
-//                "when partial put are allowed");
-//        addFixture("Sets the identification timeout to 100 ms and allow partial puts.");
-//
-//        settingsForCUT.getRepositorySettings().getClientSettings()
-//                .setIdentificationTimeoutDuration(datatypeFactory.newDuration(100));
-//        settingsForCUT.getReferenceSettings().getPutFileSettings().setPartialPutsAllow(true);
-//        TestEventHandler testEventHandler = new TestEventHandler();
-//        PutFileClient putClient = createPutFileClient();
-//
-//        addStep("Request the putting of a file through the PutClient",
-//                "A identification request should be dispatched.");
-//        putClient.putFile(collectionID, httpServerConfiguration.getURL(DEFAULT_FILE_ID), DEFAULT_FILE_ID, 0, null,
-//                null, testEventHandler, null);
-//        Assertions.assertEquals(OperationEventType.IDENTIFY_REQUEST_SENT, testEventHandler.waitForEvent().getEventType());
-//        IdentifyPillarsForPutFileRequest receivedIdentifyRequestMessage =
-//                collectionReceiver.waitForMessage(IdentifyPillarsForPutFileRequest.class);
-//
-//        addStep("Only send an identification response from one pillar.",
-//                "An COMPONENT_IDENTIFIED event should be generate.");
-//        IdentifyPillarsForPutFileResponse identifyResponse = messageFactory.createIdentifyPillarsForPutFileResponse(
-//                receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
-//        messageBus.sendMessage(identifyResponse);
-//        Assertions.assertEquals(OperationEventType.COMPONENT_IDENTIFIED, testEventHandler.waitForEvent().getEventType());
-//
-//        addStep("Await the timeout.", "An IDENTIFY_TIMEOUT events, a COMPONENT_FAILED " +
-//                "event for the non-responding pillar and an IDENTIFICATION_COMPLETE event should be generated.");
-//        Assertions.assertEquals(OperationEventType.IDENTIFY_TIMEOUT, testEventHandler.waitForEvent().getEventType());
-//        Assertions.assertEquals(OperationEventType.COMPONENT_FAILED, testEventHandler.waitForEvent().getEventType());
-//        Assertions.assertEquals(OperationEventType.IDENTIFICATION_COMPLETE, testEventHandler.waitForEvent().getEventType());
-//
-//        addStep("The client should proceed to send a putFileOperation request to the responding pillar.",
-//                "A REQUEST_SENT event should be generated and a PutFileRequest should be received on the pillar.");
-//        Assertions.assertEquals(OperationEventType.REQUEST_SENT, testEventHandler.waitForEvent().getEventType());
-//        PutFileRequest receivedPutFileRequest = pillar1Receiver.waitForMessage(PutFileRequest.class);
-//
-//        addStep("Send a pillar complete event",
-//                "The client should generate a COMPONENT_COMPLETE followed by a COMPLETE event");
-//        PutFileFinalResponse putFileFinalResponse = messageFactory.createPutFileFinalResponse(
-//                receivedPutFileRequest, PILLAR1_ID, pillar1DestinationId);
-//        messageBus.sendMessage(putFileFinalResponse);
-//        Assertions.assertEquals(OperationEventType.COMPONENT_COMPLETE, testEventHandler.waitForEvent().getEventType());
-//        Assertions.assertEquals(OperationEventType.FAILED, testEventHandler.waitForEvent().getEventType());
-//    }
 
     @Test
     @Tag("regressiontest")

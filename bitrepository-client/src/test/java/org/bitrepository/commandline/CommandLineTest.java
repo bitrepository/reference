@@ -34,14 +34,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
-public class CommandLineTest {
+class CommandLineTest {
     private static final String SETTINGS_DIR = "SettingsDir";
     private static final String KEY_FILE = "KeyFile";
     private static final String DUMMY_DATA = "DummyData";
 
     @Test
     @Tag("regressiontest")
-    public void argumentsTesterUnknownArgument() throws Exception {
+    void argumentsTesterUnknownArgument() throws Exception {
         assertThrows(Exception.class, () -> {
             addDescription("Test the handling of arguments by the CommandLineArgumentHandler.");
             CommandLineArgumentsHandler clah = new CommandLineArgumentsHandler();
@@ -56,7 +56,7 @@ public class CommandLineTest {
 
     @Test
     @Tag("regressiontest")
-    public void argumentsTesterWrongArgument() throws Exception {
+    void argumentsTesterWrongArgument() throws Exception {
         assertThrows(Exception.class, () -> {
             addDescription("Test the handling of arguments by the CommandLineArgumentHandler.");
             CommandLineArgumentsHandler clah = new CommandLineArgumentsHandler();
@@ -76,7 +76,7 @@ public class CommandLineTest {
 
     @Test
     @Tag("regressiontest")
-    public void newArgumentTester() throws Exception {
+    void newArgumentTester() throws Exception {
         addDescription("Test the handling of a new argument.");
         CommandLineArgumentsHandler clah = new CommandLineArgumentsHandler();
         String argName = "X";

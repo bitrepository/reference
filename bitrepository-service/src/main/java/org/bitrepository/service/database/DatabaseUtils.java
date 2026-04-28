@@ -34,6 +34,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -244,9 +245,26 @@ public class DatabaseUtils {
      * @return The date from the given statement.
      * @throws IllegalStateException if the connection could not be established,
      *                               if the prepared statement could not be created, or the execution failed
+     * @deprecated Use {@link #selectInstantValue(DBConnector, String, Object...)} instead
      */
+    @Deprecated(forRemoval = true)
     public static Date selectDateValue(DBConnector dbConnector, String query, Object... args) {
         return retrieveDateValue(dbConnector, true, query, args);
+    }
+
+    /**
+     * Retrieves an instant value from the database through the use of a SQL query, which requests
+     * the wanted instant value, and the arguments for the query to become a proper SQL statement.
+     *
+     * @param dbConnector For connecting to the database.
+     * @param query       The query for retrieving the instant.
+     * @param args        The arguments for the database statement.
+     * @return The instant from the given statement.
+     * @throws IllegalStateException if the connection could not be established,
+     *                               if the prepared statement could not be created, or the execution failed
+     */
+    public static Instant selectInstantValue(DBConnector dbConnector, String query, Object... args) {
+        return retrieveInstantValue(dbConnector, true, query, args);
     }
 
     /**
@@ -260,9 +278,27 @@ public class DatabaseUtils {
      * @return The date from the given statement.
      * @throws IllegalStateException if the connection could not be established,
      *                               if the prepared statement could not be created, or the execution failed
+     * @deprecated Use {@link #selectFirstInstantValue(DBConnector, String, Object...)} instead
      */
+    @Deprecated(forRemoval = true)
     public static Date selectFirstDateValue(DBConnector dbConnector, String query, Object... args) {
         return retrieveDateValue(dbConnector, false, query, args);
+    }
+
+    /**
+     * Retrieves the first instant value from the database through the use of a SQL query, which requests
+     * the wanted instant value, and the arguments for the query to become a proper SQL statement.
+     * If the results set contains more than one value, the others are ignored.
+     *
+     * @param dbConnector For connecting to the database.
+     * @param query       The query for retrieving the instant.
+     * @param args        The arguments for the database statement.
+     * @return The instant from the given statement.
+     * @throws IllegalStateException if the connection could not be established,
+     *                               if the prepared statement could not be created, or the execution failed
+     */
+    public static Instant selectFirstInstantValue(DBConnector dbConnector, String query, Object... args) {
+        return retrieveInstantValue(dbConnector, false, query, args);
     }
 
     /**
@@ -275,7 +311,9 @@ public class DatabaseUtils {
      * @return The date from the given statement.
      * @throws IllegalStateException if the connection could not be established,
      *                               if the prepared statement could not be created, or the execution failed
+     * @deprecated Use {@link #retrieveInstantValue(DBConnector, boolean, String, Object...)} instead
      */
+    @Deprecated(forRemoval = true)
     private static Date retrieveDateValue(DBConnector dbConnector, boolean mustHaveOnlyOneResult, String query, Object... args) {
         ArgumentValidator.checkNotNull(dbConnector, "DBConnector dbConnector");
         ArgumentValidator.checkNotNullOrEmpty(query, "String query");
@@ -297,6 +335,41 @@ public class DatabaseUtils {
                     throw new IllegalStateException("Too many results from " + ps);
                 }
                 return resultDate;
+            }
+        } catch (SQLException e) {
+            throw failedExecutionOfStatement(e, query, args);
+        }
+    }
+
+    /**
+     * The actual extraction from the database.
+     *
+     * @param dbConnector           For connecting to the database.
+     * @param mustHaveOnlyOneResult Whether it should fail, if more than one result is found.
+     * @param query                 The query for retrieving the instant.
+     * @param args                  The arguments for the database statement.
+     * @return The instant from the given statement.
+     * @throws IllegalStateException if the connection could not be established,
+     *                               if the prepared statement could not be created, or the execution failed
+     */
+    private static Instant retrieveInstantValue(DBConnector dbConnector, boolean mustHaveOnlyOneResult, String query, Object... args) {
+        ArgumentValidator.checkNotNull(dbConnector, "DBConnector dbConnector");
+        ArgumentValidator.checkNotNullOrEmpty(query, "String query");
+        ArgumentValidator.checkNotNull(args, "Object... args");
+
+        try (Connection conn = dbConnector.getConnection();
+             PreparedStatement ps = createPreparedStatement(conn, query, args)) {
+            try (ResultSet res = ps.executeQuery()) {
+                if (!res.next()) {
+                    log.trace("Got an empty result set for statement '{}' with arguments '{}' on database '{}'." +
+                            " Returning a null.", query, Arrays.asList(args), conn);
+                    return null;
+                }
+                Instant resultInstant = res.getObject(1, Instant.class);
+                if (mustHaveOnlyOneResult && res.next()) {
+                    throw new IllegalStateException("Too many results from " + ps);
+                }
+                return resultInstant;
             }
         } catch (SQLException e) {
             throw failedExecutionOfStatement(e, query, args);
@@ -414,13 +487,15 @@ public class DatabaseUtils {
                 s.setBoolean(i, (Boolean) arg);
             } else if (arg instanceof Date) {
                 s.setTimestamp(i, new Timestamp(((Date) arg).getTime()));
+            } else if (arg instanceof Instant) {
+                s.setTimestamp(i, Timestamp.from((Instant) arg));
             } else {
                 if (arg == null) {
                     throw new IllegalStateException("Cannot handle a null as argument for SQL query. We can only "
-                            + "handle string, int, long, date or boolean args for query: " + query);
+                            + "handle string, int, long, date, instant or boolean args for query: " + query);
                 } else {
                     throw new IllegalStateException("Cannot handle type '" + arg.getClass().getName() + "'. We can only "
-                            + "handle string, int, long, date or boolean args for query: " + query);
+                            + "handle string, int, long, date, instant or boolean args for query: " + query);
                 }
             }
             i++;

@@ -9,12 +9,15 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AuditPackerTest {
@@ -44,10 +47,10 @@ class AuditPackerTest {
                 new StubAuditEventIterator(), new StubAuditEventIterator(), new StubAuditEventIterator());
 
         Mockito.when(store.getAuditTrailsByIterator(
-                ArgumentMatchers.any(), ArgumentMatchers.eq(collectionID), ArgumentMatchers.anyString(),
-                ArgumentMatchers.any(Long.class), ArgumentMatchers.any(), ArgumentMatchers.any(),
-                ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(),
-                ArgumentMatchers.any())
+                any(), eq(collectionID), any(),
+                any(), any(), any(),
+                any(), (Instant) any(), (Instant) any(),
+                any(), any())
         ).thenReturn(iterators.get(0)).thenReturn(iterators.get(1)).thenReturn(iterators.get(2));
 
         // Do the actual call to createNewPackage - this will fetch first event from the iterators.

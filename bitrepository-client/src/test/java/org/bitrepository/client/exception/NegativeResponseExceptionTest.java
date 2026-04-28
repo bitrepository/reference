@@ -30,12 +30,11 @@ import org.junit.jupiter.api.Test;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-
-public class NegativeResponseExceptionTest {
+class NegativeResponseExceptionTest {
 
     @Test
     @Tag("regressiontest")
-    public void testNegativeResponse() {
+    void testNegativeResponse() {
         addDescription("Test the instantiation of the exception");
         addStep("Setup", "");
         String errMsg = "TEST-EXCEPTION";

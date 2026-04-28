@@ -28,6 +28,7 @@ import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.service.LifeCycledService;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Date;
 
@@ -55,6 +56,27 @@ public interface AlarmStore extends LifeCycledService {
      * @param ascending    Whether the alarms should be delivered ascending.
      * @return The requested collection of alarms from the store.
      */
-    Collection<Alarm> extractAlarms(String componentID, AlarmCode alarmCode, Date minDate, Date maxDate,
+    Collection<Alarm> extractAlarms(String componentID, AlarmCode alarmCode, Instant minDate, Instant maxDate,
                                     String fileID, String collectionID, Integer count, boolean ascending);
+
+    /**
+     * Extracts the alarms based on the given optional restrictions.
+     *
+     * @param componentID  The id of the component or null.
+     * @param alarmCode    The alarm code or null.
+     * @param minDate      The earliest date for the alarms or null.
+     * @param maxDate      The latest date for the alarms or null.
+     * @param fileID       The id of the file, which the alarms are connected or null.
+     * @param collectionID the ID of the collection. Perhaps it is optional
+     * @param count        The maximum number of alarms to retrieve from the store or null.
+     * @param ascending    Whether the alarms should be delivered ascending.
+     * @return The requested collection of alarms from the store.
+     */
+    default Collection<Alarm> extractAlarms(String componentID, AlarmCode alarmCode, Date minDate, Date maxDate,
+                                    String fileID, String collectionID, Integer count, boolean ascending) {
+        return extractAlarms(componentID, alarmCode,
+                minDate != null ? minDate.toInstant() : null,
+                maxDate != null ? maxDate.toInstant() : null,
+                fileID, collectionID, count, ascending);
+    }
 }

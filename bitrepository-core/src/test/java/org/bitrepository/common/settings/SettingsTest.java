@@ -12,20 +12,19 @@ import java.time.Duration;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class SettingsTest  {
+class SettingsTest  {
 
     private DatatypeFactory factory;
 
     @BeforeEach
-    public void setUpFactory() throws DatatypeConfigurationException {
+    void setUpFactory() throws DatatypeConfigurationException {
         factory = DatatypeFactory.newInstance();
     }
 
     @Test
     @Tag("regressiontest")
-    public void getDurationFromXmlDurationOrMillisRequiresOneNonNullArg() {
+    void getDurationFromXmlDurationOrMillisRequiresOneNonNullArg() {
         Assertions.assertThrows(NullPointerException.class, () -> {
             addDescription("Tests that getDurationFromXmlDurationOrMillis() fails when given two nulls");
             addStep("null and null", "NPE");
@@ -36,7 +35,7 @@ public class SettingsTest  {
 
     @Test
     @Tag("regressiontest")
-    public void testGetDurationFromXmlDurationOrMillis() {
+    void testGetDurationFromXmlDurationOrMillis() {
         addDescription("Tests conversions and selection by getDurationFromXmlDurationOrMillis()");
 
         addStep("null and some milliseconds", "Duration of millis");

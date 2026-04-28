@@ -33,12 +33,12 @@ import java.nio.charset.StandardCharsets;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class StreamUtilsTest {
+class StreamUtilsTest {
     String DATA = "The data for the streams.";
 
     @Test
     @Tag("regressiontest")
-    public void streamTester() throws Exception {
+    void streamTester() throws Exception {
         addDescription("Tests the SteamUtils class.");
         addStep("Setup variables", "");
         ByteArrayOutputStream out = new ByteArrayOutputStream();

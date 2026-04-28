@@ -33,10 +33,10 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 /**
  * Allure steps to validate that the exception thrown is the exception thrown.
  */
-public class IdentifyContributorExceptionTest {
+class IdentifyContributorExceptionTest {
     @Test
     @Tag("regressiontest")
-    public void testIdentifyContributor() throws Exception {
+    void testIdentifyContributor() throws Exception {
         addDescription("Test the instantiation of the exception");
         addStep("Setup", "");
         String errMsg = "TEST-ERROR";

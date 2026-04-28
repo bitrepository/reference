@@ -38,12 +38,16 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 /** Used to listen for operation event and store them for later retrieval by a test. */
 public class TestEventHandler implements EventHandler {
 
+    /** The <code>TestEventManager</code> used to manage the event for the associated test. */
+
     /** The queue used to store the received operation events. */
     private final BlockingQueue<OperationEvent> eventQueue = new LinkedBlockingQueue<>();
 
     /** The default time to wait for events */
     private static final long DEFAULT_WAIT_SECONDS = 3;
 
+    /** The constructor.
+     */
     public TestEventHandler() {
         super();
 

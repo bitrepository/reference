@@ -15,9 +15,9 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 
-public class FileExchangeResolverTest {
+class FileExchangeResolverTest {
     @Test
-    public void resolveFileProtocol() {
+    void resolveFileProtocol() {
         FileExchangeSettings settings = new FileExchangeSettings();
         settings.setProtocolType(ProtocolType.FILE);
         FileExchange exchange = FileExchangeResolver.getFileExchange(settings);
@@ -25,7 +25,7 @@ public class FileExchangeResolverTest {
     }
 
     @Test
-    public void resolveHttpProtocol() {
+    void resolveHttpProtocol() {
         FileExchangeSettings settings = new FileExchangeSettings();
         settings.setProtocolType(ProtocolType.HTTP);
         FileExchange exchange = FileExchangeResolver.getFileExchange(settings);
@@ -33,7 +33,7 @@ public class FileExchangeResolverTest {
     }
 
     @Test
-    public void resolveHttpsProtocol() {
+    void resolveHttpsProtocol() {
         FileExchangeSettings settings = new FileExchangeSettings();
         settings.setProtocolType(ProtocolType.HTTPS);
         FileExchange exchange = FileExchangeResolver.getFileExchange(settings);
@@ -41,28 +41,28 @@ public class FileExchangeResolverTest {
     }
 
     @Test
-    public void resolveFileProtocolURL() throws MalformedURLException, URISyntaxException {
+    void resolveFileProtocolURL() throws MalformedURLException, URISyntaxException {
         URL url = new URI("file:///home/user/Desktop/my-cool-file.txt").toURL();
         FileExchange exchange = FileExchangeResolver.getBasicFileExchangeFromURL(url);
         Assertions.assertEquals(LocalFileExchange.class, exchange.getClass());
     }
 
     @Test
-    public void resolveHttpProtocolURL() throws MalformedURLException, URISyntaxException {
+    void resolveHttpProtocolURL() throws MalformedURLException, URISyntaxException {
         URL url = new URI("http://localhost:80/myfile.txt").toURL();
         FileExchange exchange = FileExchangeResolver.getBasicFileExchangeFromURL(url);
         Assertions.assertEquals(HttpFileExchange.class, exchange.getClass());
     }
 
     @Test
-    public void resolveHttpsProtocolURL() throws MalformedURLException, URISyntaxException {
+    void resolveHttpsProtocolURL() throws MalformedURLException, URISyntaxException {
         URL url = new URI("https://localhost:443/myfile.txt").toURL();
         FileExchange exchange = FileExchangeResolver.getBasicFileExchangeFromURL(url);
         Assertions.assertEquals(HttpsFileExchange.class, exchange.getClass());
     }
 
     @Test
-    public void resolveBadProtocolURL() {
+    void resolveBadProtocolURL() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             URL badURL = new URI("ftp://some/path").toURL();
             FileExchangeResolver.getBasicFileExchangeFromURL(badURL);

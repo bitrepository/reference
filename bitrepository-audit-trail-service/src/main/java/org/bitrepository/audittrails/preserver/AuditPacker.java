@@ -38,6 +38,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -108,7 +109,7 @@ public class AuditPacker {
      */
     public synchronized Path createNewPackage() throws IOException {
         resetPackedAuditCount();
-        Path auditTrailsFile = directory.resolve(collectionID + "-audit-trails-" + System.currentTimeMillis());
+        Path auditTrailsFile = directory.resolve(collectionID + "-audit-trails-" + Instant.now().toEpochMilli());
         try {
             Files.createFile(auditTrailsFile);
             packContributors(auditTrailsFile);
@@ -158,7 +159,7 @@ public class AuditPacker {
         log.debug("Starting to pack AuditTrails at seq-number {} for contributor: {} for collection: {}",
                 nextSeqNumber, contributorID, collectionID);
         AuditEventIterator iterator = store.getAuditTrailsByIterator(null, collectionID, contributorID, nextSeqNumber, null,
-                null, null, null, null, null, null);
+                null, null, (Instant) null, (Instant) null, null, null);
         long timeStart = System.currentTimeMillis();
         long logInterval = 1000;
 
@@ -166,7 +167,7 @@ public class AuditPacker {
         log.debug("AuditEventIterator created");
         while ((event = iterator.getNextAuditTrailEvent()) != null) {
             numPackedAudits++;
-            if (largestSeqNumber < event.getSequenceNumber().longValue()) {
+            if (event.isSetSequenceNumber() && largestSeqNumber < event.getSequenceNumber().longValue()) {
                 largestSeqNumber = event.getSequenceNumber().longValue();
             }
             writer.println(event);

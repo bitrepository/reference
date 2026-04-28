@@ -36,6 +36,7 @@ import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.JaxbHelper;
+import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedFileIDsResultSet;
@@ -59,7 +60,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
+import java.time.Instant;
 
 public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRequest> {
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -134,8 +135,12 @@ public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRe
         if (message.getMaxNumberOfResults() != null) {
             maxResults = message.getMaxNumberOfResults().longValue();
         }
-        return getPillarModel().getFileIDsResultSet(message.getFileIDs().getFileID(), message.getMinTimestamp(),
-                message.getMaxTimestamp(), maxResults, message.getCollectionID());
+        Instant minTime = message.getMinTimestamp() != null ?
+                CalendarUtils.convertFromXMLGregorianCalendarToInstant(message.getMinTimestamp()) : null;
+        Instant maxTime = message.getMaxTimestamp() != null ?
+                CalendarUtils.convertFromXMLGregorianCalendarToInstant(message.getMaxTimestamp()) : null;
+        return getPillarModel().getFileIDsResultSet(message.getFileIDs().getFileID(), minTime,
+                maxTime, maxResults, message.getCollectionID());
     }
 
     /**
@@ -168,7 +173,7 @@ public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRe
     private File makeTemporaryResultFile(GetFileIDsRequest request, FileIDsData fileIDs)
             throws IOException, JAXBException {
         // Create the temporary file.
-        File checksumResultFile = File.createTempFile(request.getCorrelationID(), new Date().getTime() + ".id");
+        File checksumResultFile = File.createTempFile(request.getCorrelationID(), System.currentTimeMillis() + ".id");
         log.info("Writing the requested fileIDs to the file '{}'", checksumResultFile);
 
         // Print all the file ids data safely (close the streams!)

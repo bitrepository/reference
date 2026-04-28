@@ -67,9 +67,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.nio.file.Files;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -249,7 +249,7 @@ public class RestIntegrityService {
                 PillarType pillarTypeObject = SettingsUtils.getPillarType(pillar);
                 String pillarType = pillarTypeObject != null ? pillarTypeObject.value() : null;
                 PillarCollectionStat emptyStat = new PillarCollectionStat(pillar, collectionID, pillarName, pillarType,
-                        0L, 0L, 0L, 0L, 0L, 0L, "", null, new Date(0), new Date(0));
+                        0L, 0L, 0L, 0L, 0L, 0L, "", null, Instant.EPOCH, Instant.EPOCH);
                 stats.put(pillar, emptyStat);
             }
         }
@@ -458,7 +458,7 @@ public class RestIntegrityService {
         JsonFactory jf = new JsonFactory();
         JsonGenerator jg = jf.createGenerator(writer);
         List<CollectionStat> stats = model.getLatestCollectionStat(collectionID, 1);
-        Date lastIngest = model.getDateForNewestFileEntryForCollection(collectionID);
+        Instant lastIngest = model.getDateForNewestFileEntryForCollectionInstant(collectionID);
         String lastIngestStr = lastIngest == null ? "No files ingested yet" : TimeUtils.shortDate(lastIngest);
         Long collectionSize;
         Long numberOfFiles;
@@ -597,7 +597,7 @@ public class RestIntegrityService {
         jg.writeStartObject();
         jg.writeObjectField("workflowID", workflowID.getWorkflowName());
         jg.writeObjectField("workflowDescription", workflow.getDescription());
-        Date nextScheduledRun = workflowManager.getNextScheduledRun(workflowID);
+        Instant nextScheduledRun = workflowManager.getNextScheduledRunInstant(workflowID);
         if (nextScheduledRun == null) {
             jg.writeObjectField("nextRun", "Must be run manually");
         } else {
@@ -608,7 +608,7 @@ public class RestIntegrityService {
             jg.writeObjectField("lastRunDetails", "Workflow hasn't finished a run yet");
             jg.writeObjectField("lastRunFinishState", "Pending");
         } else {
-            jg.writeObjectField("lastRun", TimeUtils.shortDate(lastRunStatistic.getFinish()));
+            jg.writeObjectField("lastRun", TimeUtils.shortDate(lastRunStatistic.getFinishInstant()));
             jg.writeObjectField("lastRunDetails", lastRunStatistic.getFullStatistics());
             jg.writeObjectField("lastRunFinishState", lastRunStatistic.getFinishState().toString());
         }

@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
@@ -52,7 +53,7 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
     public AuditEventIterator getAuditTrailsByIterator(String fileID, String collectionID, String contributorID,
                                                        Long minSeqNumber, Long maxSeqNumber, String actorName,
                                                        FileAction operation,
-                                                       Date startDate, Date endDate, String fingerprint,
+                                                       Instant startDate, Instant endDate, String fingerprint,
                                                        String operationID) {
         return getAuditEventIteratorImplementation(fileID, collectionID, contributorID, minSeqNumber, maxSeqNumber,
                 actorName, operation, startDate, endDate, fingerprint, operationID, null);
@@ -62,16 +63,44 @@ public class AuditTrailServiceDAO implements AuditTrailStore {
     public AuditEventIterator getAuditTrailsByIterator(String fileID, String collectionID, String contributorID,
                                                        Long minSeqNumber, Long maxSeqNumber, String actorName,
                                                        FileAction operation,
-                                                       Date startDate, Date endDate, String fingerprint,
+                                                       Instant startDate, Instant endDate, String fingerprint,
                                                        String operationID, int maxAuditTrails) {
         return getAuditEventIteratorImplementation(fileID, collectionID, contributorID, minSeqNumber, maxSeqNumber,
                 actorName, operation, startDate, endDate, fingerprint, operationID, maxAuditTrails);
     }
 
+    @Override
+    @Deprecated(forRemoval = true)
+    public AuditEventIterator getAuditTrailsByIterator(String fileID, String collectionID, String contributorID,
+                                                       Long minSeqNumber, Long maxSeqNumber, String actorName,
+                                                       FileAction operation,
+                                                       Date startDate, Date endDate, String fingerprint,
+                                                       String operationID) {
+        return getAuditTrailsByIterator(fileID, collectionID, contributorID, minSeqNumber, maxSeqNumber,
+                actorName, operation,
+                startDate != null ? startDate.toInstant() : null,
+                endDate != null ? endDate.toInstant() : null,
+                fingerprint, operationID);
+    }
+
+    @Override
+    @Deprecated(forRemoval = true)
+    public AuditEventIterator getAuditTrailsByIterator(String fileID, String collectionID, String contributorID,
+                                                       Long minSeqNumber, Long maxSeqNumber, String actorName,
+                                                       FileAction operation,
+                                                       Date startDate, Date endDate, String fingerprint,
+                                                       String operationID, int maxAuditTrails) {
+        return getAuditTrailsByIterator(fileID, collectionID, contributorID, minSeqNumber, maxSeqNumber,
+                actorName, operation,
+                startDate != null ? startDate.toInstant() : null,
+                endDate != null ? endDate.toInstant() : null,
+                fingerprint, operationID, maxAuditTrails);
+    }
+
     private AuditEventIterator getAuditEventIteratorImplementation(String fileID, String collectionID,
                                                                    String contributorID, Long minSeqNumber,
                                                                    Long maxSeqNumber, String actorName,
-                                                                   FileAction operation, Date startDate, Date endDate,
+                                                                   FileAction operation, Instant startDate, Instant endDate,
                                                                    String fingerprint, String operationID,
                                                                    Integer maxAuditTrails) {
         ExtractModel model = new ExtractModel();

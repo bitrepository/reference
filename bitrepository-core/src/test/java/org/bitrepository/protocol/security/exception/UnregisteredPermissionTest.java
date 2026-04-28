@@ -28,11 +28,11 @@ import org.junit.jupiter.api.Test;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class UnregisteredPermissionTest {
+class UnregisteredPermissionTest {
 
     @Test
     @Tag("regressiontest")
-    public void testUnregisteredPermissionException() throws Exception {
+    void testUnregisteredPermissionException() throws Exception {
         addDescription("Test the instantiation of the exception");
         addStep("Setup", "");
         String errMsg = "TEST-ERROR";

@@ -41,11 +41,11 @@ import org.junit.jupiter.api.Test;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class IdentifyPillarsForGetChecksumsIT extends DefaultPillarIdentificationTest {
+class IdentifyPillarsForGetChecksumsIT extends DefaultPillarIdentificationTest {
     protected GetChecksumsMessageFactory msgFactory;
 
     @BeforeEach
-    public void initialiseReferenceTest() throws Exception {
+    void initialiseReferenceTest() throws Exception {
         msgFactory = new GetChecksumsMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
         clearReceivers();
     }
@@ -53,7 +53,7 @@ public class IdentifyPillarsForGetChecksumsIT extends DefaultPillarIdentificatio
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    public void normalIdentificationTest() {
+    void normalIdentificationTest() {
         addDescription("Verifies the normal behaviour for getChecksums identification");
         addStep("Setup for test", "2 files on the pillar");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
@@ -91,7 +91,7 @@ public class IdentifyPillarsForGetChecksumsIT extends DefaultPillarIdentificatio
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    public void nonExistingFileTest() {
+    void nonExistingFileTest() {
         addDescription("Tests that the pillar is able to reject a GetChecksums requests for a file, which it " +
                 "does not have during the identification phase.");
         addStep("Setup for test", "2 files on the pillar");
@@ -118,7 +118,7 @@ public class IdentifyPillarsForGetChecksumsIT extends DefaultPillarIdentificatio
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    public void allFilesTest() {
+    void allFilesTest() {
         addDescription("Tests that the pillar accepts a GetChecksums requests for all files, even though it does not " +
                 "have any files.");
         FileIDs fileids = FileIDsUtils.getAllFileIDs();

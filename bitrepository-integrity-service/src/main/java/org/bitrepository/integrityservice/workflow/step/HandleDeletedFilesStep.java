@@ -28,7 +28,7 @@ import org.bitrepository.service.exception.StepFailedException;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 
 import java.io.IOException;
-import java.util.Date;
+import java.time.Instant;
 import java.util.Set;
 
 /**
@@ -38,10 +38,10 @@ import java.util.Set;
 public class HandleDeletedFilesStep extends AbstractWorkFlowStep {
     private final IntegrityModel store;
     private final IntegrityReporter reporter;
-    private final Date workflowStart;
+    private final Instant workflowStart;
     private final Set<String> pillarsToClean;
 
-    public HandleDeletedFilesStep(IntegrityModel store, IntegrityReporter reporter, Date workflowStart,
+    public HandleDeletedFilesStep(IntegrityModel store, IntegrityReporter reporter, Instant workflowStart,
                                   Set<String> pillarsToClean) {
         this.store = store;
         this.reporter = reporter;

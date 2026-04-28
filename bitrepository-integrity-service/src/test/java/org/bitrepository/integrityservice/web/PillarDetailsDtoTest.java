@@ -7,7 +7,7 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class PillarDetailsDtoTest {
+class PillarDetailsDtoTest {
     private final ObjectMapper objectMapper = new ObjectMapper(); // Use ObjectMapper for JSON
 
     @Test

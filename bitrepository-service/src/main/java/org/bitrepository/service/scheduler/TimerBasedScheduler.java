@@ -32,6 +32,7 @@ import org.bitrepository.service.workflow.WorkflowState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -92,10 +93,22 @@ public class TimerBasedScheduler implements JobScheduler {
     }
 
     @Override
+    @Deprecated(forRemoval = true)
     public Date getNextRun(JobID jobId) {
         if (intervalTasks.containsKey(jobId)) {
             return intervalTasks.get(jobId).getNextRun();
-        } else return null;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public Instant getNextRunInstant(JobID jobId) {
+        if (intervalTasks.containsKey(jobId)) {
+            return intervalTasks.get(jobId).getNextRunInstant();
+        } else {
+            return null;
+        }
     }
 
     @Override

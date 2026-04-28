@@ -66,8 +66,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.math.BigInteger;
 import java.net.URL;
+import java.time.Instant;
 import java.util.Collection;
-import java.util.Date;
 import java.util.LinkedList;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
@@ -78,7 +78,7 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
  * Test class for the 'GetFileClient'.
  */
 @ExtendWith(SuiteInfoParameterResolver.class)
-public class GetChecksumsClientComponentTest extends DefaultClientTest {
+class GetChecksumsClientComponentTest extends DefaultClientTest {
     private TestGetChecksumsMessageFactory messageFactory;
 
     private static final ChecksumSpecTYPE DEFAULT_CHECKSUM_SPECS;
@@ -90,13 +90,13 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
     }
 
     @BeforeEach
-    public void beforeMethodSetup() throws Exception {
+    void beforeMethodSetup() {
         messageFactory = new TestGetChecksumsMessageFactory(settingsForTestClient.getComponentID());
     }
 
     @Test
     @Tag("regressiontest")
-    public void verifyGetChecksumsClientFromFactory() throws Exception {
+    void verifyGetChecksumsClientFromFactory() {
         Assertions.assertInstanceOf(ConversationBasedGetChecksumsClient.class,
                 AccessComponentFactory.getInstance().createGetChecksumsClient(settingsForCUT, securityManager,
                         settingsForTestClient.getComponentID()),
@@ -106,7 +106,7 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void getChecksumsFromSinglePillar() throws Exception {
+    void getChecksumsFromSinglePillar() throws Exception {
         addDescription("Tests that the client can retrieve checksums from a single pillar.");
 
         TestEventHandler testEventHandler = new TestEventHandler();
@@ -117,9 +117,8 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
                         "and a IDENTIFY_REQUEST_SENT event should be generated.");
         Collection<String> pillar1AsCollection = new LinkedList<>();
         pillar1AsCollection.add(PILLAR1_ID);
-        getChecksumsClient.getChecksums(collectionID, new ContributorQuery[]{new ContributorQuery(PILLAR1_ID, null,
-                        null,
-                        null)},
+        getChecksumsClient.getChecksums(collectionID, new ContributorQuery[]{new ContributorQuery(PILLAR1_ID, (Instant) null,
+                        (Instant) null,null)},
                 DEFAULT_FILE_ID, DEFAULT_CHECKSUM_SPECS, null, testEventHandler,
                 "TEST-AUDIT");
 
@@ -176,7 +175,7 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void getChecksumsDeliveredAtUrl() throws Exception {
+    void getChecksumsDeliveredAtUrl() throws Exception {
         addDescription("Tests the delivery of checksums from all pillars at a given URL.");
 
         String deliveryFilename = "TEST-CHECKSUM-DELIVERY.xml";
@@ -249,7 +248,7 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void testNoSuchFile() throws Exception {
+    void testNoSuchFile() throws Exception {
         addDescription("Testing how a request for a non-existing file is handled.");
         addStep("Setting up variables and such.", "Should be OK.");
         settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()
@@ -315,16 +314,16 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void testPaging() throws Exception {
+    void testPaging() throws Exception {
         addDescription("Tests the GetChecksums client correctly handles functionality for limiting results, " +
                 "either by timestamp or result count.");
 
         GetChecksumsClient getChecksumsClient = createGetChecksumsClient();
         addStep("Request checksums from with MinTimestamp, MaxTimestamp, MaxNumberOfResults set for both pillars .",
                 "A IdentifyPillarsForGetChecksumsRequest should be sent.");
-        Date timestamp3 = new Date();
-        Date timestamp2 = new Date(timestamp3.getTime() - 100);
-        Date timestamp1 = new Date(timestamp3.getTime() - 1000);
+        Instant timestamp3 = Instant.now();
+        Instant timestamp2 = timestamp3.minusMillis(100);
+        Instant timestamp1 = timestamp3.minusMillis(1000);
         ContributorQuery query1 = new ContributorQuery(PILLAR1_ID, timestamp1, timestamp2, 1);
         ContributorQuery query2 = new ContributorQuery(PILLAR2_ID, timestamp2, timestamp3, 2);
         getChecksumsClient.getChecksums(collectionID, new ContributorQuery[]{query1, query2}, null, null, null,
@@ -342,10 +341,10 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
                 receivedIdentifyRequestMessage, PILLAR2_ID, pillar2DestinationId));
 
         GetChecksumsRequest receivedGetChecksumsRequest1 = pillar1Receiver.waitForMessage(GetChecksumsRequest.class);
-        Assertions.assertEquals(CalendarUtils.getXmlGregorianCalendar(query1.getMinTimestamp()),
+        Assertions.assertEquals(CalendarUtils.getXmlGregorianCalendar(query1.getMinTimestampInstant()),
                 receivedGetChecksumsRequest1.getMinTimestamp(),
                 "Unexpected MinTimestamp in GetChecksumsRequest to pillar1.");
-        Assertions.assertEquals(CalendarUtils.getXmlGregorianCalendar(query1.getMaxTimestamp()),
+        Assertions.assertEquals(CalendarUtils.getXmlGregorianCalendar(query1.getMaxTimestampInstant()),
                 receivedGetChecksumsRequest1.getMaxTimestamp(),
                 "Unexpected MaxTimestamp in GetChecksumsRequest to pillar1.");
         Assertions.assertEquals(BigInteger.valueOf(query1.getMaxNumberOfResults()),
@@ -353,10 +352,10 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
                 "Unexpected MaxNumberOfResults in GetChecksumsRequest to pillar1.");
 
         GetChecksumsRequest receivedGetChecksumsRequest2 = pillar2Receiver.waitForMessage(GetChecksumsRequest.class);
-        Assertions.assertEquals(CalendarUtils.getXmlGregorianCalendar((query2.getMinTimestamp())),
+        Assertions.assertEquals(CalendarUtils.getXmlGregorianCalendar((query2.getMinTimestampInstant())),
                 receivedGetChecksumsRequest2.getMinTimestamp(),
                 "Unexpected MinTimestamp in GetChecksumsRequest to pillar2.");
-        Assertions.assertEquals(CalendarUtils.getXmlGregorianCalendar(query2.getMaxTimestamp()),
+        Assertions.assertEquals(CalendarUtils.getXmlGregorianCalendar(query2.getMaxTimestampInstant()),
                 receivedGetChecksumsRequest2.getMaxTimestamp(),
                 "Unexpected MaxTimestamp in GetChecksumsRequest to pillar2.");
         Assertions.assertEquals(BigInteger.valueOf(query2.getMaxNumberOfResults()),
@@ -366,7 +365,7 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void getChecksumsFromOtherCollection() throws Exception {
+    void getChecksumsFromOtherCollection() throws Exception {
         addDescription("Tests the getChecksums client will correctly try to get from a second collection if required");
         addFixture("Configure collection1 to contain both pillars and collection 2 to only contain pillar2");
         settingsForCUT.getReferenceSettings().getClientSettings().setOperationRetryCount(BigInteger.valueOf(2));
@@ -419,7 +418,6 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
                 testEventHandler.waitForEvent().getEventType());
     }
 
-
     /**
      * Creates a new test GetCheckSumsClient based on the supplied settings.
      * <p>
@@ -432,7 +430,6 @@ public class GetChecksumsClientComponentTest extends DefaultClientTest {
         return new GetChecksumsClientTestWrapper(new ConversationBasedGetChecksumsClient(
                 messageBus, conversationMediator, settingsForCUT, settingsForTestClient.getComponentID()));
     }
-
 
     @Override
     protected MessageResponse createIdentifyResponse(MessageRequest identifyRequest, String from, String to) {

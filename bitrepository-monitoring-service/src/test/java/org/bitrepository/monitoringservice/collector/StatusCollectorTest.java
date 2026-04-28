@@ -39,27 +39,25 @@ import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class StatusCollectorTest {
+class StatusCollectorTest {
     Settings settings;
 
-    private final int INTERVAL = 500;
-    private final int INTERVAL_DELAY = 250;
-
     @BeforeAll
-    public void setup() {
+    void setup() {
         settings = TestSettingsProvider.reloadSettings("StatusCollectorUnderTest");
     }
 
     @Test
     @Tag("regressiontest")
-    public void testStatusCollector() throws Exception {
+    void testStatusCollector() throws Exception {
         addDescription("Tests the status collector.");
         addStep("Setup", "");
 
         MockAlerter alerter = new MockAlerter();
         MockStatusStore store = new MockStatusStore();
         MockGetStatusClient client = new MockGetStatusClient();
-        Duration intervalXmlDur = DatatypeFactory.newInstance().newDuration(INTERVAL);
+        int interval = 500;
+        Duration intervalXmlDur = DatatypeFactory.newInstance().newDuration(interval);
         settings.getReferenceSettings().getMonitoringServiceSettings().setCollectionInterval(intervalXmlDur);
 
         addStep("Create the collector", "");
@@ -72,8 +70,9 @@ public class StatusCollectorTest {
 
         addStep("Start the collector", "It should immediately call the client and store.");
         collector.start();
+        int intervalDelay = 250;
         synchronized (this) {
-            wait(INTERVAL_DELAY);
+            wait(intervalDelay);
         }
         Assertions.assertEquals(0, store.getCallsForGetStatusMap());
         Assertions.assertEquals(1, store.getCallsForUpdateReplayCounts());
@@ -83,7 +82,7 @@ public class StatusCollectorTest {
 
         addStep("wait 2 * the interval", "It should call the client and store two times more.");
         synchronized (this) {
-            wait(2L * INTERVAL);
+            wait(2L * interval);
         }
         collector.stop();
 
@@ -95,7 +94,7 @@ public class StatusCollectorTest {
 
         addStep("wait the interval + delay again", "It should not have made any more calls");
         synchronized (this) {
-            wait(INTERVAL + INTERVAL_DELAY);
+            wait(interval + intervalDelay);
         }
 
         Assertions.assertEquals(0, store.getCallsForGetStatusMap());

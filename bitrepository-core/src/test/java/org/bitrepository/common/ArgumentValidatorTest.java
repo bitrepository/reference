@@ -32,10 +32,10 @@ import java.util.List;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class ArgumentValidatorTest {
+class ArgumentValidatorTest {
     @Test
     @Tag("regressiontest")
-    public void testArgumentValidatorObject() throws Exception {
+    void testArgumentValidatorObject() throws Exception {
         addDescription("Test the argument validator for arguments not null");
         addStep("Test not null", "Should only throw an exception when a null is given.");
         ArgumentValidator.checkNotNull(new Object(), "No exception expected.");
@@ -49,7 +49,7 @@ public class ArgumentValidatorTest {
 
     @Test
     @Tag("regressiontest")
-    public void testArgumentValidatorString() throws Exception {
+    void testArgumentValidatorString() throws Exception {
         addDescription("Test the argument validator for arguments for strings");
         addStep("Test empty string", "Should only throw an exception when the string is null or empty");
         ArgumentValidator.checkNotNullOrEmpty("NO EXCEPTION", "No exception expected.");
@@ -69,7 +69,7 @@ public class ArgumentValidatorTest {
 
     @Test
     @Tag("regressiontest")
-    public void testArgumentValidatorInteger() throws Exception {
+    void testArgumentValidatorInteger() throws Exception {
         addDescription("Test the argument validator for arguments for integers");
         addStep("Test not negative", "Should only throw an exception if the integer is negative");
         ArgumentValidator.checkNotNegative(1, "No exception expected.");
@@ -98,7 +98,7 @@ public class ArgumentValidatorTest {
 
     @Test
     @Tag("regressiontest")
-    public void testArgumentValidatorLong() throws Exception {
+    void testArgumentValidatorLong() throws Exception {
         addDescription("Test the argument validator for arguments for longs");
         addStep("Test not negative", "Should only throw an exception if the long is negative");
         ArgumentValidator.checkNotNegative(1L, "No exception expected.");
@@ -127,7 +127,7 @@ public class ArgumentValidatorTest {
 
     @Test
     @Tag("regressiontest")
-    public void testArgumentValidatorCollection() throws Exception {
+    void testArgumentValidatorCollection() throws Exception {
         addDescription("Test the argument validator for arguments for collections");
         addStep("Check against null or empty collection", "Should throw exception exception when non-empty collection");
         try {
@@ -147,7 +147,7 @@ public class ArgumentValidatorTest {
 
     @Test
     @Tag("regressiontest")
-    public void testArgumentValidatorArrays() throws Exception {
+    void testArgumentValidatorArrays() throws Exception {
         addDescription("Test the argument validator for arguments for arrays");
         addStep("Check against null or empty arrays", "Should throw exception exception when non-empty array");
         try {
@@ -167,7 +167,7 @@ public class ArgumentValidatorTest {
 
     @Test
     @Tag("regressiontest")
-    public void testArgumentValidatorBoolean() throws Exception {
+    void testArgumentValidatorBoolean() throws Exception {
         addDescription("Test the argument validator for arguments for booleans");
         addStep("validate checkTrue", "Should fail when false.");
         ArgumentValidator.checkTrue(true, "No exception expected");

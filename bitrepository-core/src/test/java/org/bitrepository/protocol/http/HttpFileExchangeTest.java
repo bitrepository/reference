@@ -38,10 +38,10 @@ import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 
-public class HttpFileExchangeTest {
+class HttpFileExchangeTest {
     @Test
     @Tag("regressiontest")
-    public void checkUrlEncodingOfFilenamesTest() throws MalformedURLException, URISyntaxException {
+    void checkUrlEncodingOfFilenamesTest() throws MalformedURLException, URISyntaxException {
         addDescription("Tests that the filename is url-encoded correctly for a configured webdav server");
         Settings mySettings = TestSettingsProvider.reloadSettings("uploadTest");
         FileExchangeSettings fileExchangeSettings = mySettings.getReferenceSettings().getFileExchangeSettings();

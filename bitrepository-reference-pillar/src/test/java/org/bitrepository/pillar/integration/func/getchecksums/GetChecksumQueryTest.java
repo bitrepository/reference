@@ -31,18 +31,21 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import static org.bitrepository.common.utils.AllureTestUtils.*;
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addFixture;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class GetChecksumQueryTest extends PillarFunctionTest {
+class GetChecksumQueryTest extends PillarFunctionTest {
 
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    public void checksumSortingTest() {
+    void checksumSortingTest() {
         addDescription("Test whether the checksum result is sorted oldest to newest.");
         addFixture("Ensure at least two files are present on the pillar");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
@@ -63,7 +66,7 @@ public class GetChecksumQueryTest extends PillarFunctionTest {
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    public void maxNumberOfResultTest() {
+    void maxNumberOfResultTest() {
         addDescription("Verifies the size of the result set can be limited by setting the maxNumberOfResult parameter.");
         addFixture("Ensure at least two files are present on the pillar");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
@@ -76,7 +79,7 @@ public class GetChecksumQueryTest extends PillarFunctionTest {
         addStep("Repeat the request checksums, this time with maxNumberOfResult set to one",
                 "A checksum result with a single checksum should be returned. " +
                         "The checksum should be the oldest/first checksum in the full list.");
-        ContributorQuery singleChecksumQuery = new ContributorQuery(getPillarID(), null, null, 1);
+        ContributorQuery singleChecksumQuery = new ContributorQuery(getPillarID(), (Instant) null, (Instant) null, 1);
         List<ChecksumDataForChecksumSpecTYPE> singleChecksumList = pillarFileManager.getChecksums(null,
                 singleChecksumQuery, null);
         Assertions.assertEquals(1, singleChecksumList.size(),
@@ -89,7 +92,7 @@ public class GetChecksumQueryTest extends PillarFunctionTest {
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    public void minTimeStampTest() {
+    void minTimeStampTest() {
         addDescription("Test the pillar support for only retrieving checksums newer that a given time. " +
                 "Note that this test assumes there is at least 2 checksums with different timestamps." +
                 "(Checksum lists are not compared directly as long lists might have checksums with shared " +
@@ -152,7 +155,7 @@ public class GetChecksumQueryTest extends PillarFunctionTest {
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    public void maxTimeStampTest() {
+    void maxTimeStampTest() {
         addDescription("Test the pillar support for only retrieving checksums older than a given time. " +
                 "Note that this test assumes there is at least 2 checksums with different timestamps. " +
                 "(Checksum lists are not compared directly as long lists might have checksums with shared " +

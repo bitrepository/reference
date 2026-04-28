@@ -21,6 +21,7 @@
  */
 package org.bitrepository.integrityservice.cache;
 
+import java.time.Instant;
 import java.util.Date;
 
 public class CollectionStat {
@@ -28,16 +29,16 @@ public class CollectionStat {
     private Long fileCount;
     private Long dataSize;
     private Long checksumErrors;
-    private Date latestFileTime;
-    private Date statsTime;
-    private Date updateTime;
+    private Instant latestFileTime;
+    private Instant statsTime;
+    private Instant updateTime;
 
     public CollectionStat(String collectionID) {
         this.collectionID = collectionID;
     }
 
     public CollectionStat(String collectionID, Long fileCount, Long dataSize, Long checksumErrors,
-                          Date latestFile, Date statsTime, Date updateTime) {
+                          Instant latestFile, Instant statsTime, Instant updateTime) {
         this.collectionID = collectionID;
         this.fileCount = fileCount;
         this.dataSize = dataSize;
@@ -45,6 +46,15 @@ public class CollectionStat {
         this.latestFileTime = latestFile;
         this.statsTime = statsTime;
         this.updateTime = updateTime;
+    }
+
+    @Deprecated(forRemoval = true)
+    public CollectionStat(String collectionID, Long fileCount, Long dataSize, Long checksumErrors,
+                          Date latestFile, Date statsTime, Date updateTime) {
+        this(collectionID, fileCount, dataSize, checksumErrors,
+                latestFile != null ? latestFile.toInstant() : null,
+                statsTime != null ? statsTime.toInstant() : null,
+                updateTime != null ? updateTime.toInstant() : null);
     }
 
     public String getCollectionID() {
@@ -63,12 +73,22 @@ public class CollectionStat {
         return checksumErrors;
     }
 
-    public Date getStatsTime() {
+    public Instant getStatsInstant() {
         return statsTime;
     }
 
-    public Date getUpdateTime() {
+    @Deprecated(forRemoval = true)
+    public Date getStatsTime() {
+        return statsTime != null ? Date.from(statsTime) : null;
+    }
+
+    public Instant getUpdateInstant() {
         return updateTime;
+    }
+
+    @Deprecated(forRemoval = true)
+    public Date getUpdateTime() {
+        return updateTime != null ? Date.from(updateTime) : null;
     }
 
     public void setFileCount(Long fileCount) {
@@ -83,19 +103,39 @@ public class CollectionStat {
         this.checksumErrors = checksumErrors;
     }
 
-    public void setStatsTime(Date statsTime) {
+    public void setStatsTime(Instant statsTime) {
         this.statsTime = statsTime;
     }
 
-    public void setUpdateTime(Date updateTime) {
+    @Deprecated(forRemoval = true)
+    public void setStatsTime(Date statsTime) {
+        this.statsTime = statsTime != null ? statsTime.toInstant() : null;
+    }
+
+    public void setUpdateTime(Instant updateTime) {
         this.updateTime = updateTime;
     }
 
-    public Date getLatestFileTime() {
+    @Deprecated(forRemoval = true)
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime != null ? updateTime.toInstant() : null;
+    }
+
+    public Instant getLatestFileInstant() {
         return latestFileTime;
     }
 
-    public void setLatestFileTime(Date latestFileTime) {
+    @Deprecated(forRemoval = true)
+    public Date getLatestFileTime() {
+        return latestFileTime != null ? Date.from(latestFileTime) : null;
+    }
+
+    public void setLatestFileTime(Instant latestFileTime) {
         this.latestFileTime = latestFileTime;
+    }
+
+    @Deprecated(forRemoval = true)
+    public void setLatestFileTime(Date latestFileTime) {
+        this.latestFileTime = latestFileTime != null ? latestFileTime.toInstant() : null;
     }
 }

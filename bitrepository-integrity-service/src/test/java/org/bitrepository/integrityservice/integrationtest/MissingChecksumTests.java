@@ -24,8 +24,13 @@ package org.bitrepository.integrityservice.integrationtest;
 import org.apache.commons.codec.DecoderException;
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
-import org.bitrepository.bitrepositoryelements.*;
+import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumType;
+import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
+import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
+import org.bitrepository.bitrepositoryelements.ResultingChecksums;
 import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.IdentificationCompleteEvent;
@@ -60,12 +65,17 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigInteger;
-import java.util.*;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class MissingChecksumTests {
+class MissingChecksumTests {
     private static final String PILLAR_1 = "pillar1";
     private static final String PILLAR_2 = "pillar2";
 
@@ -82,7 +92,7 @@ public class MissingChecksumTests {
     IntegrityReporter reporter;
 
     @BeforeEach
-    public void setup() throws Exception {
+    void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("IntegrityCheckingUnderTest");
 
         DerbyDatabaseDestroyer.deleteDatabase(
@@ -113,7 +123,7 @@ public class MissingChecksumTests {
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testMissingChecksumAndStep() throws Exception {
+    void testMissingChecksumAndStep() throws Exception {
         addDescription("Test that files initially are set to checksum-state unknown, and to missing in the "
                 + "missing checksum step.");
         addStep("Ingest file to database", "");
@@ -123,7 +133,7 @@ public class MissingChecksumTests {
         Mockito.doAnswer(invocation -> TEST_COLLECTION).when(reporter).getCollectionID();
 
         StatisticsCollector cs = new StatisticsCollector(TEST_COLLECTION);
-        HandleMissingChecksumsStep missingChecksumStep = new HandleMissingChecksumsStep(model, reporter, cs, new Date(0));
+        HandleMissingChecksumsStep missingChecksumStep = new HandleMissingChecksumsStep(model, reporter, cs, Instant.EPOCH);
         missingChecksumStep.performStep();
         for (String pillar : SettingsUtils.getPillarIDsForCollection(TEST_COLLECTION)) {
             Assertions.assertEquals(1, (long) cs.getPillarCollectionStat(pillar).getMissingChecksums());
@@ -133,10 +143,10 @@ public class MissingChecksumTests {
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testMissingChecksumForFirstGetChecksums() throws WorkflowAbortedException {
+    void testMissingChecksumForFirstGetChecksums() throws WorkflowAbortedException {
         addDescription("Test that checksums are set to missing, when not found during GetChecksum.");
         addStep("Ingest file to database", "");
-        Date testStart = new Date();
+        Instant testStart = Instant.now();
         populateDatabase(model, TEST_FILE_1);
 
         addStep("Add checksum results for only one pillar.", "");
@@ -182,11 +192,11 @@ public class MissingChecksumTests {
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testMissingChecksumDuringSecondIngest() throws WorkflowAbortedException {
+    void testMissingChecksumDuringSecondIngest() throws WorkflowAbortedException {
         addDescription("Test that checksums are set to missing, when not found during GetChecksum, "
                 + "even though they have been found before.");
         addStep("Ingest file to database", "");
-        Date testStart = new Date();
+        Instant testStart = Instant.now();
         populateDatabase(model, TEST_FILE_1);
 
         addStep("Add checksum results for both pillar.", "");
@@ -244,7 +254,7 @@ public class MissingChecksumTests {
         Mockito.when(integrityContributors.getActiveContributors())
                 .thenReturn(new HashSet<>(Arrays.asList(PILLAR_1, PILLAR_2))).thenReturn(new HashSet<>());
 
-        Date secondUpdate = new Date();
+        Instant secondUpdate = Instant.now();
         UpdateChecksumsStep step2 = new FullUpdateChecksumsStep(collector, model, alerter, createChecksumSpecTYPE(),
                 settings, TEST_COLLECTION, integrityContributors);
         step2.performStep();
@@ -267,7 +277,7 @@ public class MissingChecksumTests {
     protected void populateDatabase(IntegrityModel model, String... files) {
         FileIDsData data = new FileIDsData();
         FileIDsDataItems items = new FileIDsDataItems();
-        XMLGregorianCalendar lastModificationTime = CalendarUtils.getNow();
+        XMLGregorianCalendar lastModificationTime = CalendarUtils.getXmlGregorianCalendar(Instant.now());
         for (String f : files) {
             FileIDsDataItem item = new FileIDsDataItem();
             item.setFileID(f);
@@ -291,7 +301,7 @@ public class MissingChecksumTests {
         List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<>();
         for (String fileID : fileIDs) {
             ChecksumDataForChecksumSpecTYPE csData = new ChecksumDataForChecksumSpecTYPE();
-            csData.setCalculationTimestamp(CalendarUtils.getNow());
+            csData.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(Instant.now()));
             try {
                 csData.setChecksumValue(Base16Utils.encodeBase16(MissingChecksumTests.DEFAULT_CHECKSUM));
             } catch (DecoderException e) {

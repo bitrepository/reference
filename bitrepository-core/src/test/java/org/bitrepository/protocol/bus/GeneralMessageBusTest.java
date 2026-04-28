@@ -42,7 +42,7 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
  * Class for testing the interface with the message bus.
  */
 @ExtendWith(SuiteInfoParameterResolver.class)
-public class GeneralMessageBusTest extends IntegrationTest {
+class GeneralMessageBusTest extends IntegrationTest {
     protected static MessageReceiver collectionReceiver;
 
     @Override
@@ -53,14 +53,14 @@ public class GeneralMessageBusTest extends IntegrationTest {
     }
 
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         messageBus.setComponentFilter(List.of());
         messageBus.setCollectionFilter(List.of());
     }
 
     @Test
     @Tag("regressiontest")
-    public final void busActivityTest() throws Exception {
+    final void busActivityTest() throws Exception {
         addDescription("Tests whether it is possible to create a message listener, " +
                 "and then set it to listen to the topic. Then puts a message" +
                 "on the topic for the message listener to find, and" +
@@ -78,7 +78,7 @@ public class GeneralMessageBusTest extends IntegrationTest {
 
     @Test
     @Tag("regressiontest")
-    public final void twoListenersForTopicTest() throws Exception {
+    final void twoListenersForTopicTest() throws Exception {
         addDescription("Verifies that two listeners on the same topic both receive the message");
 
         addStep("Make a connection to the message bus and add two listeners",
@@ -103,7 +103,7 @@ public class GeneralMessageBusTest extends IntegrationTest {
 
     @Test
     @Tag("specificationonly")
-    public final void messageBusFailoverTest() {
+    final void messageBusFailoverTest() {
         addDescription("Verifies that we can switch to at second message bus " +
                 "in the middle of a conversation, if the connection is lost. " +
                 "We should also be able to resume the conversation on the new " +
@@ -112,7 +112,7 @@ public class GeneralMessageBusTest extends IntegrationTest {
 
     @Test
     @Tag("specificationonly")
-    public final void messageBusReconnectTest() {
+    final void messageBusReconnectTest() {
         addDescription("Test whether we are able to reconnect to the message " +
                 "bus if the connection is lost");
     }

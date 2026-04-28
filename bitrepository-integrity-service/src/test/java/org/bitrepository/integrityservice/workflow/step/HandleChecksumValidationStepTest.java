@@ -45,8 +45,8 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 import java.io.File;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
@@ -85,7 +85,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testNoData() throws Exception {
+    void testNoData() throws Exception {
         addDescription("Test the checksum integrity validator without any data in the cache.");
         IntegrityModel cache = getIntegrityModel();
         IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION, "test", new File("target/"));
@@ -101,7 +101,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testSimilarData() throws Exception {
+    void testSimilarData() throws Exception {
         addDescription("Test the checksum integrity validator when all pillars have similar data.");
         IntegrityModel cache = getIntegrityModel();
         IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION, "test", new File("target/"));
@@ -131,7 +131,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testMissingAtOnePillar() throws Exception {
+    void testMissingAtOnePillar() throws Exception {
         addDescription("Test the checksum integrity validator when one pillar is missing the data.");
         IntegrityModel cache = getIntegrityModel();
         IntegrityReporter reporter = new BasicIntegrityReporter(TEST_COLLECTION, "test", new File("target/"));
@@ -153,7 +153,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testTwoDisagreeingChecksums() throws Exception {
+    void testTwoDisagreeingChecksums() throws Exception {
         addDescription("Test the checksum integrity validator when only two pillar has data, but it it different.");
         IntegrityModel cache = getIntegrityModel();
         IntegrityReporter reporter =
@@ -183,7 +183,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testThreeDisagreeingChecksums() throws Exception {
+    void testThreeDisagreeingChecksums() throws Exception {
         addDescription("Test the checksum integrity validator when all pillars have different checksums.");
         IntegrityModel cache = getIntegrityModel();
         IntegrityReporter reporter =
@@ -213,7 +213,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testChecksumMajority() throws Exception {
+    void testChecksumMajority() throws Exception {
         addDescription("Test the checksum integrity validator when two pillars have one checksum and the last pillar "
                 + "has another checksum.");
         IntegrityModel cache = getIntegrityModel();
@@ -244,7 +244,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testAuditTrailsForChecksumErrors() throws Exception {
+    void testAuditTrailsForChecksumErrors() throws Exception {
         addDescription("Test audit trails for checksum errors. Verify that a pillar with a single checksum will"
                 + " be pointed out as the possible cause.");
         IntegrityModel cache = getIntegrityModel();
@@ -330,7 +330,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
         @Override
         public AuditTrailDatabaseResults getAudits(String collectionID,
                                                    String fileID, Long minSeqNumber, Long maxSeqNumber,
-                                                   Date minDate, Date maxDate, Long maxNumberOfResults) {
+                                                   Instant minDate, Instant maxDate, Long maxNumberOfResults) {
             return null;
         }
     }

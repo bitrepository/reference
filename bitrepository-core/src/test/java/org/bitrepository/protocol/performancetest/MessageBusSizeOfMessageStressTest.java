@@ -34,7 +34,6 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.bus.LocalActiveMQBroker;
-import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageListener;
@@ -48,7 +47,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.util.Date;
+import java.time.Instant;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
@@ -59,13 +58,13 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
  * The size is regulated by the 'BUFFER_TEXT' and the 'NUMBER_OF_REPEATS_OF_BUFFER_TEXT'.
  * Currently, the buffer text is 100 bytes, and it is repeated 100 times, thus generating a message of size 10 kB.
  */
-public class MessageBusSizeOfMessageStressTest {
+class MessageBusSizeOfMessageStressTest {
     private static String QUEUE = "TEST-QUEUE";
     private final long TIME_FRAME = 60000L;
     private Settings settings;
 
     @BeforeEach
-    public void initializeSettings() {
+    void initializeSettings() {
         settings = TestSettingsProvider.getSettings(getClass().getSimpleName());
     }
 
@@ -73,30 +72,35 @@ public class MessageBusSizeOfMessageStressTest {
      * Tests the amount of messages sent over a message bus, which is not placed locally.
      * Requires sending at least five per second.
      */
-    /* @Test
-    @Tag("StressTest"} ) */
-    public void SendLargeMessagesDistributed() throws Exception {
+    @Test
+    @Tag("StressTest")
+    void SendLargeMessagesDistributed() throws Exception {
         addDescription("Tests how many messages can be handled within a given timeframe.");
         addStep("Define constants", "This should not be possible to fail.");
-        QUEUE += "-" + (new Date()).getTime();
+        QUEUE += "-" + Instant.now().toEpochMilli();
 
         addStep("Make configuration for the messagebus.", "Both should be created.");
-        MessageBusConfiguration conf = MessageBusConfigurationFactory.createDefaultConfiguration();
+        MessageBusConfiguration conf = settings.getRepositorySettings().getProtocolSettings().getMessageBusConfiguration();
+        LocalActiveMQBroker broker = new LocalActiveMQBroker(conf);
+
         ResendMessageListener listener = null;
 
         try {
+            addStep("Starting the broker.", "Should be allowed");
+            broker.start();
+
             addStep("Initialise the message-listener", "Should be allowed.");
             listener = new ResendMessageListener();
 
             AlarmMessage message = getTestMessage();
 
-            addStep("Start sending at '" + new Date() + "'", "Should just be waiting.");
+            addStep("Start sending at '" + Instant.now() + "'", "Should just be waiting.");
             listener.startSending(message);
             synchronized (this) {
                 try {
                     wait(TIME_FRAME);
                 } catch (InterruptedException e) {
-                    /* e.printStackTrace(); */
+                    Assertions.fail(e);
                 }
             }
 
@@ -108,6 +112,7 @@ public class MessageBusSizeOfMessageStressTest {
             if (listener != null) {
                 listener.stop();
             }
+            broker.stop();
         }
     }
 
@@ -117,10 +122,10 @@ public class MessageBusSizeOfMessageStressTest {
      */
     @Test
     @Tag("StressTest")
-    public void SendLargeMessagesLocally() throws Exception {
+    void SendLargeMessagesLocally() throws Exception {
         addDescription("Tests how many messages can be handled within a given timeframe.");
         addStep("Define constants", "This should not be possible to fail.");
-        QUEUE += "-" + (new Date()).getTime();
+        QUEUE += "-" + Instant.now().toEpochMilli();
 
         addStep("Make configuration for the messagebus and define the local broker.",
                 "Both should be created.");
@@ -142,7 +147,7 @@ public class MessageBusSizeOfMessageStressTest {
 
             AlarmMessage message = getTestMessage();
 
-            addStep("Start sending at '" + new Date() + "'", "Should just be waiting.");
+            addStep("Start sending at '" + Instant.now() + "'", "Should just be waiting.");
             listener.startSending(message);
             synchronized (this) {
                 try {

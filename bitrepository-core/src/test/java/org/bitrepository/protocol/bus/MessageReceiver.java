@@ -64,14 +64,14 @@ public class MessageReceiver {
     private final MessageModel messageModel = new MessageModel();
     private final String destination;
     private final MessageListener messageListener;
-    
+
 
     /**
      * @param destination The destination to use for the receiver. Primarily used for logging purposes.
      */
     public MessageReceiver(String destination) {
         this.destination = destination;
-        
+
         messageListener = new TestMessageHandler();
     }
 

@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.util.Date;
+import java.time.Instant;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
@@ -43,13 +43,13 @@ public class DeleteFileCmdTest extends DefaultFixtureClientTest {
     private String DEFAULT_COLLECTION_ID;
 
     @BeforeEach
-    public void setupClient() throws Exception {
+    public void setupClient() {
         DEFAULT_COLLECTION_ID = settingsForTestClient.getCollections().get(0).getID();
     }
 
     @Test
     @Tag("regressiontest")
-    public void defaultSuccessScenarioTest() throws Exception {
+    public void defaultSuccessScenarioTest() {
         addDescription("Tests simplest arguments for running the CmdLineClient");
         String[] args = new String[]{"-s" + SETTINGS_DIR,
                 "-k" + KEY_FILE,
@@ -62,7 +62,7 @@ public class DeleteFileCmdTest extends DefaultFixtureClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void missingCollectionArgumentTest() throws Exception {
+    public void missingCollectionArgumentTest() {
         assertThrows(IllegalArgumentException.class, () -> {
             addDescription("Tests the scenario, where the collection arguments is missing.");
             String[] args = new String[]{"-s" + SETTINGS_DIR,
@@ -76,7 +76,7 @@ public class DeleteFileCmdTest extends DefaultFixtureClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void missingPillarArgumentTest() throws Exception {
+    public void missingPillarArgumentTest() {
         assertThrows(IllegalArgumentException.class, () -> {
             addDescription("Tests the different scenarios, with the pillar argument.");
             String[] args = new String[]{"-s" + SETTINGS_DIR,
@@ -90,14 +90,14 @@ public class DeleteFileCmdTest extends DefaultFixtureClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void unknownPillarArgumentTest() throws Exception {
+    public void unknownPillarArgumentTest() {
         assertThrows(IllegalArgumentException.class, () -> {
             addStep("Testing against a non-existing pillar id", "Should fail");
             String[] args = new String[]{"-s" + SETTINGS_DIR,
                     "-k" + KEY_FILE,
                     "-C" + DEFAULT_CHECKSUM,
                     "-c" + DEFAULT_COLLECTION_ID,
-                    "-p" + "Random" + (new Date()).getTime() + "pillar",
+                    "-p" + "Random" + Instant.now().toEpochMilli() + "pillar",
                     "-i" + DEFAULT_FILE_ID};
             new DeleteFileCmd(args);
         });
@@ -105,7 +105,7 @@ public class DeleteFileCmdTest extends DefaultFixtureClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void missingFileIDArgumentTest() throws Exception {
+    public void missingFileIDArgumentTest() {
         assertThrows(IllegalArgumentException.class, () -> {
             addDescription("Tests the scenario, where no arguments for file id argument is given.");
             String[] args = new String[]{"-s" + SETTINGS_DIR,
@@ -119,7 +119,7 @@ public class DeleteFileCmdTest extends DefaultFixtureClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void checksumArgumentNonSaltAlgorithmWitoutSaltTest() throws Exception {
+    public void checksumArgumentNonSaltAlgorithmWitoutSaltTest() {
         addDescription("Test MD5 checksum without salt -> no failure");
         String[] args = new String[]{"-s" + SETTINGS_DIR,
                 "-k" + KEY_FILE,
@@ -133,7 +133,7 @@ public class DeleteFileCmdTest extends DefaultFixtureClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void checksumArgumentSaltAlgorithmWithSaltTest() throws Exception {
+    public void checksumArgumentSaltAlgorithmWithSaltTest() {
         addDescription("Test HMAC_SHA256 checksum with salt -> No failure");
         String[] args = new String[]{"-s" + SETTINGS_DIR,
                 "-k" + KEY_FILE,

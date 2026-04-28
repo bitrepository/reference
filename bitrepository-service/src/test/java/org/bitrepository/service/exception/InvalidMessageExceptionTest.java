@@ -34,12 +34,12 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 /**
  * Test that InvalidMessageException works as expected.
  */
-public class InvalidMessageExceptionTest {
+class InvalidMessageExceptionTest {
     private final String TEST_COLLECTION_ID = "test-collection-id";
 
     @Test
     @Tag("regressiontest")
-    public void testIdentifyContributor() throws Exception {
+    void testIdentifyContributor() throws Exception {
         addDescription("Test the instantiation of the exception");
         addStep("Setup", "");
         String errMsg = "TEST-ERROR";

@@ -21,7 +21,7 @@ public class StubAuditEventIterator extends AuditEventIterator {
         String pillarID = "pillarID";
         String actor = "actor";
 
-        if(called) {
+        if (called) {
             return null;
         } else {
             called = true;

@@ -49,7 +49,7 @@ import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 @ExtendWith(SuiteInfoParameterResolver.class)
-public class ReferenceArchiveTest extends DefaultPillarTest {
+class ReferenceArchiveTest extends DefaultPillarTest {
     protected ReferenceArchive archive;
     protected PillarMediator mediator;
     protected MockAuditManager audits;
@@ -73,7 +73,7 @@ public class ReferenceArchiveTest extends DefaultPillarTest {
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    public void testReferenceArchive() throws Exception {
+    void testReferenceArchive() throws Exception {
         addDescription("Test the ReferenceArchive.");
         addStep("Setup", "Should be OK.");
 

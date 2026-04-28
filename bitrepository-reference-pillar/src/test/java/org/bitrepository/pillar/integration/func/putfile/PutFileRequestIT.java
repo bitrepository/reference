@@ -22,7 +22,13 @@
 package org.bitrepository.pillar.integration.func.putfile;
 
 import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositorymessages.*;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse;
+import org.bitrepository.bitrepositorymessages.MessageRequest;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.bitrepositorymessages.PutFileFinalResponse;
+import org.bitrepository.bitrepositorymessages.PutFileProgressResponse;
+import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.PillarTestGroups;
@@ -38,12 +44,12 @@ import java.util.concurrent.TimeUnit;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class PutFileRequestIT extends DefaultPillarOperationTest {
+class PutFileRequestIT extends DefaultPillarOperationTest {
     protected PutFileMessageFactory msgFactory;
     private String pillarDestination;
 
     @BeforeEach
-    public void initialiseReferenceTest() throws Exception {
+    void initialiseReferenceTest() throws Exception {
         pillarDestination = lookupPutFileDestination();
         msgFactory = new PutFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), pillarDestination);
     }
@@ -51,7 +57,7 @@ public class PutFileRequestIT extends DefaultPillarOperationTest {
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    public void normalPutFileTest() {
+    void normalPutFileTest() {
         addDescription("Tests a normal PutFile sequence");
         addStep("Send a putFile request to " + testConfiguration.getPillarUnderTestID(),
                 "The pillar should send a final response with the following elements: <ol>" +
@@ -100,7 +106,7 @@ public class PutFileRequestIT extends DefaultPillarOperationTest {
 
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
-    public void putFileWithMD5ReturnChecksumTest() {
+    void putFileWithMD5ReturnChecksumTest() {
         addDescription("Tests that the pillar is able to return the default type checksum in the final response");
         addStep("Send a putFile request to " + testConfiguration.getPillarUnderTestID() + " with the ",
                 "The pillar should send a final response with the ChecksumRequestForNewFile elements " +
@@ -121,7 +127,7 @@ public class PutFileRequestIT extends DefaultPillarOperationTest {
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
     @Tag(PillarTestGroups.OPERATION_ACCEPTED_PROGRESS)
-    public void putFileOperationAcceptedProgressTest() {
+    void putFileOperationAcceptedProgressTest() {
         addDescription("Tests a that a pillar sends progress response after receiving a putFile request.");
 
         addStep("Send a putFile request to " + testConfiguration.getPillarUnderTestID(),

@@ -44,7 +44,7 @@ public class WebAlarm {
     public WebAlarm(Alarm alarm) {
         collectionID = alarm.getCollectionID() == null ? "" : alarm.getCollectionID();
         fileID = (alarm.getFileID() == null) ? "" : alarm.getFileID();
-        origDateTime = TimeUtils.shortDate(CalendarUtils.convertFromXMLGregorianCalendar(alarm.getOrigDateTime()));
+        origDateTime = TimeUtils.shortDate(CalendarUtils.convertFromXMLGregorianCalendarToInstant(alarm.getOrigDateTime()));
         alarmRaiser = alarm.getAlarmRaiser();
         alarmCode = alarm.getAlarmCode();
         alarmText = alarm.getAlarmText();

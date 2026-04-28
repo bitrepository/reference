@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -124,12 +124,12 @@ public class ChecksumUpdater {
             init();
             log.debug("Initialized checksumUpdater");
             try {
-                Date maxDate = new Date(0);
+                Instant maxDate = Instant.MIN;
                 for (ChecksumDataForChecksumSpecTYPE csData : data) {
                     updateChecksum(csData);
                     addFileInfoWithChecksum(csData);
-                    maxDate = TimeUtils.getMaxDate(maxDate,
-                            CalendarUtils.convertFromXMLGregorianCalendar(csData.getCalculationTimestamp()));
+                    maxDate = TimeUtils.getMaxInstant(maxDate,
+                            CalendarUtils.convertFromXMLGregorianCalendarToInstant(csData.getCalculationTimestamp()));
                 }
                 updateMaxTime(maxDate);
                 log.debug("Done building file update batch");
@@ -144,16 +144,17 @@ public class ChecksumUpdater {
     }
 
     private void addFileInfoWithChecksum(ChecksumDataForChecksumSpecTYPE item) throws SQLException {
-        long calculationTime = CalendarUtils.convertFromXMLGregorianCalendar(item.getCalculationTimestamp()).getTime();
+        long calculationTime =
+                CalendarUtils.convertFromXMLGregorianCalendarToInstant(item.getCalculationTimestamp()).toEpochMilli();
 
-        Date now = new Date();
+        Instant now = Instant.now();
         insertFileInfoPS.setString(1, pillar);
         insertFileInfoPS.setString(2, item.getFileID());
         insertFileInfoPS.setLong(3, calculationTime);
-        insertFileInfoPS.setLong(4, now.getTime());
+        insertFileInfoPS.setLong(4, now.toEpochMilli());
         insertFileInfoPS.setString(5, Base16Utils.decodeBase16(item.getChecksumValue()));
         insertFileInfoPS.setLong(6, calculationTime);
-        insertFileInfoPS.setLong(7, now.getTime());
+        insertFileInfoPS.setLong(7, now.toEpochMilli());
         insertFileInfoPS.setString(8, collectionID);
         insertFileInfoPS.setString(9, item.getFileID());
         insertFileInfoPS.setString(10, collectionID);
@@ -162,25 +163,25 @@ public class ChecksumUpdater {
     }
 
     private void updateChecksum(ChecksumDataForChecksumSpecTYPE item) throws SQLException {
-        long calculationTime = CalendarUtils.convertFromXMLGregorianCalendar(item.getCalculationTimestamp()).getTime();
+        long calculationTime = CalendarUtils.convertFromXMLGregorianCalendarToInstant(item.getCalculationTimestamp()).toEpochMilli();
 
-        Date now = new Date();
+        Instant now = Instant.now();
         updateChecksumPS.setString(1, Base16Utils.decodeBase16(item.getChecksumValue()));
         updateChecksumPS.setLong(2, calculationTime);
-        updateChecksumPS.setLong(3, now.getTime());
+        updateChecksumPS.setLong(3, now.toEpochMilli());
         updateChecksumPS.setString(4, item.getFileID());
         updateChecksumPS.setString(5, collectionID);
         updateChecksumPS.setString(6, pillar);
         updateChecksumPS.addBatch();
     }
 
-    private void updateMaxTime(Date maxDate) throws SQLException {
-        updateLatestChecksumTimePS.setLong(1, maxDate.getTime());
+    private void updateMaxTime(Instant maxDate) throws SQLException {
+        updateLatestChecksumTimePS.setLong(1, maxDate.toEpochMilli());
         updateLatestChecksumTimePS.setString(2, collectionID);
         updateLatestChecksumTimePS.setString(3, pillar);
 
         insertLatestChecksumTimePS.setString(1, pillar);
-        insertLatestChecksumTimePS.setLong(2, maxDate.getTime());
+        insertLatestChecksumTimePS.setLong(2, maxDate.toEpochMilli());
         insertLatestChecksumTimePS.setString(3, collectionID);
         insertLatestChecksumTimePS.setString(4, collectionID);
         insertLatestChecksumTimePS.setString(5, pillar);

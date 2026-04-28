@@ -43,7 +43,7 @@ public class DestinationHelper {
         this.componentID = componentID;
         this.collectionDestinationID = collectionDestinationID;
 
-        receiverDestinationIDFactory = createReceiverDestinationIDFactory(receiverDestinationIDFactoryClass);
+        receiverDestinationIDFactory = createReceiverDestinationIDFactory(receiverDestinationIDFactoryClass.trim());
     }
 
     /**

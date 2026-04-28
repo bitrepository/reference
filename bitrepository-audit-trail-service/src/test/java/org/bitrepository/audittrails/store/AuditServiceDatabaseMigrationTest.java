@@ -28,7 +28,11 @@ import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
@@ -38,7 +42,7 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 // TODO: cannot test migration of version 1 to 2, since it requires a collection id.
 // Therefore this is only tested with version 2 of the database.
-public class AuditServiceDatabaseMigrationTest {
+class AuditServiceDatabaseMigrationTest {
     protected Settings settings;
 
     static final String PATH_TO_DATABASE_UNPACKED = "target/test/audits/auditservicedb-v2";
@@ -47,7 +51,7 @@ public class AuditServiceDatabaseMigrationTest {
     static final String FILE_ID = "default-file-id";
 
     @BeforeEach
-    public void setup() throws Exception {
+    void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("ReferencePillarTest");
 
         settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase().setDatabaseURL(
@@ -61,14 +65,14 @@ public class AuditServiceDatabaseMigrationTest {
     }
 
     @AfterEach
-    public void cleanup() throws Exception {
+    void cleanup() throws Exception {
         FileUtils.deleteDirIfExists(new File(PATH_TO_DATABASE_UNPACKED));
     }
 
     @Test
     @Tag("regressiontest")
     @Tag("databasetest")
-    public void testMigratingAuditServiceDatabase() {
+    void testMigratingAuditServiceDatabase() {
         addDescription("Tests that the database can be migrated to latest version with the provided scripts.");
         DBConnector connector = new DBConnector(
                 settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase());

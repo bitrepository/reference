@@ -35,6 +35,7 @@ import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -104,14 +105,14 @@ public abstract class AuditTrailContributorDAO implements AuditTrailManager {
                               FileAction operation, String operationID, String fingerprint) {
         ArgumentValidator.checkNotNull(collectionID, "String collectionID");
         ArgumentValidator.checkNotNull(operation, "FileAction operation");
-        addAuditEvent(collectionID, fileID, new Date(), actor, info, auditTrail, operation, operationID, fingerprint);
+        addAuditEvent(collectionID, fileID, Instant.now(), actor, info, auditTrail, operation, operationID, fingerprint);
     }
 
     /**
      * Inner method to handle the insertion of audit events.
      * The inner method is separated out to be able to test specifics timestamps.
      */
-    protected void addAuditEvent(String collectionID, String fileID, Date auditTime, String actor, String info,
+    protected void addAuditEvent(String collectionID, String fileID, Instant auditTime, String actor, String info,
                                  String auditTrail, FileAction operation, String operationID, String fingerprint) {
         ArgumentValidator.checkNotNull(collectionID, "String collectionID");
         ArgumentValidator.checkNotNull(operation, "FileAction operation");
@@ -150,15 +151,32 @@ public abstract class AuditTrailContributorDAO implements AuditTrailManager {
                     + AUDIT_TRAIL_AUDIT + " , " + AUDIT_TRAIL_INFORMATION + " , " + AUDIT_TRAIL_OPERATIONID + " , " +
                     AUDIT_TRAIL_FINGERPRINT + " ) VALUES ( ? , ? , ? , ? , ? , ? , ? , ?)";
             DatabaseUtils.executeStatement(dbConnector, insertSql, fileGuid, actorGuid, operation.toString(),
-                    auditTime.getTime(), auditTrail, info, operationID, fingerprint);
+                    auditTime.toEpochMilli(), auditTrail, info, operationID, fingerprint);
         }
+    }
+
+    @Deprecated(forRemoval = true)
+    protected void addAuditEvent(String collectionID, String fileID, Date auditTime, String actor, String info,
+                                 String auditTrail, FileAction operation, String operationID, String fingerprint) {
+        addAuditEvent(collectionID, fileID, auditTime != null ? auditTime.toInstant() : null,
+                actor, info, auditTrail, operation, operationID, fingerprint);
     }
 
     @Override
     public AuditTrailDatabaseResults getAudits(String collectionID, String fileID, Long minSeqNumber,
-                                               Long maxSeqNumber, Date minDate, Date maxDate, Long maxNumberOfResults) {
+                                               Long maxSeqNumber, Instant minDate, Instant maxDate, Long maxNumberOfResults) {
         return extractEvents(new AuditTrailExtractor(collectionID, fileID, minSeqNumber, maxSeqNumber, minDate,
                 maxDate, maxNumberOfResults));
+    }
+
+    @Override
+    @Deprecated(forRemoval = true)
+    public AuditTrailDatabaseResults getAudits(String collectionID, String fileID, Long minSeqNumber,
+                                               Long maxSeqNumber, Date minDate, Date maxDate, Long maxNumberOfResults) {
+        return getAudits(collectionID, fileID, minSeqNumber, maxSeqNumber,
+                minDate != null ? minDate.toInstant() : null,
+                maxDate != null ? maxDate.toInstant() : null,
+                maxNumberOfResults);
     }
 
     /**
@@ -330,8 +348,8 @@ public abstract class AuditTrailContributorDAO implements AuditTrailManager {
         private final String fileID;
         private final Long minSeqNumber;
         private final Long maxSeqNumber;
-        private final Date minDate;
-        private final Date maxDate;
+        private final Instant minDate;
+        private final Instant maxDate;
         private final Long maxResults;
 
         /**
@@ -343,8 +361,8 @@ public abstract class AuditTrailContributorDAO implements AuditTrailManager {
          * @param maxDate      The maximum date limitation for the request.
          * @param maxResults   the maximum number of results to return.
          */
-        public AuditTrailExtractor(String collectionID, String fileID, Long minSeqNumber, Long maxSeqNumber, Date minDate,
-                                   Date maxDate, Long maxResults) {
+        public AuditTrailExtractor(String collectionID, String fileID, Long minSeqNumber, Long maxSeqNumber, Instant minDate,
+                                   Instant maxDate, Long maxResults) {
             this.collectionID = collectionID;
             this.fileID = fileID;
             this.minSeqNumber = minSeqNumber;
@@ -443,10 +461,10 @@ public abstract class AuditTrailContributorDAO implements AuditTrailManager {
                 res.add(maxSeqNumber);
             }
             if (minDate != null) {
-                res.add(minDate.getTime());
+                res.add(minDate.toEpochMilli());
             }
             if (maxDate != null) {
-                res.add(maxDate.getTime());
+                res.add(maxDate.toEpochMilli());
             }
             if (maxResults != null) {
                 res.add(maxResults);

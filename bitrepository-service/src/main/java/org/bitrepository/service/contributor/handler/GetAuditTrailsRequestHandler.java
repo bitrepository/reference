@@ -53,7 +53,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
+import java.time.Instant;
 
 /**
  * Class for handling the GetAuditTrails operation.
@@ -137,15 +137,15 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
             log.trace("Maximum sequence value: {}", message.getMaxSequenceNumber().longValue());
             maxSeq = message.getMaxSequenceNumber().longValue();
         }
-        Date minDate = null;
+        Instant minDate = null;
         if (message.getMinTimestamp() != null) {
             log.trace("Minimum date value: {}", message.getMinTimestamp());
-            minDate = CalendarUtils.convertFromXMLGregorianCalendar(message.getMinTimestamp());
+            minDate = CalendarUtils.convertFromXMLGregorianCalendarToInstant(message.getMinTimestamp());
         }
-        Date maxDate = null;
+        Instant maxDate = null;
         if (message.getMaxTimestamp() != null) {
             log.trace("Maximum date value: {}", message.getMaxTimestamp());
-            maxDate = CalendarUtils.convertFromXMLGregorianCalendar(message.getMaxTimestamp());
+            maxDate = CalendarUtils.convertFromXMLGregorianCalendarToInstant(message.getMaxTimestamp());
         }
         Long maxNumberOfResults = null;
         if (message.getMaxNumberOfResults() != null) {
@@ -197,7 +197,7 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
      */
     protected File createAuditTrailFile(GetAuditTrailsRequest request, AuditTrailDatabaseResults extractedAuditTrails)
             throws IOException, JAXBException, SAXException {
-        File checksumResultFile = File.createTempFile(request.getCorrelationID(), new Date().getTime() + ".at");
+        File checksumResultFile = File.createTempFile(request.getCorrelationID(), Instant.now().toEpochMilli() + ".at");
 
         GetAuditTrailsResults results = new GetAuditTrailsResults();
         results.setVersion(ProtocolVersionLoader.loadProtocolVersion().getVersion());

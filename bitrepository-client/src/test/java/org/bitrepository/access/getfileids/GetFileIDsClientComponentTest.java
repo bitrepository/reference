@@ -29,48 +29,62 @@ import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEvent;
-import org.bitrepository.bitrepositoryelements.*;
+import org.bitrepository.bitrepositoryelements.FileIDs;
+import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
-import org.bitrepository.bitrepositorymessages.*;
+import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
+import org.bitrepository.bitrepositoryelements.ResultingFileIDs;
+import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
+import org.bitrepository.bitrepositorymessages.MessageRequest;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.client.DefaultClientTest;
 import org.bitrepository.client.TestEventHandler;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.protocol.bus.MessageReceiver;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import javax.xml.bind.JAXBException;
 import java.math.BigInteger;
 import java.net.URL;
-import java.util.Date;
+import java.time.Instant;
 
-import static org.bitrepository.common.utils.AllureTestUtils.*;
-
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addFixture;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 /**
  * Test class for the 'GetFileIDsClient'.
  */
 @ExtendWith(AllureJunit5.class)
 @ExtendWith(SuiteInfoParameterResolver.class)
-public class GetFileIDsClientComponentTest extends DefaultClientTest {
+class GetFileIDsClientComponentTest extends DefaultClientTest {
 
     private TestGetFileIDsMessageFactory messageFactory;
 
     /**
      * Set up the test scenario before running the tests in this class.
      *
-     * @throws javax.xml.bind.JAXBException
      */
     @BeforeEach
-    public void setUp() throws JAXBException {
+    void setUp() {
         // TODO getFileIDsFromFastestPillar settings
         messageFactory = new TestGetFileIDsMessageFactory(settingsForTestClient.getComponentID());
     }
 
     @Test
     @Tag("regressiontest")
-    public void verifyGetFileIDsClientFromFactory() throws Exception {
+    void verifyGetFileIDsClientFromFactory() {
         Assertions.assertInstanceOf(ConversationBasedGetFileIDsClient.class,
                 AccessComponentFactory.getInstance().createGetFileIDsClient(settingsForCUT, securityManager,
                         settingsForTestClient.getComponentID()),
@@ -81,7 +95,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
     @Test
     @Tag("regressiontest")
     @DisplayName("Test that the GetFileIDsClient can be created from the AccessComponentFactory.")
-    public void getFileIDsDeliveredAtUrl() throws Exception {
+    void getFileIDsDeliveredAtUrl() throws Exception {
         addDescription("Tests the delivery of fileIDs from a pillar at a given URL.");
         addStep("Initialise the variables for this test.",
                 "EventManager and GetFileIDsClient should be instantiated.");
@@ -163,7 +177,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void getFileIDsDeliveredThroughMessage() throws Exception {
+    void getFileIDsDeliveredThroughMessage() throws Exception {
         addDescription("Tests the delivery of fileIDs from a pillar at a given URL.");
         addStep("Initialise the variables for this test.",
                 "EventManager and GetFileIDsClient should be instantiated.");
@@ -221,7 +235,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
         FileIDsDataItems fiddItems = new FileIDsDataItems();
         String fileID = receivedGetFileIDsRequest.getFileIDs().getFileID();
         FileIDsDataItem fidItem = new FileIDsDataItem();
-        fidItem.setLastModificationTime(CalendarUtils.getNow());
+        fidItem.setLastModificationTime(CalendarUtils.getXmlGregorianCalendar(Instant.now()));
         fidItem.setFileID(fileID);
         fiddItems.getFileIDsDataItem().add(fidItem);
 
@@ -250,7 +264,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void testNoSuchFile() throws Exception {
+    void testNoSuchFile() throws Exception {
         addDescription("Testing how a request for a non-existing file is handled.");
         addStep("Setting up variables and such.", "Should be OK.");
 
@@ -276,7 +290,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
                 "The callback listener should notify of the response and the client should send a GetFileIDsRequest "
                         + "message to the pillar");
 
-        GetFileIDsRequest receivedGetFileIDsRequest = null;
+        GetFileIDsRequest receivedGetFileIDsRequest;
         IdentifyPillarsForGetFileIDsResponse identifyResponse =
                 messageFactory.createIdentifyPillarsForGetFileIDsResponse(
                         receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
@@ -307,16 +321,16 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void testPaging() throws Exception {
+    void testPaging() {
         addDescription("Tests the GetFileIDs client correctly handles functionality for limiting results, either by " +
                 "timestamp or result count.");
 
         GetFileIDsClient client = createGetFileIDsClient();
         addStep("Request fileIDs from with MinTimestamp, MaxTimestamp, MaxNumberOfResults set for both pillars .",
                 "A IdentifyPillarsForGetFileIDsRequest should be sent.");
-        Date timestamp3 = new Date();
-        Date timestamp2 = new Date(timestamp3.getTime() - 100);
-        Date timestamp1 = new Date(timestamp3.getTime() - 1000);
+        Instant timestamp3 = Instant.now();
+        Instant timestamp2 = timestamp3.minusMillis(100);
+        Instant timestamp1 = timestamp3.minusMillis(1000);
         ContributorQuery query1 = new ContributorQuery(PILLAR1_ID, timestamp1, timestamp2, 1);
         ContributorQuery query2 = new ContributorQuery(PILLAR2_ID, timestamp2, timestamp3, 2);
         client.getFileIDs(collectionID, new ContributorQuery[]{query1, query2}, null, null, testEventHandler);
@@ -333,18 +347,18 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
                 receivedIdentifyRequestMessage, PILLAR2_ID, pillar2DestinationId));
 
         GetFileIDsRequest receivedGetFileIDsRequest1 = pillar1Receiver.waitForMessage(GetFileIDsRequest.class);
-        Assertions.assertEquals(CalendarUtils.getXmlGregorianCalendar(query1.getMinTimestamp()), receivedGetFileIDsRequest1.getMinTimestamp(),
+        Assertions.assertEquals(CalendarUtils.getXmlGregorianCalendar(query1.getMinTimestampInstant()), receivedGetFileIDsRequest1.getMinTimestamp(),
                 "Unexpected MinTimestamp in GetFileIDsRequest to pillar1.");
-        Assertions.assertEquals(CalendarUtils.getXmlGregorianCalendar(query1.getMaxTimestamp()), receivedGetFileIDsRequest1.getMaxTimestamp(),
+        Assertions.assertEquals(CalendarUtils.getXmlGregorianCalendar(query1.getMaxTimestampInstant()), receivedGetFileIDsRequest1.getMaxTimestamp(),
                 "Unexpected MaxTimestamp in GetFileIDsRequest to pillar1.");
         Assertions.assertEquals(BigInteger.valueOf(query1.getMaxNumberOfResults()), receivedGetFileIDsRequest1.getMaxNumberOfResults(),
                 "Unexpected MaxNumberOfResults in GetFileIDsRequest to pillar1.");
 
         GetFileIDsRequest receivedGetFileIDsRequest2 = pillar2Receiver.waitForMessage(GetFileIDsRequest.class);
-        Assertions.assertEquals(CalendarUtils.getXmlGregorianCalendar((query2.getMinTimestamp())),
+        Assertions.assertEquals(CalendarUtils.getXmlGregorianCalendar((query2.getMinTimestampInstant())),
                 receivedGetFileIDsRequest2.getMinTimestamp(), "Unexpected MinTimestamp in GetFileIDsRequest to " +
                         "pillar2.");
-        Assertions.assertEquals(CalendarUtils.getXmlGregorianCalendar(query2.getMaxTimestamp()), receivedGetFileIDsRequest2.getMaxTimestamp(),
+        Assertions.assertEquals(CalendarUtils.getXmlGregorianCalendar(query2.getMaxTimestampInstant()), receivedGetFileIDsRequest2.getMaxTimestamp(),
                 "Unexpected MaxTimestamp in GetFileIDsRequest to pillar2.");
         Assertions.assertEquals(BigInteger.valueOf(query2.getMaxNumberOfResults()), receivedGetFileIDsRequest2.getMaxNumberOfResults(),
                 "Unexpected MaxNumberOfResults in GetFileIDsRequest to pillar2.");
@@ -352,7 +366,7 @@ public class GetFileIDsClientComponentTest extends DefaultClientTest {
 
     @Test
     @Tag("regressiontest")
-    public void getFileIDsFromOtherCollection() throws Exception {
+    void getFileIDsFromOtherCollection() throws Exception {
         addDescription("Tests the getFileIDs client will correctly try to get from a second collection if required");
         addFixture("Configure collection1 to contain both pillars and collection 2 to only contain pillar2");
         settingsForCUT.getReferenceSettings().getClientSettings().setOperationRetryCount(BigInteger.valueOf(2));

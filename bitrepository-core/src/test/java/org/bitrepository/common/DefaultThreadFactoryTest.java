@@ -18,13 +18,13 @@ import static org.mockito.Mockito.when;
 /**
  * Created by abr on 17-02-17.
  */
-public class DefaultThreadFactoryTest {
+class DefaultThreadFactoryTest {
 
     private final String message = "Hey this is the message I want to see";
 
     @Test
     @Tag("regressiontest")
-    public void testUncaughtExceptionHandler() throws Exception {
+    void testUncaughtExceptionHandler() throws Exception {
         // Technique from https://dzone.com/articles/unit-testing-asserting-line
 
         //Get the logger as a logback logger so we can set properties on it

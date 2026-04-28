@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import java.util.Date;
+import java.time.Instant;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
@@ -34,17 +34,17 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 class ChecksumEntryTest {
     private static final String CE_FILE = "file";
     private static final String CE_CHECKSUM = "checksum";
-    private static final Date CE_DATE = new Date(1234567890);
+    private static final Instant CE_DATE = Instant.ofEpochMilli(1234567890);
 
     @Test
     @Tag("regressiontest")
     @Tag("pillartest")
-    void testExtendedTestCase() throws Exception {
+    void testExtendedTestCase() {
         addDescription("Test the ChecksumEntry");
         addStep("Create a ChecksumEntry", "The data should be extractable again.");
         ChecksumEntry ce = new ChecksumEntry(CE_FILE, CE_CHECKSUM, CE_DATE);
         Assertions.assertEquals(CE_FILE, ce.getFileId());
         Assertions.assertEquals(CE_CHECKSUM, ce.getChecksum());
-        Assertions.assertEquals(CE_DATE, ce.getCalculationDate());
+        Assertions.assertEquals(CE_DATE, ce.getCalculationInstant());
     }
 }

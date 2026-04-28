@@ -32,13 +32,13 @@ import org.junit.jupiter.api.Test;
 /**
  * Allure report generating test of whether ServiceSettingsProvider actually <i>knows</i> the enum ServiceType.
  */
-public class ServiceSettingsProviderTest {
+class ServiceSettingsProviderTest {
 
     private static final String PATH_TO_TEST_SETTINGS = "settings/xml/bitrepository-devel";
 
     @Test
     @Tag("regressiontest")
-    public void componentIDTest() {
+    void componentIDTest() {
         SettingsProvider settingsLoader =
                 new ServiceSettingsProvider(new XMLFileSettingsLoader(PATH_TO_TEST_SETTINGS),
                         ServiceType.ALARM_SERVICE);

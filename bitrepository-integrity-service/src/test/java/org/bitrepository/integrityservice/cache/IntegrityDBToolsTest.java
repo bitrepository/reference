@@ -49,7 +49,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
+class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
 
     String testPillar1 = "MY-TEST-PILLAR-1";
     String testPillar2 = "MY-TEST-PILLAR-2";
@@ -89,7 +89,7 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
     @Tag("regressiontest")
     @Tag("databasetest")
     @Tag("integritytest")
-    public void testAddCollectionSuccess() {
+    void testAddCollectionSuccess() {
         addDescription("Tests that a new collection can be added to the integrity database");
         String newCollectionID = "new-collectionid";
         DatabaseManager dm = new IntegrityDatabaseManager(
@@ -115,7 +115,7 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
     @Tag("regressiontest")
     @Tag("databasetest")
     @Tag("integritytest")
-    public void testAddExistingCollection() {
+    void testAddExistingCollection() {
         addDescription("Tests that an existing collectionID cannot be added to the integrity database.");
         DatabaseManager dm = new IntegrityDatabaseManager(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
@@ -145,7 +145,7 @@ public class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
     @Tag("regressiontest")
     @Tag("databasetest")
     @Tag("integritytest")
-    public void testRemoveNonExistingCollection() {
+    void testRemoveNonExistingCollection() {
         addDescription("Tests that a non existing collection can't be removed from the integrity database.");
         String nonExistingCollectionID = "non-existing-collectionid";
         DatabaseManager dm = new IntegrityDatabaseManager(

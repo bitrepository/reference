@@ -39,11 +39,11 @@ import org.junit.jupiter.api.Test;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class IdentifyPillarsForGetFileIDsIT extends DefaultPillarIdentificationTest {
+class IdentifyPillarsForGetFileIDsIT extends DefaultPillarIdentificationTest {
     protected GetFileIDsMessageFactory msgFactory;
 
     @BeforeEach
-    public void initialiseReferenceTest() throws Exception {
+    void initialiseReferenceTest() throws Exception {
         msgFactory = new GetFileIDsMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
         clearReceivers();
     }
@@ -51,7 +51,7 @@ public class IdentifyPillarsForGetFileIDsIT extends DefaultPillarIdentificationT
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    public void normalIdentificationTest() {
+    void normalIdentificationTest() {
         addDescription("Verifies the normal behaviour for getFileIDs identification");
         addStep("Setup for test", "2 files on the pillar");
         pillarFileManager.ensureNumberOfFilesOnPillar(2, testMethodName);
@@ -89,7 +89,7 @@ public class IdentifyPillarsForGetFileIDsIT extends DefaultPillarIdentificationT
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    public void nonExistingFileTest() {
+    void nonExistingFileTest() {
         addDescription("Tests that the pillar is able to reject a GetFileIDs requests for a file, which it " +
                 "does not have during the identification phase.");
         addStep("Setup for test", "2 files on the pillar");
@@ -116,7 +116,7 @@ public class IdentifyPillarsForGetFileIDsIT extends DefaultPillarIdentificationT
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    public void allFilesTest() {
+    void allFilesTest() {
         addDescription("Tests that the pillar accepts a GetFileIDs requests for all files, even though it does not " +
                 "have any files.");
         FileIDs fileids = FileIDsUtils.getAllFileIDs();

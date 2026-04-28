@@ -61,7 +61,7 @@ public class IntegrityInformationCollectorTest {
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testCollectorGetFileIDs() throws Exception {
+    void testCollectorGetFileIDs() throws Exception {
         addDescription("Tests that the collector calls the GetFileClient");
         addStep("Define variables", "No errors");
         String pillarID = "TEST-PILLAR";
@@ -93,7 +93,7 @@ public class IntegrityInformationCollectorTest {
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testCollectorGetChecksums() throws Exception {
+    void testCollectorGetChecksums() throws Exception {
         addDescription("Tests that the collector calls the GetChecksumsClient");
         addStep("Define variables", "No errors");
         String pillarID = "TEST-PILLAR";
@@ -137,7 +137,7 @@ public class IntegrityInformationCollectorTest {
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testCollectorGetFile() throws Exception {
+    void testCollectorGetFile() throws Exception {
         addDescription("Tests that the collector calls the GetFileClient");
         addStep("Define variables", "No errors");
         String auditTrailInformation = "audit trail for this test";
@@ -169,7 +169,7 @@ public class IntegrityInformationCollectorTest {
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testCollectorPutFile() throws Exception {
+    void testCollectorPutFile() throws Exception {
         addDescription("Tests that the collector calls the PutFileClient");
         addStep("Define variables", "No errors");
         String auditTrailInformation = "audit trail for this test";
@@ -203,7 +203,7 @@ public class IntegrityInformationCollectorTest {
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testCollectorHandleChecksumClientFailures() throws Exception {
+    void testCollectorHandleChecksumClientFailures() throws Exception {
         addDescription("Test that the IntegrityInformationCollector works as a fault-barrier.");
         addStep("Setup variables for the test", "Should be OK");
         String pillarID = "TEST-PILLAR";
@@ -230,7 +230,7 @@ public class IntegrityInformationCollectorTest {
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testCollectorHandleGetFileIDsClientFailures() throws Exception {
+    void testCollectorHandleGetFileIDsClientFailures() throws Exception {
         addDescription("Test that the IntegrityInformationCollector works as a fault-barrier.");
         addStep("Setup variables for the test", "Should be OK");
         String pillarID = "TEST-PILLAR";
@@ -253,7 +253,7 @@ public class IntegrityInformationCollectorTest {
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testCollectorHandleGetFileClientFailures() throws Exception {
+    void testCollectorHandleGetFileClientFailures() throws Exception {
         addDescription("Test that the IntegrityInformationCollector works as a fault-barrier.");
         addStep("Define variables", "No errors");
         String auditTrailInformation = "audit trail for this test";
@@ -276,7 +276,7 @@ public class IntegrityInformationCollectorTest {
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testCollectorHandlePutFileClientFailures() throws Exception {
+    void testCollectorHandlePutFileClientFailures() throws Exception {
         addDescription("Test that the IntegrityInformationCollector works as a fault-barrier.");
         addStep("Define variables", "No errors");
         String auditTrailInformation = "audit trail for this test";

@@ -35,6 +35,7 @@ import org.bitrepository.bitrepositorymessages.GetChecksumsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.JaxbHelper;
+import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.store.StorageModel;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;
@@ -58,7 +59,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
+import java.time.Instant;
 
 public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksumsRequest> {
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -133,16 +134,21 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
             throws RequestHandlerException {
         log.debug("Starting to extracting the checksum of the requested files.");
 
+        Instant minTime = request.getMinTimestamp() != null ?
+                CalendarUtils.convertFromXMLGregorianCalendarToInstant(request.getMinTimestamp()) : null;
+        Instant maxTime = request.getMaxTimestamp() != null ?
+                CalendarUtils.convertFromXMLGregorianCalendarToInstant(request.getMaxTimestamp()) : null;
+
         if (request.getFileIDs().isSetFileID()) {
             return getPillarModel().getSingleChecksumResultSet(request.getFileIDs().getFileID(),
-                    request.getCollectionID(), request.getMinTimestamp(), request.getMaxTimestamp(),
+                    request.getCollectionID(), minTime, maxTime,
                     request.getChecksumRequestForExistingFile());
         } else {
             Long maxResults = null;
             if (request.getMaxNumberOfResults() != null) {
                 maxResults = request.getMaxNumberOfResults().longValue();
             }
-            return getPillarModel().getChecksumResultSet(request.getMinTimestamp(), request.getMaxTimestamp(),
+            return getPillarModel().getChecksumResultSet(minTime, maxTime,
                     maxResults, request.getCollectionID(), request.getChecksumRequestForExistingFile());
         }
     }
@@ -201,7 +207,7 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
     private File makeTemporaryChecksumFile(GetChecksumsRequest request,
                                            ExtractedChecksumResultSet checksumResultSet) throws IOException, JAXBException, SAXException {
         // Create the temporary file.
-        File checksumResultFile = File.createTempFile(request.getCorrelationID(), new Date().getTime() + ".cs");
+        File checksumResultFile = File.createTempFile(request.getCorrelationID(), System.currentTimeMillis() + ".cs");
         log.debug("Writing the list of checksums to the file '{}'", checksumResultFile);
 
         // Create data format 

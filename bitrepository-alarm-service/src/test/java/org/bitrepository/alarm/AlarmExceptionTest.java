@@ -27,11 +27,11 @@ import org.junit.jupiter.api.Test;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 
-public class AlarmExceptionTest {
+class AlarmExceptionTest {
 
     @Test
     @Tag("regressiontest")
-    public void alarmExceptionTest() throws Exception {
+    void alarmExceptionTest() throws Exception {
         addDescription("Tests that AlarmExceptions can be thrown.");
         String alarmError = "The message of the alarm exception";
         try {

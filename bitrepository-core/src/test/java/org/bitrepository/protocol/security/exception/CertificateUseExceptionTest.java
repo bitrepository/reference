@@ -29,11 +29,11 @@ import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 
-public class CertificateUseExceptionTest {
+class CertificateUseExceptionTest {
 
     @Test
     @Tag("regressiontest")
-    public void testCertificateUseException() throws Exception {
+    void testCertificateUseException() throws Exception {
         addDescription("Test the instantiation of the exception");
         addStep("Setup", "");
         String errMsg = "TEST-ERROR";

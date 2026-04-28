@@ -34,19 +34,19 @@ import java.time.Duration;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class MaxChecksumAgeProviderTest {
+class MaxChecksumAgeProviderTest {
 
     DatatypeFactory factory;
 
     @BeforeEach
-    public void setUpFactory() throws DatatypeConfigurationException {
+    void setUpFactory() throws DatatypeConfigurationException {
         factory = DatatypeFactory.newInstance();
     }
 
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testNoSettings() {
+    void testNoSettings() {
         addDescription("Test the MaxChecksumAge when no settings are defined");
         addStep("Create a MaxChecksumAgeProvider with null settings and a default MaxAge of 100",
 
@@ -59,7 +59,7 @@ public class MaxChecksumAgeProviderTest {
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testNoPillarSpecificSetting() {
+    void testNoPillarSpecificSetting() {
         addDescription("Test the MaxChecksumAge when no settings are defined for the specific pillar");
 
         addStep("Create a MaxChecksumAgeProvider with settings containing a default MaxAge of 10 and no pillar " +
@@ -75,7 +75,7 @@ public class MaxChecksumAgeProviderTest {
     @Test
     @Tag("regressiontest")
     @Tag("integritytest")
-    public void testPillarSpecificSetting() {
+    void testPillarSpecificSetting() {
         addDescription("Test the MaxChecksumAge when a value has been defined for specific pillars");
 
 

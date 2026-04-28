@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -57,7 +58,7 @@ public class MultipleCollectionIT extends PillarIntegrationTest {
         addStep("Send a getFileIDs for the file in the second collection",
                 "The fileID should be retrieved");
         ContributorQuery query =
-                new ContributorQuery(getPillarID(), null, null, null);
+                new ContributorQuery(getPillarID(), (Instant) null, (Instant) null, null);
         Assertions.assertEquals(1, clientProvider.getGetFileIDsClient().getGetFileIDs(
                 nonDefaultCollectionId, new ContributorQuery[]{query}, nonDefaultFileId, defaultFileUrl, null).size());
 

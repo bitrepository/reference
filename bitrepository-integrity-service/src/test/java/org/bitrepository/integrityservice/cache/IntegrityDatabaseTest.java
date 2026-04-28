@@ -42,12 +42,16 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
+class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     AuditTrailManager auditManager;
     String TEST_PILLAR_1 = "MY-TEST-PILLAR-1";
     String TEST_PILLAR_2 = "MY-TEST-PILLAR-2";
@@ -80,7 +84,7 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     @Tag("regressiontest")
     @Tag("databasetest")
     @Tag("integritytest")
-    public void instantiationTest() {
+    void instantiationTest() {
         addDescription("Tests that the connection can be instantaited.");
         IntegrityDatabase integrityCache = new IntegrityDatabase(settings);
         Assertions.assertNotNull(integrityCache);
@@ -90,20 +94,21 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     @Tag("regressiontest")
     @Tag("databasetest")
     @Tag("integritytest")
-    public void initialStateExtractionTest() {
+    void initialStateExtractionTest() {
         addDescription("Tests the initial state of the IntegrityModel. Should not contain any data.");
         IntegrityModel model = new IntegrityDatabase(settings);
 
         addStep("Test the 'findChecksumsOlderThan'", "Should deliver an empty collection");
         Collection<String> oldChecksums = getIssuesFromIterator(model.findChecksumsOlderThan(
-                new Date(0), TEST_PILLAR_1, TEST_COLLECTIONID));
+                Instant.EPOCH, TEST_PILLAR_1, TEST_COLLECTIONID));
         Assertions.assertNotNull(oldChecksums);
         Assertions.assertEquals(0, oldChecksums.size());
 
         addStep("Test the 'findMissingChecksums'", "Should deliver an empty collection");
         for (String pillar : SettingsUtils.getPillarIDsForCollection(TEST_COLLECTIONID)) {
             Collection<String> missingChecksums
-                    = getIssuesFromIterator(model.findFilesWithMissingChecksum(TEST_COLLECTIONID, pillar, new Date(0)));
+                    =
+                    getIssuesFromIterator(model.findFilesWithMissingChecksum(TEST_COLLECTIONID, pillar, Instant.EPOCH));
             Assertions.assertNotNull(missingChecksums);
             Assertions.assertEquals(0, missingChecksums.size());
         }
@@ -131,7 +136,7 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     @Tag("regressiontest")
     @Tag("databasetest")
     @Tag("integritytest")
-    public void testIngestOfFileIDsData() {
+    void testIngestOfFileIDsData() {
         addDescription("Tests the ingesting of file ids data");
         IntegrityModel model = new IntegrityDatabase(settings);
 
@@ -146,9 +151,11 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         for (FileInfo fi : fileinfos) {
             Assertions.assertEquals(TEST_FILE_ID, fi.getFileId());
             Assertions.assertNull(fi.getChecksum());
-            Assertions.assertEquals(CalendarUtils.getEpoch(), fi.getDateForLastChecksumCheck());
-            Assertions.assertEquals(data1.getFileIDsDataItems().getFileIDsDataItem().get(0).getLastModificationTime(),
-                    fi.getDateForLastFileIDCheck());
+            Assertions.assertEquals(Instant.EPOCH, fi.getDateForLastChecksumCheckInstant());
+            Assertions.assertEquals(
+                    CalendarUtils.convertFromXMLGregorianCalendarToInstant(
+                            data1.getFileIDsDataItems().getFileIDsDataItem().get(0).getLastModificationTime()),
+                    fi.getDateForLastFileIDCheckInstant());
         }
     }
 
@@ -156,7 +163,7 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     @Tag("regressiontest")
     @Tag("databasetest")
     @Tag("integritytest")
-    public void testIngestOfChecksumsData() {
+    void testIngestOfChecksumsData() {
         addDescription("Tests the ingesting of checksums data");
         IntegrityModel model = new IntegrityDatabase(settings);
 
@@ -171,7 +178,9 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         for (FileInfo fi : fileinfos) {
             Assertions.assertEquals(TEST_FILE_ID, fi.getFileId());
             Assertions.assertEquals(TEST_CHECKSUM, fi.getChecksum());
-            Assertions.assertEquals(csData.get(0).getCalculationTimestamp(), fi.getDateForLastChecksumCheck());
+            Assertions.assertEquals(
+                    CalendarUtils.convertFromXMLGregorianCalendarToInstant(csData.get(0).getCalculationTimestamp()),
+                    fi.getDateForLastChecksumCheckInstant());
         }
     }
 
@@ -179,7 +188,7 @@ public class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     @Tag("regressiontest")
     @Tag("databasetest")
     @Tag("integritytest")
-    public void testDeletingEntry() {
+    void testDeletingEntry() {
         addDescription("Tests the deletion of an FileID entry.");
         IntegrityModel model = new IntegrityDatabase(settings);
 

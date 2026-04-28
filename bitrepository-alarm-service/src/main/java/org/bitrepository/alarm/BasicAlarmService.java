@@ -35,8 +35,8 @@ import org.bitrepository.service.contributor.ContributorMediator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.util.Collection;
-import java.util.Date;
 
 public class BasicAlarmService implements AlarmService {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -89,7 +89,7 @@ public class BasicAlarmService implements AlarmService {
     public void start() {}
 
     @Override
-    public Collection<Alarm> extractAlarms(String componentID, AlarmCode alarmCode, Date minDate, Date maxDate,
+    public Collection<Alarm> extractAlarms(String componentID, AlarmCode alarmCode, Instant minDate, Instant maxDate,
                                            String fileID, String collectionID, Integer maxResults, boolean ascending) {
         return store.extractAlarms(componentID, alarmCode, minDate, maxDate, fileID, collectionID, maxResults, ascending);
     }

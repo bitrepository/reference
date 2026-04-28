@@ -28,6 +28,7 @@ import org.bitrepository.service.workflow.JobID;
 import org.bitrepository.service.workflow.JobTimerTask;
 import org.bitrepository.service.workflow.SchedulableJob;
 
+import java.time.Instant;
 import java.util.Date;
 
 /**
@@ -62,8 +63,19 @@ public interface JobScheduler {
     /**
      * @param jobId the indicated job
      * @return the date for the next run of the indicated job. Return null if the job isn't scheduled.
+     * @deprecated Use {@link #getNextRunInstant(JobID)} instead
      */
+    @Deprecated(forRemoval = true)
     Date getNextRun(JobID jobId);
+
+    /**
+     * @param jobId the indicated job
+     * @return the date for the next run of the indicated job. Return null if the job isn't scheduled.
+     */
+    default Instant getNextRunInstant(JobID jobId) {
+        Date date = getNextRun(jobId);
+        return date != null ? date.toInstant() : null;
+    }
 
     /**
      * @param jobId the indicated job

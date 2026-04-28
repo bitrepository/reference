@@ -24,7 +24,12 @@ package org.bitrepository.pillar.integration.func.getfileids;
 import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
-import org.bitrepository.bitrepositorymessages.*;
+import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
+import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileIDsResponse;
+import org.bitrepository.bitrepositorymessages.MessageRequest;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.func.DefaultPillarOperationTest;
@@ -41,12 +46,12 @@ import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 @ExtendWith(SuiteInfoParameterResolver.class)
-public class GetFileIDsTest extends DefaultPillarOperationTest {
+class GetFileIDsTest extends DefaultPillarOperationTest {
     protected GetFileIDsMessageFactory msgFactory;
     private String pillarDestination;
 
     @BeforeEach
-    public void initialiseReferenceTest() throws Exception {
+    void initialiseReferenceTest() throws Exception {
         msgFactory = new GetFileIDsMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
         pillarDestination = lookupPillarDestination();
         msgFactory = new GetFileIDsMessageFactory(collectionID, settingsForTestClient, getPillarID(),
@@ -58,7 +63,7 @@ public class GetFileIDsTest extends DefaultPillarOperationTest {
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    public void pillarGetFileIDsTestSuccessCase() throws Exception {
+    void pillarGetFileIDsTestSuccessCase() throws Exception {
         addDescription("Tests the GetFileIDs functionality of the pillar for the successful scenario.");
 
         addStep("Create and send a GetFileIDsRequest to the pillar.",
@@ -103,7 +108,7 @@ public class GetFileIDsTest extends DefaultPillarOperationTest {
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    public void pillarGetFileIDsTestFailedNoSuchFileInOperation() throws Exception {
+    void pillarGetFileIDsTestFailedNoSuchFileInOperation() throws Exception {
         addDescription("Tests that the pillar is able to handle requests for a non-existing file correctly during " +
                 "the operation phase.");
         FileIDs fileids = FileIDsUtils.createFileIDs(nonDefaultFileId);
@@ -119,7 +124,7 @@ public class GetFileIDsTest extends DefaultPillarOperationTest {
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    public void pillarGetFileIDsSpecificFileIDRequest() throws Exception {
+    void pillarGetFileIDsSpecificFileIDRequest() throws Exception {
         addDescription("Tests that the pillar is able to handle requests for a non-existing file correctly during " +
                 "the operation phase.");
         FileIDs fileids = FileIDsUtils.createFileIDs(defaultFileId);
@@ -144,7 +149,7 @@ public class GetFileIDsTest extends DefaultPillarOperationTest {
     @Test
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
-    public void pillarGetFileIDsTestBadDeliveryURL() throws Exception {
+    void pillarGetFileIDsTestBadDeliveryURL() throws Exception {
         addDescription("Test the case when the delivery URL is unaccessible.");
         String badURL = "http://localhost:61616/¾";
         GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(
@@ -161,7 +166,7 @@ public class GetFileIDsTest extends DefaultPillarOperationTest {
     @Tag(PillarTestGroups.FULL_PILLAR_TEST)
     @Tag(PillarTestGroups.CHECKSUM_PILLAR_TEST)
     @Tag(PillarTestGroups.RESULT_UPLOAD)
-    public void pillarGetFileIDsTestDeliveryThroughUpload() throws Exception {
+    void pillarGetFileIDsTestDeliveryThroughUpload() throws Exception {
         addDescription("Test the case when the results should be delivered through the message .");
         GetFileIDsRequest getFileIDsRequest = msgFactory.createGetFileIDsRequest(
                 FileIDsUtils.getAllFileIDs(), defaultUploadFileAddress);

@@ -45,9 +45,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
-public class IntegrityWorkflowManagerTest {
+class IntegrityWorkflowManagerTest {
     private Settings settings;
     private WorkflowSettings workflowSettings;
     private TimerBasedScheduler scheduler;
@@ -56,7 +59,7 @@ public class IntegrityWorkflowManagerTest {
     private TestWorkflow workflow1, workflow2;
 
     @BeforeEach
-    public void setup() throws DatatypeConfigurationException {
+    void setup() throws DatatypeConfigurationException {
         scheduler = mock(TimerBasedScheduler.class);
         factory = DatatypeFactory.newInstance();
 
@@ -80,7 +83,7 @@ public class IntegrityWorkflowManagerTest {
 
     @Test
     @Tag("regressiontest")
-    public void normalWorkflowSettings() {
+    void normalWorkflowSettings() {
         addDescription("Verifies that the IntegrityWorkflowManager loads correctly for at normally defined workflow.");
 
         addStep("Create a IntegrityWorkflowManager based on a single Testworkflow with a daily schedule in a to " +
@@ -95,7 +98,7 @@ public class IntegrityWorkflowManagerTest {
 
     @Test
     @Tag("regressiontest")
-    public void noWorkflowPackage() {
+    void noWorkflowPackage() {
         addDescription("Verifies that the IntegrityWorkflowManager loads correctly for at workflow configuration with " +
                 "a workflow class name without a package scope (located in the default workflow package).");
 
@@ -112,7 +115,7 @@ public class IntegrityWorkflowManagerTest {
 
     @Test
     @Tag("regressiontest")
-    public void noWorkflowSettings() {
+    void noWorkflowSettings() {
         addDescription("Verifies that the IntegrityWorkflowManager loads correctly for missing reference settings a " +
                 "workflow settings element.");
 
@@ -134,7 +137,7 @@ public class IntegrityWorkflowManagerTest {
 
     @Test
     @Tag("regressiontest")
-    public void collectionSpecificWorkflows() {
+    void collectionSpecificWorkflows() {
         addDescription("Verifies that the IntegrityWorkflowManager loads correctly for workflows configured for " +
                 "specific collection.");
 
@@ -163,7 +166,7 @@ public class IntegrityWorkflowManagerTest {
 
     @Test
     @Tag("regressiontest")
-    public void unscheduledWorkflow() {
+    void unscheduledWorkflow() {
         addDescription("Verifies that the IntegrityWorkflowManager loads workflow correctly for workflows without a " +
                 "defined schedule meaning they are never run automatically.");
 
@@ -172,15 +175,15 @@ public class IntegrityWorkflowManagerTest {
         workflowSettings.getWorkflow().get(0).setSchedules(null);
 
         IntegrityWorkflowManager manager = createIntegrityWorkflowManager();
-        when(manager.getNextScheduledRun(workflow1.getJobID())).thenReturn(null);
+        when(manager.getNextScheduledRunInstant(workflow1.getJobID())).thenReturn(null);
         when(manager.getRunInterval(workflow1.getJobID())).thenReturn(-1L);
-        assertNull(manager.getNextScheduledRun(workflow1.getJobID()));
+        assertNull(manager.getNextScheduledRunInstant(workflow1.getJobID()));
         assertEquals(-1, manager.getRunInterval(workflow1.getJobID()));
     }
 
     @Test
     @Tag("regressiontest")
-    public void startWorkflow() {
+    void startWorkflow() {
         addDescription("Verifies that the that it is possible to manually start a workflow.");
 
         addStep("Call the startWorkflow with a workflow defined in the configuration",

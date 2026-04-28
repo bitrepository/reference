@@ -41,12 +41,13 @@ import java.util.concurrent.TimeUnit;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
+
 /**
  * Runs the GeneralMessageBusTest using a LocalActiveMQBroker (if useEmbeddedMessageBus is true) and a suitable
  * MessageBus based on settingsForTestClient.  Regression tests utilized that uses Allure to generate reports.
  */
 
-public class ActiveMQMessageBusTest extends GeneralMessageBusTest {
+class ActiveMQMessageBusTest extends GeneralMessageBusTest {
 
     @Override
     protected void setupMessageBus() {
@@ -61,7 +62,7 @@ public class ActiveMQMessageBusTest extends GeneralMessageBusTest {
 
     @Test
     @Tag("regressiontest")
-    public final void collectionFilterTest() throws Exception {
+    final void collectionFilterTest() throws Exception {
         addDescription("Test that message bus filters identify requests to other collection, eg. ignores these.");
         addStep("Send an identify request with a undefined 'Collection' header property, " +
                         "eg. this identify requests should be handled by everybody.",
@@ -96,7 +97,7 @@ public class ActiveMQMessageBusTest extends GeneralMessageBusTest {
 
     @Test
     @Tag("regressiontest")
-    public final void sendMessageToSpecificComponentTest() throws Exception {
+    final void sendMessageToSpecificComponentTest() throws Exception {
         addDescription("Test that message bus correct uses the 'to' header property to indicated that the message " +
                 "is meant for a specific component");
         addStep("Send a message with the 'Recipient' parameter set to at specific component",
@@ -123,7 +124,7 @@ public class ActiveMQMessageBusTest extends GeneralMessageBusTest {
 
     @Test
     @Tag("regressiontest")
-    public final void toFilterTest() throws Exception {
+    final void toFilterTest() throws Exception {
         addDescription("Test that message bus filters identify requests to other components, eg. ignores these.");
         addStep("Send an identify request with a undefined 'To' header property, " +
                         "eg. this identify requests should be handled by all components.",

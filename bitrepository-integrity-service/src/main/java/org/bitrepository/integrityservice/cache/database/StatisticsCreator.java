@@ -32,7 +32,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -83,10 +83,10 @@ public class StatisticsCreator {
             init();
             log.debug("Initialized statisticsCreator");
             try {
-                Date statisticsTime = statisticsCollector.getCollectionStat().getStatsTime();
-                Date now = new Date();
-                insertStatisticsEntryPS.setLong(1, statisticsTime.getTime());
-                insertStatisticsEntryPS.setLong(2, now.getTime());
+                Instant statisticsTime = statisticsCollector.getCollectionStat().getStatsInstant();
+                Instant now = Instant.now();
+                insertStatisticsEntryPS.setLong(1, statisticsTime.toEpochMilli());
+                insertStatisticsEntryPS.setLong(2, now.toEpochMilli());
                 insertStatisticsEntryPS.setString(3, collectionID);
 
                 addCollectionStatistics(statisticsCollector.getCollectionStat());
@@ -109,7 +109,7 @@ public class StatisticsCreator {
         insertCollectionStatPS.setLong(1, cs.getFileCount());
         insertCollectionStatPS.setLong(2, cs.getDataSize());
         insertCollectionStatPS.setLong(3, cs.getChecksumErrors());
-        insertCollectionStatPS.setLong(4, cs.getLatestFileTime().getTime());
+        insertCollectionStatPS.setLong(4, cs.getLatestFileInstant().toEpochMilli());
         insertCollectionStatPS.setString(5, cs.getCollectionID());
     }
 

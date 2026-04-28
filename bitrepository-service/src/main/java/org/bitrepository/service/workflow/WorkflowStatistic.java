@@ -24,6 +24,8 @@ package org.bitrepository.service.workflow;
 
 import org.bitrepository.common.utils.TimeUtils;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,8 +37,8 @@ import java.util.List;
 public class WorkflowStatistic {
     private final String name;
     private WorkflowState finishState;
-    private Date start;
-    private Date finish;
+    private Instant start;
+    private Instant finish;
     private final List<WorkflowStatistic> subStatistics = new LinkedList<>();
 
     private static final String LINEFEED = "\n";
@@ -54,7 +56,7 @@ public class WorkflowStatistic {
      * Marks the start time of the statistics.
      */
     public void start() {
-        start = new Date();
+        start = Instant.now();
     }
 
     /**
@@ -126,8 +128,19 @@ public class WorkflowStatistic {
      * Get the start date of the statistics.
      *
      * @return starting time as a Date.
+     * @deprecated Use {@link #getStartInstant()} instead
      */
+    @Deprecated(forRemoval = true)
     public Date getStart() {
+        return start != null ? Date.from(start) : null;
+    }
+
+    /**
+     * Get the start instant of the statistics.
+     *
+     * @return starting time as an Instant.
+     */
+    public Instant getStartInstant() {
         return start;
     }
 
@@ -135,8 +148,19 @@ public class WorkflowStatistic {
      * Get the finish date of the statistics.
      *
      * @return finish time as a Date.
+     * @deprecated Use {@link #getFinishInstant()} instead
      */
+    @Deprecated(forRemoval = true)
     public Date getFinish() {
+        return finish != null ? Date.from(finish) : null;
+    }
+
+    /**
+     * Get the finish instant of the statistics.
+     *
+     * @return finish time as an Instant.
+     */
+    public Instant getFinishInstant() {
         return finish;
     }
 
@@ -155,7 +179,7 @@ public class WorkflowStatistic {
      * @param finishState The state at which the workflow (or step) finished at
      */
     public void finish(WorkflowState finishState) {
-        this.finish = new Date();
+        this.finish = Instant.now();
         this.finishState = finishState;
     }
 
@@ -164,16 +188,16 @@ public class WorkflowStatistic {
     }
 
     /**
-     * @return The duration of the workflow if it has been started, else 0.
+     * @return The duration (millisecends) of the workflow if it has been started, else 0.
      */
     private long getDuration() {
         if (start == null) {
             return 0;
         }
-        if (getFinish() == null) {
-            return System.currentTimeMillis() - start.getTime();
+        if (getFinishInstant() == null) {
+            return System.currentTimeMillis() - start.toEpochMilli();
         } else {
-            return finish.getTime() - start.getTime();
+            return ChronoUnit.MILLIS.between(start, finish);
         }
     }
 

@@ -29,6 +29,7 @@ import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.integrityservice.statistics.StatisticsCollector;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -99,7 +100,8 @@ public interface IntegrityModel {
     IntegrityIssueIterator getFilesOnPillar(String pillarID, long firstIndex, long maxResults, String collectionID);
 
     /**
-     * An IntegrityIssueIterator for files with less than the expected number of copies, restricted by first index and max results.
+     * An IntegrityIssueIterator for files with less than the expected number of copies, restricted by first index
+     * and max results.
      *
      * @param collectionID   The ID of the collection to get missing files from
      * @param expectedCopies The number of expected copies.
@@ -127,30 +129,82 @@ public interface IntegrityModel {
      *
      * @param collectionID The collection in which to look for missing checksums
      * @param pillarID     The pillar on which to look for missing checksums
-     * @param cutoffDate   The latest date that the checksums should have been seen to not be considered missing
-     * @return The IntegrityIssueIterator of file ids for the files which exists but are missing their checksum at any pillar.
+     * @param cutoffDate   The latest date that the checksums should have been seen to not be considered missing.
+     *                     Not allowed to be null.
+     * @return The IntegrityIssueIterator of file ids for the files which exists but are missing their checksum at
+     * any pillar.
      */
-    IntegrityIssueIterator findFilesWithMissingChecksum(String collectionID, String pillarID, Date cutoffDate);
+    IntegrityIssueIterator findFilesWithMissingChecksum(String collectionID, String pillarID, Instant cutoffDate);
 
     /**
-     * Locates the id of all the files which are older than a given date.
+     * Locates the files which exists but are missing their checksum on a given pillar.
+     * Checksums are considered missing if they are not present (NULL in the database), or the checksum
+     * entry have not been updated since a given date.
      *
-     * @param date         The date for the checksum to be older than.
-     * @param pillarID     The pillar to get checksums from
-     * @param collectionID The collection to where the files belong
+     * @param collectionID The collection in which to look for missing checksums
+     * @param pillarID     The pillar on which to look for missing checksums
+     * @param cutoffDate   The latest date that the checksums should have been seen to not be considered missing.
+     *                     Not allowed to be null.
+     * @return The IntegrityIssueIterator of file ids for the files which exists but are missing their checksum at
+     * any pillar.
+     * @deprecated Use {@link #findFilesWithMissingChecksum(String, String, Instant)} instead
+     */
+    @Deprecated(forRemoval = true)
+    default IntegrityIssueIterator findFilesWithMissingChecksum(String collectionID, String pillarID, Date cutoffDate) {
+        return findFilesWithMissingChecksum(collectionID, pillarID, cutoffDate.toInstant());
+    }
+
+    /**
+     * Locates the id of all the files which are older than a given checksumAgeThreshold.
+     *
+     * @param checksumAgeThreshold The checksumAgeThreshold for the checksum to be older than. Not allowed to be null.
+     * @param pillarID             The pillar to get checksums from
+     * @param collectionID         The collection to where the files belong
      * @return The IntegrityIssueIterator of ids for the files which have an old checksum.
      */
-    IntegrityIssueIterator findChecksumsOlderThan(Date date, String pillarID, String collectionID);
+    IntegrityIssueIterator findChecksumsOlderThan(Instant checksumAgeThreshold, String pillarID, String collectionID);
+
+    /**
+     * Locates the id of all the files which are older than a given checksumAtLeastThatOld.
+     *
+     * @param checksumAtLeastThatOld The checksumAtLeastThatOld for the checksum to be older than.
+     *                               Not allowed to be null.
+     * @param pillarID               The pillar to get checksums from
+     * @param collectionID           The collection to where the files belong
+     * @return The IntegrityIssueIterator of ids for the files which have an old checksum.
+     * @deprecated Use {@link #findChecksumsOlderThan(Instant, String, String)} instead
+     */
+    @Deprecated(forRemoval = true)
+    default IntegrityIssueIterator findChecksumsOlderThan(Date checksumAtLeastThatOld, String pillarID,
+                                                          String collectionID) {
+        return findChecksumsOlderThan(checksumAtLeastThatOld.toInstant(), pillarID, collectionID);
+    }
 
     /**
      * Finds orphan files on a pillar in a given collection, i.e. files that no longer exists on the pillar
      *
      * @param collectionID The ID of the collection in which to find orphan files.
      * @param pillarID     The ID of the pillar on which to look for orphan files.
-     * @param cutoffDate   The date after which the file need to have been updated to not be considered orphan
+     * @param cutoffDate   The date after which the file need to have been updated to not be considered orphan.
+     *                     Not allowed to be null.
      * @return The list of orphan files
      */
-    IntegrityIssueIterator findOrphanFiles(String collectionID, String pillarID, Date cutoffDate);
+    IntegrityIssueIterator findOrphanFiles(String collectionID, String pillarID, Instant cutoffDate);
+
+    /**
+     * Finds orphan files on a pillar in a given collection, i.e. files that no longer exists on the pillar
+     *
+     * @param collectionID The ID of the collection in which to find orphan files.
+     * @param pillarID     The ID of the pillar on which to look for orphan files.
+     * @param cutoffDate   The date after which the file need to have been updated to not be considered orphan.
+     *                     Not allowed to be null.
+     * @return The list of orphan files
+     * @deprecated Use {@link #findOrphanFiles(String, String, Instant)} instead
+     */
+    @Deprecated(forRemoval = true)
+    default IntegrityIssueIterator findOrphanFiles(String collectionID, String pillarID, Date cutoffDate) {
+        return findOrphanFiles(collectionID, pillarID, cutoffDate.toInstant());
+    }
 
     /**
      * Retrieves the list of file ids for the files, where the pillars does not agree about the checksums.
@@ -162,12 +216,26 @@ public interface IntegrityModel {
 
     /**
      * Retrieves the date for the latest file entry for a given collection.
-     * E.g. the date for the latest file which has been positively identified as existing in the collection.
+     * E.g. the date for the latest file that has been positively identified as existing in the collection.
      *
      * @param collectionID The ID of the collection to look in
      * @return The requested date.
      */
-    Date getDateForNewestFileEntryForCollection(String collectionID);
+    Instant getDateForNewestFileEntryForCollectionInstant(String collectionID);
+
+    /**
+     * Retrieves the date for the latest file entry for a given collection.
+     * E.g. the date for the latest file that has been positively identified as existing in the collection.
+     *
+     * @param collectionID The ID of the collection to look in
+     * @return The requested date.
+     * @deprecated Use {@link #getDateForNewestFileEntryForCollectionInstant(String)} instead
+     */
+    @Deprecated(forRemoval = true)
+    default Date getDateForNewestFileEntryForCollection(String collectionID) {
+        Instant instant = getDateForNewestFileEntryForCollectionInstant(collectionID);
+        return instant != null ? Date.from(instant) : null;
+    }
 
     /**
      * Retrieves the date for the latest file entry for a given pillar.
@@ -177,7 +245,22 @@ public interface IntegrityModel {
      * @param collectionID The ID of the collection to look in
      * @return The requested date.
      */
-    Date getDateForNewestFileEntryForPillar(String pillarID, String collectionID);
+    Instant getDateForNewestFileEntryForPillarInstant(String pillarID, String collectionID);
+
+    /**
+     * Retrieves the date for the latest file entry for a given pillar.
+     * E.g. the date for the latest file which has been positively identified as existing on the given pillar.
+     *
+     * @param pillarID     The pillar whose latest file entry is requested.
+     * @param collectionID The ID of the collection to look in
+     * @return The requested date.
+     * @deprecated Use {@link #getDateForNewestFileEntryForPillarInstant(String, String)} instead
+     */
+    @Deprecated(forRemoval = true)
+    default Date getDateForNewestFileEntryForPillar(String pillarID, String collectionID) {
+        Instant instant = getDateForNewestFileEntryForPillarInstant(pillarID, collectionID);
+        return instant != null ? Date.from(instant) : null;
+    }
 
     /**
      * Retrieves the date for the latest checksum entry for a given pillar.
@@ -187,7 +270,22 @@ public interface IntegrityModel {
      * @param collectionID The ID of the collection to look in
      * @return The requested date.
      */
-    Date getDateForNewestChecksumEntryForPillar(String pillarID, String collectionID);
+    Instant getDateForNewestChecksumEntryForPillarInstant(String pillarID, String collectionID);
+
+    /**
+     * Retrieves the date for the latest checksum entry for a given pillar.
+     * E.g. the date for the latest checksum which has been positively identified as valid on the given pillar.
+     *
+     * @param pillarID     The pillar whose latest checksum entry is requested.
+     * @param collectionID The ID of the collection to look in
+     * @return The requested date.
+     * @deprecated Use {@link #getDateForNewestChecksumEntryForPillarInstant(String, String)} instead
+     */
+    @Deprecated(forRemoval = true)
+    default Date getDateForNewestChecksumEntryForPillar(String pillarID, String collectionID) {
+        Instant instant = getDateForNewestChecksumEntryForPillarInstant(pillarID, collectionID);
+        return instant != null ? Date.from(instant) : null;
+    }
 
     /**
      * Retrieves the accumulated size of the files in the given collection
@@ -243,7 +341,21 @@ public interface IntegrityModel {
      * @param fileID       The ID of the file
      * @return the earliest date a specific file on any pillar in a given collection.
      */
-    Date getEarliestFileDate(String collectionID, String fileID);
+    Instant getEarliestFileInstant(String collectionID, String fileID);
+
+    /**
+     * Get the earliest date a specific file on any pillar in a given collection.
+     *
+     * @param collectionID The ID of the collection
+     * @param fileID       The ID of the file
+     * @return the earliest date a specific file on any pillar in a given collection.
+     * @deprecated Use {@link #getEarliestFileInstant(String, String)} instead
+     */
+    @Deprecated(forRemoval = true)
+    default Date getEarliestFileDate(String collectionID, String fileID) {
+        Instant instant = getEarliestFileInstant(collectionID, fileID);
+        return instant != null ? Date.from(instant) : null;
+    }
 
     /**
      * Get the FileID at the specific index position.

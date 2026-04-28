@@ -157,7 +157,7 @@ public abstract class PillarIntegrationTest extends IntegrationTest {
                 try {
                     messageBus.close();
                 } catch (JMSException e) {
-                    e.printStackTrace();
+                    log.warn("Failed to close message bus", e);
                 }
                 messageBus = null;
             }
