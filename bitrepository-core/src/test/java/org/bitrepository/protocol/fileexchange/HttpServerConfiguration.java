@@ -30,6 +30,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Paths;
 
 /**
  * Configuration for {@link HttpServerConnector} objects. Pretty obsoleted as it only delegates to the
@@ -68,10 +69,16 @@ public class HttpServerConfiguration {
      */
     public URL getURL(String filename) throws MalformedURLException {
         try {
+            String path = getHttpServerPath() + "/" + filename;
+            String scheme = getProtocol().toLowerCase();
             if (getHttpServerName() == null) {
-                return new URI(getProtocol(), null, null, 0, getHttpServerPath() + "/" + filename, null, null).toURL();
+                String absolutePath = Paths.get(path).toAbsolutePath().normalize().toString().replace("\\", "/");
+                if (!absolutePath.startsWith("/")) {
+                    absolutePath = "/" + absolutePath;
+                }
+                return new URI(scheme, null, null, -1, absolutePath, null, null).toURL();
             }
-            return new URI(getProtocol(), null, getHttpServerName(), getPortNumber(), getHttpServerPath() + "/" + filename, null, null).toURL();
+            return new URI(scheme, null, getHttpServerName(), getPortNumber(), path, null, null).toURL();
         } catch (URISyntaxException e) {
             throw new MalformedURLException(e.getMessage());
         }

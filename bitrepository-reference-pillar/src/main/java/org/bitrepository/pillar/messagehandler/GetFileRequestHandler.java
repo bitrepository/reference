@@ -48,10 +48,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.util.UUID;
+import java.net.URI;
 
 public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest> {
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -131,9 +128,9 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
             }
 
             log.info("Uploading file '{}' to {}", message.getFileID(), fileAddress);
-            URL uploadUrl = new URL(fileAddress);
-            FileExchange fileExchange = FileExchangeResolver.getBasicFileExchangeFromURL(uploadUrl);
-            fileExchange.putFile(is, uploadUrl);
+            final URI uploadUri = URI.create(fileAddress);
+            FileExchange fileExchange = FileExchangeResolver.getBasicFileExchangeFromURL(uploadUri.toURL());
+            fileExchange.putFile(is, uploadUri.toURL());
         } catch (IOException e) {
             log.warn("The file '{}' from collection '{}' could not be uploaded at '{}' cause: '{}'",
                     message.getFileID(), message.getCollectionID(), fileAddress, e.getMessage());

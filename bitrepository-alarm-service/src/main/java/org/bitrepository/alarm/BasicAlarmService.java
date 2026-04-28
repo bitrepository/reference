@@ -35,7 +35,6 @@ import org.bitrepository.service.contributor.ContributorMediator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jms.JMSException;
 import java.util.Collection;
 import java.util.Date;
 
@@ -81,7 +80,7 @@ public class BasicAlarmService implements AlarmService {
         try {
             messageBus.close();
             // TODO Kill any lingering timer threads
-        } catch (JMSException e) {
+        } catch (jakarta.jms.JMSException e) {
             log.info("Error during shutdown of MessageBus ", e);
         }
     }

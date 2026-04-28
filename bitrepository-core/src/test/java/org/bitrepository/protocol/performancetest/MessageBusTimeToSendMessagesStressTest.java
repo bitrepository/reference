@@ -233,7 +233,7 @@ public class MessageBusTimeToSendMessagesStressTest {
             } finally {
                 try {
                     bus.close();
-                } catch (javax.jms.JMSException e) {
+                } catch (jakarta.jms.JMSException e) {
                     // ignore
                 }
             }
@@ -267,7 +267,7 @@ public class MessageBusTimeToSendMessagesStressTest {
             bus.removeListener(testQueue, this);
             try {
                 bus.close();
-            } catch (javax.jms.JMSException e) {
+            } catch (jakarta.jms.JMSException e) {
                 // ignore
             }
         }

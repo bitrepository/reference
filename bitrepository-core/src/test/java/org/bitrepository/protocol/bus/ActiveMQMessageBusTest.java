@@ -21,6 +21,8 @@
  */
 package org.bitrepository.protocol.bus;
 
+import jakarta.jms.Message;
+import jakarta.jms.MessageListener;
 import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
@@ -31,8 +33,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import javax.jms.Message;
-import javax.jms.MessageListener;
 import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -74,7 +74,7 @@ public class ActiveMQMessageBusTest extends GeneralMessageBusTest {
         IdentifyPillarsForDeleteFileRequest identifyRequest =
                 ExampleMessageFactory.createMessage(IdentifyPillarsForDeleteFileRequest.class);
         identifyRequest.setCollectionID(myCollectionID);
-        javax.jms.Message msg = rawMessagebus.createMessage(identifyRequest);
+        jakarta.jms.Message msg = rawMessagebus.createMessage(identifyRequest);
         rawMessagebus.addHeader(msg, identifyRequest.getClass().getSimpleName(), identifyRequest.getReplyTo(),
                 null,
                 identifyRequest.getCorrelationID());
@@ -135,7 +135,7 @@ public class ActiveMQMessageBusTest extends GeneralMessageBusTest {
         IdentifyPillarsForDeleteFileRequest identifyRequest =
                 ExampleMessageFactory.createMessage(IdentifyPillarsForDeleteFileRequest.class);
         identifyRequest.setDestination(settingsForTestClient.getCollectionDestination());
-        javax.jms.Message msg = rawMessagebus.createMessage(identifyRequest);
+        jakarta.jms.Message msg = rawMessagebus.createMessage(identifyRequest);
         rawMessagebus.addHeader(msg, identifyRequest.getClass().getSimpleName(), identifyRequest.getReplyTo(),
                 null,
                 identifyRequest.getCorrelationID());
@@ -159,7 +159,7 @@ public class ActiveMQMessageBusTest extends GeneralMessageBusTest {
         IdentifyPillarsForDeleteFileResponse identifyResponse =
                 ExampleMessageFactory.createMessage(IdentifyPillarsForDeleteFileResponse.class);
         identifyRequest.setDestination(settingsForTestClient.getCollectionDestination());
-        javax.jms.Message response = rawMessagebus.createMessage(identifyResponse);
+        jakarta.jms.Message response = rawMessagebus.createMessage(identifyResponse);
         rawMessagebus.addHeader(response, identifyResponse.getClass().getSimpleName(), identifyResponse.getReplyTo(),
                 null,
                 identifyRequest.getCorrelationID());
@@ -172,7 +172,7 @@ public class ActiveMQMessageBusTest extends GeneralMessageBusTest {
         DeleteFileRequest request =
                 ExampleMessageFactory.createMessage(DeleteFileRequest.class);
         request.setDestination(settingsForTestClient.getCollectionDestination());
-        javax.jms.Message rq = rawMessagebus.createMessage(request);
+        jakarta.jms.Message rq = rawMessagebus.createMessage(request);
         rawMessagebus.addHeader(rq, request.getClass().getSimpleName(), request.getReplyTo(),
                 null,
                 identifyRequest.getCorrelationID());

@@ -56,7 +56,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URL;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
@@ -234,13 +234,13 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
      * @throws IOException If something goes wrong.
      */
     private void uploadFile(File fileToUpload, String url) throws IOException {
-        URL uploadUrl = new URL(url);
+        final URI uploadUri = URI.create(url);
 
         // Upload the file.
         log.debug("Uploading file '{}' to {}", fileToUpload.getName(), url);
         try (InputStream in = new BufferedInputStream(new FileInputStream(fileToUpload))) {
-            FileExchange fileExchange = FileExchangeResolver.getBasicFileExchangeFromURL(uploadUrl);
-            fileExchange.putFile(in, uploadUrl);
+            FileExchange fileExchange = FileExchangeResolver.getBasicFileExchangeFromURL(uploadUri.toURL());
+            fileExchange.putFile(in, uploadUri.toURL());
         }
     }
 

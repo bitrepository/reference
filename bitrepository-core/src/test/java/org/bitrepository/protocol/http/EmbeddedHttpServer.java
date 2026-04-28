@@ -28,8 +28,8 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.DefaultHandler;
-import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.util.resource.ResourceFactory;
 
 import java.io.File;
 
@@ -55,16 +55,14 @@ public class EmbeddedHttpServer {
         server.addConnector(connector);
 
         ResourceHandler resource_handler = new ResourceHandler();
-        resource_handler.setDirectoriesListed(true);
+        resource_handler.setDirAllowed(true);
         resource_handler.setWelcomeFiles(new String[]{ "index.html" });
-
         File httpServerDir = new File("target/httpserver/dav/");
         httpServerDir.mkdirs();
 
-        resource_handler.setResourceBase(httpServerDir.getPath());
+        resource_handler.setBaseResource(ResourceFactory.root().newResource(httpServerDir.toPath()));
 
-        HandlerList handlers = new HandlerList();
-        handlers.setHandlers(new Handler[] { resource_handler, new DefaultHandler() });
+        Handler.Sequence handlers = new Handler.Sequence(resource_handler, new DefaultHandler());
         server.setHandler(handlers);
     }
 

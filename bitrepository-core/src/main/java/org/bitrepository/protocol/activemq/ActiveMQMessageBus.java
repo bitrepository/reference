@@ -24,6 +24,16 @@
  */
 package org.bitrepository.protocol.activemq;
 
+import jakarta.jms.Connection;
+import jakarta.jms.DeliveryMode;
+import jakarta.jms.Destination;
+import jakarta.jms.ExceptionListener;
+import jakarta.jms.JMSException;
+import jakarta.jms.MessageConsumer;
+import jakarta.jms.MessageProducer;
+import jakarta.jms.Session;
+import jakarta.jms.TextMessage;
+import jakarta.jms.Topic;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.util.ByteArrayInputStream;
 import org.bitrepository.bitrepositorymessages.Message;
@@ -56,16 +66,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-import javax.jms.Connection;
-import javax.jms.DeliveryMode;
-import javax.jms.Destination;
-import javax.jms.ExceptionListener;
-import javax.jms.JMSException;
-import javax.jms.MessageConsumer;
-import javax.jms.MessageProducer;
-import javax.jms.Session;
-import javax.jms.TextMessage;
-import javax.jms.Topic;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
@@ -416,7 +416,7 @@ public class ActiveMQMessageBus implements MessageBus {
      * <p>
      * This adapts from general Active MQ messages to the types.
      */
-    private class ActiveMQMessageListener implements javax.jms.MessageListener {
+    private class ActiveMQMessageListener implements jakarta.jms.MessageListener {
         /**
          * The Log.
          */
@@ -445,7 +445,7 @@ public class ActiveMQMessageBus implements MessageBus {
          * @param jmsMessage The message received.
          */
         @Override
-        public void onMessage(final javax.jms.Message jmsMessage) {
+        public void onMessage(final jakarta.jms.Message jmsMessage) {
             String type = null;
             String text = null;
             try {

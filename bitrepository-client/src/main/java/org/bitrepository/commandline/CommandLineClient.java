@@ -22,6 +22,7 @@
 
 package org.bitrepository.commandline;
 
+import jakarta.jms.JMSException;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.codec.DecoderException;
@@ -45,13 +46,15 @@ import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.referencesettings.ProtocolType;
 
-import javax.jms.JMSException;
 import java.io.File;
-import java.net.HttpURLConnection;import java.net.URL;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.util.List;
 import java.util.Locale;
+
 /**
  * Defines the common functionality for command-line-clients.
  */
@@ -341,13 +344,13 @@ public abstract class CommandLineClient {
             String urlArg = cmdHandler.getOptionValue(Constants.URL_ARG);
 
             try {
-                final URL url = new URL(urlArg);
+                final URI uri = URI.create(urlArg);
 
-                ProtocolType protocolType = ProtocolType.fromValue(url.getProtocol().toUpperCase(Locale.ROOT));
+                ProtocolType protocolType = ProtocolType.fromValue(uri.toURL().getProtocol().toUpperCase(Locale.ROOT));
                 if (protocolType != ProtocolType.FILE) {
                     // Test if URL can actually be opened to exit early
                     // - otherwise checksum pillars will still receive and store checksum.
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
                     int responseCode = connection.getResponseCode();
 
                     if (responseCode > 399) {
@@ -355,7 +358,7 @@ public abstract class CommandLineClient {
                     }
                 }
 
-                return url;
+                return uri.toURL();
             } catch (Exception e) {
                 throw new IllegalArgumentException("The URL argument is either empty or not a valid URL: " + urlArg, e);
             }

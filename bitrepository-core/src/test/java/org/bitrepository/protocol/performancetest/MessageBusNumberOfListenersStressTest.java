@@ -360,7 +360,7 @@ public class MessageBusNumberOfListenersStressTest {
             bus.removeListener(queueName, this);
             try {
                 bus.close();
-            } catch (javax.jms.JMSException e) {
+            } catch (jakarta.jms.JMSException e) {
                 // ignore
             }
         }
