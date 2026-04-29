@@ -28,7 +28,7 @@ import java.nio.file.Paths;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class LocalFileExchangeTest {
-    final static String BASE_FILE_EXCHANGE_DIR = "target/fileexchange/";
+    static final String BASE_FILE_EXCHANGE_DIR = "target/fileexchange/";
     private FileExchange exchange;
 
     @BeforeAll
@@ -107,7 +107,7 @@ class LocalFileExchangeTest {
     }
 
     @Test
-    public void putFileByStreamTest() throws IOException {
+    void putFileByStreamTest() throws IOException {
         String testFileName = "putFileByStreamTestFile";
         String testFileContent = "lorem ipsum2";
 
@@ -122,7 +122,7 @@ class LocalFileExchangeTest {
     }
 
     @Test
-    public void getFileByInputStreamTest() throws IOException {
+    void getFileByInputStreamTest() throws IOException {
         String testFileName = "getFileByInputStreamTestFile";
         String testFileContent = "lorem ipsum3";
         String testFileLocation = "target/" + testFileName;
@@ -136,7 +136,7 @@ class LocalFileExchangeTest {
     }
 
     @Test
-    public void getFileByOutputStreamTest() throws IOException {
+    void getFileByOutputStreamTest() throws IOException {
         String testFileName = "getFileByOutputStreamTestFile";
         String testFileContent = "lorem ipsum4";
         String testFileLocation = "target/" + testFileName;
@@ -151,7 +151,7 @@ class LocalFileExchangeTest {
     }
 
     @Test
-    public void getFileByAddressTest() throws IOException {
+    void getFileByAddressTest() throws IOException {
         String testFileName = "getFileByAddressTestFile";
         String testFileContent = "lorem ipsum5";
         String testFileLocation = "target/" + testFileName;
@@ -168,7 +168,7 @@ class LocalFileExchangeTest {
     }
 
     @Test
-    public void deleteFileTest() throws IOException, URISyntaxException {
+    void deleteFileTest() throws IOException, URISyntaxException {
         String testFileName = "putFileByStreamTestFile";
         String testFileContent = "lorem ipsum6";
 
