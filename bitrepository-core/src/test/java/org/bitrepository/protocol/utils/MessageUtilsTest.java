@@ -21,6 +21,7 @@
  */
 package org.bitrepository.protocol.utils;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
@@ -34,7 +35,7 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 class MessageUtilsTest {
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testPositiveIdentification() {
         addDescription("Tests isPositiveIdentifyResponse method in the message utility class.");
         MessageResponse response = new MessageResponse();
@@ -56,7 +57,7 @@ class MessageUtilsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testIdentificationResponse() {
         addDescription("Tests isIdentifyResponse method in the message utility class.");
         MessageResponse response = new MessageResponse();
@@ -74,7 +75,7 @@ class MessageUtilsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testProgressResponse() {
         addDescription("Tests isPositiveProgressResponse method in the message utility class.");
         MessageResponse response = new MessageResponse();

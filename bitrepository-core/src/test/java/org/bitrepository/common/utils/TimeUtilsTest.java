@@ -21,6 +21,7 @@
  */
 package org.bitrepository.common.utils;
 
+import org.bitrepository.TestGroups;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -44,7 +45,7 @@ class TimeUtilsTest {
     private static final ZonedDateTime BASE = Instant.EPOCH.atZone(ZoneOffset.UTC);
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void timeTester() {
         addDescription("Tests the TimeUtils. Pi days = 271433605 milliseconds");
         addStep("Test that milliseconds can be converted into human readable seconds",
@@ -81,7 +82,7 @@ class TimeUtilsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void printsHumanDuration() {
         Assertions.assertEquals("1y", TimeUtils.durationToHumanUsingEstimates(ChronoUnit.YEARS.getDuration()));
         Assertions.assertEquals("1m", TimeUtils.durationToHumanUsingEstimates(ChronoUnit.MONTHS.getDuration()));
@@ -98,7 +99,7 @@ class TimeUtilsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void zeroIntervalTest() {
         addDescription("Verifies that a 0 ms interval is represented correctly");
         addStep("Call millisecondsToHuman with 0 ms", "The output should be '0 ms'");
@@ -107,7 +108,7 @@ class TimeUtilsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void durationsPrintHumanly() {
         addDescription("Tests durationToHuman()");
 
@@ -131,7 +132,7 @@ class TimeUtilsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void differencesPrintHumanly() {
         addDescription("TimeUtils.humanDifference() should return" +
                 " similar human readable strings to those from millisecondsToHuman()");
@@ -176,7 +177,7 @@ class TimeUtilsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void differencesPrintsWithAppropriatePrecision() {
         // Include hours if months are 6 or less.
         testHumanDifference("11m", Period.ofMonths(11), Duration.ofHours(23));
@@ -222,7 +223,7 @@ class TimeUtilsTest {
      * api should be discontinued and the new Java Time api used instead.
      */
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void shortDateTest() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm", Locale.ROOT).withZone(ZoneId.systemDefault());
         Instant date = Instant.ofEpochMilli(1360069129256L);
@@ -231,7 +232,7 @@ class TimeUtilsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void rejectsNegativeDuration() {
         Assertions.assertThrows(IllegalArgumentException.class,
                 () -> TimeUtils.durationToCountAndTimeUnit(Duration.ofSeconds(Long.MIN_VALUE)));
@@ -240,7 +241,7 @@ class TimeUtilsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void convertsDurationToCountAndTimeUnit() {
         CountAndTimeUnit expectedZero = TimeUtils.durationToCountAndTimeUnit(Duration.ZERO);
         Assertions.assertEquals(0, expectedZero.getCount());

@@ -21,19 +21,27 @@
  */
 package org.bitrepository.protocol.performancetest;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
+import org.bitrepository.pillar.integration.ArtemisFixedPortContainer;
 import org.bitrepository.protocol.bus.MessageReceiver;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.testcontainers.activemq.ArtemisContainer;
+import org.testcontainers.containers.InternetProtocol;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.FileOutputStream;
 import java.nio.charset.StandardCharsets;
@@ -48,22 +56,31 @@ import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class MessageBusDelayTest {
+@Testcontainers
+@Disabled
+@Tag(TestGroups.STRESS_TEST)
+public class MessageBusDelayTest {
     private Settings settings;
     private SecurityManager securityManager;
     private static final int PERFORMANCE_COUNT = 1000;
     private static final int NUMBER_OF_TESTS = 100;
     private static final boolean WRITE_RESULTS_TO_DISC = true;
 
+    @Container
+    static ArtemisContainer activemqContainer = new ArtemisContainer("apache/artemis:2.55.0")
+                                                            .withEnv("ANONYMOUS_LOGIN","true");
+
     @BeforeAll
-    void setup() {
+    public void setup() {
         settings = TestSettingsProvider.reloadSettings(getClass().getSimpleName());
         securityManager = new DummySecurityManager();
+        settings.getRepositorySettings().getProtocolSettings().getMessageBusConfiguration()
+                .setURL(activemqContainer.getBrokerUrl());
     }
 
     @Test
-    @Tag("StressTest")
-    void testManyTimes() {
+    @Tag(TestGroups.STRESS_TEST)
+    public void testManyTimes() {
         for (int i = 0; i < NUMBER_OF_TESTS; i++) {
             try {
                 performStatisticalAnalysisOfMessageDelay();
@@ -79,27 +96,30 @@ class MessageBusDelayTest {
                 + "on the delay between the sending and the retrieval of the message.");
         addStep("Setup the variables and connections for the test.", "Should connect to the messagebus.");
         MessageBus messageBus = MessageBusManager.getMessageBus(settings, securityManager);
-        MessageReceiver destinationReceiver;
         String destination = "DelayPerformanceTestDestination-" + Instant.now().toEpochMilli();
-        destinationReceiver = new MessageReceiver("Performance test topic receiver");
-        messageBus.addListener(destination, destinationReceiver.getMessageListener());
+        List<Long> delayList;
+        try (MessageReceiver destinationReceiver = new MessageReceiver("Performance test topic receiver")) {
+            messageBus.addListener(destination, destinationReceiver.getMessageListener());
 
-        List<Long> delayList = new ArrayList<>(PERFORMANCE_COUNT);
-        AlarmMessage message = ExampleMessageFactory.createMessage(AlarmMessage.class);
-        message.setDestination(destination);
+            delayList = new ArrayList<>(PERFORMANCE_COUNT);
+            AlarmMessage message = ExampleMessageFactory.createMessage(AlarmMessage.class);
+            message.setDestination(destination);
 
-        addStep("Sending the message and calculating the time.", "Should be done '" + PERFORMANCE_COUNT + "' times.");
-        for (int i = 0; i < PERFORMANCE_COUNT; i++) {
-            Instant before = Instant.now();
-            messageBus.sendMessage(message);
-            AlarmMessage received = destinationReceiver.waitForMessage(AlarmMessage.class, 100, TimeUnit.SECONDS);
-            Instant after = Instant.now();
-            if (received == null) {
-                System.err.println("No message received within 100 seconds");
+            addStep("Sending the message and calculating the time.",
+                    "Should be done '" + PERFORMANCE_COUNT + "' times.");
+            for (int i = 0; i < PERFORMANCE_COUNT; i++) {
+                Instant before = Instant.now();
+                messageBus.sendMessage(message);
+                AlarmMessage received = destinationReceiver.waitForMessage(AlarmMessage.class, 100, TimeUnit.SECONDS,
+                                                                           message.getCorrelationID());
+                Instant after = Instant.now();
+                if (received == null) {
+                    System.err.println("No message received within 100 seconds");
+                }
+
+                long delay = MILLIS.between(before, after);
+                delayList.add(delay);
             }
-
-            long delay = MILLIS.between(before, after);
-            delayList.add(delay);
         }
 
         addStep("Perform the statistical analysis on the delay results.", "TODO !!!!");

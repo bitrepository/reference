@@ -35,12 +35,12 @@
     <ID>integrity-service</ID>
     <IntegrityDatabase>
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
-      <DatabaseURL>jdbc:derby:<!--foobarpattern-->target/database/integritydb</DatabaseURL>
+      <DatabaseURL>jdbc:derby:<!--foobarpattern-->target/database/integritydb;create=true</DatabaseURL>
     </IntegrityDatabase>
     <TimeBeforeMissingFileCheck>PT1H</TimeBeforeMissingFileCheck>
     <AuditTrailContributerDatabase>
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
-      <DatabaseURL>jdbc:derby:<!--foobarpattern-->target/database/auditcontributerdb</DatabaseURL>
+      <DatabaseURL>jdbc:derby:<!--foobarpattern-->target/database/auditcontributerdb;create=true</DatabaseURL>
     </AuditTrailContributerDatabase>
     <ObsoleteChecksumSettings>
       <DefaultMaxChecksumAge>P30D</DefaultMaxChecksumAge>

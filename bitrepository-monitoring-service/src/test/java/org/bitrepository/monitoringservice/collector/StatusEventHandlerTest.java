@@ -21,6 +21,7 @@
  */
 package org.bitrepository.monitoringservice.collector;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.access.getstatus.conversation.StatusCompleteContributorEvent;
 import org.bitrepository.client.eventhandler.AbstractOperationEvent;
 import org.bitrepository.client.eventhandler.CompleteEvent;
@@ -42,7 +43,7 @@ public class StatusEventHandlerTest {
     public static final String TEST_COLLECTION = "collection1";
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testStatusEventHandler() throws Exception {
         addDescription("Test the GetStatusEventHandler handling of events");
         addStep("Setup", "");
@@ -57,8 +58,7 @@ public class StatusEventHandlerTest {
         Assertions.assertEquals(0, alerter.getCallsForCheckStatuses());
 
         addStep("Test an unhandled event.", "Should not make any calls.");
-        AbstractOperationEvent event = new DefaultEvent(TEST_COLLECTION);
-        event.setEventType(OperationEvent.OperationEventType.WARNING);
+        AbstractOperationEvent event = new DefaultEvent(OperationEvent.OperationEventType.WARNING, TEST_COLLECTION);
         eventHandler.handleEvent(event);
 
         Assertions.assertEquals(0, store.getCallsForGetStatusMap());

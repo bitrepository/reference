@@ -21,6 +21,7 @@
  */
 package org.bitrepository.protocol.security;
 
+import org.bitrepository.TestGroups;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerId;
@@ -49,7 +50,7 @@ class PermissionStoreTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void positiveCertificateRetrievalTest() throws Exception {
         addDescription("Tests that a certificate can be retrieved based on the correct signerId.");
         addStep("Create signer to lookup certificate", "No exceptions");
@@ -65,7 +66,7 @@ class PermissionStoreTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void negativeCertificateRetrievalTest() throws Exception {
         addDescription("Tests that a certificate cannot be retrieved based on the wrong signerId.");
         addStep("Create signer and modify its ID so lookup will fail", "No exceptions");
@@ -85,19 +86,19 @@ class PermissionStoreTest {
     }
 
     //@Test
-//    @Tag("regressiontest"})
+//    @Tag(TestGroups.REGRESSIONTEST})
     public void certificatePermissionCheckTest() {
         addDescription("Tests that a certificate only allows for the expected permission.");
     }
 
     //@Test
-//    @Tag("regressiontest"})
+//    @Tag(TestGroups.REGRESSIONTEST})
     public void unknownCertificatePermissionCheckTest() {
         addDescription("Tests that a unknown certificate results in expected refusal.");
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void certificateFingerprintTest() throws Exception {
         addDescription("Tests that a certificate fingerprint can correctly be retrieved for a signer.");
         addFixture("Create signer to lookup fingerprint");

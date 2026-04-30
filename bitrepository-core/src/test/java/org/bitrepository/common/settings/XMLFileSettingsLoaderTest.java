@@ -24,6 +24,7 @@
  */
 package org.bitrepository.common.settings;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.settings.repositorysettings.RepositorySettings;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
@@ -33,7 +34,7 @@ class XMLFileSettingsLoaderTest{
     private static final String PATH_TO_SETTINGS = "settings/xml/bitrepository-devel";
     
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testCollectionSettingsLoading() throws Exception {
         SettingsLoader settingsLoader = new XMLFileSettingsLoader(PATH_TO_SETTINGS);
         

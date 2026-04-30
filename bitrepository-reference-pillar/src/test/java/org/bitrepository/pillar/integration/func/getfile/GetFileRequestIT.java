@@ -11,7 +11,7 @@ import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.PillarTestGroups;
-import org.bitrepository.pillar.integration.func.PillarFunctionTest;
+import org.bitrepository.pillar.integration.func.PillarFunctionIT;
 import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-class GetFileRequestIT extends PillarFunctionTest {
+class GetFileRequestIT extends PillarFunctionIT {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     protected GetFileMessageFactory msgFactory;
     protected URL testFileURL = null;
@@ -77,10 +77,10 @@ class GetFileRequestIT extends PillarFunctionTest {
                         "<li>'ResponseInfo.ResponseCode' element should be OPERATION_COMPLETED</li>" +
                         "</ol>");
 
-        GetFileRequest getRequest = (GetFileRequest) createRequest();
+        GetFileRequest getRequest = createRequest();
         messageBus.sendMessage(getRequest);
 
-        GetFileFinalResponse finalResponse = (GetFileFinalResponse) receiveResponse();
+        GetFileFinalResponse finalResponse = receiveResponse(getRequest);
         Assertions.assertNotNull(finalResponse);
         Assertions.assertEquals(getRequest.getCorrelationID(), finalResponse.getCorrelationID(),
                 "Received unexpected " +
@@ -123,7 +123,7 @@ class GetFileRequestIT extends PillarFunctionTest {
         addStep("Send a getFile request to " + testConfiguration.getPillarUnderTestID() + " with a specified " +
                         "FilePart",
                 "The pillar should send a final response with the FilePart element for the supplied file");
-        GetFileRequest getRequest = (GetFileRequest) createRequest();
+        GetFileRequest getRequest = createRequest();
 
         final int offsetAndLength = 5;
         FilePart filePart = new FilePart();
@@ -132,7 +132,7 @@ class GetFileRequestIT extends PillarFunctionTest {
         getRequest.setFilePart(filePart);
         messageBus.sendMessage(getRequest);
 
-        GetFileFinalResponse finalResponse = (GetFileFinalResponse) receiveResponse();
+        GetFileFinalResponse finalResponse = receiveResponse(getRequest);
         Assertions.assertEquals(getRequest.getFilePart(), finalResponse.getFilePart(),
                 "Received unexpected 'FilePart' element.");
 
@@ -154,11 +154,11 @@ class GetFileRequestIT extends PillarFunctionTest {
         addStep("Send a getFile request to " + testConfiguration.getPillarUnderTestID() + " with a " +
                 "non-existing fileID", "The pillar should send a failure response");
 
-        GetFileRequest getRequest = (GetFileRequest) createRequest();
+        GetFileRequest getRequest = createRequest();
         getRequest.setFileID("NonExistingFile");
         messageBus.sendMessage(getRequest);
 
-        GetFileFinalResponse finalResponse = (GetFileFinalResponse) receiveResponse();
+        GetFileFinalResponse finalResponse = receiveResponse(getRequest);
         Assertions.assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE, finalResponse.getResponseInfo().getResponseCode(),
                 "Received unexpected 'ResponseCode' element.");
     }
@@ -169,11 +169,11 @@ class GetFileRequestIT extends PillarFunctionTest {
         addDescription("Verifies the a missing collectionID in the request is rejected");
         addStep("Sending a request without a collectionID.",
                 "The pillar should send a REQUEST_NOT_UNDERSTOOD_FAILURE Response.");
-        MessageRequest request = createRequest();
+        GetFileRequest request = createRequest();
         request.setCollectionID(null);
         messageBus.sendMessage(request);
 
-        MessageResponse receivedResponse = receiveResponse();
+        MessageResponse receivedResponse = receiveResponse(request);
         Assertions.assertEquals(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE,
                 receivedResponse.getResponseInfo().getResponseCode());
     }
@@ -188,16 +188,16 @@ class GetFileRequestIT extends PillarFunctionTest {
         MessageRequest request = createRequest();
         request.setCollectionID(nonDefaultCollectionId);
         messageBus.sendMessage(request);
-        assertPositivResponseIsReceived();
+        assertPositivResponseIsReceived(request);
     }
 
-    protected MessageRequest createRequest() {
+    protected GetFileRequest createRequest() {
         return msgFactory.createGetFileRequest(testFileURL.toExternalForm(), defaultFileId);
     }
 
-    protected MessageResponse receiveResponse() {
+    protected GetFileFinalResponse receiveResponse(final MessageRequest request) {
         return clientReceiver.waitForMessage(GetFileFinalResponse.class, getOperationTimeout(),
-                TimeUnit.SECONDS);
+                TimeUnit.SECONDS, request.getCorrelationID());
     }
 
     protected void assertNoResponseIsReceived() {
@@ -213,8 +213,8 @@ class GetFileRequestIT extends PillarFunctionTest {
         return clientReceiver.waitForMessage(IdentifyPillarsForGetFileResponse.class).getReplyTo();
     }
 
-    protected void assertPositivResponseIsReceived() {
-        MessageResponse receivedResponse = receiveResponse();
+    protected void assertPositivResponseIsReceived(final MessageRequest request) {
+        MessageResponse receivedResponse = receiveResponse(request);
         Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, receivedResponse.getResponseInfo().getResponseCode());
     }
 }

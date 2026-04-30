@@ -21,6 +21,7 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.getfileids.conversation.FileIDsCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
@@ -62,7 +63,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
     public static final String TEST_FILE_1 = "test-file-1";
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testPositiveReply() throws WorkflowAbortedException {
         addDescription("Test the step for updating the file ids can handle COMPLETE operation event.");
         doAnswer(new Answer() {
@@ -88,7 +89,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
     }
     
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testAbortWorkflowWhenNegativeReply() {
         addDescription("Test the step for updating the file ids will throw an WorkflowAbortedException"
                 + "when AbortOnFailedContributor is set to true and a FAILED event is received.");
@@ -127,7 +128,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testRetryCollectionWhenNegativeReply() throws WorkflowAbortedException {
         addDescription("Test the step for updating the file ids will retry on a FAILED event");
         final ResultingFileIDs resultingFileIDs = createResultingFileIDs(TEST_FILE_1);
@@ -172,7 +173,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
     }
     
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testContinueWorkflowWhenNegativeReply() throws WorkflowAbortedException {
         addDescription("Test the step for updating the file ids will continue when getting an FAILED operation event"
                 + " when AbortOnFailedContributor is set to false");
@@ -206,7 +207,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
     
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testIngestOfResults() throws WorkflowAbortedException {
         addDescription("Test the step for updating the file ids can ingest the data correctly into the store.");
         final ResultingFileIDs resultingFileIDs = createResultingFileIDs(TEST_FILE_1);
@@ -235,7 +236,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
 
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testPartialResults() throws WorkflowAbortedException {
         addDescription("Test that the number of partial is used for generating more than one request.");
         final ResultingFileIDs resultingFileIDs = createResultingFileIDs(TEST_FILE_1);

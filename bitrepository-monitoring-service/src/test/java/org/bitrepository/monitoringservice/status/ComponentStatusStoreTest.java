@@ -21,6 +21,7 @@
  */
 package org.bitrepository.monitoringservice.status;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.bitrepositoryelements.ResultingStatus;
 import org.bitrepository.bitrepositoryelements.StatusCode;
 import org.bitrepository.bitrepositoryelements.StatusInfo;
@@ -50,7 +51,7 @@ class ComponentStatusStoreTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testComponentStatus() throws Exception {
         addDescription("Tests the compontent status");
         addStep("Setup", "");

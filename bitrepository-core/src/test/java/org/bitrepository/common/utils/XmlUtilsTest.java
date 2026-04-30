@@ -1,5 +1,6 @@
 package org.bitrepository.common.utils;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositoryelements.TimeMeasureUnit;
 import org.junit.jupiter.api.Assertions;
@@ -25,7 +26,7 @@ class XmlUtilsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void negativeDurationIsRejected() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             XmlUtils.validateNonNegative(factory.newDuration("-PT0.00001S"));
@@ -33,7 +34,7 @@ class XmlUtilsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testXmlDurationToDuration() {
         addDescription("Tests xmlDurationToDuration in sunshine scenario cases");
 
@@ -78,7 +79,7 @@ class XmlUtilsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testNegativeXmlDurationToDuration() {
         // WorkflowInterval may be negative (meaning don’t run automatically)
         addDescription("Tests that xmlDurationToDuration() accepts a negative duration and converts it correctly");
@@ -107,7 +108,7 @@ class XmlUtilsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void tooManyDecimalsAreRejected() {
         Assertions.assertThrows(ArithmeticException.class, () -> {
             addDescription("Tests that xmlDurationToDuration() rejects more than 9 decimals on seconds");
@@ -117,7 +118,7 @@ class XmlUtilsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testXmlDurationToMilliseconds() {
         addDescription("Tests xmlDurationToMilliseconds in sunshine scenario cases");
         addStep("Test correct and precise conversion",
@@ -132,13 +133,13 @@ class XmlUtilsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testNegativeXmlDurationToMilliseconds() {
         Assertions.assertEquals(-1000, XmlUtils.xmlDurationToMilliseconds(factory.newDuration("-PT1S")));
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void convertsToTimeMeasure() {
         TimeMeasureTYPE shortTimeMeasure = XmlUtils.xmlDurationToTimeMeasure(factory.newDuration(1));
         Assertions.assertEquals(TimeMeasureUnit.MILLISECONDS, shortTimeMeasure.getTimeMeasureUnit());

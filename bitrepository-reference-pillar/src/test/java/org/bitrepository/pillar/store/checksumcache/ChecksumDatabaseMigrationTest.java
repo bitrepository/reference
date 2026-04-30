@@ -21,6 +21,7 @@
  */
 package org.bitrepository.pillar.store.checksumcache;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.FileUtils;
@@ -83,7 +84,7 @@ class ChecksumDatabaseMigrationTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("pillartest")
     void testMigratingChecksumDatabaseFromV1ToV2() throws Exception {
         addDescription("Tests that the checksums table can be migrated from version 1 to 2, " +
@@ -123,7 +124,7 @@ class ChecksumDatabaseMigrationTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("pillartest")
     void testMigratingChecksumDatabaseFromV3ToV4() throws Exception {
         addDescription("Tests that the checksums table can be migrated from version 3 to 4, " +

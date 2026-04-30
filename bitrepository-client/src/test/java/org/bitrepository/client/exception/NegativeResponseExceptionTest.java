@@ -21,6 +21,7 @@
  */
 package org.bitrepository.client.exception;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.client.exceptions.NegativeResponseException;
 import org.junit.jupiter.api.Assertions;
@@ -33,7 +34,7 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 class NegativeResponseExceptionTest {
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testNegativeResponse() {
         addDescription("Test the instantiation of the exception");
         addStep("Setup", "");

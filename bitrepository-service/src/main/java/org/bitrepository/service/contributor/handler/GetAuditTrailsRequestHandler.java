@@ -22,6 +22,8 @@
 package org.bitrepository.service.contributor.handler;
 
 import java.io.ByteArrayInputStream;
+
+import jakarta.xml.bind.JAXBException;
 import org.bitrepository.bitrepositorydata.GetAuditTrailsResults;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
@@ -45,7 +47,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

@@ -22,6 +22,7 @@
 package org.bitrepository.integrityservice.workflow.step;
 
 import org.apache.commons.codec.DecoderException;
+import org.bitrepository.TestGroups;
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
@@ -52,9 +53,11 @@ import java.util.List;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+import static org.mockito.AdditionalMatchers.or;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -68,15 +71,13 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
     public static final String DEFAULT_CHECKSUM = "0123456789";
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testPositiveReply() throws WorkflowAbortedException {
         addDescription("Test the step for updating the checksums can handle COMPLETE operation event.");
-        doAnswer(new Answer() {
-            public Void answer(InvocationOnMock invocation) {
-                EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
-                eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
-                return null;
-            }
+        doAnswer(invocation -> {
+            EventHandler eventHandler = invocation.getArgument(6, EventHandler.class);
+            eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
+            return null;
         }).when(collector).getChecksums(
                 eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class), any(),
                 anyString(), any(ContributorQuery[].class), any(EventHandler.class));
@@ -93,17 +94,15 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testAbortWorkflowWhenNegativeReply() {
         addDescription("Test the step for updating the checksums will abort the workflow in case "
-                + "of FAILURE operation event and AbortOnFailedContributor = true .");
-        doAnswer(new Answer() {
-            public Void answer(InvocationOnMock invocation) {
-                EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
-                eventHandler.handleEvent(new ContributorFailedEvent(TEST_PILLAR_1, TEST_COLLECTION, ResponseCode.FAILURE));
-                eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "Problem encountered", null));
-                return null;
-            }
+               + "of FAILURE operation event and AbortOnFailedContributor = true .");
+        doAnswer(invocation -> {
+            EventHandler eventHandler = invocation.getArgument(6, EventHandler.class);
+            eventHandler.handleEvent(new ContributorFailedEvent(TEST_PILLAR_1, TEST_COLLECTION, ResponseCode.FAILURE));
+            eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "Problem encountered", null));
+            return null;
         }).when(collector).getChecksums(
                 eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class), any(),
                 anyString(), any(ContributorQuery[].class), any(EventHandler.class));
@@ -129,7 +128,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testRetryCollectionWhenNegativeReply() throws WorkflowAbortedException {
         addDescription("Test the step for updating the file ids will retry on a FAILED event");
 
@@ -138,7 +137,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
             boolean firstAnswer = true;
 
             public Void answer(InvocationOnMock invocation) {
-                EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
+                EventHandler eventHandler = invocation.getArgument(6, EventHandler.class);
                 if (firstAnswer) {
                     firstAnswer = false;
                     eventHandler.handleEvent(new ContributorFailedEvent(TEST_PILLAR_1, TEST_COLLECTION, ResponseCode.FAILURE));
@@ -174,13 +173,13 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testContinueWorkflowNegativeReply() throws WorkflowAbortedException {
         addDescription("Test the step for updating the checksums will continue the workflow in case "
                 + "of FAILURE operation event and AbortOnFailedContributor = false .");
         doAnswer(new Answer() {
             public Void answer(InvocationOnMock invocation) {
-                EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
+                EventHandler eventHandler = invocation.getArgument(6, EventHandler.class);
                 eventHandler.handleEvent(new ContributorFailedEvent(TEST_PILLAR_1, TEST_COLLECTION, ResponseCode.FAILURE));
                 eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "Problem encountered", null));
                 return null;
@@ -206,19 +205,17 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testIngestOfResults() throws WorkflowAbortedException {
         addDescription("Test the step for updating the checksums delivers the results to the integrity model.");
         final ResultingChecksums resultingChecksums = createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1);
-        doAnswer(new Answer() {
-            public Void answer(InvocationOnMock invocation) {
-                EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
-                eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, List.of(TEST_PILLAR_1)));
-                eventHandler.handleEvent(new ChecksumsCompletePillarEvent(TEST_PILLAR_1, TEST_COLLECTION,
-                        resultingChecksums, createChecksumSpecTYPE(), false));
-                eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
-                return null;
-            }
+        doAnswer(invocation -> {
+            EventHandler eventHandler = invocation.getArgument(6, EventHandler.class);
+            eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, List.of(TEST_PILLAR_1)));
+            eventHandler.handleEvent(new ChecksumsCompletePillarEvent(TEST_PILLAR_1, TEST_COLLECTION,
+                      resultingChecksums, createChecksumSpecTYPE(), false));
+            eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
+            return null;
         }).when(collector).getChecksums(
                 eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class), any(),
                 anyString(), any(ContributorQuery[].class), any(EventHandler.class));
@@ -238,19 +235,17 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testCallForChangingChecksumStates() throws WorkflowAbortedException {
         addDescription("Test the step for updating the checksums delivers the results to the integrity model.");
         final ResultingChecksums resultingChecksums = createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1);
-        doAnswer(new Answer() {
-            public Void answer(InvocationOnMock invocation) {
-                EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
-                eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, List.of(TEST_PILLAR_1)));
-                eventHandler.handleEvent(new ChecksumsCompletePillarEvent(TEST_PILLAR_1, TEST_COLLECTION,
-                        resultingChecksums, createChecksumSpecTYPE(), false));
-                eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
-                return null;
-            }
+        doAnswer(invocation -> {
+            EventHandler eventHandler = invocation.getArgument(6, EventHandler.class);
+            eventHandler.handleEvent(new IdentificationCompleteEvent(TEST_COLLECTION, List.of(TEST_PILLAR_1)));
+            eventHandler.handleEvent(new ChecksumsCompletePillarEvent(TEST_PILLAR_1, TEST_COLLECTION,
+                      resultingChecksums, createChecksumSpecTYPE(), false));
+            eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
+            return null;
         }).when(collector).getChecksums(
                 eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class), any(),
                 anyString(), any(ContributorQuery[].class), any(EventHandler.class));
@@ -269,7 +264,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testPartialResults() throws WorkflowAbortedException {
         addDescription("Test that the number of partial is used for generating more than one request.");
         final ResultingChecksums resultingChecksums = createResultingChecksums(DEFAULT_CHECKSUM, TEST_FILE_1);
@@ -309,21 +304,18 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testFullChecksumCollection() throws WorkflowAbortedException {
         addDescription("Test that the full list of checksums is requested.");
 
-        doAnswer(new Answer() {
-            public Void answer(InvocationOnMock invocation) {
-                EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
-                eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
-                return null;
-            }
+        doAnswer(invocation -> {
+            invocation.getArgument(6, EventHandler.class).handleEvent(new CompleteEvent(TEST_COLLECTION, null));
+            return null;
         }).when(collector).getChecksums(
                 eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class), any(),
                 anyString(), any(ContributorQuery[].class), any(EventHandler.class));
 
-        when(model.getDateForNewestChecksumEntryForPillarInstant(anyString(), anyString())).thenReturn(Instant.EPOCH);
+        when(model.getDateForNewestChecksumEntryForPillarInstant(anyString(), anyString())).thenReturn(Instant.MIN);
         when(integrityContributors.getActiveContributors())
                 .thenReturn(new HashSet<>(List.of(TEST_PILLAR_1))).thenReturn(new HashSet<>());
 
@@ -332,24 +324,22 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         step.performStep();
 
         ContributorQuery[] expectedContributorQueries =
-                makeFullQueries(settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID());
+                makeFullQueries(settings.getRepositorySettings().getCollections().getCollection().getFirst().getPillarIDs().getPillarID());
 
         verify(collector).getChecksums(eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class),
-                any(), anyString(), eq(expectedContributorQueries), any(EventHandler.class));
+                any(), or(anyString(),isNull()), eq(expectedContributorQueries), any(EventHandler.class));
         verifyNoMoreInteractions(alerter);
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testIncrementalChecksumCollection() throws WorkflowAbortedException {
         addDescription("Test that only the list of new checksums is requested.");
 
-        doAnswer(new Answer() {
-            public Void answer(InvocationOnMock invocation) {
-                EventHandler eventHandler = (EventHandler) invocation.getArguments()[6];
-                eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
-                return null;
-            }
+        doAnswer(invocation -> {
+            EventHandler eventHandler = invocation.getArgument(6, EventHandler.class);
+            eventHandler.handleEvent(new CompleteEvent(TEST_COLLECTION, null));
+            return null;
         }).when(collector).getChecksums(
                 eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class), any(),
                 anyString(), any(ContributorQuery[].class), any(EventHandler.class));
@@ -362,7 +352,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
         step.performStep();
 
         ContributorQuery[] expectedContributorQueries =
-                makeQueries(settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID(), model);
+                makeQueries(settings.getRepositorySettings().getCollections().getCollection().getFirst().getPillarIDs().getPillarID(), model);
 
         verify(collector).getChecksums(eq(TEST_COLLECTION), any(), any(ChecksumSpecTYPE.class),
                 any(), anyString(), eq(expectedContributorQueries), any(EventHandler.class));
@@ -372,7 +362,7 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
     private ContributorQuery[] makeFullQueries(List<String> pillars) {
         List<ContributorQuery> res = new ArrayList<>();
         for (String pillar : pillars) {
-            Instant latestChecksumDate = null;
+            Instant latestChecksumDate = Instant.MIN;
             res.add(new ContributorQuery(pillar, latestChecksumDate, null, SettingsUtils.DEFAULT_MAX_CLIENT_PAGE_SIZE));
         }
 
@@ -390,15 +380,15 @@ public class UpdateChecksumsStepTest extends WorkflowstepTest {
     }
 
 
-    private ResultingChecksums createResultingChecksums(String checksum, String... fileids) {
+    private ResultingChecksums createResultingChecksums(String checksum, String... fileIDs) {
         ResultingChecksums res = new ResultingChecksums();
-        res.getChecksumDataItems().addAll(createChecksumData(checksum, fileids));
+        res.getChecksumDataItems().addAll(createChecksumData(checksum, fileIDs));
         return res;
     }
 
-    private List<ChecksumDataForChecksumSpecTYPE> createChecksumData(String checksum, String... fileids) {
+    private List<ChecksumDataForChecksumSpecTYPE> createChecksumData(String checksum, String... fileIDs) {
         List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<>();
-        for (String fileID : fileids) {
+        for (String fileID : fileIDs) {
             ChecksumDataForChecksumSpecTYPE csData = new ChecksumDataForChecksumSpecTYPE();
             csData.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(Instant.now()));
             try {

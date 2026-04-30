@@ -32,7 +32,7 @@ import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.PillarTestGroups;
-import org.bitrepository.pillar.integration.func.DefaultPillarOperationTest;
+import org.bitrepository.pillar.integration.func.DefaultPillarOperationIT;
 import org.bitrepository.pillar.messagefactories.PutFileMessageFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,7 +44,7 @@ import java.util.concurrent.TimeUnit;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-class PutFileRequestIT extends DefaultPillarOperationTest {
+class PutFileRequestIT extends DefaultPillarOperationIT {
     protected PutFileMessageFactory msgFactory;
     private String pillarDestination;
 
@@ -78,7 +78,7 @@ class PutFileRequestIT extends DefaultPillarOperationTest {
                 DEFAULT_FILE_SIZE);
         messageBus.sendMessage(putRequest);
 
-        PutFileFinalResponse finalResponse = (PutFileFinalResponse) receiveResponse();
+        PutFileFinalResponse finalResponse = receiveResponse(putRequest);
         Assertions.assertNotNull(finalResponse);
         Assertions.assertEquals(putRequest.getCorrelationID(), finalResponse.getCorrelationID(),
                 "Received unexpected 'CorrelationID' element.");
@@ -117,7 +117,7 @@ class PutFileRequestIT extends DefaultPillarOperationTest {
         putRequest.setChecksumRequestForNewFile(ChecksumUtils.getDefault(settingsForTestClient));
         messageBus.sendMessage(putRequest);
 
-        PutFileFinalResponse finalResponse = (PutFileFinalResponse) receiveResponse();
+        PutFileFinalResponse finalResponse = receiveResponse(putRequest);
         Assertions.assertArrayEquals(TestFileHelper.getDefaultFileChecksum().getChecksumValue(),
                 finalResponse.getChecksumDataForNewFile().getChecksumValue(),
                 "Return MD5 checksum was not equals to checksum for default file.");
@@ -142,11 +142,11 @@ class PutFileRequestIT extends DefaultPillarOperationTest {
                         "<li>'FileAddress' element corresponding to the supplied FileAddress</li>" +
                         "<li>'ResponseInfo.ResponseCode' element should be OPERATION_ACCEPTED_PROGRESS</li>" +
                         "</ol>");
-        PutFileRequest putRequest = (PutFileRequest) createRequest();
+        PutFileRequest putRequest = createRequest();
         messageBus.sendMessage(putRequest);
 
         PutFileProgressResponse progressResponse = clientReceiver.waitForMessage(PutFileProgressResponse.class,
-                getOperationTimeout(), TimeUnit.SECONDS);
+                getOperationTimeout(), TimeUnit.SECONDS, putRequest.getCorrelationID());
         Assertions.assertNotNull(progressResponse);
         Assertions.assertEquals(putRequest.getCorrelationID(), progressResponse.getCorrelationID(),
                 "Received unexpected 'CorrelationID' element.");
@@ -170,15 +170,15 @@ class PutFileRequestIT extends DefaultPillarOperationTest {
     }
 
     @Override
-    protected MessageRequest createRequest() {
+    protected PutFileRequest createRequest() {
         return msgFactory.createPutFileRequest(TestFileHelper.getDefaultFileChecksum(), null,
                 defaultDownloadFileAddress, nonDefaultFileId, DEFAULT_FILE_SIZE);
     }
 
     @Override
-    protected MessageResponse receiveResponse() {
+    protected PutFileFinalResponse receiveResponse(MessageRequest request) {
         return clientReceiver.waitForMessage(PutFileFinalResponse.class, getOperationTimeout(),
-                TimeUnit.SECONDS);
+                TimeUnit.SECONDS, request.getCorrelationID());
     }
 
     protected void assertNoResponseIsReceived() {

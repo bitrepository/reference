@@ -21,6 +21,7 @@
  */
 package org.bitrepository.protocol.security;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
 import org.bitrepository.common.settings.Settings;
@@ -80,7 +81,7 @@ class SecurityManagerTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void operationAuthorizationBehaviourTest() throws Exception {
         addDescription("Tests that a signature only allows the correct requests.");
 
@@ -125,7 +126,7 @@ class SecurityManagerTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void certificateAuthorizationBehaviourTest() throws Exception {
         addDescription("Tests that a certificate is only allowed by registered users (component).");
         addStep("Check that the registered component is allowed.",
@@ -152,7 +153,7 @@ class SecurityManagerTest {
 
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void positiveSigningAuthenticationRoundtripTest() throws Exception {
         addDescription("Tests that a roundtrip of signing a request and afterwards authenticating is succeeds.");
         addStep("Sign a chunk of data.", "Data is signed successfully");
@@ -178,7 +179,7 @@ class SecurityManagerTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void negativeSigningAuthenticationRoundtripUnkonwnCertificateTest() throws Exception {
         addDescription("Tests that a roundtrip of signing a request and afterwards authenticating it fails due to " +
                 "a unknown certificate.");
@@ -205,7 +206,7 @@ class SecurityManagerTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void negativeSigningAuthenticationRoundtripBadDataTest() throws Exception {
         addDescription("Tests that a roundtrip of signing a request and afterwards authenticating it fails " +
                 "due to bad data");

@@ -42,9 +42,7 @@ public class CompleteEvent extends AbstractOperationEvent {
      *                         the operation.
      */
     public CompleteEvent(String collectionID, List<ContributorEvent> componentResults) {
-        super();
-        setCollectionID(collectionID);
-        setEventType(OperationEventType.COMPLETE);
+        super(OperationEventType.COMPLETE, collectionID, null);
         this.componentResults = componentResults;
     }
 

@@ -21,6 +21,7 @@
  */
 package org.bitrepository.protocol.utils;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.common.utils.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -48,7 +49,7 @@ class ConfigLoaderTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testLoadingConfig() throws Exception {
         addDescription("Test the loading of a configuration file for the config loader.");
         addStep("Setup variables", "");

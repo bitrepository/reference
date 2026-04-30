@@ -22,6 +22,7 @@
 package org.bitrepository.integrityservice.workflow;
 
 import org.apache.commons.codec.DecoderException;
+import org.bitrepository.TestGroups;
 import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -96,7 +97,7 @@ class SaltedChecksumWorkflowTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testNoFilesInCollection() {
         addDescription("Test that the workflow does nothing, when it has no files in the collection.");
@@ -121,7 +122,7 @@ class SaltedChecksumWorkflowTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testSuccess() {
         addDescription("Test that the workflow works when both pillars deliver the same checksum.");
@@ -163,7 +164,7 @@ class SaltedChecksumWorkflowTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testOneComponentFailureAndTwoOtherAgreeOnChecksum() {
         addDescription("Test that the workflow works when both pillars deliver the same checksum.");
@@ -182,7 +183,9 @@ class SaltedChecksumWorkflowTest {
             eventHandler.handleEvent(e1);
             eventHandler.handleEvent(e2);
             eventHandler.handleEvent(e3);
-            eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "COMPONENT FAILED", Arrays.asList(e1, e2, e3)));
+            eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION,
+                                                              "COMPONENT FAILED", Arrays.asList(e1, e2, e3)
+            ));
             return null;
         }).when(collector).getChecksums(anyString(), any(), any(), anyString(), anyString(), any(), any(EventHandler.class));
 
@@ -208,7 +211,7 @@ class SaltedChecksumWorkflowTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testOneComponentFailureAndTwoOtherDisagreeOnChecksum() throws Exception {
         addDescription("Test that the workflow works when both pillars deliver the same checksum.");
@@ -228,8 +231,9 @@ class SaltedChecksumWorkflowTest {
             eventHandler.handleEvent(e1);
             eventHandler.handleEvent(e2);
             eventHandler.handleEvent(e3);
-            eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION, "COMPONENT FAILED",
-                    Arrays.asList(e1, e2, e3)));
+            eventHandler.handleEvent(new OperationFailedEvent(TEST_COLLECTION,
+                                                              "COMPONENT FAILED", Arrays.asList(e1, e2, e3)
+            ));
             return null;
         }).when(collector).getChecksums(anyString(), any(), any(), anyString(), anyString(), any(), any(EventHandler.class));
 
@@ -256,7 +260,7 @@ class SaltedChecksumWorkflowTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testInconsistentChecksums() {
         addDescription("Test that the workflow discovers and handles inconsistent checksums");
@@ -302,7 +306,7 @@ class SaltedChecksumWorkflowTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testNoReceivedChecksums() {
         addDescription("Test that the workflow handles the case, when no checksums are received");

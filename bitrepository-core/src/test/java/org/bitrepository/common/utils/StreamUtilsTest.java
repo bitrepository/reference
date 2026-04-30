@@ -22,6 +22,8 @@
 package org.bitrepository.common.utils;
 
 import java.io.ByteArrayInputStream;
+
+import org.bitrepository.TestGroups;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -37,7 +39,7 @@ class StreamUtilsTest {
     String DATA = "The data for the streams.";
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void streamTester() throws Exception {
         addDescription("Tests the SteamUtils class.");
         addStep("Setup variables", "");

@@ -25,6 +25,7 @@
 package org.bitrepository.integrityservice.cache;
 
 import org.apache.commons.codec.DecoderException;
+import org.bitrepository.TestGroups;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
@@ -62,9 +63,7 @@ class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     String TEST_COLLECTIONID;
 
     @BeforeEach
-    @Override
     public void setup() throws Exception {
-        super.setup();
         TEST_COLLECTIONID = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
         auditManager = Mockito.mock(AuditTrailManager.class);
     }
@@ -81,9 +80,9 @@ class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
-    @Tag("integritytest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
+    @Tag(INTEGRITYTEST)
     void instantiationTest() {
         addDescription("Tests that the connection can be instantaited.");
         IntegrityDatabase integrityCache = new IntegrityDatabase(settings);
@@ -91,9 +90,9 @@ class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
-    @Tag("integritytest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
+    @Tag(INTEGRITYTEST)
     void initialStateExtractionTest() {
         addDescription("Tests the initial state of the IntegrityModel. Should not contain any data.");
         IntegrityModel model = new IntegrityDatabase(settings);
@@ -133,9 +132,9 @@ class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
-    @Tag("integritytest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
+    @Tag(INTEGRITYTEST)
     void testIngestOfFileIDsData() {
         addDescription("Tests the ingesting of file ids data");
         IntegrityModel model = new IntegrityDatabase(settings);
@@ -160,9 +159,9 @@ class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
-    @Tag("integritytest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
+    @Tag(INTEGRITYTEST)
     void testIngestOfChecksumsData() {
         addDescription("Tests the ingesting of checksums data");
         IntegrityModel model = new IntegrityDatabase(settings);
@@ -185,9 +184,9 @@ class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
-    @Tag("integritytest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
+    @Tag(INTEGRITYTEST)
     void testDeletingEntry() {
         addDescription("Tests the deletion of an FileID entry.");
         IntegrityModel model = new IntegrityDatabase(settings);

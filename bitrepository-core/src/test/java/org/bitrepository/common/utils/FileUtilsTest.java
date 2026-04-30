@@ -22,6 +22,8 @@
 package org.bitrepository.common.utils;
 
 import java.io.ByteArrayInputStream;
+
+import org.bitrepository.TestGroups;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,7 +60,7 @@ class FileUtilsTest {    String DIR = "test-directory";
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void createDirectoryTester() throws Exception {
         addDescription("Test the ability to create directories.");
         addStep("Test the ability to create a directory", "Should be created by utility.");
@@ -83,7 +85,7 @@ class FileUtilsTest {    String DIR = "test-directory";
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void createSubDirectoryTester() throws Exception {
         addDescription("Test the ability to create sub directories.");
         addStep("Test the ability to create sub-directories", "Should be created by utility");
@@ -122,7 +124,7 @@ class FileUtilsTest {    String DIR = "test-directory";
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void createDeleteDirectoryTester() throws Exception {
         addDescription("Test the ability to delete directories.");
         addStep("Test deleting a directory with file and subdirectory",
@@ -142,7 +144,7 @@ class FileUtilsTest {    String DIR = "test-directory";
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void deprecateFileTester() throws Exception {
         addDescription("Test the deprecation of a file.");
         addStep("Setup", "");
@@ -160,7 +162,7 @@ class FileUtilsTest {    String DIR = "test-directory";
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void moveFileTester() throws Exception {
         addDescription("Test the moving of a file.");
         addStep("Setup", "");
@@ -179,7 +181,7 @@ class FileUtilsTest {    String DIR = "test-directory";
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void writeInputstreamTester() throws Exception {
         addDescription("Test writing an inputstream to a file.");
         addStep("Setup", "");
@@ -196,7 +198,7 @@ class FileUtilsTest {    String DIR = "test-directory";
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void unzipFileTester() throws Exception {
         addDescription("Test unzipping a file.");
         addStep("Setup", "");
@@ -212,7 +214,7 @@ class FileUtilsTest {    String DIR = "test-directory";
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void cleanupEmptyDirectoriesTester() throws Exception {
         addDescription("Test the cleanup of empty directories.");
         File dir = FileUtils.retrieveDirectory(directory);

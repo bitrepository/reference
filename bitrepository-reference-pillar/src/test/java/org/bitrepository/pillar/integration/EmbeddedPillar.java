@@ -62,7 +62,7 @@ public class EmbeddedPillar implements LifeCycledService {
     }
 
     private static MessageBus initialize(Settings pillarSettings) {
-        ReferencePillarDerbyDBTestUtils dbUtils = new ReferencePillarDerbyDBTestUtils(pillarSettings);
+        ReferencePillarDBTestUtils dbUtils = new ReferencePillarDBTestUtils(pillarSettings);
         dbUtils.createEmptyDatabases();
         for (CollectionDirs collectionDir : pillarSettings.getReferenceSettings().getPillarSettings().getCollectionDirs()) {
             for (String dir : collectionDir.getFileDirs() ) {

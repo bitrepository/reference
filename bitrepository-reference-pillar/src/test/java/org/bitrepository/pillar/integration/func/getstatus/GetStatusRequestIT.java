@@ -29,7 +29,7 @@ import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyContributorsForGetStatusResponse;
 import org.bitrepository.pillar.PillarTestGroups;
-import org.bitrepository.pillar.integration.func.PillarFunctionTest;
+import org.bitrepository.pillar.integration.func.PillarFunctionIT;
 import org.bitrepository.pillar.messagefactories.GetStatusMessageFactory;
 import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.junit.jupiter.api.Assertions;
@@ -40,7 +40,7 @@ import org.junit.jupiter.api.Test;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-class GetStatusRequestIT extends PillarFunctionTest {
+class GetStatusRequestIT extends PillarFunctionIT {
     protected GetStatusMessageFactory msgFactory;
     private String pillarDestination;
 

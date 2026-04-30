@@ -21,6 +21,7 @@
  */
 package org.bitrepository.integrityservice.workflow;
 
+import org.bitrepository.TestGroups;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -34,7 +35,7 @@ class IntegrityContributorsTest {
     private final static String PILLAR2 = "pillar2";
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testConstructor() {
         IntegrityContributors ic = new IntegrityContributors(Arrays.asList(PILLAR1, PILLAR2), 3);
         Set<String> activeContributors = ic.getActiveContributors();
@@ -45,7 +46,7 @@ class IntegrityContributorsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testFailContributor() {
         IntegrityContributors ic = new IntegrityContributors(Arrays.asList(PILLAR1, PILLAR2), 1);
         ic.failContributor(PILLAR1);
@@ -55,7 +56,7 @@ class IntegrityContributorsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testRetry() {
         IntegrityContributors ic = new IntegrityContributors(Arrays.asList(PILLAR1, PILLAR2), 3);
         ic.failContributor(PILLAR1);
@@ -70,7 +71,7 @@ class IntegrityContributorsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testSucceed() {
         IntegrityContributors ic = new IntegrityContributors(Arrays.asList(PILLAR1, PILLAR2), 2);
         ic.failContributor(PILLAR1);
@@ -85,7 +86,7 @@ class IntegrityContributorsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testFinishContributor() {
         IntegrityContributors ic = new IntegrityContributors(Arrays.asList(PILLAR1, PILLAR2), 3);
         ic.finishContributor(PILLAR1);
@@ -95,7 +96,7 @@ class IntegrityContributorsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testReloadContributors() {
         IntegrityContributors ic = new IntegrityContributors(Arrays.asList(PILLAR1, PILLAR2), 1);
         ic.finishContributor(PILLAR1);

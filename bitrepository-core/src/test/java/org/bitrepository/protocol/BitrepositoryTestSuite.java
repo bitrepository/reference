@@ -1,5 +1,6 @@
 package org.bitrepository.protocol;
 
+import org.bitrepository.TestGroups;
 import org.junit.platform.suite.api.IncludeTags;
 import org.junit.platform.suite.api.SelectPackages;
 import org.junit.platform.suite.api.Suite;
@@ -10,7 +11,7 @@ import org.junit.platform.suite.api.Suite;
  */
 @Suite
 @SelectPackages("org.bitrepository.protocol")
-@IncludeTags("regressiontest")
+@IncludeTags(TestGroups.REGRESSIONTEST)
 public class BitrepositoryTestSuite {
     // No need for methods here; this just groups and extends
 }

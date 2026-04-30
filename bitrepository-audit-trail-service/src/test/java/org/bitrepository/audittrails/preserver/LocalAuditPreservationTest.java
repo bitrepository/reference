@@ -21,6 +21,7 @@
  */
 package org.bitrepository.audittrails.preserver;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.audittrails.store.AuditEventIterator;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
@@ -144,7 +145,7 @@ class LocalAuditPreservationTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @SuppressWarnings("rawtypes")
     void auditPreservationIngestTest() throws Exception {
         addDescription("Tests the ingest of the audit trail preservation.");

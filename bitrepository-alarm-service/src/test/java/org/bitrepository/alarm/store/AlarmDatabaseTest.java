@@ -21,24 +21,25 @@
  */
 package org.bitrepository.alarm.store;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
-import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.testcontainers.containers.BindMode;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 
-import java.io.File;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -50,7 +51,7 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 /**
  * Sees if alarms are correctly stored in the database.
  */
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Testcontainers
 class AlarmDatabaseTest {
     /**
      * The settings for the tests. Should be instantiated in the setup.
@@ -62,19 +63,23 @@ class AlarmDatabaseTest {
     String collection1 = "collection1";
     String collection2 = "collection2";
     String DATABASE_NAME = "alarmservicedb";
-    String DATABASE_DIRECTORY = "test-data";
-    String DATABASE_URL = "jdbc:derby:" + DATABASE_DIRECTORY + "/" + DATABASE_NAME;
-    File dbDir = null;
 
-    @BeforeAll
+    @Container
+    PostgreSQLContainer postgreSQLContainer =
+            new PostgreSQLContainer("postgres:18-alpine")
+                    .withDatabaseName(DATABASE_NAME)
+                    .withClasspathResourceMapping("sql/postgres/alarmServiceDBCreation.sql",
+                                                  "/docker-entrypoint-initdb.d/init.sql",
+                                                  BindMode.READ_ONLY);
+
+    @BeforeEach
     void setup() {
         settings = TestSettingsProvider.reloadSettings("AlarmDatabaseUnderTest");
-
-        DerbyDatabaseDestroyer.deleteDatabase(
-                settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase());
-
-        AlarmDatabaseCreator integrityDatabaseCreator = new AlarmDatabaseCreator();
-        integrityDatabaseCreator.createAlarmDatabase(settings, null);
+        var alarmServiceDatabaseSettings = settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase();
+        alarmServiceDatabaseSettings.setDatabaseURL(postgreSQLContainer.getJdbcUrl());
+        alarmServiceDatabaseSettings.setUsername(postgreSQLContainer.getUsername());
+        alarmServiceDatabaseSettings.setPassword(postgreSQLContainer.getPassword());
+        alarmServiceDatabaseSettings.setDriverClass(postgreSQLContainer.getDriverClassName());
     }
 
     @AfterEach
@@ -86,16 +91,13 @@ class AlarmDatabaseTest {
     }
 
     @AfterAll
-    void shutdown() {
+    static void shutdown() {
         addStep("Cleanup after test.", "Should remove directory with test material.");
-        if (dbDir != null) {
-            FileUtils.delete(dbDir);
-        }
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
     void AlarmDatabaseExtractionTest() {
         addDescription("Testing the connection to the alarm service database especially with regards to "
                 + "extracting the data from it.");
@@ -204,8 +206,8 @@ class AlarmDatabaseTest {
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
     void AlarmDatabaseLargeIngestionTest() {
         addDescription("Testing the ingestion of a large texts into the database");
         addStep("Setup and create alarm", "");
@@ -238,8 +240,8 @@ class AlarmDatabaseTest {
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
     void alarmDatabaseCorrectTimestampTest() {
         addDescription("Testing the correct ingest and extraction of alarm dates");
         AlarmDAOFactory alarmDAOFactory = new AlarmDAOFactory();

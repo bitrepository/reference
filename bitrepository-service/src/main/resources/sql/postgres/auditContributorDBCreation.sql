@@ -29,15 +29,15 @@
 --              of the tables, especially when upgrading.
 -- Expected entry count: only those in this script.
 --**************************************************************************--
-CREATE TABLE tableversions (
+CREATE TABLE IF NOT EXISTS tableversions (
     tablename VARCHAR(100) NOT NULL, -- Name of table
     version INT NOT NULL             -- version of table
 );
 
-insert into tableversions ( tablename, version ) values ( 'audit', 5);
-insert into tableversions ( tablename, version ) values ( 'file', 2);
-insert into tableversions ( tablename, version ) values ( 'actor', 1);
-insert into tableversions ( tablename, version ) values ( 'auditcontributordb', 5);
+insert into tableversions ( tablename, version ) values ( 'audit', 5) on conflict do nothing;
+insert into tableversions ( tablename, version ) values ( 'file', 2) on conflict do nothing;
+insert into tableversions ( tablename, version ) values ( 'actor', 1) on conflict do nothing;
+insert into tableversions ( tablename, version ) values ( 'auditcontributordb', 5) on conflict do nothing;
 
 --*************************************************************************--
 -- Name:     file
@@ -45,13 +45,13 @@ insert into tableversions ( tablename, version ) values ( 'auditcontributordb', 
 -- Purpose:  Keeps track of the different file ids. 
 -- Expected entry count: A lot. Though not as many as 'audittrail'.
 --*************************************************************************--
-CREATE TABLE file (
+CREATE TABLE IF NOT EXISTS file (
     file_guid SERIAL PRIMARY KEY,   -- The guid for the file id.
     fileid VARCHAR(255),            -- The actual file id.
     collectionid VARCHAR(255)       -- The collection for the file id.
 );
 
-CREATE INDEX fileindex ON file ( fileid, collectionid );
+CREATE INDEX IF NOT EXISTS fileindex ON file ( fileid, collectionid );
 
 --*************************************************************************--
 -- Name:     actor
@@ -59,12 +59,12 @@ CREATE INDEX fileindex ON file ( fileid, collectionid );
 -- Purpose:  Keeps track of the different actors.
 -- Expected entry count: Some, though not many.
 --*************************************************************************--
-CREATE TABLE actor (
+CREATE TABLE IF NOT EXISTS actor (
     actor_guid SERIAL PRIMARY KEY,  -- The guid for the actor.
     actor_name VARCHAR(255) UNIQUE  -- The name of the actor.
 );
 
-CREATE INDEX actorindex ON actor ( actor_name );
+CREATE INDEX IF NOT EXISTS actorindex ON actor ( actor_name );
 
 --*************************************************************************--
 -- Name:     audittrail
@@ -74,7 +74,7 @@ CREATE INDEX actorindex ON actor ( actor_name );
 -- Purpose:  Keeps track of the different audits.
 -- Expected entry count: Very, very many.
 --*************************************************************************--
-CREATE TABLE audittrail (
+CREATE TABLE IF NOT EXISTS audittrail (
     sequence_number SERIAL PRIMARY KEY,
                                     -- The sequence number and unique key for this table.
     file_guid INT,                  -- The identifier for the file. Used to lookup in the file table.
@@ -92,5 +92,5 @@ CREATE TABLE audittrail (
                                     -- Foreign key constraint for enforcing relationship
 );
 
-CREATE INDEX dateindex ON audittrail ( operation_date );
-CREATE INDEX fileidindex ON audittrail ( file_guid );
+CREATE INDEX IF NOT EXISTS dateindex ON audittrail ( operation_date );
+CREATE INDEX IF NOT EXISTS fileidindex ON audittrail ( file_guid );

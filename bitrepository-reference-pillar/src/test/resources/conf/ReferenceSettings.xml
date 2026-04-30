@@ -46,18 +46,22 @@
         <MaxAgeForChecksums>P1D</MaxAgeForChecksums>
         <RecalculateOldChecksumsInterval>PT1H</RecalculateOldChecksumsInterval>
         <AuditTrailContributerDatabase>
-            <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
-            <DatabaseURL>jdbc:derby:target/reference1pillar/auditcontributerdb</DatabaseURL>
+            <DriverClass>org.postgresql.Driver</DriverClass>
+            <DatabaseURL>jdbc:postgresql://localhost:65432/auditcontributerdb</DatabaseURL>
+            <Username>testcontainerUser</Username>
+            <Password>testcontainerPassword</Password>
         </AuditTrailContributerDatabase>
         <ChecksumDatabase>
-            <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
-            <DatabaseURL>jdbc:derby:target/reference1pillar/checksumdb</DatabaseURL>
+            <DriverClass>org.postgresql.Driver</DriverClass>
+            <DatabaseURL>jdbc:postgresql://localhost:54321/checksumdb</DatabaseURL>
+            <Username>testcontainerUser</Username>
+            <Password>testcontainerPassword</Password>
         </ChecksumDatabase>
         <AlarmLevel>ERROR</AlarmLevel>
         <VerifyDataConsistencyOnMessage>true</VerifyDataConsistencyOnMessage>
     </PillarSettings>
     <FileExchangeSettings>
         <ProtocolType>FILE</ProtocolType>
-        <Path>src/test/resources</Path>
+        <Path>target/fileexchange</Path>
     </FileExchangeSettings>
 </ReferenceSettings>

@@ -20,4 +20,4 @@
 -- #L%
 ---
 ALTER TABLE checksums RENAME COLUMN calculationdate2 TO calculationdate;
-CREATE INDEX calculationindex ON checksums ( calculationdate );
+CREATE INDEX IF NOT EXISTS calculationindex ON checksums ( calculationdate );

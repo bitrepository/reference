@@ -21,6 +21,7 @@
  */
 package org.bitrepository.protocol.messagebus;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.PutFileRequest;
@@ -46,7 +47,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 class ReceivedMessageHandlerTest {
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void singleMessageDispatch() {
         addDescription("Tests that a single message is dispatched correctly");
         ReceivedMessageHandler handler = new ReceivedMessageHandler(null);
@@ -58,7 +59,7 @@ class ReceivedMessageHandlerTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void parallelMessageDispatch() {
         addDescription("Tests that two messages can be handled in parallel in the default pool configuration.");
         addFixture("Create a ReceivedMessageHandler with a null configuration. This should create a " +
@@ -83,7 +84,7 @@ class ReceivedMessageHandlerTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void manyMessageDispatch() {
         addDescription("Tests that many (50) messages can be handled in parallel in the default pool configuration.");
         addFixture("Create a ReceivedMessageHandler with a null configuration. This should create a " +
@@ -112,7 +113,7 @@ class ReceivedMessageHandlerTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void singleThreadMessageDispatch() {
         addDescription("Tests that two messages will be handled in sequence if a singleThreaded pool is configured.");
         addFixture("Create a ReceivedMessageHandler with a single pool of size 1.");
@@ -135,7 +136,7 @@ class ReceivedMessageHandlerTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void specificMessagePools() {
         addDescription("Tests that different message types can be handled by different executors.");
         addFixture("Create a ReceivedMessageHandler with a two pools, " +
@@ -170,7 +171,7 @@ class ReceivedMessageHandlerTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void specificMessageNamePoolAndDefaultPool() {
         addDescription("Tests it is possible to specify a pool for a specific message type, with a " +
                 "default pool for the remainder.");
@@ -204,7 +205,7 @@ class ReceivedMessageHandlerTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void specificMessageCategoryPoolAndDefaultPool() {
         addDescription("Tests it is possible to specify a pool for a specific message category, with a " +
                 "default pool for the remainder.");
@@ -237,7 +238,7 @@ class ReceivedMessageHandlerTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void specificCollectionPoolAndDefaultPool() {
         addDescription("Tests it is possible to specify a pool for a specific collection, with a " +
                 "default pool for the remainder.");
@@ -279,7 +280,7 @@ class ReceivedMessageHandlerTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void specificCollectionPoolWithSpecificMessageTypePool() {
         addDescription("Tests it is possible to specify a pool for a specific collection for only a specific" +
                 "message type.");

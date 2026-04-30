@@ -21,6 +21,7 @@
  */
 package org.bitrepository.service.exception;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.junit.jupiter.api.Assertions;
@@ -38,7 +39,7 @@ class InvalidMessageExceptionTest {
     private final String TEST_COLLECTION_ID = "test-collection-id";
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testIdentifyContributor() throws Exception {
         addDescription("Test the instantiation of the exception");
         addStep("Setup", "");
