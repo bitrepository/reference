@@ -24,6 +24,7 @@
  */
 package org.bitrepository.alarm;
 
+import jakarta.jms.JMSException;
 import org.bitrepository.alarm.handling.AlarmHandler;
 import org.bitrepository.alarm.handling.AlarmMediator;
 import org.bitrepository.alarm.store.AlarmStore;
@@ -80,7 +81,7 @@ public class BasicAlarmService implements AlarmService {
         try {
             messageBus.close();
             // TODO Kill any lingering timer threads
-        } catch (jakarta.jms.JMSException e) {
+        } catch (JMSException e) {
             log.info("Error during shutdown of MessageBus ", e);
         }
     }
