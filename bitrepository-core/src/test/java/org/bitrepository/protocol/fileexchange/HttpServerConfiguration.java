@@ -45,7 +45,7 @@ public class HttpServerConfiguration {
     }
 
     /**
-     * Prefix to use when working with files on the http server. The prefix is used to distinguish between different 
+     * Prefix to use when working with files on the http server. The prefix is used to distinguish between different
      * users/processes working with the server in parallel
      */
     public String getProtocol() {
@@ -70,16 +70,18 @@ public class HttpServerConfiguration {
      */
     public URL getURL(String filename) throws MalformedURLException {
         try {
-            String path = getHttpServerPath() + "/" + filename;
             String scheme = getProtocol().toLowerCase(Locale.ROOT);
-            if (getHttpServerName() == null) {
-                String absolutePath = Paths.get(path).toAbsolutePath().normalize().toString().replace("\\", "/");
-                if (!absolutePath.startsWith("/")) {
-                    absolutePath = "/" + absolutePath;
-                }
+            String serverName = getHttpServerName();
+            String serverPath = getHttpServerPath() == null ? "" : getHttpServerPath();
+
+            if (serverName == null) {
+                String absolutePath = Paths.get(serverPath, filename).toAbsolutePath().normalize().toUri().getPath();
                 return new URI(scheme, null, null, -1, absolutePath, null, null).toURL();
             }
-            return new URI(scheme, null, getHttpServerName(), getPortNumber(), path, null, null).toURL();
+
+            // For remote URLs, paths must always use forward slashes
+            String path = serverPath + "/" + filename;
+            return new URI(scheme, null, serverName, getPortNumber(), path, null, null).toURL();
         } catch (URISyntaxException e) {
             throw new MalformedURLException(e.getMessage());
         }

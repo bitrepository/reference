@@ -52,6 +52,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 
@@ -174,11 +175,11 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
         log.debug("Creating audit trail file and uploading it.");
         try {
             File fileToUpload = createAuditTrailFile(message, extractedAuditTrails);
-            URI uploadUri = new URI(message.getResultAddress());
+            URL uploadUrl = new URI(message.getResultAddress()).toURL();
 
-            log.debug("Uploading file '{}' to {}", fileToUpload.getName(), uploadUri.toURL().toExternalForm());
-            FileExchange fileExchange = FileExchangeResolver.getBasicFileExchangeFromURL(uploadUri.toURL());
-            fileExchange.putFile(new FileInputStream(fileToUpload), uploadUri.toURL());
+            log.debug("Uploading file '{}' to {}", fileToUpload.getName(), uploadUrl.toExternalForm());
+            FileExchange fileExchange = FileExchangeResolver.getBasicFileExchangeFromURL(uploadUrl);
+            fileExchange.putFile(new FileInputStream(fileToUpload), uploadUrl);
         } catch (Exception e) {
             throw new InvalidMessageException(ResponseCode.FILE_TRANSFER_FAILURE,
                     "Could not handle the creation and upload of the results due to: " + e.getMessage(), e);
