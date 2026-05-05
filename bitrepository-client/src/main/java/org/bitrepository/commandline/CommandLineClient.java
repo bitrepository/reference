@@ -344,13 +344,11 @@ public abstract class CommandLineClient {
             String urlArg = cmdHandler.getOptionValue(Constants.URL_ARG);
 
             try {
-                final URI uri = URI.create(urlArg);
+                final URL url = new URI(urlArg).toURL();
 
-                ProtocolType protocolType = ProtocolType.fromValue(uri.toURL().getProtocol().toUpperCase(Locale.ROOT));
+                ProtocolType protocolType = ProtocolType.fromValue(url.getProtocol().toUpperCase(Locale.ROOT));
                 if (protocolType != ProtocolType.FILE) {
-                    // Test if URL can actually be opened to exit early
-                    // - otherwise checksum pillars will still receive and store checksum.
-                    HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                     int responseCode = connection.getResponseCode();
 
                     if (responseCode > 399) {
@@ -358,7 +356,7 @@ public abstract class CommandLineClient {
                     }
                 }
 
-                return uri.toURL();
+                return url;
             } catch (Exception e) {
                 throw new IllegalArgumentException("The URL argument is either empty or not a valid URL: " + urlArg, e);
             }

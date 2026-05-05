@@ -31,6 +31,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
+import java.util.Locale;
 
 /**
  * Configuration for {@link HttpServerConnector} objects. Pretty obsoleted as it only delegates to the
@@ -70,7 +71,7 @@ public class HttpServerConfiguration {
     public URL getURL(String filename) throws MalformedURLException {
         try {
             String path = getHttpServerPath() + "/" + filename;
-            String scheme = getProtocol().toLowerCase();
+            String scheme = getProtocol().toLowerCase(Locale.ROOT);
             if (getHttpServerName() == null) {
                 String absolutePath = Paths.get(path).toAbsolutePath().normalize().toString().replace("\\", "/");
                 if (!absolutePath.startsWith("/")) {

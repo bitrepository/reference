@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import java.net.URI;
 import java.net.URL;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
@@ -60,7 +61,7 @@ public class GetFileStepTest extends WorkflowstepTest {
                 eq(TEST_COLLECTION), eq(TEST_FILE_1), any(URL.class), any(EventHandler.class), anyString());
 
         IntegrityWorkflowContext context = new IntegrityWorkflowContext(settings, collector, model, alerter, auditManager);
-        URL uploadUrl = new URL("http://localhost/dav/test.txt");
+        URL uploadUrl = new URI("http://localhost/dav/test.txt").toURL();
         GetFileStep step = new GetFileStep(context, TEST_COLLECTION, TEST_FILE_1, uploadUrl);
 
         step.performStep();
@@ -87,7 +88,7 @@ public class GetFileStepTest extends WorkflowstepTest {
 
             IntegrityWorkflowContext context =
                     new IntegrityWorkflowContext(settings, collector, model, alerter, auditManager);
-            URL uploadUrl = new URL("http://localhost/dav/test.txt");
+            URL uploadUrl = new URI("http://localhost/dav/test.txt").toURL();
             GetFileStep step = new GetFileStep(context, TEST_COLLECTION, TEST_FILE_1, uploadUrl);
 
             step.performStep();

@@ -35,6 +35,7 @@ import org.bitrepository.modify.putfile.PutFileClient;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import java.net.URI;
 import java.net.URL;
 import java.util.List;
 
@@ -141,7 +142,7 @@ public class IntegrityInformationCollectorTest {
         addDescription("Tests that the collector calls the GetFileClient");
         addStep("Define variables", "No errors");
         String auditTrailInformation = "audit trail for this test";
-        URL uploadUrl = new URL("http://localhost:80/dav/test.txt");
+        URL uploadUrl = new URI("http://localhost:80/dav/test.txt").toURL();
 
         addStep("Setup a GetFileClient for test purpose.", "Should be OK.");
         GetFileClient getFileClient = mock(GetFileClient.class);
@@ -173,7 +174,7 @@ public class IntegrityInformationCollectorTest {
         addDescription("Tests that the collector calls the PutFileClient");
         addStep("Define variables", "No errors");
         String auditTrailInformation = "audit trail for this test";
-        URL uploadUrl = new URL("http://localhost:80/dav/test.txt");
+        URL uploadUrl = new URI("http://localhost:80/dav/test.txt").toURL();
         ChecksumDataForFileTYPE csForValidation = new ChecksumDataForFileTYPE();
 
         addStep("Setup a PutFileClient for test purpose.", "Should be OK.");
@@ -257,7 +258,7 @@ public class IntegrityInformationCollectorTest {
         addDescription("Test that the IntegrityInformationCollector works as a fault-barrier.");
         addStep("Define variables", "No errors");
         String auditTrailInformation = "audit trail for this test";
-        URL uploadUrl = new URL("http://localhost:80/dav/test.txt");
+        URL uploadUrl = new URI("http://localhost:80/dav/test.txt").toURL();
 
         addStep("Setup a GetFileClient for test purpose, and ensure that it throws an error when called.",
                 "Should be OK.");
@@ -280,7 +281,7 @@ public class IntegrityInformationCollectorTest {
         addDescription("Test that the IntegrityInformationCollector works as a fault-barrier.");
         addStep("Define variables", "No errors");
         String auditTrailInformation = "audit trail for this test";
-        URL uploadUrl = new URL("http://localhost:80/dav/test.txt");
+        URL uploadUrl = new URI("http://localhost:80/dav/test.txt").toURL();
         ChecksumDataForFileTYPE csForValidation = new ChecksumDataForFileTYPE();
 
         addStep("Setup a PutFileClient for test purpose, and ensure that it throws an error when called.",

@@ -47,6 +47,7 @@ import org.mockito.stubbing.Answer;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 import java.io.FileInputStream;
+import java.net.URI;
 import java.net.URL;
 import java.time.Instant;
 
@@ -74,7 +75,7 @@ class LocalAuditPreservationTest {
         settings.getRepositorySettings().getCollections().getCollection().add(c);
 
         collectionID = c.getID();
-        testUploadUrl = new URL("http://TestURL.com");
+        testUploadUrl = new URI("http://TestURL.com").toURL();
         threadFactory = new DefaultThreadFactory(this.getClass().getSimpleName(), Thread.NORM_PRIORITY, false);
 
     }
@@ -121,8 +122,8 @@ class LocalAuditPreservationTest {
             }
         }).when(store).getAuditTrailsByIterator(ArgumentMatchers.any(), ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyString(), ArgumentMatchers.any(Long.class), ArgumentMatchers.any(),
-                ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(Instant.class),
-                ArgumentMatchers.any(Instant.class),
+                ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.isNull(Instant.class),
+                ArgumentMatchers.isNull(Instant.class),
                 ArgumentMatchers.any(), ArgumentMatchers.any());
 
         preserver.start();

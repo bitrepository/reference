@@ -55,8 +55,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 
 public class HttpFileExchange implements FileExchange {
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -100,7 +98,7 @@ public class HttpFileExchange implements FileExchange {
             throw new CoordinationLayerException("Could not upload the file '" + dataFile.getAbsolutePath() +
                     "' to the server.", e);
         }
-    }
+     }
 
     @Override
     public void getFile(OutputStream out, URL url) throws IOException {
@@ -200,19 +198,13 @@ public class HttpFileExchange implements FileExchange {
             path += "/";
         }
 
-        // URI constructor with individual components automatically encodes special characters in the path segment.
-        // However, it does NOT encode characters like '+' if they are part of the path segment, as they are technically allowed.
-        // But the existing tests and many WebDAV servers expect '+' to be encoded as %2B in the filename.
-        // Therefore, we manually encode the filename and then construct the full URI.
-        String encodedFilename = URLEncoder.encode(filename, StandardCharsets.UTF_8).replace("+", "%20");
-        log.debug("URL for file '{}' encoded to '{}'", filename, encodedFilename);
-
         try {
-            // First construct the base URI (everything except the filename) to ensure correct encoding of components.
             URI baseURI = new URI(settings.getProtocolType().value(), null, settings.getServerName(),
                     settings.getPort().intValue(), path, null, null);
-            // Then append the manually encoded filename. toASCIIString() ensures we don't double-encode.
-            return baseURI.resolve(encodedFilename).toURL();
+            String encodedFilename = new URI(null, null, null, -1, "/" + filename, null, null)
+                    .getRawPath().substring(1).replace("+", "%2B");
+
+            return new URI(baseURI.toASCIIString() + encodedFilename).toURL();
         } catch (URISyntaxException e) {
             throw new MalformedURLException(e.getMessage());
         }
