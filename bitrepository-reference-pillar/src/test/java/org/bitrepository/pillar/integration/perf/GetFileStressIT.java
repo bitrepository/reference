@@ -32,22 +32,21 @@ import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.integration.perf.metrics.Metrics;
 import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
 import org.bitrepository.protocol.bus.MessageReceiver;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
-import java.io.IOException;
-import java.nio.file.DirectoryStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class GetFileStressIT extends PillarPerformanceTest {
-    public static final String FOLDER_NAME = "src/test/resources";
+class GetFileStressIT extends PillarPerformanceTest {
+    @TempDir
+    static Path tempDir;
     protected GetFileClient getFileClient;
 
     @BeforeEach
@@ -55,22 +54,6 @@ public class GetFileStressIT extends PillarPerformanceTest {
         getFileClient = AccessComponentFactory.getInstance().createGetFileClient(
                 settingsForTestClient, createSecurityManager(), settingsForTestClient.getComponentID()
         );
-    }
-
-    @AfterAll
-    static void removeUnnecessaryFiles() throws IOException {
-        removeFiles("noIdentfy", FOLDER_NAME);
-        removeFiles("parallel", FOLDER_NAME);
-        removeFiles("single", FOLDER_NAME);
-    }
-
-    private static void removeFiles(String fileStartsWith, String folderName) throws IOException {
-        Path directory = Paths.get(folderName);
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory, fileStartsWith + "*")) {
-            for (Path entry : stream) {
-                Files.delete(entry);
-            }
-        }
     }
 
     @Test
@@ -112,6 +95,7 @@ public class GetFileStressIT extends PillarPerformanceTest {
         EventHandler eventHandler = new OperationEventHandlerForMetrics(metrics, getLimiter);
         for (int i = 1; i <= numberOfFiles; i++) {
             getLimiter.addJob(defaultFileId);
+            URL testUrl = httpServerConfiguration.getURL(nonDefaultFileId + "-" + i);
             getFileClient.getFileFromSpecificPillar(
                     collectionID, defaultFileId, null, httpServerConfiguration.getURL(nonDefaultFileId + "-" + i),
                     getPillarID(), eventHandler, " performing parallelGetFilePerformance");
@@ -142,11 +126,23 @@ public class GetFileStressIT extends PillarPerformanceTest {
         for (int i = 1; i <= numberOfFiles; i++) {
             String correlationID = msgFactory.getNewCorrelationID();
             getLimiter.addJob(correlationID);
+            String fileName = nonDefaultFileId + "-" + i;
+            
+            // Ensure the source file exists in the temp directory so the server can serve it
+            Path sourceFile = tempDir.resolve(fileName);
+            if (!Files.exists(sourceFile)) {
+                Files.createFile(sourceFile);
+            }
+
+            // Create a unique destination path for each file within the temp directory
+            Path destinationFile = tempDir.resolve("noIdentfy-dest-" + i);
             GetFileRequest getRequest =
-                    msgFactory.createGetFileRequest("noIdentfyGetFilePerformanceTest", correlationID,
-                            httpServerConfiguration.getURL(nonDefaultFileId + "-" + i).toExternalForm(),
+                    msgFactory.createGetFileRequest(destinationFile.toAbsolutePath().toString(),
+                            correlationID,
+                            httpServerConfiguration.getURL(fileName).toExternalForm(),
                             defaultFileId, null, getPillarID(), getPillarID(),
                             settingsForTestClient.getReceiverDestinationID(), pillarDestination);
+            getRequest.setFileAddress("file:" + tempDir.toAbsolutePath().toString()+"/"+fileName);
             messageBus.sendMessage(getRequest);
         }
 
