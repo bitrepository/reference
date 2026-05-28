@@ -28,14 +28,12 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import java.util.concurrent.ThreadFactory;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.Duration;
 
 class SettingsProviderTest {
     private static final String PATH_TO_TEST_SETTINGS = "settings/xml/bitrepository-devel";
-
-    public static final String TEST_COLLECTION = "dummy-collection";
-    public static final String DEFAULT_CONTRIBUTOR = "Contributor1";
-    private ThreadFactory threadFactory;
 
     @Test
     @Tag("regressiontest")
@@ -71,28 +69,17 @@ class SettingsProviderTest {
 
     @Test
     @Tag("regressiontest")
-    void collectAuditIntervalTest() {
+    void collectAuditIntervalTest() throws DatatypeConfigurationException {
         SettingsProvider settingsLoader =
                 new SettingsProvider(new XMLFileSettingsLoader(PATH_TO_TEST_SETTINGS), "TestComponentID");
 
         Settings settings = settingsLoader.getSettings();
 
-        Assertions.assertEquals(1, settings.getReferenceSettings()
-                .getAuditTrailServiceSettings()
-                .getCollectAuditInterval()
-                .getDays());
-        Assertions.assertEquals(1, settings.getReferenceSettings()
-                .getAuditTrailServiceSettings()
-                .getCollectAuditInterval()
-                .getHours());
-        Assertions.assertEquals(22, settings.getReferenceSettings()
-                .getAuditTrailServiceSettings()
-                .getCollectAuditInterval()
-                .getMinutes());
-        Assertions.assertEquals(22, settings.getReferenceSettings()
-                .getAuditTrailServiceSettings()
-                .getCollectAuditInterval()
-                .getSeconds());
+        DatatypeFactory factory = DatatypeFactory.newInstance();
+        Duration expectedInterval =
+                factory.newDuration(true, 0, 0, 1, 1, 22, 22);
+        Assertions.assertEquals(expectedInterval,
+                settings.getReferenceSettings().getAuditTrailServiceSettings().getCollectAuditInterval());
     }
 
 }

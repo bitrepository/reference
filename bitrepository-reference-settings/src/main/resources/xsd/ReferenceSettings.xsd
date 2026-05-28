@@ -730,6 +730,7 @@
               The interval between each collecting of audit trail data from the contributors.
               Non-negative XML schema durations consisting of days, hours, minutes and/or seconds are accepted.
               The seconds may have up to 9 decimals of fraction.
+              A day will be understood as 24 hours always.
               For example P1D (1 day), PT3M (3 minutes), P1DT1H22M22.5S (1 day 1 hour 22 minutes 22.5 seconds).
             </xs:documentation>
           </xs:annotation>
