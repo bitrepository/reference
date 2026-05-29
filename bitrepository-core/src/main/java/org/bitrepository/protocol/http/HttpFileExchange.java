@@ -190,7 +190,7 @@ public class HttpFileExchange implements FileExchange {
         ArgumentValidator.checkNotNull(settings,
                 "The ReferenceSettings are missing the settings for the file exchange.");
 
-        String path = settings.getPath() == null ? "" : settings.getPath();
+        String path = settings.getPath();
         if (!path.startsWith("/")) {
             path = "/" + path;
         }

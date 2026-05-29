@@ -70,18 +70,14 @@ public class HttpServerConfiguration {
      */
     public URL getURL(String filename) throws MalformedURLException {
         try {
-            String scheme = getProtocol().toLowerCase(Locale.ROOT);
-            String serverName = getHttpServerName();
-            String serverPath = getHttpServerPath() == null ? "" : getHttpServerPath();
-
-            if (serverName == null) {
-                String absolutePath = Paths.get(serverPath, filename).toAbsolutePath().normalize().toUri().getPath();
-                return new URI(scheme, null, null, -1, absolutePath, null, null).toURL();
+            if (getHttpServerName() == null) {
+                String absolutePath = Paths.get(getHttpServerPath(), filename).toUri().getPath();
+                return new URI(getProtocol().toLowerCase(Locale.ROOT), null, null, -1,
+                        absolutePath, null, null).toURL();
             }
 
-            // For remote URLs, paths must always use forward slashes
-            String path = serverPath + "/" + filename;
-            return new URI(scheme, null, serverName, getPortNumber(), path, null, null).toURL();
+            return new URI(getProtocol().toLowerCase(Locale.ROOT), null, getHttpServerName(), getPortNumber(),
+                    getHttpServerPath() + "/" + filename, null, null).toURL();
         } catch (URISyntaxException e) {
             throw new MalformedURLException(e.getMessage());
         }
