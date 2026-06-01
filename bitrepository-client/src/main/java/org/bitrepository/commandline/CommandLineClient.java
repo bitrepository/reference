@@ -326,7 +326,8 @@ public abstract class CommandLineClient {
             fileexchange.deleteFile(url);
         } catch (Exception e) {
             output.error("Issue regarding removing file from server: " + e.getMessage());
-        }    }
+        }
+    }
 
     /**
      * Retrieves the URL for the PutFile operation.
@@ -348,6 +349,8 @@ public abstract class CommandLineClient {
 
                 ProtocolType protocolType = ProtocolType.fromValue(url.getProtocol().toUpperCase(Locale.ROOT));
                 if (protocolType != ProtocolType.FILE) {
+                    // Test if URL can actually be opened to exit early
+                    // - otherwise checksum pillars will still receive and store checksum.
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                     int responseCode = connection.getResponseCode();
 
