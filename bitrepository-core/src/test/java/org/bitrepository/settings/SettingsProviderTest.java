@@ -28,6 +28,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.Duration;
+
 class SettingsProviderTest {
     private static final String PATH_TO_TEST_SETTINGS = "settings/xml/bitrepository-devel";
 
@@ -62,4 +66,20 @@ class SettingsProviderTest {
         Assertions.assertEquals(originalCollectionID, settings.getRepositorySettings().getCollections().getCollection().get(0).getID());
         Assertions.assertEquals(originalCollectionID, settings.getCollections().get(0).getID());
     }
+
+    @Test
+    @Tag("regressiontest")
+    void collectAuditIntervalTest() throws DatatypeConfigurationException {
+        SettingsProvider settingsLoader =
+                new SettingsProvider(new XMLFileSettingsLoader(PATH_TO_TEST_SETTINGS), "TestComponentID");
+
+        Settings settings = settingsLoader.getSettings();
+
+        DatatypeFactory factory = DatatypeFactory.newInstance();
+        Duration expectedInterval =
+                factory.newDuration(true, 0, 0, 1, 1, 22, 22);
+        Assertions.assertEquals(expectedInterval,
+                settings.getReferenceSettings().getAuditTrailServiceSettings().getCollectAuditInterval());
+    }
+
 }

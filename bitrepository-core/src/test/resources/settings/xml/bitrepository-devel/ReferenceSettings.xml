@@ -72,7 +72,7 @@
       <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
       <DatabaseURL>jdbc:derby:target/auditservicedb</DatabaseURL>
     </AuditTrailServiceDatabase>
-    <CollectAuditInterval>PT1H</CollectAuditInterval>
+    <CollectAuditInterval>P1DT1H22M22S</CollectAuditInterval>
     <TimerTaskCheckInterval>60000</TimerTaskCheckInterval>
     <AuditTrailPreservation>
       <AuditTrailPreservationInterval>P7D</AuditTrailPreservationInterval>
