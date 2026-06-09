@@ -22,6 +22,7 @@
 
 package org.bitrepository.commandline;
 
+import jakarta.jms.JMSException;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.codec.DecoderException;
@@ -45,9 +46,9 @@ import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.referencesettings.ProtocolType;
 
-import javax.jms.JMSException;
 import java.io.File;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
@@ -344,7 +345,7 @@ public abstract class CommandLineClient {
             String urlArg = cmdHandler.getOptionValue(Constants.URL_ARG);
 
             try {
-                final URL url = new URL(urlArg);
+                final URL url = new URI(urlArg).toURL();
 
                 ProtocolType protocolType = ProtocolType.fromValue(url.getProtocol().toUpperCase(Locale.ROOT));
                 if (protocolType != ProtocolType.FILE) {

@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
@@ -44,7 +45,7 @@ class GetFileRequestIT extends PillarFunctionTest {
     void initialiseReferenceTest() throws Exception {
         String pillarDestination = lookupGetFileDestination();
         msgFactory = new GetFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), pillarDestination);
-        testFileURL = new URL(defaultFileUrl.toExternalForm() + System.currentTimeMillis());
+        testFileURL = new URI(defaultFileUrl.toExternalForm() + System.currentTimeMillis()).toURL();
         fe = ProtocolComponentFactory.getInstance().getFileExchange(settingsForCUT);
     }
 

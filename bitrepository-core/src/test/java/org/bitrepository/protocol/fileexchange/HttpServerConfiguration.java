@@ -14,7 +14,7 @@
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
  * GNU General Lesser Public License for more details.
  * 
  * You should have received a copy of the GNU General Lesser Public 
@@ -27,7 +27,11 @@ package org.bitrepository.protocol.fileexchange;
 import org.bitrepository.settings.referencesettings.FileExchangeSettings;
 
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Paths;
+import java.util.Locale;
 
 /**
  * Configuration for {@link HttpServerConnector} objects. Pretty obsoleted as it only delegates to the
@@ -41,7 +45,7 @@ public class HttpServerConfiguration {
     }
 
     /**
-     * Prefix to use when working with files on the http server. The prefix is used to distinguish between different 
+     * Prefix to use when working with files on the http server. The prefix is used to distinguish between different
      * users/processes working with the server in parallel
      */
     public String getProtocol() {
@@ -65,9 +69,17 @@ public class HttpServerConfiguration {
      * @param filename
      */
     public URL getURL(String filename) throws MalformedURLException {
-        if (getHttpServerName() == null) {
-            return new URL(getProtocol(), null, 0, getHttpServerPath() + "/" + filename);
+        try {
+            if (getHttpServerName() == null) {
+                String absolutePath = Paths.get(getHttpServerPath(), filename).toUri().getPath();
+                return new URI(getProtocol().toLowerCase(Locale.ROOT), null, null, -1,
+                        absolutePath, null, null).toURL();
+            }
+
+            return new URI(getProtocol().toLowerCase(Locale.ROOT), null, getHttpServerName(), getPortNumber(),
+                    getHttpServerPath() + "/" + filename, null, null).toURL();
+        } catch (URISyntaxException e) {
+            throw new MalformedURLException(e.getMessage());
         }
-        return new URL(getProtocol(), getHttpServerName(), getPortNumber(), getHttpServerPath() + "/" + filename);
     }
 }

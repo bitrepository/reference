@@ -17,9 +17,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
@@ -27,7 +27,7 @@ import java.nio.file.Paths;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class LocalFileExchangeTest {
-    final static String BASE_FILE_EXCHANGE_DIR = "target/fileexchange/";
+    static final String BASE_FILE_EXCHANGE_DIR = "target/fileexchange/";
     private FileExchange exchange;
 
     @BeforeAll
@@ -48,15 +48,18 @@ class LocalFileExchangeTest {
 
     @Test
     @Tag("regressiontest")
-    void getUrlTest() throws MalformedURLException {
+    void getUrlTest() throws MalformedURLException, URISyntaxException {
         String testFile = "getUrlTestfile";
 
         File basedir = new File(BASE_FILE_EXCHANGE_DIR);
-        URL expectedUrl = new URL("file:" + basedir.getAbsolutePath() + "/" + testFile);
+        URI baseURI = new URI("file", null, basedir.getAbsolutePath() + "/", null);
+        String encodedFilename = new URI(null, null, null, -1, "/" + testFile, null, null)
+                .getRawPath().substring(1).replace("+", "%2B");
+        URL expectedUrl = new URI(baseURI.toASCIIString() + encodedFilename).toURL();
 
         URL actualUrl = exchange.getURL(testFile);
         Assertions.assertEquals(expectedUrl, actualUrl);
-        File actualFile = new File(actualUrl.getFile());
+        File actualFile = new File(actualUrl.toURI());
         Assertions.assertFalse(actualFile.exists());
     }
 
@@ -73,8 +76,10 @@ class LocalFileExchangeTest {
         File testFile = createTestFile(testFileLocation, testFileContent);
 
         File basedir = new File(BASE_FILE_EXCHANGE_DIR);
-        URL expectedUrl = new URL("file:" + basedir.getAbsolutePath() + "/" + URLEncoder.encode(testFileName,
-                StandardCharsets.UTF_8));
+        URI baseURI = new URI("file", null, basedir.getAbsolutePath() + "/", null);
+        String encodedFilename = new URI(null, null, null, -1, "/" + testFileName, null, null)
+                .getRawPath().substring(1).replace("+", "%2B");
+        URL expectedUrl = new URI(baseURI.toASCIIString() + encodedFilename).toURL();
 
         URL fileExchangeUrl = exchange.putFile(testFile);
         Assertions.assertEquals(expectedUrl, fileExchangeUrl);
@@ -86,19 +91,22 @@ class LocalFileExchangeTest {
     }
 
     @Test
-    void putFileByFileTest() throws IOException {
+    void putFileByFileTest() throws IOException, URISyntaxException {
         String testFileName = "putFileByFileTestFile";
         String testFileLocation = "target/" + testFileName;
         String testFileContent = "lorem ipsum1";
         File testFile = createTestFile(testFileLocation, testFileContent);
 
         File basedir = new File(BASE_FILE_EXCHANGE_DIR);
-        URL expectedUrl = new URL("file:" + basedir.getAbsolutePath() + "/" + testFileName);
+        URI baseURI = new URI("file", null, basedir.getAbsolutePath() + "/", null);
+        String encodedFilename = new URI(null, null, null, -1, "/" + testFileName, null, null)
+                .getRawPath().substring(1).replace("+", "%2B");
+        URL expectedUrl = new URI(baseURI.toASCIIString() + encodedFilename).toURL();
 
         URL fileExchangeUrl = exchange.putFile(testFile);
         Assertions.assertEquals(expectedUrl, fileExchangeUrl);
 
-        File actualFile = new File(fileExchangeUrl.getFile());
+        File actualFile = new File(fileExchangeUrl.toURI());
         Assertions.assertTrue(actualFile.exists());
         String fileExchangeContent = readTestFileContent(actualFile);
         Assertions.assertEquals(testFileContent, fileExchangeContent);
@@ -106,7 +114,7 @@ class LocalFileExchangeTest {
     }
 
     @Test
-    void putFileByStreamTest() throws IOException {
+    void putFileByStreamTest() throws IOException, URISyntaxException {
         String testFileName = "putFileByStreamTestFile";
         String testFileContent = "lorem ipsum2";
 
@@ -114,7 +122,7 @@ class LocalFileExchangeTest {
         URL fileExchangeUrl = exchange.getURL(testFileName);
         exchange.putFile(is, fileExchangeUrl);
 
-        File fileExchangeFile = new File(fileExchangeUrl.getFile());
+        File fileExchangeFile = new File(fileExchangeUrl.toURI());
         String fileExchangeContent = readTestFileContent(fileExchangeFile);
         Assertions.assertEquals(testFileContent, fileExchangeContent);
         fileExchangeFile.delete();
@@ -175,7 +183,7 @@ class LocalFileExchangeTest {
         URL fileExchangeUrl = exchange.getURL(testFileName);
         exchange.putFile(is, fileExchangeUrl);
 
-        File fileExchangeFile = new File(fileExchangeUrl.getFile());
+        File fileExchangeFile = new File(fileExchangeUrl.toURI());
         Assertions.assertTrue(fileExchangeFile.exists());
         exchange.deleteFile(fileExchangeUrl);
         Assertions.assertFalse(fileExchangeFile.exists());

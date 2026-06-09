@@ -31,7 +31,6 @@ import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.bus.LocalActiveMQBroker;
-import org.bitrepository.protocol.bus.MessageBusConfigurationFactory;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageListener;
@@ -78,16 +77,25 @@ class MessageBusTimeToSendMessagesStressTest {
      */
     @Test
     @Tag("StressTest")
-    void SendManyMessagesDistributed() {
+    void SendManyMessagesDistributed() throws Exception {
         addDescription("Tests how fast a given number of messages can be handled.");
         addStep("Define constants", "This should not be possible to fail.");
 
         addStep("Make configuration for the messagebus.", "Both should be created.");
-        MessageBusConfiguration conf = MessageBusConfigurationFactory.createDefaultConfiguration();
+        MessageBusConfiguration conf = new MessageBusConfiguration();
+        int port = getFreePort();
+        conf.setURL("tcp://localhost:" + port);
+        settings.getRepositorySettings().getProtocolSettings().setMessageBusConfiguration(conf);
+        LocalActiveMQBroker broker = new LocalActiveMQBroker(conf);
+        Assertions.assertNotNull(broker);
+
         SecurityManager securityManager = new DummySecurityManager();
         CountMessagesListener listener = null;
 
         try {
+            addStep("Starting the broker.", "Should be allowed");
+            broker.start();
+
             addStep("Initialise the message-listener", "Should be allowed.");
             listener = new CountMessagesListener(securityManager);
 
@@ -117,6 +125,7 @@ class MessageBusTimeToSendMessagesStressTest {
             if (listener != null) {
                 listener.stop();
             }
+            broker.stop();
         }
     }
 
@@ -234,7 +243,7 @@ class MessageBusTimeToSendMessagesStressTest {
             } finally {
                 try {
                     bus.close();
-                } catch (javax.jms.JMSException e) {
+                } catch (jakarta.jms.JMSException e) {
                     // ignore
                 }
             }
@@ -266,7 +275,7 @@ class MessageBusTimeToSendMessagesStressTest {
             bus.removeListener(testQueue, this);
             try {
                 bus.close();
-            } catch (javax.jms.JMSException e) {
+            } catch (jakarta.jms.JMSException e) {
                 // ignore
             }
         }

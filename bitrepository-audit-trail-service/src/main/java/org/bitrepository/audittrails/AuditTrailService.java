@@ -24,6 +24,7 @@
  */
 package org.bitrepository.audittrails;
 
+import jakarta.jms.JMSException;
 import org.bitrepository.audittrails.collector.AuditTrailCollector;
 import org.bitrepository.audittrails.preserver.AuditTrailPreserver;
 import org.bitrepository.audittrails.store.AuditEventIterator;
@@ -40,11 +41,10 @@ import org.bitrepository.service.contributor.ContributorMediator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jms.JMSException;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.time.Instant;
 
 /**
  * Class to expose the functionality of the AuditTrailService.

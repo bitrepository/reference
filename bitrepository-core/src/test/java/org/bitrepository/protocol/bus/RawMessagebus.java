@@ -22,6 +22,14 @@
 
 package org.bitrepository.protocol.bus;
 
+import jakarta.jms.Connection;
+import jakarta.jms.Destination;
+import jakarta.jms.ExceptionListener;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.MessageConsumer;
+import jakarta.jms.MessageProducer;
+import jakarta.jms.Session;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.protocol.CoordinationLayerException;
@@ -31,14 +39,6 @@ import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jms.Connection;
-import javax.jms.Destination;
-import javax.jms.ExceptionListener;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageConsumer;
-import javax.jms.MessageProducer;
-import javax.jms.Session;
 import javax.xml.bind.JAXBException;
 import java.util.HashMap;
 import java.util.Map;
@@ -138,7 +138,7 @@ public class RawMessagebus {
         return destination;
     }
 
-    public synchronized void addListener(String destinationID, javax.jms.MessageListener listener) throws JMSException {
+    public synchronized void addListener(String destinationID, jakarta.jms.MessageListener listener) throws JMSException {
         MessageConsumer consumer = getMessageConsumer(destinationID, listener);
         try {
             consumer.setMessageListener(listener);
@@ -148,7 +148,7 @@ public class RawMessagebus {
         }
     }
 
-    private MessageConsumer getMessageConsumer(String destinationID, javax.jms.MessageListener listener) throws JMSException {
+    private MessageConsumer getMessageConsumer(String destinationID, jakarta.jms.MessageListener listener) throws JMSException {
         String key = destinationID + "#" + listener.hashCode();
         if (!consumers.containsKey(key)) {
             Destination destination = getDestination(destinationID, consumerSession);

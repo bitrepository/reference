@@ -44,8 +44,10 @@ import org.bitrepository.settings.referencesettings.ChecksumPillarFileDownload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.IOException;
-import java.net.URL;
+import java.net.URI;
+import java.util.Date;
 import java.time.Instant;
 
 /**
@@ -227,9 +229,9 @@ public class ChecksumStorageModel extends StorageModel {
         log.debug("Retrieving the data from URL: '{}'", fileAddress);
 
         try {
-            URL fileURL = new URL(fileAddress);
-            FileExchange fileExchange = FileExchangeResolver.getBasicFileExchangeFromURL(fileURL);
-            return ChecksumUtils.generateChecksum(fileExchange.getFile(fileURL), defaultChecksumSpec);
+            final URI fileURL = URI.create(fileAddress);
+            FileExchange fileExchange = FileExchangeResolver.getBasicFileExchangeFromURL(fileURL.toURL());
+            return ChecksumUtils.generateChecksum(fileExchange.getFile(fileURL.toURL()), defaultChecksumSpec);
         } catch (IOException e) {
             String errMsg = "Could not retrieve the file from '" + fileAddress + "'";
             log.error(errMsg, e);

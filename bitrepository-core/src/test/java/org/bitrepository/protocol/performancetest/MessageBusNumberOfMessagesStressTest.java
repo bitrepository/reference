@@ -24,6 +24,7 @@
  */
 package org.bitrepository.protocol.performancetest;
 
+import jakarta.jms.JMSException;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.common.settings.Settings;
@@ -43,7 +44,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import javax.jms.JMSException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.time.Instant;

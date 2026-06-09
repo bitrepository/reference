@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.xml.datatype.Duration;
 import java.io.IOException;
-import java.net.URL;
+import java.net.URI;
 import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -316,9 +316,9 @@ public class FileStorageModel extends StorageModel {
         log.debug("Retrieving the data to be stored from URL: '{}'", fileAddress);
 
         try {
-            URL fileURL = new URL(fileAddress);
-            FileExchange fileExchange = FileExchangeResolver.getBasicFileExchangeFromURL(fileURL);
-            fileArchive.downloadFileForValidation(fileID, collectionID, fileExchange.getFile(fileURL));
+            final URI fileURI = URI.create(fileAddress);
+            FileExchange fileExchange = FileExchangeResolver.getBasicFileExchangeFromURL(fileURI.toURL());
+            fileArchive.downloadFileForValidation(fileID, collectionID, fileExchange.getFile(fileURI.toURL()));
         } catch (IOException e) {
             String errMsg = "Could not retrieve the file from '" + fileAddress + "'";
             log.error(errMsg, e);

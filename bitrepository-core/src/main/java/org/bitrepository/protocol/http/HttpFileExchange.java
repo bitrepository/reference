@@ -52,10 +52,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 
 public class HttpFileExchange implements FileExchange {
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -99,7 +98,7 @@ public class HttpFileExchange implements FileExchange {
             throw new CoordinationLayerException("Could not upload the file '" + dataFile.getAbsolutePath() +
                     "' to the server.", e);
         }
-    }
+     }
 
     @Override
     public void getFile(OutputStream out, URL url) throws IOException {
@@ -110,12 +109,12 @@ public class HttpFileExchange implements FileExchange {
     public void getFile(File outputFile, String fileAddress) {
         try {
             // retrieve the url and the output-stream for the file.
-            URL url = new URL(fileAddress);
+            URL url = new URI(fileAddress).toURL();
             try (OutputStream out = new BufferedOutputStream(new FileOutputStream(outputFile))) {
                 // download the file.
                 performDownload(out, url);
             }
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             throw new CoordinationLayerException("Could not download data from '" + fileAddress + "' to the file '" +
                     outputFile.getAbsolutePath() + "'.", e);
         }
@@ -190,11 +189,25 @@ public class HttpFileExchange implements FileExchange {
         ArgumentValidator.checkNotNullOrEmpty(filename, "String fileName");
         ArgumentValidator.checkNotNull(settings,
                 "The ReferenceSettings are missing the settings for the file exchange.");
-        String urlEncodedFilename = URLEncoder.encode(filename, StandardCharsets.UTF_8);
-        log.debug("URL for file '{}' encoded to '{}'", filename, urlEncodedFilename);
 
-        return new URL(settings.getProtocolType().value(), settings.getServerName(), settings.getPort().intValue(),
-                settings.getPath() + "/" + urlEncodedFilename);
+        String path = settings.getPath();
+        if (!path.startsWith("/")) {
+            path = "/" + path;
+        }
+        if (!path.endsWith("/")) {
+            path += "/";
+        }
+
+        try {
+            URI baseURI = new URI(settings.getProtocolType().value(), null, settings.getServerName(),
+                    settings.getPort().intValue(), path, null, null);
+            String encodedFilename = new URI(null, null, null, -1, "/" + filename, null, null)
+                    .getRawPath().substring(1).replace("+", "%2B");
+
+            return new URI(baseURI.toASCIIString() + encodedFilename).toURL();
+        } catch (URISyntaxException e) {
+            throw new MalformedURLException(e.getMessage());
+        }
     }
 
     /**

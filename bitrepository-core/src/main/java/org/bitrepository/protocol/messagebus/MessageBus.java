@@ -24,7 +24,7 @@
  */
 package org.bitrepository.protocol.messagebus;
 
-import javax.jms.JMSException;
+import jakarta.jms.JMSException;
 import java.util.List;
 
 

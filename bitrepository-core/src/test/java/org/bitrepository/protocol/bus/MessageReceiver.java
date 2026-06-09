@@ -24,16 +24,15 @@
  */
 package org.bitrepository.protocol.bus;
 
+import jakarta.jms.ExceptionListener;
+import jakarta.jms.JMSException;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.messagebus.MessageListener;
-
 import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jms.ExceptionListener;
-import javax.jms.JMSException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;

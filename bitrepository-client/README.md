@@ -140,7 +140,7 @@ The below code is a full example of the various parts above. The code will compi
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import javax.jms.JMSException;
+import jakarta.jms.JMSException;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;

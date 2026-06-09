@@ -22,6 +22,7 @@
 package org.bitrepository.pillar.integration;
 
 import io.qameta.allure.Allure;
+import jakarta.jms.JMSException;
 import org.bitrepository.SuiteInfo;
 import org.bitrepository.SuiteInfoParameterResolver;
 import org.bitrepository.client.conversation.mediator.CollectionBasedConversationMediator;
@@ -60,7 +61,6 @@ import org.junit.platform.suite.api.AfterSuite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jms.JMSException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;

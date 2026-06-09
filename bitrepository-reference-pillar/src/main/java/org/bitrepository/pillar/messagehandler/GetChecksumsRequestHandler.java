@@ -57,6 +57,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -239,8 +241,8 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
      * @param url          The location where the file should be uploaded.
      * @throws IOException If something goes wrong.
      */
-    private void uploadFile(File fileToUpload, String url) throws IOException {
-        URL uploadUrl = new URL(url);
+    private void uploadFile(File fileToUpload, String url) throws IOException, URISyntaxException {
+        final URL uploadUrl = new URI(url).toURL();
 
         // Upload the file.
         log.debug("Uploading file '{}' to {}", fileToUpload.getName(), url);
