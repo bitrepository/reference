@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
+import java.time.Duration;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 
@@ -66,7 +67,7 @@ class TimeMeasurementUtilsTest {
     @Tag("regressiontest")
     void testCompareMilliSecondsToHours() {
         addDescription("Test the comparison between milliseconds and hours.");
-        long millis = 7200000L;
+        long millis = Duration.ofHours(2).toMillis();
         TimeMeasureTYPE referenceTime = new TimeMeasureTYPE();
         referenceTime.setTimeMeasureValue(BigInteger.valueOf(millis));
         referenceTime.setTimeMeasureUnit(TimeMeasureUnit.MILLISECONDS);
@@ -103,4 +104,23 @@ class TimeMeasurementUtilsTest {
         Assertions.assertEquals(0, TimeMeasurementUtils.compare(time, time2));
     }
 
+    @Test
+    @Tag("regressiontest")
+    void testGetTimeMeasureInLongOverflow() {
+        addDescription("Test that getTimeMeasureInLong throws ArithmeticException when the value overflows long.");
+        TimeMeasureTYPE millisOverflow = new TimeMeasureTYPE();
+        millisOverflow.setTimeMeasureValue(BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE));
+        millisOverflow.setTimeMeasureUnit(TimeMeasureUnit.MILLISECONDS);
+
+        Assertions.assertThrows(ArithmeticException.class, () -> {
+            TimeMeasurementUtils.getTimeMeasureInLong(millisOverflow);
+        }, "Should throw ArithmeticException when millisecond value exceeds Long.MAX_VALUE");
+        TimeMeasureTYPE hoursOverflow = new TimeMeasureTYPE();
+        hoursOverflow.setTimeMeasureValue(BigInteger.valueOf(Long.MAX_VALUE));
+        hoursOverflow.setTimeMeasureUnit(TimeMeasureUnit.HOURS);
+
+        Assertions.assertThrows(ArithmeticException.class, () -> {
+            TimeMeasurementUtils.getTimeMeasureInLong(hoursOverflow);
+        }, "Should throw ArithmeticException when hour value converted to milliseconds exceeds Long.MAX_VALUE");
+    }
 }
