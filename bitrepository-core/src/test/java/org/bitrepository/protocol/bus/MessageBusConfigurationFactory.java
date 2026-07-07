@@ -35,7 +35,7 @@ public class MessageBusConfigurationFactory {
     
     public static MessageBusConfiguration createDefaultConfiguration() {
         MessageBusConfiguration config = new MessageBusConfiguration();
-        config.setURL("failover://tcp://sandkasse-01.kb.dk:61616");
+        config.setURL("tcp://sandkasse-01.kb.dk:61616?reconnectAttempts=-1");
         return config;
     }
     

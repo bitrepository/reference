@@ -34,8 +34,9 @@ import jakarta.jms.MessageProducer;
 import jakarta.jms.Session;
 import jakarta.jms.TextMessage;
 import jakarta.jms.Topic;
-import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.activemq.util.ByteArrayInputStream;
+import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
+
+import java.io.ByteArrayInputStream;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.common.DefaultThreadFactory;
@@ -85,16 +86,16 @@ public class ActiveMQMessageBus implements MessageBus {
     /**
      * The key for storing the message type in a string property in the message headers.
      */
-    public static final String MESSAGE_TYPE_KEY = "org.bitrepository.messages.type";
+    public static final String MESSAGE_TYPE_KEY = "org_bitrepository_messages_type";
     /**
      * The key for storing the BitRepositoryCollectionID in a string property in the message headers.
      */
-    public static final String COLLECTION_ID_KEY = "org.bitrepository.messages.collectionid";
+    public static final String COLLECTION_ID_KEY = "org_bitrepository_messages_collectionid";
     /**
      * The key for storing the message type in a string property in the message headers.
      */
-    public static final String MESSAGE_SIGNATURE_KEY = "org.bitrepository.messages.signature";
-    public static final String MESSAGE_TO_KEY = "org.bitrepository.messages.to";
+    public static final String MESSAGE_SIGNATURE_KEY = "org_bitrepository_messages_signature";
+    public static final String MESSAGE_TO_KEY = "org_bitrepository_messages_to";
     /**
      * Default transacted.
      */

@@ -21,7 +21,7 @@
  */
 package org.bitrepository.service.contributor.handler;
 
-import org.apache.activemq.util.ByteArrayInputStream;
+import java.io.ByteArrayInputStream;
 import org.bitrepository.bitrepositorydata.GetAuditTrailsResults;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
