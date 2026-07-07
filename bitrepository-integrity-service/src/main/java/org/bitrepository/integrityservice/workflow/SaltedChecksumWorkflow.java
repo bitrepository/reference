@@ -92,7 +92,7 @@ public class SaltedChecksumWorkflow extends Workflow {
             Map<String, String> checksums = requestSaltedChecksumForFileStep();
             validateChecksums(checksums);
         } catch (IllegalStateException e) {
-            context.getAlerter().integrityFailed("Failed trying to check salted checksum: " + e.getMessage(),
+            context.alerter().integrityFailed("Failed trying to check salted checksum: " + e.getMessage(),
                     collectionID);
         } finally {
             finish();
@@ -108,7 +108,7 @@ public class SaltedChecksumWorkflow extends Workflow {
      */
     private ChecksumSpecTYPE getChecksumSpecWithRandomSalt() throws IllegalArgumentException {
         ChecksumType defaultChecksum = ChecksumType.valueOf(
-                context.getSettings().getRepositorySettings().getProtocolSettings().getDefaultChecksumType());
+                context.settings().getRepositorySettings().getProtocolSettings().getDefaultChecksumType());
         ChecksumSpecTYPE res = new ChecksumSpecTYPE();
         switch (defaultChecksum) {
             case SHA1:
@@ -144,12 +144,12 @@ public class SaltedChecksumWorkflow extends Workflow {
      * @return The randomly found FileID.
      */
     private String getRandomFileId() {
-        long numberOfFiles = context.getStore().getNumberOfFilesInCollection(collectionID);
+        long numberOfFiles = context.store().getNumberOfFilesInCollection(collectionID);
         if (numberOfFiles <= 0L) {
             throw new IllegalStateException("No files in collection '" + collectionID + "'.");
         }
         long randomFileIndex = ThreadLocalRandom.current().nextLong(numberOfFiles);
-        return context.getStore().getFileIDAtPosition(collectionID, randomFileIndex);
+        return context.store().getFileIDAtPosition(collectionID, randomFileIndex);
     }
 
     /**
@@ -159,8 +159,8 @@ public class SaltedChecksumWorkflow extends Workflow {
      */
     private Map<String, String> requestSaltedChecksumForFileStep() {
         log.info("Request the file '{}' with the checksumSpecTYPE '{}'", currentFileID, currentChecksumSpec);
-        GetChecksumForFileStep step = new GetChecksumForFileStep(context.getCollector(), context.getAlerter(),
-                currentChecksumSpec, currentFileID, context.getSettings(), collectionID, integrityContributors);
+        GetChecksumForFileStep step = new GetChecksumForFileStep(context.collector(), context.alerter(),
+                currentChecksumSpec, currentFileID, context.settings(), collectionID, integrityContributors);
         performStep(step);
         return step.getResults();
     }
@@ -193,7 +193,7 @@ public class SaltedChecksumWorkflow extends Workflow {
                     Base16Utils.decodeBase16(currentChecksumSpec.getChecksumSalt()) + "' for pillars: " +
                     checksums.keySet();
             log.info(audit);
-            context.getAuditManager()
+            context.auditManager()
                     .addAuditEvent(collectionID, currentFileID, "IntegrityServiceWorkflow: " + getClass().getName(),
                             audit, "Integrity salted checksum check", FileAction.INTEGRITY_CHECK, null, null);
         }
@@ -206,10 +206,10 @@ public class SaltedChecksumWorkflow extends Workflow {
      */
     private void sendFailure(String failureMessage) {
         log.warn("Failure in checksum salted checksum: {}", failureMessage);
-        context.getAuditManager()
+        context.auditManager()
                 .addAuditEvent(collectionID, currentFileID, "IntegrityServiceWorkflow: " + getClass().getName(),
                         failureMessage,"Integrity salted checksum check", FileAction.INTEGRITY_CHECK, null, null);
-        context.getAlerter().integrityFailed(failureMessage, collectionID);
+        context.alerter().integrityFailed(failureMessage, collectionID);
     }
 
     @Override
