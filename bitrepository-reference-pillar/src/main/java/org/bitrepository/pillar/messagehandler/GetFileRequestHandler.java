@@ -106,7 +106,7 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
         uploadToClient(request);
         getAuditManager().addAuditEvent(request.getCollectionID(), request.getFileID(), request.getFrom(),
                 "Failed identifying pillar.", request.getAuditTrailInformation(), FileAction.GET_FILE,
-                request.getCorrelationID(), requestContext.getCertificateFingerprint());
+                request.getCorrelationID(), requestContext.certificateFingerprint());
         sendFinalResponse(request);
     }
 

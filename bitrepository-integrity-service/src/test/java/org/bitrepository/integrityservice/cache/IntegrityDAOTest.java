@@ -634,8 +634,8 @@ class IntegrityDAOTest extends IntegrityDatabaseTestCase {
                 "The collection should have two files, the first pillar two, the second one");
         Assertions.assertEquals(2, (long) cache.getNumberOfFilesInCollection(TEST_COLLECTIONID));
         Map<String, PillarCollectionMetric> metrics = cache.getPillarCollectionMetrics(TEST_COLLECTIONID);
-        Assertions.assertEquals(2, metrics.get(TEST_PILLAR_1).getPillarFileCount());
-        Assertions.assertEquals(1, metrics.get(TEST_PILLAR_2).getPillarFileCount());
+        Assertions.assertEquals(2, metrics.get(TEST_PILLAR_1).pillarFileCount());
+        Assertions.assertEquals(1, metrics.get(TEST_PILLAR_2).pillarFileCount());
 
         addStep("Extract missing files", "one file should be missing");
         List<String> missingFiles
@@ -760,10 +760,10 @@ class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         Map<String, PillarCollectionMetric> metrics = cache.getPillarCollectionMetrics(TEST_COLLECTIONID);
         addStep("Check the reported size of the first pillar in the collection",
                 "The reported size matches the precalculated");
-        Assertions.assertEquals(pillar1Size, metrics.get(TEST_PILLAR_1).getPillarCollectionSize());
+        Assertions.assertEquals(pillar1Size, metrics.get(TEST_PILLAR_1).pillarCollectionSize());
         addStep("Check the reported size of the second pillar in the collection",
                 "The reported size matches the precalculated");
-        Assertions.assertEquals(pillar2Size, metrics.get(TEST_PILLAR_2).getPillarCollectionSize());
+        Assertions.assertEquals(pillar2Size, metrics.get(TEST_PILLAR_2).pillarCollectionSize());
         addStep("Check the reported size of the whole collection",
                 "The reported size matches the precalculated");
         Assertions.assertEquals(collectionSize, cache.getCollectionSize(TEST_COLLECTIONID));

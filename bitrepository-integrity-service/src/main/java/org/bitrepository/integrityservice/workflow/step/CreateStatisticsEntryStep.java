@@ -63,14 +63,14 @@ public class CreateStatisticsEntryStep extends AbstractWorkFlowStep {
                 sc.getPillarCollectionStat(pillar).setDataSize(0L);
                 sc.getPillarCollectionStat(pillar).setOldestChecksumTimestamp(null);
             } else {
-                sc.getPillarCollectionStat(pillar).setFileCount(metric.getPillarFileCount());
-                sc.getPillarCollectionStat(pillar).setDataSize(metric.getPillarCollectionSize());
-                sc.getPillarCollectionStat(pillar).setOldestChecksumTimestamp(metric.getOldestChecksumTimestamp());
+                sc.getPillarCollectionStat(pillar).setFileCount(metric.pillarFileCount());
+                sc.getPillarCollectionStat(pillar).setDataSize(metric.pillarCollectionSize());
+                sc.getPillarCollectionStat(pillar).setOldestChecksumTimestamp(metric.oldestChecksumTimestamp());
             }
         }
         sc.getCollectionStat().setFileCount(store.getNumberOfFilesInCollection(collectionID));
         sc.getCollectionStat().setDataSize(store.getCollectionFileSize(collectionID));
-        sc.getCollectionStat().setLatestFileTime(store.getDateForNewestFileEntryForCollection(collectionID));
+        sc.getCollectionStat().setLatestFileTime(store.getDateForNewestFileEntryForCollectionInstant(collectionID));
 
         store.createStatistics(collectionID, sc);
     }

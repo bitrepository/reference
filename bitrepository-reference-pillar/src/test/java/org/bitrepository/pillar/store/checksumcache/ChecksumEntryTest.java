@@ -47,4 +47,31 @@ class ChecksumEntryTest {
         Assertions.assertEquals(CE_CHECKSUM, ce.getChecksum());
         Assertions.assertEquals(CE_DATE, ce.getCalculationInstant());
     }
+
+    @Test
+    @Tag("regressiontest")
+    @Tag("pillartest")
+    void compactConstructorRejectsNullFileID() {
+        addDescription("The compact constructor must reject a null fileID");
+        Assertions.assertThrows(Exception.class, () -> new ChecksumEntry(null, CE_CHECKSUM, CE_DATE));
+    }
+
+    @Test
+    @Tag("regressiontest")
+    @Tag("pillartest")
+    void compactConstructorRejectsEmptyFileID() {
+        addDescription("The compact constructor must reject an empty fileID");
+        Assertions.assertThrows(Exception.class, () -> new ChecksumEntry("", CE_CHECKSUM, CE_DATE));
+    }
+
+    @Test
+    @Tag("regressiontest")
+    @Tag("pillartest")
+    void equalityIsComponentBased() {
+        addDescription("Two ChecksumEntries with identical components must be equal");
+        ChecksumEntry a = new ChecksumEntry(CE_FILE, CE_CHECKSUM, CE_DATE);
+        ChecksumEntry b = new ChecksumEntry(CE_FILE, CE_CHECKSUM, CE_DATE);
+        Assertions.assertEquals(a, b);
+        Assertions.assertEquals(a.hashCode(), b.hashCode());
+    }
 }

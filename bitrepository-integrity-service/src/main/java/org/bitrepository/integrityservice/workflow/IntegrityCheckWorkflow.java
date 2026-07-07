@@ -66,7 +66,7 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
     /**
      * Remember to call the initialise method needs to be called before the start method.
      */
-    public IntegrityCheckWorkflow() {}
+    protected IntegrityCheckWorkflow() {}
 
     @Override
     public void initialise(WorkflowContext context, String collectionID) {
@@ -84,20 +84,20 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
     protected abstract Instant getChecksumUpdateCutoffDate();
 
     @Override
-    public void start() {
+    public synchronized void start() {
         workflowStart = Instant.now();
 
         if (context == null) {
             throw new IllegalStateException(
                     "The workflow can not be started before the initialise method has been " + "called.");
         }
-        IntegrityReporter reporter = new BasicIntegrityReporter(jobID.getCollectionID(), jobID.getWorkflowName(),
+        IntegrityReporter reporter = new BasicIntegrityReporter(jobID.collectionID(), jobID.workflowName(),
                 IntegrityServiceManager.getIntegrityReportStorageDir());
 
         super.start();
         try {
             StatisticsCollector statisticsCollector = new StatisticsCollector(collectionID);
-            Integer maxRetries = context.getSettings().getReferenceSettings().getIntegrityServiceSettings()
+            Integer maxRetries = context.settings().getReferenceSettings().getIntegrityServiceSettings()
                     .getComponentRetries();
             integrityContributors = new IntegrityContributors(SettingsUtils.getPillarIDsForCollection(collectionID),
                     maxRetries == null ? DEFAULT_MAX_RETRIES : maxRetries);
@@ -111,38 +111,38 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
             performStep(updateChecksumStep);
 
             if (cleanDeletedFiles()) {
-                HandleDeletedFilesStep handleDeletedFilesStep = new HandleDeletedFilesStep(context.getStore(), reporter,
+                HandleDeletedFilesStep handleDeletedFilesStep = new HandleDeletedFilesStep(context.store(), reporter,
                         workflowStart, integrityContributors.getFinishedContributors());
                 performStep(handleDeletedFilesStep);
             }
 
             statisticsCollector.getCollectionStat().setStatsTime(Instant.now());
-            javax.xml.datatype.Duration timeBeforeMissingFileCheck = context.getSettings().getReferenceSettings()
+            javax.xml.datatype.Duration timeBeforeMissingFileCheck = context.settings().getReferenceSettings()
                     .getIntegrityServiceSettings().getTimeBeforeMissingFileCheck();
             Duration missingFileGracePeriod = XmlUtils.xmlDurationToDuration(timeBeforeMissingFileCheck);
-            HandleMissingFilesStep handleMissingFilesStep = new HandleMissingFilesStep(context.getStore(), reporter,
+            HandleMissingFilesStep handleMissingFilesStep = new HandleMissingFilesStep(context.store(), reporter,
                     statisticsCollector, missingFileGracePeriod);
             performStep(handleMissingFilesStep);
 
             HandleChecksumValidationStep handleChecksumValidationStep = new HandleChecksumValidationStep(
-                    context.getStore(), context.getAuditManager(), reporter, statisticsCollector);
+                    context.store(), context.auditManager(), reporter, statisticsCollector);
             performStep(handleChecksumValidationStep);
 
-            HandleMissingChecksumsStep handleMissingChecksumsStep = new HandleMissingChecksumsStep(context.getStore(),
+            HandleMissingChecksumsStep handleMissingChecksumsStep = new HandleMissingChecksumsStep(context.store(),
                     reporter, statisticsCollector, getChecksumUpdateCutoffDate());
             performStep(handleMissingChecksumsStep);
 
             HandleObsoleteChecksumsStep handleObsoleteChecksumsStep = new HandleObsoleteChecksumsStep(
-                    context.getSettings(), context.getStore(), reporter, statisticsCollector);
+                    context.settings(), context.store(), reporter, statisticsCollector);
             performStep(handleObsoleteChecksumsStep);
 
-            CreateStatisticsEntryStep createStatistics = new CreateStatisticsEntryStep(context.getStore(), collectionID,
+            CreateStatisticsEntryStep createStatistics = new CreateStatisticsEntryStep(context.store(), collectionID,
                     statisticsCollector);
             performStep(createStatistics);
 
             if (currentState() != WorkflowState.ABORTED) {
                 if (reporter.hasIntegrityIssues()) {
-                    context.getAlerter().integrityFailed(reporter.generateSummaryOfReport(), collectionID);
+                    context.alerter().integrityFailed(reporter.generateSummaryOfReport(), collectionID);
                 }
                 try {
                     reporter.generateReport();
@@ -150,7 +150,7 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
                             .setLatestReport(collectionID, reporter.getReportDir());
                 } catch (IOException e) {
                     log.error("Failed to generate integrity report", e);
-                    context.getAlerter().integrityComponentFailure("Failed to generate integrity report", collectionID);
+                    context.alerter().integrityComponentFailure("Failed to generate integrity report", collectionID);
                 }
             }
         } finally {

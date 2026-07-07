@@ -29,22 +29,10 @@ import java.util.Date;
 /**
  * Container for the information about the checksum of a file.
  */
-public class ChecksumEntry {
-    protected final String fileID;
-    protected final String checksum;
-    protected final Instant calculationDate;
+public record ChecksumEntry(String fileID, String checksum, Instant calculationInstant) {
 
-    /**
-     * @param fileID          The id of the file.
-     * @param checksum        The checksum of the file.
-     * @param calculationDate The calculation date for the checksum of the file.
-     */
-    public ChecksumEntry(String fileID, String checksum, Instant calculationDate) {
+    public ChecksumEntry {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
-
-        this.fileID = fileID;
-        this.checksum = checksum;
-        this.calculationDate = calculationDate;
     }
 
     /**
@@ -58,30 +46,23 @@ public class ChecksumEntry {
         this(fileID, checksum, calculationDate != null ? calculationDate.toInstant() : null);
     }
 
-    /**
-     * @return The id of the file.
-     */
     public String getFileId() {
         return fileID;
     }
 
-    /**
-     * @return The checksum of the file.
-     */
     public String getChecksum() {
         return checksum;
     }
 
+    public Instant getCalculationInstant() {
+        return calculationInstant;
+    }
+
     /**
-     * @return The calculation date for the checksum of the file.
      * @deprecated Use {@link #getCalculationInstant()} instead
      */
     @Deprecated(forRemoval = true)
     public Date getCalculationDate() {
-        return calculationDate != null ? Date.from(calculationDate) : null;
-    }
-
-    public Instant getCalculationInstant() {
-        return calculationDate;
+        return calculationInstant != null ? Date.from(calculationInstant) : null;
     }
 }

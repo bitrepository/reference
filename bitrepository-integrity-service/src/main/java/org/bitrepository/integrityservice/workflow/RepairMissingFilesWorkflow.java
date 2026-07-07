@@ -96,7 +96,7 @@ public class RepairMissingFilesWorkflow extends Workflow {
      */
     private void repairMissingFiles(List<String> pillarIDs) {
         List<String> filesNotRepaired = new ArrayList<>();
-        try (IntegrityIssueIterator iterator = context.getStore()
+        try (IntegrityIssueIterator iterator = context.store()
                 .findFilesWithMissingCopies(collectionID, pillarIDs.size(), 0L, MAX_RESULTS)) {
 
             String fileId;
@@ -121,7 +121,7 @@ public class RepairMissingFilesWorkflow extends Workflow {
             }
         }
         if (!filesNotRepaired.isEmpty()) {
-            context.getAlerter().operationFailed("Failed to repair the files '" + filesNotRepaired + "'.", collectionID);
+            context.alerter().operationFailed("Failed to repair the files '" + filesNotRepaired + "'.", collectionID);
         }
     }
 
@@ -134,7 +134,7 @@ public class RepairMissingFilesWorkflow extends Workflow {
      */
     private String getChecksumForFile(String fileId) {
         String res = null;
-        for (FileInfo fi : context.getStore().getFileInfos(fileId, collectionID)) {
+        for (FileInfo fi : context.store().getFileInfos(fileId, collectionID)) {
             if (res == null) {
                 res = fi.getChecksum();
             } else {
@@ -159,7 +159,7 @@ public class RepairMissingFilesWorkflow extends Workflow {
      * @throws MalformedURLException If a well-formed URL cannot be created.
      */
     private URL createURL(String fileId) throws MalformedURLException {
-        FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(context.getSettings());
+        FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(context.settings());
         return fe.getURL(fileId);
     }
 
@@ -201,7 +201,7 @@ public class RepairMissingFilesWorkflow extends Workflow {
      * @throws URISyntaxException If the URL is invalid.
      */
     private void deleteUrl(URL url) throws URISyntaxException {
-        FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(context.getSettings());
+        FileExchange fe = ProtocolComponentFactory.getInstance().getFileExchange(context.settings());
         try {
             fe.deleteFile(url);
         } catch (IOException e) {
