@@ -30,7 +30,7 @@ import jakarta.jms.Message;
 import jakarta.jms.MessageConsumer;
 import jakarta.jms.MessageProducer;
 import jakarta.jms.Session;
-import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
+import org.bitrepository.protocol.activemq.ArtemisConnectionFactoryProvider;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
@@ -56,7 +56,7 @@ public class RawMessagebus {
     public RawMessagebus(MessageBusConfiguration messageBusConfiguration, SecurityManager securityManager) {
         this.securityManager = securityManager;
 
-        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(messageBusConfiguration.getURL());
+        var connectionFactory = ArtemisConnectionFactoryProvider.create(messageBusConfiguration);
         try {
             connection = connectionFactory.createConnection();
             connection.setExceptionListener(new MessageBusExceptionListener());
