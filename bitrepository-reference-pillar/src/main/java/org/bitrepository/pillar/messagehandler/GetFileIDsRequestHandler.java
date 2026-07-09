@@ -25,7 +25,7 @@
  */
 package org.bitrepository.pillar.messagehandler;
 
-import org.apache.activemq.util.ByteArrayInputStream;
+import java.io.ByteArrayInputStream;
 import org.bitrepository.bitrepositorydata.GetFileIDsResults;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.ResponseCode;

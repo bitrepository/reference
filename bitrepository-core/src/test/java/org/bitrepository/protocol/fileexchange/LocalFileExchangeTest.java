@@ -4,7 +4,7 @@ import org.apache.commons.io.IOUtils;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.LocalFileExchange;
 import org.bitrepository.settings.referencesettings.FileExchangeSettings;
-import org.fusesource.hawtbuf.ByteArrayInputStream;
+import java.io.ByteArrayInputStream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;

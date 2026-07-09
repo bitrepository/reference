@@ -24,7 +24,7 @@
  */
 package org.bitrepository.protocol.message;
 
-import org.apache.activemq.util.ByteArrayInputStream;
+import java.io.ByteArrayInputStream;
 import org.apache.commons.io.IOUtils;
 import org.bitrepository.common.JaxbHelper;
 

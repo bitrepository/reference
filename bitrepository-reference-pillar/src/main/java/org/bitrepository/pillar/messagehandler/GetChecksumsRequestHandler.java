@@ -24,7 +24,7 @@
  */
 package org.bitrepository.pillar.messagehandler;
 
-import org.apache.activemq.util.ByteArrayInputStream;
+import java.io.ByteArrayInputStream;
 import org.bitrepository.bitrepositorydata.GetChecksumsResults;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ResponseCode;

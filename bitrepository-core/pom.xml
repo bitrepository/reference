@@ -57,8 +57,8 @@
     </dependency>
     <dependency>
       <groupId>org.apache.activemq</groupId>
-      <artifactId>activemq-client</artifactId>
-      <version>${activemq.version}</version>
+      <artifactId>artemis-jakarta-client</artifactId>
+      <version>${artemis.version}</version>
     </dependency>
     <dependency>
       <groupId>commons-codec</groupId>
@@ -67,8 +67,8 @@
     </dependency>
     <dependency>
       <groupId>org.apache.activemq</groupId>
-      <artifactId>activemq-broker</artifactId>
-      <version>${activemq.version}</version>
+      <artifactId>artemis-server</artifactId>
+      <version>${artemis.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
