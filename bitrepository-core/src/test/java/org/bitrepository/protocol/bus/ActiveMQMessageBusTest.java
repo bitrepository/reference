@@ -26,6 +26,7 @@ import jakarta.jms.MessageListener;
 import org.bitrepository.bitrepositorymessages.DeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileResponse;
+import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.ProtocolComponentFactory;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.message.ExampleMessageFactory;
@@ -180,5 +181,41 @@ class ActiveMQMessageBusTest extends GeneralMessageBusTest {
         response.setStringProperty(ActiveMQMessageBus.MESSAGE_TO_KEY, "OtherComponent");
         rawMessagebus.sendMessage(settingsForTestClient.getCollectionDestination(), rq);
         collectionReceiver.waitForMessage(DeleteFileRequest.class);
+    }
+
+    @Test
+    @Tag("regressiontest")
+    final void closeReleasesJmsResourcesTest() throws Exception {
+        addDescription("Test that closing a message bus releases its JMS resources, so it can no longer " +
+                "be used to send messages afterwards.");
+        addStep("Create a dedicated message bus instance and close it",
+                "No exception should be thrown while closing.");
+        ActiveMQMessageBus dedicatedMessageBus = new ActiveMQMessageBus(settingsForTestClient, securityManager);
+        dedicatedMessageBus.close();
+
+        addStep("Attempt to send a message on the closed message bus",
+                "The send should fail, since the underlying JMS session and connection have been closed.");
+        IdentifyPillarsForDeleteFileRequest message =
+                ExampleMessageFactory.createMessage(IdentifyPillarsForDeleteFileRequest.class);
+        message.setDestination(settingsForTestClient.getCollectionDestination());
+        Assertions.assertThrows(CoordinationLayerException.class, () -> dedicatedMessageBus.sendMessage(message));
+    }
+
+    @Test
+    @Tag("regressiontest")
+    final void rawMessagebusCloseReleasesJmsResourcesTest() throws Exception {
+        addDescription("Test that closing a RawMessagebus releases its JMS resources, so it can no longer " +
+                "be used afterwards.");
+        addStep("Create a raw message bus instance and close it",
+                "No exception should be thrown while closing.");
+        RawMessagebus rawMessagebus = new RawMessagebus(
+                settingsForTestClient.getMessageBusConfiguration(),
+                securityManager);
+        rawMessagebus.close();
+
+        addStep("Attempt to create a producer on the closed raw message bus",
+                "The call should fail, since the underlying JMS session and connection have been closed.");
+        Assertions.assertThrows(CoordinationLayerException.class,
+                () -> rawMessagebus.getProducer(settingsForTestClient.getCollectionDestination()));
     }
 }
