@@ -58,15 +58,42 @@ public class RawMessagebus {
 
         var connectionFactory = ArtemisConnectionFactoryProvider.create(messageBusConfiguration);
         try {
-            connection = connectionFactory.createConnection();
-            connection.setExceptionListener(new MessageBusExceptionListener());
+            newConnection = connectionFactory.createConnection();
+            newConnection.setExceptionListener(new MessageBusExceptionListener());
 
-            producerSession = connection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
-            consumerSession = connection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
+            producerSession = newConnection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
+            consumerSession = newConnection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
+            connection = newConnection;
 
             connection.start();
         } catch (JMSException e) {
+            closeQuietly(newConnection);
             throw new CoordinationLayerException("Unable to initialise connection to message bus", e);
+        }
+    }
+
+    /**
+     * Closes the connection, suppressing any JMSException, so it can be safely used for cleanup after a
+     * failed initialisation without masking the original error.
+     */
+    private void closeQuietly(Connection connection) {
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (JMSException e) {
+                log.warn("Failed to close connection after initialisation failure", e);
+            }
+        }
+    }
+
+    /**
+     * Closes the producer session, consumer session and connection. Declared in reverse close order so
+     * try-with-resources closes the sessions before the connection, guaranteeing all are attempted even
+     * if one throws.
+     */
+    public void close() throws JMSException {
+        try (connection; consumerSession; producerSession) {
+            log.debug("Closing raw message bus connection.");
         }
     }
 
