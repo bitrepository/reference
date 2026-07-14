@@ -91,7 +91,7 @@ class CalendarUtilsTest {
         CalendarUtils cu = CalendarUtils.getInstance(ZoneId.of("Europe/Copenhagen"));
         Instant expectedStartOfDay = Instant.parse("2015-02-25T23:00:00.000Z");
 
-        Instant parsedStartOfDay = cu.makeStartInstant("2015/02/26");
+        Instant parsedStartOfDay = cu.makeStartInstant("2015-02-26");
         Assertions.assertEquals(expectedStartOfDay, parsedStartOfDay);
     }
 
@@ -102,7 +102,7 @@ class CalendarUtilsTest {
         CalendarUtils cu = CalendarUtils.getInstance(ZoneId.of("Europe/Copenhagen"));
         Instant expectedEndOfDay = Instant.parse("2015-02-26T22:59:59.999Z");
 
-        Instant parsedEndOfDay = cu.makeEndInstant("2015/02/26");
+        Instant parsedEndOfDay = cu.makeEndInstant("2015-02-26");
         Assertions.assertEquals(expectedEndOfDay, parsedEndOfDay);
     }
 
@@ -113,9 +113,9 @@ class CalendarUtilsTest {
         CalendarUtils cu = CalendarUtils.getInstance(ZoneId.of("Europe/Copenhagen"));
         Instant expectedEndOfDay = Instant.parse("2015-12-31T22:59:59.999Z");
 
-        // Note: New implementation uses strict parsing, so 2015/12/32 is invalid. 
-        // Changed to 2015/12/31 to test end-of-year.
-        Instant parsedEndOfDay = cu.makeEndInstant("2015/12/31");
+        // Note: New implementation uses strict parsing, so 2015-12-32 is invalid.
+        // Changed to 2015-12-31 to test end-of-year.
+        Instant parsedEndOfDay = cu.makeEndInstant("2015-12-31");
         Assertions.assertEquals(expectedEndOfDay, parsedEndOfDay);
     }
 
@@ -126,7 +126,7 @@ class CalendarUtilsTest {
         CalendarUtils cu = CalendarUtils.getInstance(ZoneId.of("Europe/Copenhagen"));
         Instant expectedStartOfDayInUTC = ZonedDateTime.parse("2016-01-31T23:00:00.000Z",
                 DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneId.of("UTC"))).toInstant();
-        Instant parsedStartOfDay = cu.makeStartInstant("2016/02/01");
+        Instant parsedStartOfDay = cu.makeStartInstant("2016-02-01");
         Assertions.assertEquals(expectedStartOfDayInUTC, parsedStartOfDay);
     }
 
@@ -137,7 +137,7 @@ class CalendarUtilsTest {
         CalendarUtils cu = CalendarUtils.getInstance(ZoneId.of("Europe/Copenhagen"));
         Instant expectedEndOfDayInUTC = ZonedDateTime.parse("2016-02-01T22:59:59.999Z",
                 DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneId.of("UTC"))).toInstant();
-        Instant parsedEndOfDay = cu.makeEndInstant("2016/02/01");
+        Instant parsedEndOfDay = cu.makeEndInstant("2016-02-01");
         Assertions.assertEquals(expectedEndOfDayInUTC, parsedEndOfDay);
     }
 
@@ -147,9 +147,9 @@ class CalendarUtilsTest {
         addDescription("Test that the interval between start and end date on a summertime to "
                 + "wintertime change is 25 hours (-1 millisecond).");
         CalendarUtils cu = CalendarUtils.getInstance(ZoneId.of("Europe/Copenhagen"));
-        Instant startDate = cu.makeStartInstant("2015/10/25");
+        Instant startDate = cu.makeStartInstant("2015-10-25");
         Assertions.assertNotNull(startDate);
-        Instant endDate = cu.makeEndInstant("2015/10/25");
+        Instant endDate = cu.makeEndInstant("2015-10-25");
         Assertions.assertNotNull(endDate);
         Duration expectedIntervalLength = Duration.ofHours(25).minusMillis(1);
         Assertions.assertEquals(expectedIntervalLength, Duration.between(startDate, endDate));
@@ -161,9 +161,9 @@ class CalendarUtilsTest {
         addDescription("Test that the interval between start and end date on a wintertime to "
                 + "summertime change is 23 hours (-1 millisecond).");
         CalendarUtils cu = CalendarUtils.getInstance(ZoneId.of("Europe/Copenhagen"));
-        Instant startDate = cu.makeStartInstant("2016/03/27");
+        Instant startDate = cu.makeStartInstant("2016-03-27");
         Assertions.assertNotNull(startDate);
-        Instant endDate = cu.makeEndInstant("2016/03/27");
+        Instant endDate = cu.makeEndInstant("2016-03-27");
         Assertions.assertNotNull(endDate);
         Duration expectedIntervalLength = Duration.ofHours(23).minusMillis(1);
         Assertions.assertEquals(expectedIntervalLength, Duration.between(startDate, endDate));

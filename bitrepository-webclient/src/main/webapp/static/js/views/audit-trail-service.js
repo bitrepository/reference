@@ -66,8 +66,8 @@ function getAuditTrails() {
             $("#auditTrailsTableDiv").html(htmlTable);
         }, "json").fail(
         function (jqXHR, textStatus, errorThrown) {
-            let htmlElement = "<div class=\"alert alert-error\">";
-            htmlElement += "<button type=\"button\" class=\"close\" data-dismiss=\"alert\">&times;</button>";
+            let htmlElement = "<div class=\"alert alert-danger\">";
+            htmlElement += "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>";
             htmlElement += "<b>Oh snap!</b> ";
             htmlElement += "Fetching of Audit trails failed with: " + errorThrown + "</div>";
             $("#auditTrailsTableDiv").html(htmlElement);
@@ -183,8 +183,6 @@ $(document).ready(function () {
     makeMenu("audit-trail-service.html", "#pageMenu");
     initPage();
     getCollectionIDs();
-    $("#fromDate").datepicker({format: "yyyy/mm/dd"});
-    $("#toDate").datepicker({format: "yyyy/mm/dd"});
     $("#toDateClearButton").on("click", function (event) {event.preventDefault(); clearElement("#toDate")});
     $("#fromDateClearButton").on("click", function (event) {event.preventDefault(); clearElement("#fromDate")});
     $("#fileIDClearButton").on("click", function (event) {event.preventDefault(); clearElement("#fileIDFilter")});

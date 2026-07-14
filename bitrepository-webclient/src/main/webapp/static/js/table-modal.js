@@ -110,7 +110,7 @@ function TableModal(operation, pillarID, url, contentElement, getTotalItemCountC
                 $(".next-button").on("click", () => self.getModal(page + 1));
             }
         }).fail(function () {
-            let html = "<div class=\"alert alert-error\">"
+            let html = "<div class=\"alert alert-danger\">"
             html += "Failed to load page";
             html += "</div>"
             $(contentElement).html(html);

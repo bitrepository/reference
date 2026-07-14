@@ -71,7 +71,7 @@ function DownloadModal(collectionID, contentElement, url) {
             updateDownloadLink(zipURL);
             enableOnClickFunctionality(self);
         }).fail(function () {
-            let html = "<div class=\"alert alert-error\">";
+            let html = "<div class=\"alert alert-danger\">";
             html += "Failed to load page";
             html += "</div>";
             $(contentElement).html(html);

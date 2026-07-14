@@ -17,7 +17,7 @@ function displayCollectionsListing(collections) {
 function displayProtocolSettings(settings) {
     let html = "<h3>Protocol settings</h3>";
 
-    html += "<table class=\"table table-hover table-condensed table-bordered\">";
+    html += "<table class=\"table table-hover table-sm table-bordered\">";
     html += "<thead><tr>";
     html += "<th>Settings key</th>";
     html += "<th>Value</th>";

@@ -134,16 +134,16 @@ function updateCollectionRow(collection) {
     let checksumErrorsNumberElement = $("#" + id + "-numChecksumErrors");
     checksumErrorsNumberElement.html(numeral(collection.numChecksumErrors).format('0,0'));
     if (collection.numChecksumErrors > 0) {
-        checksumErrorsNumberElement.addClass("badge badge-important pull-right");
+        checksumErrorsNumberElement.addClass("badge text-bg-danger float-end");
     } else {
-        checksumErrorsNumberElement.removeClass("badge badge-important pull-right");
+        checksumErrorsNumberElement.removeClass("badge text-bg-danger float-end");
     }
     let missingFilesNumberElement = $("#" + id + "-numMissingFiles");
     missingFilesNumberElement.html(numeral(collection.numMissingFiles).format('0,0'));
     if (collection.numMissingFiles > 0) {
-        missingFilesNumberElement.addClass("badge badge-important pull-right");
+        missingFilesNumberElement.addClass("badge text-bg-danger float-end");
     } else {
-        missingFilesNumberElement.removeClass("badge badge-important pull-right");
+        missingFilesNumberElement.removeClass("badge text-bg-danger float-end");
     }
     $("#" + id + "-nextCheck").html(collection.nextCheck);
 }

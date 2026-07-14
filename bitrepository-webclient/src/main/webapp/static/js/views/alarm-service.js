@@ -109,8 +109,6 @@ function init() {
 $(document).ready(function () {
     makeMenu("alarm-service.html", "#pageMenu");
     init();
-    $("#fromDate").datepicker({format: "yyyy/mm/dd"});
-    $("#toDate").datepicker({format: "yyyy/mm/dd"});
     $("#toDateClearButton").on("click", function (event) {
         event.preventDefault();
         clearElement("#toDate")
