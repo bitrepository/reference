@@ -28,13 +28,12 @@ import org.slf4j.LoggerFactory;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
-import java.util.TimerTask;
 
 /**
  * A timer task encapsulating a workflow.
  * Used for scheduling workflows to run continuously at a given interval.
  */
-public class JobTimerTask extends TimerTask {
+public class JobTimerTask implements Runnable {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private Instant nextRun;
     private final long interval;

@@ -107,6 +107,7 @@ public class Pillar {
      */
     public void close() {
         try {
+            scheduler.shutdown();
             mediator.close();
             messageBus.close();
             pillarModel.close();
