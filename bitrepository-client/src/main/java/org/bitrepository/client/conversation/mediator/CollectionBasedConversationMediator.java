@@ -28,6 +28,7 @@ import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.client.conversation.Conversation;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.common.DefaultThreadFactory;
+import org.bitrepository.common.ScheduledVirtualThreadExecutor;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.common.utils.XmlUtils;
@@ -43,9 +44,9 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Conversation handler that delegates messages to registered conversations.
@@ -61,22 +62,27 @@ public class CollectionBasedConversationMediator implements ConversationMediator
      *
      * @see ConversationCleaner
      */
-    private static final Timer cleanTimer = new Timer(NAME_OF_TIMER, TIMER_IS_DAEMON);
+    private static final ScheduledVirtualThreadExecutor cleanScheduler =
+            new ScheduledVirtualThreadExecutor(NAME_OF_TIMER, TIMER_IS_DAEMON);
     private final MessageBus messagebus;
     private static final ThreadFactory threadFactory = new DefaultThreadFactory(
             CollectionBasedConversationMediator.class.getSimpleName() + "-", Thread.NORM_PRIORITY, false);
+    private ScheduledFuture<?> cleanupTask;
 
     @Override
     public void start() {
         messagebus.addListener(settings.getReceiverDestinationID(), this);
         javax.xml.datatype.Duration cleanupInterval = settings.getReferenceSettings().getClientSettings().getMediatorCleanupInterval();
-        cleanTimer.scheduleAtFixedRate(new ConversationCleaner(),
-                0, XmlUtils.xmlDurationToMilliseconds(cleanupInterval));
+        cleanupTask = cleanScheduler.scheduleAtFixedRate(new ConversationCleaner(),
+                0, XmlUtils.xmlDurationToMilliseconds(cleanupInterval), TimeUnit.MILLISECONDS);
     }
 
     @Override
     public void shutdown() {
         messagebus.removeListener(settings.getReceiverDestinationID(), this);
+        if (cleanupTask != null) {
+            cleanupTask.cancel(false);
+        }
     }
 
     /**
@@ -149,7 +155,7 @@ public class CollectionBasedConversationMediator implements ConversationMediator
      * A copy of the current conversations is created before running through the conversations to avoid having to lock
      * the conversations map while cleaning.
      */
-    private final class ConversationCleaner extends TimerTask {
+    private final class ConversationCleaner implements Runnable {
         @Override
         public void run() {
             Conversation[] conversationArray = conversations.values().toArray(new Conversation[0]);
