@@ -212,6 +212,9 @@ public final class IntegrityServiceManager {
 
         @Override
         public void shutdown() {
+            if (workFlowManager != null) {
+                workFlowManager.shutdown();
+            }
             if (messageBus != null) {
                 try {
                     messageBus.close();
