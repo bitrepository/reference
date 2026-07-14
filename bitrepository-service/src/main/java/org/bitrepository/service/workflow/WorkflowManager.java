@@ -66,6 +66,13 @@ public abstract class WorkflowManager {
         return scheduler.startJob(getWorkflow(jobID));
     }
 
+    /**
+     * Stops the underlying scheduler. No further workflow runs will be triggered after this returns.
+     */
+    public void shutdown() {
+        scheduler.shutdown();
+    }
+
     public List<JobID> getWorkflows(String collectionID) {
         return collectionWorkflows.get(collectionID);
     }

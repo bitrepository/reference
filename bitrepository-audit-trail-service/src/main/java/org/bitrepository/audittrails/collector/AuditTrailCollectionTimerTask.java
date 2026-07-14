@@ -28,9 +28,8 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 import java.util.Date;
-import java.util.TimerTask;
 
-public class AuditTrailCollectionTimerTask extends TimerTask {
+public class AuditTrailCollectionTimerTask implements Runnable {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private final IncrementalCollector collector;
