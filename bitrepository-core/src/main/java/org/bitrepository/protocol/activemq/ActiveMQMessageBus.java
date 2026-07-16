@@ -172,7 +172,7 @@ public class ActiveMQMessageBus implements MessageBus {
         clientID = settings.getComponentID();
         String schemaLocation = "BitRepositoryMessages.xsd";
         jaxbHelper = new JaxbHelper("xsd/", schemaLocation);
-        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(configuration.getURL());
+        ActiveMQConnectionFactory connectionFactory = ArtemisConnectionFactoryProvider.create(configuration);
         registerCustomMessageLoggers();
         try {
             connection = connectionFactory.createConnection();
