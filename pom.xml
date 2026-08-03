@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.bitrepository.reference</groupId>
     <artifactId>bitrepository-parent</artifactId>
-    <version>1.12-SNAPSHOT</version>
+    <version>${revision}</version>
 
     <parent>
         <groupId>org.sbforge</groupId>
@@ -405,6 +405,31 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.7.3</version>
+                <configuration>
+                    <updatePomFile>true</updatePomFile>
+                    <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -581,6 +606,7 @@
     </profiles>
 
     <properties>
+        <revision>1.12-SNAPSHOT</revision>
         <!-- Specify java version here, to support forbiddenapis plugin -->
         <maven.compiler.release>21</maven.compiler.release>
         <api.check.phase>process-classes</api.check.phase> <!-- forbidden-apis dislikes TestValidationUtils #validateUtilityClass -->
