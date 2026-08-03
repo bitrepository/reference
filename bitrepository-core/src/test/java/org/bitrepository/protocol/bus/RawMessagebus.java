@@ -34,6 +34,7 @@ import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.activemq.ArtemisConnectionFactoryProvider;
+import org.bitrepository.protocol.activemq.JmsConnectionUtils;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
 import org.slf4j.Logger;
@@ -68,31 +69,13 @@ public class RawMessagebus {
 
             connection.start();
         } catch (JMSException e) {
-            closeQuietly(newConnection);
+            JmsConnectionUtils.closeQuietly(newConnection);
             throw new CoordinationLayerException("Unable to initialise connection to message bus", e);
         }
     }
 
-    /**
-     * Closes the connection, suppressing any JMSException, so it can be safely used for cleanup after a
-     * failed initialisation without masking the original error.
-     */
-    private void closeQuietly(Connection connection) {
-        if (connection != null) {
-            try {
-                connection.close();
-            } catch (JMSException e) {
-                log.warn("Failed to close connection after initialisation failure", e);
-            }
-        }
-    }
-
-    /**
-     * Closes the producer session, consumer session and connection. Declared in reverse close order so
-     * try-with-resources closes the sessions before the connection, guaranteeing all are attempted even
-     * if one throws.
-     */
     public void close() throws JMSException {
+//     Closes the producer session, consumer session and connection.
         try (connection; consumerSession; producerSession) {
             log.debug("Closing raw message bus connection.");
         }

@@ -194,7 +194,7 @@ class ActiveMQMessageBusTest extends GeneralMessageBusTest {
         dedicatedMessageBus.close();
 
         addStep("Attempt to send a message on the closed message bus",
-                "The send should fail, since the underlying JMS session and connection have been closed.");
+                "The send should fail since the underlying JMS session and connection have been closed.");
         IdentifyPillarsForDeleteFileRequest message =
                 ExampleMessageFactory.createMessage(IdentifyPillarsForDeleteFileRequest.class);
         message.setDestination(settingsForTestClient.getCollectionDestination());

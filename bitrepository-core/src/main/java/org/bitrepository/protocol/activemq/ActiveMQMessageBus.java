@@ -187,7 +187,7 @@ public class ActiveMQMessageBus implements MessageBus {
 
             startListeningForMessages();
         } catch (JMSException e) {
-            closeQuietly(newConnection);
+            JmsConnectionUtils.closeQuietly(newConnection);
             throw new CoordinationLayerException("Unable to initialise connection to message bus", e);
         }
         log.debug("ActiveMQConnection initialized for '{}'", configuration);
@@ -212,20 +212,6 @@ public class ActiveMQMessageBus implements MessageBus {
             }
         });
         connectionStarter.start();
-    }
-
-    /**
-     * Closes the connection, suppressing any JMSException, so it can be safely used for cleanup after a
-     * failed initialisation without masking the original error.
-     */
-    private void closeQuietly(Connection connection) {
-        if (connection != null) {
-            try {
-                connection.close();
-            } catch (JMSException e) {
-                log.warn("Failed to close connection after initialisation failure", e);
-            }
-        }
     }
 
     @Override
