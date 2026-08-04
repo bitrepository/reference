@@ -30,10 +30,11 @@ import jakarta.jms.Message;
 import jakarta.jms.MessageConsumer;
 import jakarta.jms.MessageProducer;
 import jakarta.jms.Session;
-import org.bitrepository.protocol.activemq.ArtemisConnectionFactoryProvider;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
+import org.bitrepository.protocol.activemq.ArtemisConnectionFactoryProvider;
+import org.bitrepository.protocol.activemq.JmsConnectionUtils;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
 import org.slf4j.Logger;
@@ -57,16 +58,26 @@ public class RawMessagebus {
         this.securityManager = securityManager;
 
         var connectionFactory = ArtemisConnectionFactoryProvider.create(messageBusConfiguration);
+        Connection connection = null;
         try {
             connection = connectionFactory.createConnection();
             connection.setExceptionListener(new MessageBusExceptionListener());
 
             producerSession = connection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
             consumerSession = connection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
+            this.connection = connection;
 
             connection.start();
         } catch (JMSException e) {
+            JmsConnectionUtils.closeQuietly(connection);
             throw new CoordinationLayerException("Unable to initialise connection to message bus", e);
+        }
+    }
+
+    public void close() throws JMSException {
+//     Closes the producer session, consumer session and connection.
+        try (connection; consumerSession; producerSession) {
+            log.debug("Closing raw message bus connection.");
         }
     }
 

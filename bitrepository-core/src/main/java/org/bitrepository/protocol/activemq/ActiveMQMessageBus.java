@@ -35,8 +35,6 @@ import jakarta.jms.Session;
 import jakarta.jms.TextMessage;
 import jakarta.jms.Topic;
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
-
-import java.io.ByteArrayInputStream;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.common.DefaultThreadFactory;
@@ -67,6 +65,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
+import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
@@ -174,18 +173,21 @@ public class ActiveMQMessageBus implements MessageBus {
         jaxbHelper = new JaxbHelper("xsd/", schemaLocation);
         ActiveMQConnectionFactory connectionFactory = ArtemisConnectionFactoryProvider.create(configuration);
         registerCustomMessageLoggers();
+        Connection newConnection = null;
         try {
-            connection = connectionFactory.createConnection();
-            connection.setClientID(clientID);
-            connection.setExceptionListener(new MessageBusExceptionListener());
+            newConnection = connectionFactory.createConnection();
+            newConnection.setClientID(clientID);
+            newConnection.setExceptionListener(new MessageBusExceptionListener());
 
-            producerSession = connection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
-            consumerSession = connection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
+            producerSession = newConnection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
+            consumerSession = newConnection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
             producer = producerSession.createProducer(null);
             producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+            connection = newConnection;
 
             startListeningForMessages();
         } catch (JMSException e) {
+            JmsConnectionUtils.closeQuietly(newConnection);
             throw new CoordinationLayerException("Unable to initialise connection to message bus", e);
         }
         log.debug("ActiveMQConnection initialized for '{}'", configuration);
@@ -251,12 +253,9 @@ public class ActiveMQMessageBus implements MessageBus {
     public void close() throws JMSException {
         receivedMessageHandler.close();
         log.info("Closing message bus: {}", configuration);
-        producerSession.close();
-        log.debug("Producer session closed.");
-        consumerSession.close();
-        log.debug("Consumer session closed.");
-        connection.close();
-        log.debug("Connection closed.");
+        try (connection; consumerSession; producerSession) {
+            log.debug("Closing producer session, consumer session and connection.");
+        }
     }
 
     @Override
