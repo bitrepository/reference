@@ -29,4 +29,20 @@ public record JobID(String workflowName, String collectionID) {
     public String toString() {
         return workflowName + "-" + collectionID;
     }
+
+    /**
+     * @deprecated Use {@link #workflowName()} instead
+     */
+    @Deprecated(forRemoval = true)
+    public String getWorkflowName() {
+        return workflowName;
+    }
+
+    /**
+     * @deprecated Use {@link #collectionID()} instead
+     */
+    @Deprecated(forRemoval = true)
+    public String getCollectionID() {
+        return collectionID;
+    }
 }

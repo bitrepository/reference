@@ -31,6 +31,14 @@ import java.io.InputStream;
  */
 public record DefaultFileInfo(File file) implements FileInfo {
 
+    /**
+     * @deprecated Use {@link #file()} instead
+     */
+    @Deprecated(forRemoval = true)
+    public File getFile() {
+        return file;
+    }
+
     @Override
     public String getFileID() {
         return file.getName();

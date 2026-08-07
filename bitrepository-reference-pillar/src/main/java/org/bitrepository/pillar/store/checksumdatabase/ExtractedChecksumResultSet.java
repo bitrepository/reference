@@ -60,14 +60,14 @@ public class ExtractedChecksumResultSet {
      */
     public void insertChecksumEntry(ChecksumEntry entry) {
         ChecksumDataForChecksumSpecTYPE res = new ChecksumDataForChecksumSpecTYPE();
-        res.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(entry.getCalculationDate()));
+        res.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(entry.calculationInstant()));
         try {
-            res.setChecksumValue(Base16Utils.encodeBase16(entry.getChecksum()));
+            res.setChecksumValue(Base16Utils.encodeBase16(entry.checksum()));
         } catch (DecoderException e) {
             throw new IllegalArgumentException("Could not encode checksum.", e);
         }
 
-        res.setFileID(entry.getFileId());
+        res.setFileID(entry.fileID());
         entries.add(res);
     }
 
