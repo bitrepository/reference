@@ -31,10 +31,18 @@ import org.jspecify.annotations.NonNull;
  */
 public record SelectedComponentInfo(String componentID, String componentTopic) {
 
+    /**
+     * @deprecated Use {@link #componentID()} instead
+     */
+    @Deprecated(forRemoval = true)
     public String getID() {
         return componentID;
     }
 
+    /**
+     * @deprecated Use {@link #componentTopic()} instead
+     */
+    @Deprecated(forRemoval = true)
     public String getDestination() {
         return componentTopic;
     }
