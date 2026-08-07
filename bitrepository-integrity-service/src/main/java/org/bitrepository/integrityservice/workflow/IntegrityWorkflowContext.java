@@ -38,4 +38,45 @@ public record IntegrityWorkflowContext(
     IntegrityModel store,
     IntegrityAlerter alerter,
     AuditTrailManager auditManager
-) implements WorkflowContext {}
+) implements WorkflowContext {
+
+    /**
+     * @deprecated Use {@link #settings()} instead
+     */
+    @Deprecated(forRemoval = true)
+    public Settings getSettings() {
+        return settings;
+    }
+
+    /**
+     * @deprecated Use {@link #collector()} instead
+     */
+    @Deprecated(forRemoval = true)
+    public IntegrityInformationCollector getCollector() {
+        return collector;
+    }
+
+    /**
+     * @deprecated Use {@link #store()} instead
+     */
+    @Deprecated(forRemoval = true)
+    public IntegrityModel getStore() {
+        return store;
+    }
+
+    /**
+     * @deprecated Use {@link #alerter()} instead
+     */
+    @Deprecated(forRemoval = true)
+    public IntegrityAlerter getAlerter() {
+        return alerter;
+    }
+
+    /**
+     * @deprecated Use {@link #auditManager()} instead
+     */
+    @Deprecated(forRemoval = true)
+    public AuditTrailManager getAuditManager() {
+        return auditManager;
+    }
+}

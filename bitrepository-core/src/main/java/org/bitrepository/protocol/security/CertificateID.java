@@ -53,4 +53,20 @@ public record CertificateID(X500Principal issuer, BigInteger serial) {
     public static CertificateID of(X500Name issuer, BigInteger serialNumber) {
         return new CertificateID(issuer, serialNumber);
     }
+
+    /**
+     * @deprecated Use {@link #issuer()} instead
+     */
+    @Deprecated(forRemoval = true)
+    public X500Principal getIssuer() {
+        return issuer;
+    }
+
+    /**
+     * @deprecated Use {@link #serial()} instead
+     */
+    @Deprecated(forRemoval = true)
+    public BigInteger getSerial() {
+        return serial;
+    }
 }

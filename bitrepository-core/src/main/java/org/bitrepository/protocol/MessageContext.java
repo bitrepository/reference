@@ -24,4 +24,12 @@ package org.bitrepository.protocol;
 /**
  * Contains information about the message, not contained in the message itself.
  */
-public record MessageContext(String certificateFingerprint) {}
+public record MessageContext(String certificateFingerprint) {
+    /**
+     * @deprecated Use {@link #certificateFingerprint()} instead
+     */
+    @Deprecated(forRemoval = true)
+    public String getCertificateFingerprint() {
+        return certificateFingerprint;
+    }
+}

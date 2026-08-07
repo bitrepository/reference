@@ -28,6 +28,10 @@ import java.util.Date;
 
 /**
  * Container for the information about the checksum of a file.
+ *
+ * @param fileID             The id of the file.
+ * @param checksum           The checksum of the file.
+ * @param calculationInstant The calculation date for the checksum of the file.
  */
 public record ChecksumEntry(String fileID, String checksum, Instant calculationInstant) {
 
@@ -36,9 +40,6 @@ public record ChecksumEntry(String fileID, String checksum, Instant calculationI
     }
 
     /**
-     * @param fileID          The id of the file.
-     * @param checksum        The checksum of the file.
-     * @param calculationDate The calculation date for the checksum of the file.
      * @deprecated Use {@link #ChecksumEntry(String, String, Instant)} instead
      */
     @Deprecated(forRemoval = true)
@@ -46,14 +47,26 @@ public record ChecksumEntry(String fileID, String checksum, Instant calculationI
         this(fileID, checksum, calculationDate != null ? calculationDate.toInstant() : null);
     }
 
+    /**
+     * @deprecated Use {@link #fileID()} instead
+     */
+    @Deprecated(forRemoval = true)
     public String getFileId() {
         return fileID;
     }
 
+    /**
+     * @deprecated Use {@link #checksum()} instead
+     */
+    @Deprecated(forRemoval = true)
     public String getChecksum() {
         return checksum;
     }
 
+    /**
+     * @deprecated Use {@link #calculationInstant()} instead
+     */
+    @Deprecated(forRemoval = true)
     public Instant getCalculationInstant() {
         return calculationInstant;
     }
