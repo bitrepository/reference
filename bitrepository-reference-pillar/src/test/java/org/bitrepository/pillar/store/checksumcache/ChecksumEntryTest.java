@@ -54,7 +54,7 @@ class ChecksumEntryTest {
     @Tag("pillartest")
     void compactConstructorRejectsNullFileID() {
         addDescription("The compact constructor must reject a null fileID");
-        Assertions.assertThrows(Exception.class, () -> new ChecksumEntry(null, CE_CHECKSUM, CE_DATE));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new ChecksumEntry(null, CE_CHECKSUM, CE_DATE));
     }
 
     @Test
@@ -62,7 +62,7 @@ class ChecksumEntryTest {
     @Tag("pillartest")
     void compactConstructorRejectsEmptyFileID() {
         addDescription("The compact constructor must reject an empty fileID");
-        Assertions.assertThrows(Exception.class, () -> new ChecksumEntry("", CE_CHECKSUM, CE_DATE));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new ChecksumEntry("", CE_CHECKSUM, CE_DATE));
     }
 
     @Test
