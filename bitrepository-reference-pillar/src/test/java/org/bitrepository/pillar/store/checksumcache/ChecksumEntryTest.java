@@ -43,9 +43,9 @@ class ChecksumEntryTest {
         addDescription("Test the ChecksumEntry");
         addStep("Create a ChecksumEntry", "The data should be extractable again.");
         ChecksumEntry ce = new ChecksumEntry(CE_FILE, CE_CHECKSUM, CE_DATE);
-        Assertions.assertEquals(CE_FILE, ce.getFileId());
-        Assertions.assertEquals(CE_CHECKSUM, ce.getChecksum());
-        Assertions.assertEquals(CE_DATE, ce.getCalculationInstant());
+        Assertions.assertEquals(CE_FILE, ce.fileID());
+        Assertions.assertEquals(CE_CHECKSUM, ce.checksum());
+        Assertions.assertEquals(CE_DATE, ce.calculationInstant());
     }
 
     @Test
