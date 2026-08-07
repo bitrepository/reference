@@ -51,9 +51,4 @@ public record SelectedComponentInfo(@NonNull String componentID, @NonNull String
     public @NonNull String getDestination() {
         return componentTopic;
     }
-
-    @Override
-    public @NonNull String toString() {
-        return "SelectedComponentInfo: componentID=" + componentID + ", componentTopic=" + componentTopic;
-    }
 }
