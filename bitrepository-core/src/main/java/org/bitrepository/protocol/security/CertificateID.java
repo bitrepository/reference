@@ -25,6 +25,7 @@ import org.bouncycastle.asn1.x500.X500Name;
 
 import javax.security.auth.x500.X500Principal;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.math.BigInteger;
 
 /**
@@ -33,14 +34,23 @@ import java.math.BigInteger;
  */
 public record CertificateID(X500Principal issuer, BigInteger serial) {
 
+    /** Creates a CertificateID from an X500Name issuer converting it to X500Principal. */
+    public CertificateID(X500Name issuer, BigInteger serialNumber) {
+        this(getX500Principal(issuer), serialNumber);
+    }
+
+    private static X500Principal getX500Principal(X500Name issuer) {
+        try {
+            return new X500Principal(issuer.getEncoded());
+        } catch (IOException e) {
+            throw new UncheckedIOException("Failed to create X500Principal from X500Name", e);
+        }
+    }
+
     /**
      * Creates a CertificateID from an X500Name issuer, converting it to X500Principal.
      */
     public static CertificateID of(X500Name issuer, BigInteger serialNumber) {
-        try {
-            return new CertificateID(new X500Principal(issuer.getEncoded()), serialNumber);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to create X500Principal from X500Name", e);
-        }
+        return new CertificateID(issuer, serialNumber);
     }
 }
