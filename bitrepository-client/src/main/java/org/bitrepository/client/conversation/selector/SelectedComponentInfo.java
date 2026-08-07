@@ -28,22 +28,27 @@ import org.jspecify.annotations.NonNull;
 
 /**
  * Container for information about a pillar which has been identified and marked as selected for a request.
+ *
+ * @param componentID    The ID of the selected pillar
+ * @param componentTopic The topic for communication with the selected pillar
  */
-public record SelectedComponentInfo(String componentID, String componentTopic) {
+public record SelectedComponentInfo(@NonNull String componentID, @NonNull String componentTopic) {
 
     /**
+     * @return The ID of the pillar chosen by this selector
      * @deprecated Use {@link #componentID()} instead
      */
     @Deprecated(forRemoval = true)
-    public String getID() {
+    public @NonNull String getID() {
         return componentID;
     }
 
     /**
+     * @return The topic for sending messages to the pillar chosen by this selector
      * @deprecated Use {@link #componentTopic()} instead
      */
     @Deprecated(forRemoval = true)
-    public String getDestination() {
+    public @NonNull String getDestination() {
         return componentTopic;
     }
 
