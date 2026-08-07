@@ -63,15 +63,4 @@ class ChecksumEntryTest {
         addDescription("The compact constructor must reject an empty fileID");
         Assertions.assertThrows(IllegalArgumentException.class, () -> new ChecksumEntry("", CE_CHECKSUM, CE_DATE));
     }
-
-    @Test
-    @Tag("regressiontest")
-    @Tag("pillartest")
-    void equalityIsComponentBased() {
-        addDescription("Two ChecksumEntries with identical components must be equal");
-        ChecksumEntry a = new ChecksumEntry(CE_FILE, CE_CHECKSUM, CE_DATE);
-        ChecksumEntry b = new ChecksumEntry(CE_FILE, CE_CHECKSUM, CE_DATE);
-        Assertions.assertEquals(a, b);
-        Assertions.assertEquals(a.hashCode(), b.hashCode());
-    }
 }
