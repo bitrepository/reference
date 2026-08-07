@@ -24,7 +24,7 @@
  */
 package org.bitrepository.client.conversation.selector;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Container for information about a pillar which has been identified and marked as selected for a request.
@@ -40,7 +40,7 @@ public record SelectedComponentInfo(String componentID, String componentTopic) {
     }
 
     @Override
-    public @NotNull String toString() {
+    public @NonNull String toString() {
         return "SelectedComponentInfo: componentID=" + componentID + ", componentTopic=" + componentTopic;
     }
 }
