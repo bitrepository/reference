@@ -23,7 +23,7 @@ pipeline {
         }
         stage('Mvn clean package') {
             steps {
-                sh "${env.MVN_CMD} -PallTests clean package"
+                sh "${env.MVN_CMD} -PallTests -Pintegration-test -PStress-test clean install"
             }
         }
         stage('Analyze build results') {
