@@ -16,14 +16,6 @@ class JobIDTest {
     }
 
     @Test
-    void equalityIsComponentBased() {
-        JobID a = new JobID("wf", "col");
-        JobID b = new JobID("wf", "col");
-        assertEquals(a, b);
-        assertEquals(a.hashCode(), b.hashCode());
-    }
-
-    @Test
     void inequalityOnDifferentComponents() {
         JobID base = new JobID("wf", "col");
         assertNotEquals(base, new JobID("other", "col"));

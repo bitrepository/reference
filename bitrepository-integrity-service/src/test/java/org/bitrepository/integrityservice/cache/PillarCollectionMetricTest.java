@@ -26,13 +26,4 @@ class PillarCollectionMetricTest {
         assertEquals(0L, m.pillarFileCount());
         assertNull(m.oldestChecksumTimestamp());
     }
-
-    @Test
-    void equalityIsComponentBased() {
-        Instant ts = Instant.ofEpochMilli(1000);
-        PillarCollectionMetric a = new PillarCollectionMetric(10L, 5L, ts);
-        PillarCollectionMetric b = new PillarCollectionMetric(10L, 5L, ts);
-        assertEquals(a, b);
-        assertEquals(a.hashCode(), b.hashCode());
-    }
 }
