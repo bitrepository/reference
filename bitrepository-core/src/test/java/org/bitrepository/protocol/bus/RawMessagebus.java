@@ -30,6 +30,7 @@ import jakarta.jms.Message;
 import jakarta.jms.MessageConsumer;
 import jakarta.jms.MessageProducer;
 import jakarta.jms.Session;
+import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
@@ -57,21 +58,21 @@ public class RawMessagebus {
     public RawMessagebus(MessageBusConfiguration messageBusConfiguration, SecurityManager securityManager) {
         this.securityManager = securityManager;
 
-        var connectionFactory = ArtemisConnectionFactoryProvider.create(messageBusConfiguration);
-        Connection connection = null;
+        ActiveMQConnectionFactory connectionFactory = ArtemisConnectionFactoryProvider.create(messageBusConfiguration);
+        Connection newConnection = null;
         try {
-            connection = connectionFactory.createConnection();
-            connection.setExceptionListener(new MessageBusExceptionListener());
+            newConnection = connectionFactory.createConnection();
+            newConnection.setExceptionListener(new MessageBusExceptionListener());
 
-            producerSession = connection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
-            consumerSession = connection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
-            this.connection = connection;
+            producerSession = newConnection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
+            consumerSession = newConnection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
 
-            connection.start();
+            newConnection.start();
         } catch (JMSException e) {
-            JmsConnectionUtils.closeQuietly(connection);
+            JmsConnectionUtils.closeQuietly(newConnection);
             throw new CoordinationLayerException("Unable to initialise connection to message bus", e);
         }
+        connection = newConnection;
     }
 
     public void close() throws JMSException {

@@ -135,6 +135,7 @@ public class ActiveMQMessageBus implements MessageBus {
     private final MessageBusConfiguration configuration;
     private final JaxbHelper jaxbHelper;
     private final Connection connection;
+    private final ActiveMQConnectionFactory connectionFactory;
     private final SecurityManager securityManager;
 
     private final Set<String> componentFilter = new HashSet<>();
@@ -171,7 +172,7 @@ public class ActiveMQMessageBus implements MessageBus {
         clientID = settings.getComponentID();
         String schemaLocation = "BitRepositoryMessages.xsd";
         jaxbHelper = new JaxbHelper("xsd/", schemaLocation);
-        ActiveMQConnectionFactory connectionFactory = ArtemisConnectionFactoryProvider.create(configuration);
+        connectionFactory = ArtemisConnectionFactoryProvider.create(configuration);
         registerCustomMessageLoggers();
         Connection newConnection = null;
         try {
@@ -187,7 +188,7 @@ public class ActiveMQMessageBus implements MessageBus {
 
             startListeningForMessages();
         } catch (JMSException e) {
-            JmsConnectionUtils.closeQuietly(newConnection);
+            connectionFactory.close();
             throw new CoordinationLayerException("Unable to initialise connection to message bus", e);
         }
         log.debug("ActiveMQConnection initialized for '{}'", configuration);
@@ -253,9 +254,15 @@ public class ActiveMQMessageBus implements MessageBus {
     public void close() throws JMSException {
         receivedMessageHandler.close();
         log.info("Closing message bus: {}", configuration);
-        try (connection; consumerSession; producerSession) {
-            log.debug("Closing producer session, consumer session and connection.");
+        try (connectionFactory) {
+            producerSession.close();
+            log.debug("Producer session closed.");
+            consumerSession.close();
+            log.debug("Consumer session closed.");
+            connection.close();
+            log.debug("Connection closed.");
         }
+        log.debug("Connection factory closed.");
     }
 
     @Override
