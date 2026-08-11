@@ -21,7 +21,7 @@
  */
 package org.bitrepository.common.utils;
 
-import org.apache.activemq.util.ByteArrayInputStream;
+import java.io.ByteArrayInputStream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

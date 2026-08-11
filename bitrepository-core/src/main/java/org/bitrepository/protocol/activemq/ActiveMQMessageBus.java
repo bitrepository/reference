@@ -34,8 +34,7 @@ import jakarta.jms.MessageProducer;
 import jakarta.jms.Session;
 import jakarta.jms.TextMessage;
 import jakarta.jms.Topic;
-import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.activemq.util.ByteArrayInputStream;
+import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.common.DefaultThreadFactory;
@@ -66,6 +65,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
+import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
@@ -85,16 +85,16 @@ public class ActiveMQMessageBus implements MessageBus {
     /**
      * The key for storing the message type in a string property in the message headers.
      */
-    public static final String MESSAGE_TYPE_KEY = "org.bitrepository.messages.type";
+    public static final String MESSAGE_TYPE_KEY = "org_bitrepository_messages_type";
     /**
      * The key for storing the BitRepositoryCollectionID in a string property in the message headers.
      */
-    public static final String COLLECTION_ID_KEY = "org.bitrepository.messages.collectionid";
+    public static final String COLLECTION_ID_KEY = "org_bitrepository_messages_collectionid";
     /**
      * The key for storing the message type in a string property in the message headers.
      */
-    public static final String MESSAGE_SIGNATURE_KEY = "org.bitrepository.messages.signature";
-    public static final String MESSAGE_TO_KEY = "org.bitrepository.messages.to";
+    public static final String MESSAGE_SIGNATURE_KEY = "org_bitrepository_messages_signature";
+    public static final String MESSAGE_TO_KEY = "org_bitrepository_messages_to";
     /**
      * Default transacted.
      */
@@ -135,6 +135,7 @@ public class ActiveMQMessageBus implements MessageBus {
     private final MessageBusConfiguration configuration;
     private final JaxbHelper jaxbHelper;
     private final Connection connection;
+    private final ActiveMQConnectionFactory connectionFactory;
     private final SecurityManager securityManager;
 
     private final Set<String> componentFilter = new HashSet<>();
@@ -171,20 +172,23 @@ public class ActiveMQMessageBus implements MessageBus {
         clientID = settings.getComponentID();
         String schemaLocation = "BitRepositoryMessages.xsd";
         jaxbHelper = new JaxbHelper("xsd/", schemaLocation);
-        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(configuration.getURL());
+        connectionFactory = ArtemisConnectionFactoryProvider.create(configuration);
         registerCustomMessageLoggers();
+        Connection newConnection = null;
         try {
-            connection = connectionFactory.createConnection();
-            connection.setClientID(clientID);
-            connection.setExceptionListener(new MessageBusExceptionListener());
+            newConnection = connectionFactory.createConnection();
+            newConnection.setClientID(clientID);
+            newConnection.setExceptionListener(new MessageBusExceptionListener());
 
-            producerSession = connection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
-            consumerSession = connection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
+            producerSession = newConnection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
+            consumerSession = newConnection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
             producer = producerSession.createProducer(null);
             producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+            connection = newConnection;
 
             startListeningForMessages();
         } catch (JMSException e) {
+            connectionFactory.close();
             throw new CoordinationLayerException("Unable to initialise connection to message bus", e);
         }
         log.debug("ActiveMQConnection initialized for '{}'", configuration);
@@ -250,12 +254,15 @@ public class ActiveMQMessageBus implements MessageBus {
     public void close() throws JMSException {
         receivedMessageHandler.close();
         log.info("Closing message bus: {}", configuration);
-        producerSession.close();
-        log.debug("Producer session closed.");
-        consumerSession.close();
-        log.debug("Consumer session closed.");
-        connection.close();
-        log.debug("Connection closed.");
+        try (connectionFactory) {
+            producerSession.close();
+            log.debug("Producer session closed.");
+            consumerSession.close();
+            log.debug("Consumer session closed.");
+            connection.close();
+            log.debug("Connection closed.");
+        }
+        log.debug("Connection factory closed.");
     }
 
     @Override

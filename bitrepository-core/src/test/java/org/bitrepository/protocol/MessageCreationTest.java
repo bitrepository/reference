@@ -24,7 +24,7 @@
  */
 package org.bitrepository.protocol;
 
-import org.apache.activemq.util.ByteArrayInputStream;
+import java.io.ByteArrayInputStream;
 import org.apache.commons.io.IOUtils;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
