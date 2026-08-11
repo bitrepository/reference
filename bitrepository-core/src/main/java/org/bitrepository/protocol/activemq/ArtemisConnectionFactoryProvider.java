@@ -29,6 +29,15 @@ import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Creates and configures ActiveMQConnectionFactory instances for Artemis.
+ *
+ * <p>The broker URL is resolved in priority order:
+ * <ol>
+ *   <li>Environment variable #BROKER_URL_ENV</li>
+ *   <li>URL from MessageBusConfiguration</li>
+ * </ol>
+ */
 public final class ArtemisConnectionFactoryProvider {
     private static final Logger log = LoggerFactory.getLogger(ArtemisConnectionFactoryProvider.class);
 
