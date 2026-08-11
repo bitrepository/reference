@@ -5,7 +5,7 @@
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
+ * Copyright (C) 2010 Royal Danish Library
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -29,15 +29,6 @@ import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Creates and configures ActiveMQConnectionFactory instances for Artemis.
- *
- * <p>The broker URL is resolved in priority order:
- * <ol>
- *   <li>Environment variable #BROKER_URL_ENV</li>
- *   <li>URL from MessageBusConfiguration</li>
- * </ol>
- */
 public final class ArtemisConnectionFactoryProvider {
     private static final Logger log = LoggerFactory.getLogger(ArtemisConnectionFactoryProvider.class);
 
@@ -56,8 +47,9 @@ public final class ArtemisConnectionFactoryProvider {
     }
 
     /**
-     * Resolves the broker URL from environment variable or configuration,
-     * and ensures {@code reconnectAttempts=-1} is present.
+     * Resolves the broker URL from environment variable or configuration. If the URL does not already specify
+     * {@code reconnectAttempts}, defaults it to {@code -1} (infinite reconnect attempts); an explicit value already
+     * present in the URL is left untouched.
      *
      * @throws IllegalArgumentException if {@link #BROKER_URL_ENV} is not set and {@code config}
      *         is {@code null} or has no URL
@@ -69,8 +61,7 @@ public final class ArtemisConnectionFactoryProvider {
         }
         if (config == null || config.getURL() == null || config.getURL().isBlank()) {
             throw new IllegalArgumentException(
-                    "MessageBusConfiguration with a non-blank URL is required when " + BROKER_URL_ENV
-                            + " is not set");
+                    "MessageBusConfiguration is absent or has a blank URL when " + BROKER_URL_ENV + " is not set");
         }
         return appendReconnectAttempts(config.getURL());
     }
