@@ -3,33 +3,24 @@ package org.bitrepository.common.utils;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-public class CountAndTimeUnit {
-    private final long count;
-    private final TimeUnit unit;
-
-    public CountAndTimeUnit(long count, TimeUnit unit) {
-        this.count = count;
-        this.unit = Objects.requireNonNull(unit, "unit");
+public record CountAndTimeUnit(long count, TimeUnit unit) {
+    public CountAndTimeUnit {
+        Objects.requireNonNull(unit, "unit");
     }
 
+    /**
+     * @deprecated Use {@link #count()} instead
+     */
+    @Deprecated(forRemoval = true)
     public long getCount() {
         return count;
     }
 
+    /**
+     * @deprecated Use {@link #unit()} instead
+     */
+    @Deprecated(forRemoval = true)
     public TimeUnit getUnit() {
         return unit;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        CountAndTimeUnit that = (CountAndTimeUnit) o;
-        return count == that.count && unit == that.unit;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(count, unit);
     }
 }

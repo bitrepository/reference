@@ -176,8 +176,8 @@ class MissingChecksumTests {
 
         addStep("Check whether checksum is missing", "Should be missing at pillar two only.");
         Map<String, PillarCollectionMetric> metrics = model.getPillarCollectionMetrics(TEST_COLLECTION);
-        Assertions.assertEquals(1, metrics.get(PILLAR_1).getPillarFileCount());
-        Assertions.assertEquals(1, metrics.get(PILLAR_2).getPillarFileCount());
+        Assertions.assertEquals(1, metrics.get(PILLAR_1).pillarFileCount());
+        Assertions.assertEquals(1, metrics.get(PILLAR_2).pillarFileCount());
 
         List<String> missingChecksumsPillar1
                 = getIssuesFromIterator(model.findFilesWithMissingChecksum(TEST_COLLECTION, PILLAR_1, testStart));
@@ -229,8 +229,8 @@ class MissingChecksumTests {
 
         addStep("Check whether checksum is missing", "Should be missing at pillar two only.");
         Map<String, PillarCollectionMetric> metrics = model.getPillarCollectionMetrics(TEST_COLLECTION);
-        Assertions.assertEquals(1, metrics.get(PILLAR_1).getPillarFileCount());
-        Assertions.assertEquals(1, metrics.get(PILLAR_2).getPillarFileCount());
+        Assertions.assertEquals(1, metrics.get(PILLAR_1).pillarFileCount());
+        Assertions.assertEquals(1, metrics.get(PILLAR_2).pillarFileCount());
 
         for (String pillar : Arrays.asList(PILLAR_1, PILLAR_2)) {
             List<String> missingChecksums
@@ -263,8 +263,8 @@ class MissingChecksumTests {
         addStep("Check whether checksum is missing",
                 "Should be missing at pillar one, and not on pillar two.");
         metrics = model.getPillarCollectionMetrics(TEST_COLLECTION);
-        Assertions.assertEquals(1, metrics.get(PILLAR_1).getPillarFileCount());
-        Assertions.assertEquals(1, metrics.get(PILLAR_2).getPillarFileCount());
+        Assertions.assertEquals(1, metrics.get(PILLAR_1).pillarFileCount());
+        Assertions.assertEquals(1, metrics.get(PILLAR_2).pillarFileCount());
 
         List<String> missingChecksumsPillar1
                 = getIssuesFromIterator(model.findFilesWithMissingChecksum(TEST_COLLECTION, PILLAR_1, secondUpdate));

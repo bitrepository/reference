@@ -36,7 +36,7 @@ import org.bitrepository.integrityservice.workflow.step.HandleObsoleteChecksumsS
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.settings.referencesettings.ObsoleteChecksumSettings;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -644,7 +644,7 @@ public abstract class IntegrityDAO {
         return stats;
     }
 
-    @NotNull
+    @NonNull
     private String getMaxAgeForChecksums(String pillarID) {
         ObsoleteChecksumSettings obsoleteChecksumSettings =
                 SettingsUtils.getIntegrityServiceSettings().getObsoleteChecksumSettings();

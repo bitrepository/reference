@@ -56,7 +56,7 @@ public abstract class CompleteEventAwaiter implements EventHandler {
      * @param settings      The settings.
      * @param outputHandler The {@link OutputHandler} for handling outputting results
      */
-    public CompleteEventAwaiter(Settings settings, OutputHandler outputHandler) {
+    protected CompleteEventAwaiter(Settings settings, OutputHandler outputHandler) {
         this.timeout = settings.getIdentificationTimeout().plus(settings.getOperationTimeout());
         this.output = outputHandler;
     }
@@ -88,7 +88,7 @@ public abstract class CompleteEventAwaiter implements EventHandler {
     public OperationEvent getFinish() {
         try {
             CountAndTimeUnit pollTimeout = TimeUtils.durationToCountAndTimeUnit(timeout);
-            return finalEventQueue.poll(pollTimeout.getCount(), pollTimeout.getUnit());
+            return finalEventQueue.poll(pollTimeout.count(), pollTimeout.unit());
         } catch (InterruptedException e) {
             throw new IllegalStateException("Interrupted while waiting for the final response.", e);
         }

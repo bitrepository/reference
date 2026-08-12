@@ -21,7 +21,7 @@
  */
 package org.bitrepository.common;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +55,7 @@ public class DefaultThreadFactory implements ThreadFactory {
     }
 
     @Override
-    public synchronized Thread newThread(@NotNull Runnable runnable) {
+    public synchronized Thread newThread(@NonNull Runnable runnable) {
         Thread newThread = new Thread(runnable, prefix + "-Thread" + counter);
         newThread.setPriority(priority);
         newThread.setDaemon(daemonic);

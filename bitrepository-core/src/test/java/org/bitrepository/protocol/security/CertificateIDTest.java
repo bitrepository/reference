@@ -58,7 +58,7 @@ class CertificateIDTest {
         CMSSignedData s = new CMSSignedData(new CMSProcessableByteArray(
                 SecurityTestConstants.getTestData().getBytes(SecurityModuleConstants.defaultEncodingType)), decodeSig);
         SignerInformation signer = s.getSignerInfos().getSigners().iterator().next();
-        CertificateID certificateIDFromSignature = new CertificateID(signer.getSID().getIssuer(), signer.getSID().getSerialNumber());
+        CertificateID certificateIDFromSignature = CertificateID.of(signer.getSID().getIssuer(), signer.getSID().getSerialNumber());
 
         addStep("Assert that the two CertificateID objects are equal", "Assert succeeds");
         Assertions.assertEquals(certificateIDfromCertificate, certificateIDFromSignature);
@@ -81,7 +81,7 @@ class CertificateIDTest {
         CMSSignedData s = new CMSSignedData(new CMSProcessableByteArray(
                 SecurityTestConstants.getTestData().getBytes(SecurityModuleConstants.defaultEncodingType)), decodeSig);
         SignerInformation signer = s.getSignerInfos().getSigners().iterator().next();
-        CertificateID certificateIDFromSignature = new CertificateID(signer.getSID().getIssuer(), signer.getSID().getSerialNumber());
+        CertificateID certificateIDFromSignature = CertificateID.of(signer.getSID().getIssuer(), signer.getSID().getSerialNumber());
 
         addStep("Assert that the two CertificateID objects are not equal", "Assert succeeds");
         Assertions.assertNotSame(certificateIDFromCertificate, certificateIDFromSignature);
@@ -100,8 +100,8 @@ class CertificateIDTest {
         CertificateID certificateID1 = new CertificateID(issuer, serial);
 
         addStep("Validate the content of the certificateID", "Should be same as x509Certificate");
-        Assertions.assertEquals(issuer, certificateID1.getIssuer());
-        Assertions.assertEquals(serial, certificateID1.getSerial());
+        Assertions.assertEquals(issuer, certificateID1.issuer());
+        Assertions.assertEquals(serial, certificateID1.serial());
 
         addStep("Test whether it equals it self", "should give positive result");
         Assertions.assertEquals(certificateID1, certificateID1);

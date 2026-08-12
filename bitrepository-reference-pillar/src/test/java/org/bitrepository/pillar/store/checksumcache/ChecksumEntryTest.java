@@ -43,8 +43,27 @@ class ChecksumEntryTest {
         addDescription("Test the ChecksumEntry");
         addStep("Create a ChecksumEntry", "The data should be extractable again.");
         ChecksumEntry ce = new ChecksumEntry(CE_FILE, CE_CHECKSUM, CE_DATE);
-        Assertions.assertEquals(CE_FILE, ce.getFileId());
-        Assertions.assertEquals(CE_CHECKSUM, ce.getChecksum());
-        Assertions.assertEquals(CE_DATE, ce.getCalculationInstant());
+        Assertions.assertEquals(CE_FILE, ce.fileID());
+        Assertions.assertEquals(CE_CHECKSUM, ce.checksum());
+        Assertions.assertEquals(CE_DATE, ce.calculationInstant());
+    }
+
+    @Test
+    @Tag("regressiontest")
+    @Tag("pillartest")
+    void compactConstructorRejectsNullFileID() {
+        addDescription("The compact constructor must reject a null fileID");
+        RuntimeException exception = Assertions.assertThrows(
+                RuntimeException.class, () -> new ChecksumEntry(null, CE_CHECKSUM, CE_DATE));
+        Assertions.assertTrue(exception instanceof NullPointerException || exception instanceof IllegalArgumentException,
+                "Expected: NullPointerException or IllegalArgumentException. Actual: " + exception);
+    }
+
+    @Test
+    @Tag("regressiontest")
+    @Tag("pillartest")
+    void compactConstructorRejectsEmptyFileID() {
+        addDescription("The compact constructor must reject an empty fileID");
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new ChecksumEntry("", CE_CHECKSUM, CE_DATE));
     }
 }

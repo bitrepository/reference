@@ -133,7 +133,7 @@ public class PermissionStore {
      * @throws PermissionStoreException if no certificate can be found based on the SignerId
      */
     public X509Certificate getCertificate(SignerId signer) throws PermissionStoreException {
-        CertificateID certificateID = new CertificateID(signer.getIssuer(), signer.getSerialNumber());
+        CertificateID certificateID = CertificateID.of(signer.getIssuer(), signer.getSerialNumber());
         CertificatePermission permission = permissionMap.get(certificateID);
         if (permission != null) {
             return permission.getCertificate();
@@ -150,7 +150,7 @@ public class PermissionStore {
      * @throws PermissionStoreException in case no certificate has been registered for the given signerId
      */
     public boolean checkCertificateUser(SignerId signer, String certificateUser) throws PermissionStoreException {
-        CertificateID certificateID = new CertificateID(signer.getIssuer(), signer.getSerialNumber());
+        CertificateID certificateID = CertificateID.of(signer.getIssuer(), signer.getSerialNumber());
         CertificatePermission certificatePermission = permissionMap.get(certificateID);
         if (certificatePermission == null) {
             throw new PermissionStoreException("Failed to find certificate and permissions for the requested signer: " + certificateID);
@@ -165,7 +165,7 @@ public class PermissionStore {
      * @throws UnregisteredPermissionException No finger-print could be found for the indicated signer.
      */
     public String getCertificateFingerprint(SignerId signer) throws UnregisteredPermissionException {
-        CertificateID certificateID = new CertificateID(signer.getIssuer(), signer.getSerialNumber());
+        CertificateID certificateID = CertificateID.of(signer.getIssuer(), signer.getSerialNumber());
         CertificatePermission certificatePermission = permissionMap.get(certificateID);
         if (certificatePermission != null) {
             return certificatePermission.getFingerprint();
@@ -185,7 +185,7 @@ public class PermissionStore {
      * @throws PermissionStoreException in case no certificate and permission set can be found for the provided signer.
      */
     public boolean checkPermission(SignerId signer, Operation permission, String collectionID) throws PermissionStoreException {
-        CertificateID certificateID = new CertificateID(signer.getIssuer(), signer.getSerialNumber());
+        CertificateID certificateID = CertificateID.of(signer.getIssuer(), signer.getSerialNumber());
         CertificatePermission certificatePermission = permissionMap.get(certificateID);
         if (certificatePermission == null) {
             throw new PermissionStoreException("Failed to find certificate and permissions for the requested signer: " + certificateID);

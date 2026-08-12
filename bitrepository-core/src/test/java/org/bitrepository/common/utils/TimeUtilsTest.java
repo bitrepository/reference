@@ -243,8 +243,8 @@ class TimeUtilsTest {
     @Tag("regressiontest")
     void convertsDurationToCountAndTimeUnit() {
         CountAndTimeUnit expectedZero = TimeUtils.durationToCountAndTimeUnit(Duration.ZERO);
-        Assertions.assertEquals(0, expectedZero.getCount());
-        Assertions.assertNotNull(expectedZero.getUnit());
+        Assertions.assertEquals(0, expectedZero.count());
+        Assertions.assertNotNull(expectedZero.unit());
 
         Assertions.assertEquals(new CountAndTimeUnit(1, TimeUnit.NANOSECONDS),
                 TimeUtils.durationToCountAndTimeUnit(Duration.ofNanos(1)));

@@ -168,10 +168,10 @@ public abstract class StorageModel {
             throws RequestHandlerException {
         ChecksumEntry entry = getChecksumEntryForFile(fileID, collectionID, csType);
         ChecksumDataForFileTYPE res = new ChecksumDataForFileTYPE();
-        res.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(entry.getCalculationInstant()));
+        res.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(entry.calculationInstant()));
         res.setChecksumSpec(csType);
         try {
-            res.setChecksumValue(Base16Utils.encodeBase16(entry.getChecksum()));
+            res.setChecksumValue(Base16Utils.encodeBase16(entry.checksum()));
         } catch (DecoderException e) {
             throw new IllegalArgumentException("Could not encode checksum.", e);
         }
@@ -238,8 +238,8 @@ public abstract class StorageModel {
         ExtractedChecksumResultSet res = new ExtractedChecksumResultSet();
         ChecksumEntry entry = getChecksumEntryForFile(fileID, collectionID, csSpec);
 
-        boolean lowerBound = minTimestamp == null || !minTimestamp.isAfter(entry.getCalculationInstant());
-        boolean upperBound = maxTimestamp == null || !maxTimestamp.isBefore(entry.getCalculationInstant());
+        boolean lowerBound = minTimestamp == null || !minTimestamp.isAfter(entry.calculationInstant());
+        boolean upperBound = maxTimestamp == null || !maxTimestamp.isBefore(entry.calculationInstant());
         if (lowerBound && upperBound) {
             res.insertChecksumEntry(entry);
         }

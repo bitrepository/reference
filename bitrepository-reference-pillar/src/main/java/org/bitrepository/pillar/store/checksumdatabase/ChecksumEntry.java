@@ -28,29 +28,18 @@ import java.util.Date;
 
 /**
  * Container for the information about the checksum of a file.
+ *
+ * @param fileID             The id of the file.
+ * @param checksum           The checksum of the file.
+ * @param calculationInstant The calculation date for the checksum of the file.
  */
-public class ChecksumEntry {
-    protected final String fileID;
-    protected final String checksum;
-    protected final Instant calculationDate;
+public record ChecksumEntry(String fileID, String checksum, Instant calculationInstant) {
 
-    /**
-     * @param fileID          The id of the file.
-     * @param checksum        The checksum of the file.
-     * @param calculationDate The calculation date for the checksum of the file.
-     */
-    public ChecksumEntry(String fileID, String checksum, Instant calculationDate) {
+    public ChecksumEntry {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
-
-        this.fileID = fileID;
-        this.checksum = checksum;
-        this.calculationDate = calculationDate;
     }
 
     /**
-     * @param fileID          The id of the file.
-     * @param checksum        The checksum of the file.
-     * @param calculationDate The calculation date for the checksum of the file.
      * @deprecated Use {@link #ChecksumEntry(String, String, Instant)} instead
      */
     @Deprecated(forRemoval = true)
@@ -59,29 +48,34 @@ public class ChecksumEntry {
     }
 
     /**
-     * @return The id of the file.
+     * @deprecated Use {@link #fileID()} instead
      */
+    @Deprecated(forRemoval = true)
     public String getFileId() {
         return fileID;
     }
 
     /**
-     * @return The checksum of the file.
+     * @deprecated Use {@link #checksum()} instead
      */
+    @Deprecated(forRemoval = true)
     public String getChecksum() {
         return checksum;
     }
 
     /**
-     * @return The calculation date for the checksum of the file.
+     * @deprecated Use {@link #calculationInstant()} instead
+     */
+    @Deprecated(forRemoval = true)
+    public Instant getCalculationInstant() {
+        return calculationInstant;
+    }
+
+    /**
      * @deprecated Use {@link #getCalculationInstant()} instead
      */
     @Deprecated(forRemoval = true)
     public Date getCalculationDate() {
-        return calculationDate != null ? Date.from(calculationDate) : null;
-    }
-
-    public Instant getCalculationInstant() {
-        return calculationDate;
+        return calculationInstant != null ? Date.from(calculationInstant) : null;
     }
 }

@@ -75,7 +75,7 @@ public abstract class GeneralConversationState implements ConversationState {
             if (!responseStatus.getOutstandingComponents().isEmpty()) {
                 if (getTimeoutValue().compareTo(Duration.ZERO) > 0) { // TODO From Java 18 use: getTimeoutValue().isPositive()
                     CountAndTimeUnit delay = TimeUtils.durationToCountAndTimeUnit(getTimeoutValue());
-                    scheduledTimeout = timer.schedule(new TimeoutHandler(), delay.getCount(), delay.getUnit());
+                    scheduledTimeout = timer.schedule(new TimeoutHandler(), delay.count(), delay.unit());
                 }
                 sendRequest();
             } else {
