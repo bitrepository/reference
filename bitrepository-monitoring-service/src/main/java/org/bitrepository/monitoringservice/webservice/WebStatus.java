@@ -21,11 +21,11 @@
  */
 package org.bitrepository.monitoringservice.webservice;
 
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.monitoringservice.status.ComponentStatus;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.time.Instant;
 
 @XmlRootElement

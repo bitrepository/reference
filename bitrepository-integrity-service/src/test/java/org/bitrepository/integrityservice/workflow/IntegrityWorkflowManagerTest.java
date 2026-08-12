@@ -22,6 +22,7 @@
 
 package org.bitrepository.integrityservice.workflow;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.SettingsUtils;
@@ -82,7 +83,7 @@ class IntegrityWorkflowManagerTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void normalWorkflowSettings() {
         addDescription("Verifies that the IntegrityWorkflowManager loads correctly for at normally defined workflow.");
 
@@ -97,7 +98,7 @@ class IntegrityWorkflowManagerTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void noWorkflowPackage() {
         addDescription("Verifies that the IntegrityWorkflowManager loads correctly for at workflow configuration with " +
                 "a workflow class name without a package scope (located in the default workflow package).");
@@ -114,7 +115,7 @@ class IntegrityWorkflowManagerTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void noWorkflowSettings() {
         addDescription("Verifies that the IntegrityWorkflowManager loads correctly for missing reference settings a " +
                 "workflow settings element.");
@@ -136,7 +137,7 @@ class IntegrityWorkflowManagerTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void collectionSpecificWorkflows() {
         addDescription("Verifies that the IntegrityWorkflowManager loads correctly for workflows configured for " +
                 "specific collection.");
@@ -165,7 +166,7 @@ class IntegrityWorkflowManagerTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void unscheduledWorkflow() {
         addDescription("Verifies that the IntegrityWorkflowManager loads workflow correctly for workflows without a " +
                 "defined schedule meaning they are never run automatically.");
@@ -182,7 +183,7 @@ class IntegrityWorkflowManagerTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void startWorkflow() {
         addDescription("Verifies that the that it is possible to manually start a workflow.");
 

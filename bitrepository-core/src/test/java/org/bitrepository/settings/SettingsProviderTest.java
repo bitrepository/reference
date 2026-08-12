@@ -21,6 +21,7 @@
  */
 package org.bitrepository.settings;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
@@ -36,7 +37,7 @@ class SettingsProviderTest {
     private static final String PATH_TO_TEST_SETTINGS = "settings/xml/bitrepository-devel";
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void componentIDTest() {
         String myComponentID = "TestComponentID";
         SettingsProvider settingsLoader =
@@ -47,7 +48,7 @@ class SettingsProviderTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void reloadTest() {
         String myComponentID = "TestComponentID";
         SettingsProvider settingsLoader =
@@ -68,7 +69,7 @@ class SettingsProviderTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void collectAuditIntervalTest() throws DatatypeConfigurationException {
         SettingsProvider settingsLoader =
                 new SettingsProvider(new XMLFileSettingsLoader(PATH_TO_TEST_SETTINGS), "TestComponentID");

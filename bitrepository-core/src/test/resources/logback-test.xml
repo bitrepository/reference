@@ -33,4 +33,6 @@
   </root>
 
   <logger name="org.bitrepository" level="DEBUG"/>
+    <!--Due to bug https://github.com/testcontainers/testcontainers-java/issues/10713, Ryuk logs spurious warnings, so ignore them-->
+  <logger name="org.testcontainers.utility.RyukResourceReaper" level="ERROR"/>
 </configuration>

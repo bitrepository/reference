@@ -118,7 +118,7 @@ public class DatabaseMaintainer {
      */
     protected static Connection getDBConnection(DatabaseSpecifics databaseSpecifics) throws SQLException, ClassNotFoundException {
         Class.forName(databaseSpecifics.getDriverClass());
-        Connection connection = DriverManager.getConnection(databaseSpecifics.getDatabaseURL());
+        Connection connection = DriverManager.getConnection(databaseSpecifics.getDatabaseURL(), databaseSpecifics.getUsername(), databaseSpecifics.getPassword());
         return connection;
     }
 }

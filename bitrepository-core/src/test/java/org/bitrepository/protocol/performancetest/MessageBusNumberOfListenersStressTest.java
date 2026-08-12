@@ -24,10 +24,12 @@
  */
 package org.bitrepository.protocol.performancetest;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
+import org.bitrepository.pillar.integration.ArtemisFixedPortContainer;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.bus.LocalActiveMQBroker;
@@ -42,6 +44,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
+import org.testcontainers.activemq.ArtemisContainer;
+import org.testcontainers.containers.InternetProtocol;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -67,6 +74,8 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
  * This is controlled through the variables 'WRITE_RESULTS_TO_FILE', which deternimes whether to write to the file, and
  * 'OUTPUT_FILE_NAME' which is the name of the file to write the output results.
  */
+@Tag(TestGroups.STRESS_TEST)
+@EnabledIfSystemProperty(named = "runStressTests", matches = "true")
 public class MessageBusNumberOfListenersStressTest {
     /**
      * The default time to wait for a simple communication.
@@ -112,7 +121,7 @@ public class MessageBusNumberOfListenersStressTest {
     private String testQueue;
 
     @BeforeEach
-    void initializeSettings() {
+    public void initializeSettings() {
         settings = TestSettingsProvider.getSettings(getClass().getSimpleName());
         testQueue = "TEST-LISTENERS-" + System.currentTimeMillis();
     }
@@ -124,8 +133,8 @@ public class MessageBusNumberOfListenersStressTest {
      * @throws Exception Can possibly throw an exception.
      */
     @Test
-    @Tag("StressTest")
-    void testManyListenersOnLocalMessageBus() throws Exception {
+    @Tag(TestGroups.STRESS_TEST)
+    public void testManyListenersOnLocalMessageBus() throws Exception {
         addDescription("Tests how many messages can be handled within a given timeframe when a given number of "
                 + "listeners are receiving them.");
         addStep("Define constants", "This should not be possible to fail.");
@@ -166,8 +175,8 @@ public class MessageBusNumberOfListenersStressTest {
     }
 
     @Test
-    @Tag("StressTest")
-    void testManyListenersOnDistributedMessageBus() throws Exception {
+    @Tag(TestGroups.STRESS_TEST)
+    public void testManyListenersOnDistributedMessageBus() throws Exception {
         addDescription("Tests how many messages can be handled within a given timeframe when a given number of "
                 + "listeners are receiving them.");
         addStep("Define constants", "This should not be possible to fail.");

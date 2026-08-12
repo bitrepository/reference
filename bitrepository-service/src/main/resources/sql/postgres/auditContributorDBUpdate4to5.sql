@@ -25,16 +25,16 @@ UPDATE tableversions SET version = 5 WHERE tablename = 'audit';
 UPDATE tableversions SET version = 5 WHERE tablename = 'auditcontributordb';
 
 -- migrate the audittrail table
-ALTER TABLE audittrail ADD COLUMN operation_date2 BIGINT;
+ALTER TABLE IF EXISTS audittrail ADD COLUMN operation_date2 BIGINT;
 
-DROP INDEX dateindex;
+DROP INDEX IF EXISTS dateindex;
 
 UPDATE audittrail SET operation_date2 = (EXTRACT (epoch FROM operation_date AT TIME ZONE (SELECT current_setting('TIMEZONE'))) * 1000);
 
-ALTER TABLE audittrail DROP COLUMN operation_date;
+ALTER TABLE IF EXISTS audittrail DROP COLUMN operation_date;
 
-ALTER TABLE audittrail RENAME COLUMN operation_date2 TO operation_date;
+ALTER TABLE IF EXISTS audittrail RENAME COLUMN operation_date2 TO operation_date;
 
-ALTER TABLE audittrail ALTER COLUMN operation_date SET NOT NULL;
+ALTER TABLE IF EXISTS audittrail ALTER COLUMN operation_date SET NOT NULL;
 
-CREATE INDEX dateindex ON audittrail ( operation_date );
+CREATE INDEX IF NOT EXISTS dateindex ON audittrail ( operation_date );

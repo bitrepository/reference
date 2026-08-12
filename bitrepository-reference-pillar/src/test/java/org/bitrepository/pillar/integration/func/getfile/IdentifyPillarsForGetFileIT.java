@@ -25,7 +25,7 @@ import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.pillar.PillarTestGroups;
-import org.bitrepository.pillar.integration.func.PillarFunctionTest;
+import org.bitrepository.pillar.integration.func.PillarFunctionIT;
 import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -35,7 +35,7 @@ import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class IdentifyPillarsForGetFileIT extends PillarFunctionTest {
+class IdentifyPillarsForGetFileIT extends PillarFunctionIT {
     protected GetFileMessageFactory msgFactory;
 
     @BeforeEach

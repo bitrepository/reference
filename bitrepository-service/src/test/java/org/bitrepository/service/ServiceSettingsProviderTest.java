@@ -21,6 +21,7 @@
  */
 package org.bitrepository.service;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.SettingsProvider;
 import org.bitrepository.common.settings.XMLFileSettingsLoader;
@@ -37,7 +38,7 @@ class ServiceSettingsProviderTest {
     private static final String PATH_TO_TEST_SETTINGS = "settings/xml/bitrepository-devel";
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void componentIDTest() {
         SettingsProvider settingsLoader =
                 new ServiceSettingsProvider(new XMLFileSettingsLoader(PATH_TO_TEST_SETTINGS),

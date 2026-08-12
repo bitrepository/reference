@@ -22,6 +22,7 @@
 package org.bitrepository.integrityservice.workflow.step;
 
 import org.apache.commons.codec.DecoderException;
+import org.bitrepository.TestGroups;
 import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
@@ -82,7 +83,7 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
 
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testNoResults() throws Exception {
         addDescription("Test step for retrieving the checksum of a single file, when no results are delivered.");
@@ -114,7 +115,7 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testFullData() throws Exception {
         addDescription(
@@ -165,7 +166,7 @@ public class GetChecksumForFileStepTest extends WorkflowstepTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testComponentFailure() throws Exception {
         addDescription("Test step for retrieving the checksum of a single file, when one pillar fails.");

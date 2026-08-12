@@ -24,10 +24,12 @@
  */
 package org.bitrepository.protocol.performancetest;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
+import org.bitrepository.pillar.integration.ArtemisFixedPortContainer;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.bus.LocalActiveMQBroker;
@@ -41,6 +43,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
+import org.testcontainers.activemq.ArtemisContainer;
+import org.testcontainers.containers.InternetProtocol;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -54,7 +61,10 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 /**
  * Stress testing of the messagebus.
  */
-class MessageBusTimeToSendMessagesStressTest {
+@Tag(TestGroups.STRESS_TEST)
+@EnabledIfSystemProperty(named = "runStressTests", matches = "true")
+public class MessageBusTimeToSendMessagesStressTest {
+
     /** The time to wait when sending a message before it definitely should
      * have been consumed by a listener.*/
     static final int TIME_FOR_MESSAGE_TRANSFER_WAIT = 500;
@@ -66,7 +76,7 @@ class MessageBusTimeToSendMessagesStressTest {
     private String testQueue;
 
     @BeforeEach
-    void initializeSettings() {
+    public void initializeSettings() {
         settings = TestSettingsProvider.getSettings(getClass().getSimpleName());
         testQueue = "TEST-QUEUE-" + System.currentTimeMillis();
     }
@@ -76,8 +86,8 @@ class MessageBusTimeToSendMessagesStressTest {
      * Require sending at least five per second.
      */
     @Test
-    @Tag("StressTest")
-    void SendManyMessagesDistributed() throws Exception {
+    @Tag(TestGroups.STRESS_TEST)
+    public void SendManyMessagesDistributed() throws Exception {
         addDescription("Tests how fast a given number of messages can be handled.");
         addStep("Define constants", "This should not be possible to fail.");
 
@@ -115,8 +125,11 @@ class MessageBusTimeToSendMessagesStressTest {
             }
 
             Instant messageStopTime = listener.getStopSending();
-            addStep("Validating the count. Started at '" + startSending.atZone(ZoneId.systemDefault()) + "' and ended at '"
-                    + messageStopTime.atZone(ZoneId.systemDefault()) + "'", "Should not be wrong.");
+            addStep("Validating the count. Started at '"
+                    + startSending.atZone(ZoneId.systemDefault())
+                    + "' and ended at '"
+                    + messageStopTime.atZone(ZoneId.systemDefault())
+                    + "'", "Should not be wrong.");
 
             int count = listener.getCount();
             long timeFrame = ChronoUnit.SECONDS.between(startSending, messageStopTime);
@@ -134,8 +147,8 @@ class MessageBusTimeToSendMessagesStressTest {
      * It should be at least 20 per second.
      */
     @Test
-    @Tag("StressTest")
-    void SendManyMessagesLocally() throws Exception {
+    @Tag(TestGroups.STRESS_TEST)
+    public void SendManyMessagesLocally() throws Exception {
         addDescription("Tests how many messages can be handled within a given timeframe.");
         addStep("Define constants", "This should not be possible to fail.");
 
@@ -175,8 +188,11 @@ class MessageBusTimeToSendMessagesStressTest {
                 }
             }
 
-            addStep("Validating the count. Started at '" + startSending.atZone(ZoneId.systemDefault()) + "' and ended at '"
-                    + listener.getStopSending().atZone(ZoneId.systemDefault()) + "'", "Should not be wrong.");
+            addStep("Validating the count. Started at '"
+                    + startSending.atZone(ZoneId.systemDefault())
+                    + "' and ended at '"
+                    + listener.getStopSending().atZone(ZoneId.systemDefault())
+                    + "'", "Should not be wrong.");
             int count = listener.getCount();
             long timeFrame = ChronoUnit.SECONDS.between(startSending, listener.getStopSending());
             System.out.println("Sent '" + count + "' messages in '" + timeFrame + "' seconds.");
@@ -209,7 +225,7 @@ class MessageBusTimeToSendMessagesStressTest {
         int NUMBER_OF_SENDERS = 10;
         for (int i = 0; i < NUMBER_OF_SENDERS; i++) {
             Thread t = new MessageSenderThread(conf, securityManager, NUMBER_OF_MESSAGES / NUMBER_OF_SENDERS,
-                    String.valueOf(i));
+                                               String.valueOf(i));
             t.start();
         }
     }
@@ -219,9 +235,14 @@ class MessageBusTimeToSendMessagesStressTest {
         private final int numberOfMessages;
         private final String id;
 
-        public MessageSenderThread(MessageBusConfiguration conf, SecurityManager securityManager, int numberOfMessages, String id) {
+        public MessageSenderThread(MessageBusConfiguration conf,
+                                   SecurityManager securityManager,
+                                   int numberOfMessages,
+                                   String id) {
             Settings senderSettings =
-                    TestSettingsProvider.getSettings(MessageBusTimeToSendMessagesStressTest.class.getSimpleName() + "-" + id);
+                    TestSettingsProvider.getSettings(MessageBusTimeToSendMessagesStressTest.class.getSimpleName()
+                                                     + "-"
+                                                     + id);
             senderSettings.getRepositorySettings().getProtocolSettings().setMessageBusConfiguration(conf);
             this.bus = new ActiveMQMessageBus(senderSettings, securityManager);
             this.numberOfMessages = numberOfMessages;

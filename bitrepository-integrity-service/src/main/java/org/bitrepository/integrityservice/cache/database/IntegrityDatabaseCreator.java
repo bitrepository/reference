@@ -48,14 +48,17 @@ public class IntegrityDatabaseCreator extends DatabaseCreator {
         dbCreator.createIntegrityDatabase(settings, args[1]);
     }
 
-    public void createIntegrityDatabase(Settings settings, String pathToSqlCreationScript) {
+    public void createIntegrityDatabase(Settings settings, String... pathToSqlCreationScript) {
         DatabaseSpecifics databaseSpecifics =
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase();
 
-        if (pathToSqlCreationScript == null) {
-            pathToSqlCreationScript = DEFAULT_INTEGRITY_DB_SCRIPT;
+        if (pathToSqlCreationScript.length == 0) {
+            pathToSqlCreationScript = new String[]{DEFAULT_INTEGRITY_DB_SCRIPT};
         }
 
-        createDatabase(databaseSpecifics, pathToSqlCreationScript);
+        for (String script : pathToSqlCreationScript) {
+            createDatabase(databaseSpecifics, script);
+        }
+
     }
 }

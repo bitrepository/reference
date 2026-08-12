@@ -21,6 +21,7 @@ package org.bitrepository.pillar.store.archive;
  * #L%
  */
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.common.utils.FileUtils;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.store.filearchive.ArchiveDirectory;
@@ -41,7 +42,7 @@ import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 class ArchiveDirectoryTest {
-    private static final String DIR_NAME = "archive-directory";
+    private static final String DIR_NAME = "target/test/archive-directory";
     private static final String FILE_DIR_NAME = DIR_NAME + "/fileDir";
     private static final String FOLDER_DIR_NAME = DIR_NAME + "/" + ArchiveDirectory.FOLDER_DIR;
 
@@ -57,7 +58,7 @@ class ArchiveDirectoryTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("pillartest")
     void testArchiveDirectoryExistingFile() throws Exception {
         addDescription("Test the ArchiveDirectory when the file exists");
@@ -78,7 +79,7 @@ class ArchiveDirectoryTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("pillartest")
     void testArchiveDirectoryMissingFile() throws Exception {
         addDescription("Test the ArchiveDirectory when the file is missing.");
@@ -101,7 +102,7 @@ class ArchiveDirectoryTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("pillartest")
     void testArchiveDirectoryNewFile() throws Exception {
         addDescription("Testing the ArchiveDirectory handling of a new file.");
@@ -140,7 +141,7 @@ class ArchiveDirectoryTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("pillartest")
     void testArchiveDirectoryMoveFileToArchive() throws Exception {
         addDescription("Testing the error scenarios when moving a file from tmp to archive for the ArchiveDirectory.");
@@ -183,7 +184,7 @@ class ArchiveDirectoryTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("pillartest")
     void testArchiveDirectoryRemoveFile() throws Exception {
         addDescription("Testing the error scenarios when removing files from the archive.");
@@ -222,7 +223,7 @@ class ArchiveDirectoryTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("pillartest")
     void testArchiveDirectoryExistingFolderFile() throws Exception {
         addDescription("Test the ArchiveDirectory when the file exists");
@@ -243,7 +244,7 @@ class ArchiveDirectoryTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("pillartest")
     void testArchiveDirectoryMissingFolderFile() throws Exception {
         addDescription("Test the ArchiveDirectory when the file is missing.");
@@ -266,7 +267,7 @@ class ArchiveDirectoryTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("pillartest")
     void testArchiveDirectoryNewFolderFile() throws Exception {
         addDescription("Testing the ArchiveDirectory handling of a new file.");
@@ -306,7 +307,7 @@ class ArchiveDirectoryTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("pillartest")
     void testArchiveDirectoryMoveFolderFileToArchive() throws Exception {
         addDescription("Testing the error scenarios when moving a file from tmp to archive for the ArchiveDirectory.");
@@ -350,7 +351,7 @@ class ArchiveDirectoryTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("pillartest")
     void testArchiveDirectoryRemoveFolderFile() throws Exception {
         addDescription("Testing the error scenarios when removing files from the archive.");

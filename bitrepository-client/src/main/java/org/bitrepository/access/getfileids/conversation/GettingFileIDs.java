@@ -71,11 +71,11 @@ public class GettingFileIDs extends PerformingOperationState {
                 msg.setPillarID(query.getComponentID());
                 msg.setDestination(activeContributors.get(query.getComponentID()));
 
-                if (query.getMinTimestamp() != null) {
-                    msg.setMinTimestamp(CalendarUtils.getXmlGregorianCalendar(query.getMinTimestamp()));
+                if (query.getMinTimestampInstant() != null) {
+                    msg.setMinTimestamp(CalendarUtils.getXmlGregorianCalendar(query.getMinTimestampInstant()));
                 }
-                if (query.getMaxTimestamp() != null) {
-                    msg.setMaxTimestamp(CalendarUtils.getXmlGregorianCalendar(query.getMaxTimestamp()));
+                if (query.getMaxTimestampInstant() != null) {
+                    msg.setMaxTimestamp(CalendarUtils.getXmlGregorianCalendar(query.getMaxTimestampInstant()));
                 }
                 if (query.getMaxNumberOfResults() != null) {
                     msg.setMaxNumberOfResults(BigInteger.valueOf(query.getMaxNumberOfResults()));

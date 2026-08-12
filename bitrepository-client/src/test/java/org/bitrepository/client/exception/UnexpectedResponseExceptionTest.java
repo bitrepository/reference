@@ -21,6 +21,7 @@
  */
 package org.bitrepository.client.exception;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.client.exceptions.UnexpectedResponseException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
@@ -32,7 +33,7 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 class UnexpectedResponseExceptionTest {
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testUnexpectedResponse() throws Exception {
         addDescription("Test the instantiation of the exception");
         addStep("Setup", "");

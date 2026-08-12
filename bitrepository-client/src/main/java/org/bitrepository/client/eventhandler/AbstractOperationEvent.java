@@ -37,12 +37,37 @@ public abstract class AbstractOperationEvent implements OperationEvent {
     private String conversationID;
     private String collectionID;
 
+    protected AbstractOperationEvent(OperationEventType type, String collectionID, String info) {
+        this.type = type;
+        this.info = info;
+        this.collectionID = collectionID;
+    }
+
+    protected AbstractOperationEvent(OperationEventType type, String collectionID) {
+        this.type = type;
+        this.info = null;
+        this.collectionID = collectionID;
+    }
+
+    /**
+     * @deprecated Use the constructors setting the OperationEventType
+     * @see AbstractOperationEvent#AbstractOperationEvent(OperationEventType, String)
+     */
+    @Deprecated(forRemoval = true)
+    public AbstractOperationEvent(String collectionID) {
+        this.collectionID = collectionID;
+    }
+
     @Override
     public String getCollectionID() {
         return collectionID;
     }
 
-    public void setCollectionID(String collectionID) {
+    /**
+     * @deprecated collectionId should be final and set by constructor.
+     */
+    @Deprecated(forRemoval = true)
+    public void setCollectionID(final String collectionID) {
         this.collectionID = collectionID;
     }
 
@@ -51,40 +76,32 @@ public abstract class AbstractOperationEvent implements OperationEvent {
         return info;
     }
 
+
+    /**
+     * @deprecated info should be final and set by constructor.
+     */
+    @Deprecated(forRemoval = true)
+    public void setInfo(final String info) {
+        this.info = info;
+    }
+
     @Override
     public OperationEventType getEventType() {
         return type;
     }
 
-    @Override
-    public OperationType getOperationType() {
-        return operationType;
+
+    /**
+     * @deprecated eventType should be final and set by constructor.
+     */
+    @Deprecated(forRemoval = true)
+    public void setEventType(final OperationEventType type) {
+        this.type = type;
     }
 
     @Override
     public String getFileID() {
         return fileID;
-    }
-
-    @Override
-    public String getConversationID() {
-        return conversationID;
-    }
-
-    /**
-     * @param type The {@link OperationEventType}  to set as the event type
-     * @see #getEventType
-     */
-    public void setEventType(OperationEventType type) {
-        this.type = type;
-    }
-
-    /**
-     * @param operationType The {@link OperationType} to set as the operation type
-     * @see #getOperationType
-     */
-    public void setOperationType(OperationType operationType) {
-        this.operationType = operationType;
     }
 
     /**
@@ -95,19 +112,28 @@ public abstract class AbstractOperationEvent implements OperationEvent {
         this.fileID = fileID;
     }
 
-    /**
-     * @param info The content of the info field
-     * @see #getInfo
-     */
-    public void setInfo(String info) {
-        this.info = info;
+    @Override
+    public String getConversationID() {
+        return conversationID;
     }
-
     /**
      * @param conversationID See {@link #getConversationID}
      */
     public void setConversationID(String conversationID) {
         this.conversationID = conversationID;
+    }
+
+    @Override
+    public OperationType getOperationType() {
+        return operationType;
+    }
+
+    /**
+     * @param operationType The {@link OperationType} to set as the operation type
+     * @see #getOperationType
+     */
+    public void setOperationType(OperationType operationType) {
+        this.operationType = operationType;
     }
 
     @Override

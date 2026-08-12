@@ -24,6 +24,7 @@
  */
 package org.bitrepository.common.utils;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.common.settings.Settings;
@@ -43,7 +44,7 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 class ChecksumUtilsTest {
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void calculateHmacChecksums() throws Exception {
         addDescription("Tests whether the utility class for calculating checksums with HMAC is able to "
                 + "correctly calculate predefined examples from : "
@@ -99,7 +100,7 @@ class ChecksumUtilsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void calculateDigestChecksums() throws Exception {
         addDescription("Tests whether the utility class for calculating checksums with MessageDigest is able to "
                 + "correctly calculate the checksums.");
@@ -145,7 +146,7 @@ class ChecksumUtilsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testChecksumOnFile() throws Exception {
         addDescription("Test the checksum calculation on a file");
         addStep("Setup", "");
@@ -167,7 +168,7 @@ class ChecksumUtilsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testChecksumAlgorithmValidation() throws Exception {
         addDescription("Test the algorithm validation for every single possible checksum algorithm.");
         for (ChecksumType csType : ChecksumType.values()) {
@@ -265,7 +266,7 @@ class ChecksumUtilsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testDefaultChecksum() {
         addDescription("Test the extraction of the default checksum from settings.");
         addStep("Setup the settings", "Loading the test settings");

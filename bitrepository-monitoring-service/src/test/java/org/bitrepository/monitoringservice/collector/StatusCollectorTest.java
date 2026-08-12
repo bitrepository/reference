@@ -21,6 +21,7 @@
  */
 package org.bitrepository.monitoringservice.collector;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.monitoringservice.MockAlerter;
@@ -48,7 +49,7 @@ class StatusCollectorTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testStatusCollector() throws Exception {
         addDescription("Tests the status collector.");
         addStep("Setup", "");

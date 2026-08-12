@@ -72,6 +72,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ThreadFactory;
 
@@ -124,7 +125,7 @@ public class ActiveMQMessageBus implements MessageBus {
      * Used to identify if a listener is already registered.
      */
     private final Map<String, MessageConsumer> consumers = Collections
-            .synchronizedMap(new HashMap<>());
+        .synchronizedMap(new HashMap<>());
     /**
      * Map of destinations, mapping from ID to destination.
      */
@@ -153,8 +154,9 @@ public class ActiveMQMessageBus implements MessageBus {
     /**
      * ThreadFactory for any threads the activeMQ messageBus needs to create
      */
-    private static final ThreadFactory threadFactory = new DefaultThreadFactory(ActiveMQMessageListener.class.getSimpleName() + "-",
-            Thread.NORM_PRIORITY, false);
+    private static final ThreadFactory threadFactory = new DefaultThreadFactory(ActiveMQMessageListener.class.getSimpleName() +
+                                                                                "-",
+                                                                                Thread.NORM_PRIORITY, false);
 
 
     /**
@@ -188,7 +190,7 @@ public class ActiveMQMessageBus implements MessageBus {
 
             startListeningForMessages();
         } catch (JMSException e) {
-            connectionFactory.close();
+            closeQuietly(newConnection);
             throw new CoordinationLayerException("Unable to initialise connection to message bus", e);
         }
         log.debug("ActiveMQConnection initialized for '{}'", configuration);
@@ -198,6 +200,21 @@ public class ActiveMQMessageBus implements MessageBus {
             messageThreadPoolConfig = settings.getReferenceSettings().getGeneralSettings().getMessageThreadPools();
         }
         receivedMessageHandler = new ReceivedMessageHandler(messageThreadPoolConfig);
+    }
+
+
+    /**
+     * Closes the connection, suppressing any JMSException, so it can be safely used for cleanup after a
+     * failed initialisation without masking the original error.
+     */
+    private void closeQuietly(Connection connection) {
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (JMSException e) {
+                log.warn("Failed to close connection after initialisation failure", e);
+            }
+        }
     }
 
     /**
@@ -236,33 +253,49 @@ public class ActiveMQMessageBus implements MessageBus {
     @Override
     public synchronized void removeListener(String destinationID, MessageListener listener) {
         log.debug("Removing listener '{}' from destination: '{}' on message-bus '{}'",
-                listener, destinationID, configuration);
-        MessageConsumer consumer = getMessageConsumer(destinationID, listener, false);
+                  listener, destinationID, configuration);
         try {
-            // We need to set the listener to null to have the removeListener take effect at once.
-            // If this isn't done the listener will continue to receive messages. Do we have a memory leak here? 
-            consumer.setMessageListener(null);
-            consumer.close();
-        } catch (JMSException e) {
-            throw new CoordinationLayerException(
+            MessageConsumer consumer;
+            try {
+                consumer = getMessageConsumer(destinationID, listener, false);
+            } catch (CoordinationLayerException e) {
+                var cause = e.getCause();
+                if (cause instanceof jakarta.jms.IllegalStateException
+                    && Objects.equals(cause.getMessage(), "AMQ219019: Session is closed")) {
+                    return;
+                }
+                throw e;
+            }
+            try {
+
+                // We need to set the listener to null to have the removeListener take effect at once.
+                // If this isn't done the listener will continue to receive messages. Do we have a memory leak here?
+//                consumer.setMessageListener(null);
+
+                consumer.close();
+            } catch (IllegalStateException e) {
+                if (Objects.equals(e.getMessage(), "The Consumer is closed")) {
+                    return;
+                }
+                throw new CoordinationLayerException(
                     "Unable to remove listener '" + listener + "' from destinationID '" + destinationID + "'", e);
+            } catch (JMSException e) {
+                throw new CoordinationLayerException(
+                    "Unable to remove listener '" + listener + "' from destinationID '" + destinationID + "'", e);
+            }
+        } finally {
+            String consumerHash = getConsumerHash(destinationID, listener);
+            consumers.remove(consumerHash);
+
         }
-        consumers.remove(getConsumerHash(destinationID, listener));
     }
 
     @Override
     public void close() throws JMSException {
-        receivedMessageHandler.close();
         log.info("Closing message bus: {}", configuration);
-        try (connectionFactory) {
-            producerSession.close();
-            log.debug("Producer session closed.");
-            consumerSession.close();
-            log.debug("Consumer session closed.");
-            connection.close();
-            log.debug("Connection closed.");
+        try (connectionFactory; connection; consumerSession; producerSession; receivedMessageHandler) {
+            log.debug("Closing producer session, consumer session and connection.");
         }
-        log.debug("Connection factory closed.");
     }
 
     @Override
@@ -382,23 +415,14 @@ public class ActiveMQMessageBus implements MessageBus {
                 if (parts.length == 1) {
                     destination = session.createTopic(destinationID);
                 } else if (parts.length == 2) {
-                    switch (parts[0]) {
-                        case "topic":
-                            destination = session.createTopic(parts[1]);
-                            break;
-                        case "queue":
-                            destination = session.createQueue(parts[1]);
-                            break;
-                        case "temporary-queue":
-                            destination = session.createTemporaryQueue();
-                            break;
-                        case "temporary-topic":
-                            destination = session.createTemporaryTopic();
-                            break;
-                        default:
-                            throw new CoordinationLayerException("Unable to create destination '" +
-                                    destination + "'. Unknown type.");
-                    }
+                    destination = switch (parts[0]) {
+                        case "topic" -> session.createTopic(parts[1]);
+                        case "queue" -> session.createQueue(parts[1]);
+                        case "temporary-queue" -> session.createTemporaryQueue();
+                        case "temporary-topic" -> session.createTemporaryTopic();
+                        default -> throw new CoordinationLayerException("Unable to create destination '" +
+                                                                        destination + "'. Unknown type.");
+                    };
                 }
             } catch (JMSException e) {
                 throw new CoordinationLayerException("Could not create destination '" + destinationID + "'", e);

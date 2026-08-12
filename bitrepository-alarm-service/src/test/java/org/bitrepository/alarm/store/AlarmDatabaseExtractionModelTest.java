@@ -21,6 +21,7 @@
  */
 package org.bitrepository.alarm.store;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
@@ -33,7 +34,7 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 class AlarmDatabaseExtractionModelTest {
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void alarmExceptionTest() {
         addDescription("Test the AlarmDatabaseExtractionModel class");
         addStep("Define constants etc.", "Should be OK");

@@ -22,6 +22,7 @@
 
 package org.bitrepository.pillar.common;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.bitrepository.settings.repositorysettings.PillarIDs;
 import org.junit.jupiter.api.Assertions;
@@ -34,7 +35,7 @@ import java.util.List;
 
 class SettingsHelperTest {
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void getPillarCollectionsTest() {
         String myPillarID = "myPillarID";
         String otherPillarID = "OtherPillar";

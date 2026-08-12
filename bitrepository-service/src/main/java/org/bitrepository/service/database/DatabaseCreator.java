@@ -63,7 +63,7 @@ public class DatabaseCreator extends DatabaseMaintainer {
     private static DatabaseSpecifics updateDatabaseSpecificsForDBCreation(DatabaseSpecifics databaseSpecifics) {
         DatabaseSpecifics newDatabaseSpecifics = new DatabaseSpecifics();
         newDatabaseSpecifics.setDriverClass(databaseSpecifics.getDriverClass());
-        newDatabaseSpecifics.setDatabaseURL(databaseSpecifics.getDatabaseURL() + ";create=true");
+        newDatabaseSpecifics.setDatabaseURL(databaseSpecifics.getDatabaseURL() );
         newDatabaseSpecifics.setUsername(databaseSpecifics.getUsername());
         newDatabaseSpecifics.setPassword(databaseSpecifics.getPassword());
         return newDatabaseSpecifics;

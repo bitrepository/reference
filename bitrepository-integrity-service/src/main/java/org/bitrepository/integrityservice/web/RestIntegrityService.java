@@ -26,6 +26,18 @@ package org.bitrepository.integrityservice.web;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.StreamingOutput;
 import org.bitrepository.common.utils.FileSizeUtils;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.common.utils.TimeUtils;
@@ -47,18 +59,6 @@ import org.bitrepository.settings.referencesettings.PillarType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -80,9 +80,6 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import static javax.ws.rs.core.Response.ResponseBuilder;
-import static javax.ws.rs.core.Response.Status;
-import static javax.ws.rs.core.Response.status;
 
 @Path("/IntegrityService")
 public class RestIntegrityService {
@@ -117,15 +114,22 @@ public class RestIntegrityService {
 
         if (it == null) {
             throw new WebApplicationException(
-                    status(Status.NO_CONTENT).entity("Failed to get missing files from database").type(
-                            MediaType.TEXT_PLAIN).build());
+                Response.status(Response.Status.NO_CONTENT)
+                        .entity("Failed to get missing files from database")
+                        .type(MediaType.TEXT_PLAIN)
+                        .build());
         }
 
         List<String> iteratorAsList = StreamingTools.iteratorToList(it);
         if (iteratorAsList.isEmpty()) {
-            throw new WebApplicationException(status(Status.NOT_FOUND).entity(
-                    String.format(Locale.ROOT, "No fileIDs found for collection: '%s' and pillar: '%s'", collectionID,
-                            pillarID)).type(MediaType.TEXT_PLAIN).build());
+            throw new WebApplicationException(
+                Response.status(Response.Status.NOT_FOUND)
+                        .entity(String.format(Locale.ROOT,
+                                              "No fileIDs found for collection: '%s' and pillar: '%s'",
+                                              collectionID,
+                                              pillarID))
+                        .type(MediaType.TEXT_PLAIN)
+                        .build());
         }
 
         return new HashMap<>(Map.of(pillarID, iteratorAsList));
@@ -156,9 +160,15 @@ public class RestIntegrityService {
             missingOnPillar = getReportPart(part, collectionID, pillarID, page, pageSize);
             output.put(pillarID, missingOnPillar);
         } catch (FileNotFoundException e) {
-            throw new WebApplicationException(status(Status.NOT_FOUND).entity(String.format(Locale.ROOT,
-                    "No integrity '%s' report part for collection: '%s' and pillar: '%s' found!", part.getHumanString(),
-                    collectionID, pillarID)).type(MediaType.TEXT_PLAIN).build());
+            throw new WebApplicationException(
+                Response.status(Response.Status.NOT_FOUND)
+                        .entity(String.format(Locale.ROOT,
+                                              "No integrity '%s' report part for collection: '%s' and pillar: '%s' found!",
+                                              part.getHumanString(),
+                                              collectionID,
+                                              pillarID))
+                        .type(MediaType.TEXT_PLAIN)
+                        .build());
         }
 
         for (String otherPillar : otherPillars) {
@@ -360,9 +370,13 @@ public class RestIntegrityService {
         try {
             fullReport = integrityReportProvider.getLatestIntegrityReportReader(collectionID).getFullReport();
         } catch (FileNotFoundException e) {
-            throw new WebApplicationException(status(Status.NOT_FOUND).entity(
-                    String.format(Locale.ROOT, "No integrity report for collection: '%s' found!", collectionID)).type(
-                    MediaType.TEXT_PLAIN).build());
+            throw new WebApplicationException(
+                Response.status(Response.Status.NOT_FOUND)
+                        .entity(String.format(Locale.ROOT,
+                                              "No integrity report for collection: '%s' found!",
+                                              collectionID))
+                        .type(MediaType.TEXT_PLAIN)
+                        .build());
         }
         return output -> streamFile(fullReport, output);
     }
@@ -395,15 +409,15 @@ public class RestIntegrityService {
                         zipOut.flush();
                     } catch (IOException e) {
                         throw new WebApplicationException(
-                                status(Status.INTERNAL_SERVER_ERROR)
-                                        .entity("Internal error when trying to zip the report file " + key + ": " + e)
-                                        .type(MediaType.TEXT_PLAIN)
-                                        .build());
+                            Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                                    .entity("Internal error when trying to zip the report file " + key + ": " + e)
+                                    .type(MediaType.TEXT_PLAIN)
+                                    .build());
                     }
                 });
             }
         };
-        ResponseBuilder response = Response.ok();
+        Response.ResponseBuilder response = Response.ok();
         response.type("application/zip");
         response.header("Content-Disposition", "attachment; filename=" + fileName);
         response.entity(streamingOutput);
@@ -429,7 +443,7 @@ public class RestIntegrityService {
                     pillarID);
             log.error(errorMessage);
             throw new WebApplicationException(
-                    status(Status.NOT_FOUND).entity(errorMessage).type(MediaType.TEXT_PLAIN).build());
+                Response.status(Response.Status.NOT_FOUND).entity(errorMessage).type(MediaType.TEXT_PLAIN).build());
         }
         return reportPartFile;
     }
@@ -513,9 +527,15 @@ public class RestIntegrityService {
         try {
             reportPartContent = getReportPart(part, collectionID, pillarID, page, pageSize);
         } catch (FileNotFoundException e) {
-            throw new WebApplicationException(status(Status.NOT_FOUND).entity(String.format(Locale.ROOT,
-                    "No integrity '%s' report part for collection: '%s' and pillar: '%s' found!", part.getHumanString(),
-                    collectionID, pillarID)).type(MediaType.TEXT_PLAIN).build());
+            throw new WebApplicationException(
+                Response.status(Response.Status.NOT_FOUND)
+                        .entity(String.format(Locale.ROOT,
+                                              "No integrity '%s' report part for collection: '%s' and pillar: '%s' found!",
+                                              part.getHumanString(),
+                                              collectionID,
+                                              pillarID))
+                        .type(MediaType.TEXT_PLAIN)
+                        .build());
         }
         return reportPartContent;
     }

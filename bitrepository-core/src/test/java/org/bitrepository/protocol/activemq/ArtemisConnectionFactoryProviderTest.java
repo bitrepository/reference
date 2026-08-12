@@ -24,16 +24,18 @@
  */
 package org.bitrepository.protocol.activemq;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@Tag("regressiontest")
-class ArtemisConnectionFactoryProviderTest {
+@Tag(TestGroups.REGRESSIONTEST)
+public class ArtemisConnectionFactoryProviderTest {
 
     private static MessageBusConfiguration configWithUrl(String url) {
         MessageBusConfiguration config = new MessageBusConfiguration();
@@ -42,7 +44,7 @@ class ArtemisConnectionFactoryProviderTest {
     }
 
     @Test
-    void resolveUrlAppendsReconnectAttemptsWhenAbsent() {
+    public void resolveUrlAppendsReconnectAttemptsWhenAbsent() {
         String result = ArtemisConnectionFactoryProvider.resolveUrl(
                 configWithUrl("tcp://localhost:61616"));
         assertTrue(result.contains("reconnectAttempts=-1"),
@@ -50,15 +52,16 @@ class ArtemisConnectionFactoryProviderTest {
     }
 
     @Test
-    void resolveUrlDoesNotDuplicateReconnectAttempts() {
+    public void resolveUrlDoesNotDuplicateReconnectAttempts() {
         String url = "tcp://localhost:61616?reconnectAttempts=-1";
         String result = ArtemisConnectionFactoryProvider.resolveUrl(configWithUrl(url));
-        assertTrue(result.indexOf("reconnectAttempts") == result.lastIndexOf("reconnectAttempts"),
-                "reconnectAttempts must appear exactly once: " + result);
+        assertEquals(result.indexOf("reconnectAttempts"),
+                     result.lastIndexOf("reconnectAttempts"),
+                     "reconnectAttempts must appear exactly once: " + result);
     }
 
     @Test
-    void resolveUrlAppendsWithAmpersandWhenQueryParamAlreadyPresent() {
+    public void resolveUrlAppendsWithAmpersandWhenQueryParamAlreadyPresent() {
         String result = ArtemisConnectionFactoryProvider.resolveUrl(
                 configWithUrl("tcp://localhost:61616?foo=bar"));
         assertTrue(result.contains("&reconnectAttempts=-1"),
@@ -66,7 +69,7 @@ class ArtemisConnectionFactoryProviderTest {
     }
 
     @Test
-    void resolveUrlUsesConfigUrlWhenEnvVarAbsent() {
+    public void resolveUrlUsesConfigUrlWhenEnvVarAbsent() {
         String configUrl = "tcp://broker.example.com:61616";
         String result = ArtemisConnectionFactoryProvider.resolveUrl(configWithUrl(configUrl));
         assertTrue(result.startsWith(configUrl),
@@ -74,18 +77,18 @@ class ArtemisConnectionFactoryProviderTest {
     }
 
     @Test
-    void createReturnsNonNullFactory() {
+    public void createReturnsNonNullFactory() {
         assertNotNull(ArtemisConnectionFactoryProvider.create(configWithUrl("tcp://localhost:61616")));
     }
 
     @Test
-    void resolveUrlThrowsWhenConfigIsNullAndEnvVarAbsent() {
+    public void resolveUrlThrowsWhenConfigIsNullAndEnvVarAbsent() {
         assertThrows(IllegalArgumentException.class,
                 () -> ArtemisConnectionFactoryProvider.resolveUrl(null));
     }
 
     @Test
-    void resolveUrlThrowsWhenConfigUrlIsBlankAndEnvVarAbsent() {
+    public void resolveUrlThrowsWhenConfigUrlIsBlankAndEnvVarAbsent() {
         assertThrows(IllegalArgumentException.class,
                 () -> ArtemisConnectionFactoryProvider.resolveUrl(configWithUrl("  ")));
     }

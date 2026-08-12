@@ -1,4 +1,12 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+SCRIPT_DIR="$(dirname "$(readlink -f -- "${BASH_SOURCE[0]}")")"
+
+set -o errexit
+set -o pipefail
+set -o nounset
+#set -o xtrace
+
 
 ###
 # #%L
@@ -34,9 +42,9 @@ echo "Unzipping war to get access to lib files."
 unzip -o -qq *.war
 
 echo "Creating integrity database."
-$JAVA $CLASSPATH org.bitrepository.integrityservice.cache.database.IntegrityDatabaseCreator $CONFDIR $INTEGRITY_DB_SCRIPT
+$JAVA $CLASSPATH "org.bitrepository.integrityservice.cache.database.IntegrityDatabaseCreator" "$CONFDIR" "$INTEGRITY_DB_SCRIPT"
 echo "Creating audit database."
-$JAVA $CLASSPATH org.bitrepository.integrityservice.audittrail.IntegrityAuditTrailDatabaseCreator $CONFDIR $AUDIT_CONTRIBUTOR_DB_SCRIPT
+$JAVA $CLASSPATH "org.bitrepository.integrityservice.audittrail.IntegrityAuditTrailDatabaseCreator" "$CONFDIR" "$AUDIT_CONTRIBUTOR_DB_SCRIPT"
 
-cp -r target $FINAL_DIR
+cp -r target "$FINAL_DIR"
 rm -r target

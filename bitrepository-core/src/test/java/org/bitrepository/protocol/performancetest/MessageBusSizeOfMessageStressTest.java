@@ -24,6 +24,7 @@
  */
 package org.bitrepository.protocol.performancetest;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.bitrepositoryelements.Alarm;
 import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
@@ -31,6 +32,7 @@ import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.pillar.integration.ArtemisFixedPortContainer;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.bus.LocalActiveMQBroker;
@@ -44,6 +46,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
+import org.testcontainers.activemq.ArtemisContainer;
+import org.testcontainers.containers.InternetProtocol;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -58,13 +65,16 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
  * The size is regulated by the 'BUFFER_TEXT' and the 'NUMBER_OF_REPEATS_OF_BUFFER_TEXT'.
  * Currently, the buffer text is 100 bytes, and it is repeated 100 times, thus generating a message of size 10 kB.
  */
-class MessageBusSizeOfMessageStressTest {
+@Tag(TestGroups.STRESS_TEST)
+@EnabledIfSystemProperty(named = "runStressTests", matches = "true")
+public class MessageBusSizeOfMessageStressTest {
+
     private static String QUEUE = "TEST-QUEUE";
     private final long TIME_FRAME = 60000L;
     private Settings settings;
 
     @BeforeEach
-    void initializeSettings() {
+    public void initializeSettings() {
         settings = TestSettingsProvider.getSettings(getClass().getSimpleName());
     }
 
@@ -73,8 +83,7 @@ class MessageBusSizeOfMessageStressTest {
      * Requires sending at least five per second.
      */
     @Test
-    @Tag("StressTest")
-    void SendLargeMessagesDistributed() throws Exception {
+    public void SendLargeMessagesDistributed() throws Exception {
         addDescription("Tests how many messages can be handled within a given timeframe.");
         addStep("Define constants", "This should not be possible to fail.");
         QUEUE += "-" + Instant.now().toEpochMilli();
@@ -112,7 +121,6 @@ class MessageBusSizeOfMessageStressTest {
             if (listener != null) {
                 listener.stop();
             }
-            broker.stop();
         }
     }
 
@@ -121,8 +129,8 @@ class MessageBusSizeOfMessageStressTest {
      * It should be at least 20 per second.
      */
     @Test
-    @Tag("StressTest")
-    void SendLargeMessagesLocally() throws Exception {
+    @Tag(TestGroups.STRESS_TEST)
+    public void SendLargeMessagesLocally() throws Exception {
         addDescription("Tests how many messages can be handled within a given timeframe.");
         addStep("Define constants", "This should not be possible to fail.");
         QUEUE += "-" + Instant.now().toEpochMilli();

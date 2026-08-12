@@ -22,6 +22,7 @@
 package org.bitrepository.integrityservice.workflow.step;
 
 import org.apache.commons.codec.DecoderException;
+import org.bitrepository.TestGroups;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.utils.Base16Utils;
@@ -83,7 +84,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testNoData() throws Exception {
         addDescription("Test the checksum integrity validator without any data in the cache.");
@@ -99,7 +100,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testSimilarData() throws Exception {
         addDescription("Test the checksum integrity validator when all pillars have similar data.");
@@ -129,7 +130,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testMissingAtOnePillar() throws Exception {
         addDescription("Test the checksum integrity validator when one pillar is missing the data.");
@@ -151,7 +152,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testTwoDisagreeingChecksums() throws Exception {
         addDescription("Test the checksum integrity validator when only two pillar has data, but it it different.");
@@ -181,7 +182,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testThreeDisagreeingChecksums() throws Exception {
         addDescription("Test the checksum integrity validator when all pillars have different checksums.");
@@ -211,7 +212,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testChecksumMajority() throws Exception {
         addDescription("Test the checksum integrity validator when two pillars have one checksum and the last pillar "
@@ -242,7 +243,7 @@ public class HandleChecksumValidationStepTest extends IntegrityDatabaseTestCase 
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testAuditTrailsForChecksumErrors() throws Exception {
         addDescription("Test audit trails for checksum errors. Verify that a pillar with a single checksum will"

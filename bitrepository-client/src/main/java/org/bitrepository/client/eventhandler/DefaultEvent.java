@@ -29,9 +29,21 @@ package org.bitrepository.client.eventhandler;
  */
 public class DefaultEvent extends AbstractOperationEvent {
 
+    /**
+     * @deprecated used the constructor DefaultEvent#DefaultEvent(OperationEventType, String)
+     * @see DefaultEvent#DefaultEvent(OperationEventType, String)
+     */
+    @Deprecated(forRemoval = true)
     public DefaultEvent(String collectionID) {
-        super();
-        setCollectionID(collectionID);
+        super(collectionID);
+    }
+
+    public DefaultEvent(final OperationEventType type, final String collectionID, final String info) {
+        super(type, collectionID, info);
+    }
+
+    public DefaultEvent(final OperationEventType type, final String collectionID) {
+        super(type, collectionID);
     }
 
     @Override

@@ -59,10 +59,14 @@ public class PuttingFile extends PerformingOperationState {
 
     @Override
     protected void generateContributorCompleteEvent(MessageResponse msg) throws UnexpectedResponseException {
-        if (msg instanceof PutFileFinalResponse) {
-            PutFileFinalResponse response = (PutFileFinalResponse) msg;
-            getContext().getMonitor().contributorComplete(new PutFileCompletePillarEvent(response.getPillarID(), response.getCollectionID(),
-                    response.getChecksumDataForNewFile(), response.getResponseInfo()));
+        if (msg instanceof PutFileFinalResponse response) {
+            getContext().getMonitor()
+                        .contributorComplete(new PutFileCompletePillarEvent(
+                            response.getPillarID(),
+                            response.getCollectionID(),
+                            response.getChecksumDataForNewFile(),
+                            response.getResponseInfo(),
+                            "File already existed on " + response.getPillarID()));
         } else {
             throw new UnexpectedResponseException(
                     "Received unexpected msg " + msg.getClass().getSimpleName() + " while waiting for Put file response.");
@@ -140,17 +144,22 @@ public class PuttingFile extends PerformingOperationState {
                         sendPillarRequest(pillarID);
                         componentRequestCount.put(pillarID, componentRequestCount.get(pillarID) + 1);
                         context.getMonitor()
-                                .retry("Retrying putfile (attempt number " + componentRequestCount.get(pillarID) + ")", pillarID);
+                               .retry("Retrying putfile (attempt number " + componentRequestCount.get(pillarID) + ")",
+                                      pillarID);
                     } else {
-                        getContext().getMonitor().contributorFailed(msg.getResponseInfo().getResponseText(), msg.getFrom(),
-                                msg.getResponseInfo().getResponseCode());
+                        getContext().getMonitor().contributorFailed(msg.getResponseInfo().getResponseText(),
+                                                                    msg.getFrom(),
+                                                                    msg.getResponseInfo().getResponseCode());
                     }
                     break;
                 case DUPLICATE_FILE_FAILURE:
                     if (ChecksumUtils.areEqual(response.getChecksumDataForExistingFile(), context.getChecksumForValidationAtPillar())) {
-                        PutFileCompletePillarEvent event = new PutFileCompletePillarEvent(response.getPillarID(),
-                                response.getCollectionID(), response.getChecksumDataForExistingFile(), response.getResponseInfo());
-                        event.setInfo("File already existed on " + response.getPillarID());
+                        PutFileCompletePillarEvent event = new PutFileCompletePillarEvent(
+                                response.getPillarID(),
+                                response.getCollectionID(),
+                                response.getChecksumDataForExistingFile(),
+                                response.getResponseInfo(),
+                                "File already existed on " + response.getPillarID());
                         getContext().getMonitor().contributorComplete(event);
                     } else {
                         getContext().getMonitor().contributorFailed(

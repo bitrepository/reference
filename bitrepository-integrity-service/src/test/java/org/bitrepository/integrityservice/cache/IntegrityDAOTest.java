@@ -25,6 +25,7 @@
 package org.bitrepository.integrityservice.cache;
 
 import org.apache.commons.codec.DecoderException;
+import org.bitrepository.TestGroups;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
@@ -32,7 +33,6 @@ import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.IntegrityDatabaseTestCase;
-import org.bitrepository.integrityservice.cache.database.DerbyIntegrityDAO;
 import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.service.database.DatabaseManager;
@@ -40,6 +40,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
 import java.time.Instant;
@@ -57,6 +59,7 @@ import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 class IntegrityDAOTest extends IntegrityDatabaseTestCase {
+    private static final Logger log = LoggerFactory.getLogger(IntegrityDAOTest.class);
     String TEST_PILLAR_1 = "MY-TEST-PILLAR-1";
     String TEST_PILLAR_2 = "MY-TEST-PILLAR-2";
     String EXTRA_PILLAR = "MY-EXTRA-PILLAR";
@@ -68,9 +71,7 @@ class IntegrityDAOTest extends IntegrityDatabaseTestCase {
     static final String EXTRA_COLLECTION = "extra-collection";
 
     @BeforeEach
-    @Override
-    public void setup() throws Exception {
-        super.setup();
+    public void setup() {
         TEST_COLLECTIONID = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
     }
 
@@ -96,18 +97,19 @@ class IntegrityDAOTest extends IntegrityDatabaseTestCase {
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
     @Tag("integritytest")
-    void instantiationTest() throws Exception {
+    void instantiationTest() {
         addDescription("Testing the connection to the integrity database.");
-        IntegrityDAO cache = createDAO();
-        Assertions.assertNotNull(cache);
+        try (IntegrityDAO cache = createDAO()) {
+            Assertions.assertNotNull(cache);
+        }
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
     @Tag("integritytest")
     void reinitialiseDatabaseTest() throws Exception {
         addDescription("Testing the connection to the integrity database.");
@@ -115,681 +117,731 @@ class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         DatabaseManager dm = new IntegrityDatabaseManager(
                 settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
 
-        IntegrityDAO cache = new DerbyIntegrityDAO(dm.getConnector());
-        Assertions.assertNotNull(cache);
+        try (IntegrityDAO cache = createDAO()) {
+            Assertions.assertNotNull(cache);
 
-        addStep("Close the connection and create another one.", "Should not fail");
-        dm.getConnector().getConnection().close();
-        dm.getConnector().destroy();
+            addStep("Close the connection and create another one.", "Should not fail");
+            cache.close();
+            dm.getConnector().getConnection().close();
+            dm.getConnector().destroy();
 
-        synchronized (this) {
-            wait(100);
+            synchronized (this) {
+                wait(100);
+            }
+
+            DatabaseManager newdm = new IntegrityDatabaseManager(
+                    settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
+
+            try (IntegrityDAO ignored = createDAO()) {
+                //There must be some code in this block, otherwise it is not run...
+                log.debug("Dao created");
+            }
         }
-
-        DatabaseManager newdm = new IntegrityDatabaseManager(
-                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
-
-        cache = new DerbyIntegrityDAO(newdm.getConnector());
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
     @Tag("integritytest")
-    void initialStateExtractionTest() throws Exception {
+    void initialStateExtractionTest() {
         addDescription("Tests the initial state of the IntegrityModel. Should not contain any data.");
-        IntegrityDAO cache = createDAO();
+        try (IntegrityDAO cache = createDAO()) {
 
-        List<String> pillersInDB = cache.getAllPillars();
-        Assertions.assertTrue(pillersInDB.containsAll(Arrays.asList(TEST_PILLAR_1, TEST_PILLAR_2, EXTRA_PILLAR)));
-        Assertions.assertEquals(3, pillersInDB.size());
-        List<String> collectionsInDB = cache.getCollections();
-        Assertions.assertTrue(collectionsInDB.containsAll(Arrays.asList(TEST_COLLECTIONID, EXTRA_COLLECTION)));
-        Assertions.assertEquals(2, collectionsInDB.size());
+            List<String> pillersInDB = cache.getAllPillars();
+            Assertions.assertTrue(pillersInDB.containsAll(Arrays.asList(TEST_PILLAR_1, TEST_PILLAR_2, EXTRA_PILLAR)));
+            Assertions.assertEquals(3, pillersInDB.size());
+            List<String> collectionsInDB = cache.getCollections();
+            Assertions.assertTrue(collectionsInDB.containsAll(Arrays.asList(TEST_COLLECTIONID, EXTRA_COLLECTION)));
+            Assertions.assertEquals(2, collectionsInDB.size());
 
-        Assertions.assertEquals(Long.valueOf(0), cache.getNumberOfFilesInCollection(TEST_COLLECTIONID));
-        Assertions.assertEquals(Long.valueOf(0), cache.getNumberOfFilesInCollection(EXTRA_COLLECTION));
+            Assertions.assertEquals(Long.valueOf(0), cache.getNumberOfFilesInCollection(TEST_COLLECTIONID));
+            Assertions.assertEquals(Long.valueOf(0), cache.getNumberOfFilesInCollection(EXTRA_COLLECTION));
+        }
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
     @Tag("integritytest")
     void testCorrectDateHandling() {
         addDescription("Testing the correct ingest and extraction of file and checksum dates");
-        IntegrityDAO cache = createDAO();
+        try (IntegrityDAO cache = createDAO()) {
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.ROOT);
-        Instant summertimeTS = ZonedDateTime.parse("2015-10-25T02:59:54.000+02:00", formatter).toInstant();
-        Instant summertimeUnix = Instant.ofEpochMilli(1445734794000L);
-        Assertions.assertEquals(summertimeUnix, summertimeTS);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.ROOT);
+            Instant summertimeTS = ZonedDateTime.parse("2015-10-25T02:59:54.000+02:00", formatter).toInstant();
+            Instant summertimeUnix = Instant.ofEpochMilli(1445734794000L);
+            Assertions.assertEquals(summertimeUnix, summertimeTS);
 
-        Instant wintertimeTS = ZonedDateTime.parse("2015-10-25T02:59:54.000+01:00", formatter).toInstant();
-        Instant wintertimeUnix = Instant.ofEpochMilli(1445738394000L);
-        Assertions.assertEquals(wintertimeUnix, wintertimeTS);
+            Instant wintertimeTS = ZonedDateTime.parse("2015-10-25T02:59:54.000+01:00", formatter).toInstant();
+            Instant wintertimeUnix = Instant.ofEpochMilli(1445738394000L);
+            Assertions.assertEquals(wintertimeUnix, wintertimeTS);
 
-        FileIDsData summertimeData = getFileIDsData("summertime");
-        summertimeData.getFileIDsDataItems().getFileIDsDataItem().get(0)
-                .setLastModificationTime(CalendarUtils.getXmlGregorianCalendar(summertimeTS));
-        FileIDsData wintertimeData = getFileIDsData("wintertime");
-        wintertimeData.getFileIDsDataItems().getFileIDsDataItem().get(0)
-                .setLastModificationTime(CalendarUtils.getXmlGregorianCalendar(wintertimeTS));
-        cache.updateFileIDs(summertimeData, TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateFileIDs(wintertimeData, TEST_PILLAR_1, TEST_COLLECTIONID);
+            FileIDsData summertimeData = getFileIDsData("summertime");
+            summertimeData.getFileIDsDataItems().getFileIDsDataItem().get(0)
+                          .setLastModificationTime(CalendarUtils.getXmlGregorianCalendar(summertimeTS));
+            FileIDsData wintertimeData = getFileIDsData("wintertime");
+            wintertimeData.getFileIDsDataItems().getFileIDsDataItem().get(0)
+                          .setLastModificationTime(CalendarUtils.getXmlGregorianCalendar(wintertimeTS));
+            cache.updateFileIDs(summertimeData, TEST_PILLAR_1, TEST_COLLECTIONID);
+            cache.updateFileIDs(wintertimeData, TEST_PILLAR_1, TEST_COLLECTIONID);
 
-        List<ChecksumDataForChecksumSpecTYPE> summertimeCsData = getChecksumResults("summertime", TEST_CHECKSUM);
-        summertimeCsData.get(0).setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(summertimeTS));
-        List<ChecksumDataForChecksumSpecTYPE> wintertimeCsData = getChecksumResults("wintertime", TEST_CHECKSUM);
-        wintertimeCsData.get(0).setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(wintertimeTS));
-        cache.updateChecksums(summertimeCsData, TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateChecksums(wintertimeCsData, TEST_PILLAR_1, TEST_COLLECTIONID);
+            List<ChecksumDataForChecksumSpecTYPE> summertimeCsData = getChecksumResults("summertime", TEST_CHECKSUM);
+            summertimeCsData.get(0).setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(summertimeTS));
+            List<ChecksumDataForChecksumSpecTYPE> wintertimeCsData = getChecksumResults("wintertime", TEST_CHECKSUM);
+            wintertimeCsData.get(0).setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(wintertimeTS));
+            cache.updateChecksums(summertimeCsData, TEST_PILLAR_1, TEST_COLLECTIONID);
+            cache.updateChecksums(wintertimeCsData, TEST_PILLAR_1, TEST_COLLECTIONID);
 
-        List<FileInfo> fis = cache.getFileInfosForFile("summertime", TEST_COLLECTIONID);
-        Assertions.assertEquals(1, fis.size(), fis.toString());
-        Assertions.assertEquals(summertimeUnix, fis.get(0).getDateForLastChecksumCheckInstant());
+            List<FileInfo> fis = cache.getFileInfosForFile("summertime", TEST_COLLECTIONID);
+            Assertions.assertEquals(1, fis.size(), fis.toString());
+            Assertions.assertEquals(summertimeUnix, fis.get(0).getDateForLastChecksumCheckInstant());
 
-        fis = cache.getFileInfosForFile("wintertime", TEST_COLLECTIONID);
-        Assertions.assertEquals(1, fis.size(), fis.toString());
-        Assertions.assertEquals(wintertimeUnix, fis.get(0).getDateForLastChecksumCheckInstant());
+            fis = cache.getFileInfosForFile("wintertime", TEST_COLLECTIONID);
+            Assertions.assertEquals(1, fis.size(), fis.toString());
+            Assertions.assertEquals(wintertimeUnix, fis.get(0).getDateForLastChecksumCheckInstant());
+        }
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
     @Tag("integritytest")
-    void testIngestOfFileIDsData() throws Exception {
+    void testIngestOfFileIDsData() {
         addDescription("Tests the ingesting of file ids data");
-        IntegrityDAO cache = createDAO();
+        try (IntegrityDAO cache = createDAO()) {
 
-        Assertions.assertEquals(Long.valueOf(0), cache.getNumberOfFilesInCollection(TEST_COLLECTIONID));
-        Assertions.assertEquals(Long.valueOf(0), cache.getNumberOfFilesInCollection(EXTRA_COLLECTION));
+            Assertions.assertEquals(Long.valueOf(0), cache.getNumberOfFilesInCollection(TEST_COLLECTIONID));
+            Assertions.assertEquals(Long.valueOf(0), cache.getNumberOfFilesInCollection(EXTRA_COLLECTION));
 
-        addStep("Create data", "Should be ingested into the database");
-        FileIDsData data1 = getFileIDsData(TEST_FILE_ID);
-        cache.updateFileIDs(data1, TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateFileIDs(data1, TEST_PILLAR_2, TEST_COLLECTIONID);
+            addStep("Create data", "Should be ingested into the database");
+            FileIDsData data1 = getFileIDsData(TEST_FILE_ID);
+            cache.updateFileIDs(data1, TEST_PILLAR_1, TEST_COLLECTIONID);
+            cache.updateFileIDs(data1, TEST_PILLAR_2, TEST_COLLECTIONID);
 
-        addStep("Extract the data", "Should be identical to the ingested data");
-        Collection<FileInfo> fileinfos = cache.getFileInfosForFile(TEST_FILE_ID, TEST_COLLECTIONID);
-        Assertions.assertNotNull(fileinfos);
-        for (FileInfo fi : fileinfos) {
-            Assertions.assertEquals(TEST_FILE_ID, fi.getFileId());
-            Assertions.assertNull(fi.getChecksum());
-            Assertions.assertEquals(Instant.EPOCH, fi.getDateForLastChecksumCheckInstant());
-            Assertions.assertEquals(CalendarUtils.convertFromXMLGregorianCalendarToInstant(
-                    data1.getFileIDsDataItems().getFileIDsDataItem().get(0).getLastModificationTime()),
+            addStep("Extract the data", "Should be identical to the ingested data");
+            Collection<FileInfo> fileinfos = cache.getFileInfosForFile(TEST_FILE_ID, TEST_COLLECTIONID);
+            Assertions.assertNotNull(fileinfos);
+            for (FileInfo fi : fileinfos) {
+                Assertions.assertEquals(TEST_FILE_ID, fi.getFileId());
+                Assertions.assertNull(fi.getChecksum());
+                Assertions.assertEquals(Instant.EPOCH, fi.getDateForLastChecksumCheckInstant());
+                Assertions.assertEquals(
+                    CalendarUtils.convertFromXMLGregorianCalendarToInstant(
+                        data1.getFileIDsDataItems()
+                             .getFileIDsDataItem()
+                             .getFirst()
+                             .getLastModificationTime()),
                     fi.getDateForLastFileIDCheckInstant());
-            Assertions.assertEquals(Long.valueOf(data1.getFileIDsDataItems().getFileIDsDataItem().get(0).getFileSize().longValue()),
+                Assertions.assertEquals(
+                    Long.valueOf(
+                        data1.getFileIDsDataItems()
+                             .getFileIDsDataItem()
+                             .getFirst()
+                             .getFileSize()
+                             .longValue()),
                     fi.getFileSize());
-        }
+            }
 
-        addStep("Check that the extra collection is untouched by the ingest", "should deliver an empty collection and" +
-                " no errors");
-        Assertions.assertEquals(Long.valueOf(1), cache.getNumberOfFilesInCollection(TEST_COLLECTIONID));
-        Assertions.assertEquals(Long.valueOf(0), cache.getNumberOfFilesInCollection(EXTRA_COLLECTION));
+            addStep("Check that the extra collection is untouched by the ingest",
+                    "should deliver an empty collection and no errors");
+            Assertions.assertEquals(Long.valueOf(1), cache.getNumberOfFilesInCollection(TEST_COLLECTIONID));
+            Assertions.assertEquals(Long.valueOf(0), cache.getNumberOfFilesInCollection(EXTRA_COLLECTION));
+        }
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
     @Tag("integritytest")
-    void testIngestOfChecksumsData() throws Exception {
+    void testIngestOfChecksumsData() {
         addDescription("Tests the ingesting of checksums data");
-        IntegrityDAO cache = createDAO();
+        try (IntegrityDAO cache = createDAO()) {
 
-        Assertions.assertEquals(Long.valueOf(0), cache.getNumberOfFilesInCollection(TEST_COLLECTIONID));
-        Assertions.assertEquals(Long.valueOf(0), cache.getNumberOfFilesInCollection(EXTRA_COLLECTION));
+            Assertions.assertEquals(Long.valueOf(0), cache.getNumberOfFilesInCollection(TEST_COLLECTIONID));
+            Assertions.assertEquals(Long.valueOf(0), cache.getNumberOfFilesInCollection(EXTRA_COLLECTION));
 
-        addStep("Create data", "Should be ingested into the database");
-        List<ChecksumDataForChecksumSpecTYPE> csData = getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM);
-        cache.updateChecksums(csData, TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateChecksums(csData, TEST_PILLAR_2, TEST_COLLECTIONID);
+            addStep("Create data", "Should be ingested into the database");
+            List<ChecksumDataForChecksumSpecTYPE> csData = getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM);
+            cache.updateChecksums(csData, TEST_PILLAR_1, TEST_COLLECTIONID);
+            cache.updateChecksums(csData, TEST_PILLAR_2, TEST_COLLECTIONID);
 
-        addStep("Extract the data", "Should be identical to the ingested data");
-        Collection<FileInfo> fileinfos = cache.getFileInfosForFile(TEST_FILE_ID, TEST_COLLECTIONID);
-        Assertions.assertNotNull(fileinfos);
-        for (FileInfo fi : fileinfos) {
-            Assertions.assertEquals(TEST_FILE_ID, fi.getFileId());
-            Assertions.assertEquals(TEST_CHECKSUM, fi.getChecksum());
-            Assertions.assertEquals(CalendarUtils.convertFromXMLGregorianCalendarToInstant(csData.get(0).getCalculationTimestamp()),
+            addStep("Extract the data", "Should be identical to the ingested data");
+            Collection<FileInfo> fileinfos = cache.getFileInfosForFile(TEST_FILE_ID, TEST_COLLECTIONID);
+            Assertions.assertNotNull(fileinfos);
+            for (FileInfo fi : fileinfos) {
+                Assertions.assertEquals(TEST_FILE_ID, fi.getFileId());
+                Assertions.assertEquals(TEST_CHECKSUM, fi.getChecksum());
+                Assertions.assertEquals(
+                    CalendarUtils.convertFromXMLGregorianCalendarToInstant(csData.getFirst().getCalculationTimestamp()),
                     fi.getDateForLastChecksumCheckInstant());
+            }
+
+            addStep("Check that the extra collection is untouched by the ingest",
+                    "should deliver an empty collection and no errors");
+            Assertions.assertEquals(Long.valueOf(1), cache.getNumberOfFilesInCollection(TEST_COLLECTIONID));
+            Assertions.assertEquals(Long.valueOf(0), cache.getNumberOfFilesInCollection(EXTRA_COLLECTION));
         }
 
-        addStep("Check that the extra collection is untouched by the ingest",
-                "should deliver an empty collection and no errors");
-        Assertions.assertEquals(Long.valueOf(1), cache.getNumberOfFilesInCollection(TEST_COLLECTIONID));
-        Assertions.assertEquals(Long.valueOf(0), cache.getNumberOfFilesInCollection(EXTRA_COLLECTION));
-
     }
 
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
     @Tag("integritytest")
-    void testDeletingEntry() throws Exception {
+    void testDeletingEntry() {
         addDescription("Tests the deletion of an FileID entry from a collection. " +
-                "Checks that it does not effect another collection with a fileID equal to the deleted");
-        IntegrityDAO cache = createDAO();
-        Collection<FileInfo> fileinfos = cache.getFileInfosForFile(TEST_FILE_ID, TEST_COLLECTIONID);
-        Assertions.assertNotNull(fileinfos);
-        Assertions.assertEquals(0, fileinfos.size());
+                       "Checks that it does not effect another collection with a fileID equal to the deleted");
+        try (IntegrityDAO cache = createDAO()) {
+            Collection<FileInfo> fileinfos = cache.getFileInfosForFile(TEST_FILE_ID, TEST_COLLECTIONID);
+            Assertions.assertNotNull(fileinfos);
+            Assertions.assertEquals(0, fileinfos.size());
 
-        addStep("Create data", "Should be ingested into the database");
-        FileIDsData data1 = getFileIDsData(TEST_FILE_ID);
-        cache.updateFileIDs(data1, TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateFileIDs(data1, TEST_PILLAR_2, TEST_COLLECTIONID);
+            addStep("Create data", "Should be ingested into the database");
+            FileIDsData data1 = getFileIDsData(TEST_FILE_ID);
+            cache.updateFileIDs(data1, TEST_PILLAR_1, TEST_COLLECTIONID);
+            cache.updateFileIDs(data1, TEST_PILLAR_2, TEST_COLLECTIONID);
 
-        cache.updateFileIDs(data1, TEST_PILLAR_1, EXTRA_COLLECTION);
-        cache.updateFileIDs(data1, EXTRA_PILLAR, EXTRA_COLLECTION);
+            cache.updateFileIDs(data1, TEST_PILLAR_1, EXTRA_COLLECTION);
+            cache.updateFileIDs(data1, EXTRA_PILLAR, EXTRA_COLLECTION);
 
-        addStep("Ensure that the data is present", "the data is present");
-        fileinfos = cache.getFileInfosForFile(TEST_FILE_ID, TEST_COLLECTIONID);
-        Assertions.assertNotNull(fileinfos);
-        Assertions.assertEquals(2, fileinfos.size());
-        fileinfos = cache.getFileInfosForFile(TEST_FILE_ID, EXTRA_COLLECTION);
-        Assertions.assertNotNull(fileinfos);
-        Assertions.assertEquals(2, fileinfos.size());
+            addStep("Ensure that the data is present", "the data is present");
+            fileinfos = cache.getFileInfosForFile(TEST_FILE_ID, TEST_COLLECTIONID);
+            Assertions.assertNotNull(fileinfos);
+            Assertions.assertEquals(2, fileinfos.size());
+            fileinfos = cache.getFileInfosForFile(TEST_FILE_ID, EXTRA_COLLECTION);
+            Assertions.assertNotNull(fileinfos);
+            Assertions.assertEquals(2, fileinfos.size());
 
-        addStep("Delete the entry for the first pillar",
-                "No fileinfos should be extracted from the pillar in the collection.");
-        cache.removeFile(TEST_COLLECTIONID, TEST_PILLAR_1, TEST_FILE_ID);
-        List<FileInfo> fis = cache.getFileInfosForFile(TEST_FILE_ID, TEST_COLLECTIONID);
-        Assertions.assertNotNull(fis);
-        Assertions.assertEquals(1, fis.size());
-        Assertions.assertEquals(TEST_PILLAR_2, fis.get(0).getPillarId());
+            addStep("Delete the entry for the first pillar",
+                    "No fileinfos should be extracted from the pillar in the collection.");
+            cache.removeFile(TEST_COLLECTIONID, TEST_PILLAR_1, TEST_FILE_ID);
+            List<FileInfo> fis = cache.getFileInfosForFile(TEST_FILE_ID, TEST_COLLECTIONID);
+            Assertions.assertNotNull(fis);
+            Assertions.assertEquals(1, fis.size());
+            Assertions.assertEquals(TEST_PILLAR_2, fis.get(0).getPillarId());
 
-        addStep("Delete the entry for the second pillar",
-                "No fileinfos should be extracted from the collection.");
-        cache.removeFile(TEST_COLLECTIONID, TEST_PILLAR_2, TEST_FILE_ID);
-        fis = cache.getFileInfosForFile(TEST_FILE_ID, TEST_COLLECTIONID);
-        Assertions.assertNotNull(fis);
-        Assertions.assertEquals(0, fis.size());
+            addStep("Delete the entry for the second pillar",
+                    "No fileinfos should be extracted from the collection.");
+            cache.removeFile(TEST_COLLECTIONID, TEST_PILLAR_2, TEST_FILE_ID);
+            fis = cache.getFileInfosForFile(TEST_FILE_ID, TEST_COLLECTIONID);
+            Assertions.assertNotNull(fis);
+            Assertions.assertEquals(0, fis.size());
 
-        addStep("Check that the data in the extra collection is still present",
-                "the data is present");
-        fileinfos = cache.getFileInfosForFile(TEST_FILE_ID, EXTRA_COLLECTION);
-        Assertions.assertNotNull(fileinfos);
-        Assertions.assertEquals(2, fileinfos.size());
+            addStep("Check that the data in the extra collection is still present",
+                    "the data is present");
+            fileinfos = cache.getFileInfosForFile(TEST_FILE_ID, EXTRA_COLLECTION);
+            Assertions.assertNotNull(fileinfos);
+            Assertions.assertEquals(2, fileinfos.size());
+        }
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
     @Tag("integritytest")
-    void testDeletingNonExistingEntry() throws Exception {
+    void testDeletingNonExistingEntry() {
         addDescription("Tests the deletion of an nonexisting FileID entry.");
-        IntegrityDAO cache = createDAO();
+        try (IntegrityDAO cache = createDAO()) {
 
-        String nonexistingFileEntry = "NON-EXISTING-FILE-ENTRY" + Instant.now().toEpochMilli();
+            String nonexistingFileEntry = "NON-EXISTING-FILE-ENTRY" + Instant.now().toEpochMilli();
 
-        addStep("Create data", "Should be ingested into the database");
-        FileIDsData data1 = getFileIDsData(TEST_FILE_ID);
-        cache.updateFileIDs(data1, TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateFileIDs(data1, TEST_PILLAR_2, TEST_COLLECTIONID);
+            addStep("Create data", "Should be ingested into the database");
+            FileIDsData data1 = getFileIDsData(TEST_FILE_ID);
+            cache.updateFileIDs(data1, TEST_PILLAR_1, TEST_COLLECTIONID);
+            cache.updateFileIDs(data1, TEST_PILLAR_2, TEST_COLLECTIONID);
 
-        Collection<FileInfo> fileinfos = cache.getFileInfosForFile(nonexistingFileEntry, TEST_COLLECTIONID);
-        Assertions.assertNotNull(fileinfos);
-        Assertions.assertEquals(0, fileinfos.size());
+            Collection<FileInfo> fileinfos = cache.getFileInfosForFile(nonexistingFileEntry, TEST_COLLECTIONID);
+            Assertions.assertNotNull(fileinfos);
+            Assertions.assertEquals(0, fileinfos.size());
 
-        fileinfos = cache.getFileInfosForFile(TEST_FILE_ID, TEST_COLLECTIONID);
-        Assertions.assertNotNull(fileinfos);
-        Assertions.assertEquals(2, fileinfos.size());
+            fileinfos = cache.getFileInfosForFile(TEST_FILE_ID, TEST_COLLECTIONID);
+            Assertions.assertNotNull(fileinfos);
+            Assertions.assertEquals(2, fileinfos.size());
 
-        addStep("Delete a nonexisting entry", "Should not change the state of the database.");
-        cache.removeFile(TEST_COLLECTIONID, TEST_PILLAR_1, nonexistingFileEntry);
-        cache.removeFile(TEST_COLLECTIONID, TEST_PILLAR_2, nonexistingFileEntry);
-        fileinfos = cache.getFileInfosForFile(TEST_FILE_ID, TEST_COLLECTIONID);
-        Assertions.assertNotNull(fileinfos);
-        Assertions.assertEquals(2, fileinfos.size());
+            addStep("Delete a nonexisting entry", "Should not change the state of the database.");
+            cache.removeFile(TEST_COLLECTIONID, TEST_PILLAR_1, nonexistingFileEntry);
+            cache.removeFile(TEST_COLLECTIONID, TEST_PILLAR_2, nonexistingFileEntry);
+            fileinfos = cache.getFileInfosForFile(TEST_FILE_ID, TEST_COLLECTIONID);
+            Assertions.assertNotNull(fileinfos);
+            Assertions.assertEquals(2, fileinfos.size());
+        }
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
     @Tag("integritytest")
     void testFindOrphanFiles() throws Exception {
         addDescription("Tests the ability to find orphan files.");
-        IntegrityDAO cache = createDAO();
+        try (IntegrityDAO cache = createDAO()) {
 
-        addStep("Create data", "Should be ingested into the database");
-        String orphanFile = "orphan";
-        String existingFile = "existing";
-        FileIDsData data1 = getFileIDsData(existingFile);
-        FileIDsData data3 = getFileIDsData(orphanFile);
-        cache.updateFileIDs(data1, TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateFileIDs(data1, TEST_PILLAR_2, TEST_COLLECTIONID);
-        cache.updateFileIDs(data3, TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateFileIDs(data3, TEST_PILLAR_2, TEST_COLLECTIONID);
-        Assertions.assertEquals(Long.valueOf(2), cache.getNumberOfFilesInCollection(TEST_COLLECTIONID));
-        Assertions.assertEquals(Long.valueOf(0), cache.getNumberOfFilesInCollection(EXTRA_COLLECTION));
-        Thread.sleep(100);
-        Instant updateTime = Instant.now();
-        cache.updateFileIDs(data1, TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateFileIDs(data1, TEST_PILLAR_2, TEST_COLLECTIONID);
-        cache.updateFileIDs(data3, TEST_PILLAR_1, TEST_COLLECTIONID);
+            addStep("Create data", "Should be ingested into the database");
+            String orphanFile = "orphan";
+            String existingFile = "existing";
+            FileIDsData data1 = getFileIDsData(existingFile);
+            FileIDsData data3 = getFileIDsData(orphanFile);
+            cache.updateFileIDs(data1, TEST_PILLAR_1, TEST_COLLECTIONID);
+            cache.updateFileIDs(data1, TEST_PILLAR_2, TEST_COLLECTIONID);
+            cache.updateFileIDs(data3, TEST_PILLAR_1, TEST_COLLECTIONID);
+            cache.updateFileIDs(data3, TEST_PILLAR_2, TEST_COLLECTIONID);
+            Assertions.assertEquals(Long.valueOf(2), cache.getNumberOfFilesInCollection(TEST_COLLECTIONID));
+            Assertions.assertEquals(Long.valueOf(0), cache.getNumberOfFilesInCollection(EXTRA_COLLECTION));
+            Thread.sleep(100);
+            Instant updateTime = Instant.now();
+            cache.updateFileIDs(data1, TEST_PILLAR_1, TEST_COLLECTIONID);
+            cache.updateFileIDs(data1, TEST_PILLAR_2, TEST_COLLECTIONID);
+            cache.updateFileIDs(data3, TEST_PILLAR_1, TEST_COLLECTIONID);
 
-        List<String> orphanFilesPillar1 = getIssuesFromIterator(cache.getOrphanFilesOnPillar(TEST_COLLECTIONID,
-                TEST_PILLAR_1, updateTime));
-        Assertions.assertEquals(0, orphanFilesPillar1.size());
-        List<String> orphanFilesPillar2 = getIssuesFromIterator(cache.getOrphanFilesOnPillar(TEST_COLLECTIONID,
-                TEST_PILLAR_2, updateTime));
-        Assertions.assertEquals(1, orphanFilesPillar2.size());
+            List<String> orphanFilesPillar1 = getIssuesFromIterator(cache.getOrphanFilesOnPillar(TEST_COLLECTIONID,
+                                                                                                 TEST_PILLAR_1,
+                                                                                                 updateTime));
+            Assertions.assertEquals(0, orphanFilesPillar1.size());
+            List<String> orphanFilesPillar2 = getIssuesFromIterator(cache.getOrphanFilesOnPillar(TEST_COLLECTIONID,
+                                                                                                 TEST_PILLAR_2,
+                                                                                                 updateTime));
+            Assertions.assertEquals(1, orphanFilesPillar2.size());
+        }
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
     @Tag("integritytest")
-    void testFindInconsistentChecksum() throws Exception {
+    void testFindInconsistentChecksum() {
         addDescription("Testing the localization of inconsistent checksums");
-        IntegrityDAO cache = createDAO();
+        try (IntegrityDAO cache = createDAO()) {
 
-        String checksum1_1 = "11";
-        String checksum1_2 = "12";
-        String checksum3 = "33";
-        String checksum2_1 = "21";
-        String checksum2_2 = "22";
+            String checksum1_1 = "11";
+            String checksum1_2 = "12";
+            String checksum3 = "33";
+            String checksum2_1 = "21";
+            String checksum2_2 = "22";
 
-        String BAD_FILE_ID_1 = "BAD-FILE-1";
-        String BAD_FILE_ID_2 = "BAD-FILE-2";
-        String GOOD_FILE_ID = "GOOD-FILE";
+            String BAD_FILE_ID_1 = "BAD-FILE-1";
+            String BAD_FILE_ID_2 = "BAD-FILE-2";
+            String GOOD_FILE_ID = "GOOD-FILE";
 
-        addStep("Update the database with 2 inconsistent files and one consistent file.",
-                "Ingesting the data into the database");
-        List<ChecksumDataForChecksumSpecTYPE> csData1_1 = getChecksumResults(BAD_FILE_ID_1, checksum1_1);
-        List<ChecksumDataForChecksumSpecTYPE> csData1_2 = getChecksumResults(BAD_FILE_ID_2, checksum1_2);
-        List<ChecksumDataForChecksumSpecTYPE> csData1_3 = getChecksumResults(GOOD_FILE_ID, checksum3);
-        cache.updateChecksums(csData1_1, TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateChecksums(csData1_2, TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateChecksums(csData1_3, TEST_PILLAR_1, TEST_COLLECTIONID);
-        List<ChecksumDataForChecksumSpecTYPE> csData2_1 = getChecksumResults(BAD_FILE_ID_1, checksum2_1);
-        List<ChecksumDataForChecksumSpecTYPE> csData2_2 = getChecksumResults(BAD_FILE_ID_2, checksum2_2);
-        List<ChecksumDataForChecksumSpecTYPE> csData2_3 = getChecksumResults(GOOD_FILE_ID, checksum3);
-        cache.updateChecksums(csData2_1, TEST_PILLAR_2, TEST_COLLECTIONID);
-        cache.updateChecksums(csData2_2, TEST_PILLAR_2, TEST_COLLECTIONID);
-        cache.updateChecksums(csData2_3, TEST_PILLAR_2, TEST_COLLECTIONID);
+            addStep("Update the database with 2 inconsistent files and one consistent file.",
+                    "Ingesting the data into the database");
+            List<ChecksumDataForChecksumSpecTYPE> csData1_1 = getChecksumResults(BAD_FILE_ID_1, checksum1_1);
+            List<ChecksumDataForChecksumSpecTYPE> csData1_2 = getChecksumResults(BAD_FILE_ID_2, checksum1_2);
+            List<ChecksumDataForChecksumSpecTYPE> csData1_3 = getChecksumResults(GOOD_FILE_ID, checksum3);
+            cache.updateChecksums(csData1_1, TEST_PILLAR_1, TEST_COLLECTIONID);
+            cache.updateChecksums(csData1_2, TEST_PILLAR_1, TEST_COLLECTIONID);
+            cache.updateChecksums(csData1_3, TEST_PILLAR_1, TEST_COLLECTIONID);
+            List<ChecksumDataForChecksumSpecTYPE> csData2_1 = getChecksumResults(BAD_FILE_ID_1, checksum2_1);
+            List<ChecksumDataForChecksumSpecTYPE> csData2_2 = getChecksumResults(BAD_FILE_ID_2, checksum2_2);
+            List<ChecksumDataForChecksumSpecTYPE> csData2_3 = getChecksumResults(GOOD_FILE_ID, checksum3);
+            cache.updateChecksums(csData2_1, TEST_PILLAR_2, TEST_COLLECTIONID);
+            cache.updateChecksums(csData2_2, TEST_PILLAR_2, TEST_COLLECTIONID);
+            cache.updateChecksums(csData2_3, TEST_PILLAR_2, TEST_COLLECTIONID);
 
-        addStep("Find the files with inconsistent checksums", "Bad file 1 and 2");
-        List<String> filesWithChecksumError
-                = getIssuesFromIterator(cache.findFilesWithChecksumInconsistencies(TEST_COLLECTIONID));
-        Assertions.assertEquals(Arrays.asList(BAD_FILE_ID_1, BAD_FILE_ID_2), filesWithChecksumError);
+            addStep("Find the files with inconsistent checksums", "Bad file 1 and 2");
+            List<String> filesWithChecksumError
+                    = getIssuesFromIterator(cache.findFilesWithChecksumInconsistencies(TEST_COLLECTIONID));
+            Assertions.assertEquals(Arrays.asList(BAD_FILE_ID_1, BAD_FILE_ID_2), filesWithChecksumError);
+        }
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
     @Tag("integritytest")
     void testNoChecksums() {
         addDescription("Testing the checksum validation, when no checksums exists.");
-        IntegrityDAO cache = createDAO();
+        try (IntegrityDAO cache = createDAO()) {
 
-        addStep("Update the database with 2 inconsistent files and one consistent file.",
-                "Ingesting the data into the database");
-        FileIDsData data1 = getFileIDsData(TEST_FILE_ID);
-        cache.updateFileIDs(data1, TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateFileIDs(data1, TEST_PILLAR_2, TEST_COLLECTIONID);
+            addStep("Update the database with 2 inconsistent files and one consistent file.",
+                    "Ingesting the data into the database");
+            FileIDsData data1 = getFileIDsData(TEST_FILE_ID);
+            cache.updateFileIDs(data1, TEST_PILLAR_1, TEST_COLLECTIONID);
+            cache.updateFileIDs(data1, TEST_PILLAR_2, TEST_COLLECTIONID);
 
-        addStep("Finding the files with inconsistent checksums", "No checksum thus no errors");
-        List<String> filesWithChecksumError
-                = getIssuesFromIterator(cache.findFilesWithChecksumInconsistencies(TEST_COLLECTIONID));
-        Assertions.assertEquals(Collections.emptyList(), filesWithChecksumError);
+            addStep("Finding the files with inconsistent checksums", "No checksum thus no errors");
+            List<String> filesWithChecksumError
+                    = getIssuesFromIterator(cache.findFilesWithChecksumInconsistencies(TEST_COLLECTIONID));
+            Assertions.assertEquals(Collections.emptyList(), filesWithChecksumError);
+        }
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
     @Tag("integritytest")
     void testMissingChecksums() {
         addDescription("Testing the checksum validation, when only one pillar has a checksum for a file.");
-        IntegrityDAO cache = createDAO();
+        try (IntegrityDAO cache = createDAO()) {
 
-        Instant testStart = Instant.now();
-        addStep("Update the database with 1 file, missing its checksum on one pillar.",
-                "Ingesting the data into the database");
-        cache.updateFileIDs(getFileIDsData(TEST_FILE_ID), TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateFileIDs(getFileIDsData(TEST_FILE_ID), TEST_PILLAR_2, TEST_COLLECTIONID);
-        cache.updateChecksums(getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM), TEST_PILLAR_1, TEST_COLLECTIONID);
+            Instant testStart = Instant.now();
+            addStep("Update the database with 1 file, missing its checksum on one pillar.",
+                    "Ingesting the data into the database");
+            cache.updateFileIDs(getFileIDsData(TEST_FILE_ID), TEST_PILLAR_1, TEST_COLLECTIONID);
+            cache.updateFileIDs(getFileIDsData(TEST_FILE_ID), TEST_PILLAR_2, TEST_COLLECTIONID);
+            cache.updateChecksums(getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM), TEST_PILLAR_1, TEST_COLLECTIONID);
 
-        addStep("Finding the files with inconsistent checksums", "No checksum thus no errors");
-        List<String> filesWithChecksumError
-                = getIssuesFromIterator(cache.findFilesWithChecksumInconsistencies(TEST_COLLECTIONID));
-        Assertions.assertEquals(Collections.emptyList(), filesWithChecksumError);
+            addStep("Finding the files with inconsistent checksums", "No checksum thus no errors");
+            List<String> filesWithChecksumError
+                    = getIssuesFromIterator(cache.findFilesWithChecksumInconsistencies(TEST_COLLECTIONID));
+            Assertions.assertEquals(Collections.emptyList(), filesWithChecksumError);
 
-        List<String> fileWithMissingChecksumPillar1
-                = getIssuesFromIterator(cache.getFilesWithMissingChecksums(TEST_COLLECTIONID, TEST_PILLAR_1,
-                testStart));
-        Assertions.assertEquals(Collections.emptyList(), fileWithMissingChecksumPillar1);
-        List<String> fileWithMissingChecksumPillar2
-                = getIssuesFromIterator(cache.getFilesWithMissingChecksums(TEST_COLLECTIONID, TEST_PILLAR_2,
-                testStart));
-        Assertions.assertEquals(Collections.singletonList(TEST_FILE_ID), fileWithMissingChecksumPillar2);
+            List<String> fileWithMissingChecksumPillar1
+                    = getIssuesFromIterator(cache.getFilesWithMissingChecksums(TEST_COLLECTIONID, TEST_PILLAR_1,
+                                                                               testStart));
+            Assertions.assertEquals(Collections.emptyList(), fileWithMissingChecksumPillar1);
+            List<String> fileWithMissingChecksumPillar2
+                    = getIssuesFromIterator(cache.getFilesWithMissingChecksums(TEST_COLLECTIONID, TEST_PILLAR_2,
+                                                                               testStart));
+            Assertions.assertEquals(Collections.singletonList(TEST_FILE_ID), fileWithMissingChecksumPillar2);
+        }
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
     @Tag("integritytest")
     void testMissingChecksumsChecksumNotUpdated() throws Exception {
         addDescription("Testing the checksum validation, when only one pillar has a checksum for a file.");
-        IntegrityDAO cache = createDAO();
+        try (IntegrityDAO cache = createDAO()) {
 
-        Instant testStart = Instant.now();
-        addStep("Update the database with 1 file, no missing checksums.",
-                "Ingesting the data into the database");
-        cache.updateFileIDs(getFileIDsData(TEST_FILE_ID), TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateFileIDs(getFileIDsData(TEST_FILE_ID), TEST_PILLAR_2, TEST_COLLECTIONID);
-        cache.updateChecksums(getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM), TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateChecksums(getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM), TEST_PILLAR_2, TEST_COLLECTIONID);
+            Instant testStart = Instant.now();
+            addStep("Update the database with 1 file, no missing checksums.",
+                    "Ingesting the data into the database");
+            cache.updateFileIDs(getFileIDsData(TEST_FILE_ID), TEST_PILLAR_1, TEST_COLLECTIONID);
+            cache.updateFileIDs(getFileIDsData(TEST_FILE_ID), TEST_PILLAR_2, TEST_COLLECTIONID);
+            cache.updateChecksums(getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM), TEST_PILLAR_1, TEST_COLLECTIONID);
+            cache.updateChecksums(getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM), TEST_PILLAR_2, TEST_COLLECTIONID);
 
-        addStep("Finding the files with inconsistent checksums", "No checksum thus no errors");
-        List<String> filesWithChecksumError
-                = getIssuesFromIterator(cache.findFilesWithChecksumInconsistencies(TEST_COLLECTIONID));
-        Assertions.assertEquals(Collections.emptyList(), filesWithChecksumError);
+            addStep("Finding the files with inconsistent checksums", "No checksum thus no errors");
+            List<String> filesWithChecksumError
+                    = getIssuesFromIterator(cache.findFilesWithChecksumInconsistencies(TEST_COLLECTIONID));
+            Assertions.assertEquals(Collections.emptyList(), filesWithChecksumError);
 
-        List<String> fileWithMissingChecksumPillar1
-                = getIssuesFromIterator(cache.getFilesWithMissingChecksums(TEST_COLLECTIONID, TEST_PILLAR_1,
-                testStart));
-        Assertions.assertEquals(Collections.emptyList(), fileWithMissingChecksumPillar1);
-        List<String> fileWithMissingChecksumPillar2
-                = getIssuesFromIterator(cache.getFilesWithMissingChecksums(TEST_COLLECTIONID, TEST_PILLAR_2,
-                testStart));
-        Assertions.assertEquals(Collections.emptyList(), fileWithMissingChecksumPillar2);
+            List<String> fileWithMissingChecksumPillar1
+                    = getIssuesFromIterator(cache.getFilesWithMissingChecksums(TEST_COLLECTIONID, TEST_PILLAR_1,
+                                                                               testStart));
+            Assertions.assertEquals(Collections.emptyList(), fileWithMissingChecksumPillar1);
+            List<String> fileWithMissingChecksumPillar2
+                    = getIssuesFromIterator(cache.getFilesWithMissingChecksums(TEST_COLLECTIONID, TEST_PILLAR_2,
+                                                                               testStart));
+            Assertions.assertEquals(Collections.emptyList(), fileWithMissingChecksumPillar2);
 
-        addStep("Updating the checksum for one pillar, and checking that the other pillars checksum is now missing",
-                "The second pillar is reported to be missing the checksum for the file");
-        Instant secondUpdate = Instant.now();
-        Thread.sleep(1000);
-        cache.updateChecksums(getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM), TEST_PILLAR_1, TEST_COLLECTIONID);
-        addStep("Finding the files with inconsistent checksums", "No checksum thus no errors");
-        filesWithChecksumError = getIssuesFromIterator(cache.findFilesWithChecksumInconsistencies(TEST_COLLECTIONID));
-        Assertions.assertEquals(Collections.emptyList(), filesWithChecksumError);
+            addStep("Updating the checksum for one pillar, and checking that the other pillars checksum is now missing",
+                    "The second pillar is reported to be missing the checksum for the file");
+            Instant secondUpdate = Instant.now();
+            Thread.sleep(1000);
+            cache.updateChecksums(getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM), TEST_PILLAR_1, TEST_COLLECTIONID);
+            addStep("Finding the files with inconsistent checksums", "No checksum thus no errors");
+            filesWithChecksumError = getIssuesFromIterator(cache.findFilesWithChecksumInconsistencies(TEST_COLLECTIONID));
+            Assertions.assertEquals(Collections.emptyList(), filesWithChecksumError);
 
-        fileWithMissingChecksumPillar1
-                = getIssuesFromIterator(cache.getFilesWithMissingChecksums(TEST_COLLECTIONID, TEST_PILLAR_1,
-                secondUpdate));
-        Assertions.assertEquals(Collections.emptyList(), fileWithMissingChecksumPillar1);
-        fileWithMissingChecksumPillar2
-                = getIssuesFromIterator(cache.getFilesWithMissingChecksums(TEST_COLLECTIONID, TEST_PILLAR_2,
-                secondUpdate));
-        Assertions.assertEquals(Collections.singletonList(TEST_FILE_ID), fileWithMissingChecksumPillar2);
+            fileWithMissingChecksumPillar1
+                    = getIssuesFromIterator(cache.getFilesWithMissingChecksums(TEST_COLLECTIONID, TEST_PILLAR_1,
+                                                                               secondUpdate));
+            Assertions.assertEquals(Collections.emptyList(), fileWithMissingChecksumPillar1);
+            fileWithMissingChecksumPillar2
+                    = getIssuesFromIterator(cache.getFilesWithMissingChecksums(TEST_COLLECTIONID, TEST_PILLAR_2,
+                                                                               secondUpdate));
+            Assertions.assertEquals(Collections.singletonList(TEST_FILE_ID), fileWithMissingChecksumPillar2);
+        }
     }
 
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
     @Tag("integritytest")
     void testOutdatedChecksums() {
         addDescription("Testing the checksum validation, when only one pillar has a checksum for a file.");
-        IntegrityDAO cache = createDAO();
+        try (IntegrityDAO cache = createDAO()) {
 
-        Instant maxDate = Instant.now().minusSeconds(10);
+            Instant maxDate = Instant.now().minusSeconds(10);
 
-        addStep("Update the database with one file, one pillar having an outdated checksum.",
-                "Ingesting the data into the database");
-        cache.updateFileIDs(getFileIDsData(TEST_FILE_ID), TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateFileIDs(getFileIDsData(TEST_FILE_ID), TEST_PILLAR_2, TEST_COLLECTIONID);
-        cache.updateChecksums(getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM), TEST_PILLAR_1, TEST_COLLECTIONID);
+            addStep("Update the database with one file, one pillar having an outdated checksum.",
+                    "Ingesting the data into the database");
+            cache.updateFileIDs(getFileIDsData(TEST_FILE_ID), TEST_PILLAR_1, TEST_COLLECTIONID);
+            cache.updateFileIDs(getFileIDsData(TEST_FILE_ID), TEST_PILLAR_2, TEST_COLLECTIONID);
+            cache.updateChecksums(getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM), TEST_PILLAR_1, TEST_COLLECTIONID);
 
-        List<ChecksumDataForChecksumSpecTYPE> checksumData = getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM);
-        checksumData.get(0).setCalculationTimestamp(CalendarUtils.getEpoch());
-        cache.updateChecksums(checksumData, TEST_PILLAR_2, TEST_COLLECTIONID);
+            List<ChecksumDataForChecksumSpecTYPE> checksumData = getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM);
+            checksumData.get(0).setCalculationTimestamp(CalendarUtils.getEpoch());
+            cache.updateChecksums(checksumData, TEST_PILLAR_2, TEST_COLLECTIONID);
 
-        addStep("Finding the files with inconsistent checksums", "No checksum thus no errors");
-        List<String> filesWithChecksumError
-                = getIssuesFromIterator(cache.findFilesWithChecksumInconsistencies(TEST_COLLECTIONID));
-        Assertions.assertEquals(Collections.emptyList(), filesWithChecksumError);
+            addStep("Finding the files with inconsistent checksums", "No checksum thus no errors");
+            List<String> filesWithChecksumError
+                    = getIssuesFromIterator(cache.findFilesWithChecksumInconsistencies(TEST_COLLECTIONID));
+            Assertions.assertEquals(Collections.emptyList(), filesWithChecksumError);
 
-        List<String> fileWithOutdatedChecksumsPillar1
-                = getIssuesFromIterator(cache.getFilesWithOutdatedChecksums(TEST_COLLECTIONID, TEST_PILLAR_1, maxDate));
-        Assertions.assertEquals(Collections.emptyList(), fileWithOutdatedChecksumsPillar1);
+            List<String> fileWithOutdatedChecksumsPillar1
+                    = getIssuesFromIterator(cache.getFilesWithOutdatedChecksums(TEST_COLLECTIONID,
+                                                                                TEST_PILLAR_1,
+                                                                                maxDate));
+            Assertions.assertEquals(Collections.emptyList(), fileWithOutdatedChecksumsPillar1);
 
-        List<String> fileWithOutdatedChecksumPillar2
-                = getIssuesFromIterator(cache.getFilesWithOutdatedChecksums(TEST_COLLECTIONID, TEST_PILLAR_2, maxDate));
-        Assertions.assertEquals(Collections.singletonList(TEST_FILE_ID), fileWithOutdatedChecksumPillar2);
+            List<String> fileWithOutdatedChecksumPillar2
+                    = getIssuesFromIterator(cache.getFilesWithOutdatedChecksums(TEST_COLLECTIONID,
+                                                                                TEST_PILLAR_2,
+                                                                                maxDate));
+            Assertions.assertEquals(Collections.singletonList(TEST_FILE_ID), fileWithOutdatedChecksumPillar2);
+        }
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
     @Tag("integritytest")
     void testExtractingAllKnownFilesForPillars() {
         addDescription("Tests that known files can be extracted for specific pillars.");
-        IntegrityDAO cache = createDAO();
-        String file2 = TEST_FILE_ID + "-2";
-        String file3 = TEST_FILE_ID + "-3";
+        try (IntegrityDAO cache = createDAO()) {
+            String file2 = TEST_FILE_ID + "-2";
+            String file3 = TEST_FILE_ID + "-3";
 
-        addStep("Insert two files into database for a pillar",
-                "Ingesting the data into the database");
-        cache.updateFileIDs(getFileIDsData(TEST_FILE_ID, file2), TEST_PILLAR_1, TEST_COLLECTIONID);
-        addStep("Insert a file to the extra collection for the common pillar",
-                "Data is ingested into the database");
-        cache.updateFileIDs(getFileIDsData(file3), TEST_PILLAR_1, EXTRA_COLLECTION);
+            addStep("Insert two files into database for a pillar",
+                    "Ingesting the data into the database");
+            cache.updateFileIDs(getFileIDsData(TEST_FILE_ID, file2), TEST_PILLAR_1, TEST_COLLECTIONID);
+            addStep("Insert a file to the extra collection for the common pillar",
+                    "Data is ingested into the database");
+            cache.updateFileIDs(getFileIDsData(file3), TEST_PILLAR_1, EXTRA_COLLECTION);
 
-        addStep("Extract all the existing file ids for the pillar for collection '" + TEST_COLLECTIONID + "'",
-                "Both file ids is found.");
-        IntegrityIssueIterator it = cache.getAllFileIDsOnPillar(TEST_COLLECTIONID, TEST_PILLAR_1, 0L, Long.MAX_VALUE);
-        Collection<String> fileIDs = getIssuesFromIterator(it);
-        Assertions.assertEquals(2, fileIDs.size(), "Number of files: " + fileIDs.size());
-        Assertions.assertTrue(fileIDs.contains(TEST_FILE_ID));
-        Assertions.assertTrue(fileIDs.contains(file2));
-        Assertions.assertFalse(fileIDs.contains(file3));
+            addStep("Extract all the existing file ids for the pillar for collection '" + TEST_COLLECTIONID + "'",
+                    "Both file ids is found.");
+            IntegrityIssueIterator it = cache.getAllFileIDsOnPillar(TEST_COLLECTIONID,
+                                                                    TEST_PILLAR_1,
+                                                                    0L,
+                                                                    Long.MAX_VALUE);
+            Collection<String> fileIDs = getIssuesFromIterator(it);
+            Assertions.assertEquals(2, fileIDs.size(), "Number of files: " + fileIDs.size());
+            Assertions.assertTrue(fileIDs.contains(TEST_FILE_ID));
+            Assertions.assertTrue(fileIDs.contains(file2));
+            Assertions.assertFalse(fileIDs.contains(file3));
 
-        addStep("Extract the single fileID for the extra collection", "Only the one file id exists");
-        it = cache.getAllFileIDsOnPillar(EXTRA_COLLECTION, TEST_PILLAR_1, 0L, Long.MAX_VALUE);
-        fileIDs = getIssuesFromIterator(it);
-        Assertions.assertEquals(1, fileIDs.size(), "Number of files: " + fileIDs.size());
-        Assertions.assertTrue(fileIDs.contains(file3));
-        Assertions.assertFalse(fileIDs.contains(file2));
-        Assertions.assertFalse(fileIDs.contains(TEST_FILE_ID));
+            addStep("Extract the single fileID for the extra collection", "Only the one file id exists");
+            it = cache.getAllFileIDsOnPillar(EXTRA_COLLECTION, TEST_PILLAR_1, 0L, Long.MAX_VALUE);
+            fileIDs = getIssuesFromIterator(it);
+            Assertions.assertEquals(1, fileIDs.size(), "Number of files: " + fileIDs.size());
+            Assertions.assertTrue(fileIDs.contains(file3));
+            Assertions.assertFalse(fileIDs.contains(file2));
+            Assertions.assertFalse(fileIDs.contains(TEST_FILE_ID));
 
-        addStep("Extract all the existing file ids for another pillar", "No files are found.");
-        it = cache.getAllFileIDsOnPillar(TEST_COLLECTIONID, TEST_PILLAR_2, 0L, Long.MAX_VALUE);
-        fileIDs = getIssuesFromIterator(it);
-        Assertions.assertTrue(fileIDs.isEmpty());
+            addStep("Extract all the existing file ids for another pillar", "No files are found.");
+            it = cache.getAllFileIDsOnPillar(TEST_COLLECTIONID, TEST_PILLAR_2, 0L, Long.MAX_VALUE);
+            fileIDs = getIssuesFromIterator(it);
+            Assertions.assertTrue(fileIDs.isEmpty());
+        }
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
     @Tag("integritytest")
     void testExtractingAllKnownFilesForPillarsLimits() {
         addDescription("Tests the limits for extracting files for specific pillars.");
-        IntegrityDAO cache = createDAO();
-        String file2 = TEST_FILE_ID + "-2";
+        try (IntegrityDAO cache = createDAO()) {
+            String file2 = TEST_FILE_ID + "-2";
 
-        addStep("Insert two files into database for a pillar", "Ingesting the data into the database");
-        cache.updateFileIDs(getFileIDsData(TEST_FILE_ID, file2), TEST_PILLAR_1, TEST_COLLECTIONID);
+            addStep("Insert two files into database for a pillar", "Ingesting the data into the database");
+            cache.updateFileIDs(getFileIDsData(TEST_FILE_ID, file2), TEST_PILLAR_1, TEST_COLLECTIONID);
 
-        addStep("Extract with a maximum of 1", "The first file.");
-        IntegrityIssueIterator it = cache.getAllFileIDsOnPillar(TEST_COLLECTIONID, TEST_PILLAR_1, 0L, 1L);
-        Collection<String> fileIDs = getIssuesFromIterator(it);
-        Assertions.assertEquals(1, fileIDs.size());
-        Assertions.assertTrue(fileIDs.contains(TEST_FILE_ID));
+            addStep("Extract with a maximum of 1", "The first file.");
+            IntegrityIssueIterator it = cache.getAllFileIDsOnPillar(TEST_COLLECTIONID, TEST_PILLAR_1, 0L, 1L);
+            Collection<String> fileIDs = getIssuesFromIterator(it);
+            Assertions.assertEquals(1, fileIDs.size());
+            Assertions.assertTrue(fileIDs.contains(TEST_FILE_ID));
 
-        addStep("Extract with a minimum of 1 and maximum of infinite", "The last file.");
-        it = cache.getAllFileIDsOnPillar(TEST_COLLECTIONID, TEST_PILLAR_1, 1L, Long.MAX_VALUE);
-        fileIDs = getIssuesFromIterator(it);
-        Assertions.assertEquals(1, fileIDs.size());
-        Assertions.assertTrue(fileIDs.contains(file2));
+            addStep("Extract with a minimum of 1 and maximum of infinite", "The last file.");
+            it = cache.getAllFileIDsOnPillar(TEST_COLLECTIONID, TEST_PILLAR_1, 1L, Long.MAX_VALUE);
+            fileIDs = getIssuesFromIterator(it);
+            Assertions.assertEquals(1, fileIDs.size());
+            Assertions.assertTrue(fileIDs.contains(file2));
+        }
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
     @Tag("integritytest")
     void testExtractingAllMissingFiles() {
         addDescription("Tests that missing files can be extracted.");
-        IntegrityDAO cache = createDAO();
-        String file2 = TEST_FILE_ID + "-2";
+        try (IntegrityDAO cache = createDAO()) {
+            String file2 = TEST_FILE_ID + "-2";
 
-        addStep("Insert two files into database for a pillar and mark them as missing",
-                "Ingesting the data into the database");
+            addStep("Insert two files into database for a pillar and mark them as missing",
+                    "Ingesting the data into the database");
 
-        cache.updateFileIDs(getFileIDsData(TEST_FILE_ID, file2), TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateFileIDs(getFileIDsData(TEST_FILE_ID), TEST_PILLAR_2, TEST_COLLECTIONID);
+            cache.updateFileIDs(getFileIDsData(TEST_FILE_ID, file2), TEST_PILLAR_1, TEST_COLLECTIONID);
+            cache.updateFileIDs(getFileIDsData(TEST_FILE_ID), TEST_PILLAR_2, TEST_COLLECTIONID);
 
-        addStep("Check the number of files in collection and on pillars",
-                "The collection should have two files, the first pillar two, the second one");
-        Assertions.assertEquals(2, (long) cache.getNumberOfFilesInCollection(TEST_COLLECTIONID));
-        Map<String, PillarCollectionMetric> metrics = cache.getPillarCollectionMetrics(TEST_COLLECTIONID);
-        Assertions.assertEquals(2, metrics.get(TEST_PILLAR_1).getPillarFileCount());
-        Assertions.assertEquals(1, metrics.get(TEST_PILLAR_2).getPillarFileCount());
+            addStep("Check the number of files in collection and on pillars",
+                    "The collection should have two files, the first pillar two, the second one");
+            Assertions.assertEquals(2, (long) cache.getNumberOfFilesInCollection(TEST_COLLECTIONID));
+            Map<String, PillarCollectionMetric> metrics = cache.getPillarCollectionMetrics(TEST_COLLECTIONID);
+            Assertions.assertEquals(2, metrics.get(TEST_PILLAR_1).getPillarFileCount());
+            Assertions.assertEquals(1, metrics.get(TEST_PILLAR_2).getPillarFileCount());
 
-        addStep("Extract missing files", "one file should be missing");
-        List<String> missingFiles
-                = getIssuesFromIterator(cache.findFilesWithMissingCopies(TEST_COLLECTIONID, 2, 0L, 10L));
-        Assertions.assertEquals(Collections.singletonList(file2), missingFiles);
+            addStep("Extract missing files", "one file should be missing");
+            List<String> missingFiles
+                    = getIssuesFromIterator(cache.findFilesWithMissingCopies(TEST_COLLECTIONID, 2, 0L, 10L));
+            Assertions.assertEquals(Collections.singletonList(file2), missingFiles);
+        }
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
     @Tag("integritytest")
     void testExtractingAllMissingFilesForPillarsLimits() {
         addDescription("Tests the limits for extracting missing files for specific pillars.");
-        IntegrityDAO cache = createDAO();
-        String file2 = TEST_FILE_ID + "-2";
-        String file3 = TEST_FILE_ID + "-3";
+        try (IntegrityDAO cache = createDAO()) {
+            String file2 = TEST_FILE_ID + "-2";
+            String file3 = TEST_FILE_ID + "-3";
 
-        addStep("Insert two files into database for a pillar and set them to missing",
-                "Ingesting the data into the database");
-        cache.updateFileIDs(getFileIDsData(TEST_FILE_ID, file2, file3), TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateFileIDs(getFileIDsData(TEST_FILE_ID), TEST_PILLAR_2, TEST_COLLECTIONID);
+            addStep("Insert two files into database for a pillar and set them to missing",
+                    "Ingesting the data into the database");
+            cache.updateFileIDs(getFileIDsData(TEST_FILE_ID, file2, file3), TEST_PILLAR_1, TEST_COLLECTIONID);
+            cache.updateFileIDs(getFileIDsData(TEST_FILE_ID), TEST_PILLAR_2, TEST_COLLECTIONID);
 
-        addStep("Extract with a maximum of 1", "The first file.");
-        IntegrityIssueIterator it = cache.findFilesWithMissingCopies(TEST_COLLECTIONID, 2, 0L, 1L);
-        Collection<String> fileIDs = getIssuesFromIterator(it);
-        Assertions.assertEquals(1, fileIDs.size());
-        Assertions.assertTrue(fileIDs.contains(file2));
+            addStep("Extract with a maximum of 1", "The first file.");
+            IntegrityIssueIterator it = cache.findFilesWithMissingCopies(TEST_COLLECTIONID, 2, 0L, 1L);
+            Collection<String> fileIDs = getIssuesFromIterator(it);
+            Assertions.assertEquals(1, fileIDs.size());
+            Assertions.assertTrue(fileIDs.contains(file2));
 
-        addStep("Extract with a minimum of 1 and maximum of infinite", "The last file.");
-        it = cache.findFilesWithMissingCopies(TEST_COLLECTIONID, 2, 1L, Long.MAX_VALUE);
-        fileIDs = getIssuesFromIterator(it);
-        Assertions.assertEquals(1, fileIDs.size());
-        Assertions.assertTrue(fileIDs.contains(file3));
+            addStep("Extract with a minimum of 1 and maximum of infinite", "The last file.");
+            it = cache.findFilesWithMissingCopies(TEST_COLLECTIONID, 2, 1L, Long.MAX_VALUE);
+            fileIDs = getIssuesFromIterator(it);
+            Assertions.assertEquals(1, fileIDs.size());
+            Assertions.assertTrue(fileIDs.contains(file3));
+        }
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
     @Tag("integritytest")
     void testGetLatestFileDateEntryForCollection() {
         addDescription("Tests that checksum date entries can be retrieved and manipulated.");
-        IntegrityDAO cache = createDAO();
+        try (IntegrityDAO cache = createDAO()) {
 
-        addStep("Create data", "Should be ingested into the database");
+            addStep("Create data", "Should be ingested into the database");
 
-        Assertions.assertNull(cache.getLatestFileInstant(TEST_COLLECTIONID, TEST_PILLAR_1));
-        Assertions.assertNull(cache.getLatestFileInstant(TEST_COLLECTIONID, TEST_PILLAR_2));
+            Assertions.assertNull(cache.getLatestFileInstant(TEST_COLLECTIONID, TEST_PILLAR_1));
+            Assertions.assertNull(cache.getLatestFileInstant(TEST_COLLECTIONID, TEST_PILLAR_2));
 
-        FileIDsData fidsPillar1 = getFileIDsData(TEST_FILE_ID);
-        Instant expectedLatestFileDatePillar1 = CalendarUtils.convertFromXMLGregorianCalendarToInstant(
-                fidsPillar1.getFileIDsDataItems().getFileIDsDataItem().get(0).getLastModificationTime());
-        cache.updateFileIDs(fidsPillar1, TEST_PILLAR_1, TEST_COLLECTIONID);
+            FileIDsData fidsPillar1 = getFileIDsData(TEST_FILE_ID);
+            Instant expectedLatestFileDatePillar1 = CalendarUtils.convertFromXMLGregorianCalendarToInstant(
+                    fidsPillar1.getFileIDsDataItems().getFileIDsDataItem().get(0).getLastModificationTime());
+            cache.updateFileIDs(fidsPillar1, TEST_PILLAR_1, TEST_COLLECTIONID);
 
-        FileIDsData fidsPillar2 = getFileIDsData(TEST_FILE_ID);
-        Instant expectedLatestFileDatePillar2 = expectedLatestFileDatePillar1.plusMillis(100);
-        fidsPillar2.getFileIDsDataItems().getFileIDsDataItem().get(0)
-                .setLastModificationTime(CalendarUtils.getXmlGregorianCalendar(expectedLatestFileDatePillar2));
-        cache.updateFileIDs(fidsPillar2, TEST_PILLAR_2, TEST_COLLECTIONID);
+            FileIDsData fidsPillar2 = getFileIDsData(TEST_FILE_ID);
+            Instant expectedLatestFileDatePillar2 = expectedLatestFileDatePillar1.plusMillis(100);
+            fidsPillar2.getFileIDsDataItems().getFileIDsDataItem().get(0)
+                       .setLastModificationTime(CalendarUtils.getXmlGregorianCalendar(expectedLatestFileDatePillar2));
+            cache.updateFileIDs(fidsPillar2, TEST_PILLAR_2, TEST_COLLECTIONID);
 
-        Assertions.assertEquals(expectedLatestFileDatePillar1, cache.getLatestFileInstant(TEST_COLLECTIONID, TEST_PILLAR_1));
-        Assertions.assertEquals(expectedLatestFileDatePillar2, cache.getLatestFileInstant(TEST_COLLECTIONID, TEST_PILLAR_2));
+            Assertions.assertEquals(expectedLatestFileDatePillar1,
+                                    cache.getLatestFileInstant(TEST_COLLECTIONID, TEST_PILLAR_1));
+            Assertions.assertEquals(expectedLatestFileDatePillar2,
+                                    cache.getLatestFileInstant(TEST_COLLECTIONID, TEST_PILLAR_2));
 
-        Assertions.assertEquals(cache.getLatestFileInstantInCollection(TEST_COLLECTIONID),
-                cache.getLatestFileInstant(TEST_COLLECTIONID, TEST_PILLAR_2));
+            Assertions.assertEquals(cache.getLatestFileInstantInCollection(TEST_COLLECTIONID),
+                                    cache.getLatestFileInstant(TEST_COLLECTIONID, TEST_PILLAR_2));
 
-        cache.resetFileCollectionProgress(TEST_COLLECTIONID);
-        Assertions.assertNull(cache.getLatestFileInstant(TEST_COLLECTIONID, TEST_PILLAR_1));
-        Assertions.assertNull(cache.getLatestFileInstant(TEST_COLLECTIONID, TEST_PILLAR_2));
+            cache.resetFileCollectionProgress(TEST_COLLECTIONID);
+            Assertions.assertNull(cache.getLatestFileInstant(TEST_COLLECTIONID, TEST_PILLAR_1));
+            Assertions.assertNull(cache.getLatestFileInstant(TEST_COLLECTIONID, TEST_PILLAR_2));
+        }
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
     @Tag("integritytest")
     void testGetLatestChecksumDateEntryForCollection() {
         addDescription("Tests that checksum date entries can be retrieved and manipulated.");
-        IntegrityDAO cache = createDAO();
+        try (IntegrityDAO cache = createDAO()) {
 
-        addStep("Create data", "Should be ingested into the database");
+            addStep("Create data", "Should be ingested into the database");
 
-        Assertions.assertNull(cache.getLatestChecksumInstant(TEST_COLLECTIONID, TEST_PILLAR_1));
-        Assertions.assertNull(cache.getLatestChecksumInstant(TEST_COLLECTIONID, TEST_PILLAR_2));
+            Assertions.assertNull(cache.getLatestChecksumInstant(TEST_COLLECTIONID, TEST_PILLAR_1));
+            Assertions.assertNull(cache.getLatestChecksumInstant(TEST_COLLECTIONID, TEST_PILLAR_2));
 
-        List<ChecksumDataForChecksumSpecTYPE> csData = getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM);
-        cache.updateChecksums(csData, TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateChecksums(csData, TEST_PILLAR_2, TEST_COLLECTIONID);
-        Instant expectedLatestChecksum = CalendarUtils.convertFromXMLGregorianCalendarToInstant(csData.get(0).getCalculationTimestamp());
-        Assertions.assertEquals(expectedLatestChecksum, cache.getLatestChecksumInstant(TEST_COLLECTIONID, TEST_PILLAR_1));
-        Assertions.assertEquals(expectedLatestChecksum, cache.getLatestChecksumInstant(TEST_COLLECTIONID, TEST_PILLAR_2));
+            List<ChecksumDataForChecksumSpecTYPE> csData = getChecksumResults(TEST_FILE_ID, TEST_CHECKSUM);
+            cache.updateChecksums(csData, TEST_PILLAR_1, TEST_COLLECTIONID);
+            cache.updateChecksums(csData, TEST_PILLAR_2, TEST_COLLECTIONID);
+            Instant expectedLatestChecksum = CalendarUtils.convertFromXMLGregorianCalendarToInstant(csData.get(0)
+                                                                                                          .getCalculationTimestamp());
+            Assertions.assertEquals(expectedLatestChecksum,
+                                    cache.getLatestChecksumInstant(TEST_COLLECTIONID, TEST_PILLAR_1));
+            Assertions.assertEquals(expectedLatestChecksum,
+                                    cache.getLatestChecksumInstant(TEST_COLLECTIONID, TEST_PILLAR_2));
 
-        cache.resetChecksumCollectionProgress(TEST_COLLECTIONID);
-        Assertions.assertNull(cache.getLatestChecksumInstant(TEST_COLLECTIONID, TEST_PILLAR_1));
-        Assertions.assertNull(cache.getLatestChecksumInstant(TEST_COLLECTIONID, TEST_PILLAR_2));
+            cache.resetChecksumCollectionProgress(TEST_COLLECTIONID);
+            Assertions.assertNull(cache.getLatestChecksumInstant(TEST_COLLECTIONID, TEST_PILLAR_1));
+            Assertions.assertNull(cache.getLatestChecksumInstant(TEST_COLLECTIONID, TEST_PILLAR_2));
+        }
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
     @Tag("integritytest")
     void testExtractCollectionFileSize() {
         addDescription("Tests that the accumulated size of the collection can be extracted");
-        IntegrityDAO cache = createDAO();
+        try (IntegrityDAO cache = createDAO()) {
 
-        addStep("Insert test data into database", "Data is ingested");
-        String file2 = TEST_FILE_ID + "-2";
-        String file3 = TEST_FILE_ID + "-3";
-        Long size1 = 100L;
-        Long size2 = 200L;
-        Long size3 = 300L;
-        FileIDsData data1 = makeFileIDsDataWithGivenFileSize(TEST_FILE_ID, size1);
-        FileIDsData data2 = makeFileIDsDataWithGivenFileSize(file2, size2);
-        FileIDsData data3 = makeFileIDsDataWithGivenFileSize(file3, size3);
-        cache.updateFileIDs(data1, TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateFileIDs(data2, TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateFileIDs(data2, TEST_PILLAR_2, TEST_COLLECTIONID);
-        cache.updateFileIDs(data3, TEST_PILLAR_2, TEST_COLLECTIONID);
+            addStep("Insert test data into database", "Data is ingested");
+            String file2 = TEST_FILE_ID + "-2";
+            String file3 = TEST_FILE_ID + "-3";
+            Long size1 = 100L;
+            Long size2 = 200L;
+            Long size3 = 300L;
+            FileIDsData data1 = makeFileIDsDataWithGivenFileSize(TEST_FILE_ID, size1);
+            FileIDsData data2 = makeFileIDsDataWithGivenFileSize(file2, size2);
+            FileIDsData data3 = makeFileIDsDataWithGivenFileSize(file3, size3);
+            cache.updateFileIDs(data1, TEST_PILLAR_1, TEST_COLLECTIONID);
+            cache.updateFileIDs(data2, TEST_PILLAR_1, TEST_COLLECTIONID);
+            cache.updateFileIDs(data2, TEST_PILLAR_2, TEST_COLLECTIONID);
+            cache.updateFileIDs(data3, TEST_PILLAR_2, TEST_COLLECTIONID);
 
-        long pillar1Size = size1 + size2;
-        long pillar2Size = size2 + size3;
-        long collectionSize = size1 + size2 + size3;
+            long pillar1Size = size1 + size2;
+            long pillar2Size = size2 + size3;
+            long collectionSize = size1 + size2 + size3;
 
-        Map<String, PillarCollectionMetric> metrics = cache.getPillarCollectionMetrics(TEST_COLLECTIONID);
-        addStep("Check the reported size of the first pillar in the collection",
-                "The reported size matches the precalculated");
-        Assertions.assertEquals(pillar1Size, metrics.get(TEST_PILLAR_1).getPillarCollectionSize());
-        addStep("Check the reported size of the second pillar in the collection",
-                "The reported size matches the precalculated");
-        Assertions.assertEquals(pillar2Size, metrics.get(TEST_PILLAR_2).getPillarCollectionSize());
-        addStep("Check the reported size of the whole collection",
-                "The reported size matches the precalculated");
-        Assertions.assertEquals(collectionSize, cache.getCollectionSize(TEST_COLLECTIONID));
+            Map<String, PillarCollectionMetric> metrics = cache.getPillarCollectionMetrics(TEST_COLLECTIONID);
+            addStep("Check the reported size of the first pillar in the collection",
+                    "The reported size matches the precalculated");
+            Assertions.assertEquals(pillar1Size, metrics.get(TEST_PILLAR_1).getPillarCollectionSize());
+            addStep("Check the reported size of the second pillar in the collection",
+                    "The reported size matches the precalculated");
+            Assertions.assertEquals(pillar2Size, metrics.get(TEST_PILLAR_2).getPillarCollectionSize());
+            addStep("Check the reported size of the whole collection",
+                    "The reported size matches the precalculated");
+            Assertions.assertEquals(collectionSize, cache.getCollectionSize(TEST_COLLECTIONID));
+        }
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
     @Tag("integritytest")
     void testGetFileIDAtIndex() {
         addDescription("Tests that a fileID at a given index can be extracted.");
-        IntegrityDAO cache = createDAO();
+        try (IntegrityDAO cache = createDAO()) {
 
-        addStep("Extract a fileID from the empty database", "Returns a null");
-        Assertions.assertNull(cache.getFileIdAtIndex(TEST_COLLECTIONID, 0L));
+            addStep("Extract a fileID from the empty database", "Returns a null");
+            Assertions.assertNull(cache.getFileIdAtIndex(TEST_COLLECTIONID, 0L));
 
-        addStep("Insert test data into database", "Data is ingested");
-        FileIDsData data = makeFileIDsDataWithGivenFileSize(TEST_FILE_ID, 100L);
-        cache.updateFileIDs(data, TEST_PILLAR_1, TEST_COLLECTIONID);
-        cache.updateFileIDs(data, TEST_PILLAR_2, TEST_COLLECTIONID);
+            addStep("Insert test data into database", "Data is ingested");
+            FileIDsData data = makeFileIDsDataWithGivenFileSize(TEST_FILE_ID, 100L);
+            cache.updateFileIDs(data, TEST_PILLAR_1, TEST_COLLECTIONID);
+            cache.updateFileIDs(data, TEST_PILLAR_2, TEST_COLLECTIONID);
 
-        addStep("Extract the first fileID", "The inserted fileID");
-        Assertions.assertEquals(TEST_FILE_ID, cache.getFileIdAtIndex(TEST_COLLECTIONID, 0L));
+            addStep("Extract the first fileID", "The inserted fileID");
+            Assertions.assertEquals(TEST_FILE_ID, cache.getFileIdAtIndex(TEST_COLLECTIONID, 0L));
 
-        addStep("Extract a fileID at an incomprehendable index from the database", "Returns a null");
-        Assertions.assertNull(cache.getFileIdAtIndex(TEST_COLLECTIONID, Long.MAX_VALUE));
+            addStep("Extract a fileID at an incomprehendable index from the database", "Returns a null");
+            Assertions.assertNull(cache.getFileIdAtIndex(TEST_COLLECTIONID, Long.MAX_VALUE));
+        }
     }
 
     private FileIDsData makeFileIDsDataWithGivenFileSize(String fileID, Long size) {
@@ -835,11 +887,6 @@ class IntegrityDAOTest extends IntegrityDatabaseTestCase {
         return res;
     }
 
-    private IntegrityDAO createDAO() {
-        DatabaseManager dm = new IntegrityDatabaseManager(
-                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
-        return new DerbyIntegrityDAO(dm.getConnector());
-    }
 
     /**
      * This is not the way to handle the iterators, as the lists might grow really long.

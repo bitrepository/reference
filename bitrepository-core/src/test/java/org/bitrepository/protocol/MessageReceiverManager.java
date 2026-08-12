@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * Takes care of the receiver bookkeeping in connect with test setup and testdown.
  */
-public class MessageReceiverManager {
+public class MessageReceiverManager implements AutoCloseable{
     private final List<MessageReceiver> messageReceivers =
             new LinkedList<>();
     private final MessageBus messageBus;
@@ -66,6 +66,13 @@ public class MessageReceiverManager {
     public void clearMessagesInReceivers() {
         for (MessageReceiver receiver : messageReceivers) {
             receiver.clearMessages();
+        }
+    }
+
+    @Override
+    public void close() throws InterruptedException {
+        for (MessageReceiver receiver : messageReceivers) {
+            receiver.close();
         }
     }
 }
