@@ -33,25 +33,22 @@ import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.perf.metrics.Metrics;
 import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
 import org.bitrepository.protocol.bus.MessageReceiver;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledIf;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
+import org.junit.jupiter.api.io.TempDir;
 
-import java.io.IOException;
-import java.nio.file.DirectoryStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 @EnabledIfSystemProperty(named = "runStressTests", matches = "true")
 public class GetFileStressIT extends PillarPerformanceIT {
-    public static final String FOLDER_NAME = "src/test/resources";
+    @TempDir
     static Path tempDir;
     protected GetFileClient getFileClient;
 
