@@ -30,20 +30,20 @@
 --              of the tables, especially when upgrading.
 -- Expected entry count: only those in this script.
 --**************************************************************************--
-CREATE TABLE tableversions (
+CREATE TABLE IF NOT EXISTS tableversions (
     tablename VARCHAR(100) NOT NULL, -- Name of table
     version SMALLINT NOT NULL        -- version of table
 );
 
-INSERT INTO tableversions (tablename, version) VALUES ('fileinfo', 6);
-INSERT INTO tableversions (tablename, version) VALUES ('files', 2);
-INSERT INTO tableversions (tablename, version) VALUES ('pillar', 3);
-INSERT INTO tableversions (tablename, version) VALUES ('collections' ,2);
-INSERT INTO tableversions (tablename, version) VALUES ('integritydb', 7);
-INSERT INTO tableversions (tablename, version) VALUES ('stats', 3);
-INSERT INTO tableversions (tablename, version) VALUES ('collectionstats', 3);
-INSERT INTO tableversions (tablename, version) VALUES ('pillarstats', 2);
-INSERT INTO tableversions (tablename, version) VALUES ('collection_progress', 2);
+INSERT INTO tableversions (tablename, version) VALUES ('fileinfo', 6) ON CONFLICT DO NOTHING;
+INSERT INTO tableversions (tablename, version) VALUES ('files', 2) ON CONFLICT DO NOTHING;
+INSERT INTO tableversions (tablename, version) VALUES ('pillar', 3) ON CONFLICT DO NOTHING;
+INSERT INTO tableversions (tablename, version) VALUES ('collections' ,2) ON CONFLICT DO NOTHING;
+INSERT INTO tableversions (tablename, version) VALUES ('integritydb', 7) ON CONFLICT DO NOTHING;
+INSERT INTO tableversions (tablename, version) VALUES ('stats', 3) ON CONFLICT DO NOTHING;
+INSERT INTO tableversions (tablename, version) VALUES ('collectionstats', 3) ON CONFLICT DO NOTHING;
+INSERT INTO tableversions (tablename, version) VALUES ('pillarstats', 2) ON CONFLICT DO NOTHING;
+INSERT INTO tableversions (tablename, version) VALUES ('collection_progress', 2) ON CONFLICT DO NOTHING;
 
 --*************************************************************************--
 -- Name:     collections
@@ -51,7 +51,7 @@ INSERT INTO tableversions (tablename, version) VALUES ('collection_progress', 2)
 -- Purpose:  Keeps track of the names of the files within the system.
 -- Expected entry count: Few
 --*************************************************************************--
-CREATE TABLE collections (
+CREATE TABLE IF NOT EXISTS collections (
     collectionID VARCHAR(255) PRIMARY KEY  -- The id for the collection.
 );
 
@@ -62,7 +62,7 @@ CREATE TABLE collections (
 -- Purpose:  Keeps track of the information about the pillars.
 -- Expected entry count: Few
 --*************************************************************************--
-CREATE TABLE pillar (
+CREATE TABLE IF NOT EXISTS pillar (
     pillarID VARCHAR(100) PRIMARY KEY   -- The id of the pillar.
 );
 
@@ -74,7 +74,7 @@ CREATE TABLE pillar (
 --           on a specific pillar.
 -- Expected entry count: Very, very many.
 --*************************************************************************--
-CREATE TABLE fileinfo (
+CREATE TABLE IF NOT EXISTS fileinfo (
     fileID VARCHAR(255) NOT NULL,           -- The file ID 
     collectionID VARCHAR(255) NOT NULL,     -- The collection ID
     pillarID VARCHAR(100) NOT NULL,         -- The pillar ID
@@ -90,7 +90,7 @@ CREATE TABLE fileinfo (
     FOREIGN KEY (pillarID) REFERENCES pillar(pillarID)
 );
 
-CREATE INDEX collectionfileidx ON fileinfo(collectionid, fileid);
+CREATE INDEX IF NOT EXISTS collectionfileidx ON fileinfo(collectionid, fileid);
 
 --*************************************************************************--
 -- Name:     collection_progress
@@ -99,7 +99,7 @@ CREATE INDEX collectionfileidx ON fileinfo(collectionid, fileid);
 --           a given pillar in a given collection
 -- Expected entry count: few
 --*************************************************************************--
-CREATE TABLE collection_progress (
+CREATE TABLE IF NOT EXISTS collection_progress (
     collectionID VARCHAR(255) NOT NULL,
     pillarID VARCHAR(100) NOT NULL,
     latest_file_timestamp BIGINT DEFAULT NULL,
@@ -115,7 +115,7 @@ CREATE TABLE collection_progress (
 -- Purpose:  Keeps track of the collected statistics.
 -- Expected entry count: Many (over time)
 --*************************************************************************--
-CREATE TABLE stats (
+CREATE TABLE IF NOT EXISTS stats (
     stat_key SERIAL PRIMARY KEY, -- The key for a set of statistics.
     stat_time BIGINT NOT NULL, 
                                  -- The time (millis since epoch) the statistics entry were made.
@@ -126,7 +126,7 @@ CREATE TABLE stats (
                                  -- Foreign key constraint on collectionID, enforcing the presence of the referred key
 );
 
-CREATE INDEX lastupdatetimeindex ON stats (last_update);
+CREATE INDEX IF NOT EXISTS lastupdatetimeindex ON stats (last_update);
 
 --*************************************************************************--
 -- Name:     collectionstats
@@ -134,7 +134,7 @@ CREATE INDEX lastupdatetimeindex ON stats (last_update);
 -- Purpose:  Keeps track of the statistics for a collection.
 -- Expected entry count: many (over time)
 --*************************************************************************--
-CREATE TABLE collectionstats (
+CREATE TABLE IF NOT EXISTS collectionstats (
     collectionstat_key SERIAL PRIMARY KEY,
                                  -- The key for the collectionstat.
     stat_key INT NOT NULL,       -- The key for the statistics entity.
@@ -153,7 +153,7 @@ CREATE TABLE collectionstats (
 -- Purpose:  Keeps track of the statistics for a pillar.
 -- Expected entry count: many (over time)
 --*************************************************************************--
-CREATE TABLE pillarstats (
+CREATE TABLE IF NOT EXISTS pillarstats (
     pillarstat_key SERIAL PRIMARY KEY,
                                  -- The key for the pillarstat.
     stat_key INT NOT NULL,       -- The key for the statistics entity.

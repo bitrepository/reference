@@ -21,6 +21,7 @@
  */
 package org.bitrepository.service.audit;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.FileUtils;
@@ -71,8 +72,8 @@ class AuditTrailContributorDatabaseMigrationTest {
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
     void testMigratingAuditContributorDatabase() {
         addDescription("Tests that the database can be migrated to latest version with the provided scripts.");
         DBConnector connector = new DBConnector(

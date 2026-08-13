@@ -31,6 +31,7 @@ import org.bitrepository.settings.referencesettings.MessageThreadPools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Closeable;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
@@ -42,7 +43,7 @@ import java.util.concurrent.ThreadFactory;
 /**
  * Takes care of handling the further processing by the listeners in separated thread.
  */
-public class ReceivedMessageHandler {
+public class ReceivedMessageHandler implements Closeable {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final ExecutorModel executorModel;
     private final ThreadFactory threadFactory = new DefaultThreadFactory("ReceivedMessageHandler-", Thread.NORM_PRIORITY, false);

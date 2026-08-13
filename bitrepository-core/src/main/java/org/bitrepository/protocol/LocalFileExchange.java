@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
@@ -84,8 +85,8 @@ public class LocalFileExchange implements FileExchange {
     public void getFile(File outputFile, String fileAddress) {
         URL url;
         try {
-            url = new URL(fileAddress);
-        } catch (MalformedURLException e) {
+            url = new URI(fileAddress).toURL();
+        } catch (MalformedURLException | URISyntaxException e) {
             throw new IllegalStateException("Cannot create the URL.", e);
         }
 

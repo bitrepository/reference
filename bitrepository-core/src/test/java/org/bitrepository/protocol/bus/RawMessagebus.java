@@ -22,28 +22,27 @@
 
 package org.bitrepository.protocol.bus;
 
-import org.apache.activemq.ActiveMQConnectionFactory;
+import jakarta.jms.Connection;
+import jakarta.jms.Destination;
+import jakarta.jms.ExceptionListener;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.MessageConsumer;
+import jakarta.jms.MessageProducer;
+import jakarta.jms.Session;
+import jakarta.xml.bind.JAXBException;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.protocol.CoordinationLayerException;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
-import org.bitrepository.protocol.security.SecurityManager;
+import org.bitrepository.protocol.activemq.ArtemisConnectionFactoryProvider;
 import org.bitrepository.settings.repositorysettings.MessageBusConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jms.Connection;
-import javax.jms.Destination;
-import javax.jms.ExceptionListener;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageConsumer;
-import javax.jms.MessageProducer;
-import javax.jms.Session;
-import javax.xml.bind.JAXBException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RawMessagebus {
+public class RawMessagebus implements AutoCloseable {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final Map<String, Destination> destinations = new HashMap<>();
     private final Map<String, MessageConsumer> consumers = new HashMap<>();
@@ -51,22 +50,46 @@ public class RawMessagebus {
     private final Session consumerSession;
     private final Connection connection;
     public static final boolean TRANSACTED = false;
-    private final SecurityManager securityManager;
 
-    public RawMessagebus(MessageBusConfiguration messageBusConfiguration, SecurityManager securityManager) {
-        this.securityManager = securityManager;
+    public RawMessagebus(MessageBusConfiguration messageBusConfiguration) {
 
-        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(messageBusConfiguration.getURL());
+        var connectionFactory = ArtemisConnectionFactoryProvider.create(messageBusConfiguration);
+        Connection connection = null;
         try {
             connection = connectionFactory.createConnection();
             connection.setExceptionListener(new MessageBusExceptionListener());
 
             producerSession = connection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
             consumerSession = connection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
+            this.connection = connection;
 
             connection.start();
         } catch (JMSException e) {
+            closeQuietly(connection);
             throw new CoordinationLayerException("Unable to initialise connection to message bus", e);
+        }
+    }
+
+
+    /**
+     * Closes the connection, suppressing any JMSException, so it can be safely used for cleanup after a
+     * failed initialisation without masking the original error.
+     */
+    private void closeQuietly(Connection connection) {
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (JMSException e) {
+                log.warn("Failed to close connection after initialisation failure", e);
+            }
+        }
+    }
+
+    public void close() throws JMSException {
+        connection.setExceptionListener(null);
+//     Closes the producer session, consumer session and connection.
+        try (connection; consumerSession; producerSession) {
+            log.debug("Closing raw message bus connection.");
         }
     }
 
@@ -138,7 +161,7 @@ public class RawMessagebus {
         return destination;
     }
 
-    public synchronized void addListener(String destinationID, javax.jms.MessageListener listener) throws JMSException {
+    public synchronized void addListener(String destinationID, jakarta.jms.MessageListener listener) throws JMSException {
         MessageConsumer consumer = getMessageConsumer(destinationID, listener);
         try {
             consumer.setMessageListener(listener);
@@ -148,7 +171,7 @@ public class RawMessagebus {
         }
     }
 
-    private MessageConsumer getMessageConsumer(String destinationID, javax.jms.MessageListener listener) throws JMSException {
+    private MessageConsumer getMessageConsumer(String destinationID, jakarta.jms.MessageListener listener) throws JMSException {
         String key = destinationID + "#" + listener.hashCode();
         if (!consumers.containsKey(key)) {
             Destination destination = getDestination(destinationID, consumerSession);

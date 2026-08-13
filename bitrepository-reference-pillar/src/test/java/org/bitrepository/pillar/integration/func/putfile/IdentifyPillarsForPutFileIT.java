@@ -27,7 +27,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForPutFileResponse
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.pillar.PillarTestGroups;
-import org.bitrepository.pillar.integration.func.DefaultPillarIdentificationTest;
+import org.bitrepository.pillar.integration.func.DefaultPillarIdentificationIT;
 import org.bitrepository.pillar.messagefactories.PutFileMessageFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Test;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest {
+class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationIT {
     protected PutFileMessageFactory msgFactory;
 
     @BeforeEach
@@ -62,11 +62,11 @@ class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest {
                         "<li>'ResponseInfo.ResponseCode' element should be IDENTIFICATION_POSITIVE</li>" +
                         "</ol>");
         IdentifyPillarsForPutFileRequest identifyRequest = msgFactory.createIdentifyPillarsForPutFileRequest(
-                nonDefaultFileId, 0L);
+            nonDefaultFileId, 0L);
         messageBus.sendMessage(identifyRequest);
 
-        IdentifyPillarsForPutFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
-                IdentifyPillarsForPutFileResponse.class);
+        IdentifyPillarsForPutFileResponse receivedIdentifyResponse = receiveResponse(identifyRequest);
+
         Assertions.assertEquals(identifyRequest.getCollectionID(), receivedIdentifyResponse.getCollectionID(),
                 "Received unexpected CollectionID");
         Assertions.assertEquals(identifyRequest.getCorrelationID(), receivedIdentifyResponse.getCorrelationID(),
@@ -100,8 +100,7 @@ class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest {
                 nonDefaultFileId, 0L);
         messageBus.sendMessage(identifyRequest);
 
-        IdentifyPillarsForPutFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
-                IdentifyPillarsForPutFileResponse.class);
+        IdentifyPillarsForPutFileResponse receivedIdentifyResponse = receiveResponse(identifyRequest);
         Assertions.assertEquals(identifyRequest.getCollectionID(), receivedIdentifyResponse.getCollectionID());
         Assertions.assertEquals(identifyRequest.getCorrelationID(), receivedIdentifyResponse.getCorrelationID());
         Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getFrom());
@@ -127,20 +126,18 @@ class IdentifyPillarsForPutFileIT extends DefaultPillarIdentificationTest {
                 defaultFileId, 0L);
         messageBus.sendMessage(identifyRequest);
 
-        IdentifyPillarsForPutFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
-                IdentifyPillarsForPutFileResponse.class);
+        IdentifyPillarsForPutFileResponse receivedIdentifyResponse = receiveResponse(identifyRequest);
         Assertions.assertEquals(ResponseCode.DUPLICATE_FILE_FAILURE, receivedIdentifyResponse.getResponseInfo().getResponseCode());
     }
 
     @Override
-    protected MessageRequest createRequest() {
-        return msgFactory.createIdentifyPillarsForPutFileRequest(
-                nonDefaultFileId, 0L);
+    protected IdentifyPillarsForPutFileRequest createRequest() {
+        return msgFactory.createIdentifyPillarsForPutFileRequest(nonDefaultFileId, 0L);
     }
 
     @Override
-    protected MessageResponse receiveResponse() {
-        return clientReceiver.waitForMessage(IdentifyPillarsForPutFileResponse.class);
+    protected IdentifyPillarsForPutFileResponse receiveResponse(MessageRequest request) {
+        return clientReceiver.waitForMessage(IdentifyPillarsForPutFileResponse.class, request.getCorrelationID());
     }
 
     @Override

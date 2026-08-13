@@ -36,8 +36,10 @@ import org.bitrepository.common.DefaultThreadFactory;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.AllureTestUtils;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.service.AlarmDispatcher;
 import org.bitrepository.service.contributor.ContributorMediator;
+import org.bitrepository.settings.referencesettings.ClientSettings;
 import org.bitrepository.settings.repositorysettings.Collection;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
@@ -75,6 +77,9 @@ public class AuditTrailServiceTest {
         c.setID(TEST_COLLECTION);
         settings.getRepositorySettings().getCollections().getCollection().add(c);
         threadFactory = new DefaultThreadFactory(this.getClass().getSimpleName(), Thread.NORM_PRIORITY);
+        ClientSettings clientSettings = settings.getReferenceSettings().getClientSettings();
+        clientSettings.setMaxPageSize(BigInteger.valueOf(1000));
+        SettingsUtils.initialize(settings);
     }
 
     @Test

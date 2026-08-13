@@ -21,6 +21,7 @@
  */
 package org.bitrepository.monitoringservice;
 
+import jakarta.jms.JMSException;
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getstatus.GetStatusClient;
 import org.bitrepository.common.settings.Settings;
@@ -40,7 +41,6 @@ import org.bitrepository.settings.referencesettings.AlarmLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jms.JMSException;
 import java.time.Duration;
 import java.util.Map;
 

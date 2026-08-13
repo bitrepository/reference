@@ -21,6 +21,7 @@
  */
 package org.bitrepository.audittrails.store;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.FileUtils;
@@ -70,8 +71,8 @@ class AuditServiceDatabaseMigrationTest {
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
     void testMigratingAuditServiceDatabase() {
         addDescription("Tests that the database can be migrated to latest version with the provided scripts.");
         DBConnector connector = new DBConnector(

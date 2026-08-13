@@ -21,14 +21,14 @@
  */
 package org.bitrepository.monitoringservice.webservice;
 
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
 import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.monitoringservice.MonitoringService;
 import org.bitrepository.monitoringservice.MonitoringServiceFactory;
 import org.bitrepository.monitoringservice.status.ComponentStatus;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

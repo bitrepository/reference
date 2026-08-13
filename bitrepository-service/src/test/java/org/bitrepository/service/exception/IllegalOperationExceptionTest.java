@@ -21,6 +21,7 @@
  */
 package org.bitrepository.service.exception;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -41,7 +42,7 @@ class IllegalOperationExceptionTest {
     private final String TEST_COLLECTION_ID = "test-collection-id";
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testIdentifyContributor() throws Exception {
         addDescription("Test the instantiation of the exception");
         addStep("Setup", "");

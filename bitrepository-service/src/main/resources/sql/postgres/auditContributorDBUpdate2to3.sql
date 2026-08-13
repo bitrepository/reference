@@ -27,5 +27,5 @@ ALTER TABLE audittrail ALTER COLUMN information TYPE TEXT;
 ALTER TABLE audittrail ALTER COLUMN audit TYPE TEXT;
 
 -- Set the table versions
-insert into tableversions ( tablename, version ) values ( 'auditcontributordb', 3);
+insert into tableversions ( tablename, version ) values ( 'auditcontributordb', 3) on conflict do nothing;
 update tableversions set version = 3 where tablename = 'audittrail';

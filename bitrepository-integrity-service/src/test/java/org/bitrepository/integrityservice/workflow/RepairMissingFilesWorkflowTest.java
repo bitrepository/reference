@@ -21,6 +21,7 @@
  */
 package org.bitrepository.integrityservice.workflow;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
@@ -106,7 +107,7 @@ class RepairMissingFilesWorkflowTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testNoMissingFiles() {
         addDescription("Test that the workflow does nothing, when it has no missing files.");
@@ -131,7 +132,7 @@ class RepairMissingFilesWorkflowTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testSuccessRepair() {
         addDescription("Test that the workflow makes calls to the collector, when a file is missing");
@@ -185,7 +186,7 @@ class RepairMissingFilesWorkflowTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testFailedGetFile() {
         addDescription("Test that the workflow does not try to put a file, if it fails to get it.");
@@ -228,7 +229,7 @@ class RepairMissingFilesWorkflowTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testFailedPutFile() {
         addDescription("Test that the workflow makes calls to the collector for get and put file, even when put file fails.");

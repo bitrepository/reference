@@ -21,7 +21,9 @@
  */
 package org.bitrepository.service.contributor.handler;
 
-import org.apache.activemq.util.ByteArrayInputStream;
+import java.io.ByteArrayInputStream;
+
+import jakarta.xml.bind.JAXBException;
 import org.bitrepository.bitrepositorydata.GetAuditTrailsResults;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
@@ -45,12 +47,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -174,7 +176,7 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
         log.debug("Creating audit trail file and uploading it.");
         try {
             File fileToUpload = createAuditTrailFile(message, extractedAuditTrails);
-            URL uploadUrl = new URL(message.getResultAddress());
+            URL uploadUrl = new URI(message.getResultAddress()).toURL();
 
             log.debug("Uploading file '{}' to {}", fileToUpload.getName(), uploadUrl.toExternalForm());
             FileExchange fileExchange = FileExchangeResolver.getBasicFileExchangeFromURL(uploadUrl);

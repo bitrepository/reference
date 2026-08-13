@@ -31,7 +31,7 @@ import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.ChecksumUtils;
 import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.pillar.PillarTestGroups;
-import org.bitrepository.pillar.integration.func.DefaultPillarIdentificationTest;
+import org.bitrepository.pillar.integration.func.DefaultPillarIdentificationIT;
 import org.bitrepository.pillar.messagefactories.GetChecksumsMessageFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-class IdentifyPillarsForGetChecksumsIT extends DefaultPillarIdentificationTest {
+class IdentifyPillarsForGetChecksumsIT extends DefaultPillarIdentificationIT {
     protected GetChecksumsMessageFactory msgFactory;
 
     @BeforeEach
@@ -71,8 +71,7 @@ class IdentifyPillarsForGetChecksumsIT extends DefaultPillarIdentificationTest {
 
         addStep("Retrieve and validate the response getPillarID() the pillar.",
                 "The pillar should make a response.");
-        IdentifyPillarsForGetChecksumsResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
-                IdentifyPillarsForGetChecksumsResponse.class);
+        IdentifyPillarsForGetChecksumsResponse receivedIdentifyResponse = receiveResponse(identifyRequest);
         Assertions.assertNotNull(receivedIdentifyResponse);
         Assertions.assertEquals(identifyRequest.getCollectionID(), receivedIdentifyResponse.getCollectionID(),
                 "Received unexpected 'CollectionID' in response.");
@@ -107,8 +106,7 @@ class IdentifyPillarsForGetChecksumsIT extends DefaultPillarIdentificationTest {
 
         addStep("Retrieve and validate the response getPillarID() the pillar.",
                 "The pillar should make a response.");
-        IdentifyPillarsForGetChecksumsResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
-                IdentifyPillarsForGetChecksumsResponse.class);
+        IdentifyPillarsForGetChecksumsResponse receivedIdentifyResponse = receiveResponse(identifyRequest);
         Assertions.assertNotNull(receivedIdentifyResponse.getFileIDs().getFileID());
         Assertions.assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE,
                 receivedIdentifyResponse.getResponseInfo().getResponseCode(),
@@ -132,22 +130,21 @@ class IdentifyPillarsForGetChecksumsIT extends DefaultPillarIdentificationTest {
 
         addStep("Retrieve and validate the response getPillarID() the pillar.",
                 "The pillar should make a response.");
-        IdentifyPillarsForGetChecksumsResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
-                IdentifyPillarsForGetChecksumsResponse.class);
+        IdentifyPillarsForGetChecksumsResponse receivedIdentifyResponse = receiveResponse(identifyRequest);
         Assertions.assertEquals(ResponseCode.IDENTIFICATION_POSITIVE,
                 receivedIdentifyResponse.getResponseInfo().getResponseCode(),
                 "Received unexpected 'ResponseCode' in response.");
     }
 
     @Override
-    protected MessageRequest createRequest() {
+    protected IdentifyPillarsForGetChecksumsRequest createRequest() {
         return msgFactory.createIdentifyPillarsForGetChecksumsRequest(ChecksumUtils.getDefault(settingsForCUT),
                 FileIDsUtils.getAllFileIDs());
     }
 
     @Override
-    protected MessageResponse receiveResponse() {
-        return clientReceiver.waitForMessage(IdentifyPillarsForGetChecksumsResponse.class);
+    protected IdentifyPillarsForGetChecksumsResponse receiveResponse(MessageRequest request) {
+        return clientReceiver.waitForMessage(IdentifyPillarsForGetChecksumsResponse.class, request.getCorrelationID());
     }
 
     @Override

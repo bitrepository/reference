@@ -29,7 +29,7 @@ import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.FileIDsUtils;
 import org.bitrepository.pillar.PillarTestGroups;
-import org.bitrepository.pillar.integration.func.DefaultPillarIdentificationTest;
+import org.bitrepository.pillar.integration.func.DefaultPillarIdentificationIT;
 import org.bitrepository.pillar.messagefactories.GetFileIDsMessageFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-class IdentifyPillarsForGetFileIDsIT extends DefaultPillarIdentificationTest {
+class IdentifyPillarsForGetFileIDsIT extends DefaultPillarIdentificationIT {
     protected GetFileIDsMessageFactory msgFactory;
 
     @BeforeEach
@@ -137,13 +137,13 @@ class IdentifyPillarsForGetFileIDsIT extends DefaultPillarIdentificationTest {
     }
 
     @Override
-    protected MessageRequest createRequest() {
+    protected IdentifyPillarsForGetFileIDsRequest createRequest() {
         return msgFactory.createIdentifyPillarsForGetFileIDsRequest(null);
     }
 
     @Override
-    protected MessageResponse receiveResponse() {
-        return clientReceiver.waitForMessage(IdentifyPillarsForGetFileIDsResponse.class);
+    protected IdentifyPillarsForGetFileIDsResponse receiveResponse(MessageRequest request) {
+        return clientReceiver.waitForMessage(IdentifyPillarsForGetFileIDsResponse.class, request.getCorrelationID());
     }
 
     @Override

@@ -20,9 +20,9 @@
 -- #L%
 ---
 
-ALTER TABLE audittrail ADD operationID VARCHAR(100);
-ALTER TABLE audittrail ADD fingerprint VARCHAR(100);
+ALTER TABLE IF EXISTS audittrail ADD operationID VARCHAR(100);
+ALTER TABLE IF EXISTS audittrail ADD fingerprint VARCHAR(100);
 
 -- Set the table versions
-insert into tableversions ( tablename, version ) values ( 'auditcontributordb', 4);
+insert into tableversions ( tablename, version ) values ( 'auditcontributordb', 4) on conflict do NOTHING;
 update tableversions set version = 4 where tablename = 'audit';

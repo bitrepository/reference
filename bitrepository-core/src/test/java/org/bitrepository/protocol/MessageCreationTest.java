@@ -24,8 +24,9 @@
  */
 package org.bitrepository.protocol;
 
-import org.apache.activemq.util.ByteArrayInputStream;
+import jakarta.xml.bind.JAXBException;
 import org.apache.commons.io.IOUtils;
+import org.bitrepository.TestGroups;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
 import org.bitrepository.common.JaxbHelper;
@@ -36,13 +37,13 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import javax.xml.bind.JAXBException;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -58,7 +59,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 class MessageCreationTest {
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void messageCreationTest() throws Exception {
         addDescription("Tests if we are able to create message objects from xml. The input XML is the example code " +
                 "defined in the message-xml, thereby also testing whether this is valid.");
@@ -72,7 +73,7 @@ class MessageCreationTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void badDateMessageTest() throws IOException, SAXException, JAXBException {
         assertThrows(SAXException.class, () -> {
 

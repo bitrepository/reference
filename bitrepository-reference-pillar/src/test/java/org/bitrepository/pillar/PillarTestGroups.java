@@ -27,4 +27,5 @@ public class PillarTestGroups {
     public static final String FULL_PILLAR_TEST = "fullPillarTest";
     public static final String OPERATION_ACCEPTED_PROGRESS = "operationAcceptedProgress";
     public static final String RESULT_UPLOAD = "resultUploadTest";
+    public static final String PILLAR_STRESS_TEST = "pillar-stress-test";
 }

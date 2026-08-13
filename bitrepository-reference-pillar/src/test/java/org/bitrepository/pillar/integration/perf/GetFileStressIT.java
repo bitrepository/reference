@@ -29,23 +29,29 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileRequest;
 import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetFileResponse;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.utils.TestFileHelper;
+import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.perf.metrics.Metrics;
 import org.bitrepository.pillar.messagefactories.GetFileMessageFactory;
 import org.bitrepository.protocol.bus.MessageReceiver;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.api.condition.DisabledIf;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 
-import java.net.URL;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-class GetFileStressIT extends PillarPerformanceTest {
-    @TempDir
+@EnabledIfSystemProperty(named = "runStressTests", matches = "true")
+public class GetFileStressIT extends PillarPerformanceIT {
+    public static final String FOLDER_NAME = "src/test/resources";
     static Path tempDir;
     protected GetFileClient getFileClient;
 
@@ -57,7 +63,7 @@ class GetFileStressIT extends PillarPerformanceTest {
     }
 
     @Test
-    @Tag("pillar-stress-test")
+    @Tag(PillarTestGroups.PILLAR_STRESS_TEST)
     void singleGetFilePerformanceTest() throws Exception {
         final int NUMBER_OF_FILES = 1000;
         final int PART_STATISTIC_INTERVAL = 100;
@@ -77,7 +83,7 @@ class GetFileStressIT extends PillarPerformanceTest {
     }
 
     @Test
-    @Tag("pillar-stress-test")
+    @Tag(PillarTestGroups.PILLAR_STRESS_TEST)
     void parallelGetFilePerformanceTest() throws Exception {
         final int numberOfFiles =
                 testConfiguration.getInt("pillarintegrationtest.GetFileStressIT.parallelGet.numberOfFiles");
@@ -104,7 +110,7 @@ class GetFileStressIT extends PillarPerformanceTest {
     }
 
     @Test
-    @Tag("pillar-stress-test")
+    @Tag(PillarTestGroups.PILLAR_STRESS_TEST)
     void noIdentfyGetFilePerformanceTest() throws Exception {
         final int numberOfFiles =
                 testConfiguration.getInt("pillarintegrationtest.GetFileStressIT.parallelGet.numberOfFiles");
@@ -127,7 +133,7 @@ class GetFileStressIT extends PillarPerformanceTest {
             String correlationID = msgFactory.getNewCorrelationID();
             getLimiter.addJob(correlationID);
             String fileName = nonDefaultFileId + "-" + i;
-            
+
             // Ensure the source file exists in the temp directory so the server can serve it
             Path sourceFile = tempDir.resolve(fileName);
             if (!Files.exists(sourceFile)) {
@@ -150,15 +156,17 @@ class GetFileStressIT extends PillarPerformanceTest {
     }
 
     public String lookupGetFileDestination() {
-        MessageReceiver clientReceiver = new MessageReceiver(settingsForTestClient.getReceiverDestinationID());
-        messageBus.addListener(clientReceiver.getDestination(), clientReceiver.getMessageListener());
-        GetFileMessageFactory pillarLookupmMsgFactory =
-                new GetFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
-        IdentifyPillarsForGetFileRequest identifyRequest =
-                pillarLookupmMsgFactory.createIdentifyPillarsForGetFileRequest(defaultFileId);
-        messageBus.sendMessage(identifyRequest);
-        String pillarDestination = clientReceiver.waitForMessage(IdentifyPillarsForGetFileResponse.class).getReplyTo();
-        messageBus.removeListener(clientReceiver.getDestination(), clientReceiver.getMessageListener());
+        String pillarDestination;
+        try (MessageReceiver clientReceiver = new MessageReceiver(settingsForTestClient.getReceiverDestinationID())) {
+            messageBus.addListener(clientReceiver.getDestination(), clientReceiver.getMessageListener());
+            var getFileMessageFactory =
+                    new GetFileMessageFactory(collectionID, settingsForTestClient, getPillarID(), null);
+            IdentifyPillarsForGetFileRequest identifyRequest =
+                    getFileMessageFactory.createIdentifyPillarsForGetFileRequest(defaultFileId);
+            messageBus.sendMessage(identifyRequest);
+            pillarDestination = clientReceiver.waitForMessage(IdentifyPillarsForGetFileResponse.class).getReplyTo();
+            messageBus.removeListener(clientReceiver.getDestination(), clientReceiver.getMessageListener());
+        }
         return pillarDestination;
     }
 }

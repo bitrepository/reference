@@ -48,10 +48,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.util.UUID;
 
 public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest> {
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -131,7 +130,7 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
             }
 
             log.info("Uploading file '{}' to {}", message.getFileID(), fileAddress);
-            URL uploadUrl = new URL(fileAddress);
+            final URL uploadUrl = new URI(fileAddress).toURL();
             FileExchange fileExchange = FileExchangeResolver.getBasicFileExchangeFromURL(uploadUrl);
             fileExchange.putFile(is, uploadUrl);
         } catch (IOException e) {
@@ -139,6 +138,8 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
                     message.getFileID(), message.getCollectionID(), fileAddress, e.getMessage());
             throw new InvalidMessageException(ResponseCode.FILE_TRANSFER_FAILURE,
                     "Could not deliver file to address '" + fileAddress + "', cause: " + e.getMessage(), e);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
         }
     }
 

@@ -24,13 +24,13 @@
  */
 package org.bitrepository.protocol.messagebus;
 
+import jakarta.jms.JMSException;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jms.JMSException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

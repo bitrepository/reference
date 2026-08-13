@@ -21,6 +21,7 @@
  */
 package org.bitrepository.common.utils;
 
+import org.bitrepository.TestGroups;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -40,7 +41,7 @@ class CalendarUtilsTest {
     long DATE_IN_MILLIS = 123456789L;
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void calendarTester() {
         addDescription("Test the calendar utility class");
         addStep("Test the convertion of a date", "Should be the same date.");
@@ -84,7 +85,7 @@ class CalendarUtilsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void startDateTest() {
         addDescription("Test that the start date is considered as localtime and converted into UTC.");
         CalendarUtils cu = CalendarUtils.getInstance(ZoneId.of("Europe/Copenhagen"));
@@ -95,7 +96,7 @@ class CalendarUtilsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void endDateTest() {
         addDescription("Test that the end date is considered as localtime and converted into UTC.");
         CalendarUtils cu = CalendarUtils.getInstance(ZoneId.of("Europe/Copenhagen"));
@@ -106,7 +107,7 @@ class CalendarUtilsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void endDateRolloverTest() {
         addDescription("Test that the end date is correctly rolls over a year and month change.");
         CalendarUtils cu = CalendarUtils.getInstance(ZoneId.of("Europe/Copenhagen"));
@@ -119,7 +120,7 @@ class CalendarUtilsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testBeginningOfDay() {
         addDescription("Tests that the time is converted to the beginning of the day localtime, not UTC");
         CalendarUtils cu = CalendarUtils.getInstance(ZoneId.of("Europe/Copenhagen"));
@@ -130,7 +131,7 @@ class CalendarUtilsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testEndOfDay() {
         addDescription("Tests that the time is converted to the beginning of the day localtime, not UTC");
         CalendarUtils cu = CalendarUtils.getInstance(ZoneId.of("Europe/Copenhagen"));
@@ -141,7 +142,7 @@ class CalendarUtilsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testSummerWinterTimeChange() {
         addDescription("Test that the interval between start and end date on a summertime to "
                 + "wintertime change is 25 hours (-1 millisecond).");
@@ -155,7 +156,7 @@ class CalendarUtilsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testWinterSummerTimeChange() {
         addDescription("Test that the interval between start and end date on a wintertime to "
                 + "summertime change is 23 hours (-1 millisecond).");

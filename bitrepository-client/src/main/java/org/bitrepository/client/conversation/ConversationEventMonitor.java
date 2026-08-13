@@ -326,24 +326,19 @@ public class ConversationEventMonitor {
     }
 
     private DefaultEvent createDefaultEvent(OperationEvent.OperationEventType eventType, String info) {
-        DefaultEvent event = new DefaultEvent(collectionID);
-        event.setEventType(eventType);
-        event.setInfo(info);
+        DefaultEvent event = new DefaultEvent(eventType, collectionID, info);
         addContextInfo(event);
         return event;
     }
 
     private ContributorEvent createContributorEvent(OperationEvent.OperationEventType eventType, String info, String contributorID) {
-        ContributorEvent event = new ContributorEvent(contributorID, collectionID);
-        event.setEventType(eventType);
-        event.setInfo(info);
+        ContributorEvent event = new ContributorEvent(eventType, contributorID, collectionID, info);
         addContextInfo(event);
         return event;
     }
 
     private ContributorFailedEvent createContributorFailedEvent(String info, String contributorID, ResponseCode responseCode) {
-        ContributorFailedEvent event = new ContributorFailedEvent(contributorID, collectionID, responseCode);
-        event.setInfo(info);
+        ContributorFailedEvent event = new ContributorFailedEvent(contributorID, collectionID, responseCode, info);
         addContextInfo(event);
         return event;
     }

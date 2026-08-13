@@ -21,6 +21,7 @@
  */
 package org.bitrepository.pillar;
 
+import jakarta.jms.JMSException;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.SettingsUtils;
@@ -37,7 +38,6 @@ import org.bitrepository.settings.referencesettings.PillarType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jms.JMSException;
 import javax.xml.datatype.Duration;
 
 /**

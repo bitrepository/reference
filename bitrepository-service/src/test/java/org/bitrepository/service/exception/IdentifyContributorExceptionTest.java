@@ -21,6 +21,7 @@
  */
 package org.bitrepository.service.exception;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
@@ -35,7 +36,7 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
  */
 class IdentifyContributorExceptionTest {
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testIdentifyContributor() throws Exception {
         addDescription("Test the instantiation of the exception");
         addStep("Setup", "");

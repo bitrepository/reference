@@ -22,6 +22,7 @@
 
 package org.bitrepository.commandline;
 
+import jakarta.jms.JMSException;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.codec.DecoderException;
@@ -45,9 +46,9 @@ import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.SecurityManager;
 import org.bitrepository.settings.referencesettings.ProtocolType;
 
-import javax.jms.JMSException;
 import java.io.File;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
@@ -58,7 +59,6 @@ import java.util.Locale;
  * Defines the common functionality for command-line-clients.
  */
 public abstract class CommandLineClient {
-    private final String componentID;
     protected OutputHandler output = new DefaultOutputHandler(getClass());
     protected Settings settings;
     protected SecurityManager securityManager;
@@ -103,7 +103,6 @@ public abstract class CommandLineClient {
             output.setVerbosity(true);
         }
         settings = cmdHandler.loadSettings();
-        componentID = settings.getComponentID();
         securityManager = cmdHandler.loadSecurityManager(settings);
         fileIDValidator = new FileIDValidator(settings);
 
@@ -122,14 +121,6 @@ public abstract class CommandLineClient {
      */
     protected abstract void performOperation();
 
-    /**
-     * Defines the componentID of the concrete client. Must be specified by in the subclass.
-     *
-     * @return The componentID of the concrete client.
-     */
-    protected String getComponentID() {
-        return componentID;
-    }
 
     /**
      * Used for determining whether the fileID Argument is required for the concrete operation.
@@ -344,7 +335,7 @@ public abstract class CommandLineClient {
             String urlArg = cmdHandler.getOptionValue(Constants.URL_ARG);
 
             try {
-                final URL url = new URL(urlArg);
+                final URL url = new URI(urlArg).toURL();
 
                 ProtocolType protocolType = ProtocolType.fromValue(url.getProtocol().toUpperCase(Locale.ROOT));
                 if (protocolType != ProtocolType.FILE) {

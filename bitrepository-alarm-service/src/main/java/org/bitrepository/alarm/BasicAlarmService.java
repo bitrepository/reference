@@ -24,6 +24,7 @@
  */
 package org.bitrepository.alarm;
 
+import jakarta.jms.JMSException;
 import org.bitrepository.alarm.handling.AlarmHandler;
 import org.bitrepository.alarm.handling.AlarmMediator;
 import org.bitrepository.alarm.store.AlarmStore;
@@ -35,7 +36,6 @@ import org.bitrepository.service.contributor.ContributorMediator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jms.JMSException;
 import java.time.Instant;
 import java.util.Collection;
 

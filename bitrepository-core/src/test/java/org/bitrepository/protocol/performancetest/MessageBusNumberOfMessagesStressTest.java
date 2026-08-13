@@ -24,10 +24,13 @@
  */
 package org.bitrepository.protocol.performancetest;
 
+import jakarta.jms.JMSException;
+import org.bitrepository.TestGroups;
 import org.bitrepository.bitrepositorymessages.AlarmMessage;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
+import org.bitrepository.pillar.integration.ArtemisFixedPortContainer;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.activemq.ActiveMQMessageBus;
 import org.bitrepository.protocol.bus.LocalActiveMQBroker;
@@ -42,8 +45,12 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
+import org.testcontainers.activemq.ArtemisContainer;
+import org.testcontainers.containers.InternetProtocol;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
-import javax.jms.JMSException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.time.Instant;
@@ -56,7 +63,8 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 /**
  * Stress testing of the messagebus.
  */
-class MessageBusNumberOfMessagesStressTest {
+@EnabledIfSystemProperty(named = "runStressTests", matches = "true")
+public class MessageBusNumberOfMessagesStressTest {
     /**
      * The name of the queue to send the messages.
      */
@@ -64,7 +72,7 @@ class MessageBusNumberOfMessagesStressTest {
     private Settings settings;
 
     @BeforeEach
-    void initializeSettings() {
+    public void initializeSettings() {
         settings = TestSettingsProvider.getSettings(getClass().getSimpleName());
     }
 
@@ -73,8 +81,8 @@ class MessageBusNumberOfMessagesStressTest {
      * Require sending at least five messages per second.
      */
     @Test
-    @Tag("StressTest")
-    void SendManyMessagesDistributed() throws Exception {
+    @Tag(TestGroups.STRESS_TEST)
+    public void SendManyMessagesDistributed() throws Exception {
         addDescription("Tests how many messages can be handled within a given timeframe.");
         addStep("Define constants", "This should not be possible to fail.");
         long timeFrame = 60000L; // one minute in millis
@@ -125,8 +133,8 @@ class MessageBusNumberOfMessagesStressTest {
      * It should be at least 20 per second.
      */
     @Test
-    @Tag("StressTest")
-    void SendManyMessagesLocally() throws Exception {
+    @Tag(TestGroups.STRESS_TEST)
+    public void SendManyMessagesLocally() throws Exception {
         addDescription("Tests how many messages can be handled within a given timeframe.");
         addStep("Define constants", "This should not be possible to fail.");
         long timeFrame = 60000L; // one minute in millis

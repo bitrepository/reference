@@ -26,8 +26,8 @@ import org.bitrepository.bitrepositoryelements.AlarmCode;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.common.utils.TimeUtils;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * Class to format alarms for web display

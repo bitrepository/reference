@@ -25,7 +25,7 @@
  */
 package org.bitrepository.pillar.messagehandler;
 
-import org.apache.activemq.util.ByteArrayInputStream;
+import jakarta.xml.bind.JAXBException;
 import org.bitrepository.bitrepositorydata.GetFileIDsResults;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -50,15 +50,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-import javax.xml.bind.JAXBException;
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URL;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 
@@ -210,12 +210,12 @@ public class GetFileIDsRequestHandler extends PerformRequestHandler<GetFileIDsRe
      * @throws IOException If something goes wrong.
      */
     private void uploadFile(File fileToUpload, String url) throws IOException {
-        URL uploadUrl = new URL(url);
+        final URI uploadUri = URI.create(url);
 
         log.debug("Uploading file '{}' to {}", fileToUpload.getName(), url);
         try (InputStream in = new BufferedInputStream(new FileInputStream(fileToUpload))) {
-            FileExchange fileExchange = FileExchangeResolver.getBasicFileExchangeFromURL(uploadUrl);
-            fileExchange.putFile(in, uploadUrl);
+            FileExchange fileExchange = FileExchangeResolver.getBasicFileExchangeFromURL(uploadUri.toURL());
+            fileExchange.putFile(in, uploadUri.toURL());
         }
     }
 

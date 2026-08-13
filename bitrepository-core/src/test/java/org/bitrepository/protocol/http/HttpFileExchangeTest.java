@@ -21,6 +21,7 @@
  */
 package org.bitrepository.protocol.http;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.settings.referencesettings.FileExchangeSettings;
@@ -31,6 +32,7 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
@@ -39,8 +41,8 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 class HttpFileExchangeTest {
     @Test
-    @Tag("regressiontest")
-    void checkUrlEncodingOfFilenamesTest() throws MalformedURLException {
+    @Tag(TestGroups.REGRESSIONTEST)
+    void checkUrlEncodingOfFilenamesTest() throws MalformedURLException, URISyntaxException {
         addDescription("Tests that the filename is url-encoded correctly for a configured webdav server");
         Settings mySettings = TestSettingsProvider.reloadSettings("uploadTest");
         FileExchangeSettings fileExchangeSettings = mySettings.getReferenceSettings().getFileExchangeSettings();
@@ -49,19 +51,19 @@ class HttpFileExchangeTest {
         fileExchangeSettings.setPort(BigInteger.valueOf(8000));
         fileExchangeSettings.setPath("dav");
         HttpFileExchange fe = new HttpFileExchange(fileExchangeSettings);
-        String serverPathPrefix = fileExchangeSettings.getPath() + "/";
+        String serverPathPrefix = "/" + fileExchangeSettings.getPath() + "/";
 
         addStep("Check plain filename (a filename that does not see any changes due to urlencoding",
                 "The filename should be unmodified");
         String plainFilename = "testfile";
         URL plainFilenameUrl = fe.getURL(plainFilename);
 
-        Assertions.assertEquals(serverPathPrefix + plainFilename, plainFilenameUrl.getFile());
+        Assertions.assertEquals(serverPathPrefix + plainFilename, plainFilenameUrl.toURI().getRawPath());
 
         addStep("Check that + is encoded as expected", "Filenames with a + is correctly encoded");
         String plusFilename = "test+file";
         URL plusFilenameUrl = fe.getURL(plusFilename);
         String expectedEncodedPlusFilename = "test%2Bfile";
-        Assertions.assertEquals(serverPathPrefix + expectedEncodedPlusFilename, plusFilenameUrl.getFile());
+        Assertions.assertEquals(serverPathPrefix + expectedEncodedPlusFilename, plusFilenameUrl.toURI().getRawPath());
     }
 }

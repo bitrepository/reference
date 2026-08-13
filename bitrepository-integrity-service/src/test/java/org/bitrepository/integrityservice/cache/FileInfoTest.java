@@ -21,6 +21,7 @@
  */
 package org.bitrepository.integrityservice.cache;
 
+import org.bitrepository.TestGroups;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -43,7 +44,7 @@ class FileInfoTest {
     private static final Long FILE_SIZE = 12345L;
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testFileInfo() {
         addDescription("Tests the FileInfo element. Adds all data and extracts it again.");

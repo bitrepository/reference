@@ -25,11 +25,11 @@
 package org.bitrepository.protocol.bus;
 
 import io.qameta.allure.Allure;
+import jakarta.jms.JMSException;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocol.messagebus.MessageBus;
 import org.bitrepository.protocol.messagebus.MessageListener;
 
-import javax.jms.JMSException;
 import java.util.List;
 
 public class MessageBusWrapper implements MessageBus {

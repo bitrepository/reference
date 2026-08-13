@@ -21,6 +21,7 @@
  */
 package org.bitrepository.common.exception;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.common.exceptions.UnableToFinishException;
 
 import org.junit.jupiter.api.Assertions;
@@ -33,7 +34,7 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 class UnableToFinishExceptionTest {
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testUnableToFinish() throws Exception {
         addDescription("Test the instantiation of the exception");
         addStep("Setup", "");

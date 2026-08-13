@@ -24,7 +24,7 @@
  */
 package org.bitrepository.service.workflow;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * States for a workflow.

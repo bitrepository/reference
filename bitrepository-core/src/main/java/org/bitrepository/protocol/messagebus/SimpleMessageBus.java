@@ -21,10 +21,10 @@
  */
 package org.bitrepository.protocol.messagebus;
 
+import jakarta.jms.JMSException;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.protocol.MessageContext;
 
-import javax.jms.JMSException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;

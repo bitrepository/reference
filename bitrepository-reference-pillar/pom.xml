@@ -63,9 +63,23 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-broker</artifactId>
-            <version>${activemq.version}</version>
+            <groupId>org.apache.artemis</groupId>
+            <artifactId>artemis-server</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-activemq</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-postgresql</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -111,11 +125,6 @@
             <plugin>
                 <groupId>io.qameta.allure</groupId>
                 <artifactId>allure-maven</artifactId>
-                <version>2.12.0</version>
-                <configuration>
-                    <resultsDirectory>${project.basedir}/allure-results</resultsDirectory>
-                    <reportDirectory>${project.basedir}/allure-report</reportDirectory>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -154,6 +163,16 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>org.bitrepository.pillar.integration.**</exclude>
+                    </excludes>
+                    <test>org.bitrepository.pillar.BitrepositoryPillarCommonIntegrationTestSuite</test>
+                    <failIfNoTests>true</failIfNoTests>
+                </configuration>
+            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -187,23 +206,63 @@
     </build>
     <profiles>
         <profile>
-            <!-- This will fail on Jenkins, blocking after the integration tests have been run??-->
             <id>integration-test</id>
             <build>
                 <plugins>
                     <plugin>
                         <artifactId>maven-failsafe-plugin</artifactId>
-                        <configuration>
-                            <test>BitrepositoryPillarTestSuite</test>
-                            <test>BitrepositoryChecksumPillarTestSuite</test>
-                            <failIfNoTests>true</failIfNoTests>
-                        </configuration>
                         <executions>
                             <execution>
+                                <id>BitrepositoryPillarTestSuite</id>
+                                <phase>integration-test</phase>
                                 <goals>
                                     <goal>integration-test</goal>
                                     <goal>verify</goal>
                                 </goals>
+                                <configuration>
+                                    <test>org.bitrepository.pillar.integration.BitrepositoryPillarTestSuite</test>
+                                    <failIfNoTests>true</failIfNoTests>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>BitrepositoryChecksumPillarTestSuite</id>
+                                <phase>integration-test</phase>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                                <configuration>
+                                    <test>org.bitrepository.pillar.integration.BitrepositoryChecksumPillarTestSuite
+                                    </test>
+                                    <failIfNoTests>true</failIfNoTests>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>Stress-test</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>stressTest</id>
+                                <phase>integration-test</phase>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                                <configuration>
+                                    <test>org.bitrepository.pillar.integration.BitrepositoryPerformanceTestSuite</test>
+                                    <failIfNoTests>true</failIfNoTests>
+                                    <systemPropertyVariables>
+                                        <runStressTests>true</runStressTests>
+                                    </systemPropertyVariables>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>

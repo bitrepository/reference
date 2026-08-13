@@ -21,6 +21,7 @@
  */
 package org.bitrepository.integrityservice.collector;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.ContributorQueryUtils;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
@@ -35,6 +36,7 @@ import org.bitrepository.modify.putfile.PutFileClient;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import java.net.URI;
 import java.net.URL;
 import java.util.List;
 
@@ -59,7 +61,7 @@ public class IntegrityInformationCollectorTest {
     public final static String fileId = "FILE_ID";
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testCollectorGetFileIDs() throws Exception {
         addDescription("Tests that the collector calls the GetFileClient");
@@ -91,7 +93,7 @@ public class IntegrityInformationCollectorTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testCollectorGetChecksums() throws Exception {
         addDescription("Tests that the collector calls the GetChecksumsClient");
@@ -135,13 +137,13 @@ public class IntegrityInformationCollectorTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testCollectorGetFile() throws Exception {
         addDescription("Tests that the collector calls the GetFileClient");
         addStep("Define variables", "No errors");
         String auditTrailInformation = "audit trail for this test";
-        URL uploadUrl = new URL("http://localhost:80/dav/test.txt");
+        URL uploadUrl = new URI("http://localhost:80/dav/test.txt").toURL();
 
         addStep("Setup a GetFileClient for test purpose.", "Should be OK.");
         GetFileClient getFileClient = mock(GetFileClient.class);
@@ -167,13 +169,13 @@ public class IntegrityInformationCollectorTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testCollectorPutFile() throws Exception {
         addDescription("Tests that the collector calls the PutFileClient");
         addStep("Define variables", "No errors");
         String auditTrailInformation = "audit trail for this test";
-        URL uploadUrl = new URL("http://localhost:80/dav/test.txt");
+        URL uploadUrl = new URI("http://localhost:80/dav/test.txt").toURL();
         ChecksumDataForFileTYPE csForValidation = new ChecksumDataForFileTYPE();
 
         addStep("Setup a PutFileClient for test purpose.", "Should be OK.");
@@ -201,7 +203,7 @@ public class IntegrityInformationCollectorTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testCollectorHandleChecksumClientFailures() throws Exception {
         addDescription("Test that the IntegrityInformationCollector works as a fault-barrier.");
@@ -228,7 +230,7 @@ public class IntegrityInformationCollectorTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testCollectorHandleGetFileIDsClientFailures() throws Exception {
         addDescription("Test that the IntegrityInformationCollector works as a fault-barrier.");
@@ -251,13 +253,13 @@ public class IntegrityInformationCollectorTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testCollectorHandleGetFileClientFailures() throws Exception {
         addDescription("Test that the IntegrityInformationCollector works as a fault-barrier.");
         addStep("Define variables", "No errors");
         String auditTrailInformation = "audit trail for this test";
-        URL uploadUrl = new URL("http://localhost:80/dav/test.txt");
+        URL uploadUrl = new URI("http://localhost:80/dav/test.txt").toURL();
 
         addStep("Setup a GetFileClient for test purpose, and ensure that it throws an error when called.",
                 "Should be OK.");
@@ -274,13 +276,13 @@ public class IntegrityInformationCollectorTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testCollectorHandlePutFileClientFailures() throws Exception {
         addDescription("Test that the IntegrityInformationCollector works as a fault-barrier.");
         addStep("Define variables", "No errors");
         String auditTrailInformation = "audit trail for this test";
-        URL uploadUrl = new URL("http://localhost:80/dav/test.txt");
+        URL uploadUrl = new URI("http://localhost:80/dav/test.txt").toURL();
         ChecksumDataForFileTYPE csForValidation = new ChecksumDataForFileTYPE();
 
         addStep("Setup a PutFileClient for test purpose, and ensure that it throws an error when called.",

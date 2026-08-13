@@ -21,6 +21,7 @@
  */
 package org.bitrepository.audittrails.preserver;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.audittrails.store.AuditEventIterator;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
@@ -47,6 +48,7 @@ import org.mockito.stubbing.Answer;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 import java.io.FileInputStream;
+import java.net.URI;
 import java.net.URL;
 import java.time.Instant;
 
@@ -74,7 +76,7 @@ class LocalAuditPreservationTest {
         settings.getRepositorySettings().getCollections().getCollection().add(c);
 
         collectionID = c.getID();
-        testUploadUrl = new URL("http://TestURL.com");
+        testUploadUrl = new URI("http://TestURL.com").toURL();
         threadFactory = new DefaultThreadFactory(this.getClass().getSimpleName(), Thread.NORM_PRIORITY, false);
 
     }
@@ -121,8 +123,8 @@ class LocalAuditPreservationTest {
             }
         }).when(store).getAuditTrailsByIterator(ArgumentMatchers.any(), ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyString(), ArgumentMatchers.any(Long.class), ArgumentMatchers.any(),
-                ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(Instant.class),
-                ArgumentMatchers.any(Instant.class),
+                ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.isNull(Instant.class),
+                ArgumentMatchers.isNull(Instant.class),
                 ArgumentMatchers.any(), ArgumentMatchers.any());
 
         preserver.start();
@@ -143,7 +145,7 @@ class LocalAuditPreservationTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @SuppressWarnings("rawtypes")
     void auditPreservationIngestTest() throws Exception {
         addDescription("Tests the ingest of the audit trail preservation.");

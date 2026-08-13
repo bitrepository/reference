@@ -21,6 +21,7 @@
  */
 package org.bitrepository.common;
 
+import org.bitrepository.TestGroups;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -34,7 +35,7 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 class ArgumentValidatorTest {
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testArgumentValidatorObject() throws Exception {
         addDescription("Test the argument validator for arguments not null");
         addStep("Test not null", "Should only throw an exception when a null is given.");
@@ -48,7 +49,7 @@ class ArgumentValidatorTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testArgumentValidatorString() throws Exception {
         addDescription("Test the argument validator for arguments for strings");
         addStep("Test empty string", "Should only throw an exception when the string is null or empty");
@@ -68,7 +69,7 @@ class ArgumentValidatorTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testArgumentValidatorInteger() throws Exception {
         addDescription("Test the argument validator for arguments for integers");
         addStep("Test not negative", "Should only throw an exception if the integer is negative");
@@ -97,7 +98,7 @@ class ArgumentValidatorTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testArgumentValidatorLong() throws Exception {
         addDescription("Test the argument validator for arguments for longs");
         addStep("Test not negative", "Should only throw an exception if the long is negative");
@@ -126,7 +127,7 @@ class ArgumentValidatorTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testArgumentValidatorCollection() throws Exception {
         addDescription("Test the argument validator for arguments for collections");
         addStep("Check against null or empty collection", "Should throw exception exception when non-empty collection");
@@ -146,7 +147,7 @@ class ArgumentValidatorTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testArgumentValidatorArrays() throws Exception {
         addDescription("Test the argument validator for arguments for arrays");
         addStep("Check against null or empty arrays", "Should throw exception exception when non-empty array");
@@ -166,7 +167,7 @@ class ArgumentValidatorTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testArgumentValidatorBoolean() throws Exception {
         addDescription("Test the argument validator for arguments for booleans");
         addStep("validate checkTrue", "Should fail when false.");

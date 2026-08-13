@@ -33,10 +33,31 @@ public class ContributorEvent extends AbstractOperationEvent {
     /**
      * @param contributorID The contributorID for which this event concerns.
      * @param collectionID  the collectionID for which this event concerns.
+     * @deprecated used the constructor DefaultEvent#DefaultEvent(OperationEventType, String)
+     * @see DefaultEvent#DefaultEvent(OperationEventType, String)
      */
+    @Deprecated(forRemoval = true)
     public ContributorEvent(String contributorID, String collectionID) {
-        super();
-        setCollectionID(collectionID);
+        super(collectionID);
+        this.contributorID = contributorID;
+    }
+
+    /**
+     * @param contributorID The contributorID for which this event concerns.
+     * @param collectionID  the collectionID for which this event concerns.
+     * @param info the Info
+     */
+    public ContributorEvent(OperationEventType eventType, String contributorID, String collectionID, final String info) {
+        super(eventType, collectionID, info);
+        this.contributorID = contributorID;
+    }
+
+    /**
+     * @param contributorID The contributorID for which this event concerns.
+     * @param collectionID  the collectionID for which this event concerns.
+     */
+    public ContributorEvent(OperationEventType eventType, String contributorID, String collectionID) {
+        super(eventType, collectionID);
         this.contributorID = contributorID;
     }
 

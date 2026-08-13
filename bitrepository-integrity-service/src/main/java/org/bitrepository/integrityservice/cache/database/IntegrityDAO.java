@@ -59,7 +59,7 @@ import java.util.Optional;
  * Common parts of the implementation of the access to the integrity db.
  * Database specific backends are abstracted out in concrete classes.
  */
-public abstract class IntegrityDAO {
+public abstract class IntegrityDAO implements AutoCloseable {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     /**
@@ -76,8 +76,13 @@ public abstract class IntegrityDAO {
     /**
      * Destroys the DB connector.
      */
+    @Override
     public void close() {
         dbConnector.destroy();
+    }
+
+    public DBConnector getDbConnector() {
+        return dbConnector;
     }
 
     /**

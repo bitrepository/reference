@@ -24,8 +24,17 @@
  */
 package org.bitrepository.protocol.activemq;
 
-import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.activemq.util.ByteArrayInputStream;
+import jakarta.jms.Connection;
+import jakarta.jms.DeliveryMode;
+import jakarta.jms.Destination;
+import jakarta.jms.ExceptionListener;
+import jakarta.jms.JMSException;
+import jakarta.jms.MessageConsumer;
+import jakarta.jms.MessageProducer;
+import jakarta.jms.Session;
+import jakarta.jms.TextMessage;
+import jakarta.jms.Topic;
+import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.common.DefaultThreadFactory;
@@ -56,22 +65,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-import javax.jms.Connection;
-import javax.jms.DeliveryMode;
-import javax.jms.Destination;
-import javax.jms.ExceptionListener;
-import javax.jms.JMSException;
-import javax.jms.MessageConsumer;
-import javax.jms.MessageProducer;
-import javax.jms.Session;
-import javax.jms.TextMessage;
-import javax.jms.Topic;
+import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ThreadFactory;
 
@@ -85,16 +86,16 @@ public class ActiveMQMessageBus implements MessageBus {
     /**
      * The key for storing the message type in a string property in the message headers.
      */
-    public static final String MESSAGE_TYPE_KEY = "org.bitrepository.messages.type";
+    public static final String MESSAGE_TYPE_KEY = "org_bitrepository_messages_type";
     /**
      * The key for storing the BitRepositoryCollectionID in a string property in the message headers.
      */
-    public static final String COLLECTION_ID_KEY = "org.bitrepository.messages.collectionid";
+    public static final String COLLECTION_ID_KEY = "org_bitrepository_messages_collectionid";
     /**
      * The key for storing the message type in a string property in the message headers.
      */
-    public static final String MESSAGE_SIGNATURE_KEY = "org.bitrepository.messages.signature";
-    public static final String MESSAGE_TO_KEY = "org.bitrepository.messages.to";
+    public static final String MESSAGE_SIGNATURE_KEY = "org_bitrepository_messages_signature";
+    public static final String MESSAGE_TO_KEY = "org_bitrepository_messages_to";
     /**
      * Default transacted.
      */
@@ -124,7 +125,7 @@ public class ActiveMQMessageBus implements MessageBus {
      * Used to identify if a listener is already registered.
      */
     private final Map<String, MessageConsumer> consumers = Collections
-            .synchronizedMap(new HashMap<>());
+        .synchronizedMap(new HashMap<>());
     /**
      * Map of destinations, mapping from ID to destination.
      */
@@ -135,6 +136,7 @@ public class ActiveMQMessageBus implements MessageBus {
     private final MessageBusConfiguration configuration;
     private final JaxbHelper jaxbHelper;
     private final Connection connection;
+    private final ActiveMQConnectionFactory connectionFactory;
     private final SecurityManager securityManager;
 
     private final Set<String> componentFilter = new HashSet<>();
@@ -152,8 +154,9 @@ public class ActiveMQMessageBus implements MessageBus {
     /**
      * ThreadFactory for any threads the activeMQ messageBus needs to create
      */
-    private static final ThreadFactory threadFactory = new DefaultThreadFactory(ActiveMQMessageListener.class.getSimpleName() + "-",
-            Thread.NORM_PRIORITY, false);
+    private static final ThreadFactory threadFactory = new DefaultThreadFactory(ActiveMQMessageListener.class.getSimpleName() +
+                                                                                "-",
+                                                                                Thread.NORM_PRIORITY, false);
 
 
     /**
@@ -171,20 +174,23 @@ public class ActiveMQMessageBus implements MessageBus {
         clientID = settings.getComponentID();
         String schemaLocation = "BitRepositoryMessages.xsd";
         jaxbHelper = new JaxbHelper("xsd/", schemaLocation);
-        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(configuration.getURL());
+        connectionFactory = ArtemisConnectionFactoryProvider.create(configuration);
         registerCustomMessageLoggers();
+        Connection newConnection = null;
         try {
-            connection = connectionFactory.createConnection();
-            connection.setClientID(clientID);
-            connection.setExceptionListener(new MessageBusExceptionListener());
+            newConnection = connectionFactory.createConnection();
+            newConnection.setClientID(clientID);
+            newConnection.setExceptionListener(new MessageBusExceptionListener());
 
-            producerSession = connection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
-            consumerSession = connection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
+            producerSession = newConnection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
+            consumerSession = newConnection.createSession(TRANSACTED, Session.AUTO_ACKNOWLEDGE);
             producer = producerSession.createProducer(null);
             producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+            connection = newConnection;
 
             startListeningForMessages();
         } catch (JMSException e) {
+            closeQuietly(newConnection);
             throw new CoordinationLayerException("Unable to initialise connection to message bus", e);
         }
         log.debug("ActiveMQConnection initialized for '{}'", configuration);
@@ -194,6 +200,21 @@ public class ActiveMQMessageBus implements MessageBus {
             messageThreadPoolConfig = settings.getReferenceSettings().getGeneralSettings().getMessageThreadPools();
         }
         receivedMessageHandler = new ReceivedMessageHandler(messageThreadPoolConfig);
+    }
+
+
+    /**
+     * Closes the connection, suppressing any JMSException, so it can be safely used for cleanup after a
+     * failed initialisation without masking the original error.
+     */
+    private void closeQuietly(Connection connection) {
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (JMSException e) {
+                log.warn("Failed to close connection after initialisation failure", e);
+            }
+        }
     }
 
     /**
@@ -232,30 +253,49 @@ public class ActiveMQMessageBus implements MessageBus {
     @Override
     public synchronized void removeListener(String destinationID, MessageListener listener) {
         log.debug("Removing listener '{}' from destination: '{}' on message-bus '{}'",
-                listener, destinationID, configuration);
-        MessageConsumer consumer = getMessageConsumer(destinationID, listener, false);
+                  listener, destinationID, configuration);
         try {
-            // We need to set the listener to null to have the removeListener take effect at once.
-            // If this isn't done the listener will continue to receive messages. Do we have a memory leak here? 
-            consumer.setMessageListener(null);
-            consumer.close();
-        } catch (JMSException e) {
-            throw new CoordinationLayerException(
+            MessageConsumer consumer;
+            try {
+                consumer = getMessageConsumer(destinationID, listener, false);
+            } catch (CoordinationLayerException e) {
+                var cause = e.getCause();
+                if (cause instanceof jakarta.jms.IllegalStateException
+                    && Objects.equals(cause.getMessage(), "AMQ219019: Session is closed")) {
+                    return;
+                }
+                throw e;
+            }
+            try {
+
+                // We need to set the listener to null to have the removeListener take effect at once.
+                // If this isn't done the listener will continue to receive messages. Do we have a memory leak here?
+//                consumer.setMessageListener(null);
+
+                consumer.close();
+            } catch (IllegalStateException e) {
+                if (Objects.equals(e.getMessage(), "The Consumer is closed")) {
+                    return;
+                }
+                throw new CoordinationLayerException(
                     "Unable to remove listener '" + listener + "' from destinationID '" + destinationID + "'", e);
+            } catch (JMSException e) {
+                throw new CoordinationLayerException(
+                    "Unable to remove listener '" + listener + "' from destinationID '" + destinationID + "'", e);
+            }
+        } finally {
+            String consumerHash = getConsumerHash(destinationID, listener);
+            consumers.remove(consumerHash);
+
         }
-        consumers.remove(getConsumerHash(destinationID, listener));
     }
 
     @Override
     public void close() throws JMSException {
-        receivedMessageHandler.close();
         log.info("Closing message bus: {}", configuration);
-        producerSession.close();
-        log.debug("Producer session closed.");
-        consumerSession.close();
-        log.debug("Consumer session closed.");
-        connection.close();
-        log.debug("Connection closed.");
+        try (connectionFactory; connection; consumerSession; producerSession; receivedMessageHandler) {
+            log.debug("Closing producer session, consumer session and connection.");
+        }
     }
 
     @Override
@@ -375,23 +415,14 @@ public class ActiveMQMessageBus implements MessageBus {
                 if (parts.length == 1) {
                     destination = session.createTopic(destinationID);
                 } else if (parts.length == 2) {
-                    switch (parts[0]) {
-                        case "topic":
-                            destination = session.createTopic(parts[1]);
-                            break;
-                        case "queue":
-                            destination = session.createQueue(parts[1]);
-                            break;
-                        case "temporary-queue":
-                            destination = session.createTemporaryQueue();
-                            break;
-                        case "temporary-topic":
-                            destination = session.createTemporaryTopic();
-                            break;
-                        default:
-                            throw new CoordinationLayerException("Unable to create destination '" +
-                                    destination + "'. Unknown type.");
-                    }
+                    destination = switch (parts[0]) {
+                        case "topic" -> session.createTopic(parts[1]);
+                        case "queue" -> session.createQueue(parts[1]);
+                        case "temporary-queue" -> session.createTemporaryQueue();
+                        case "temporary-topic" -> session.createTemporaryTopic();
+                        default -> throw new CoordinationLayerException("Unable to create destination '" +
+                                                                        destination + "'. Unknown type.");
+                    };
                 }
             } catch (JMSException e) {
                 throw new CoordinationLayerException("Could not create destination '" + destinationID + "'", e);
@@ -416,7 +447,7 @@ public class ActiveMQMessageBus implements MessageBus {
      * <p>
      * This adapts from general Active MQ messages to the types.
      */
-    private class ActiveMQMessageListener implements javax.jms.MessageListener {
+    private class ActiveMQMessageListener implements jakarta.jms.MessageListener {
         /**
          * The Log.
          */
@@ -445,7 +476,7 @@ public class ActiveMQMessageBus implements MessageBus {
          * @param jmsMessage The message received.
          */
         @Override
-        public void onMessage(final javax.jms.Message jmsMessage) {
+        public void onMessage(final jakarta.jms.Message jmsMessage) {
             String type = null;
             String text = null;
             try {

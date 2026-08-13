@@ -21,31 +21,35 @@
  */
 package org.bitrepository.pillar.store.checksumcache;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
-import org.bitrepository.pillar.common.ChecksumDatabaseCreator;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumDAO;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumDatabaseManager;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumEntry;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedChecksumResultSet;
 import org.bitrepository.pillar.store.checksumdatabase.ExtractedFileIDsResultSet;
-import org.bitrepository.service.database.DerbyDatabaseDestroyer;
-import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 import org.bitrepository.settings.repositorysettings.PillarIDs;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.containers.BindMode;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 
+import java.sql.DriverManager;
 import java.time.Instant;
 import java.util.List;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
+@Testcontainers
 class ChecksumDatabaseTest {
     private String collectionID;
     protected Settings settings;
@@ -54,21 +58,35 @@ class ChecksumDatabaseTest {
     private static final String DEFAULT_CHECKSUM = "abcdef0110fedcba";
     private static final Instant DEFAULT_DATE = Instant.ofEpochMilli(System.currentTimeMillis());
 
+    @Container
+    static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:18-alpine")
+                                                         .withClasspathResourceMapping(
+                                                             "sql/postgres/checksumDBCreation.sql",
+                                                             "/docker-entrypoint-initdb.d/init.sql",
+                                                             BindMode.READ_ONLY);
+
     @BeforeEach
     void setup() throws Exception {
         loadSettings();
-        collectionID = settings.getCollections().get(0).getID();
+        collectionID = settings.getCollections().getFirst().getID();
 
-        DatabaseSpecifics checksumDB =
-                settings.getReferenceSettings().getPillarSettings().getChecksumDatabase();
-        DerbyDatabaseDestroyer.deleteDatabase(checksumDB);
+        var dbSettings = settings.getReferenceSettings().getPillarSettings().getChecksumDatabase();
+        dbSettings.setDatabaseURL(postgreSQLContainer.getJdbcUrl());
+        dbSettings.setUsername(postgreSQLContainer.getUsername());
+        dbSettings.setPassword(postgreSQLContainer.getPassword());
+        dbSettings.setDriverClass(postgreSQLContainer.getDriverClassName());
 
-        ChecksumDatabaseCreator checksumDatabaseCreator = new ChecksumDatabaseCreator();
-        checksumDatabaseCreator.createChecksumDatabase(settings, null);
+        try (var connection = DriverManager.getConnection(dbSettings.getDatabaseURL(),
+                                                          dbSettings.getUsername(),
+                                                          dbSettings.getPassword());
+             var statement = connection.createStatement()) {
+            //quickly empty the database between tests
+            statement.execute("TRUNCATE TABLE checksums;");
+        }
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("pillartest")
     void testChecksumDatabaseExtraction() {
         addDescription("Test the extraction of data from the checksum database.");
@@ -93,14 +111,14 @@ class ChecksumDatabaseTest {
         List<ChecksumDataForChecksumSpecTYPE> entries = cache.getChecksumResults((Instant) null, (Instant) null,
                 null, collectionID).getEntries();
         Assertions.assertEquals(1, entries.size());
-        Assertions.assertEquals(DEFAULT_FILE_ID, entries.get(0).getFileID());
-        Assertions.assertEquals(DEFAULT_CHECKSUM, Base16Utils.decodeBase16(entries.get(0).getChecksumValue()));
+        Assertions.assertEquals(DEFAULT_FILE_ID, entries.getFirst().getFileID());
+        Assertions.assertEquals(DEFAULT_CHECKSUM, Base16Utils.decodeBase16(entries.getFirst().getChecksumValue()));
         Assertions.assertEquals(DEFAULT_DATE,
-                CalendarUtils.convertFromXMLGregorianCalendarToInstant(entries.get(0).getCalculationTimestamp()));
+                CalendarUtils.convertFromXMLGregorianCalendarToInstant(entries.getFirst().getCalculationTimestamp()));
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("pillartest")
     void testDeletion() {
         addDescription("Test that data can be deleted from the database.");
@@ -122,7 +140,7 @@ class ChecksumDatabaseTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("pillartest")
     void testReplacingExistingEntry() {
         addDescription("Test that an entry can be replaced by another in the database.");
@@ -151,7 +169,7 @@ class ChecksumDatabaseTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("pillartest")
     void testExtractionOfMissingData() {
         addDescription("Test the handling of bad arguments.");
@@ -184,7 +202,7 @@ class ChecksumDatabaseTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("pillartest")
     void testSpecifiedEntryExtraction() {
         addDescription("Test that specific entries can be extracted. Has two entries in the database: "
@@ -203,7 +221,7 @@ class ChecksumDatabaseTest {
         addStep("Extract with a maximum of 1 entry", "The oldest entry");
         extractedResults = cache.getChecksumResults((Instant) null, (Instant) null, 1L, collectionID);
         Assertions.assertEquals(1, extractedResults.getEntries().size());
-        ChecksumDataForChecksumSpecTYPE dataEntry = extractedResults.getEntries().get(0);
+        ChecksumDataForChecksumSpecTYPE dataEntry = extractedResults.getEntries().getFirst();
         Assertions.assertEquals(0,
                 CalendarUtils.convertFromXMLGregorianCalendar(dataEntry.getCalculationTimestamp()).getTime());
         Assertions.assertEquals(oldFile, dataEntry.getFileID());
@@ -211,7 +229,7 @@ class ChecksumDatabaseTest {
         addStep("Extract all dates older than this tests instantiation", "The oldest entry");
         extractedResults = cache.getChecksumResults((Instant) null, beforeTest, null, collectionID);
         Assertions.assertEquals(1, extractedResults.getEntries().size());
-        dataEntry = extractedResults.getEntries().get(0);
+        dataEntry = extractedResults.getEntries().getFirst();
         Assertions.assertEquals(0,
                 CalendarUtils.convertFromXMLGregorianCalendar(dataEntry.getCalculationTimestamp()).getTime());
         Assertions.assertEquals(oldFile, dataEntry.getFileID());
@@ -219,7 +237,7 @@ class ChecksumDatabaseTest {
         addStep("Extract all dates newer than this tests instantiation", "The default entry");
         extractedResults = cache.getChecksumResults(beforeTest, (Instant) null, null, collectionID);
         Assertions.assertEquals(1, extractedResults.getEntries().size());
-        dataEntry = extractedResults.getEntries().get(0);
+        dataEntry = extractedResults.getEntries().getFirst();
         Assertions.assertEquals(DEFAULT_DATE,
                 CalendarUtils.convertFromXMLGregorianCalendarToInstant(dataEntry.getCalculationTimestamp()));
         Assertions.assertEquals(DEFAULT_FILE_ID, dataEntry.getFileID());
@@ -234,7 +252,7 @@ class ChecksumDatabaseTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("pillartest")
     void testGetFileIDsRestrictions() {
         addDescription("Tests the restrictions on the GetFileIDs call to the database.");
@@ -251,7 +269,7 @@ class ChecksumDatabaseTest {
         addStep("Test with no time restrictions and 10000 max_results",
                 "Delivers both files.");
         ExtractedFileIDsResultSet efirs =
-                cache.getFileIDs((Instant) null, (Instant) null, 100000L, null, collectionID);
+            cache.getFileIDs((Instant) null, (Instant) null, 100000L, null, collectionID);
         Assertions.assertEquals(2, efirs.getEntries().getFileIDsDataItems().getFileIDsDataItem().size());
 
         addStep("Test with minimum-date earlier than first file", "Delivers both files.");
@@ -310,7 +328,7 @@ class ChecksumDatabaseTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("pillartest")
     void testGetChecksumResult() {
         addDescription("Tests the restrictions on the GetChecksumResult call to the database.");
@@ -359,12 +377,14 @@ class ChecksumDatabaseTest {
 
         addStep("Test with too old an upper limit", "Does not retrieve the file");
         extractedChecksums = cache.getChecksumResult(Instant.EPOCH,
-                DEFAULT_DATE.minusMillis(1), DEFAULT_FILE_ID, collectionID);
+                                                     DEFAULT_DATE.minusMillis(1),
+                                                     DEFAULT_FILE_ID,
+                                                     collectionID);
         Assertions.assertEquals(0, extractedChecksums.getEntries().size());
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("pillartest")
     void testGetFileIDsWithOldChecksums() {
         addDescription("Tests the restrictions on the GetFileIDsWithOldChecksums call to the database.");

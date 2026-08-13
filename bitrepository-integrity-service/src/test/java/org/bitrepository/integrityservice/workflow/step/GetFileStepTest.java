@@ -21,6 +21,7 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
@@ -30,6 +31,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import java.net.URI;
 import java.net.URL;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
@@ -47,7 +49,7 @@ public class GetFileStepTest extends WorkflowstepTest {
     public static final String TEST_FILE_1 = "test-file-1";
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testPositiveReply() throws Exception {
         addDescription("Test the step for getting the file can handle COMPLETE operation event.");
         doAnswer(new Answer() {
@@ -60,7 +62,7 @@ public class GetFileStepTest extends WorkflowstepTest {
                 eq(TEST_COLLECTION), eq(TEST_FILE_1), any(URL.class), any(EventHandler.class), anyString());
 
         IntegrityWorkflowContext context = new IntegrityWorkflowContext(settings, collector, model, alerter, auditManager);
-        URL uploadUrl = new URL("http://localhost/dav/test.txt");
+        URL uploadUrl = new URI("http://localhost/dav/test.txt").toURL();
         GetFileStep step = new GetFileStep(context, TEST_COLLECTION, TEST_FILE_1, uploadUrl);
 
         step.performStep();
@@ -72,7 +74,7 @@ public class GetFileStepTest extends WorkflowstepTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testNegativeReply() throws Exception {
         assertThrows(IllegalStateException.class, () -> {
             addDescription("Test the step for getting the file can handle FAILURE operation event.");
@@ -87,7 +89,7 @@ public class GetFileStepTest extends WorkflowstepTest {
 
             IntegrityWorkflowContext context =
                     new IntegrityWorkflowContext(settings, collector, model, alerter, auditManager);
-            URL uploadUrl = new URL("http://localhost/dav/test.txt");
+            URL uploadUrl = new URI("http://localhost/dav/test.txt").toURL();
             GetFileStep step = new GetFileStep(context, TEST_COLLECTION, TEST_FILE_1, uploadUrl);
 
             step.performStep();

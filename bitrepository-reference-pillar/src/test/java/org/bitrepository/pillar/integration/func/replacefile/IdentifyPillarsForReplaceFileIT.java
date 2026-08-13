@@ -27,7 +27,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForReplaceFileResp
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.pillar.PillarTestGroups;
-import org.bitrepository.pillar.integration.func.DefaultPillarIdentificationTest;
+import org.bitrepository.pillar.integration.func.DefaultPillarIdentificationIT;
 import org.bitrepository.pillar.messagefactories.ReplaceFileMessageFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Test;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-class IdentifyPillarsForReplaceFileIT extends DefaultPillarIdentificationTest {
+class IdentifyPillarsForReplaceFileIT extends DefaultPillarIdentificationIT {
     protected ReplaceFileMessageFactory msgFactory;
 
     @BeforeEach
@@ -114,8 +114,8 @@ class IdentifyPillarsForReplaceFileIT extends DefaultPillarIdentificationTest {
     }
 
     @Override
-    protected MessageResponse receiveResponse() {
-        return clientReceiver.waitForMessage(IdentifyPillarsForReplaceFileResponse.class);
+    protected MessageResponse receiveResponse(MessageRequest request) {
+        return clientReceiver.waitForMessage(IdentifyPillarsForReplaceFileResponse.class, request.getCorrelationID());
     }
 
     @Override

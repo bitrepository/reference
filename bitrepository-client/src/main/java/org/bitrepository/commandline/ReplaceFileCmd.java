@@ -72,7 +72,8 @@ public class ReplaceFileCmd extends CommandLineClient {
      */
     protected ReplaceFileCmd(String... args) {
         super(args);
-        client = ModifyComponentFactory.getInstance().retrieveReplaceFileClient(settings, securityManager, getComponentID());
+        client = ModifyComponentFactory.getInstance().retrieveReplaceFileClient(settings, securityManager,
+                                                                                settings.getComponentID());
     }
 
     @Override

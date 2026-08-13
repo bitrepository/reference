@@ -21,6 +21,7 @@
  */
 package org.bitrepository.common.utils;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
@@ -33,7 +34,7 @@ class FileIDUtilsTest {
     String FILE_ID = "Test-File-Id";
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void fileIDsTest() throws Exception {
         addDescription("Test the utility class for generating FileIDs");
         addStep("Test 'all file ids'", "is only AllFileIDs");

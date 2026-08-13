@@ -206,12 +206,12 @@ public abstract class AlarmDatabaseExtractor {
             res.append(ALARM_CODE + " = ?");
         }
 
-        if (model.getStartDate() != null) {
+        if (model.getStart() != null) {
             nextArgument(res);
             res.append(ALARM_DATE + " >= ?");
         }
 
-        if (model.getEndDate() != null) {
+        if (model.getEnd() != null) {
             nextArgument(res);
             res.append(ALARM_DATE + " <= ?");
         }
@@ -258,12 +258,12 @@ public abstract class AlarmDatabaseExtractor {
             res.add(model.getAlarmCode().toString());
         }
 
-        if (model.getStartDate() != null) {
-            res.add(model.getStartDate().getTime());
+        if (model.getStart() != null) {
+            res.add(model.getStart().toEpochMilli());
         }
 
-        if (model.getEndDate() != null) {
-            res.add(model.getEndDate().getTime());
+        if (model.getEnd() != null) {
+            res.add(model.getEnd().toEpochMilli());
         }
 
         if (model.getFileID() != null) {

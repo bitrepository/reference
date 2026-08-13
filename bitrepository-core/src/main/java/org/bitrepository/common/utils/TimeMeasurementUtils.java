@@ -29,13 +29,14 @@ import org.bitrepository.bitrepositoryelements.TimeMeasureUnit;
 import org.bitrepository.common.ArgumentValidator;
 
 import java.math.BigInteger;
-import java.util.Comparator;
-import java.util.UnknownFormatConversionException;
+import java.time.Duration;
 
 /**
  * Provides helper method for accessing {@link TimeMeasureTYPE} objects.
  */
 public class TimeMeasurementUtils {
+
+    private static final BigInteger MILLIS_PER_HOUR = BigInteger.valueOf(Duration.ofHours(1).toMillis());
 
     /**
      * Private constructor. To prevent instantiation of this utility class.
@@ -76,7 +77,6 @@ public class TimeMeasurementUtils {
      * @param time2 time2
      * @return a negative integer, zero, or a positive integer as the first argument is less than, equal to, or
      * greater than the second.
-     * @see Comparator
      */
     public static int compare(TimeMeasureTYPE time1, TimeMeasureTYPE time2) {
         ArgumentValidator.checkNotNull(time1, "time1");
@@ -88,17 +88,13 @@ public class TimeMeasurementUtils {
      * Normalizes {@link TimeMeasureTYPE} into milliseconds.
      *
      * @param timeMeasure The time measure to convert
-     * @return The time measure in milliseconds
-     * @throws UnknownFormatConversionException Unable to interpret the supplied timeMeasure.
+     * @return The time measure value in milliseconds as a BigInteger
      */
-    private static BigInteger convertToMilliSeconds(TimeMeasureTYPE timeMeasure) throws UnknownFormatConversionException {
-        if (TimeMeasureUnit.MILLISECONDS.equals(timeMeasure.getTimeMeasureUnit())) {
-            return timeMeasure.getTimeMeasureValue();
-        } else if ((TimeMeasureUnit.HOURS.equals(timeMeasure.getTimeMeasureUnit()))) {
-            return timeMeasure.getTimeMeasureValue().multiply(new BigInteger("3600000"));
-        } else {
-            throw new UnknownFormatConversionException("Unable to compare times, unknown unit " + timeMeasure.getTimeMeasureUnit());
-        }
+    private static BigInteger convertToMilliSeconds(TimeMeasureTYPE timeMeasure) {
+        return switch (timeMeasure.getTimeMeasureUnit()) {
+            case MILLISECONDS -> timeMeasure.getTimeMeasureValue();
+            case HOURS -> timeMeasure.getTimeMeasureValue().multiply(MILLIS_PER_HOUR);
+        };
     }
 
     /**
@@ -119,6 +115,6 @@ public class TimeMeasurementUtils {
      * @return The value of the TimeMeasure as a long.
      */
     public static long getTimeMeasureInLong(TimeMeasureTYPE time1) {
-        return convertToMilliSeconds(time1).longValue();
+        return convertToMilliSeconds(time1).longValueExact();
     }
 }
