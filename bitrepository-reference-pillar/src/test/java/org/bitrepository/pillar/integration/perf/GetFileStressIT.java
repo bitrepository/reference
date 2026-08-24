@@ -39,8 +39,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.api.io.TempDir;
 
-import java.net.URL;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
@@ -48,8 +46,6 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 @EnabledIfSystemProperty(named = "runStressTests", matches = "true")
 public class GetFileStressIT extends PillarPerformanceIT {
-    @TempDir
-    static Path tempDir;
     protected GetFileClient getFileClient;
 
     @BeforeEach
@@ -98,7 +94,7 @@ public class GetFileStressIT extends PillarPerformanceIT {
         EventHandler eventHandler = new OperationEventHandlerForMetrics(metrics, getLimiter);
         for (int i = 1; i <= numberOfFiles; i++) {
             getLimiter.addJob(defaultFileId);
-            URL testUrl = httpServerConfiguration.getURL(nonDefaultFileId + "-" + i);
+//            URL testUrl = httpServerConfiguration.getURL(nonDefaultFileId + "-" + i);
             getFileClient.getFileFromSpecificPillar(
                     collectionID, defaultFileId, null, httpServerConfiguration.getURL(nonDefaultFileId + "-" + i),
                     getPillarID(), eventHandler, " performing parallelGetFilePerformance");
@@ -108,7 +104,7 @@ public class GetFileStressIT extends PillarPerformanceIT {
 
     @Test
     @Tag(PillarTestGroups.PILLAR_STRESS_TEST)
-    void noIdentfyGetFilePerformanceTest() throws Exception {
+    void noIdentifyGetFilePerformanceTest(@TempDir Path tempDir) throws Exception {
         final int numberOfFiles =
                 testConfiguration.getInt("pillarintegrationtest.GetFileStressIT.parallelGet.numberOfFiles");
         final int partStatisticsInterval =
@@ -129,23 +125,15 @@ public class GetFileStressIT extends PillarPerformanceIT {
         for (int i = 1; i <= numberOfFiles; i++) {
             String correlationID = msgFactory.getNewCorrelationID();
             getLimiter.addJob(correlationID);
-            String fileName = nonDefaultFileId + "-" + i;
-
-            // Ensure the source file exists in the temp directory so the server can serve it
-            Path sourceFile = tempDir.resolve(fileName);
-            if (!Files.exists(sourceFile)) {
-                Files.createFile(sourceFile);
-            }
 
             // Create a unique destination path for each file within the temp directory
             Path destinationFile = tempDir.resolve("noIdentfy-dest-" + i);
             GetFileRequest getRequest =
                     msgFactory.createGetFileRequest(destinationFile.toAbsolutePath().toString(),
                             correlationID,
-                            httpServerConfiguration.getURL(fileName).toExternalForm(),
+                            httpServerConfiguration.getURL(nonDefaultFileId + "-" + i).toExternalForm(),
                             defaultFileId, null, getPillarID(), getPillarID(),
                             settingsForTestClient.getReceiverDestinationID(), pillarDestination);
-            getRequest.setFileAddress("file:" + tempDir.toAbsolutePath().toString()+"/"+fileName);
             messageBus.sendMessage(getRequest);
         }
 
