@@ -1,11 +1,11 @@
 /*
  * #%L
- * Bitmagasin integrationstest
+ * Bitrepository Protocol
  *
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
+ * Copyright (C) 2010 - 2011 The Royal Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
