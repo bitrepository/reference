@@ -24,6 +24,7 @@
  */
 package org.bitrepository.common.utils;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.bitrepositoryelements.TimeMeasureTYPE;
 import org.bitrepository.bitrepositoryelements.TimeMeasureUnit;
 import org.junit.jupiter.api.Assertions;
@@ -40,7 +41,7 @@ import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
  */
 class TimeMeasurementUtilsTest {
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testCompareMilliSeconds() {
         addDescription("Test the comparison between TimeMeasure units.");
         TimeMeasureTYPE referenceTime = new TimeMeasureTYPE();
@@ -64,7 +65,7 @@ class TimeMeasurementUtilsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testCompareMilliSecondsToHours() {
         addDescription("Test the comparison between milliseconds and hours.");
         long millis = Duration.ofHours(2).toMillis();
@@ -91,7 +92,7 @@ class TimeMeasurementUtilsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testMaxValue() {
         addDescription("Test the Maximum value");
         TimeMeasureTYPE time = TimeMeasurementUtils.getMaximumTime();
@@ -105,7 +106,7 @@ class TimeMeasurementUtilsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testGetTimeMeasureInLongOverflow() {
         addDescription("Test that getTimeMeasureInLong throws ArithmeticException when the value overflows long.");
         TimeMeasureTYPE millisOverflow = new TimeMeasureTYPE();

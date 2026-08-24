@@ -39,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -155,7 +156,7 @@ public abstract class UpdateChecksumsStep extends AbstractWorkFlowStep {
     private ContributorQuery[] getQueries(Collection<String> pillars) {
         List<ContributorQuery> res = new ArrayList<>();
         for (String pillar : pillars) {
-            Date latestChecksumEntry = store.getDateForNewestChecksumEntryForPillar(pillar, collectionID);
+            Instant latestChecksumEntry = store.getDateForNewestChecksumEntryForPillarInstant(pillar, collectionID);
             res.add(new ContributorQuery(pillar, latestChecksumEntry, null, maxNumberOfResultsPerConversation));
         }
 

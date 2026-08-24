@@ -22,6 +22,7 @@
 package org.bitrepository.integrityservice.cache;
 
 import org.apache.commons.codec.DecoderException;
+import org.bitrepository.TestGroups;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
 import org.bitrepository.bitrepositoryelements.FileIDsData.FileIDsDataItems;
@@ -29,12 +30,9 @@ import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.integrityservice.IntegrityDatabaseTestCase;
-import org.bitrepository.integrityservice.cache.database.DerbyIntegrityDAO;
 import org.bitrepository.integrityservice.cache.database.IntegrityDAO;
 import org.bitrepository.integrityservice.cache.database.IntegrityDBStateException;
 import org.bitrepository.integrityservice.cache.database.IntegrityDBTools;
-import org.bitrepository.service.database.DBConnector;
-import org.bitrepository.service.database.DatabaseManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -58,9 +56,7 @@ class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
     String testCollectionid;
 
     @BeforeEach
-    @Override
     public void setup() throws Exception {
-        super.setup();
         testCollectionid = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
     }
 
@@ -86,91 +82,87 @@ class IntegrityDBToolsTest extends IntegrityDatabaseTestCase {
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
-    @Tag("integritytest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
+    @Tag(INTEGRITYTEST)
     void testAddCollectionSuccess() {
         addDescription("Tests that a new collection can be added to the integrity database");
         String newCollectionID = "new-collectionid";
-        DatabaseManager dm = new IntegrityDatabaseManager(
-                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
-        DBConnector dbCon = new DBConnector(settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
-        IntegrityDAO integrityDAO = new DerbyIntegrityDAO(dm.getConnector());
-        IntegrityDBTools tool = new IntegrityDBTools(dbCon);
-        List<String> collections = integrityDAO.getCollections();
-        addStep("Extract initial list of collections", "The list contains the expected collections");
-        assertTrue(collections.contains(testCollectionid));
-        assertTrue(collections.contains(extraCollectionId));
-        assertFalse(collections.contains(newCollectionID));
+        try (IntegrityDAO integrityDAO = createDAO();
+             IntegrityDBTools tool = new IntegrityDBTools(integrityDAO.getDbConnector())) {
+            List<String> collections = integrityDAO.getCollections();
+            addStep("Extract initial list of collections", "The list contains the expected collections");
+            assertTrue(collections.contains(testCollectionid));
+            assertTrue(collections.contains(extraCollectionId));
+            assertFalse(collections.contains(newCollectionID));
 
-        addStep("Add the new collection", "The new collection is found in the list of collections");
-        tool.addCollection(newCollectionID);
-        collections = integrityDAO.getCollections();
-        assertTrue(collections.contains(testCollectionid));
-        assertTrue(collections.contains(extraCollectionId));
-        assertTrue(collections.contains(newCollectionID));
+            addStep("Add the new collection", "The new collection is found in the list of collections");
+            tool.addCollection(newCollectionID);
+            collections = integrityDAO.getCollections();
+            assertTrue(collections.contains(testCollectionid));
+            assertTrue(collections.contains(extraCollectionId));
+            assertTrue(collections.contains(newCollectionID));
+        }
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
-    @Tag("integritytest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
+    @Tag(INTEGRITYTEST)
     void testAddExistingCollection() {
         addDescription("Tests that an existing collectionID cannot be added to the integrity database.");
-        DatabaseManager dm = new IntegrityDatabaseManager(
-                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
-        DBConnector dbCon = new DBConnector(settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
-        IntegrityDAO integrityDAO = new DerbyIntegrityDAO(dm.getConnector());
-        IntegrityDBTools tool = new IntegrityDBTools(dbCon);
-        List<String> collections = integrityDAO.getCollections();
-        addStep("Extract initial list of collections.",
-                "The list contains the expected collections.");
-        assertTrue(collections.contains(testCollectionid));
-        assertTrue(collections.contains(extraCollectionId));
 
-        addStep("Attempt to add the new collection.",
-                "An exception is thrown, and the collection list is uneffected.");
-        try {
-            tool.addCollection(testCollectionid);
-            fail("addCollection did not fail as expected");
-        } catch (IntegrityDBStateException e) {
+        try (IntegrityDAO integrityDAO = createDAO();
+             IntegrityDBTools tool = new IntegrityDBTools(integrityDAO.getDbConnector())) {
+            List<String> collections = integrityDAO.getCollections();
+            addStep("Extract initial list of collections.",
+                    "The list contains the expected collections.");
+            assertTrue(collections.contains(testCollectionid));
+            assertTrue(collections.contains(extraCollectionId));
 
+            addStep("Attempt to add the new collection.",
+                    "An exception is thrown, and the collection list is uneffected.");
+            try {
+                tool.addCollection(testCollectionid);
+                fail("addCollection did not fail as expected");
+            } catch (IntegrityDBStateException e) {
+
+            }
+            collections = integrityDAO.getCollections();
+            assertTrue(collections.contains(testCollectionid));
+            assertTrue(collections.contains(extraCollectionId));
         }
-        collections = integrityDAO.getCollections();
-        assertTrue(collections.contains(testCollectionid));
-        assertTrue(collections.contains(extraCollectionId));
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
-    @Tag("integritytest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
+    @Tag(INTEGRITYTEST)
     void testRemoveNonExistingCollection() {
         addDescription("Tests that a non existing collection can't be removed from the integrity database.");
         String nonExistingCollectionID = "non-existing-collectionid";
-        DatabaseManager dm = new IntegrityDatabaseManager(
-                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
-        DBConnector dbCon = new DBConnector(settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
-        IntegrityDAO integrityDAO = new DerbyIntegrityDAO(dm.getConnector());
-        IntegrityDBTools tool = new IntegrityDBTools(dbCon);
-        List<String> collections = integrityDAO.getCollections();
-        addStep("Extract initial list of collections.",
-                "The list contains the expected collections.");
-        assertTrue(collections.contains(testCollectionid));
-        assertTrue(collections.contains(extraCollectionId));
-        assertFalse(collections.contains(nonExistingCollectionID));
 
-        addStep("Attempt to remove the non-existing collection.",
-                "An exception is thrown, the collection list is uneffected.");
-        try {
-            tool.removeCollection(nonExistingCollectionID);
-            fail("removeCollection did not fail as expected");
-        } catch (IntegrityDBStateException e) {
+        try (IntegrityDAO integrityDAO = createDAO();
+             IntegrityDBTools tool = new IntegrityDBTools(integrityDAO.getDbConnector())) {
+            List<String> collections = integrityDAO.getCollections();
+            addStep("Extract initial list of collections.",
+                    "The list contains the expected collections.");
+            assertTrue(collections.contains(testCollectionid));
+            assertTrue(collections.contains(extraCollectionId));
+            assertFalse(collections.contains(nonExistingCollectionID));
 
+            addStep("Attempt to remove the non-existing collection.",
+                    "An exception is thrown, the collection list is uneffected.");
+            try {
+                tool.removeCollection(nonExistingCollectionID);
+                fail("removeCollection did not fail as expected");
+            } catch (IntegrityDBStateException e) {
+
+            }
+            collections = integrityDAO.getCollections();
+            assertTrue(collections.contains(testCollectionid));
+            assertTrue(collections.contains(extraCollectionId));
         }
-        collections = integrityDAO.getCollections();
-        assertTrue(collections.contains(testCollectionid));
-        assertTrue(collections.contains(extraCollectionId));
     }
 
     private void populateCollection(IntegrityDAO dao, String collectionID) {

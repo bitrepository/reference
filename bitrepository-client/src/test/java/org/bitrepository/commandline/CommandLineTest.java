@@ -22,6 +22,7 @@
 package org.bitrepository.commandline;
 
 import org.apache.commons.cli.Option;
+import org.bitrepository.TestGroups;
 import org.bitrepository.commandline.utils.CommandLineArgumentsHandler;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -40,7 +41,7 @@ class CommandLineTest {
     private static final String DUMMY_DATA = "DummyData";
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void argumentsTesterUnknownArgument() throws Exception {
         assertThrows(Exception.class, () -> {
             addDescription("Test the handling of arguments by the CommandLineArgumentHandler.");
@@ -55,7 +56,7 @@ class CommandLineTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void argumentsTesterWrongArgument() throws Exception {
         assertThrows(Exception.class, () -> {
             addDescription("Test the handling of arguments by the CommandLineArgumentHandler.");
@@ -75,7 +76,7 @@ class CommandLineTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void newArgumentTester() throws Exception {
         addDescription("Test the handling of a new argument.");
         CommandLineArgumentsHandler clah = new CommandLineArgumentsHandler();

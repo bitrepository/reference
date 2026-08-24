@@ -31,7 +31,7 @@ import org.bitrepository.bitrepositorymessages.ReplaceFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.ReplaceFileRequest;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.PillarTestGroups;
-import org.bitrepository.pillar.integration.func.DefaultPillarOperationTest;
+import org.bitrepository.pillar.integration.func.DefaultPillarOperationIT;
 import org.bitrepository.pillar.messagefactories.ReplaceFileMessageFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +43,7 @@ import java.util.concurrent.TimeUnit;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-class ReplaceFileRequestIT extends DefaultPillarOperationTest {
+class ReplaceFileRequestIT extends DefaultPillarOperationIT {
     protected ReplaceFileMessageFactory msgFactory;
     private String pillarDestination;
 
@@ -73,14 +73,14 @@ class ReplaceFileRequestIT extends DefaultPillarOperationTest {
         messageBus.sendMessage(replaceRequest);
 
         ReplaceFileProgressResponse progressResponse = clientReceiver.waitForMessage(ReplaceFileProgressResponse.class,
-                getOperationTimeout(), TimeUnit.SECONDS);
+                getOperationTimeout(), TimeUnit.SECONDS, replaceRequest.getCorrelationID());
         Assertions.assertNotNull(progressResponse);
         Assertions.assertEquals(replaceRequest.getCorrelationID(), progressResponse.getCorrelationID());
         Assertions.assertEquals(getPillarID(), progressResponse.getFrom());
         Assertions.assertEquals(getPillarID(), progressResponse.getPillarID());
         Assertions.assertEquals(ResponseCode.OPERATION_ACCEPTED_PROGRESS, progressResponse.getResponseInfo().getResponseCode());
 
-        ReplaceFileFinalResponse finalResponse = (ReplaceFileFinalResponse) receiveResponse();
+        ReplaceFileFinalResponse finalResponse = receiveResponse(replaceRequest);
         Assertions.assertNotNull(finalResponse);
         Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
         Assertions.assertEquals(replaceRequest.getCorrelationID(), finalResponse.getCorrelationID());
@@ -98,9 +98,9 @@ class ReplaceFileRequestIT extends DefaultPillarOperationTest {
     }
 
     @Override
-    protected MessageResponse receiveResponse() {
+    protected ReplaceFileFinalResponse receiveResponse(MessageRequest request) {
         return clientReceiver.waitForMessage(ReplaceFileFinalResponse.class, getOperationTimeout(),
-                TimeUnit.SECONDS);
+                TimeUnit.SECONDS, request.getCorrelationID());
     }
 
     protected void assertNoResponseIsReceived() {
@@ -113,6 +113,6 @@ class ReplaceFileRequestIT extends DefaultPillarOperationTest {
         IdentifyPillarsForReplaceFileRequest identifyRequest = replaceLookupMessageFactory.createIdentifyPillarsForReplaceFileRequest(
                 TestFileHelper.DEFAULT_FILE_ID, 0L);
         messageBus.sendMessage(identifyRequest);
-        return clientReceiver.waitForMessage(IdentifyPillarsForReplaceFileResponse.class).getReplyTo();
+        return clientReceiver.waitForMessage(IdentifyPillarsForReplaceFileResponse.class, identifyRequest.getCorrelationID()).getReplyTo();
     }
 }

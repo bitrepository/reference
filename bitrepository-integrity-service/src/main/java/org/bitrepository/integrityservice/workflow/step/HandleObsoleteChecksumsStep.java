@@ -85,7 +85,7 @@ public class HandleObsoleteChecksumsStep extends AbstractWorkFlowStep {
                         " (i.e., checksums don't expire).", pillar);
                 continue;
             } else {
-                Date outdated = Date.from(Instant.now().minus(maxAge));
+                Instant outdated = Instant.now().minus(maxAge);
                 try (IntegrityIssueIterator obsoleteChecksumsIterator = store.findChecksumsOlderThan(outdated, pillar,
                         reporter.getCollectionID())) {
                     String file;

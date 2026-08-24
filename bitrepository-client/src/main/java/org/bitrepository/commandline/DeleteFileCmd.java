@@ -61,7 +61,7 @@ public class DeleteFileCmd extends CommandLineClient {
     protected DeleteFileCmd(String... args) {
         super(args);
         client = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(settings, securityManager,
-                getComponentID());
+                settings.getComponentID());
     }
 
     @Override

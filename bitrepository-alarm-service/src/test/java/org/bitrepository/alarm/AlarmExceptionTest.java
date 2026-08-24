@@ -21,6 +21,7 @@
  */
 package org.bitrepository.alarm;
 
+import org.bitrepository.TestGroups;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,7 @@ import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 class AlarmExceptionTest {
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void alarmExceptionTest() throws Exception {
         addDescription("Tests that AlarmExceptions can be thrown.");
         String alarmError = "The message of the alarm exception";

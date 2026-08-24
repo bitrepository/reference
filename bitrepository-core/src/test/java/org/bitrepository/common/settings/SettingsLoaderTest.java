@@ -24,6 +24,7 @@
  */
 package org.bitrepository.common.settings;
 
+import org.bitrepository.TestGroups;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -35,7 +36,7 @@ class SettingsLoaderTest {
     private static final String PATH_TO_EXAMPLE_SETTINGS = "examples/settings";
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testDevelopmentCollectionSettingsLoading() {
         SettingsProvider settingsLoader =
                 new SettingsProvider(new XMLFileSettingsLoader(PATH_TO_SETTINGS), getClass().getSimpleName());
@@ -46,7 +47,7 @@ class SettingsLoaderTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testExampleSettingsLoading() {
         SettingsProvider settingsLoader =
                 new SettingsProvider(new XMLFileSettingsLoader(PATH_TO_EXAMPLE_SETTINGS), getClass().getSimpleName());

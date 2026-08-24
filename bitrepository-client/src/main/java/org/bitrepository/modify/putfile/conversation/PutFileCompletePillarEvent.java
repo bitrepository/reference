@@ -40,9 +40,14 @@ public class PutFileCompletePillarEvent extends ContributorCompleteEvent {
      * @param pillarID     The pillar which generated the result
      * @param collectionID The ID of the collection
      * @param result       The result returned by the pillar.
+     * @param info
      */
-    public PutFileCompletePillarEvent(String pillarID, String collectionID, ChecksumDataForFileTYPE result, ResponseInfo responseInfo) {
-        super(pillarID, collectionID);
+    public PutFileCompletePillarEvent(String pillarID,
+                                      String collectionID,
+                                      ChecksumDataForFileTYPE result,
+                                      ResponseInfo responseInfo,
+                                      final String info) {
+        super(pillarID, collectionID, info);
         this.result = result;
         this.responseInfo = responseInfo;
     }

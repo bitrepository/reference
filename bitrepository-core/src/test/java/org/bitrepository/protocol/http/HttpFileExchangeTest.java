@@ -21,6 +21,7 @@
  */
 package org.bitrepository.protocol.http;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.settings.referencesettings.FileExchangeSettings;
@@ -40,7 +41,7 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 class HttpFileExchangeTest {
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void checkUrlEncodingOfFilenamesTest() throws MalformedURLException, URISyntaxException {
         addDescription("Tests that the filename is url-encoded correctly for a configured webdav server");
         Settings mySettings = TestSettingsProvider.reloadSettings("uploadTest");

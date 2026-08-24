@@ -21,6 +21,7 @@
  */
 package org.bitrepository.audittrails.collector;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.access.getaudittrails.AuditTrailClient;
 import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
@@ -77,7 +78,7 @@ public class IncrementalCollectorTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void singleIncrementTest() throws InterruptedException {
         addDescription("Verifies the behaviour in the simplest case with just one result set ");
         AuditTrailClient client = mock(AuditTrailClient.class);
@@ -132,7 +133,7 @@ public class IncrementalCollectorTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void multipleIncrementTest() throws Exception {
         addDescription("Verifies the behaviour in the case where the adit trails needs to be reteived in multiple " +
                 "requests because of MaxNumberOfResults limits.");
@@ -211,7 +212,7 @@ public class IncrementalCollectorTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void contributorFailureTest() throws Exception {
         addDescription("Tests that the collector is able to collect from the remaining contributors if a " +
                 "contributor fails.");
@@ -283,7 +284,7 @@ public class IncrementalCollectorTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void collectionIDFailureTest() throws Exception {
         addDescription("Tests what happens when a wrong collection id is received.");
         String FALSE_COLLECTION = "FalseCollection" + Instant.now().toEpochMilli();

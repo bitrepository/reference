@@ -26,4 +26,4 @@ UPDATE tableversions SET version = 8 WHERE tablename = 'integritydb';
 -- table version
 UPDATE tableversions SET version = 3 WHERE tablename = 'pillarstats';
 
-ALTER TABLE pillarstats ADD COLUMN oldest_checksum_timestamp BIGINT DEFAULT NULL;
+ALTER TABLE pillarstats ADD COLUMN IF NOT EXISTS oldest_checksum_timestamp BIGINT DEFAULT NULL ;

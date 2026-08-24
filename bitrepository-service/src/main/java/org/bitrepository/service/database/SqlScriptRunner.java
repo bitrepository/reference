@@ -63,7 +63,7 @@ public class SqlScriptRunner {
     }
 
     /**
-     * @param delimiter         The statement delimiter, eg. ';' for mysql.
+     * @param delimiter         The statement delimiter, i.e. ';' for mysql.
      * @param fullLineDelimiter <code>true</code> if the delimiter used to distinguish between lines.
      */
     public void setDelimiter(String delimiter, boolean fullLineDelimiter) {

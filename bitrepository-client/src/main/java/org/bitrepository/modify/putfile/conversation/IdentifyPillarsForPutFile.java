@@ -63,8 +63,8 @@ public class IdentifyPillarsForPutFile extends IdentifyingState {
                 if (ChecksumUtils.areEqual(
                         response.getChecksumDataForExistingFile(), context.getChecksumForValidationAtPillar())) {
                     PutFileCompletePillarEvent event = new PutFileCompletePillarEvent(
-                            response.getPillarID(), response.getCollectionID(), response.getChecksumDataForExistingFile(), response.getResponseInfo());
-                    event.setInfo("File already existed on " + response.getPillarID());
+                            response.getPillarID(), response.getCollectionID(), response.getChecksumDataForExistingFile(), response.getResponseInfo(),
+                            "File already existed on " + response.getPillarID());
                     getContext().getMonitor().contributorComplete(event);
                 } else {
                     getContext().getMonitor().contributorFailed(

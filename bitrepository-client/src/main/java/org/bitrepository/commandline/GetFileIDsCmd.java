@@ -57,7 +57,7 @@ public class GetFileIDsCmd extends CommandLineClient {
         super(args);
         output.debug("Instantiation GetFileIDClient.");
         GetFileIDsClient client = AccessComponentFactory.getInstance().createGetFileIDsClient(settings,
-                securityManager, getComponentID());
+                securityManager, settings.getComponentID());
         output.debug("Instantiation GetFileID outputFormatter.");
         GetFileIDsOutputFormatter outputFormatter = new GetFileIDsInfoFormatter(output);
 

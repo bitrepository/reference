@@ -29,17 +29,17 @@ import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.putfile.BlockingPutFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
+import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.perf.metrics.Metrics;
 import org.bitrepository.protocol.security.DummySecurityManager;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-class GetAuditTrailsFileStressIT extends PillarPerformanceTest {
+class GetAuditTrailsFileStressIT extends PillarPerformanceIT {
     protected AuditTrailClient auditTrailClient;
     PutFileClient putClient;
 
@@ -48,7 +48,7 @@ class GetAuditTrailsFileStressIT extends PillarPerformanceTest {
         putClient = ModifyComponentFactory.getInstance().retrievePutClient(
                 settingsForTestClient, createSecurityManager(), settingsForTestClient.getComponentID());
         auditTrailClient = AccessComponentFactory.getInstance().createAuditTrailClient(
-                settingsForCUT, new DummySecurityManager(), settingsForCUT.getComponentID());
+            settingsForTestClient, new DummySecurityManager(), settingsForTestClient.getComponentID());
     }
 
     private void singleTreadedPut() throws Exception {
@@ -73,9 +73,8 @@ class GetAuditTrailsFileStressIT extends PillarPerformanceTest {
         //ToDo assert that the files are present
     }
 
-    @Disabled("Temporarily disabled due to performance issues")
     @Test
-    @Tag("pillar-stress-test")
+    @Tag(PillarTestGroups.PILLAR_STRESS_TEST)
     void singleTreadedGetAuditTrails() throws Exception {
         final int NUMBER_OF_AUDITS = 100;
         final int PART_STATISTIC_INTERVAL = NUMBER_OF_AUDITS / 5;
@@ -95,9 +94,8 @@ class GetAuditTrailsFileStressIT extends PillarPerformanceTest {
         }
     }
 
-    @Disabled("Temporarily disabled due to performance issues")
     @Test
-    @Tag("pillar-stress-test")
+    @Tag(PillarTestGroups.PILLAR_STRESS_TEST)
     void parallelGetAuditTrails() throws Exception {
         final int NUMBER_OF_AUDITS = 10;
         final int PART_STATISTIC_INTERVAL = NUMBER_OF_AUDITS / 5;

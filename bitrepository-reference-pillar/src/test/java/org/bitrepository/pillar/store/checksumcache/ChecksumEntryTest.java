@@ -21,6 +21,7 @@ package org.bitrepository.pillar.store.checksumcache;
  * #L%
  */
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.pillar.store.checksumdatabase.ChecksumEntry;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
@@ -37,7 +38,7 @@ class ChecksumEntryTest {
     private static final Instant CE_DATE = Instant.ofEpochMilli(1234567890);
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("pillartest")
     void testExtendedTestCase() {
         addDescription("Test the ChecksumEntry");

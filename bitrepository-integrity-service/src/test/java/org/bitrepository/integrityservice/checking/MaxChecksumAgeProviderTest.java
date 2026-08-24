@@ -21,6 +21,7 @@
  */
 package org.bitrepository.integrityservice.checking;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.settings.referencesettings.ObsoleteChecksumSettings;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,7 +45,7 @@ class MaxChecksumAgeProviderTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testNoSettings() {
         addDescription("Test the MaxChecksumAge when no settings are defined");
@@ -57,7 +58,7 @@ class MaxChecksumAgeProviderTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testNoPillarSpecificSetting() {
         addDescription("Test the MaxChecksumAge when no settings are defined for the specific pillar");
@@ -73,7 +74,7 @@ class MaxChecksumAgeProviderTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testPillarSpecificSetting() {
         addDescription("Test the MaxChecksumAge when a value has been defined for specific pillars");

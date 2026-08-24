@@ -21,6 +21,7 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
@@ -48,7 +49,7 @@ public class GetFileStepTest extends WorkflowstepTest {
     public static final String TEST_FILE_1 = "test-file-1";
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testPositiveReply() throws Exception {
         addDescription("Test the step for getting the file can handle COMPLETE operation event.");
         doAnswer(new Answer() {
@@ -73,7 +74,7 @@ public class GetFileStepTest extends WorkflowstepTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testNegativeReply() throws Exception {
         assertThrows(IllegalStateException.class, () -> {
             addDescription("Test the step for getting the file can handle FAILURE operation event.");

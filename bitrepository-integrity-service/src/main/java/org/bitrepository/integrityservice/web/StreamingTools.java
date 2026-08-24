@@ -24,12 +24,12 @@ package org.bitrepository.integrityservice.web;
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.StreamingOutput;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.StreamingOutput;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;

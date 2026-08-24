@@ -22,6 +22,7 @@
 package org.bitrepository.common.utils;
 
 import org.apache.commons.codec.DecoderException;
+import org.bitrepository.TestGroups;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -39,7 +40,7 @@ class Base16UtilsTest {
             new byte[]{-1, 90, -54, 122, -24, -56, 12, -102, 58, -22, -7, 23, 62, 77, -3, 39};
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void encodeChecksum() throws Exception {
         addDescription("Validating the encoding of the checksums.");
         addStep("Encode the checksum and validate", "It should match the precalculated constant.");
@@ -54,7 +55,7 @@ class Base16UtilsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void decodeChecksum() {
         addDescription("Validating the decoding of the checksums.");
         addStep("Decode the checksum and validate.", "It should match the precalculated constant.");
@@ -71,7 +72,7 @@ class Base16UtilsTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void badArgumentTest() {
         addDescription("Test bad arguments");
         Assertions.assertThrows(IllegalArgumentException.class, () -> Base16Utils.encodeBase16(null));

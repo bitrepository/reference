@@ -1,0 +1,468 @@
+/*
+ * #%L
+ * Bitrepository Access
+ * %%
+ * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
+/*
+ * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
+package org.bitrepository.access.getchecksums;
+
+import org.bitrepository.SuiteInfoParameterResolver;
+import org.bitrepository.TestGroups;
+import org.bitrepository.access.AccessComponentFactory;
+import org.bitrepository.access.ContributorQuery;
+import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumType;
+import org.bitrepository.bitrepositoryelements.ResponseCode;
+import org.bitrepository.bitrepositoryelements.ResponseInfo;
+import org.bitrepository.bitrepositoryelements.ResultingChecksums;
+import org.bitrepository.bitrepositorymessages.GetChecksumsFinalResponse;
+import org.bitrepository.bitrepositorymessages.GetChecksumsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsRequest;
+import org.bitrepository.bitrepositorymessages.IdentifyPillarsForGetChecksumsResponse;
+import org.bitrepository.bitrepositorymessages.MessageRequest;
+import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.client.DefaultClientIT;
+import org.bitrepository.client.TestEventHandler;
+import org.bitrepository.client.eventhandler.OperationEvent;
+import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.protocol.bus.MessageReceiver;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import java.math.BigInteger;
+import java.net.URL;
+import java.time.Instant;
+import java.util.Collection;
+import java.util.LinkedList;
+
+import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+import static org.bitrepository.common.utils.AllureTestUtils.addFixture;
+import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+
+/**
+ * Test class for the 'GetFileClient'.
+ */
+@ExtendWith(SuiteInfoParameterResolver.class)
+class GetChecksumsClientComponentIT extends DefaultClientIT {
+    private TestGetChecksumsMessageFactory messageFactory;
+
+    private static final ChecksumSpecTYPE DEFAULT_CHECKSUM_SPECS;
+
+    static {
+        DEFAULT_CHECKSUM_SPECS = new ChecksumSpecTYPE();
+        DEFAULT_CHECKSUM_SPECS.setChecksumSalt(null);
+        DEFAULT_CHECKSUM_SPECS.setChecksumType(ChecksumType.MD5);
+    }
+
+    @BeforeEach
+    void beforeMethodSetup() {
+        messageFactory = new TestGetChecksumsMessageFactory(settingsForTestClient.getComponentID());
+    }
+
+    @Test
+    @Tag(TestGroups.REGRESSIONTEST)
+    void verifyGetChecksumsClientFromFactory() {
+        Assertions.assertInstanceOf(ConversationBasedGetChecksumsClient.class,
+                AccessComponentFactory.getInstance().createGetChecksumsClient(settingsForCUT, securityManager,
+                        settingsForTestClient.getComponentID()),
+                "The default GetFileClient from the Access factory should be of the type '" +
+                        ConversationBasedGetChecksumsClient.class.getName() + "'.");
+    }
+
+    @Test
+    @Tag(TestGroups.REGRESSIONTEST)
+    void getChecksumsFromSinglePillar() throws Exception {
+        addDescription("Tests that the client can retrieve checksums from a single pillar.");
+
+        TestEventHandler testEventHandler = new TestEventHandler();
+        GetChecksumsClient getChecksumsClient = createGetChecksumsClient();
+
+        addStep("Request the delivery of the checksum of a file from pillar1.",
+                "A IdentifyPillarsForGetChecksumsRequest will be sent to the pillars " +
+                        "and a IDENTIFY_REQUEST_SENT event should be generated.");
+        Collection<String> pillar1AsCollection = new LinkedList<>();
+        pillar1AsCollection.add(PILLAR1_ID);
+        getChecksumsClient.getChecksums(collectionID, new ContributorQuery[]{new ContributorQuery(PILLAR1_ID, (Instant) null,
+                        (Instant) null,null)},
+                DEFAULT_FILE_ID, DEFAULT_CHECKSUM_SPECS, null, testEventHandler,
+                "TEST-AUDIT");
+
+        IdentifyPillarsForGetChecksumsRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
+                IdentifyPillarsForGetChecksumsRequest.class);
+        Assertions.assertEquals(DEFAULT_FILE_ID, receivedIdentifyRequestMessage.getFileIDs().getFileID());
+        Assertions.assertEquals(DEFAULT_CHECKSUM_SPECS,
+                receivedIdentifyRequestMessage.getChecksumRequestForExistingFile());
+        Assertions.assertEquals(OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT,
+                testEventHandler.waitForEvent().getEventType());
+
+        addStep("Sends a response from pillar2.",
+                "This should be ignored.");
+        IdentifyPillarsForGetChecksumsResponse identifyResponse2 =
+                messageFactory.createIdentifyPillarsForGetChecksumsResponse(
+                        receivedIdentifyRequestMessage, PILLAR2_ID, pillar2DestinationId);
+        messageBus.sendMessage(identifyResponse2);
+        testEventHandler.verifyNoEventsAreReceived();
+
+        addStep("Sends a response from pillar1.",
+                "A getChecksumRequest should be sendt to pillar1 and the following events should be received: " +
+                        "COMPONENT_IDENTIFIED, IDENTIFICATION_COMPLETE and REQUEST_SENT.");
+
+        IdentifyPillarsForGetChecksumsResponse identifyResponse =
+                messageFactory.createIdentifyPillarsForGetChecksumsResponse(
+                        receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
+        messageBus.sendMessage(identifyResponse);
+        GetChecksumsRequest receivedGetChecksumsRequest = pillar1Receiver.waitForMessage(GetChecksumsRequest.class);
+
+        Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_IDENTIFIED,
+                testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE,
+                testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.REQUEST_SENT,
+                testEventHandler.waitForEvent().getEventType());
+
+        addStep("Send a GetChecksumsFinalResponse to the client from pillar1",
+                "A COMPONENT_COMPLETE event should be generated with the resulting checksum. " +
+                        "Finally a COMPLETE event should be received.");
+        GetChecksumsFinalResponse completeMsg = messageFactory.createGetChecksumsFinalResponse(
+                receivedGetChecksumsRequest, PILLAR1_ID, pillar1DestinationId);
+
+        ResultingChecksums res = new ResultingChecksums();
+        res.setResultAddress(receivedGetChecksumsRequest.getResultAddress());
+        completeMsg.setResultingChecksums(res);
+
+        messageBus.sendMessage(completeMsg);
+
+        Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_COMPLETE,
+                testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.COMPLETE,
+                testEventHandler.waitForEvent().getEventType());
+    }
+
+    @Test
+    @Tag(TestGroups.REGRESSIONTEST)
+    void getChecksumsDeliveredAtUrl() throws Exception {
+        addDescription("Tests the delivery of checksums from all pillars at a given URL.");
+
+        String deliveryFilename = "TEST-CHECKSUM-DELIVERY.xml";
+
+        TestEventHandler testEventHandler = new TestEventHandler();
+        GetChecksumsClient getChecksumsClient = createGetChecksumsClient();
+
+        addStep("Ensure the delivery file isn't already present on the http server",
+                "Should be remove if it already exists.");
+        URL deliveryUrl = httpServerConfiguration.getURL(deliveryFilename);
+
+        addStep("Request the delivery of the checksum of a file from all pillars.",
+                "A IdentifyPillarsForGetChecksumsRequest should be sent and a IDENTIFY_REQUEST_SENT should be " +
+                        "generated.");
+        getChecksumsClient.getChecksums(collectionID, null, DEFAULT_FILE_ID, null, deliveryUrl, testEventHandler,
+                "TEST-AUDIT");
+
+        IdentifyPillarsForGetChecksumsRequest receivedIdentifyRequestMessage = null;
+        receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
+                IdentifyPillarsForGetChecksumsRequest.class);
+        Assertions.assertEquals(OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT,
+                testEventHandler.waitForEvent().getEventType());
+
+        addStep("The pillar sends a response to the identify message.",
+                "The callback listener should notify of the response and the client should send a GetChecksumsRequest "
+                        + "message to the pillar");
+
+        IdentifyPillarsForGetChecksumsResponse identifyResponse1 =
+                messageFactory.createIdentifyPillarsForGetChecksumsResponse(
+                        receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
+        messageBus.sendMessage(identifyResponse1);
+        IdentifyPillarsForGetChecksumsResponse identifyResponse2 =
+                messageFactory.createIdentifyPillarsForGetChecksumsResponse(
+                        receivedIdentifyRequestMessage, PILLAR2_ID, pillar2DestinationId);
+        messageBus.sendMessage(identifyResponse2);
+        GetChecksumsRequest receivedGetChecksumsRequest1 = pillar1Receiver.waitForMessage(GetChecksumsRequest.class);
+
+        for (int i = 0; i <
+                settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs()
+                        .getPillarID().size(); i++) {
+            Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_IDENTIFIED,
+                    testEventHandler.waitForEvent().getEventType());
+        }
+        Assertions.assertEquals(OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE,
+                testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.REQUEST_SENT,
+                testEventHandler.waitForEvent().getEventType());
+
+        addStep("Sends a final response from each pillar",
+                "The GetChecksumsClient notifies that the file is ready through the callback listener and the " +
+                        "uploaded file is present.");
+        GetChecksumsFinalResponse completeMsg1 = messageFactory.createGetChecksumsFinalResponse(
+                receivedGetChecksumsRequest1, PILLAR1_ID, pillar1DestinationId);
+        ResultingChecksums res = new ResultingChecksums();
+        res.setResultAddress(receivedGetChecksumsRequest1.getResultAddress());
+        completeMsg1.setResultingChecksums(res);
+        messageBus.sendMessage(completeMsg1);
+        Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_COMPLETE,
+                testEventHandler.waitForEvent().getEventType());
+
+        GetChecksumsFinalResponse completeMsg2 = messageFactory.createGetChecksumsFinalResponse(
+                receivedGetChecksumsRequest1, PILLAR2_ID, pillar2DestinationId);
+        completeMsg2.setResultingChecksums(res);
+        messageBus.sendMessage(completeMsg2);
+        Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_COMPLETE,
+                testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.COMPLETE,
+                testEventHandler.waitForEvent().getEventType());
+    }
+
+    @Test
+    @Tag(TestGroups.REGRESSIONTEST)
+    void testNoSuchFile() throws Exception {
+        addDescription("Testing how a request for a non-existing file is handled.");
+        addStep("Setting up variables and such.", "Should be OK.");
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()
+                .clear();
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()
+                .add(PILLAR1_ID);
+
+        TestEventHandler testEventHandler = new TestEventHandler();
+        GetChecksumsClient getChecksumsClient = createGetChecksumsClient();
+
+        addStep("Request the delivery of the checksum of a file from the pillar(s). A callback listener should be " +
+                        "supplied.",
+                "A IdentifyPillarsForGetChecksumsRequest will be sent to the pillar(s).");
+        getChecksumsClient.getChecksums(collectionID, null, DEFAULT_FILE_ID, null, null, testEventHandler,
+                "TEST-AUDIT");
+
+        IdentifyPillarsForGetChecksumsRequest receivedIdentifyRequestMessage = null;
+
+        receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(IdentifyPillarsForGetChecksumsRequest.class);
+        Assertions.assertEquals(OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT,
+                testEventHandler.waitForEvent().getEventType());
+
+        addStep("The pillar sends a response to the identify message.",
+                "The callback listener should notify of the response and the client should send a GetChecksumsRequest "
+                        + "message to the pillar");
+
+        GetChecksumsRequest receivedGetChecksumsRequest = null;
+        IdentifyPillarsForGetChecksumsResponse identifyResponse =
+                messageFactory.createIdentifyPillarsForGetChecksumsResponse(
+                        receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId);
+        messageBus.sendMessage(identifyResponse);
+        receivedGetChecksumsRequest = pillar1Receiver.waitForMessage(GetChecksumsRequest.class);
+
+        for (int i = 0; i <
+                settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs()
+                        .getPillarID().size(); i++) {
+            Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_IDENTIFIED,
+                    testEventHandler.waitForEvent().getEventType());
+        }
+        Assertions.assertEquals(OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE,
+                testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.REQUEST_SENT,
+                testEventHandler.waitForEvent().getEventType());
+
+        addStep("Send a error that the file cannot be found.", "Should trigger a 'event failed'.");
+        GetChecksumsFinalResponse completeMsg = messageFactory.createGetChecksumsFinalResponse(
+                receivedGetChecksumsRequest, PILLAR1_ID, pillar1DestinationId);
+
+        ResponseInfo rfInfo = new ResponseInfo();
+        rfInfo.setResponseCode(ResponseCode.FILE_NOT_FOUND_FAILURE);
+        rfInfo.setResponseText("No such file.");
+        completeMsg.setResponseInfo(rfInfo);
+        completeMsg.setResultingChecksums(null);
+
+        messageBus.sendMessage(completeMsg);
+
+        Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_FAILED,
+                testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.FAILED,
+                testEventHandler.waitForEvent().getEventType());
+    }
+
+
+    @Test
+    @Tag(TestGroups.REGRESSIONTEST)
+    void testPaging() throws Exception {
+        addDescription("Tests the GetChecksums client correctly handles functionality for limiting results, " +
+                "either by timestamp or result count.");
+
+        GetChecksumsClient getChecksumsClient = createGetChecksumsClient();
+        addStep("Request checksums from with MinTimestamp, MaxTimestamp, MaxNumberOfResults set for both pillars .",
+                "A IdentifyPillarsForGetChecksumsRequest should be sent.");
+        Instant timestamp3 = Instant.now();
+        Instant timestamp2 = timestamp3.minusMillis(100);
+        Instant timestamp1 = timestamp3.minusMillis(1000);
+        ContributorQuery query1 = new ContributorQuery(PILLAR1_ID, timestamp1, timestamp2, 1);
+        ContributorQuery query2 = new ContributorQuery(PILLAR2_ID, timestamp2, timestamp3, 2);
+        getChecksumsClient.getChecksums(collectionID, new ContributorQuery[]{query1, query2}, null, null, null,
+                testEventHandler, null);
+
+        IdentifyPillarsForGetChecksumsRequest receivedIdentifyRequestMessage = collectionReceiver.waitForMessage(
+                IdentifyPillarsForGetChecksumsRequest.class);
+
+        addStep("Send a IdentifyPillarsForGetChecksumsResponse from both pillars.",
+                "A GetChecksumsRequest should be sent to both pillars with the appropriate MinTimestamp, MaxTimestamp, " +
+                        "MaxNumberOfResults values.");
+        messageBus.sendMessage(messageFactory.createIdentifyPillarsForGetChecksumsResponse(
+                receivedIdentifyRequestMessage, PILLAR1_ID, pillar1DestinationId));
+        messageBus.sendMessage(messageFactory.createIdentifyPillarsForGetChecksumsResponse(
+                receivedIdentifyRequestMessage, PILLAR2_ID, pillar2DestinationId));
+
+        GetChecksumsRequest receivedGetChecksumsRequest1 = pillar1Receiver.waitForMessage(GetChecksumsRequest.class);
+        Assertions.assertEquals(CalendarUtils.getXmlGregorianCalendar(query1.getMinTimestampInstant()),
+                receivedGetChecksumsRequest1.getMinTimestamp(),
+                "Unexpected MinTimestamp in GetChecksumsRequest to pillar1.");
+        Assertions.assertEquals(CalendarUtils.getXmlGregorianCalendar(query1.getMaxTimestampInstant()),
+                receivedGetChecksumsRequest1.getMaxTimestamp(),
+                "Unexpected MaxTimestamp in GetChecksumsRequest to pillar1.");
+        Assertions.assertEquals(BigInteger.valueOf(query1.getMaxNumberOfResults()),
+                receivedGetChecksumsRequest1.getMaxNumberOfResults(),
+                "Unexpected MaxNumberOfResults in GetChecksumsRequest to pillar1.");
+
+        GetChecksumsRequest receivedGetChecksumsRequest2 = pillar2Receiver.waitForMessage(GetChecksumsRequest.class);
+        Assertions.assertEquals(CalendarUtils.getXmlGregorianCalendar((query2.getMinTimestampInstant())),
+                receivedGetChecksumsRequest2.getMinTimestamp(),
+                "Unexpected MinTimestamp in GetChecksumsRequest to pillar2.");
+        Assertions.assertEquals(CalendarUtils.getXmlGregorianCalendar(query2.getMaxTimestampInstant()),
+                receivedGetChecksumsRequest2.getMaxTimestamp(),
+                "Unexpected MaxTimestamp in GetChecksumsRequest to pillar2.");
+        Assertions.assertEquals(BigInteger.valueOf(query2.getMaxNumberOfResults()),
+                receivedGetChecksumsRequest2.getMaxNumberOfResults(),
+                "Unexpected MaxNumberOfResults in GetChecksumsRequest to pillar2.");
+    }
+
+    @Test
+    @Tag(TestGroups.REGRESSIONTEST)
+    void getChecksumsFromOtherCollection() throws Exception {
+        addDescription("Tests the getChecksums client will correctly try to get from a second collection if required");
+        addFixture("Configure collection1 to contain both pillars and collection 2 to only contain pillar2");
+        settingsForCUT.getReferenceSettings().getClientSettings().setOperationRetryCount(BigInteger.valueOf(2));
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()
+                .clear();
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()
+                .add(PILLAR1_ID);
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID()
+                .add(PILLAR2_ID);
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(1).getPillarIDs().getPillarID()
+                .clear();
+        settingsForCUT.getRepositorySettings().getCollections().getCollection().get(1).getPillarIDs().getPillarID()
+                .add(PILLAR2_ID);
+        String otherCollection = settingsForCUT.getRepositorySettings().getCollections().getCollection().get(1).getID();
+        TestEventHandler testEventHandler = new TestEventHandler();
+        GetChecksumsClient client = createGetChecksumsClient();
+
+        addStep("Request the putting of a file through the PutClient for collection2",
+                "A identification request should be dispatched.");
+        client.getChecksums(otherCollection, null, null, null, null,
+                testEventHandler, null);
+        Assertions.assertEquals(OperationEvent.OperationEventType.IDENTIFY_REQUEST_SENT,
+                testEventHandler.waitForEvent().getEventType());
+        IdentifyPillarsForGetChecksumsRequest receivedIdentifyRequestMessage =
+                collectionReceiver.waitForMessage(IdentifyPillarsForGetChecksumsRequest.class);
+        Assertions.assertEquals(otherCollection, receivedIdentifyRequestMessage.getCollectionID());
+
+        addStep("Send an identification response from pillar2.",
+                "An COMPONENT_IDENTIFIED event should be generate folled by a IDENTIFICATION_COMPLETE and a " +
+                        "REQUEST_SENT. A GetChecksumsFileRequest should be sent to pillar2");
+        messageBus.sendMessage(messageFactory.createIdentifyPillarsForGetChecksumsResponse(
+                receivedIdentifyRequestMessage, PILLAR2_ID, pillar2DestinationId));
+        Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_IDENTIFIED,
+                testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.IDENTIFICATION_COMPLETE,
+                testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.REQUEST_SENT,
+                testEventHandler.waitForEvent().getEventType());
+        GetChecksumsRequest receivedRequest = pillar2Receiver.waitForMessage(GetChecksumsRequest.class);
+        Assertions.assertEquals(otherCollection, receivedRequest.getCollectionID());
+
+        addStep("Send a complete event from the pillar", "The client generates " +
+                "a COMPONENT_COMPLETE, followed by a COMPLETE event.");
+        GetChecksumsFinalResponse putFileFinalResponse1 = messageFactory.createGetChecksumsFinalResponse(
+                receivedRequest, PILLAR2_ID, pillar2DestinationId);
+        messageBus.sendMessage(putFileFinalResponse1);
+        Assertions.assertEquals(OperationEvent.OperationEventType.COMPONENT_COMPLETE,
+                testEventHandler.waitForEvent().getEventType());
+        Assertions.assertEquals(OperationEvent.OperationEventType.COMPLETE,
+                testEventHandler.waitForEvent().getEventType());
+    }
+
+    /**
+     * Creates a new test GetCheckSumsClient based on the supplied settings.
+     * <p>
+     * Note that the normal way of creating client through the module factory would reuse components with settings from
+     * previous tests.
+     *
+     * @return A new GetFileClient(Wrapper).
+     */
+    private GetChecksumsClient createGetChecksumsClient() {
+        return new GetChecksumsClientTestWrapper(new ConversationBasedGetChecksumsClient(
+                messageBus, conversationMediator, settingsForCUT, settingsForTestClient.getComponentID()));
+    }
+
+    @Override
+    protected MessageResponse createIdentifyResponse(MessageRequest identifyRequest, String from, String to) {
+        return messageFactory.createIdentifyPillarsForGetChecksumsResponse(
+                (IdentifyPillarsForGetChecksumsRequest) identifyRequest, from, to);
+    }
+
+    @Override
+    protected MessageResponse createFinalResponse(MessageRequest request, String from, String to) {
+        return messageFactory.createGetChecksumsFinalResponse(
+                (GetChecksumsRequest) request, from, to);
+    }
+
+    @Override
+    protected MessageRequest waitForIdentifyRequest() {
+        return collectionReceiver.waitForMessage(IdentifyPillarsForGetChecksumsRequest.class);
+    }
+
+    @Override
+    protected MessageRequest waitForRequest(MessageReceiver receiver) {
+        return receiver.waitForMessage(GetChecksumsRequest.class);
+    }
+
+    @Override
+    protected void checkNoRequestIsReceived(MessageReceiver receiver) {
+        receiver.checkNoMessageIsReceived(GetChecksumsRequest.class);
+    }
+
+    @Override
+    protected void startOperation(TestEventHandler testEventHandler) {
+        GetChecksumsClient getChecksumsClient = createGetChecksumsClient();
+        getChecksumsClient.getChecksums(collectionID, null, null, null,
+                null, testEventHandler, null);
+    }
+}

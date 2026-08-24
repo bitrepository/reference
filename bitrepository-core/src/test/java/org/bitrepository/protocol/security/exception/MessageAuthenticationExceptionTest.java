@@ -21,6 +21,7 @@
  */
 package org.bitrepository.protocol.security.exception;
 
+import org.bitrepository.TestGroups;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -32,7 +33,7 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 class MessageAuthenticationExceptionTest {
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testMessageAuthenticationException() throws Exception {
         addDescription("Test the instantiation of the exception");
         addStep("Setup", "");

@@ -22,6 +22,7 @@
 package org.bitrepository.integrityservice.integrationtest;
 
 import org.apache.commons.codec.DecoderException;
+import org.bitrepository.TestGroups;
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.getchecksums.conversation.ChecksumsCompletePillarEvent;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
@@ -52,14 +53,22 @@ import org.bitrepository.integrityservice.workflow.IntegrityContributors;
 import org.bitrepository.integrityservice.workflow.step.FullUpdateChecksumsStep;
 import org.bitrepository.integrityservice.workflow.step.HandleMissingChecksumsStep;
 import org.bitrepository.integrityservice.workflow.step.UpdateChecksumsStep;
-import org.bitrepository.service.database.DerbyDatabaseDestroyer;
+import org.bitrepository.pillar.integration.PostgresFixedPortContainer;
+import org.bitrepository.service.database.DBConnector;
+import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.service.exception.WorkflowAbortedException;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
+import org.testcontainers.containers.InternetProtocol;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
@@ -75,6 +84,8 @@ import java.util.Map;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Testcontainers
 class MissingChecksumTests {
     private static final String PILLAR_1 = "pillar1";
     private static final String PILLAR_2 = "pillar2";
@@ -91,23 +102,48 @@ class MissingChecksumTests {
 
     IntegrityReporter reporter;
 
-    @BeforeEach
-    void setup() throws Exception {
+    /// Is NOT unused
+    ///
+    /// Creates a postgres server on port 9876 which match the requirement from
+    /// ```
+    /// <integritydatabase>
+    ///     <driverclass>org.postgresql.Driver</driverclass>
+    ///     <databaseurl>jdbc:postgresql://localhost:9876/integrityDB</databaseurl>
+    ///     <username>testcontainerUser</username>
+    ///     <password>testcontainerPassword</password>
+    /// </integritydatabase>
+    /// ```
+    /// from bitrepository-core/src/test/resources/settings/xml/bitrepository-devel/ReferenceSettings.xml
+    @Container
+    static PostgreSQLContainer postgreSQLContainer = new PostgresFixedPortContainer("postgres:18-alpine")
+                                                     .withFixedExposedPort(9876, 5432, InternetProtocol.TCP)
+                                                     .withDatabaseName("integrityDB")
+                                                     .withUsername("testcontainerUser")
+                                                     .withPassword("testcontainerPassword")
+                                                     .withLabel("purpose","integrityDB");
+
+    @BeforeAll
+    public void beforeAll() throws Exception {
         settings = TestSettingsProvider.reloadSettings("IntegrityCheckingUnderTest");
-
-        DerbyDatabaseDestroyer.deleteDatabase(
-                settings.getReferenceSettings().getIntegrityServiceSettings().getIntegrityDatabase());
-
+        SettingsUtils.initialize(settings);
         IntegrityDatabaseCreator integrityDatabaseCreator = new IntegrityDatabaseCreator();
-        integrityDatabaseCreator.createIntegrityDatabase(settings, null);
+        integrityDatabaseCreator.createIntegrityDatabase(settings, "sql/postgres/integrityDBCreation.sql", "sql/postgres/integrityDB7to8migration.sql");
 
-        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().clear();
-        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR_1);
-        settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().add(PILLAR_2);
+    }
+
+    @BeforeEach
+    public void beforeEach() throws Exception {
+        clearDatabase();
+        IntegrityDatabaseCreator integrityDatabaseCreator = new IntegrityDatabaseCreator();
+        integrityDatabaseCreator.createIntegrityDatabase(settings, "sql/postgres/integrityDBCreation.sql", "sql/postgres/integrityDB7to8migration.sql");
+
+        settings.getRepositorySettings().getCollections().getCollection().getFirst().getPillarIDs().getPillarID().clear();
+        settings.getRepositorySettings().getCollections().getCollection().getFirst().getPillarIDs().getPillarID().add(PILLAR_1);
+        settings.getRepositorySettings().getCollections().getCollection().getFirst().getPillarIDs().getPillarID().add(PILLAR_2);
 
         Duration time = DatatypeFactory.newInstance().newDuration(0);
         settings.getReferenceSettings().getIntegrityServiceSettings().setTimeBeforeMissingFileCheck(time);
-        TEST_COLLECTION = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
+        TEST_COLLECTION = settings.getRepositorySettings().getCollections().getCollection().getFirst().getID();
         SettingsUtils.initialize(settings);
 
         collector = Mockito.mock(IntegrityInformationCollector.class);
@@ -120,8 +156,21 @@ class MissingChecksumTests {
         SettingsUtils.initialize(settings);
     }
 
+    public void clearDatabase() {
+        DBConnector connector = new DBConnector(settings.getReferenceSettings()
+                                                        .getIntegrityServiceSettings()
+                                                        .getIntegrityDatabase());
+        DatabaseUtils.executeStatement(connector, "DELETE FROM fileinfo");
+        DatabaseUtils.executeStatement(connector, "DELETE FROM collection_progress");
+        DatabaseUtils.executeStatement(connector, "DELETE FROM pillarstats");
+        DatabaseUtils.executeStatement(connector, "DELETE FROM collectionstats");
+        DatabaseUtils.executeStatement(connector, "DELETE FROM stats");
+        DatabaseUtils.executeStatement(connector, "DELETE FROM pillar");
+        DatabaseUtils.executeStatement(connector, "DELETE FROM collections");
+    }
+
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testMissingChecksumAndStep() throws Exception {
         addDescription("Test that files initially are set to checksum-state unknown, and to missing in the "
@@ -141,7 +190,7 @@ class MissingChecksumTests {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testMissingChecksumForFirstGetChecksums() throws WorkflowAbortedException {
         addDescription("Test that checksums are set to missing, when not found during GetChecksum.");
@@ -186,11 +235,11 @@ class MissingChecksumTests {
         List<String> missingChecksumsPillar2
                 = getIssuesFromIterator(model.findFilesWithMissingChecksum(TEST_COLLECTION, PILLAR_2, testStart));
         Assertions.assertEquals(1, missingChecksumsPillar2.size());
-        Assertions.assertEquals(TEST_FILE_1, missingChecksumsPillar2.get(0));
+        Assertions.assertEquals(TEST_FILE_1, missingChecksumsPillar2.getFirst());
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testMissingChecksumDuringSecondIngest() throws WorkflowAbortedException {
         addDescription("Test that checksums are set to missing, when not found during GetChecksum, "
@@ -286,7 +335,7 @@ class MissingChecksumTests {
             items.getFileIDsDataItem().add(item);
         }
         data.setFileIDsDataItems(items);
-        String collectionID = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
+        String collectionID = settings.getRepositorySettings().getCollections().getCollection().getFirst().getID();
         model.addFileIDs(data, PILLAR_1, collectionID);
         model.addFileIDs(data, PILLAR_2, collectionID);
     }

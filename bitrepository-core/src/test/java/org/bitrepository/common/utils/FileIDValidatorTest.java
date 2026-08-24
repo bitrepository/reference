@@ -21,6 +21,7 @@
  */
 package org.bitrepository.common.utils;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.junit.jupiter.api.Assertions;
@@ -43,7 +44,7 @@ class FileIDValidatorTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void validatorTest() throws Exception {
         addDescription("Tests the FileIDValidator class for the input handling based on a given regex.");
         addStep("Setup the validator", "Should be ok.");
@@ -73,7 +74,7 @@ class FileIDValidatorTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void validatorDefaultTest() throws Exception {
         addDescription("Tests the FileIDValidator class default restrictions. Only the length should fail.");
         addStep("Setup the validator, where all file ids are allowed at default.", "Should be ok.");
@@ -104,7 +105,7 @@ class FileIDValidatorTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void badRegexTest() throws Exception {
         addDescription("Tests the FileIDValidator handling of bad file id pattern.");
         addStep("Give the validator a 'null' as allowed file id pattern",

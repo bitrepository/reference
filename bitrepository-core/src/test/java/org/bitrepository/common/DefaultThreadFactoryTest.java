@@ -3,6 +3,7 @@ package org.bitrepository.common;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
+import org.bitrepository.TestGroups;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -23,7 +24,7 @@ class DefaultThreadFactoryTest {
     private final String message = "Hey this is the message I want to see";
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testUncaughtExceptionHandler() throws Exception {
         // Technique from https://dzone.com/articles/unit-testing-asserting-line
 

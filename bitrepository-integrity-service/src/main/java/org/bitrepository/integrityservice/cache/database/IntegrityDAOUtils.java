@@ -27,7 +27,7 @@ import org.bitrepository.service.database.DatabaseUtils;
 
 import java.util.List;
 
-public class IntegrityDAOUtils {
+public class IntegrityDAOUtils implements AutoCloseable {
     protected final DBConnector dbConnector;
 
 
@@ -44,4 +44,8 @@ public class IntegrityDAOUtils {
         return DatabaseUtils.selectStringList(dbConnector, selectSql);
     }
 
+    @Override
+    public void close()  {
+        dbConnector.destroy();
+    }
 }

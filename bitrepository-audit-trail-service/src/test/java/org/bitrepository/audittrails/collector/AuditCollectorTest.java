@@ -21,6 +21,7 @@
  */
 package org.bitrepository.audittrails.collector;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.access.getaudittrails.AuditTrailClient;
 import org.bitrepository.access.getaudittrails.AuditTrailQuery;
 import org.bitrepository.access.getaudittrails.client.AuditTrailResult;
@@ -68,7 +69,7 @@ public class AuditCollectorTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void auditCollectorIntervalTest() throws Exception {
         AllureTestUtils.addDescription("Test that the collector calls the AuditClient at the correct intervals.");
         DatatypeFactory factory = DatatypeFactory.newInstance();

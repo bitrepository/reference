@@ -27,7 +27,7 @@ import org.bitrepository.bitrepositorymessages.IdentifyPillarsForDeleteFileRespo
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.pillar.PillarTestGroups;
-import org.bitrepository.pillar.integration.func.DefaultPillarIdentificationTest;
+import org.bitrepository.pillar.integration.func.DefaultPillarIdentificationIT;
 import org.bitrepository.pillar.messagefactories.DeleteFileMessageFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,7 +38,7 @@ import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 
-class IdentifyPillarsForDeleteFileIT extends DefaultPillarIdentificationTest {
+class IdentifyPillarsForDeleteFileIT extends DefaultPillarIdentificationIT {
     protected DeleteFileMessageFactory msgFactory;
 
     @BeforeEach
@@ -53,11 +53,10 @@ class IdentifyPillarsForDeleteFileIT extends DefaultPillarIdentificationTest {
         addDescription("Verifies the normal behaviour for deleteFile identification");
         addStep("Sending a deleteFile identification.",
                 "The pillar under test should make a response with the correct elements.");
-        IdentifyPillarsForDeleteFileRequest identifyRequest = (IdentifyPillarsForDeleteFileRequest) createRequest();
+        IdentifyPillarsForDeleteFileRequest identifyRequest = createRequest();
         messageBus.sendMessage(identifyRequest);
 
-        IdentifyPillarsForDeleteFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
-                IdentifyPillarsForDeleteFileResponse.class);
+        IdentifyPillarsForDeleteFileResponse receivedIdentifyResponse = receiveResponse(identifyRequest);
         Assertions.assertEquals(identifyRequest.getCollectionID(), receivedIdentifyResponse.getCollectionID());
         Assertions.assertEquals(identifyRequest.getCorrelationID(), receivedIdentifyResponse.getCorrelationID());
         Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getFrom());
@@ -75,11 +74,10 @@ class IdentifyPillarsForDeleteFileIT extends DefaultPillarIdentificationTest {
         addStep("Sending a deleteFile identification.",
                 "The pillar under test should make a response with the correct elements. The only different from a " +
                         "full pillar is that the checksum pillar will respond with the default checksum spec.");
-        IdentifyPillarsForDeleteFileRequest identifyRequest = (IdentifyPillarsForDeleteFileRequest) createRequest();
+        IdentifyPillarsForDeleteFileRequest identifyRequest = createRequest();
         messageBus.sendMessage(identifyRequest);
 
-        IdentifyPillarsForDeleteFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
-                IdentifyPillarsForDeleteFileResponse.class);
+        IdentifyPillarsForDeleteFileResponse receivedIdentifyResponse = receiveResponse(identifyRequest);
         Assertions.assertEquals(identifyRequest.getCollectionID(), receivedIdentifyResponse.getCollectionID());
         Assertions.assertEquals(identifyRequest.getCorrelationID(), receivedIdentifyResponse.getCorrelationID());
         Assertions.assertEquals(getPillarID(), receivedIdentifyResponse.getFrom());
@@ -100,20 +98,19 @@ class IdentifyPillarsForDeleteFileIT extends DefaultPillarIdentificationTest {
                 nonDefaultFileId);
         messageBus.sendMessage(identifyRequest);
 
-        IdentifyPillarsForDeleteFileResponse receivedIdentifyResponse = clientReceiver.waitForMessage(
-                IdentifyPillarsForDeleteFileResponse.class);
+        IdentifyPillarsForDeleteFileResponse receivedIdentifyResponse = receiveResponse(identifyRequest);
         Assertions.assertEquals(ResponseCode.FILE_NOT_FOUND_FAILURE,
                 receivedIdentifyResponse.getResponseInfo().getResponseCode());
     }
 
     @Override
-    protected MessageRequest createRequest() {
+    protected IdentifyPillarsForDeleteFileRequest createRequest() {
         return msgFactory.createIdentifyPillarsForDeleteFileRequest(defaultFileId);
     }
 
     @Override
-    protected MessageResponse receiveResponse() {
-        return clientReceiver.waitForMessage(IdentifyPillarsForDeleteFileResponse.class);
+    protected IdentifyPillarsForDeleteFileResponse receiveResponse(MessageRequest request) {
+        return clientReceiver.waitForMessage(IdentifyPillarsForDeleteFileResponse.class, request.getCorrelationID());
     }
 
     @Override

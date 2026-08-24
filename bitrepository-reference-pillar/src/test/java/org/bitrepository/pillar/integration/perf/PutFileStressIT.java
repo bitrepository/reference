@@ -27,10 +27,12 @@ import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.modify.ModifyComponentFactory;
 import org.bitrepository.modify.putfile.BlockingPutFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
+import org.bitrepository.pillar.PillarTestGroups;
 import org.bitrepository.pillar.integration.perf.metrics.Metrics;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -38,7 +40,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-class PutFileStressIT extends PillarPerformanceTest {
+@EnabledIfSystemProperty(named = "runStressTests", matches = "true")
+class PutFileStressIT extends PillarPerformanceIT {
     protected PutFileClient putClient;
 
     @BeforeEach
@@ -49,7 +52,7 @@ class PutFileStressIT extends PillarPerformanceTest {
     }
 
     @Test
-    @Tag("pillar-stress-test")
+    @Tag(PillarTestGroups.PILLAR_STRESS_TEST)
     @Tag("stress-test-pillar-population")
     void singleTreadedPut() throws Exception {
         final int NUMBER_OF_FILES = 10;
@@ -73,7 +76,7 @@ class PutFileStressIT extends PillarPerformanceTest {
     }
 
     @Test
-    @Tag("pillar-stress-test")
+    @Tag(PillarTestGroups.PILLAR_STRESS_TEST)
     void parallelPut() throws Exception {
         final int numberOfFiles =
                 testConfiguration.getInt("pillarintegrationtest.PutFileStressIT.parallelPut.numberOfFiles");

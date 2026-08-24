@@ -88,8 +88,10 @@
       </Workflow>
     </Workflows>
     <IntegrityDatabase>
-      <DriverClass>org.apache.derby.jdbc.EmbeddedDriver</DriverClass>
-      <DatabaseURL>jdbc:derby:target/test/integrityservice/integritydb</DatabaseURL>
+        <DriverClass>org.postgresql.Driver</DriverClass>
+        <DatabaseURL>jdbc:postgresql://localhost:9876/integrityDB</DatabaseURL>
+        <Username>testcontainerUser</Username>
+        <Password>testcontainerPassword</Password>
     </IntegrityDatabase>
     <TimeBeforeMissingFileCheck>PT1M</TimeBeforeMissingFileCheck>
     <AuditTrailContributerDatabase>

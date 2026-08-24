@@ -21,6 +21,7 @@
  */
 package org.bitrepository.protocol.security;
 
+import org.bitrepository.TestGroups;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
@@ -42,7 +43,7 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 class CertificateIDTest {
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void positiveCertificateIdentificationTest() throws Exception {
         addDescription("Tests that a certificate can be identified based on the correct signature.");
         addStep("Create CertificateID object based on the certificate used to sign the data",
@@ -65,7 +66,7 @@ class CertificateIDTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void negativeCertificateIdentificationTest() throws Exception {
         addDescription("Tests that a certificate is not identified based on a incorrect signature.");
         addStep("Create CertificateID object based on a certificate not used for signing the data",
@@ -88,7 +89,7 @@ class CertificateIDTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void equalTest() throws Exception {
         addDescription("Tests the equality of CertificateIDs");
         addStep("Setup", "");

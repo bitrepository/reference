@@ -21,6 +21,7 @@
  */
 package org.bitrepository.access.getaudittrails;
 
+import org.bitrepository.TestGroups;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -36,7 +37,7 @@ class AuditTrailQueryTest {
     String componentId = "componentId";
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testNoSequenceNumbers() throws Exception {
         addDescription("Test that a AuditTrailQuery can be created without any sequence numbers.");
         AuditTrailQuery query = new AuditTrailQuery(componentId, null, null, DEFAULT_MAX_NUMBER_OF_RESULTS);
@@ -46,7 +47,7 @@ class AuditTrailQueryTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testOnlyMinSequenceNumber() throws Exception {
         addDescription("Test the creation of a AuditTrailQuery with only the minSequenceNumber");
         Long minSeq = 1L;
@@ -57,7 +58,7 @@ class AuditTrailQueryTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testBothSequenceNumberSuccess() throws Exception {
         addDescription("Test the creation of a AuditTrailQuery with both SequenceNumber, where max is larger than min.");
         Long minSeq = 1L;
@@ -69,7 +70,7 @@ class AuditTrailQueryTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testBothSequenceNumberFailure() throws Exception {
         assertThrows(IllegalArgumentException.class, () -> {
             addDescription("Test the creation of a AuditTrailQuery with both SequenceNumber, where max is smalle than min.");

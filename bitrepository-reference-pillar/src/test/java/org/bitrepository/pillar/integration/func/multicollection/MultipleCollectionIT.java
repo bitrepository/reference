@@ -25,7 +25,7 @@ import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.client.exceptions.NegativeResponseException;
 import org.bitrepository.common.utils.TestFileHelper;
 import org.bitrepository.pillar.PillarTestGroups;
-import org.bitrepository.pillar.integration.PillarIntegrationTest;
+import org.bitrepository.pillar.integration.PillarIntegrationIT;
 import org.bitrepository.protocol.bus.MessageReceiver;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
@@ -38,7 +38,7 @@ import java.util.Collections;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
-public class MultipleCollectionIT extends PillarIntegrationTest {
+public class MultipleCollectionIT extends PillarIntegrationIT {
     /**
      * Used for receiving responses from the pillar
      */
@@ -78,8 +78,7 @@ public class MultipleCollectionIT extends PillarIntegrationTest {
     protected void registerMessageReceivers() {
         super.registerMessageReceivers();
 
-        clientReceiver = new MessageReceiver(settingsForTestClient.getReceiverDestinationID());
-        addReceiver(clientReceiver);
+        clientReceiver = addReceiver(new MessageReceiver(settingsForTestClient.getReceiverDestinationID()));
 
         Collection<String> pillarFilter = Collections.singletonList(testConfiguration.getPillarUnderTestID());
         clientReceiver.setFromFilter(pillarFilter);

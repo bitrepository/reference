@@ -21,6 +21,7 @@
  */
 package org.bitrepository.integrityservice.collector;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.access.ContributorQuery;
 import org.bitrepository.access.ContributorQueryUtils;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
@@ -60,7 +61,7 @@ public class IntegrityInformationCollectorTest {
     public final static String fileId = "FILE_ID";
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testCollectorGetFileIDs() throws Exception {
         addDescription("Tests that the collector calls the GetFileClient");
@@ -92,7 +93,7 @@ public class IntegrityInformationCollectorTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testCollectorGetChecksums() throws Exception {
         addDescription("Tests that the collector calls the GetChecksumsClient");
@@ -136,7 +137,7 @@ public class IntegrityInformationCollectorTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testCollectorGetFile() throws Exception {
         addDescription("Tests that the collector calls the GetFileClient");
@@ -168,7 +169,7 @@ public class IntegrityInformationCollectorTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testCollectorPutFile() throws Exception {
         addDescription("Tests that the collector calls the PutFileClient");
@@ -202,7 +203,7 @@ public class IntegrityInformationCollectorTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testCollectorHandleChecksumClientFailures() throws Exception {
         addDescription("Test that the IntegrityInformationCollector works as a fault-barrier.");
@@ -229,7 +230,7 @@ public class IntegrityInformationCollectorTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testCollectorHandleGetFileIDsClientFailures() throws Exception {
         addDescription("Test that the IntegrityInformationCollector works as a fault-barrier.");
@@ -252,7 +253,7 @@ public class IntegrityInformationCollectorTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testCollectorHandleGetFileClientFailures() throws Exception {
         addDescription("Test that the IntegrityInformationCollector works as a fault-barrier.");
@@ -275,7 +276,7 @@ public class IntegrityInformationCollectorTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     @Tag("integritytest")
     void testCollectorHandlePutFileClientFailures() throws Exception {
         addDescription("Test that the IntegrityInformationCollector works as a fault-barrier.");

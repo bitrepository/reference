@@ -21,18 +21,22 @@
  */
 package org.bitrepository.service.audit;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.service.database.DatabaseCreator;
 import org.bitrepository.service.database.DatabaseManager;
-import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.bitrepository.settings.referencesettings.DatabaseSpecifics;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.containers.BindMode;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -44,6 +48,7 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
  * Run audit trail contributor database test using Derby.  Generates Allure reports.
  */
 
+@Testcontainers
 class AuditTrailContributorDatabaseTest {
     private Settings settings;
     private DatabaseSpecifics databaseSpecifics;
@@ -57,24 +62,29 @@ class AuditTrailContributorDatabaseTest {
     private static final String FILE_ID_1 = "FILE-ID-1";
     private static final String FILE_ID_2 = "FILE-ID-2";
 
+    @Container
+    static PostgreSQLContainer postgreSQLContainer =
+        new PostgreSQLContainer("postgres:18-alpine")
+            .withClasspathResourceMapping("sql/postgres/auditContributorDBCreation.sql",
+                                          "/docker-entrypoint-initdb.d/init.sql",
+                                          BindMode.READ_ONLY);
+
     @BeforeEach
     void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings(getClass().getSimpleName());
 
         databaseSpecifics = new DatabaseSpecifics();
-        databaseSpecifics.setDriverClass("org.apache.derby.jdbc.EmbeddedDriver");
-        databaseSpecifics.setDatabaseURL("jdbc:derby:target/test/auditcontributerdb");
+        databaseSpecifics.setDriverClass(postgreSQLContainer.getDriverClassName());
+        databaseSpecifics.setDatabaseURL(postgreSQLContainer.getJdbcUrl());
+        databaseSpecifics.setUsername(postgreSQLContainer.getUsername());
+        databaseSpecifics.setPassword(postgreSQLContainer.getPassword());
 
-        DerbyDatabaseDestroyer.deleteDatabase(databaseSpecifics);
-
-        TestAuditTrailContributorDBCreator dbCreator = new TestAuditTrailContributorDBCreator();
-        dbCreator.createAuditTrailContributorDatabase(databaseSpecifics);
         firstCollectionID = settings.getCollections().get(0).getID();
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
     void testAuditTrailDatabaseExtraction() throws Exception {
         addDescription("Testing the basic functions of the audit trail database interface.");
         addStep("Setup varibles and the database connection.", "No errors.");
@@ -148,8 +158,8 @@ class AuditTrailContributorDatabaseTest {
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
     void testAuditTrailDatabaseExtractionOrder() throws Exception {
         addDescription("Test the order of extraction");
         addStep("Setup variables and database connection", "No errors");
@@ -240,8 +250,8 @@ class AuditTrailContributorDatabaseTest {
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
     void testAuditTrailDatabaseIngest() throws Exception {
         addDescription("Testing the ingest of data.");
         addStep("Setup varibles and the database connection.", "No errors.");
@@ -337,7 +347,7 @@ class AuditTrailContributorDatabaseTest {
      */
 
     private static class TestAuditTrailContributorDBCreator extends DatabaseCreator {
-        public static final String DEFAULT_AUDIT_TRAIL_DB_SCRIPT = "sql/derby/auditContributorDBCreation.sql";
+        public static final String DEFAULT_AUDIT_TRAIL_DB_SCRIPT = "sql/postgres/auditContributorDBCreation.sql";
 
         public void createAuditTrailContributorDatabase(DatabaseSpecifics databaseSpecifics) {
             createDatabase(databaseSpecifics, DEFAULT_AUDIT_TRAIL_DB_SCRIPT);

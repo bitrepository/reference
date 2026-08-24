@@ -1,5 +1,6 @@
 package org.bitrepository.common.settings;
 
+import org.bitrepository.TestGroups;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -23,7 +24,7 @@ class SettingsTest  {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void getDurationFromXmlDurationOrMillisRequiresOneNonNullArg() {
         Assertions.assertThrows(NullPointerException.class, () -> {
             addDescription("Tests that getDurationFromXmlDurationOrMillis() fails when given two nulls");
@@ -34,7 +35,7 @@ class SettingsTest  {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void testGetDurationFromXmlDurationOrMillis() {
         addDescription("Tests conversions and selection by getDurationFromXmlDurationOrMillis()");
 

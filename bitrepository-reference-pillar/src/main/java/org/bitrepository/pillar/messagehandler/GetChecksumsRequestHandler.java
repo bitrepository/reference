@@ -24,7 +24,7 @@
  */
 package org.bitrepository.pillar.messagehandler;
 
-import java.io.ByteArrayInputStream;
+import jakarta.xml.bind.JAXBException;
 import org.bitrepository.bitrepositorydata.GetChecksumsResults;
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -49,8 +49,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-import javax.xml.bind.JAXBException;
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

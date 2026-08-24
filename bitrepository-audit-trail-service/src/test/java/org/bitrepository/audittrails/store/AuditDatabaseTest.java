@@ -21,6 +21,7 @@
  */
 package org.bitrepository.audittrails.store;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvent;
 import org.bitrepository.bitrepositoryelements.AuditTrailEvents;
 import org.bitrepository.bitrepositoryelements.FileAction;
@@ -28,11 +29,14 @@ import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.bitrepository.service.database.DatabaseManager;
-import org.bitrepository.service.database.DerbyDatabaseDestroyer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.containers.BindMode;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import java.math.BigInteger;
 import java.time.Instant;
@@ -43,8 +47,9 @@ import java.util.List;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
+@Testcontainers
 class AuditDatabaseTest {
-    /** The settings for the tests. Should be instantiated in the setup.*/
+    /** The settings for the tests. Should be instantiated in the setup. */
     Settings settings;
     String fileID = "TEST-FILE-ID-" + Instant.now().toEpochMilli();
     String fileID2 = "ANOTHER-FILE-ID" + Instant.now().toEpochMilli();
@@ -57,21 +62,30 @@ class AuditDatabaseTest {
     static final String fingerprint2 = "baba";
     static final String operationID2 = "4321";
 
+    @Container
+    PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:18-alpine")
+                                                  .withLogConsumer(log -> System.out.println(log.getUtf8StringWithoutLineEnding()))
+                                                  .withClasspathResourceMapping(
+                                                      "sql/postgres/auditTrailServiceDBCreation.sql",
+                                                      "/docker-entrypoint-initdb.d/init.sql",
+                                                      BindMode.READ_ONLY);
+
+
     @BeforeEach
     void setup() throws Exception {
         settings = TestSettingsProvider.reloadSettings("AuditDatabaseUnderTest");
-        DerbyDatabaseDestroyer.deleteDatabase(
-                settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase());
-
-        AuditTrailDatabaseCreator auditTrailDatabaseCreator = new AuditTrailDatabaseCreator();
-        auditTrailDatabaseCreator.createAuditTrailDatabase(settings, null);
-
         collectionID = settings.getCollections().get(0).getID();
+
+        var dbsettings = settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase();
+        dbsettings.setDatabaseURL(postgreSQLContainer.getJdbcUrl());
+        dbsettings.setUsername(postgreSQLContainer.getUsername());
+        dbsettings.setPassword(postgreSQLContainer.getPassword());
+        dbsettings.setDriverClass(postgreSQLContainer.getDriverClassName());
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
     void AuditDatabaseExtractionTest() throws Exception {
         addDescription("Testing the connection to the audit trail service database especially with regards to "
                 + "extracting the data from it.");
@@ -204,8 +218,8 @@ class AuditDatabaseTest {
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
     void AuditDatabasePreservationTest() throws Exception {
         addDescription("Tests the functions related to the preservation of the database.");
         addStep("Adds the variables to the settings and instantaites the database cache",
@@ -233,8 +247,8 @@ class AuditDatabaseTest {
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
     void auditDatabaseCorrectTimestampTest() {
         addDescription("Testing the correct ingest and extraction of audittrail dates");
         DatabaseManager dm = new AuditTrailDatabaseManager(
@@ -276,8 +290,8 @@ class AuditDatabaseTest {
     }
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
     void AuditDatabaseIngestTest() throws Exception {
         addDescription("Testing ingest of audittrails into the database");
         addStep("Adds the variables to the settings and instantaites the database cache",
@@ -404,8 +418,8 @@ class AuditDatabaseTest {
 
 
     @Test
-    @Tag("regressiontest")
-    @Tag("databasetest")
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
     void AuditDatabaseGoodIngestTest() throws Exception {
         addDescription("Testing good case ingest of audittrails into the database");
         addStep("Adds the variables to the settings and instantaites the database cache",

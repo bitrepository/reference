@@ -1,6 +1,7 @@
 package org.bitrepository.protocol.fileexchange;
 
 import org.apache.commons.io.IOUtils;
+import org.bitrepository.TestGroups;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.LocalFileExchange;
 import org.bitrepository.settings.referencesettings.FileExchangeSettings;
@@ -47,7 +48,7 @@ class LocalFileExchangeTest {
     }
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void getUrlTest() throws MalformedURLException, URISyntaxException {
         String testFile = "getUrlTestfile";
 

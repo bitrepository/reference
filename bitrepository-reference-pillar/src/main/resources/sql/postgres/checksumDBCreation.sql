@@ -29,12 +29,12 @@
 --              of the tables, especially when upgrading.
 -- Expected entry count: only those in this script.
 --**************************************************************************--
-CREATE TABLE tableversions (
+CREATE TABLE IF NOT EXISTS tableversions (
     tablename VARCHAR(100) NOT NULL, -- Name of table
     version INT NOT NULL             -- version of table
 );
 
-INSERT INTO tableversions ( tablename, version ) VALUES ( 'checksums', 4);
+INSERT INTO tableversions ( tablename, version ) VALUES ( 'checksums', 4) ON CONFLICT DO NOTHING;
 
 --*************************************************************************--
 -- Name:     checksums
@@ -44,7 +44,7 @@ INSERT INTO tableversions ( tablename, version ) VALUES ( 'checksums', 4);
 -- Purpose:  Keep track of the checksum entries. 
 -- Expected entry count: Very many, one for each file..
 --*************************************************************************--
-CREATE TABLE checksums (
+CREATE TABLE IF NOT EXISTS checksums (
     guid SERIAL PRIMARY KEY,            -- The sequence number and unique key for this table.
     fileid VARCHAR(255) NOT NULL,       -- The id of the file.
     collectionid VARCHAR(255) NOT NULL, -- The id of the collection.
@@ -52,6 +52,6 @@ CREATE TABLE checksums (
     calculationdate BIGINT              -- The timestamp for the calculation of the checksum.
 );
 
-CREATE INDEX fileindex ON checksums ( fileid, collectionid );
-CREATE INDEX filedateindex ON checksums ( fileid, calculationdate );
-CREATE INDEX calculationindex ON checksums ( calculationdate );
+CREATE INDEX IF NOT EXISTS fileindex ON checksums ( fileid, collectionid );
+CREATE INDEX IF NOT EXISTS filedateindex ON checksums ( fileid, calculationdate );
+CREATE INDEX IF NOT EXISTS calculationindex ON checksums ( calculationdate );

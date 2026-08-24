@@ -21,6 +21,7 @@
  */
 package org.bitrepository.common.utils;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
 import org.junit.jupiter.api.Assertions;
@@ -33,7 +34,7 @@ import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 
 class ResponseInfoUtilsTest {
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void responseInfoTester() throws Exception {
         addDescription("Test the response info.");
         addStep("Validate the positive identification response", "Should be 'IDENTIFICATION_POSITIVE'");

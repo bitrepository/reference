@@ -21,6 +21,7 @@
  */
 package org.bitrepository.audittrails.preserver;
 
+import org.bitrepository.TestGroups;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.junit.jupiter.api.Tag;
@@ -43,7 +44,7 @@ public class AuditPreservationEventHandlerTest {
     public static final String TEST_COLLECTION = "dummy-collection";
 
     @Test
-    @Tag("regressiontest")
+    @Tag(TestGroups.REGRESSIONTEST)
     void auditPreservationEventHandlerTest() throws Exception {
         addDescription("Test the handling of the audit trail event handler.");
         addStep("Setup", "");
