@@ -2,7 +2,7 @@
  * #%L
  * Bitrepository Audit Trail Service
  * %%
- * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
+ * Copyright (C) 2010 - 2059 The Royal Danish Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -44,6 +44,13 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
@@ -289,6 +296,70 @@ class AlarmDatabaseTest {
         Assertions.assertEquals(wintertimeUnix,
                 CalendarUtils.convertFromXMLGregorianCalendarToInstant(wintertimeAlarms.get(0).getOrigDateTime()));
 
+    }
+
+    @Test
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
+    void concurrentAlarmsFromNewComponentAreAllStoredTest() throws InterruptedException {
+        addDescription("Testing that concurrent alarms from a not-before-seen component are all stored. "
+                + "Regression test for a race condition where two concurrent inserts of the same new component "
+                + "into the component table could cause one of them to fail with a unique constraint violation, "
+                + "losing an alarm.");
+
+        AlarmDAOFactory alarmDAOFactory = new AlarmDAOFactory();
+        AlarmServiceDAO database = alarmDAOFactory.getAlarmServiceDAOInstance(
+                settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase());
+
+        String raceComponent = "RACE-COMPONENT-" + Instant.now().toEpochMilli();
+        int concurrentAlarms = 20;
+
+        addStep("Fire " + concurrentAlarms + " alarms from the same not-before-seen component at the same time.",
+                "None of the insertions should fail.");
+        ExecutorService executor = Executors.newFixedThreadPool(concurrentAlarms);
+        CountDownLatch readyLatch = new CountDownLatch(concurrentAlarms);
+        CountDownLatch startLatch = new CountDownLatch(1);
+        List<Future<?>> futures = new ArrayList<>();
+        for (int i = 0; i < concurrentAlarms; i++) {
+            int index = i;
+            futures.add(executor.submit(() -> {
+                Alarm alarm = new Alarm();
+                alarm.setAlarmCode(AlarmCode.COMPONENT_FAILURE);
+                alarm.setAlarmRaiser(raceComponent);
+                alarm.setAlarmText("Concurrent alarm #" + index);
+                alarm.setOrigDateTime(CalendarUtils.getNow());
+                readyLatch.countDown();
+                startLatch.await();
+                database.addAlarm(alarm);
+                return null;
+            }));
+        }
+        readyLatch.await();
+        startLatch.countDown();
+
+        addStep("Wait for all insertions to complete.", "None should throw an exception.");
+        List<Exception> failures = new ArrayList<>();
+        for (Future<?> future : futures) {
+            try {
+                future.get(30, TimeUnit.SECONDS);
+            } catch (ExecutionException | TimeoutException e) {
+                failures.add(e);
+            }
+        }
+        executor.shutdown();
+        Assertions.assertTrue(failures.isEmpty(), "Concurrent alarm ingestion threw: " + failures);
+
+        addStep("Verify every alarm was actually stored, and the component was only inserted once.",
+                "Should find all alarms and exactly one component row.");
+        List<Alarm> storedAlarms = database.extractAlarms(raceComponent, null, (Instant) null,
+                (Instant) null, null, null, null, false);
+        Assertions.assertEquals(concurrentAlarms, storedAlarms.size());
+
+        DBConnector connector = new DBConnector(settings.getReferenceSettings().getAlarmServiceSettings().getAlarmServiceDatabase());
+        Long componentCount = DatabaseUtils.selectLongValue(connector,
+                "SELECT COUNT(*) FROM " + AlarmDatabaseConstants.COMPONENT_TABLE + " WHERE "
+                        + AlarmDatabaseConstants.COMPONENT_ID + " = ?", raceComponent);
+        Assertions.assertEquals(1L, componentCount);
     }
 
     private List<Alarm> makeAlarms() {
