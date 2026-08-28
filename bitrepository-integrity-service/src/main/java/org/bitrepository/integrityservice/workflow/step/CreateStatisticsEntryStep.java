@@ -21,9 +21,7 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
-import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
-import org.bitrepository.integrityservice.cache.PillarCollectionMetric;
 import org.bitrepository.integrityservice.statistics.StatisticsCollector;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 
