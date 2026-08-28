@@ -41,6 +41,7 @@ import jakarta.ws.rs.core.StreamingOutput;
 import org.bitrepository.common.utils.FileSizeUtils;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.common.utils.TimeUtils;
+import org.bitrepository.common.utils.XmlUtils;
 import org.bitrepository.integrityservice.IntegrityServiceManager;
 import org.bitrepository.integrityservice.cache.CollectionStat;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
@@ -67,6 +68,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.nio.file.Files;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -608,7 +610,23 @@ public class RestIntegrityService {
         jg.writeObjectField("missingChecksumsCount", stat.getMissingChecksums());
         jg.writeObjectField("maxAgeForChecksums", stat.getMaxAgeForChecksums());
         jg.writeObjectField("ageOfOldestChecksum", stat.getAgeOfOldestChecksum());
+        jg.writeObjectField("missingFileGracePeriod", getMissingFileGracePeriodHuman());
         jg.writeEndObject();
+    }
+
+    /**
+     * A file is only counted as "missing" once it has been known to the system for longer than this grace period
+     * (see {@code TimeBeforeMissingFileCheck}), to avoid flagging files that simply haven't finished replicating
+     * to every pillar yet. That means a pillar's file count plus its missing-files count will not add up to the
+     * collection's total file count while such recently-added files are still propagating - this human-readable
+     * value lets the GUI explain that gap instead of it looking like a bug.
+     *
+     * @return The grace period as a human-readable duration, or "none" if it is zero.
+     */
+    private String getMissingFileGracePeriodHuman() {
+        Duration gracePeriod =
+                XmlUtils.xmlDurationToDuration(SettingsUtils.getIntegrityServiceSettings().getTimeBeforeMissingFileCheck());
+        return gracePeriod.isZero() ? "none" : TimeUtils.durationToHumanUsingEstimates(gracePeriod);
     }
 
     private void writeWorkflowSetupObject(JobID workflowID, JsonGenerator jg) throws IOException {

@@ -97,7 +97,7 @@ public class RepairMissingFilesWorkflow extends Workflow {
     private void repairMissingFiles(List<String> pillarIDs) {
         List<String> filesNotRepaired = new ArrayList<>();
         try (IntegrityIssueIterator iterator = context.getStore()
-                .findFilesWithMissingCopies(collectionID, pillarIDs.size(), 0L, MAX_RESULTS)) {
+                .findFilesWithMissingCopies(collectionID, pillarIDs, 0L, MAX_RESULTS)) {
 
             String fileId;
             while ((fileId = iterator.getNextIntegrityIssue()) != null) {

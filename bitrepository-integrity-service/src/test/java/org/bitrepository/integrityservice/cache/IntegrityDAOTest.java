@@ -680,7 +680,8 @@ class IntegrityDAOTest extends IntegrityDatabaseTestCase {
 
             addStep("Extract missing files", "one file should be missing");
             List<String> missingFiles
-                    = getIssuesFromIterator(cache.findFilesWithMissingCopies(TEST_COLLECTIONID, 2, 0L, 10L));
+                    = getIssuesFromIterator(cache.findFilesWithMissingCopies(TEST_COLLECTIONID,
+                            List.of(TEST_PILLAR_1, TEST_PILLAR_2), 0L, 10L));
             Assertions.assertEquals(Collections.singletonList(file2), missingFiles);
         }
     }
@@ -701,13 +702,14 @@ class IntegrityDAOTest extends IntegrityDatabaseTestCase {
             cache.updateFileIDs(getFileIDsData(TEST_FILE_ID), TEST_PILLAR_2, TEST_COLLECTIONID);
 
             addStep("Extract with a maximum of 1", "The first file.");
-            IntegrityIssueIterator it = cache.findFilesWithMissingCopies(TEST_COLLECTIONID, 2, 0L, 1L);
+            IntegrityIssueIterator it = cache.findFilesWithMissingCopies(TEST_COLLECTIONID,
+                    List.of(TEST_PILLAR_1, TEST_PILLAR_2), 0L, 1L);
             Collection<String> fileIDs = getIssuesFromIterator(it);
             Assertions.assertEquals(1, fileIDs.size());
             Assertions.assertTrue(fileIDs.contains(file2));
 
             addStep("Extract with a minimum of 1 and maximum of infinite", "The last file.");
-            it = cache.findFilesWithMissingCopies(TEST_COLLECTIONID, 2, 1L, Long.MAX_VALUE);
+            it = cache.findFilesWithMissingCopies(TEST_COLLECTIONID, List.of(TEST_PILLAR_1, TEST_PILLAR_2), 1L, Long.MAX_VALUE);
             fileIDs = getIssuesFromIterator(it);
             Assertions.assertEquals(1, fileIDs.size());
             Assertions.assertTrue(fileIDs.contains(file3));
