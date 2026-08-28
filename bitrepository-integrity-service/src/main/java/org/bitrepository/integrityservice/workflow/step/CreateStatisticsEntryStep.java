@@ -29,7 +29,6 @@ import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 
 import java.util.List;
 import java.util.Map;
-
 /**
  * A workflow step for persisting the statistics entry gathered over the course of the workflow.
  */
