@@ -21,17 +21,12 @@
  */
 package org.bitrepository.integrityservice.workflow.step;
 
-import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
-import org.bitrepository.integrityservice.cache.PillarCollectionMetric;
 import org.bitrepository.integrityservice.statistics.StatisticsCollector;
 import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 
-import java.util.List;
-import java.util.Map;
-
 /**
- * A workflow step for creating pillar statistics.
+ * A workflow step for persisting the statistics entry gathered over the course of the workflow.
  */
 public class CreateStatisticsEntryStep extends AbstractWorkFlowStep {
     private final IntegrityModel store;
@@ -50,7 +45,10 @@ public class CreateStatisticsEntryStep extends AbstractWorkFlowStep {
     }
 
     /**
-     * Collects pillar metrics for the given collection and creates from them a statistics entry in the store.
+     * Creates a statistics entry in the store from the data gathered by the previous workflow steps.
+     * <p>
+     * File counts and data sizes are gathered earlier, by {@link HandleMissingFilesStep}, alongside the
+     * missing-files count rather than here, so that the two remain consistent with each other.
      */
     @Override
     public synchronized void performStep() {

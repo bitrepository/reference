@@ -24,6 +24,7 @@ package org.bitrepository.integrityservice.workflow.step;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.cache.FileInfo;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
+import org.bitrepository.integrityservice.cache.PillarCollectionMetric;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.integrityservice.reports.IntegrityReporter;
 import org.bitrepository.integrityservice.statistics.StatisticsCollector;
@@ -70,10 +71,19 @@ public class HandleMissingFilesStep extends AbstractWorkFlowStep {
 
     /**
      * Queries the IntegrityModel for missing files on each pillar. Reports them if any is returned.
+     * <p>
+     * Also records the file count for the collection and each pillar here, right next to the missing-files count:
+     * both are computed from the current state of the fileinfo table, so taking them from the same point in the
+     * workflow keeps them consistent with each other. Computing them at separate, far-apart steps (as used to be
+     * the case, with file counts only gathered once checksum validation had finished) allowed the two numbers to
+     * drift apart on a collection with files being added while the workflow was running.
      */
     @Override
     public synchronized void performStep() throws StepFailedException {
-        List<String> pillars = SettingsUtils.getPillarIDsForCollection(reporter.getCollectionID());
+        String collectionID = reporter.getCollectionID();
+        List<String> pillars = SettingsUtils.getPillarIDsForCollection(collectionID);
+        recordFileCounts(collectionID, pillars);
+
         Map<String, Long> missingFilesMap = new HashMap<>();
         for (String pillar : pillars) {
             missingFilesMap.put(pillar, 0L);
@@ -84,7 +94,7 @@ public class HandleMissingFilesStep extends AbstractWorkFlowStep {
                 missingAfterDate);
 
         try (IntegrityIssueIterator issueIterator = store.findFilesWithMissingCopies(reporter.getCollectionID(),
-                pillars.size(), 0L, Long.MAX_VALUE)) {
+                pillars, 0L, Long.MAX_VALUE)) {
 
             String missingFile;
             while ((missingFile = issueIterator.getNextIntegrityIssue()) != null) {
@@ -111,6 +121,28 @@ public class HandleMissingFilesStep extends AbstractWorkFlowStep {
 
             }
         }
+    }
+
+    /**
+     * Records the collection's and each pillar's current file count and data size into the statistics collector.
+     */
+    private void recordFileCounts(String collectionID, List<String> pillars) {
+        Map<String, PillarCollectionMetric> pillarMetrics = store.getPillarCollectionMetrics(collectionID);
+        for (String pillar : pillars) {
+            PillarCollectionMetric metric = pillarMetrics.get(pillar);
+            if (metric == null) {
+                sc.getPillarCollectionStat(pillar).setFileCount(0L);
+                sc.getPillarCollectionStat(pillar).setDataSize(0L);
+                sc.getPillarCollectionStat(pillar).setOldestChecksumTimestamp(null);
+            } else {
+                sc.getPillarCollectionStat(pillar).setFileCount(metric.getPillarFileCount());
+                sc.getPillarCollectionStat(pillar).setDataSize(metric.getPillarCollectionSize());
+                sc.getPillarCollectionStat(pillar).setOldestChecksumTimestamp(metric.getOldestChecksumTimestamp());
+            }
+        }
+        sc.getCollectionStat().setFileCount(store.getNumberOfFilesInCollection(collectionID));
+        sc.getCollectionStat().setDataSize(store.getCollectionFileSize(collectionID));
+        sc.getCollectionStat().setLatestFileTime(store.getDateForNewestFileEntryForCollectionInstant(collectionID));
     }
 
     private Set<String> getPillarsWithFile(String fileID, String collectionID) {
