@@ -140,7 +140,7 @@ public class ReceivedMessageHandler implements Closeable {
                 defaultCollectionExecutorModel = new CollectionExecutorModel();
             }
             if (defaultCollectionExecutorModel.defaultExecutor == null) {
-                defaultCollectionExecutorModel.defaultExecutor = Executors.newCachedThreadPool(threadFactory);
+                defaultCollectionExecutorModel.defaultExecutor = Executors.newVirtualThreadPerTaskExecutor();
             }
         }
 
@@ -167,7 +167,7 @@ public class ReceivedMessageHandler implements Closeable {
 
         private ExecutorService createExecutorService(BigInteger poolSize) {
             if (poolSize == null) {
-                return Executors.newCachedThreadPool(threadFactory);
+                return Executors.newVirtualThreadPerTaskExecutor();
             } else if (poolSize.intValue() == 1) {
                 return Executors.newSingleThreadExecutor(threadFactory);
             } else {
