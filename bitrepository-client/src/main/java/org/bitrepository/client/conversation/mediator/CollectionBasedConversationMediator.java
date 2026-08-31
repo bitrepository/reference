@@ -27,7 +27,6 @@ package org.bitrepository.client.conversation.mediator;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.client.conversation.Conversation;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
-import org.bitrepository.common.DefaultThreadFactory;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.common.utils.XmlUtils;
@@ -45,7 +44,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.ThreadFactory;
 
 /**
  * Conversation handler that delegates messages to registered conversations.
@@ -63,8 +61,6 @@ public class CollectionBasedConversationMediator implements ConversationMediator
      */
     private static final Timer cleanTimer = new Timer(NAME_OF_TIMER, TIMER_IS_DAEMON);
     private final MessageBus messagebus;
-    private static final ThreadFactory threadFactory = new DefaultThreadFactory(
-            CollectionBasedConversationMediator.class.getSimpleName() + "-", Thread.NORM_PRIORITY, false);
 
     @Override
     public void start() {
@@ -115,8 +111,8 @@ public class CollectionBasedConversationMediator implements ConversationMediator
 
         if (conversationID != null) {
             conversations.remove(conversationID);
-            Thread t = threadFactory.newThread(new FailingConversation(conversation, message));
-            t.start();
+            Thread.ofVirtual().name("FailingConversation-" + conversationID)
+                    .start(new FailingConversation(conversation, message));
         }
     }
 
