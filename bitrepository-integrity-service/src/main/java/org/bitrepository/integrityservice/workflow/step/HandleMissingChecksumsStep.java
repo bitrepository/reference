@@ -23,6 +23,7 @@ package org.bitrepository.integrityservice.workflow.step;
 
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
+import org.bitrepository.integrityservice.cache.PillarCollectionStat;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.integrityservice.reports.IntegrityReporter;
 import org.bitrepository.integrityservice.statistics.StatisticsCollector;
@@ -32,23 +33,41 @@ import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * A workflow step for finding missing checksums.
  * Uses the IntegrityChecker to perform the actual check.
+ * <p>
+ * Only a workflow that re-verifies every file in the collection (a full sweep) can authoritatively determine
+ * this count. A workflow that only touches a subset of files (e.g. an incremental check) cannot tell whether a
+ * file it left untouched is genuinely missing its checksum or simply wasn't due for re-checking, so it must not
+ * overwrite a previously established count with a partial recomputation - it instead carries the previous count
+ * forward, see {@code canDetectMissingChecksums}.
  */
 public class HandleMissingChecksumsStep extends AbstractWorkFlowStep {
     private final IntegrityModel store;
     private final IntegrityReporter reporter;
     private final StatisticsCollector sc;
     private final Instant cutoffDate;
+    private final boolean canDetectMissingChecksums;
 
+    /**
+     * @param cutoffDate                 the cutoff date to use when scanning for missing checksums. Only
+     *                                    consulted when {@code canDetectMissingChecksums} is true.
+     * @param canDetectMissingChecksums  whether this workflow run re-verifies every file and can therefore
+     *                                    authoritatively (re)compute the missing checksums count. When false,
+     *                                    the previously reported count is carried forward unchanged instead.
+     */
     public HandleMissingChecksumsStep(IntegrityModel store, IntegrityReporter reporter, StatisticsCollector statisticsCollector,
-                                      Instant latestChecksumUpdate) {
+                                      Instant cutoffDate, boolean canDetectMissingChecksums) {
         this.store = store;
         this.reporter = reporter;
         this.sc = statisticsCollector;
-        this.cutoffDate = latestChecksumUpdate;
+        this.cutoffDate = cutoffDate;
+        this.canDetectMissingChecksums = canDetectMissingChecksums;
     }
 
     @Override
@@ -66,9 +85,16 @@ public class HandleMissingChecksumsStep extends AbstractWorkFlowStep {
     public synchronized void performStep() throws StepFailedException {
         List<String> pillars = SettingsUtils.getPillarIDsForCollection(reporter.getCollectionID());
 
+        if (canDetectMissingChecksums) {
+            scanForMissingChecksums(pillars);
+        } else {
+            carryForwardPreviouslyReportedMissingChecksums(pillars);
+        }
+    }
+
+    private void scanForMissingChecksums(List<String> pillars) throws StepFailedException {
         for (String pillar : pillars) {
             Long missingChecksums = 0L;
-
 
             String missingFile;
             try (IntegrityIssueIterator missingChecksumsIterator = store.findFilesWithMissingChecksum(reporter.getCollectionID(), pillar,
@@ -82,6 +108,21 @@ public class HandleMissingChecksumsStep extends AbstractWorkFlowStep {
                     }
                 }
             }
+            sc.getPillarCollectionStat(pillar).setMissingChecksums(missingChecksums);
+        }
+    }
+
+    /**
+     * Carries the previously reported missing-checksums count forward unchanged, for pillars where no such
+     * count has been reported yet (e.g. before the first ever complete check), the count defaults to 0.
+     */
+    private void carryForwardPreviouslyReportedMissingChecksums(List<String> pillars) {
+        Map<String, PillarCollectionStat> previousStats = store.getLatestPillarStats(reporter.getCollectionID()).stream()
+                .collect(Collectors.toMap(PillarCollectionStat::getPillarID, Function.identity()));
+
+        for (String pillar : pillars) {
+            PillarCollectionStat previousStat = previousStats.get(pillar);
+            Long missingChecksums = previousStat != null ? previousStat.getMissingChecksums() : 0L;
             sc.getPillarCollectionStat(pillar).setMissingChecksums(missingChecksums);
         }
     }

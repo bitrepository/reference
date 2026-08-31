@@ -62,6 +62,16 @@ public class IncrementalIntegrityCheck extends IntegrityCheckWorkflow {
 
     @Override
     protected Instant getChecksumUpdateCutoffDate() {
+        // Unused: canDetectMissingChecksums() is false, so this workflow never scans for missing checksums.
         return Instant.EPOCH;
+    }
+
+    @Override
+    protected boolean canDetectMissingChecksums() {
+        // An incremental check only requests checksums newer than what's already known (see
+        // UpdateChecksumsStep#getQueries), so it never re-verifies the bulk of the collection. It therefore
+        // cannot tell whether a file untouched by this run is genuinely missing its checksum or simply wasn't
+        // due for re-checking, and must not overwrite the count a previous complete check established.
+        return false;
     }
 }
