@@ -22,7 +22,6 @@
 package org.bitrepository.protocol.messagebus;
 
 import org.bitrepository.bitrepositorymessages.Message;
-import org.bitrepository.common.DefaultThreadFactory;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.utils.MessageCategoryUtils;
 import org.bitrepository.settings.referencesettings.MessageCategory;
@@ -36,9 +35,12 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Takes care of handling the further processing by the listeners in separated thread.
@@ -46,7 +48,15 @@ import java.util.concurrent.ThreadFactory;
 public class ReceivedMessageHandler implements Closeable {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final ExecutorModel executorModel;
-    private final ThreadFactory threadFactory = new DefaultThreadFactory("ReceivedMessageHandler-", Thread.NORM_PRIORITY, false);
+    /** Builds the virtual threads backing the bounded-concurrency executors below. */
+    private final ThreadFactory threadFactory = Thread.ofVirtual()
+            .name("ReceivedMessageHandler-", 0)
+            .uncaughtExceptionHandler((thread, throwable) -> {
+                String throwingClass = throwable.getStackTrace()[0].getClassName();
+                Logger logger = LoggerFactory.getLogger(throwingClass);
+                logger.error("UncaughtExceptionHandler caught Exception:", throwable);
+            })
+            .factory();
 
     public ReceivedMessageHandler(MessageThreadPools messageThreadPools) {
         executorModel = new ExecutorModel(messageThreadPools);
@@ -100,6 +110,53 @@ public class ReceivedMessageHandler implements Closeable {
         @Override
         public void run() {
             listener.onMessage(message, messageContext);
+        }
+    }
+
+    private static final class ConcurrencyLimitedExecutorService extends AbstractExecutorService {
+        private final ExecutorService delegate;
+        private final Semaphore concurrencyLimiter;
+
+        ConcurrencyLimitedExecutorService(int maxConcurrency, ThreadFactory virtualThreadFactory) {
+            delegate = Executors.newThreadPerTaskExecutor(virtualThreadFactory);
+            concurrencyLimiter = new Semaphore(maxConcurrency);
+        }
+
+        @Override
+        public void execute(Runnable task) {
+            delegate.execute(() -> {
+                concurrencyLimiter.acquireUninterruptibly();
+                try {
+                    task.run();
+                } finally {
+                    concurrencyLimiter.release();
+                }
+            });
+        }
+
+        @Override
+        public void shutdown() {
+            delegate.shutdown();
+        }
+
+        @Override
+        public List<Runnable> shutdownNow() {
+            return delegate.shutdownNow();
+        }
+
+        @Override
+        public boolean isShutdown() {
+            return delegate.isShutdown();
+        }
+
+        @Override
+        public boolean isTerminated() {
+            return delegate.isTerminated();
+        }
+
+        @Override
+        public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
+            return delegate.awaitTermination(timeout, unit);
         }
     }
 
@@ -171,7 +228,7 @@ public class ReceivedMessageHandler implements Closeable {
             } else if (poolSize.intValue() == 1) {
                 return Executors.newSingleThreadExecutor(threadFactory);
             } else {
-                return Executors.newFixedThreadPool(poolSize.intValue(), threadFactory);
+                return new ConcurrencyLimitedExecutorService(poolSize.intValue(), threadFactory);
             }
         }
 
