@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.util.Collection;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -49,9 +50,10 @@ import java.util.concurrent.ScheduledFuture;
  */
 public abstract class GeneralConversationState implements ConversationState {
     private final Logger log = LoggerFactory.getLogger(getClass());
-    /** The scheduler used for timeout checks. */
-    private static final ScheduledExecutorService timer = Executors.newScheduledThreadPool(1,
+    /** Solely responsible for firing timeouts at the right time - does not run any conversation logic itself. */
+    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1,
             new DefaultThreadFactory("ConversationState-Timeout-", Thread.NORM_PRIORITY));
+    private static final ExecutorService timeoutHandlerExecutor = Executors.newVirtualThreadPerTaskExecutor();
     private ScheduledFuture<?> scheduledTimeout;
     /** For response bookkeeping */
     private final ContributorResponseStatus responseStatus;
@@ -75,7 +77,7 @@ public abstract class GeneralConversationState implements ConversationState {
             if (!responseStatus.getOutstandingComponents().isEmpty()) {
                 if (getTimeoutValue().compareTo(Duration.ZERO) > 0) { // TODO From Java 18 use: getTimeoutValue().isPositive()
                     CountAndTimeUnit delay = TimeUtils.durationToCountAndTimeUnit(getTimeoutValue());
-                    scheduledTimeout = timer.schedule(new TimeoutHandler(), delay.getCount(), delay.getUnit());
+                    scheduledTimeout = scheduler.schedule(new TimeoutHandler(), delay.getCount(), delay.getUnit());
                 }
                 sendRequest();
             } else {
@@ -132,14 +134,16 @@ public abstract class GeneralConversationState implements ConversationState {
     private class TimeoutHandler implements Runnable {
         @Override
         public void run() {
-            try {
-                logStateTimeout();
-                changeState();
-            } catch (Exception e) {
-                failConversation(e);
-            } catch (Throwable throwable) {
-                log.error("Failed to handle timeout correctly", throwable);
-            }
+            timeoutHandlerExecutor.execute(() -> {
+                try {
+                    logStateTimeout();
+                    changeState();
+                } catch (Exception e) {
+                    failConversation(e);
+                } catch (Throwable throwable) {
+                    log.error("Failed to handle timeout correctly", throwable);
+                }
+            });
         }
     }
 
