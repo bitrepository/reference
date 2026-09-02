@@ -31,6 +31,7 @@ import jakarta.jms.ExceptionListener;
 import jakarta.jms.JMSException;
 import jakarta.jms.MessageConsumer;
 import jakarta.jms.MessageProducer;
+import jakarta.jms.Queue;
 import jakarta.jms.Session;
 import jakarta.jms.TextMessage;
 import jakarta.jms.Topic;
@@ -72,7 +73,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ThreadFactory;
 
@@ -102,7 +102,8 @@ public class ActiveMQMessageBus implements MessageBus {
     public static final boolean TRANSACTED = false;
 
     /**
-     * The variable to separate the parts of the consumer key.
+     * Separates the destinationID from the listener hash in the consumer key used for topic (pub/sub)
+     * destinations.
      */
     private static final String CONSUMER_KEY_SEPARATOR = "#";
 
@@ -121,10 +122,10 @@ public class ActiveMQMessageBus implements MessageBus {
     private final String clientID;
 
     /**
-     * Map of the consumers, mapping from a hash of "destinations and listener" to consumer.
-     * Used to identify if a listener is already registered.
+     * Map of the consumers, mapping from destinationID to the single physical consumer for that destination and
+     * the listener it currently dispatches to. At most one consumer is ever kept per destinationID.
      */
-    private final Map<String, MessageConsumer> consumers = Collections
+    private final Map<String, ConsumerRegistration> consumers = Collections
         .synchronizedMap(new HashMap<>());
     /**
      * Map of destinations, mapping from ID to destination.
@@ -241,12 +242,21 @@ public class ActiveMQMessageBus implements MessageBus {
     public synchronized void addListener(String destinationID, final MessageListener listener, boolean durable) {
         log.debug("Adding {} listener '{}' to destination: '{}' on message-bus '{}'.", (durable ? "durable " : ""),
                 listener, destinationID, configuration.getName());
-        MessageConsumer consumer = getMessageConsumer(destinationID, listener, durable);
+        Destination destination = getDestination(destinationID, consumerSession);
+        String key = getConsumerKey(destinationID, listener, destination);
         try {
-            consumer.setMessageListener(new ActiveMQMessageListener(listener));
+            ConsumerRegistration registration = consumers.get(key);
+            if (registration == null) {
+                registration = new ConsumerRegistration(createConsumer(destination, durable), listener);
+                consumers.put(key, registration);
+            } else if (destination instanceof Queue) {
+                registration.currentListener = listener;
+            }
+            registration.consumer.setMessageListener(new ActiveMQMessageListener(listener));
         } catch (JMSException e) {
             throw new CoordinationLayerException(
-                    "Unable to add durable listener '" + listener + "' to destinationID '" + destinationID + "'", e);
+                    "Unable to add " + (durable ? "durable " : "") + "listener '" + listener +
+                            "' to destinationID '" + destinationID + "'", e);
         }
     }
 
@@ -254,40 +264,29 @@ public class ActiveMQMessageBus implements MessageBus {
     public synchronized void removeListener(String destinationID, MessageListener listener) {
         log.debug("Removing listener '{}' from destination: '{}' on message-bus '{}'",
                   listener, destinationID, configuration);
+        Destination destination = getDestination(destinationID, consumerSession);
+        String key = getConsumerKey(destinationID, listener, destination);
+        ConsumerRegistration registration = consumers.get(key);
+        if (registration == null || registration.currentListener != listener) {
+            return;
+        }
+
         try {
-            MessageConsumer consumer;
-            try {
-                consumer = getMessageConsumer(destinationID, listener, false);
-            } catch (CoordinationLayerException e) {
-                var cause = e.getCause();
-                if (cause instanceof jakarta.jms.IllegalStateException
-                    && Objects.equals(cause.getMessage(), "AMQ219019: Session is closed")) {
-                    return;
-                }
-                throw e;
-            }
-            try {
-
-                // We need to set the listener to null to have the removeListener take effect at once.
-                // If this isn't done the listener will continue to receive messages. Do we have a memory leak here?
-//                consumer.setMessageListener(null);
-
-                consumer.close();
-            } catch (IllegalStateException e) {
-                if (Objects.equals(e.getMessage(), "The Consumer is closed")) {
-                    return;
-                }
-                throw new CoordinationLayerException(
-                    "Unable to remove listener '" + listener + "' from destinationID '" + destinationID + "'", e);
-            } catch (JMSException e) {
+            registration.consumer.setMessageListener(null);
+            registration.consumer.close();
+        } catch (JMSException e) {
+            boolean alreadyClosed = e.getMessage() != null && e.getMessage().contains("Consumer is closed");
+            if (!alreadyClosed) {
                 throw new CoordinationLayerException(
                     "Unable to remove listener '" + listener + "' from destinationID '" + destinationID + "'", e);
             }
         } finally {
-            String consumerHash = getConsumerHash(destinationID, listener);
-            consumers.remove(consumerHash);
-
+            consumers.remove(key);
         }
+    }
+
+    private String getConsumerKey(String destinationID, MessageListener listener, Destination destination) {
+        return destination instanceof Queue ? destinationID : destinationID + CONSUMER_KEY_SEPARATOR + listener.hashCode();
     }
 
     @Override
@@ -351,52 +350,21 @@ public class ActiveMQMessageBus implements MessageBus {
     }
 
     /**
-     * Retrieves a consumer for the specific destination id and message listener.
-     * If no such consumer already exists, then it is created.
+     * Creates a new consumer for the given destination.
      *
-     * @param destinationID The id of the destination to consume messages from.
-     * @param listener      The listener to consume the messages.
-     * @param durable       Indicates whether the lister should use a durable subscriber. Only allowed for topics and
-     *                      only relevant if the consumer needs to be created.
-     * @return The instance for consuming the messages.
+     * @param destination The destination to consume messages from.
+     * @param durable     Indicates whether a durable subscriber should be used. Only allowed for topics.
+     * @return The new consumer.
      */
-    private MessageConsumer getMessageConsumer(String destinationID, MessageListener listener, boolean durable) {
-        String key = getConsumerHash(destinationID, listener);
-        log.debug("Retrieving message consumer on destination '{}' for listener '{}'. Key: '{}'",
-                destinationID, listener, key);
-        if (!consumers.containsKey(key)) {
-            log.debug("No consumer known. Creating new for key '{}", key);
-            Destination destination = getDestination(destinationID, consumerSession);
-            MessageConsumer consumer;
-            try {
-                if (durable) {
-                    if (destination instanceof Topic) {
-                        Topic topic = (Topic) destination;
-                        consumer = consumerSession.createDurableSubscriber(topic, clientID);
-                    } else {
-                        throw new IllegalArgumentException("Can not create durable subscriber on " + destinationID +
-                                " is is not a topic");
-                    }
-                } else {
-                    consumer = consumerSession.createConsumer(destination);
-                }
-            } catch (JMSException e) {
-                throw new CoordinationLayerException("Could not create message consumer for destination '" + destination + '"', e);
+    private MessageConsumer createConsumer(Destination destination, boolean durable) throws JMSException {
+        if (durable) {
+            if (destination instanceof Topic topic) {
+                return consumerSession.createDurableSubscriber(topic, clientID);
             }
-            consumers.put(key, consumer);
+            throw new IllegalArgumentException("Can not create durable subscriber on " + destination +
+                    " is not a topic");
         }
-        return consumers.get(key);
-    }
-
-    /**
-     * Creates a unique hash of the message listener and the destination id.
-     *
-     * @param destinationID The id for the destination.
-     * @param listener      The message listener.
-     * @return The key for the message listener and the destination id.
-     */
-    private String getConsumerHash(String destinationID, MessageListener listener) {
-        return destinationID + CONSUMER_KEY_SEPARATOR + listener.hashCode();
+        return consumerSession.createConsumer(destination);
     }
 
     /**
@@ -430,6 +398,22 @@ public class ActiveMQMessageBus implements MessageBus {
             destinations.put(destinationID, destination);
         }
         return destination;
+    }
+
+    /**
+     * The single physical consumer currently attached to a destination, together with the listener it is
+     * currently dispatching to. Tell whether the caller still owns this consumer, or whether a newer listener has
+     * already replaced it - in the latter case there is nothing to tear
+     * down, since the consumer now belongs to that newer listener.
+     */
+    private static final class ConsumerRegistration {
+        private final MessageConsumer consumer;
+        private volatile MessageListener currentListener;
+
+        private ConsumerRegistration(MessageConsumer consumer, MessageListener currentListener) {
+            this.consumer = consumer;
+            this.currentListener = currentListener;
+        }
     }
 
     /**
