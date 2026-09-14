@@ -110,8 +110,6 @@ public class ActiveMQMessageBus implements MessageBus {
     /**
      * The session for sending messages. Should not be the same as the consumer session,
      * as sessions are not thread safe. This also means the session should be used in a synchronized manor.
-     * TODO Switch to use a session pool/producer poll to allow multithreaded message sending, see
-     *  https://sbforge.org/jira/browse/BITMAG-357.
      */
     private final Session producerSession;
 
@@ -400,12 +398,6 @@ public class ActiveMQMessageBus implements MessageBus {
         return destination;
     }
 
-    /**
-     * The single physical consumer currently attached to a destination, together with the listener it is
-     * currently dispatching to. Tell whether the caller still owns this consumer, or whether a newer listener has
-     * already replaced it - in the latter case there is nothing to tear
-     * down, since the consumer now belongs to that newer listener.
-     */
     private static final class ConsumerRegistration {
         private final MessageConsumer consumer;
         private volatile MessageListener currentListener;
