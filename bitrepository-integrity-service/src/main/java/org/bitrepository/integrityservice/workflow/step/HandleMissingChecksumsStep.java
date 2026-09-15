@@ -40,12 +40,6 @@ import java.util.stream.Collectors;
 /**
  * A workflow step for finding missing checksums.
  * Uses the IntegrityChecker to perform the actual check.
- * <p>
- * Only a workflow that re-verifies every file in the collection (a full sweep) can authoritatively determine
- * this count. A workflow that only touches a subset of files (e.g. an incremental check) cannot tell whether a
- * file it left untouched is genuinely missing its checksum or simply wasn't due for re-checking, so it must not
- * overwrite a previously established count with a partial recomputation - it instead carries the previous count
- * forward, see {@code canDetectMissingChecksums}.
  */
 public class HandleMissingChecksumsStep extends AbstractWorkFlowStep {
     private final IntegrityModel store;
@@ -56,7 +50,7 @@ public class HandleMissingChecksumsStep extends AbstractWorkFlowStep {
 
     /**
      * @param cutoffDate                 the cutoff date to use when scanning for missing checksums. Only
-     *                                    consulted when {@code canDetectMissingChecksums} is true.
+     *                                    consulted when canDetectMissingChecksums is true.
      * @param canDetectMissingChecksums  whether this workflow run re-verifies every file and can therefore
      *                                    authoritatively (re)compute the missing checksums count. When false,
      *                                    the previously reported count is carried forward unchanged instead.
