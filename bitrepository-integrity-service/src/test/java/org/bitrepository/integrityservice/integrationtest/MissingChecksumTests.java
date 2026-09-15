@@ -182,11 +182,51 @@ class MissingChecksumTests {
         Mockito.doAnswer(invocation -> TEST_COLLECTION).when(reporter).getCollectionID();
 
         StatisticsCollector cs = new StatisticsCollector(TEST_COLLECTION);
-        HandleMissingChecksumsStep missingChecksumStep = new HandleMissingChecksumsStep(model, reporter, cs, Instant.EPOCH);
+        HandleMissingChecksumsStep missingChecksumStep = new HandleMissingChecksumsStep(model, reporter, cs, Instant.EPOCH, true);
         missingChecksumStep.performStep();
         for (String pillar : SettingsUtils.getPillarIDsForCollection(TEST_COLLECTION)) {
             Assertions.assertEquals(1, (long) cs.getPillarCollectionStat(pillar).getMissingChecksums());
         }
+    }
+
+    @Test
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag("integritytest")
+    void stepCarriesForwardMissingChecksumsWhenItCannotDetectThem() throws Exception {
+        addDescription("Test that a workflow which cannot authoritatively detect missing checksums (e.g. an "
+                + "incremental check, which only touches a subset of the collection) does not overwrite a "
+                + "previously reported missing-checksums count with a fresh, partial recomputation - instead "
+                + "the previous count is carried forward. This is a regression test for BITMAG-1230.");
+        Mockito.doAnswer(invocation -> TEST_COLLECTION).when(reporter).getCollectionID();
+
+        addStep("Ingest a file with no checksum and run the step as a full sweep (e.g. a complete check).",
+                "The file should be marked as missing at all pillars, and the count persisted as a statistics entry.");
+        populateDatabase(model, TEST_FILE_1);
+        StatisticsCollector completeCheckStats = new StatisticsCollector(TEST_COLLECTION);
+        new HandleMissingChecksumsStep(model, reporter, completeCheckStats, Instant.EPOCH, true).performStep();
+        for (String pillar : SettingsUtils.getPillarIDsForCollection(TEST_COLLECTION)) {
+            Assertions.assertEquals(1, (long) completeCheckStats.getPillarCollectionStat(pillar).getMissingChecksums());
+        }
+        persistStatistics(completeCheckStats);
+
+        addStep("Run the step again as a workflow that cannot authoritatively detect missing checksums " +
+                "(e.g. an incremental check).",
+                "The previously reported count of 1 should be carried forward, not reset to 0.");
+        StatisticsCollector incrementalCheckStats = new StatisticsCollector(TEST_COLLECTION);
+        new HandleMissingChecksumsStep(model, reporter, incrementalCheckStats, null, false).performStep();
+        for (String pillar : SettingsUtils.getPillarIDsForCollection(TEST_COLLECTION)) {
+            Assertions.assertEquals(1, (long) incrementalCheckStats.getPillarCollectionStat(pillar).getMissingChecksums());
+        }
+    }
+
+    private void persistStatistics(StatisticsCollector sc) {
+        Instant now = Instant.now();
+        sc.getCollectionStat().setStatsTime(now);
+        sc.getCollectionStat().setFileCount(0L);
+        sc.getCollectionStat().setDataSize(0L);
+        sc.getCollectionStat().setChecksumErrors(0L);
+        sc.getCollectionStat().setLatestFileTime(now);
+        model.createStatistics(TEST_COLLECTION, sc);
     }
 
     @Test

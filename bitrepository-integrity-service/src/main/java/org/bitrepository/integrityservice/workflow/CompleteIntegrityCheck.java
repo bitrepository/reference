@@ -69,4 +69,9 @@ public class CompleteIntegrityCheck extends IntegrityCheckWorkflow {
     protected Instant getChecksumUpdateCutoffDate() {
         return workflowStart;
     }
+
+    @Override
+    protected boolean canDetectMissingChecksums() {
+        return true;
+    }
 }

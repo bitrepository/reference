@@ -83,6 +83,15 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
 
     protected abstract Instant getChecksumUpdateCutoffDate();
 
+    /**
+     * Whether this workflow variant re-verifies every file and can therefore authoritatively determine the
+     * number of missing checksums. Only such a full sweep can safely reduce a previously reported count -
+     * a workflow that only touches a subset of files (e.g. an incremental check) must not overwrite a
+     * previously reported count with a partial recomputation, and should instead carry the previous count
+     * forward.
+     */
+    protected abstract boolean canDetectMissingChecksums();
+
     @Override
     public void start() {
         workflowStart = Instant.now();
@@ -128,8 +137,10 @@ public abstract class IntegrityCheckWorkflow extends Workflow {
                     context.getStore(), context.getAuditManager(), reporter, statisticsCollector);
             performStep(handleChecksumValidationStep);
 
+            boolean canDetectMissingChecksums = canDetectMissingChecksums();
+            Instant checksumUpdateCutoffDate = canDetectMissingChecksums ? getChecksumUpdateCutoffDate() : null;
             HandleMissingChecksumsStep handleMissingChecksumsStep = new HandleMissingChecksumsStep(context.getStore(),
-                    reporter, statisticsCollector, getChecksumUpdateCutoffDate());
+                    reporter, statisticsCollector, checksumUpdateCutoffDate, canDetectMissingChecksums);
             performStep(handleMissingChecksumsStep);
 
             HandleObsoleteChecksumsStep handleObsoleteChecksumsStep = new HandleObsoleteChecksumsStep(
