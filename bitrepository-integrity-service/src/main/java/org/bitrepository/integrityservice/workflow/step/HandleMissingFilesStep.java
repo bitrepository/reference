@@ -71,12 +71,6 @@ public class HandleMissingFilesStep extends AbstractWorkFlowStep {
 
     /**
      * Queries the IntegrityModel for missing files on each pillar. Reports them if any is returned.
-     * <p>
-     * Also records the file count for the collection and each pillar here, right next to the missing-files count:
-     * both are computed from the current state of the fileinfo table, so taking them from the same point in the
-     * workflow keeps them consistent with each other. Computing them at separate, far-apart steps (as used to be
-     * the case, with file counts only gathered once checksum validation had finished) allowed the two numbers to
-     * drift apart on a collection with files being added while the workflow was running.
      */
     @Override
     public synchronized void performStep() throws StepFailedException {

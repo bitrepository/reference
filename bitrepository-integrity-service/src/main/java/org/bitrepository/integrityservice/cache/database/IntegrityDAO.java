@@ -391,8 +391,7 @@ public abstract class IntegrityDAO implements AutoCloseable {
      * Method that should deliver the database specific SQL for finding files with less than N copies among a
      * given set of pillars.
      *
-     * @param numberOfPillars The number of pillars to check for copies on, i.e. the number of placeholders to
-     *                        generate for the {@code pillarID IN (...)} clause.
+     * @param numberOfPillars The number of pillars to check for copies on.
      * @return the database specific SQL for finding files with less than N copies
      */
     protected abstract String getFindFilesWithMissingCopiesSql(int numberOfPillars);

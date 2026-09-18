@@ -222,10 +222,6 @@ function updateTableHeader(missingFileGracePeriod) {
     setHeader("Configured max age of checksums");
     setHeader("Age of oldest checksum");
 
-    // A file only counts as missing once it has been known to the system for longer than this grace period, so a
-    // pillar's "Total files" plus its "Missing files" will not add up to the collection's total file count while
-    // recently-added files are still propagating to every pillar. Explain that here rather than leaving it looking
-    // like a bug.
     $("#all-missingFiles").attr("title",
         "Files added within the last " + missingFileGracePeriod + " are not yet counted as missing, even if a " +
         "pillar doesn't have them. This is why a pillar's Total files + Missing files can be lower than the " +
