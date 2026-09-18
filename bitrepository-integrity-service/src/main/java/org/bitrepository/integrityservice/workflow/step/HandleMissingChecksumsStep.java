@@ -50,18 +50,29 @@ public class HandleMissingChecksumsStep extends AbstractWorkFlowStep {
 
     /**
      * @param cutoffDate                 the cutoff date to use when scanning for missing checksums. Only
-     *                                    consulted when canDetectMissingChecksums is true.
-     * @param canDetectMissingChecksums  whether this workflow run re-verifies every file and can therefore
+     *                                    consulted when canCountTotalMissingChecksums is true.
+     * @param canCountTotalMissingChecksums  whether this workflow run re-verifies every file and can therefore
      *                                    authoritatively (re)compute the missing checksums count. When false,
      *                                    the previously reported count is carried forward unchanged instead.
      */
     public HandleMissingChecksumsStep(IntegrityModel store, IntegrityReporter reporter, StatisticsCollector statisticsCollector,
-                                      Instant cutoffDate, boolean canDetectMissingChecksums) {
+                                      Instant cutoffDate, boolean canCountTotalMissingChecksums) {
         this.store = store;
         this.reporter = reporter;
         this.sc = statisticsCollector;
         this.cutoffDate = cutoffDate;
-        this.canDetectMissingChecksums = canDetectMissingChecksums;
+        this.canDetectMissingChecksums = canCountTotalMissingChecksums;
+    }
+
+    /**
+     * @deprecated
+     * Use {@link #HandleMissingChecksumsStep(IntegrityModel, IntegrityReporter, StatisticsCollector, Instant, boolean)}
+     * instead.
+     */
+    @Deprecated
+    public HandleMissingChecksumsStep(IntegrityModel store, IntegrityReporter reporter, StatisticsCollector statisticsCollector,
+                                      Instant cutoffDate) {
+        this(store, reporter, statisticsCollector, cutoffDate, true);
     }
 
     @Override
@@ -107,8 +118,8 @@ public class HandleMissingChecksumsStep extends AbstractWorkFlowStep {
     }
 
     /**
-     * Carries the previously reported missing-checksums count forward unchanged, for pillars where no such
-     * count has been reported yet (e.g. before the first ever complete check), the count defaults to 0.
+     * Carries the previously reported missing-checksums count forward unchanged. For pillars where no such
+     * count has been reported yet (e.g. before the first ever complete check), {@code null} is carried forward.
      */
     private void carryForwardPreviouslyReportedMissingChecksums(List<String> pillars) {
         Map<String, PillarCollectionStat> previousStats = store.getLatestPillarStats(reporter.getCollectionID()).stream()
@@ -116,7 +127,7 @@ public class HandleMissingChecksumsStep extends AbstractWorkFlowStep {
 
         for (String pillar : pillars) {
             PillarCollectionStat previousStat = previousStats.get(pillar);
-            Long missingChecksums = previousStat != null ? previousStat.getMissingChecksums() : 0L;
+            Long missingChecksums = previousStat != null ? previousStat.getMissingChecksums() : null;
             sc.getPillarCollectionStat(pillar).setMissingChecksums(missingChecksums);
         }
     }

@@ -250,7 +250,10 @@ function updateStringCell(id, type, cellValue) {
 function updateIntCell(pillarID, type, cellValue) {
     let context = getBodyContext(pillarID, type);
 
-    if (cellValue === 0) {
+    if (cellValue == null) {
+        let html = `<button class="btn btn-link" disabled>N/A</button>`;
+        $("#" + context.element).html(html);
+    } else if (cellValue === 0) {
         let html = `<button class="btn btn-link" disabled>${formatInt(cellValue)}</button>`;
         $("#" + context.element).html(html);
     } else {

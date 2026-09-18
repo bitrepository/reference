@@ -119,7 +119,11 @@ public class StatisticsCreator {
         insertPillarStatPS.setLong(3, pcStat.getDataSize());
         insertPillarStatPS.setLong(4, pcStat.getMissingFiles());
         insertPillarStatPS.setLong(5, pcStat.getChecksumErrors());
-        insertPillarStatPS.setLong(6, pcStat.getMissingChecksums());
+        if (pcStat.getMissingChecksums() != null) {
+            insertPillarStatPS.setLong(6, pcStat.getMissingChecksums());
+        } else {
+            insertPillarStatPS.setNull(6, Types.BIGINT);
+        }
         insertPillarStatPS.setLong(7, pcStat.getObsoleteChecksums());
         if (pcStat.hasOldestChecksumTimestamp()) {
             insertPillarStatPS.setLong(8, pcStat.getOldestChecksumTimestampMillis());
