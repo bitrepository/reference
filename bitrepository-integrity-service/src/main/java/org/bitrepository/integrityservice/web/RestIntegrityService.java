@@ -616,8 +616,8 @@ public class RestIntegrityService {
 
     /**
      * A file is only counted as "missing" once it has been known to the system for longer than this grace period
-     * (see {@code TimeBeforeMissingFileCheck}), to avoid flagging files that simply haven't finished replicating
-     * to every pillar yet. That means a pillar's file count plus its missing-files count will not add up to the
+     * to avoid flagging files that simply haven't finished replicating to every pillar yet.
+     * That means a pillar's file count plus its missing-files count will not add up to the
      * collection's total file count while such recently-added files are still propagating - this human-readable
      * value lets the GUI explain that gap instead of it looking like a bug.
      *
