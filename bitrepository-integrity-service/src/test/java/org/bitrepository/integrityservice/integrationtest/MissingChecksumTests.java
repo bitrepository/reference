@@ -185,7 +185,7 @@ class MissingChecksumTests {
         HandleMissingChecksumsStep missingChecksumStep = new HandleMissingChecksumsStep(model, reporter, cs, Instant.EPOCH, true);
         missingChecksumStep.performStep();
         for (String pillar : SettingsUtils.getPillarIDsForCollection(TEST_COLLECTION)) {
-            Assertions.assertEquals(1, (long) cs.getPillarCollectionStat(pillar).getMissingChecksums());
+            Assertions.assertEquals(1L, cs.getPillarCollectionStat(pillar).getMissingChecksums());
         }
     }
 
@@ -205,7 +205,8 @@ class MissingChecksumTests {
         StatisticsCollector completeCheckStats = new StatisticsCollector(TEST_COLLECTION);
         new HandleMissingChecksumsStep(model, reporter, completeCheckStats, Instant.EPOCH, true).performStep();
         for (String pillar : SettingsUtils.getPillarIDsForCollection(TEST_COLLECTION)) {
-            Assertions.assertEquals(1, (long) completeCheckStats.getPillarCollectionStat(pillar).getMissingChecksums());
+            Assertions.assertEquals(1L,
+                    completeCheckStats.getPillarCollectionStat(pillar).getMissingChecksums());
         }
         persistStatistics(completeCheckStats);
 
@@ -215,7 +216,8 @@ class MissingChecksumTests {
         StatisticsCollector incrementalCheckStats = new StatisticsCollector(TEST_COLLECTION);
         new HandleMissingChecksumsStep(model, reporter, incrementalCheckStats, null, false).performStep();
         for (String pillar : SettingsUtils.getPillarIDsForCollection(TEST_COLLECTION)) {
-            Assertions.assertEquals(1, (long) incrementalCheckStats.getPillarCollectionStat(pillar).getMissingChecksums());
+            Assertions.assertEquals(1L,
+                    incrementalCheckStats.getPillarCollectionStat(pillar).getMissingChecksums());
         }
     }
 
