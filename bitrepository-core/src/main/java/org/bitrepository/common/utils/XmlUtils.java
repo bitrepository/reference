@@ -62,14 +62,6 @@ public class XmlUtils {
 
     public static TimeMeasureTYPE xmlDurationToTimeMeasure(javax.xml.datatype.Duration xmlDuration) {
         Duration duration = xmlDurationToDuration(xmlDuration);
-
-        TimeMeasureTYPE result = new TimeMeasureTYPE();
-        result.setTimeMeasureUnit(TimeMeasureUnit.MILLISECONDS);
-        BigInteger totalMilliseconds = BigInteger.valueOf(duration.toSeconds())
-                .multiply(BigInteger.valueOf(1000))
-                .add(BigInteger.valueOf(duration.toMillisPart()));
-        result.setTimeMeasureValue(totalMilliseconds);
-
-        return result;
+        return TimeMeasurementUtils.durationToTimeMeasure(duration);
     }
 }
