@@ -214,13 +214,18 @@ function makePillarRow(id) {
     return html;
 }
 
-function updateTableHeader() {
+function updateTableHeader(missingFileGracePeriod) {
     setHeader("Number of missing files");
     setHeader("Number of missing checksums");
     setHeader("Number of obsolete checksums");
     setHeader("Number of inconsistent checksums");
     setHeader("Configured max age of checksums");
     setHeader("Age of oldest checksum");
+
+    $("#all-missingFiles").attr("title",
+        "Files added within the last " + missingFileGracePeriod + " are not yet counted as missing, even if a " +
+        "pillar doesn't have them. This is why a pillar's Total files + Missing files can be lower than the " +
+        "collection's total file count.");
 }
 
 function setHeader(type) {
@@ -323,10 +328,11 @@ function getIntegrityStatus() {
                 obsoleteChecksumsCount: json[i].obsoleteChecksumsCount,
                 checksumErrorCount: json[i].checksumErrorCount,
                 maxAgeForChecksums: json[i].maxAgeForChecksums,
-                ageOfOldestChecksum: json[i].ageOfOldestChecksum
+                ageOfOldestChecksum: json[i].ageOfOldestChecksum,
+                missingFileGracePeriod: json[i].missingFileGracePeriod
             };
             updateTableBody(json[i].pillarID);
-            updateTableHeader();
+            updateTableHeader(json[i].missingFileGracePeriod);
         }
     });
 }

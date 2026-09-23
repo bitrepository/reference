@@ -61,10 +61,10 @@ public class PostgresIntegrityDAO extends IntegrityDAO {
     }
 
     @Override
-    protected String getFindFilesWithMissingCopiesSql() {
-
+    protected String getFindFilesWithMissingCopiesSql(int numberOfPillars) {
         return "SELECT fileid FROM fileinfo"
                 + " WHERE collectionid = ?"
+                + " AND pillarid IN (" + placeholders(numberOfPillars) + ")"
                 + " GROUP BY fileid"
                 + " HAVING COUNT(fileid) < ?"
                 + " ORDER BY fileid"

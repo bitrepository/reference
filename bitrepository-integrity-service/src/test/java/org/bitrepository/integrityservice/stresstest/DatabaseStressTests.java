@@ -54,6 +54,7 @@ import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigInteger;
 import java.time.Instant;
+import java.util.List;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 
@@ -162,9 +163,9 @@ class DatabaseStressTests {
 
         startTime = System.currentTimeMillis();
         String collection = settings.getRepositorySettings().getCollections().getCollection().get(0).getID();
-        int numberOfPillarsInCollection =
-                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID().size();
-        cache.findFilesWithMissingCopies(collection, numberOfPillarsInCollection, 0L, Long.MAX_VALUE);
+        List<String> pillarsInCollection =
+                settings.getRepositorySettings().getCollections().getCollection().get(0).getPillarIDs().getPillarID();
+        cache.findFilesWithMissingCopies(collection, pillarsInCollection, 0L, Long.MAX_VALUE);
         System.err.println("Time to find missing files: " + TimeUtils.millisecondsToHuman(System.currentTimeMillis() - startTime));
 
         startTime = System.currentTimeMillis();
