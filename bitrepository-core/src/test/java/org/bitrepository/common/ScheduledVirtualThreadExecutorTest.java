@@ -34,6 +34,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -82,6 +84,43 @@ class ScheduledVirtualThreadExecutorTest {
 
     @Test
     @Tag("regressiontest")
+    void scheduleWithFixedDelayWaitsForCompletionBeforeRearmingTest() throws Exception {
+        addDescription("Test that scheduleWithFixedDelay measures the delay from when a run FINISHES, not from " +
+                "when it was dispatched, so consecutive runs never overlap even though each run is dispatched to " +
+                "its own virtual thread. A buggy implementation that just wraps the dispatch call would re-arm as " +
+                "soon as the (near-instant) dispatch returns, producing fixed-rate-like ticking instead.");
+        executor = new ScheduledVirtualThreadExecutor("fixedDelayCompletionTest", true);
+        long runDurationMillis = 150;
+        long requestedDelayMillis = 50;
+        List<Long> startTimestamps = new CopyOnWriteArrayList<>();
+        CountDownLatch latch = new CountDownLatch(3);
+
+        executor.scheduleWithFixedDelay(() -> {
+            startTimestamps.add(System.nanoTime());
+            try {
+                Thread.sleep(runDurationMillis);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            latch.countDown();
+        }, 0, requestedDelayMillis, TimeUnit.MILLISECONDS);
+
+        Assertions.assertTrue(latch.await(5, TimeUnit.SECONDS), "Task should have run at least 3 times");
+        Assertions.assertTrue(startTimestamps.size() >= 3, "Should have recorded at least 3 start times");
+
+        long minimumGapNanos = TimeUnit.MILLISECONDS.toNanos(runDurationMillis + requestedDelayMillis - 20);
+        for (int i = 1; i < 3; i++) {
+            long gap = startTimestamps.get(i) - startTimestamps.get(i - 1);
+            Assertions.assertTrue(gap >= minimumGapNanos,
+                    "Run " + i + " started only " + TimeUnit.NANOSECONDS.toMillis(gap) +
+                            "ms after the previous one started; expected at least " + (runDurationMillis + requestedDelayMillis) +
+                            "ms, since the previous run should have finished (it sleeps " + runDurationMillis +
+                            "ms) before the delay is applied.");
+        }
+    }
+
+    @Test
+    @Tag("regressiontest")
     void scheduleRunsOnlyOnceTest() throws Exception {
         addDescription("Test that a one-shot schedule() call dispatches the task exactly once.");
         executor = new ScheduledVirtualThreadExecutor("onceTest", true);
@@ -118,6 +157,31 @@ class ScheduledVirtualThreadExecutorTest {
         Thread.sleep(150);
 
         Assertions.assertEquals(countAtCancellation, count.get(), "No further runs should have happened after cancellation");
+    }
+
+    @Test
+    @Tag("regressiontest")
+    void cancellingFixedDelayFutureStopsTheChainFromRearmingTest() throws Exception {
+        addDescription("Test that cancelling the future returned by scheduleWithFixedDelay stops the self-rescheduling " +
+                "chain once the in-flight run finishes.");
+        executor = new ScheduledVirtualThreadExecutor("fixedDelayCancelTest", true);
+        AtomicInteger count = new AtomicInteger();
+        CountDownLatch firstRun = new CountDownLatch(1);
+
+        ScheduledFuture<?> future = executor.scheduleWithFixedDelay(() -> {
+            count.incrementAndGet();
+            firstRun.countDown();
+        }, 0, 20, TimeUnit.MILLISECONDS);
+
+        Assertions.assertTrue(firstRun.await(5, TimeUnit.SECONDS), "Task should have run at least once");
+        boolean cancelResult = future.cancel(false);
+        Assertions.assertTrue(cancelResult, "cancel() should report success the first time");
+        Assertions.assertTrue(future.isCancelled());
+        int countAtCancellation = count.get();
+        Thread.sleep(150);
+
+        Assertions.assertEquals(countAtCancellation, count.get(), "No further runs should have happened after cancellation");
+        Assertions.assertFalse(future.cancel(false), "cancel() should report failure once already cancelled");
     }
 
     @Test
