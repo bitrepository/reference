@@ -39,7 +39,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 
 class TimerBasedSchedulerTest {
+    private static final long PROMPT_DISPATCH_WAIT_SECONDS = 1L;
     private TimerBasedScheduler scheduler;
+    private static final long INTERVAL_LONGER_THAN_WAIT_MILLIS = 2 * TimeUnit.SECONDS.toMillis(PROMPT_DISPATCH_WAIT_SECONDS);
 
     @AfterEach
     void tearDown() {
@@ -51,13 +53,14 @@ class TimerBasedSchedulerTest {
     @Test
     @Tag(TestGroups.REGRESSIONTEST)
     void scheduleWithPositiveIntervalRunsJobPromptlyTest() throws Exception {
-        addDescription("Test that schedule() with a positive interval dispatches the job right away.");
+        addDescription("Test that schedule() with a positive interval dispatches the job right away, not merely " +
+                "within the interval - the interval used here is deliberately longer than the wait below.");
         scheduler = new TimerBasedScheduler();
         FakeJob job = new FakeJob(new JobID("workflow", "collection"));
 
-        scheduler.schedule(job, 1000L);
+        scheduler.schedule(job, INTERVAL_LONGER_THAN_WAIT_MILLIS);
 
-        Assertions.assertTrue(job.started.await(5, TimeUnit.SECONDS), "Job should have been started");
+        Assertions.assertTrue(job.started.await(PROMPT_DISPATCH_WAIT_SECONDS, TimeUnit.SECONDS), "Job should have been started");
     }
 
     @Test
@@ -82,8 +85,8 @@ class TimerBasedSchedulerTest {
         addDescription("Test that cancelJob() returns the scheduled task and removes it from the scheduler's bookkeeping.");
         scheduler = new TimerBasedScheduler();
         FakeJob job = new FakeJob(new JobID("workflow", "collection"));
-        scheduler.schedule(job, 1000L);
-        Assertions.assertTrue(job.started.await(5, TimeUnit.SECONDS), "Job should have been started");
+        scheduler.schedule(job, INTERVAL_LONGER_THAN_WAIT_MILLIS);
+        Assertions.assertTrue(job.started.await(PROMPT_DISPATCH_WAIT_SECONDS, TimeUnit.SECONDS), "Job should have been started");
 
         JobTimerTask cancelled = scheduler.cancelJob(job.getJobID());
 
@@ -104,7 +107,7 @@ class TimerBasedSchedulerTest {
         String result = scheduler.startJob(job);
 
         Assertions.assertEquals("Job scheduled", result);
-        Assertions.assertTrue(job.started.await(5, TimeUnit.SECONDS), "Job should have been started");
+        Assertions.assertTrue(job.started.await(PROMPT_DISPATCH_WAIT_SECONDS, TimeUnit.SECONDS), "Job should have been started");
     }
 
     @Test
@@ -145,9 +148,9 @@ class TimerBasedSchedulerTest {
             }
         });
 
-        scheduler.schedule(job, 1000L);
+        scheduler.schedule(job, INTERVAL_LONGER_THAN_WAIT_MILLIS);
 
-        Assertions.assertTrue(notified.await(5, TimeUnit.SECONDS), "Listener should have been notified");
+        Assertions.assertTrue(notified.await(PROMPT_DISPATCH_WAIT_SECONDS, TimeUnit.SECONDS), "Listener should have been notified");
     }
 
     @Test
@@ -167,7 +170,7 @@ class TimerBasedSchedulerTest {
         addDescription("Test that shutdown() releases the scheduler's resources without throwing.");
         scheduler = new TimerBasedScheduler();
         FakeJob job = new FakeJob(new JobID("workflow", "collection"));
-        scheduler.schedule(job, 1000L);
+        scheduler.schedule(job, INTERVAL_LONGER_THAN_WAIT_MILLIS);
 
         Assertions.assertDoesNotThrow(() -> scheduler.shutdown());
     }
