@@ -30,64 +30,53 @@ import org.bitrepository.service.audit.AuditTrailManager;
 import org.bitrepository.service.workflow.WorkflowContext;
 
 /**
- * Contains the general data needed by a integrity workflow. The class wraps a number of objects normally
- * needed by integrity workflows. This avoids complicated methods with lots a arguments.
+ * Contains the general data needed by an integrity workflow, avoiding methods with many arguments.
  */
-public class IntegrityWorkflowContext implements WorkflowContext {
-    private final Settings settings;
-    private final IntegrityInformationCollector collector;
-    private final IntegrityModel store;
-    private final IntegrityAlerter alerter;
-    private final AuditTrailManager auditManager;
+public record IntegrityWorkflowContext(
+    Settings settings,
+    IntegrityInformationCollector collector,
+    IntegrityModel store,
+    IntegrityAlerter alerter,
+    AuditTrailManager auditManager
+) implements WorkflowContext {
 
     /**
-     * @param settings     The <code>Settings</code> to use in the workflow.
-     * @param collector    The <code>IntegrityInformationCollector</code> to use in the workflow.
-     * @param store        The <code>IntegrityModel</code> to use in the workflow.
-     * @param alerter      The <code>IntegrityAlerter</code> to use in the workflow.
-     * @param auditManager The <code>AuditTrailManager</code> to use in the workflow.
+     * @deprecated Use {@link #settings()} instead
      */
-    public IntegrityWorkflowContext(Settings settings,
-                                    IntegrityInformationCollector collector,
-                                    IntegrityModel store,
-                                    IntegrityAlerter alerter,
-                                    AuditTrailManager auditManager) {
-        this.settings = settings;
-        this.collector = collector;
-        this.store = store;
-        this.alerter = alerter;
-        this.auditManager = auditManager;
-
-    }
-
+    @Deprecated(forRemoval = true)
     public Settings getSettings() {
         return settings;
     }
 
+    /**
+     * @deprecated Use {@link #collector()} instead
+     */
+    @Deprecated(forRemoval = true)
     public IntegrityInformationCollector getCollector() {
         return collector;
     }
 
+    /**
+     * @deprecated Use {@link #store()} instead
+     */
+    @Deprecated(forRemoval = true)
     public IntegrityModel getStore() {
         return store;
     }
 
+    /**
+     * @deprecated Use {@link #alerter()} instead
+     */
+    @Deprecated(forRemoval = true)
     public IntegrityAlerter getAlerter() {
         return alerter;
     }
 
+    /**
+     * @deprecated Use {@link #auditManager()} instead
+     */
+    @Deprecated(forRemoval = true)
     public AuditTrailManager getAuditManager() {
         return auditManager;
-    }
-
-    @Override
-    public String toString() {
-        return "IntegrityWorkflowContext{" +
-                "settings=" + settings +
-                ", collector=" + collector +
-                ", store=" + store +
-                ", alerter=" + alerter +
-                ", auditManager=" + auditManager + '\'' +
-                '}';
     }
 }

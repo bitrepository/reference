@@ -321,7 +321,7 @@ public class RestIntegrityService {
     public List<String> getWorkflowList(@QueryParam("collectionID") String collectionID) {
         List<String> workflowIDs = new ArrayList<>();
         for (JobID workflowID : workflowManager.getWorkflows(collectionID)) {
-            workflowIDs.add(workflowID.getWorkflowName());
+            workflowIDs.add(workflowID.workflowName());
         }
         return workflowIDs;
     }
@@ -615,7 +615,7 @@ public class RestIntegrityService {
         Workflow workflow = workflowManager.getWorkflow(workflowID);
         WorkflowStatistic lastRunStatistic = workflowManager.getLastCompleteStatistics(workflowID);
         jg.writeStartObject();
-        jg.writeObjectField("workflowID", workflowID.getWorkflowName());
+        jg.writeObjectField("workflowID", workflowID.workflowName());
         jg.writeObjectField("workflowDescription", workflow.getDescription());
         Instant nextScheduledRun = workflowManager.getNextScheduledRunInstant(workflowID);
         if (nextScheduledRun == null) {

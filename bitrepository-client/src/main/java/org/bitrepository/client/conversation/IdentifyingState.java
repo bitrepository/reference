@@ -122,7 +122,7 @@ public abstract class IdentifyingState extends GeneralConversationState {
     private void generateContributorsSelectedEvent(Collection<SelectedComponentInfo> selectedComponentInfo) {
         List<String> selectedComponentIDs = new LinkedList<>();
         for (SelectedComponentInfo componentInfo : selectedComponentInfo) {
-            selectedComponentIDs.add(componentInfo.getID());
+            selectedComponentIDs.add(componentInfo.componentID());
         }
         getContext().getMonitor().contributorsSelected(selectedComponentIDs);
     }

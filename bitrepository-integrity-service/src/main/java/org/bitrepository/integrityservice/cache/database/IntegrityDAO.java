@@ -36,7 +36,7 @@ import org.bitrepository.integrityservice.workflow.step.HandleObsoleteChecksumsS
 import org.bitrepository.service.database.DBConnector;
 import org.bitrepository.service.database.DatabaseUtils;
 import org.bitrepository.settings.referencesettings.ObsoleteChecksumSettings;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -624,7 +624,8 @@ public abstract class IntegrityDAO implements AutoCloseable {
                     Long dataSize = dbResult.getLong("file_size");
                     Long missingFiles = dbResult.getLong("missing_files_count");
                     Long checksumErrors = dbResult.getLong("checksum_errors_count");
-                    Long missingChecksums = dbResult.getLong("missing_checksums_count");
+                    long missingChecksumsValue = dbResult.getLong("missing_checksums_count");
+                    Long missingChecksums = dbResult.wasNull() ? null : missingChecksumsValue;
                     Long obsoleteChecksums = dbResult.getLong("obsolete_checksums_count");
                     Instant statsTime = null;
                     Instant updateTime = null;
@@ -649,7 +650,7 @@ public abstract class IntegrityDAO implements AutoCloseable {
         return stats;
     }
 
-    @NotNull
+    @NonNull
     private String getMaxAgeForChecksums(String pillarID) {
         ObsoleteChecksumSettings obsoleteChecksumSettings =
                 SettingsUtils.getIntegrityServiceSettings().getObsoleteChecksumSettings();

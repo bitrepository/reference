@@ -22,7 +22,7 @@
 package org.bitrepository.integrityservice.cache;
 
 import org.bitrepository.common.utils.TimeUtils;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -189,7 +189,7 @@ public class PillarCollectionStat {
     }
 
     /** @return Human-readable age of the oldest checksum, for example "3m 46s" */
-    @NotNull
+    @NonNull
     public String getAgeOfOldestChecksum() {
         if (oldestChecksumTimestamp == null) {
             return "N/A";

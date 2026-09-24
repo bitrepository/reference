@@ -58,8 +58,8 @@ public class GetFileStep extends AbstractWorkFlowStep {
 
     @Override
     public void performStep() {
-        IntegrityEventCompleteAwaiter eventHandler = new IntegrityEventCompleteAwaiter(context.getSettings());
-        context.getCollector().getFile(collectionId, fileId, uploadUrl, eventHandler, "IntegrityService: "
+        IntegrityEventCompleteAwaiter eventHandler = new IntegrityEventCompleteAwaiter(context.settings());
+        context.collector().getFile(collectionId, fileId, uploadUrl, eventHandler, "IntegrityService: "
                 + getName());
 
         OperationEvent event = eventHandler.getFinish();

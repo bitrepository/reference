@@ -24,46 +24,31 @@
  */
 package org.bitrepository.client.conversation.selector;
 
+import org.jspecify.annotations.NonNull;
+
 /**
- * Container for information about a pillar which as been identified and are marked as selected for a request.
+ * Container for information about a pillar which has been identified and marked as selected for a request.
+ *
+ * @param componentID    The ID of the selected pillar
+ * @param componentTopic The topic for communication with the selected pillar
  */
-public class SelectedComponentInfo {
-    /**
-     * The ID of the selected pillar
-     */
-    protected final String componentID;
-    /**
-     * The topic for communication with the selected pillar
-     */
-    protected final String componentTopic;
+public record SelectedComponentInfo(@NonNull String componentID, @NonNull String componentTopic) {
 
     /**
-     * @param componentID    The ID of the pillar
-     * @param componentTopic the topic for communication with the selected pillar
+     * @return The ID of the pillar chosen by this selector
+     * @deprecated Use {@link #componentID()} instead
      */
-    public SelectedComponentInfo(String componentID, String componentTopic) {
-        super();
-        this.componentID = componentID;
-        this.componentTopic = componentTopic;
-    }
-
-    /**
-     * @return The ID of the pillar chosen by this selector if finished. If unfinished null is returned
-     */
-    public String getID() {
+    @Deprecated(forRemoval = true)
+    public @NonNull String getID() {
         return componentID;
     }
 
     /**
-     * @return If finished return the topic for sending messages to the pillar chosen by this selector.
-     * If unfinished null is returned
+     * @return The topic for sending messages to the pillar chosen by this selector
+     * @deprecated Use {@link #componentTopic()} instead
      */
-    public String getDestination() {
+    @Deprecated(forRemoval = true)
+    public @NonNull String getDestination() {
         return componentTopic;
-    }
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + ": componentID=" + componentID + ", componentTopic=" + componentTopic;
     }
 }

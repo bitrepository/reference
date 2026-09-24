@@ -50,7 +50,7 @@ public abstract class PerformingOperationState extends GeneralConversationState 
         super(toComponentIDs(expectedContributors));
         this.activeContributors = new HashMap<>();
         for (SelectedComponentInfo contributorInfo : expectedContributors) {
-            activeContributors.put(contributorInfo.getID(), contributorInfo.getDestination());
+            activeContributors.put(contributorInfo.componentID(), contributorInfo.componentTopic());
         }
     }
 
@@ -114,7 +114,7 @@ public abstract class PerformingOperationState extends GeneralConversationState 
     private static Collection<String> toComponentIDs(Collection<SelectedComponentInfo> contributors) {
         Collection<String> componentIDs = new HashSet<>();
         for (SelectedComponentInfo componentInfo : contributors) {
-            componentIDs.add(componentInfo.getID());
+            componentIDs.add(componentInfo.componentID());
         }
         return componentIDs;
     }
