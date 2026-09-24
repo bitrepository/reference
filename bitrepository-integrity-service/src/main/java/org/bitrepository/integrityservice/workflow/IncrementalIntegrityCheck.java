@@ -64,4 +64,9 @@ public class IncrementalIntegrityCheck extends IntegrityCheckWorkflow {
     protected Instant getChecksumUpdateCutoffDate() {
         return Instant.EPOCH;
     }
+
+    @Override
+    protected boolean canDetectMissingChecksums() {
+        return false;
+    }
 }

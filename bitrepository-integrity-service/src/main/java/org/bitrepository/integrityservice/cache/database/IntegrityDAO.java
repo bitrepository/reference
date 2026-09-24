@@ -624,7 +624,8 @@ public abstract class IntegrityDAO implements AutoCloseable {
                     Long dataSize = dbResult.getLong("file_size");
                     Long missingFiles = dbResult.getLong("missing_files_count");
                     Long checksumErrors = dbResult.getLong("checksum_errors_count");
-                    Long missingChecksums = dbResult.getLong("missing_checksums_count");
+                    long missingChecksumsValue = dbResult.getLong("missing_checksums_count");
+                    Long missingChecksums = dbResult.wasNull() ? null : missingChecksumsValue;
                     Long obsoleteChecksums = dbResult.getLong("obsolete_checksums_count");
                     Instant statsTime = null;
                     Instant updateTime = null;
