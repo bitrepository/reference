@@ -104,7 +104,7 @@ public class PutFileRequestHandler extends PerformRequestHandler<PutFileRequest>
             retrieveFile(request);
             getAuditManager().addAuditEvent(request.getCollectionID(), request.getFileID(), request.getFrom(),
                     "Add file to archive.", request.getAuditTrailInformation(), FileAction.PUT_FILE,
-                    request.getCorrelationID(), requestContext.getCertificateFingerprint());
+                    request.getCorrelationID(), requestContext.certificateFingerprint());
             sendFinalResponse(request);
         } finally {
             getPillarModel().ensureFileNotInTmpDir(request.getFileID(), request.getCollectionID());

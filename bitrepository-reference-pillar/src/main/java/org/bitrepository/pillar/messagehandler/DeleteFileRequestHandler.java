@@ -136,7 +136,7 @@ public class DeleteFileRequestHandler extends PerformRequestHandler<DeleteFileRe
         deleteTheFile(request);
         getAuditManager().addAuditEvent(request.getCollectionID(), request.getFileID(), request.getFrom(),
                 "Deleting the file.", request.getAuditTrailInformation(), FileAction.DELETE_FILE,
-                request.getCorrelationID(), requestContext.getCertificateFingerprint());
+                request.getCorrelationID(), requestContext.certificateFingerprint());
         sendFinalResponse(request, resultingChecksum);
     }
 

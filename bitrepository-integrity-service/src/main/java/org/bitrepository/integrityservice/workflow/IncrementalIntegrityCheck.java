@@ -45,14 +45,14 @@ public class IncrementalIntegrityCheck extends IntegrityCheckWorkflow {
 
     @Override
     protected UpdateFileIDsStep getUpdateFileIDsStep() {
-        return new IncrementalUpdateFileIDsStep(context.getCollector(), context.getStore(), context.getAlerter(), context.getSettings(),
+        return new IncrementalUpdateFileIDsStep(context.collector(), context.store(), context.alerter(), context.settings(),
                 collectionID, integrityContributors);
     }
 
     @Override
     protected UpdateChecksumsStep getUpdateChecksumsStep() {
-        return new IncrementalUpdateChecksumsStep(context.getCollector(), context.getStore(), context.getAlerter(),
-                ChecksumUtils.getDefault(context.getSettings()), context.getSettings(), collectionID, integrityContributors);
+        return new IncrementalUpdateChecksumsStep(context.collector(), context.store(), context.alerter(),
+                ChecksumUtils.getDefault(context.settings()), context.settings(), collectionID, integrityContributors);
     }
 
     @Override

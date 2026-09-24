@@ -22,7 +22,7 @@
 package org.bitrepository.common.utils;
 
 import org.bitrepository.common.ArgumentValidator;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.DateFormat;
@@ -191,7 +191,7 @@ public final class TimeUtils {
         return humanPeriodAndDuration(periodBetween, durationBetween);
     }
 
-    @NotNull
+    @NonNull
     private static String humanPeriodAndDuration(Period period, Duration dur) {
         // Round duration to whole minutes
         dur = dur.plusSeconds(30).truncatedTo(ChronoUnit.MINUTES);
