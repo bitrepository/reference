@@ -37,9 +37,11 @@ import java.math.BigInteger;
 import java.time.Duration;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests the <code>TimeMeasureComparator</code> class.
