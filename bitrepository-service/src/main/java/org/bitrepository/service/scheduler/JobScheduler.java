@@ -89,4 +89,9 @@ public interface JobScheduler {
      * @param listener The callback listener to receive the events.
      */
     void addJobEventListener(JobEventListener listener);
+
+    /**
+     * Stops the scheduler and releases its resources. No further jobs will run after this returns.
+     */
+    void shutdown();
 }

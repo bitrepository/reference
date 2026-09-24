@@ -29,6 +29,7 @@ import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.ScheduledVirtualThreadExecutor;
 import org.bitrepository.common.TimerTaskSchedule;
 import org.bitrepository.common.exceptions.OperationFailedException;
 import org.bitrepository.common.settings.Settings;
@@ -58,8 +59,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Handles the preservation of audit trails to a collection defined for the local repository.
@@ -71,7 +71,7 @@ public class LocalAuditTrailPreserver extends AuditTrailTaskStarter implements A
     private final Map<String, AuditPacker> auditPackers = new HashMap<>();
     private final AuditTrailPreservation preservationSettings;
     private final FileExchange exchange;
-    private Timer timer;
+    private ScheduledVirtualThreadExecutor scheduler;
     private AuditPreservationTimerTask preservationTask = null;
     private long preservedAuditCount = 0;
 
@@ -114,9 +114,9 @@ public class LocalAuditTrailPreserver extends AuditTrailTaskStarter implements A
 
     @Override
     public void start() {
-        if (timer != null) {
-            log.debug("Cancelling old timer.");
-            timer.cancel();
+        if (scheduler != null) {
+            log.debug("Cancelling old scheduler.");
+            scheduler.close();
         }
 
         javax.xml.datatype.Duration preservationIntervalXmlDur = preservationSettings.getAuditTrailPreservationInterval();
@@ -124,17 +124,17 @@ public class LocalAuditTrailPreserver extends AuditTrailTaskStarter implements A
         Duration preservationGracePeriod = getGracePeriod();
         log.info("Starting preservation of audit trails every {} after grace period of {}.",
                 TimeUtils.durationToHuman(preservationInterval), TimeUtils.durationToHuman(preservationGracePeriod));
-        timer = new Timer(true);
+        scheduler = new ScheduledVirtualThreadExecutor("AuditTrailPreserver", true);
         preservationTask = new AuditPreservationTimerTask(preservationInterval.toMillis(),
                 Math.toIntExact(preservationGracePeriod.toMillis()));
-        timer.scheduleAtFixedRate(preservationTask, preservationGracePeriod.toMillis(), preservationInterval.toMillis());
+        scheduler.scheduleAtFixedRate(preservationTask, preservationGracePeriod.toMillis(), preservationInterval.toMillis(),
+                TimeUnit.MILLISECONDS);
     }
 
     @Override
     public void close() {
-        if (timer != null) {
-            preservationTask.cancel();
-            timer.cancel();
+        if (scheduler != null) {
+            scheduler.close();
         }
     }
 
@@ -260,7 +260,7 @@ public class LocalAuditTrailPreserver extends AuditTrailTaskStarter implements A
     /**
      * Timer task for keeping track of the automated collecting of audit trails.
      */
-    private class AuditPreservationTimerTask extends TimerTask {
+    private class AuditPreservationTimerTask implements Runnable {
         private final Logger log = LoggerFactory.getLogger(getClass());
         private final TimerTaskSchedule schedule;
 

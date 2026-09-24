@@ -24,6 +24,7 @@
  */
 package org.bitrepository.service.scheduler;
 
+import org.bitrepository.common.ScheduledVirtualThreadExecutor;
 import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.service.workflow.JobID;
 import org.bitrepository.service.workflow.JobTimerTask;
@@ -39,15 +40,17 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Scheduler that uses Timer to run workflows.
  */
 public class TimerBasedScheduler implements JobScheduler {
     private final Logger log = LoggerFactory.getLogger(getClass());
-    private final Timer timer;
+    private final ScheduledVirtualThreadExecutor scheduler;
     private final Map<JobID, JobTimerTask> intervalTasks = new HashMap<>();
+    private final Map<JobID, ScheduledFuture<?>> scheduledFutures = new HashMap<>();
     public static final long SCHEDULE_INTERVAL = 60000;
     private static final String TIMER_NAME = "Service Scheduler";
     private static final boolean TIMER_IS_DAEMON = true;
@@ -58,7 +61,7 @@ public class TimerBasedScheduler implements JobScheduler {
      * Sets up a timer task for running the workflows at requested interval.
      */
     public TimerBasedScheduler() {
-        timer = new Timer(TIMER_NAME, TIMER_IS_DAEMON);
+        scheduler = new ScheduledVirtualThreadExecutor(TIMER_NAME, TIMER_IS_DAEMON);
     }
 
     @Override
@@ -67,7 +70,7 @@ public class TimerBasedScheduler implements JobScheduler {
 
         JobTimerTask task = new JobTimerTask(interval, workflow, Collections.unmodifiableList(jobListeners));
         if (interval > 0) {
-            scheduleJob(task);
+            scheduledFutures.put(workflow.getJobID(), scheduleJob(task));
         }
 
         intervalTasks.put(workflow.getJobID(), task);
@@ -87,7 +90,7 @@ public class TimerBasedScheduler implements JobScheduler {
         }
 
         JobTimerTask task = new JobTimerTask(timeBetweenRuns, job, Collections.unmodifiableList(jobListeners));
-        scheduleJob(task);
+        scheduledFutures.put(job.getJobID(), scheduleJob(task));
         intervalTasks.put(job.getJobID(), task);
         return "Job scheduled";
     }
@@ -129,9 +132,17 @@ public class TimerBasedScheduler implements JobScheduler {
         if (task == null) {
             return null;
         }
-        task.cancel();
+        ScheduledFuture<?> future = scheduledFutures.remove(jobID);
+        if (future != null) {
+            future.cancel(false);
+        }
 
         return task;
+    }
+
+    @Override
+    public void shutdown() {
+        scheduler.close();
     }
 
     /**
@@ -141,11 +152,11 @@ public class TimerBasedScheduler implements JobScheduler {
      *
      * @param task The task to schedule.
      */
-    private void scheduleJob(JobTimerTask task) {
+    private ScheduledFuture<?> scheduleJob(JobTimerTask task) {
         if (task.getIntervalBetweenRuns() > 0) {
-            timer.scheduleAtFixedRate(task, NO_DELAY, SCHEDULE_INTERVAL);
+            return scheduler.scheduleAtFixedRate(task, NO_DELAY, SCHEDULE_INTERVAL, TimeUnit.MILLISECONDS);
         } else {
-            timer.schedule(task, NO_DELAY);
+            return scheduler.schedule(task, NO_DELAY, TimeUnit.MILLISECONDS);
         }
     }
 }

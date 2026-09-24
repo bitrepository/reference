@@ -29,6 +29,7 @@ import org.bitrepository.audittrails.AuditTrailTaskStarter;
 import org.bitrepository.audittrails.store.AuditTrailStore;
 import org.bitrepository.audittrails.webservice.CollectorInfo;
 import org.bitrepository.common.ArgumentValidator;
+import org.bitrepository.common.ScheduledVirtualThreadExecutor;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.common.utils.TimeUtils;
@@ -42,7 +43,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Timer;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Manages the retrieval of AuditTrails from contributors.
@@ -50,7 +51,7 @@ import java.util.Timer;
 public class AuditTrailCollector extends AuditTrailTaskStarter {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final Map<String, AuditTrailCollectionTimerTask> collectorTasks = new HashMap<>();
-    private final Timer timer;
+    private final ScheduledVirtualThreadExecutor scheduler;
 
     /**
      * @param settings        The settings for this collector.
@@ -64,7 +65,7 @@ public class AuditTrailCollector extends AuditTrailTaskStarter {
         ArgumentValidator.checkNotNull(client, "AuditTrailClient client");
         ArgumentValidator.checkNotNull(alarmDispatcher, "AlarmDispatcher alarmDispatcher");
 
-        this.timer = new Timer(true);
+        this.scheduler = new ScheduledVirtualThreadExecutor("AuditTrailCollector", true);
         javax.xml.datatype.Duration collectAuditInterval =
                 settings.getReferenceSettings().getAuditTrailServiceSettings().getCollectAuditInterval();
         Duration collectionInterval = XmlUtils.xmlDurationToDuration(collectAuditInterval);
@@ -80,7 +81,8 @@ public class AuditTrailCollector extends AuditTrailTaskStarter {
                     collector, collectionInterval.toMillis(), Math.toIntExact(collectionGracePeriod.toMillis()));
             log.info("Starting collection of audit trails every {} after grace period of {}.",
                     TimeUtils.durationToHuman(collectionInterval), TimeUtils.durationToHuman(collectionGracePeriod));
-            timer.scheduleAtFixedRate(collectorTask, collectionGracePeriod.toMillis(), collectionInterval.toMillis());
+            scheduler.scheduleAtFixedRate(collectorTask, collectionGracePeriod.toMillis(), collectionInterval.toMillis(),
+                    TimeUnit.MILLISECONDS);
             collectorTasks.put(c.getID(), collectorTask);
         }
     }
@@ -123,10 +125,7 @@ public class AuditTrailCollector extends AuditTrailTaskStarter {
      * Closes the AuditTrailCollector.
      */
     public void close() {
-        for (AuditTrailCollectionTimerTask timerTask : collectorTasks.values()) {
-            timerTask.cancel();
-        }
-        timer.cancel();
+        scheduler.close();
     }
 
 }
