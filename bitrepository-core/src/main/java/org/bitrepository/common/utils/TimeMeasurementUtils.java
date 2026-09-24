@@ -30,13 +30,15 @@ import org.bitrepository.common.ArgumentValidator;
 
 import java.math.BigInteger;
 import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 
 /**
  * Provides helper method for accessing {@link TimeMeasureTYPE} objects.
  */
 public class TimeMeasurementUtils {
 
-    private static final BigInteger MILLIS_PER_HOUR = BigInteger.valueOf(Duration.ofHours(1).toMillis());
+    static final BigInteger MILLIS_PER_HOUR = BigInteger.valueOf(Duration.ofHours(1).toMillis());
+    private static final BigInteger MILLISECONDS_PER_SECOND = BigInteger.valueOf(1000);
 
     /**
      * Private constructor. To prevent instantiation of this utility class.
@@ -117,4 +119,45 @@ public class TimeMeasurementUtils {
     public static long getTimeMeasureInLong(TimeMeasureTYPE time1) {
         return convertToMilliSeconds(time1).longValueExact();
     }
+
+    /**
+     * Converts a {@code TimeMeasureTYPE} to a {@code Duration}.
+     *
+     * @throws ArithmeticException by overflow of the range of {@code Duration}
+     * (roughly +/- 292 277 024 626 years)
+     */
+    public static Duration timeMeasureToDuration(TimeMeasureTYPE timeMeasure) {
+        BigInteger timeMeasureValue = timeMeasure.getTimeMeasureValue();
+        return switch (timeMeasure.getTimeMeasureUnit()) {
+            case MILLISECONDS -> {
+                BigInteger[] secondsAndMillis = timeMeasureValue.divideAndRemainder(MILLISECONDS_PER_SECOND);
+                yield Duration.ofSeconds(secondsAndMillis[0].longValueExact())
+                        .plusMillis(secondsAndMillis[1].intValueExact());
+            }
+            case HOURS -> Duration.ofHours(timeMeasureValue.longValueExact());
+        };
+    }
+
+    /**
+     * <p>Converts a {@code Duration} to a {@code TimeMeasureTYPE}.</p>
+     *
+     * <p>Any fraction of milliseconds is rounded towards zero (truncated).
+     * For example PT0.6666S is rounded to PT0.666S and PT-0.6666S to PT-0.666S</p>
+     */
+    public static TimeMeasureTYPE durationToTimeMeasure(Duration duration) {
+        duration = duration.truncatedTo(ChronoUnit.MILLIS);
+
+        if (duration.equals(duration.truncatedTo(ChronoUnit.HOURS))) { // Nothing smaller than hours
+            // Use hours as unit in result
+            TimeMeasureTYPE result = new TimeMeasureTYPE();
+            result.setTimeMeasureValue(BigInteger.valueOf(duration.toHours()));
+            result.setTimeMeasureUnit(TimeMeasureUnit.HOURS);
+            return result;
+        } else {
+            BigInteger totalMilliseconds = BigInteger.valueOf(duration.getSeconds()).multiply(MILLISECONDS_PER_SECOND)
+                    .add(BigInteger.valueOf(duration.toMillisPart()));
+            return getTimeMeasurementFromMilliseconds(totalMilliseconds);
+        }
+    }
+
 }
