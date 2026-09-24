@@ -46,15 +46,15 @@ public class CompleteIntegrityCheck extends IntegrityCheckWorkflow {
 
     @Override
     protected UpdateFileIDsStep getUpdateFileIDsStep() {
-        return new FullUpdateFileIDsStep(context.getCollector(), context.getStore(), context.getAlerter(),
-                context.getSettings(), collectionID, integrityContributors);
+        return new FullUpdateFileIDsStep(context.collector(), context.store(), context.alerter(),
+                context.settings(), collectionID, integrityContributors);
     }
 
 
     @Override
     protected UpdateChecksumsStep getUpdateChecksumsStep() {
-        return new FullUpdateChecksumsStep(context.getCollector(), context.getStore(), context.getAlerter(),
-                ChecksumUtils.getDefault(context.getSettings()), context.getSettings(), collectionID,
+        return new FullUpdateChecksumsStep(context.collector(), context.store(), context.alerter(),
+                ChecksumUtils.getDefault(context.settings()), context.settings(), collectionID,
                 integrityContributors);
     }
 
