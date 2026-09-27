@@ -34,13 +34,10 @@ import java.util.Objects;
 /**
  * Provide easy access to the MaxChecksumAge for individual pillars.
  */
-public class MaxChecksumAgeProvider {
-    private final Duration defaultMaxAge;
-    private final ObsoleteChecksumSettings settings;
+public record MaxChecksumAgeProvider(Duration defaultMaxAge, ObsoleteChecksumSettings settings) {
 
-    public MaxChecksumAgeProvider(Duration defaultMaxAge, ObsoleteChecksumSettings settings) {
-        this.defaultMaxAge = Objects.requireNonNull(defaultMaxAge, "defaultMaxAge");
-        this.settings = settings;
+    public MaxChecksumAgeProvider {
+        Objects.requireNonNull(defaultMaxAge, "defaultMaxAge");
     }
 
     /**

@@ -59,15 +59,15 @@ public class ExtractedChecksumResultSet {
      * @param entry The entry to add.
      */
     public void insertChecksumEntry(ChecksumEntry entry) {
-        var res = new ChecksumDataForChecksumSpecTYPE();
-        res.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(entry.getCalculationInstant()));
+        ChecksumDataForChecksumSpecTYPE res = new ChecksumDataForChecksumSpecTYPE();
+        res.setCalculationTimestamp(CalendarUtils.getXmlGregorianCalendar(entry.calculationInstant()));
         try {
-            res.setChecksumValue(Base16Utils.encodeBase16(entry.getChecksum()));
+            res.setChecksumValue(Base16Utils.encodeBase16(entry.checksum()));
         } catch (DecoderException e) {
             throw new IllegalArgumentException("Could not encode checksum.", e);
         }
 
-        res.setFileID(entry.getFileId());
+        res.setFileID(entry.fileID());
         entries.add(res);
     }
 

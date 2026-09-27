@@ -52,11 +52,11 @@ class GettingFile extends PerformingOperationState {
      * @param pillar  The pillar the file should be requested from.
      */
     public GettingFile(GetFileConversationContext context, SelectedComponentInfo pillar) {
-        super(pillar.getID());
+        super(pillar.componentID());
         this.context = context;
         this.selectedPillar = pillar;
         contributors = new HashSet<>();
-        contributors.add(pillar.getID());
+        contributors.add(pillar.componentID());
     }
 
     @Override
@@ -66,8 +66,8 @@ class GettingFile extends PerformingOperationState {
         msg.setFileAddress(context.getUrlForResult().toExternalForm());
         msg.setFileID(context.getFileID());
         msg.setFilePart(context.getFilePart());
-        msg.setPillarID(selectedPillar.getID());
-        msg.setDestination(selectedPillar.getDestination());
+        msg.setPillarID(selectedPillar.componentID());
+        msg.setDestination(selectedPillar.componentTopic());
         context.getMonitor().requestSent("Sending GetFileRequest to ", selectedPillar.toString());
         context.getMessageSender().sendMessage(msg);
     }

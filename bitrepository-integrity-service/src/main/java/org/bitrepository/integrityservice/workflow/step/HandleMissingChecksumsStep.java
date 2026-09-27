@@ -23,6 +23,7 @@ package org.bitrepository.integrityservice.workflow.step;
 
 import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.cache.IntegrityModel;
+import org.bitrepository.integrityservice.cache.PillarCollectionStat;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.integrityservice.reports.IntegrityReporter;
 import org.bitrepository.integrityservice.statistics.StatisticsCollector;
@@ -32,6 +33,9 @@ import org.bitrepository.service.workflow.AbstractWorkFlowStep;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * A workflow step for finding missing checksums.
@@ -42,13 +46,33 @@ public class HandleMissingChecksumsStep extends AbstractWorkFlowStep {
     private final IntegrityReporter reporter;
     private final StatisticsCollector sc;
     private final Instant cutoffDate;
+    private final boolean canDetectMissingChecksums;
 
+    /**
+     * @param cutoffDate                 the cutoff date to use when scanning for missing checksums. Only
+     *                                    consulted when canCountTotalMissingChecksums is true.
+     * @param canCountTotalMissingChecksums  whether this workflow run re-verifies every file and can therefore
+     *                                    authoritatively (re)compute the missing checksums count. When false,
+     *                                    the previously reported count is carried forward unchanged instead.
+     */
     public HandleMissingChecksumsStep(IntegrityModel store, IntegrityReporter reporter, StatisticsCollector statisticsCollector,
-                                      Instant latestChecksumUpdate) {
+                                      Instant cutoffDate, boolean canCountTotalMissingChecksums) {
         this.store = store;
         this.reporter = reporter;
         this.sc = statisticsCollector;
-        this.cutoffDate = latestChecksumUpdate;
+        this.cutoffDate = cutoffDate;
+        this.canDetectMissingChecksums = canCountTotalMissingChecksums;
+    }
+
+    /**
+     * @deprecated
+     * Use {@link #HandleMissingChecksumsStep(IntegrityModel, IntegrityReporter, StatisticsCollector, Instant, boolean)}
+     * instead.
+     */
+    @Deprecated
+    public HandleMissingChecksumsStep(IntegrityModel store, IntegrityReporter reporter, StatisticsCollector statisticsCollector,
+                                      Instant cutoffDate) {
+        this(store, reporter, statisticsCollector, cutoffDate, true);
     }
 
     @Override
@@ -66,9 +90,16 @@ public class HandleMissingChecksumsStep extends AbstractWorkFlowStep {
     public synchronized void performStep() throws StepFailedException {
         List<String> pillars = SettingsUtils.getPillarIDsForCollection(reporter.getCollectionID());
 
+        if (canDetectMissingChecksums) {
+            scanForMissingChecksums(pillars);
+        } else {
+            carryForwardPreviouslyReportedMissingChecksums(pillars);
+        }
+    }
+
+    private void scanForMissingChecksums(List<String> pillars) throws StepFailedException {
         for (String pillar : pillars) {
             Long missingChecksums = 0L;
-
 
             String missingFile;
             try (IntegrityIssueIterator missingChecksumsIterator = store.findFilesWithMissingChecksum(reporter.getCollectionID(), pillar,
@@ -82,6 +113,21 @@ public class HandleMissingChecksumsStep extends AbstractWorkFlowStep {
                     }
                 }
             }
+            sc.getPillarCollectionStat(pillar).setMissingChecksums(missingChecksums);
+        }
+    }
+
+    /**
+     * Carries the previously reported missing-checksums count forward unchanged. For pillars where no such
+     * count has been reported yet (e.g. before the first ever complete check), {@code null} is carried forward.
+     */
+    private void carryForwardPreviouslyReportedMissingChecksums(List<String> pillars) {
+        Map<String, PillarCollectionStat> previousStats = store.getLatestPillarStats(reporter.getCollectionID()).stream()
+                .collect(Collectors.toMap(PillarCollectionStat::getPillarID, Function.identity()));
+
+        for (String pillar : pillars) {
+            PillarCollectionStat previousStat = previousStats.get(pillar);
+            Long missingChecksums = previousStat != null ? previousStat.getMissingChecksums() : null;
             sc.getPillarCollectionStat(pillar).setMissingChecksums(missingChecksums);
         }
     }

@@ -43,7 +43,7 @@ public class IntegrityWorkflowManager extends WorkflowManager {
     public static final long HOURLY = 3_600_000;
 
     public IntegrityWorkflowManager(IntegrityWorkflowContext context, JobScheduler scheduler) {
-        super(context, getWorkflowSettings(context.getSettings()), scheduler);
+        super(context, getWorkflowSettings(context.settings()), scheduler);
     }
 
     private static WorkflowSettings getWorkflowSettings(Settings settings) {

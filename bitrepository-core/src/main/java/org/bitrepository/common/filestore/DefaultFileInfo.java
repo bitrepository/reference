@@ -29,11 +29,14 @@ import java.io.InputStream;
 /**
  * File info for the files of a default file system.
  */
-public class DefaultFileInfo implements FileInfo {
-    private final File file;
+public record DefaultFileInfo(File file) implements FileInfo {
 
-    public DefaultFileInfo(File file) {
-        this.file = file;
+    /**
+     * @deprecated Use {@link #file()} instead
+     */
+    @Deprecated(forRemoval = true)
+    public File getFile() {
+        return file;
     }
 
     @Override
@@ -54,9 +57,5 @@ public class DefaultFileInfo implements FileInfo {
     @Override
     public long getSize() {
         return file.length();
-    }
-
-    public File getFile() {
-        return file;
     }
 }

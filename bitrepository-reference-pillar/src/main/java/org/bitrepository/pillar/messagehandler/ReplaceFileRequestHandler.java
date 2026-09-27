@@ -122,7 +122,7 @@ public class ReplaceFileRequestHandler extends PerformRequestHandler<ReplaceFile
             replaceFile(request);
             getAuditManager().addAuditEvent(request.getCollectionID(), request.getFileID(), request.getFrom(),
                     "Replacing the file.", request.getAuditTrailInformation(), FileAction.REPLACE_FILE,
-                    request.getCorrelationID(), requestContext.getCertificateFingerprint());
+                    request.getCorrelationID(), requestContext.certificateFingerprint());
 
             ChecksumDataForFileTYPE requestedNewChecksum = calculateChecksumOnNewFile(request);
             sendFinalResponse(request, requestedOldChecksum, requestedNewChecksum);

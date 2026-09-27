@@ -79,7 +79,7 @@ public class IntegrityEventCompleteAwaiter implements EventHandler {
     public OperationEvent getFinish() {
         try {
             CountAndTimeUnit pollTimeout = TimeUtils.durationToCountAndTimeUnit(timeout);
-            return finalEventQueue.poll(pollTimeout.getCount(), pollTimeout.getUnit());
+            return finalEventQueue.poll(pollTimeout.count(), pollTimeout.unit());
         } catch (InterruptedException e) {
             throw new IllegalStateException("Interrupted while waiting for the final response.", e);
         }

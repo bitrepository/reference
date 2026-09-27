@@ -69,11 +69,11 @@ public class PutFileStep extends AbstractWorkFlowStep {
 
     @Override
     public void performStep() {
-        IntegrityEventCompleteAwaiter eventHandler = new IntegrityEventCompleteAwaiter(context.getSettings());
+        IntegrityEventCompleteAwaiter eventHandler = new IntegrityEventCompleteAwaiter(context.settings());
 
         ChecksumDataForFileTYPE checksumValidationData = new ChecksumDataForFileTYPE();
         checksumValidationData.setCalculationTimestamp(CalendarUtils.getNow());
-        checksumValidationData.setChecksumSpec(ChecksumUtils.getDefault(context.getSettings()));
+        checksumValidationData.setChecksumSpec(ChecksumUtils.getDefault(context.settings()));
         try {
             checksumValidationData.setChecksumValue(Base16Utils.encodeBase16(checksum));
         } catch (DecoderException e) {
@@ -81,7 +81,7 @@ public class PutFileStep extends AbstractWorkFlowStep {
         }
 
 
-        context.getCollector()
+        context.collector()
                 .putFile(collectionId, fileId, uploadUrl, checksumValidationData, eventHandler, "IntegrityService: " + getName());
 
         OperationEvent event = eventHandler.getFinish();

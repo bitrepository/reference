@@ -90,7 +90,7 @@ public class SimpleChecksumEventHandler implements EventHandler {
      */
     public OperationEvent getFinish() throws InterruptedException {
         CountAndTimeUnit pollTimeout = TimeUtils.durationToCountAndTimeUnit(timeout);
-        return finalEventQueue.poll(pollTimeout.getCount(), pollTimeout.getUnit());
+        return finalEventQueue.poll(pollTimeout.count(), pollTimeout.unit());
     }
 
     /**

@@ -29,6 +29,7 @@ import org.bitrepository.service.database.DatabaseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -192,6 +193,8 @@ public class AlarmDatabaseIngestor {
         return res.toArray();
     }
 
+    private static final String SQLSTATE_UNIQUE_VIOLATION = "23505";
+
     /**
      * Retrieve the guid for a given component. If the component does not exist within the component table,
      * then it is created.
@@ -199,7 +202,7 @@ public class AlarmDatabaseIngestor {
      * @param componentId The name of the alarm producing component.
      * @return The guid of the component with the given name.
      */
-    private synchronized long retrieveComponentGuid(String componentId) {
+    private long retrieveComponentGuid(String componentId) {
         String sqlRetrieve = "SELECT " + COMPONENT_GUID + " FROM " + COMPONENT_TABLE
                 + " WHERE " + COMPONENT_ID + " = ?";
 
@@ -208,12 +211,25 @@ public class AlarmDatabaseIngestor {
         if (guid == null) {
             log.debug("Inserting component '{}' into the component table", componentId);
             String sqlInsert = "INSERT INTO " + COMPONENT_TABLE + " ( " + COMPONENT_ID + " ) VALUES ( ? )";
-            DatabaseUtils.executeStatement(dbConnector, sqlInsert, componentId);
+            try {
+                DatabaseUtils.executeStatement(dbConnector, sqlInsert, componentId);
+            } catch (IllegalStateException e) {
+                if (!isUniqueConstraintViolation(e)) {
+                    throw e;
+                }
+                log.debug("Component '{}' was concurrently inserted by another thread, using its guid instead",
+                        componentId);
+            }
 
             guid = DatabaseUtils.selectLongValue(dbConnector, sqlRetrieve, componentId);
         }
 
         assert guid != null;
         return guid;
+    }
+
+    private boolean isUniqueConstraintViolation(IllegalStateException e) {
+        return e.getCause() instanceof SQLException sqlException
+                && SQLSTATE_UNIQUE_VIOLATION.equals(sqlException.getSQLState());
     }
 }
