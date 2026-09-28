@@ -1,5 +1,6 @@
 package org.bitrepository.common.utils;
 
+import org.bitrepository.TestGroups;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -12,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class CountAndTimeUnitTest {
 
     @Test
+    @Tag(TestGroups.REGRESSIONTEST)
     void accessorsReturnConstructorValues() {
         CountAndTimeUnit c = new CountAndTimeUnit(42, TimeUnit.SECONDS);
         assertEquals(42, c.count());
@@ -19,11 +21,13 @@ class CountAndTimeUnitTest {
     }
 
     @Test
+    @Tag(TestGroups.REGRESSIONTEST)
     void compactConstructorRejectsNullUnit() {
         assertThrows(NullPointerException.class, () -> new CountAndTimeUnit(1, null));
     }
 
     @Test
+    @Tag(TestGroups.REGRESSIONTEST)
     void equalityIsComponentBased() {
         CountAndTimeUnit a = new CountAndTimeUnit(5, TimeUnit.MINUTES);
         CountAndTimeUnit b = new CountAndTimeUnit(5, TimeUnit.MINUTES);
@@ -32,6 +36,7 @@ class CountAndTimeUnitTest {
     }
 
     @Test
+    @Tag(TestGroups.REGRESSIONTEST)
     void inequalityOnDifferentComponents() {
         CountAndTimeUnit base = new CountAndTimeUnit(5, TimeUnit.MINUTES);
         assertNotEquals(base, new CountAndTimeUnit(6, TimeUnit.MINUTES));
@@ -39,6 +44,7 @@ class CountAndTimeUnitTest {
     }
 
     @Test
+    @Tag(TestGroups.REGRESSIONTEST)
     void convertsToDuration() {
         assertEquals(Duration.ofSeconds(7), new CountAndTimeUnit(7, TimeUnit.SECONDS).toDuration());
 
@@ -67,6 +73,7 @@ class CountAndTimeUnitTest {
     }
 
     @Test
+    @Tag(TestGroups.REGRESSIONTEST)
     void failsOnOverflow() {
         assertThrows(ArithmeticException.class,
                 () -> new CountAndTimeUnit(153_722_867_280_912_931L, TimeUnit.MINUTES).toDuration());

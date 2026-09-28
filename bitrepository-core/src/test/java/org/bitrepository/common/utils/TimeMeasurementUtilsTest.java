@@ -136,6 +136,7 @@ class TimeMeasurementUtilsTest {
     }
 
     @Test
+    @Tag(TestGroups.REGRESSIONTEST)
     void convertsTimeMeasureTypeToDuration() {
         assertEquals(Duration.ofMillis(7),
                 TimeMeasurementUtils.timeMeasureToDuration(createTimeMeasure(7, TimeMeasureUnit.MILLISECONDS)));
@@ -165,6 +166,7 @@ class TimeMeasurementUtilsTest {
     }
 
     @Test
+    @Tag(TestGroups.REGRESSIONTEST)
     void overflowingDurationFails() {
         assertThrows(ArithmeticException.class,
                 () -> TimeMeasurementUtils.timeMeasureToDuration(
@@ -186,6 +188,7 @@ class TimeMeasurementUtilsTest {
     }
 
     @Test
+    @Tag(TestGroups.REGRESSIONTEST)
     void convertsDurationToTimeMeasureType() {
         assertEquals(createTimeMeasure(37, TimeMeasureUnit.MILLISECONDS),
                 TimeMeasurementUtils.durationToTimeMeasure(Duration.ofMillis(37)));
@@ -217,6 +220,7 @@ class TimeMeasurementUtilsTest {
 
     @ParameterizedTest
     @ValueSource(longs = { -2_562_047_788_015_215L, -37, -1, 0, 1, 13, 73, 2_562_047_788_015_215L })
+    @Tag(TestGroups.REGRESSIONTEST)
     void convertsDurationToTimeMeasureTypeWithOneOrTheOtherUnit(long hours) {
         // For some Durations either time unit is acceptable in the TimeMeasureTYPE,
         // and the implementation is free to choose.
@@ -232,6 +236,7 @@ class TimeMeasurementUtilsTest {
     }
 
     @Test
+    @Tag(TestGroups.REGRESSIONTEST)
     void truncatesMicroseconds() {
         assertEquals(createTimeMeasure(37, TimeMeasureUnit.MILLISECONDS),
                 TimeMeasurementUtils.durationToTimeMeasure(Duration.ofMillis(37).plusNanos(1)));
