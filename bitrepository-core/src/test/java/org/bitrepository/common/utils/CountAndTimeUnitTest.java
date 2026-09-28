@@ -44,7 +44,6 @@ class CountAndTimeUnitTest {
     }
 
     @Test
-    @Tag(TestGroups.REGRESSIONTEST)
     void convertsToDuration() {
         assertEquals(Duration.ofSeconds(7), new CountAndTimeUnit(7, TimeUnit.SECONDS).toDuration());
 
@@ -73,7 +72,6 @@ class CountAndTimeUnitTest {
     }
 
     @Test
-    @Tag(TestGroups.REGRESSIONTEST)
     void failsOnOverflow() {
         assertThrows(ArithmeticException.class,
                 () -> new CountAndTimeUnit(153_722_867_280_912_931L, TimeUnit.MINUTES).toDuration());
