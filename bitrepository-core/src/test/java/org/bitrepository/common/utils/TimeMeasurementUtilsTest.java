@@ -36,6 +36,11 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.math.BigInteger;
 import java.time.Duration;
 import java.util.Set;
+<<<<<<< HEAD
+=======
+
+import static org.junit.jupiter.api.Assertions.*;
+>>>>>>> 9ddbdaec7 (Add utility methods to convert time measures to and from durations and count-and-time-units to durations)
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 
@@ -136,7 +141,10 @@ class TimeMeasurementUtilsTest {
     }
 
     @Test
+<<<<<<< HEAD
     @Tag(TestGroups.REGRESSIONTEST)
+=======
+>>>>>>> 9ddbdaec7 (Add utility methods to convert time measures to and from durations and count-and-time-units to durations)
     void convertsTimeMeasureTypeToDuration() {
         assertEquals(Duration.ofMillis(7),
                 TimeMeasurementUtils.timeMeasureToDuration(createTimeMeasure(7, TimeMeasureUnit.MILLISECONDS)));
@@ -166,7 +174,10 @@ class TimeMeasurementUtilsTest {
     }
 
     @Test
+<<<<<<< HEAD
     @Tag(TestGroups.REGRESSIONTEST)
+=======
+>>>>>>> 9ddbdaec7 (Add utility methods to convert time measures to and from durations and count-and-time-units to durations)
     void overflowingDurationFails() {
         assertThrows(ArithmeticException.class,
                 () -> TimeMeasurementUtils.timeMeasureToDuration(
@@ -188,7 +199,10 @@ class TimeMeasurementUtilsTest {
     }
 
     @Test
+<<<<<<< HEAD
     @Tag(TestGroups.REGRESSIONTEST)
+=======
+>>>>>>> 9ddbdaec7 (Add utility methods to convert time measures to and from durations and count-and-time-units to durations)
     void convertsDurationToTimeMeasureType() {
         assertEquals(createTimeMeasure(37, TimeMeasureUnit.MILLISECONDS),
                 TimeMeasurementUtils.durationToTimeMeasure(Duration.ofMillis(37)));
@@ -220,7 +234,10 @@ class TimeMeasurementUtilsTest {
 
     @ParameterizedTest
     @ValueSource(longs = { -2_562_047_788_015_215L, -37, -1, 0, 1, 13, 73, 2_562_047_788_015_215L })
+<<<<<<< HEAD
     @Tag(TestGroups.REGRESSIONTEST)
+=======
+>>>>>>> 9ddbdaec7 (Add utility methods to convert time measures to and from durations and count-and-time-units to durations)
     void convertsDurationToTimeMeasureTypeWithOneOrTheOtherUnit(long hours) {
         // For some Durations either time unit is acceptable in the TimeMeasureTYPE,
         // and the implementation is free to choose.
@@ -236,7 +253,10 @@ class TimeMeasurementUtilsTest {
     }
 
     @Test
+<<<<<<< HEAD
     @Tag(TestGroups.REGRESSIONTEST)
+=======
+>>>>>>> 9ddbdaec7 (Add utility methods to convert time measures to and from durations and count-and-time-units to durations)
     void truncatesMicroseconds() {
         assertEquals(createTimeMeasure(37, TimeMeasureUnit.MILLISECONDS),
                 TimeMeasurementUtils.durationToTimeMeasure(Duration.ofMillis(37).plusNanos(1)));
