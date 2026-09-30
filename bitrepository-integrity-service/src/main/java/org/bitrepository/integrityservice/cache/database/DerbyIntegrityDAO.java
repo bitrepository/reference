@@ -27,6 +27,7 @@ import org.bitrepository.service.database.DatabaseUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Class handling the specifics of IntegrityDAO when the database is based on Derby
@@ -39,14 +40,17 @@ public class DerbyIntegrityDAO extends IntegrityDAO {
 
     @Override
     protected String getFindFilesWithMissingCopiesSql(int numberOfPillars) {
-        return "SELECT fileid FROM fileinfo"
-                + " WHERE collectionid = ?"
-                + " AND pillarid IN (" + placeholders(numberOfPillars) + ")"
-                + " GROUP BY fileid"
-                + " HAVING COUNT(fileid) < ?"
-                + " ORDER BY fileid"
-                + " OFFSET ? ROWS"
-                + " FETCH FIRST ? ROWS ONLY";
+        String sqlTemplate = """
+                SELECT fileid
+                  FROM fileinfo
+                  WHERE collectionid = ?
+                    AND pillarid IN (%s)
+                  GROUP BY fileid
+                  HAVING COUNT(fileid) < ?
+                  ORDER BY fileid
+                  OFFSET ? ROWS
+                  FETCH FIRST ? ROWS ONLY""";
+        return String.format(Locale.ROOT, sqlTemplate, placeholders(numberOfPillars));
     }
 
     @Override
