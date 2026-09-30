@@ -384,7 +384,7 @@ public abstract class IntegrityDAO implements AutoCloseable {
      * @return A comma-separated string of {@code count} "?" placeholders, for use in a SQL {@code IN (...)} clause.
      */
     protected static String placeholders(int count) {
-        return String.join(",", Collections.nCopies(count, "?"));
+        return String.join(", ", Collections.nCopies(count, "?"));
     }
 
     /**
