@@ -148,11 +148,10 @@ class XmlUtilsTest {
         long hours = 2_562_047_788_015L;
         TimeMeasureTYPE longTimeMeasure = XmlUtils.xmlDurationToTimeMeasure(factory.newDurationDayTime(
                 true, BigInteger.ZERO, BigInteger.valueOf(hours), BigInteger.ZERO, BigInteger.ZERO));
-        if (longTimeMeasure.getTimeMeasureUnit() == TimeMeasureUnit.HOURS) {
-            Assertions.assertEquals(BigInteger.valueOf(hours), longTimeMeasure.getTimeMeasureValue());
-        } else {
-            Assertions.assertEquals(TimeMeasureUnit.MILLISECONDS, longTimeMeasure.getTimeMeasureUnit());
-            Assertions.assertEquals(BigInteger.valueOf(Duration.ofHours(hours).toMillis()), longTimeMeasure.getTimeMeasureValue());
+        switch (longTimeMeasure.getTimeMeasureUnit()) {
+            case HOURS -> Assertions.assertEquals(BigInteger.valueOf(hours), longTimeMeasure.getTimeMeasureValue());
+            case MILLISECONDS -> Assertions.assertEquals(BigInteger.valueOf(Duration.ofHours(hours).toMillis()),
+                    longTimeMeasure.getTimeMeasureValue());
         }
     }
 
