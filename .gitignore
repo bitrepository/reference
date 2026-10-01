@@ -11,3 +11,4 @@ auditcontributerdb
 derby.log
 bitrepository.log
 bitrepository-reference-pillar/log
+.flattened-pom.xml
