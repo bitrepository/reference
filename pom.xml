@@ -514,7 +514,6 @@
           </execution>
           <execution>
             <id>report</id>
-            <!-- verify, not test: failsafe ITs append to the same jacoco.exec and run after the test phase -->
             <phase>verify</phase>
             <goals>
               <goal>report</goal>
