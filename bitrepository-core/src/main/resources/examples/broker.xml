@@ -1,0 +1,143 @@
+<!--
+  #%L
+  Bitrepository Core
+  %%
+  Copyright (C) 2010 - 2026 Royal Danish Library and The State Archives, Denmark
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Lesser General Public License as
+  published by the Free Software Foundation, either version 2.1 of the
+  License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Lesser Public License for more details.
+
+  You should have received a copy of the GNU General Lesser Public
+  License along with this program.  If not, see
+  <http://www.gnu.org/licenses/lgpl-2.1.html>.
+  #L%
+-->
+<!--
+  Reference Apache ActiveMQ Artemis broker configuration (broker.xml).
+
+  This is the Artemis counterpart of the ActiveMQ Classic activemq.xml. Bitrepository does not ship a
+  Classic activemq.xml (the broker is provisioned outside this repository), so this file is the from-scratch
+  expression of the application's message-routing needs, written against repository conventions:
+
+    * <CollectionDestination> (e.g. topic://dummy-repository-id)      -> <address> with <multicast>
+    * <AlarmDestination>       (e.g. topic://dummy-repository-id.alarms) -> <address> with <multicast> (durable)
+    * <ReceiverDestinationID>/<ContributorDestinationID> (queue://...) -> <address> with <anycast>
+
+  Point-to-point destinations (<ReceiverDestinationID>/<ContributorDestinationID>) are built as queue:// by
+  DefaultReceiverDestinationIDFactory / UserSpecificReceiverDestinationIDFactory and are
+  passed to Session.createQueue(...). Their names are dynamic (<collection>-<componentID>), so they are NOT
+  declared statically here; they are auto-created as ANYCAST queues by the client on first use.
+
+  Because these destination names are dynamic, auto-create must stay enabled (see the <address-setting> appending
+  to "#"). Do not disable it, or every <collection>/<componentID> combination would have to be enumerated here.
+
+  Adjust at a minimum before production use:
+    * acceptor addresses/ports, and TLS (see the commented tls acceptor matching the example RepositorySettings URL)
+    * <security-settings> - this file is deliberately permissive; tighten to your authenticators/roles
+    * persistence and broker <name>
+-->
+<configuration xmlns="urn:activemq" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:schemaLocation="urn:activemq /schema/artemis-configuration.xsd">
+
+    <core xmlns="urn:activemq:core">
+
+        <name>bitmagasin-broker</name>
+
+        <!-- Persist messages across broker restarts. Disable for ephemeral/test brokers only. -->
+        <persistence-enabled>true</persistence-enabled>
+        <journal-type>ASYNCIO</journal-type>
+
+        <acceptors>
+            <!-- Plain (CORE) acceptor the clients connect to with the connection factory URL, see the
+                 example MessageBusConfiguration <URL> in RepositorySettings.xml. The Bitrepository clients use
+                 the Artemis CORE protocol via ActiveMQConnectionFactory. -->
+            <acceptor name="core">tcp://0.0.0.0:12345?protocols=CORE;tcpSendBufferSize=1048576;tcpReceiveBufferSize=1048576</acceptor>
+
+            <!-- In-VM, used by embedded/test brokers. -->
+            <acceptor name="invm">vm://0?protocols=CORE</acceptor>
+
+            <!-- TLS acceptor matching the example secure MessageBusConfiguration URL (ssl://messagebus:61601).
+                 Comment the two lines in to enable TLS. -->
+            <!-- <acceptor name="core-ssl">ssl://0.0.0.0:61601?protocols=CORE;keyStorePath=/etc/broker/broker.keystore;keyStorePassword=${KEYSTORE_PASSWORD}</acceptor> -->
+        </acceptors>
+
+        <!-- See comments at the top: permissive reference values. Harden for production. -->
+        <security-settings>
+            <security-setting match="#">
+                <permission type="createNonDurableQueue" roles="amq"/>
+                <permission type="deleteNonDurableQueue" roles="amq"/>
+                <permission type="createDurableQueue" roles="amq"/>
+                <permission type="deleteDurableQueue" roles="amq"/>
+                <permission type="createAddress" roles="amq"/>
+                <permission type="deleteAddress" roles="amq"/>
+                <permission type="consume" roles="amq"/>
+                <permission type="send" roles="amq"/>
+                <permission type="manage" roles="amq"/>
+            </security-setting>
+        </security-settings>
+
+        <address-settings>
+            <!--
+              Global defaults. AUTO-CREATE IS REQUIRED: receiver/contributor (<queue>) destinations and the
+              per-component queues under the multicast addresses are created on demand - see heading comment.
+              Dead-letter: unmatched/expired messages are shipped to DLQ/DLQ-expiry for manual inspection.
+            -->
+            <address-setting match="#">
+                <dead-letter-address>DLQ</dead-letter-address>
+                <expiry-address>ExpiryQueue</expiry-address>
+                <max-delivery-attempts>5</max-delivery-attempts>
+                <redelivery-delay>0</redelivery-delay>
+                <auto-create-addresses>true</auto-create-addresses>
+                <auto-delete-addresses>false</auto-delete-addresses>
+                <auto-create-queues>true</auto-create-queues>
+                <auto-delete-queues>false</auto-delete-queues>
+            </address-setting>
+
+            <!--
+              Broadcast + private-destination families of the example repository (dummy-repository-id[.-]...).
+              Bound memory so a single loaded collection/pillar cannot exhaust broker heap and starve others.
+              Routing type (anycast vs multicast) is decided at queue-creation time by the JMS client
+              (createQueue -> ANYCAST, createTopic subscriber -> MULTICAST), so ALL these addresses can share
+              one set of memory/DLQ limits regardless of binding type.
+            -->
+            <address-setting match="dummy-repository-id#">
+                <max-size-bytes>104857600</max-size-bytes>
+                <page-size-bytes>1048576</page-size-bytes>
+                <address-full-policy>PAGE</address-full-policy>
+            </address-setting>
+
+            <!--
+              Alarm family (durable, multicast). Alarms must not be dropped, so bounded retention + a dead
+              letter after the max delivery attempts: a failed alarm ends up on DLQ for inspection rather than
+              vanishing.
+            -->
+            <address-setting match="dummy-repository-id.alarms#">
+                <default-last-value-queue>false</default-last-value-queue>
+            </address-setting>
+        </address-settings>
+
+        <!--
+          Multicast (pub/sub) addresses. Anycast (point-to-point) addresses are intentionally not listed here:
+          they are dynamic per component and auto-created as ANYCAST by the clients.
+        -->
+        <addresses>
+            <!-- <CollectionDestination> - broadcast of Identify* requests to all pillars of the collection. -->
+            <address name="dummy-repository-id">
+                <multicast/>
+            </address>
+
+            <!-- <AlarmDestination> - durable broadcast of alarms to the alarm service(s). -->
+            <address name="dummy-repository-id.alarms">
+                <multicast/>
+            </address>
+        </addresses>
+
+    </core>
+</configuration>
