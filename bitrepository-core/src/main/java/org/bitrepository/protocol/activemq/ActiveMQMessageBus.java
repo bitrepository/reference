@@ -409,22 +409,6 @@ public class ActiveMQMessageBus implements MessageBus {
     }
 
     /**
-     * The single physical consumer currently attached to a destination, together with the listener it is
-     * currently dispatching to. Tell whether the caller still owns this consumer, or whether a newer listener has
-     * already replaced it - in the latter case there is nothing to tear
-     * down, since the consumer now belongs to that newer listener.
-     */
-    private static final class ConsumerRegistration {
-        private final MessageConsumer consumer;
-        private volatile MessageListener currentListener;
-
-        private ConsumerRegistration(MessageConsumer consumer, MessageListener currentListener) {
-            this.consumer = consumer;
-            this.currentListener = currentListener;
-        }
-    }
-
-    /**
      * Class for handling the message bus exceptions.
      */
     private class MessageBusExceptionListener implements ExceptionListener {
