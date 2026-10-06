@@ -720,6 +720,36 @@ class IntegrityDAOTest extends IntegrityDatabaseTestCase {
     @Tag(TestGroups.REGRESSIONTEST)
     @Tag(TestGroups.DATABASETEST)
     @Tag("integritytest")
+    @SuppressWarnings("removal")
+    void testMissingFilesIgnoreCopiesOnPillarsOutsideTheCollection() {
+        addDescription("Tests that a copy on a pillar no longer in the collection does not hide a missing file, "
+                + "also when using the deprecated expected copies method.");
+        try (IntegrityDAO cache = createDAO()) {
+            String file2 = TEST_FILE_ID + "-2";
+
+            addStep("Insert the second file on the first pillar and on a pillar outside the collection",
+                    "The second file has two copies, but only one on the collection's pillars");
+            cache.updateFileIDs(getFileIDsData(TEST_FILE_ID, file2), TEST_PILLAR_1, TEST_COLLECTIONID);
+            cache.updateFileIDs(getFileIDsData(TEST_FILE_ID), TEST_PILLAR_2, TEST_COLLECTIONID);
+            cache.updateFileIDs(getFileIDsData(file2), EXTRA_PILLAR, TEST_COLLECTIONID);
+
+            addStep("Extract missing files for the collection's pillars", "The second file is missing");
+            List<String> missingFiles = getIssuesFromIterator(cache.findFilesWithMissingCopies(TEST_COLLECTIONID,
+                    List.of(TEST_PILLAR_1, TEST_PILLAR_2), 0L, 10L));
+            Assertions.assertEquals(List.of(file2), missingFiles);
+
+            addStep("Extract missing files with the deprecated expected copies method",
+                    "Same result, as it uses the pillars configured for the collection");
+            List<String> missingFilesDeprecated = getIssuesFromIterator(
+                    cache.findFilesWithMissingCopies(TEST_COLLECTIONID, 2, 0L, 10L));
+            Assertions.assertEquals(missingFiles, missingFilesDeprecated);
+        }
+    }
+
+    @Test
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
+    @Tag("integritytest")
     void testGetLatestFileDateEntryForCollection() {
         addDescription("Tests that checksum date entries can be retrieved and manipulated.");
         try (IntegrityDAO cache = createDAO()) {

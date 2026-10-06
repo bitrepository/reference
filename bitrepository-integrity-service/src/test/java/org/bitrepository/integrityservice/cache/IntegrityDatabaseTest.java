@@ -211,6 +211,27 @@ class IntegrityDatabaseTest extends IntegrityDatabaseTestCase {
         Assertions.assertEquals(0, fileinfos.size());
     }
 
+    @Test
+    @Tag(TestGroups.REGRESSIONTEST)
+    @Tag(TestGroups.DATABASETEST)
+    @Tag(INTEGRITYTEST)
+    @SuppressWarnings("removal")
+    void deprecatedFindFilesWithMissingCopiesUsesTheCollectionsPillars() {
+        addDescription("Tests that the deprecated expected copies method gives the same result as the pillar based one.");
+        IntegrityModel model = new IntegrityDatabase(settings);
+        String file2 = TEST_FILE_ID + "-2";
+        model.addFileIDs(getFileIDsData(TEST_FILE_ID, file2), TEST_PILLAR_1, TEST_COLLECTIONID);
+        model.addFileIDs(getFileIDsData(TEST_FILE_ID), TEST_PILLAR_2, TEST_COLLECTIONID);
+
+        Collection<String> missingFiles = getIssuesFromIterator(model.findFilesWithMissingCopies(TEST_COLLECTIONID,
+                SettingsUtils.getPillarIDsForCollection(TEST_COLLECTIONID), 0L, Long.MAX_VALUE));
+        Collection<String> missingFilesDeprecated = getIssuesFromIterator(
+                model.findFilesWithMissingCopies(TEST_COLLECTIONID, 2, 0L, Long.MAX_VALUE));
+
+        Assertions.assertEquals(List.of(file2), missingFiles);
+        Assertions.assertEquals(missingFiles, missingFilesDeprecated);
+    }
+
     private List<ChecksumDataForChecksumSpecTYPE> getChecksumResults(String fileID, String checksum) {
         List<ChecksumDataForChecksumSpecTYPE> res = new ArrayList<>();
 
