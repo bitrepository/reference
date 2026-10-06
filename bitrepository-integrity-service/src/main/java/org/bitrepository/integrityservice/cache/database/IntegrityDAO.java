@@ -427,6 +427,25 @@ public abstract class IntegrityDAO implements AutoCloseable {
     }
 
     /**
+     * Method to find files in a given collection missing on a given pillar
+     *
+     * @param collectionID   The ID of the collection
+     * @param expectedCopies Ignored. The number of copies is now given by the pillars configured for the collection.
+     * @param firstIndex     start the iterator at this index, or 0 if null
+     * @param maxResults     maxResults
+     * @return Iterator with the fileIDs that could not be found on one of the collection's pillars
+     * @deprecated Counting copies against a number is unreliable, as leftover fileinfo rows from a pillar removed
+     * from the collection can hide a file missing from an active pillar. This now delegates to
+     * {@link #findFilesWithMissingCopies(String, List, Long, Long)} with the pillars configured for the collection.
+     */
+    @Deprecated(forRemoval = true)
+    public IntegrityIssueIterator findFilesWithMissingCopies(String collectionID, int expectedCopies,
+                                                             Long firstIndex, Long maxResults) {
+        return findFilesWithMissingCopies(collectionID, SettingsUtils.getPillarIDsForCollection(collectionID),
+                firstIndex, maxResults);
+    }
+
+    /**
      * Method to find the files in a collection where the pillars do not agree upon the checksum
      *
      * @param collectionID The ID of the collection
