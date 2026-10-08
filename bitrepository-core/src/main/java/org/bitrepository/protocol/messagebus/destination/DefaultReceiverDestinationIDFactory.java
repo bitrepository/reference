@@ -21,9 +21,22 @@
  */
 package org.bitrepository.protocol.messagebus.destination;
 
+/**
+ * Builds the receiver destination a single component uses for messages addressed specifically to it (replies to
+ * its own requests, and requests sent directly to it, e.g. a chosen pillar's PutFileRequest). This is
+ * point-to-point by nature - exactly one component ever consumes each such message.
+ */
 public class DefaultReceiverDestinationIDFactory implements ReceiverDestinationIDFactory {
+    private static final String SCHEME_SEPARATOR = "://";
+    private static final String QUEUE_SCHEME = "queue" + SCHEME_SEPARATOR;
+
     @Override
     public String getReceiverDestinationID(String componentID, String collectionDestinationID) {
-        return collectionDestinationID + "-" + componentID;
+        return QUEUE_SCHEME + withoutScheme(collectionDestinationID) + "-" + componentID;
+    }
+
+    private static String withoutScheme(String destinationID) {
+        int schemeEnd = destinationID.indexOf(SCHEME_SEPARATOR);
+        return schemeEnd == -1 ? destinationID : destinationID.substring(schemeEnd + SCHEME_SEPARATOR.length());
     }
 }
