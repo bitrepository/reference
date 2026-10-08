@@ -143,10 +143,12 @@ class GetChecksumsRequestHandlerTest {
 
         handler.processRequest(request, fixture.messageContext());
 
-        GetChecksumsFinalResponse finalResponse = (GetChecksumsFinalResponse) fixture.dispatchedResponses().get(1);
+        Assertions.assertEquals(2, fixture.dispatchedResponses().size());
+        GetChecksumsFinalResponse finalResponse = (GetChecksumsFinalResponse) fixture.dispatchedResponses().getLast();
         Assertions.assertEquals(request.getResultAddress(),
                 finalResponse.getResultingChecksums().getResultAddress());
-        Assertions.assertTrue(finalResponse.getResultingChecksums().getChecksumDataItems().isEmpty());
+        Assertions.assertTrue(finalResponse.getResultingChecksums().getChecksumDataItems().isEmpty(),
+                "Actual: " +  finalResponse.getResultingChecksums().getChecksumDataItems());
         String delivered = Files.readString(tempDir.resolve("checksums-result"));
         Assertions.assertTrue(delivered.contains(FILE_ID) && delivered.contains(OTHER_FILE_ID),
                 "Delivered result should contain both file IDs: " + delivered);
@@ -164,7 +166,8 @@ class GetChecksumsRequestHandlerTest {
                 () -> handler.processRequest(request, fixture.messageContext()));
 
         assertResponseCode(ResponseCode.FILE_TRANSFER_FAILURE, e);
-        Assertions.assertEquals(1, fixture.dispatchedResponses().size(), "Only the progress response should have been sent");
+        Assertions.assertEquals(1, fixture.dispatchedResponses().size(),
+                "Only the progress response should have been sent");
     }
 
     @Test
