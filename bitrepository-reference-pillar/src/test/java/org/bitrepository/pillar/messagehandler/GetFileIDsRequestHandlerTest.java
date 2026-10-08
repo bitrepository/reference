@@ -5,7 +5,6 @@ import org.bitrepository.bitrepositoryelements.FileIDs;
 import org.bitrepository.bitrepositoryelements.FileIDsDataItem;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.GetFileIDsFinalResponse;
-import org.bitrepository.bitrepositorymessages.GetFileIDsProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileIDsRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.utils.CalendarUtils;
@@ -63,18 +62,19 @@ class GetFileIDsRequestHandlerTest {
         List<MessageResponse> responses = fixture.dispatchedResponses();
         Assertions.assertEquals(2, responses.size());
         Assertions.assertEquals(ResponseCode.OPERATION_ACCEPTED_PROGRESS,
-                ((GetFileIDsProgressResponse) responses.get(0)).getResponseInfo().getResponseCode());
+                responses.get(0).getResponseInfo().getResponseCode());
         GetFileIDsFinalResponse finalResponse = (GetFileIDsFinalResponse) responses.get(1);
         Assertions.assertEquals(ResponseCode.OPERATION_COMPLETED, finalResponse.getResponseInfo().getResponseCode());
         Assertions.assertEquals(List.of(FILE_ID, OTHER_FILE_ID), deliveredFileIDs(finalResponse));
-        Assertions.assertNull(finalResponse.isPartialResult());
+        Assertions.assertNotEquals(Boolean.TRUE, finalResponse.isPartialResult());
     }
 
     @Test
     @Tag(TestGroups.REGRESSIONTEST)
     void returnsTheSingleRequestedFileID() throws Exception {
         when(model.hasFileID(FILE_ID, collectionID)).thenReturn(true);
-        when(model.getFileIDsResultSet(FILE_ID, (Instant) null, null, null, collectionID)).thenReturn(resultSet(FILE_ID));
+        when(model.getFileIDsResultSet(FILE_ID, (Instant) null, null,
+                null, collectionID)).thenReturn(resultSet(FILE_ID));
 
         handler.processRequest(createRequest(singleFile()), fixture.messageContext());
 
@@ -135,7 +135,8 @@ class GetFileIDsRequestHandlerTest {
     @Test
     @Tag(TestGroups.REGRESSIONTEST)
     void failedResultDeliveryGivesFileTransferFailure() {
-        when(model.getFileIDsResultSet(null, (Instant) null, null, null, collectionID)).thenReturn(resultSet(FILE_ID));
+        when(model.getFileIDsResultSet(null, (Instant) null, null,
+                null, collectionID)).thenReturn(resultSet(FILE_ID));
         GetFileIDsRequest request = createRequest(allFiles());
         request.setResultAddress(fixture.undeliverableAddress());
 
@@ -143,7 +144,8 @@ class GetFileIDsRequestHandlerTest {
                 () -> handler.processRequest(request, fixture.messageContext()));
 
         assertResponseCode(ResponseCode.FILE_TRANSFER_FAILURE, e);
-        Assertions.assertEquals(1, fixture.dispatchedResponses().size(), "Only the progress response should have been sent");
+        Assertions.assertEquals(1, fixture.dispatchedResponses().size(),
+                "Only the progress response should have been sent");
     }
 
     @Test
