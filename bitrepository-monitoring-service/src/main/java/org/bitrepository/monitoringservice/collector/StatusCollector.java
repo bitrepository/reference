@@ -23,14 +23,14 @@ package org.bitrepository.monitoringservice.collector;
 
 import org.bitrepository.access.getstatus.GetStatusClient;
 import org.bitrepository.client.eventhandler.EventHandler;
+import org.bitrepository.common.ScheduledVirtualThreadExecutor;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.utils.XmlUtils;
 import org.bitrepository.monitoringservice.alarm.MonitorAlerter;
 import org.bitrepository.monitoringservice.status.StatusStore;
 
 import java.time.Duration;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The collector of status messages.
@@ -41,7 +41,8 @@ public class StatusCollector {
     private final EventHandler eventHandler;
     private static final boolean TIMER_IS_DAEMON = true;
     private static final String NAME_OF_TIMER = "GetStatus collection timer";
-    private static final Timer timer = new Timer(NAME_OF_TIMER, TIMER_IS_DAEMON);
+    private static final ScheduledVirtualThreadExecutor scheduler =
+            new ScheduledVirtualThreadExecutor(NAME_OF_TIMER, TIMER_IS_DAEMON);
     /** Collection interval in milliseconds */
     private final long collectionInterval;
 
@@ -65,14 +66,14 @@ public class StatusCollector {
      * Start the collection of statuses
      */
     public void start() {
-        timer.schedule(new StatusCollectorTimerTask(), 0, collectionInterval);
+        scheduler.scheduleWithFixedDelay(new StatusCollectorTimerTask(), 0, collectionInterval, TimeUnit.MILLISECONDS);
     }
 
     /**
      * Stop the collection of statuses
      */
     public void stop() {
-        timer.cancel();
+        scheduler.close();
     }
 
     /**
@@ -80,7 +81,7 @@ public class StatusCollector {
      * Tells the store that a new status request has been issued, and then starts the conversation for retrieving the
      * status from all the contributors.
      */
-    private class StatusCollectorTimerTask extends TimerTask {
+    private class StatusCollectorTimerTask implements Runnable {
         @Override
         public void run() {
             statusStore.updateReplyCounts();
