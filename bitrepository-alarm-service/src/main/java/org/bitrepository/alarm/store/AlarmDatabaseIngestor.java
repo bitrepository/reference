@@ -194,6 +194,10 @@ public class AlarmDatabaseIngestor {
         return res.toArray();
     }
 
+    /**
+     * Standard SQL SqlState value meaning attempt to violate the uniqueness of a unique index.
+     * See <a href = "https://www.postgresql.org/docs/current/errcodes-appendix.html">PostgreSQL Error Codes</a>.
+     */
     private static final String SQLSTATE_UNIQUE_VIOLATION = "23505";
 
     /**
