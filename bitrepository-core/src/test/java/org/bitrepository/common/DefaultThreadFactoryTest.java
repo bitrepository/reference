@@ -10,6 +10,7 @@ import org.mockito.ArgumentCaptor;
 import org.slf4j.LoggerFactory;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.startsWith;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Mockito.mock;
@@ -67,5 +68,36 @@ class DefaultThreadFactoryTest {
         assertThat( logLine.getLoggerName(), is( equalTo( DefaultThreadFactoryTest.class.getName())));
 
         assertThat( logLine.getThrowableProxy().getMessage(), is( equalTo( DefaultThreadFactoryTest.this.message)));
+    }
+
+    @Test
+    @Tag(TestGroups.REGRESSIONTEST)
+    void testVirtualThreadBuilderLogsUncaughtExceptions() throws Exception {
+        ch.qos.logback.classic.Logger rootLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(
+                ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+        @SuppressWarnings("unchecked")
+        final Appender<ILoggingEvent> mockAppender = mock(Appender.class);
+        when(mockAppender.getName()).thenReturn("MOCK");
+        rootLogger.addAppender(mockAppender);
+        ArgumentCaptor<ILoggingEvent> argument = ArgumentCaptor.forClass(ILoggingEvent.class);
+
+        Thread thread;
+        try {
+            thread = DefaultThreadFactory.virtualThreadBuilder().name("virtual-", 0).unstarted(() -> {
+                throw new RuntimeException(message);
+            });
+            thread.start();
+            thread.join();
+            verify(mockAppender).doAppend(argument.capture());
+        } finally {
+            rootLogger.detachAppender(mockAppender);
+        }
+
+        assertThat(thread.isVirtual(), is(true));
+        assertThat(thread.getName(), startsWith("virtual-"));
+        ILoggingEvent logLine = argument.getValue();
+        assertThat(logLine.getLevel(), is(equalTo(Level.ERROR)));
+        assertThat(logLine.getLoggerName(), is(equalTo(DefaultThreadFactoryTest.class.getName())));
+        assertThat(logLine.getThrowableProxy().getMessage(), is(equalTo(DefaultThreadFactoryTest.this.message)));
     }
 }

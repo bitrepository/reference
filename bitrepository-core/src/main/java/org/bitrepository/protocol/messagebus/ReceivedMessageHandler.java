@@ -22,6 +22,7 @@
 package org.bitrepository.protocol.messagebus;
 
 import org.bitrepository.bitrepositorymessages.Message;
+import org.bitrepository.common.DefaultThreadFactory;
 import org.bitrepository.protocol.MessageContext;
 import org.bitrepository.protocol.utils.MessageCategoryUtils;
 import org.bitrepository.settings.referencesettings.MessageCategory;
@@ -48,14 +49,9 @@ import java.util.concurrent.TimeUnit;
 public class ReceivedMessageHandler implements Closeable {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final ExecutorModel executorModel;
-    /** Builds the virtual threads backing the bounded-concurrency executors below. */
-    private final ThreadFactory threadFactory = Thread.ofVirtual()
+    /** Builds the named, error-logging virtual threads backing all the executors below. */
+    private final ThreadFactory threadFactory = DefaultThreadFactory.virtualThreadBuilder()
             .name("ReceivedMessageHandler-", 0)
-            .uncaughtExceptionHandler((thread, throwable) -> {
-                String throwingClass = throwable.getStackTrace()[0].getClassName();
-                Logger logger = LoggerFactory.getLogger(throwingClass);
-                logger.error("UncaughtExceptionHandler caught Exception:", throwable);
-            })
             .factory();
 
     public ReceivedMessageHandler(MessageThreadPools messageThreadPools) {
@@ -119,7 +115,7 @@ public class ReceivedMessageHandler implements Closeable {
 
         ConcurrencyLimitedExecutorService(int maxConcurrency, ThreadFactory virtualThreadFactory) {
             delegate = Executors.newThreadPerTaskExecutor(virtualThreadFactory);
-            concurrencyLimiter = new Semaphore(maxConcurrency);
+            concurrencyLimiter = new Semaphore(maxConcurrency, true);
         }
 
         @Override
@@ -197,7 +193,7 @@ public class ReceivedMessageHandler implements Closeable {
                 defaultCollectionExecutorModel = new CollectionExecutorModel();
             }
             if (defaultCollectionExecutorModel.defaultExecutor == null) {
-                defaultCollectionExecutorModel.defaultExecutor = Executors.newVirtualThreadPerTaskExecutor();
+                defaultCollectionExecutorModel.defaultExecutor = Executors.newThreadPerTaskExecutor(threadFactory);
             }
         }
 
@@ -224,7 +220,7 @@ public class ReceivedMessageHandler implements Closeable {
 
         private ExecutorService createExecutorService(BigInteger poolSize) {
             if (poolSize == null) {
-                return Executors.newVirtualThreadPerTaskExecutor();
+                return Executors.newThreadPerTaskExecutor(threadFactory);
             } else if (poolSize.intValue() == 1) {
                 return Executors.newSingleThreadExecutor(threadFactory);
             } else {
