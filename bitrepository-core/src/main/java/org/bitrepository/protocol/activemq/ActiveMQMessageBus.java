@@ -37,6 +37,7 @@ import jakarta.jms.Topic;
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import org.bitrepository.bitrepositorymessages.Message;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
+import org.bitrepository.common.DefaultThreadFactory;
 import org.bitrepository.common.JaxbHelper;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.protocol.CoordinationLayerException;
@@ -212,13 +213,15 @@ public class ActiveMQMessageBus implements MessageBus {
      * blocking, so the main thread can continue without having to wait for the messageBus listening to start.
      */
     private void startListeningForMessages() {
-        Thread.ofVirtual().name(ActiveMQMessageListener.class.getSimpleName() + "-connectionStarter").start(() -> {
-            try {
-                connection.start();
-            } catch (Exception e) {
-                throw new RuntimeException("Unable to start listening on the message bus", e);
-            }
-        });
+        DefaultThreadFactory.virtualThreadBuilder()
+                .name(ActiveMQMessageListener.class.getSimpleName() + "-connectionStarter")
+                .start(() -> {
+                    try {
+                        connection.start();
+                    } catch (Exception e) {
+                        throw new RuntimeException("Unable to start listening on the message bus", e);
+                    }
+                });
     }
 
     @Override

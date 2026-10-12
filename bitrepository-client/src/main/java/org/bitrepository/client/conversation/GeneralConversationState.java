@@ -53,7 +53,8 @@ public abstract class GeneralConversationState implements ConversationState {
     /** Solely responsible for firing timeouts at the right time - does not run any conversation logic itself. */
     private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1,
             new DefaultThreadFactory("ConversationState-Timeout-", Thread.NORM_PRIORITY));
-    private static final ExecutorService timeoutHandlerExecutor = Executors.newVirtualThreadPerTaskExecutor();
+    private static final ExecutorService timeoutHandlerExecutor = Executors.newThreadPerTaskExecutor(
+            DefaultThreadFactory.virtualThreadBuilder().name("ConversationState-TimeoutHandler-", 0).factory());
     private ScheduledFuture<?> scheduledTimeout;
     /** For response bookkeeping */
     private final ContributorResponseStatus responseStatus;
