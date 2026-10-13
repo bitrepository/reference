@@ -43,6 +43,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addFixture;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -101,6 +102,18 @@ class ReceivedMessageHandlerTest {
         addStep("Check the thread the listener ran on.", "It should be named by the ReceivedMessageHandler.");
         assertTrue(listenerThreadName.get().startsWith("ReceivedMessageHandler-"),
                 "Unexpected thread name " + listenerThreadName.get());
+    }
+
+    @Test
+    @Tag(TestGroups.REGRESSIONTEST)
+    void poolSizeBeyondIntRangeIsRejected() {
+        addDescription("Tests that a pool size too large for an int is rejected instead of silently wrapping " +
+                "around to another size.");
+        MessageThreadPool tooLargePool = createMessageThreadPool(null, null, null, null);
+        tooLargePool.setPoolSize(BigInteger.valueOf(Integer.MAX_VALUE).add(BigInteger.ONE));
+
+        assertThrows(ArithmeticException.class,
+                () -> new ReceivedMessageHandler(createMessageThreadPools(tooLargePool)));
     }
 
     @Test
