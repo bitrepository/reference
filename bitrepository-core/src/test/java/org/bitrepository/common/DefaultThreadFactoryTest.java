@@ -78,7 +78,6 @@ class DefaultThreadFactoryTest {
                 Logger.ROOT_LOGGER_NAME);
         @SuppressWarnings("unchecked")
         final Appender<ILoggingEvent> mockAppender = mock(Appender.class);
-        when(mockAppender.getName()).thenReturn("MOCK");
         rootLogger.addAppender(mockAppender);
         ArgumentCaptor<ILoggingEvent> argument = ArgumentCaptor.forClass(ILoggingEvent.class);
 
@@ -109,7 +108,6 @@ class DefaultThreadFactoryTest {
                 Logger.ROOT_LOGGER_NAME);
         @SuppressWarnings("unchecked")
         final Appender<ILoggingEvent> mockAppender = mock(Appender.class);
-        when(mockAppender.getName()).thenReturn("MOCK");
         rootLogger.addAppender(mockAppender);
         ArgumentCaptor<ILoggingEvent> argument = ArgumentCaptor.forClass(ILoggingEvent.class);
 

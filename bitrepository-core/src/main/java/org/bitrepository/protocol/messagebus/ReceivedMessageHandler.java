@@ -223,7 +223,7 @@ public class ReceivedMessageHandler implements Closeable {
                 return Executors.newThreadPerTaskExecutor(threadFactory);
             }
             int maxConcurrency = poolSize.intValueExact();
-            if (maxConcurrency == 1) {
+            if (poolSize.equals(BigInteger.ONE)) {
                 return Executors.newSingleThreadExecutor(threadFactory);
             } else {
                 return new ConcurrencyLimitedExecutorService(maxConcurrency, threadFactory);

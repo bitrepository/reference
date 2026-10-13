@@ -87,7 +87,6 @@ class ReceivedMessageHandlerTest {
                 ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
         @SuppressWarnings("unchecked")
         Appender<ILoggingEvent> mockAppender = mock(Appender.class);
-        when(mockAppender.getName()).thenReturn("MOCK");
         rootLogger.addAppender(mockAppender);
         try {
             addStep("Dispatch a message to a listener that throws.", "The exception should be logged as an error.");
