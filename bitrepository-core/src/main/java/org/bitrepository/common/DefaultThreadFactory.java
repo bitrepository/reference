@@ -38,7 +38,10 @@ import java.util.concurrent.ThreadFactory;
  */
 public class DefaultThreadFactory implements ThreadFactory {
     private static final Thread.UncaughtExceptionHandler LOGGING_HANDLER = (thread, throwable) -> {
-        String throwingClass = throwable.getStackTrace()[0].getClassName();
+        StackTraceElement[] stackTrace = throwable.getStackTrace();
+        String throwingClass = stackTrace.length > 0
+                ? stackTrace[0].getClassName()
+                : DefaultThreadFactory.class.getName();
         Logger logger = LoggerFactory.getLogger(throwingClass);
         logger.error("UncaughtExceptionHandler caught Exception:", throwable);
     };
