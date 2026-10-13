@@ -33,36 +33,36 @@ class DefaultReceiverDestinationIDFactoryTest {
 
     @Test
     @Tag(TestGroups.REGRESSIONTEST)
-    void receiverDestinationIsAQueueEvenWhenCollectionDestinationIsATopic() {
+    void receiverDestinationInheritsTheTopicSchemeOfTheCollectionDestination() {
         DefaultReceiverDestinationIDFactory factory = new DefaultReceiverDestinationIDFactory();
 
         String receiverDestinationID =
                 factory.getReceiverDestinationID("SomePillar", "topic://dummy-repository-id");
 
-        Assertions.assertEquals("queue://dummy-repository-id-SomePillar", receiverDestinationID);
+        Assertions.assertEquals("topic://dummy-repository-id-SomePillar", receiverDestinationID);
     }
 
     @Test
     @Tag(TestGroups.REGRESSIONTEST)
-    void receiverDestinationIsAQueueWhenCollectionDestinationHasNoScheme() {
+    void receiverDestinationHasNoSchemeWhenCollectionDestinationHasNone() {
         DefaultReceiverDestinationIDFactory factory = new DefaultReceiverDestinationIDFactory();
 
         String receiverDestinationID =
                 factory.getReceiverDestinationID("SomePillar", "dummy-repository-id");
 
-        Assertions.assertEquals("queue://dummy-repository-id-SomePillar", receiverDestinationID);
+        Assertions.assertEquals("dummy-repository-id-SomePillar", receiverDestinationID);
     }
 
     @Test
     @Tag(TestGroups.REGRESSIONTEST)
-    void userSpecificFactorySuffixesTheQueueDestinationWithTheUsername() {
+    void userSpecificFactorySuffixesTheDestinationWithTheUsername() {
         UserSpecificReceiverDestinationIDFactory factory = new UserSpecificReceiverDestinationIDFactory();
 
         String receiverDestinationID =
                 factory.getReceiverDestinationID("SomePillar", "topic://dummy-repository-id");
 
         Assertions.assertEquals(
-                "queue://dummy-repository-id-SomePillar-" + System.getProperty("user.name"),
+                "topic://dummy-repository-id-SomePillar-" + System.getProperty("user.name"),
                 receiverDestinationID);
     }
 }
