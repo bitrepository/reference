@@ -208,10 +208,6 @@ public class ActiveMQMessageBus implements MessageBus {
         }
     }
 
-    /**
-     * Start to listen for message on the message bus. This is done in a separate virtual thread to avoid
-     * blocking, so the main thread can continue without having to wait for the messageBus listening to start.
-     */
     private void startListeningForMessages() {
         DefaultThreadFactory.virtualThreadBuilder()
                 .name(ActiveMQMessageListener.class.getSimpleName() + "-connectionStarter")
