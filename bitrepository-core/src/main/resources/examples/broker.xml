@@ -57,9 +57,6 @@
         <journal-type>ASYNCIO</journal-type>
 
         <acceptors>
-            <!-- Plain (CORE) acceptor the clients connect to with the connection factory URL, see the
-                 example MessageBusConfiguration <URL> in RepositorySettings.xml. The Bitrepository clients use
-                 the Artemis CORE protocol via ActiveMQConnectionFactory. -->
             <acceptor name="core">tcp://0.0.0.0:12345?protocols=CORE;tcpSendBufferSize=1048576;tcpReceiveBufferSize=1048576</acceptor>
 
             <!-- In-VM, used by embedded/test brokers. -->
@@ -70,7 +67,6 @@
             <!-- <acceptor name="core-ssl">ssl://0.0.0.0:61601?protocols=CORE;keyStorePath=/etc/broker/broker.keystore;keyStorePassword=${KEYSTORE_PASSWORD}</acceptor> -->
         </acceptors>
 
-        <!-- See comments at the top: permissive reference values. Harden for production. -->
         <security-settings>
             <security-setting match="#">
                 <permission type="createNonDurableQueue" roles="amq"/>
@@ -108,28 +104,9 @@
                 <auto-delete-addresses>false</auto-delete-addresses>
                 <auto-create-queues>true</auto-create-queues>
                 <auto-delete-queues>false</auto-delete-queues>
-            </address-setting>
-
-            <!--
-              Broadcast + private-destination families of the example repository (dummy-repository-id[.-]...).
-              Bound memory so a single loaded collection/pillar cannot exhaust broker heap and starve others.
-              Routing type (anycast vs multicast) is decided at queue-creation time by the JMS client
-              (createQueue -> ANYCAST, createTopic subscriber -> MULTICAST), so ALL these addresses can share
-              one set of memory/DLQ limits regardless of binding type.
-            -->
-            <address-setting match="dummy-repository-id#">
                 <max-size-bytes>104857600</max-size-bytes>
                 <page-size-bytes>1048576</page-size-bytes>
                 <address-full-policy>PAGE</address-full-policy>
-            </address-setting>
-
-            <!--
-              Alarm family (durable, multicast). Alarms must not be dropped, so bounded retention + a dead
-              letter after the max delivery attempts: a failed alarm ends up on DLQ for inspection rather than
-              vanishing.
-            -->
-            <address-setting match="dummy-repository-id.alarms#">
-                <default-last-value-queue>false</default-last-value-queue>
             </address-setting>
         </address-settings>
 
