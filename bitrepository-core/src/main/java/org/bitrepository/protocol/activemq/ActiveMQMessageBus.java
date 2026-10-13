@@ -218,7 +218,7 @@ public class ActiveMQMessageBus implements MessageBus {
                 .start(() -> {
                     try {
                         connection.start();
-                    } catch (Exception e) {
+                    } catch (JMSException e) {
                         throw new RuntimeException("Unable to start listening on the message bus", e);
                     }
                 });
