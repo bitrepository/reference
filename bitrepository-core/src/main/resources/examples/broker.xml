@@ -28,15 +28,17 @@
 
     * <CollectionDestination> (e.g. topic://dummy-repository-id)      -> <address> with <multicast>
     * <AlarmDestination>       (e.g. topic://dummy-repository-id.alarms) -> <address> with <multicast> (durable)
-    * <ReceiverDestinationID>/<ContributorDestinationID> (queue://...) -> <address> with <anycast>
+    * <ReceiverDestinationID>/<ContributorDestinationID> (topic://...) -> <address> with <multicast>
 
-  Point-to-point destinations (<ReceiverDestinationID>/<ContributorDestinationID>) are built as queue:// by
-  DefaultReceiverDestinationIDFactory / UserSpecificReceiverDestinationIDFactory and are
-  passed to Session.createQueue(...). Their names are dynamic (<collection>-<componentID>), so they are NOT
-  declared statically here; they are auto-created as ANYCAST queues by the client on first use.
+  Every destination is a topic (pub/sub), as under ActiveMQ Classic. The component-private destinations
+  (<ReceiverDestinationID>/<ContributorDestinationID>) inherit the topic:// scheme of the collection destination
+  in DefaultReceiverDestinationIDFactory / UserSpecificReceiverDestinationIDFactory and are passed to
+  Session.createTopic(...). Each normally has a single subscriber, but that is a convention the broker does not
+  enforce. Their names are dynamic (<collection>-<componentID>[-contributor]), so they are NOT declared
+  statically here; the broker auto-creates the MULTICAST address when the client first subscribes.
 
-  Because these destination names are dynamic, auto-create must stay enabled (see the <address-setting> appending
-  to "#"). Do not disable it, or every <collection>/<componentID> combination would have to be enumerated here.
+  Because these destination names are dynamic, auto-create must stay enabled (see the global <address-setting>
+  matching "#"). Do not disable it, or every <collection>/<componentID> combination would have to be enumerated here.
 
   Adjust at a minimum before production use:
     * acceptor addresses/ports, and TLS (see the commented tls acceptor matching the example RepositorySettings URL)
@@ -55,9 +57,6 @@
         <journal-type>ASYNCIO</journal-type>
 
         <acceptors>
-            <!-- Plain (CORE) acceptor the clients connect to with the connection factory URL, see the
-                 example MessageBusConfiguration <URL> in RepositorySettings.xml. The Bitrepository clients use
-                 the Artemis CORE protocol via ActiveMQConnectionFactory. -->
             <acceptor name="core">tcp://0.0.0.0:12345?protocols=CORE;tcpSendBufferSize=1048576;tcpReceiveBufferSize=1048576</acceptor>
 
             <!-- In-VM, used by embedded/test brokers. -->
@@ -68,7 +67,6 @@
             <!-- <acceptor name="core-ssl">ssl://0.0.0.0:61601?protocols=CORE;keyStorePath=/etc/broker/broker.keystore;keyStorePassword=${KEYSTORE_PASSWORD}</acceptor> -->
         </acceptors>
 
-        <!-- See comments at the top: permissive reference values. Harden for production. -->
         <security-settings>
             <security-setting match="#">
                 <permission type="createNonDurableQueue" roles="amq"/>
@@ -85,9 +83,17 @@
 
         <address-settings>
             <!--
-              Global defaults. AUTO-CREATE IS REQUIRED: receiver/contributor (<queue>) destinations and the
-              per-component queues under the multicast addresses are created on demand - see heading comment.
-              Dead-letter: unmatched/expired messages are shipped to DLQ/DLQ-expiry for manual inspection.
+              Single global block. AUTO-CREATE IS REQUIRED: the private receiver/contributor topics and the
+              per-subscriber queues under every multicast address are created on demand - see heading comment.
+              Dead-letter: unmatched/expired messages are shipped to DLQ/DLQ-expiry for manual inspection, and a
+              failed alarm ends up there rather than vanishing.
+
+              Memory is bounded per address (PAGE spills to disk instead of dropping, so nothing is lost) so a
+              single loaded collection/pillar cannot exhaust broker heap and starve others. The limits live here
+              rather than in a family-specific match because the dynamic destination names are
+              <collection>-<componentID>[-contributor]: Artemis wildcards only match whole '.'-delimited words,
+              so a pattern such as "dummy-repository-id#" matches only that exact name, never the dash-suffixed
+              private destinations.
             -->
             <address-setting match="#">
                 <dead-letter-address>DLQ</dead-letter-address>
@@ -98,34 +104,15 @@
                 <auto-delete-addresses>false</auto-delete-addresses>
                 <auto-create-queues>true</auto-create-queues>
                 <auto-delete-queues>false</auto-delete-queues>
-            </address-setting>
-
-            <!--
-              Broadcast + private-destination families of the example repository (dummy-repository-id[.-]...).
-              Bound memory so a single loaded collection/pillar cannot exhaust broker heap and starve others.
-              Routing type (anycast vs multicast) is decided at queue-creation time by the JMS client
-              (createQueue -> ANYCAST, createTopic subscriber -> MULTICAST), so ALL these addresses can share
-              one set of memory/DLQ limits regardless of binding type.
-            -->
-            <address-setting match="dummy-repository-id#">
                 <max-size-bytes>104857600</max-size-bytes>
                 <page-size-bytes>1048576</page-size-bytes>
                 <address-full-policy>PAGE</address-full-policy>
             </address-setting>
-
-            <!--
-              Alarm family (durable, multicast). Alarms must not be dropped, so bounded retention + a dead
-              letter after the max delivery attempts: a failed alarm ends up on DLQ for inspection rather than
-              vanishing.
-            -->
-            <address-setting match="dummy-repository-id.alarms#">
-                <default-last-value-queue>false</default-last-value-queue>
-            </address-setting>
         </address-settings>
 
         <!--
-          Multicast (pub/sub) addresses. Anycast (point-to-point) addresses are intentionally not listed here:
-          they are dynamic per component and auto-created as ANYCAST by the clients.
+          Statically declared multicast (pub/sub) addresses. The component-private receiver/contributor topics are
+          intentionally not listed here: they are dynamic per component and auto-created as MULTICAST by the clients.
         -->
         <addresses>
             <!-- <CollectionDestination> - broadcast of Identify* requests to all pillars of the collection. -->
