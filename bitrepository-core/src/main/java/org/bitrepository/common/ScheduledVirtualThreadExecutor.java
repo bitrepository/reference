@@ -81,6 +81,9 @@ public class ScheduledVirtualThreadExecutor implements AutoCloseable {
      * Dispatches {@code command} to a new virtual thread every {@code period}, starting after {@code initialDelay}.
      * Ticks continue at the fixed rate regardless of how long a dispatched run takes, matching
      * {@link java.util.Timer#scheduleAtFixedRate}.
+     * <p>
+     * Cancelling the returned future stops further ticks, but a run already dispatched to a virtual thread may still
+     * start or finish afterwards.
      */
     public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit) {
         return ticker.scheduleAtFixedRate(() -> worker.execute(command), initialDelay, period, unit);
@@ -102,6 +105,11 @@ public class ScheduledVirtualThreadExecutor implements AutoCloseable {
         FixedDelayFuture handle = new FixedDelayFuture();
         Runnable[] runOnWorker = new Runnable[1];
         runOnWorker[0] = () -> {
+            // The ticker may have fired this dispatch just before cancel() won the race against rearm();
+            // don't start a run that was cancelled while it waited for a worker thread.
+            if (handle.isCancelled()) {
+                return;
+            }
             try {
                 command.run();
             } finally {

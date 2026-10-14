@@ -153,6 +153,7 @@ class ScheduledVirtualThreadExecutorTest {
 
         Assertions.assertTrue(firstRun.await(5, TimeUnit.SECONDS), "Task should have run at least once");
         future.cancel(false);
+        Thread.sleep(100);
         int countAtCancellation = count.get();
         Thread.sleep(150);
 
