@@ -1,5 +1,0 @@
-Collection: TwoPillarCollection
-Contributor Queries: [ContributorQuery{componentID='Pillar1', minTimestamp=2026-10-14T09:01:10.458706753Z, maxTimestamp=2026-10-14T09:01:11.358706753Z, maxNumberOfResults=1}, ContributorQuery{componentID='Pillar2', minTimestamp=2026-10-14T09:01:11.358706753Z, maxTimestamp=2026-10-14T09:01:11.458706753Z, maxNumberOfResults=2}]
-Checksum Spec: null
-Address for Result: null
-Audit Info: null

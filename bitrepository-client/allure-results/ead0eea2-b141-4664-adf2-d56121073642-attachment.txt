@@ -1,1 +1,0 @@
-The client should generate the following events:'COMPONENT_COMPLETE

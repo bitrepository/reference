@@ -1,1 +1,0 @@
-An IDENTIFY_TIMEOUT event ,COMPONENT_FAILED event for the non-responding pillar, an IDENTIFICATION_COMPLETE and lastly a OperationEventType.FAILED event should be generated.

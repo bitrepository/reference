@@ -1,1 +1,0 @@
-The client should generating a PROGRESS event.

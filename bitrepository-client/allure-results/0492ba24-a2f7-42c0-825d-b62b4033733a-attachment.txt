@@ -1,5 +1,0 @@
-Collection: TwoPillarCollection
-Contributor Queries: null
-Checksum Spec: null
-Address for Result: file:/home/olvi/IdeaProjects/reference/bitrepository-client/../bitrepository-core/src/test/resources/test-files/TEST-CHECKSUM-DELIVERY.xml
-Audit Info: TEST-AUDIT

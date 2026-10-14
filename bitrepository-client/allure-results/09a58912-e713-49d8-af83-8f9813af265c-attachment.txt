@@ -1,1 +1,0 @@
-A IdentifyPillarsForGetChecksumsRequest will be sent to the pillar(s).

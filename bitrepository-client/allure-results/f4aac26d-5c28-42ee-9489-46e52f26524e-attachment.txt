@@ -1,1 +1,0 @@
-The callback listener should notify of the response and the client should send a GetFileIDsRequest message to the pillar

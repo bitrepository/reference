@@ -1,1 +1,0 @@
-Should be a FileIDsCompletePillarEvent with the ResultingFileIDs containing the list of fileids.

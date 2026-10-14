@@ -1,1 +1,0 @@
-An IDENTIFY_TIMEOUT event should be generate, followed by a FAILED event.

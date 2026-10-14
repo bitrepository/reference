@@ -1,1 +1,0 @@
-The GetFileIDs progress response should be sent by the pillar.

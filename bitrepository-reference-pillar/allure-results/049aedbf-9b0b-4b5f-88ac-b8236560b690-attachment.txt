@@ -1,1 +1,0 @@
-The final response should say 'operation_complete', and give the requested data.
