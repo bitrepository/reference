@@ -1,1 +1,0 @@
-A IdentifyPillarsForGetFileRequest will be sent to the pillar with all the correct parameters.

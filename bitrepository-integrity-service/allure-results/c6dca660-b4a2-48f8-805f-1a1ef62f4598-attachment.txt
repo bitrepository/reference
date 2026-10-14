@@ -1,1 +1,0 @@
-A integrity alarm should be generate.

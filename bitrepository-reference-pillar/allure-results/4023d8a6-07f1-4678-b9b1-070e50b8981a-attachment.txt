@@ -1,1 +1,0 @@
-The pillar handles the request and responds.

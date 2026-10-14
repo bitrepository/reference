@@ -1,4 +1,0 @@
-Collection: TwoPillarCollection
-Contributor Queries: null
-Address for Result: file:/home/olvi/IdeaProjects/reference/bitrepository-client/../bitrepository-core/src/test/resources/test-files/TEST-FILE-IDS-DELIVERY.xml
-EventHandler: org.bitrepository.client.TestEventHandler@3840b4e6

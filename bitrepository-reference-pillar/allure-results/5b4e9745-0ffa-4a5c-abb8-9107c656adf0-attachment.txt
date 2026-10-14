@@ -1,1 +1,0 @@
-Must be null, since it is full reference pillar and not a checksums pillar

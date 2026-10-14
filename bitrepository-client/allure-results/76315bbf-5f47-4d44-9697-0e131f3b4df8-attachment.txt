@@ -1,1 +1,0 @@
-The client should generate a COMPONENT_COMPLETE followed by a COMPLETE event

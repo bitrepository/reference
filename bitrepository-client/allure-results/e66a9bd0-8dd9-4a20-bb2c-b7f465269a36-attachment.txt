@@ -1,4 +1,0 @@
-Collection: TwoPillarCollection
-Pillar: Pillar1
-Checksum: org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE@2d20e68[checksumSpec=org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE@4328971d[checksumType=MD5, checksumSalt=<null>(default), otherChecksumType=<null>(default)], checksumValue={49,50,51,99,104,101,99,107,115,117,109,51,50,49}, calculationTimestamp=1970-01-01T01:00:00.000+01:00]
-Audit Info: null

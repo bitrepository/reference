@@ -1,1 +1,0 @@
-It should say as it is in settings, or return default

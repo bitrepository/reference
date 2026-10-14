@@ -1,1 +1,0 @@
-A IDENTIFY_REQUEST_SENT event should be generated followed by a FAILED event after 100 ms.

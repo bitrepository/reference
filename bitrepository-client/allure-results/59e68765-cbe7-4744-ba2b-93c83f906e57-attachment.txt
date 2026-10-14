@@ -1,1 +1,0 @@
-COMPONENT_IDENTIFIED events and a IDENTIFICATION_COMPLETE event should be received.Rights after this a REQUEST_SENT should be received.

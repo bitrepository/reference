@@ -1,1 +1,0 @@
-Should deliver non-null object when called with default checksum spec, otherwise throw exception.
