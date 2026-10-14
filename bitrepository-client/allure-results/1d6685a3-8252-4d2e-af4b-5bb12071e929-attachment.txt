@@ -1,1 +1,0 @@
-It should send message to identify which pillars and an IdentifyPillarsRequestSent notification should be generated.

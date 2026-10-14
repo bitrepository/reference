@@ -1,1 +1,0 @@
-A COMPONENT_COMPLETE event should be generated with the audit trail results.

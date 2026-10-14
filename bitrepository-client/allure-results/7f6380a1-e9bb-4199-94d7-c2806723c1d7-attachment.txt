@@ -1,1 +1,0 @@
-A COMPONENT_IDENTIFIED + a event should be generated followed by a IDENTIFICATION_COMPLETE. <p>Finally a operation request should be sent to pillar1 and a REQUEST_SENT event be generated

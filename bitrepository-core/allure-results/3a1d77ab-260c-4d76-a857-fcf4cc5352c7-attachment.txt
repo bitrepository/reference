@@ -1,1 +1,0 @@
-The send should fail since the underlying JMS session and connection have been closed.

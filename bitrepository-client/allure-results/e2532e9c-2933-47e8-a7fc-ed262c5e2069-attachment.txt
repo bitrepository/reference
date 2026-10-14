@@ -1,1 +1,0 @@
-A IDENTIFY_REQUEST_SENT should be generate and a identification request should be sent.

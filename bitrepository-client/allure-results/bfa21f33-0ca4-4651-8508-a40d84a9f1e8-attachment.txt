@@ -1,1 +1,0 @@
-The client should generate the following events: COMPONENT_IDENTIFIED, IDENTIFICATION_COMPLETE and REQUEST_SENT. A delete request should be sent to pillar1
