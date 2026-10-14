@@ -11,6 +11,7 @@ import org.mockito.ArgumentCaptor;
 import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,8 +29,7 @@ class DefaultThreadFactoryTest {
         // Technique from https://dzone.com/articles/unit-testing-asserting-line
 
         //Get the logger as a logback logger so we can set properties on it
-        Logger rootLogger = (Logger) LoggerFactory.getLogger(
-                Logger.ROOT_LOGGER_NAME);
+        Logger rootLogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
         //We mock an appender so we can catch the log messages
         @SuppressWarnings("unchecked")
@@ -40,9 +40,8 @@ class DefaultThreadFactoryTest {
         //Add the appender to the root logger
         rootLogger.addAppender(mockAppender);
 
-        //Setup a argumentCaptor for the ILoggingEvent that the appender will be called with
+        //Set up an argumentCaptor for the ILoggingEvent that the appender will be called with
         ArgumentCaptor<ILoggingEvent> argument = ArgumentCaptor.forClass(ILoggingEvent.class);
-
 
         //Create the new thread factory
         DefaultThreadFactory factory = new DefaultThreadFactory(this.getClass().getSimpleName(), Thread.NORM_PRIORITY,
@@ -69,8 +68,7 @@ class DefaultThreadFactoryTest {
     @Test
     @Tag(TestGroups.REGRESSIONTEST)
     void testVirtualThreadBuilderLogsUncaughtExceptions() throws Exception {
-        Logger rootLogger = (Logger) LoggerFactory.getLogger(
-                Logger.ROOT_LOGGER_NAME);
+        Logger rootLogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         @SuppressWarnings("unchecked")
         final Appender<ILoggingEvent> mockAppender = mock(Appender.class);
         rootLogger.addAppender(mockAppender);
@@ -88,19 +86,20 @@ class DefaultThreadFactoryTest {
             rootLogger.detachAppender(mockAppender);
         }
 
-        assertThat(thread.isVirtual(), is(true));
-        assertThat(thread.getName(), startsWith("virtual-"));
+        // TODO We may want to use AssertJ here
+        assertTrue(thread.isVirtual());
+        assertTrue(thread.getName().startsWith("virtual-"),
+                "Expected starting with \"virtual-\", was " + thread.getName());
         ILoggingEvent logLine = argument.getValue();
-        assertThat(logLine.getLevel(), is(equalTo(Level.ERROR)));
-        assertThat(logLine.getLoggerName(), is(equalTo(DefaultThreadFactoryTest.class.getName())));
-        assertThat(logLine.getThrowableProxy().getMessage(), is(equalTo(DefaultThreadFactoryTest.this.message)));
+        assertEquals(Level.ERROR, logLine.getLevel());
+        assertEquals(DefaultThreadFactoryTest.class.getName(), logLine.getLoggerName());
+        assertEquals(message, logLine.getThrowableProxy().getMessage());
     }
 
     @Test
     @Tag(TestGroups.REGRESSIONTEST)
     void testUncaughtExceptionWithoutStackTraceIsStillLogged() throws Exception {
-        Logger rootLogger = (Logger) LoggerFactory.getLogger(
-                Logger.ROOT_LOGGER_NAME);
+        Logger rootLogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         @SuppressWarnings("unchecked")
         final Appender<ILoggingEvent> mockAppender = mock(Appender.class);
         rootLogger.addAppender(mockAppender);
@@ -120,8 +119,8 @@ class DefaultThreadFactoryTest {
         }
 
         ILoggingEvent logLine = argument.getValue();
-        assertThat(logLine.getLevel(), is(equalTo(Level.ERROR)));
-        assertThat(logLine.getLoggerName(), is(equalTo(DefaultThreadFactory.class.getName())));
-        assertThat(logLine.getThrowableProxy().getMessage(), is(equalTo(DefaultThreadFactoryTest.this.message)));
+        assertEquals(Level.ERROR, logLine.getLevel());
+        assertEquals(DefaultThreadFactory.class.getName(), logLine.getLoggerName());
+        assertEquals(message, logLine.getThrowableProxy().getMessage());
     }
 }
