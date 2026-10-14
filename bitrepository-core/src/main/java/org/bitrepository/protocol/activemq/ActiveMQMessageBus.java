@@ -74,7 +74,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ThreadFactory;
 
 /**
  * Contains the basic functionality for connection and communicating with the
@@ -152,14 +151,6 @@ public class ActiveMQMessageBus implements MessageBus {
     private final ReceivedMessageHandler receivedMessageHandler;
 
     /**
-     * ThreadFactory for any threads the activeMQ messageBus needs to create
-     */
-    private static final ThreadFactory threadFactory = new DefaultThreadFactory(ActiveMQMessageListener.class.getSimpleName() +
-                                                                                "-",
-                                                                                Thread.NORM_PRIORITY, false);
-
-
-    /**
      * Use the {@link org.bitrepository.protocol.ProtocolComponentFactory} to get a handle on a instance of
      * MessageBusConnections. This constructor is for the
      * <code>ProtocolComponentFactory</code> eyes only.
@@ -217,19 +208,16 @@ public class ActiveMQMessageBus implements MessageBus {
         }
     }
 
-    /**
-     * Start to listen for message on the message bus. This is done in a separate thread to avoid blocking,
-     * so the main thread can continue without having to wait for the messageBus listening to start.
-     */
     private void startListeningForMessages() {
-        Thread connectionStarter = threadFactory.newThread(() -> {
-            try {
-                connection.start();
-            } catch (Exception e) {
-                throw new RuntimeException("Unable to start listening on the message bus", e);
-            }
-        });
-        connectionStarter.start();
+        DefaultThreadFactory.virtualThreadBuilder()
+                .name(ActiveMQMessageListener.class.getSimpleName() + "-connectionStarter")
+                .start(() -> {
+                    try {
+                        connection.start();
+                    } catch (JMSException e) {
+                        throw new RuntimeException("Unable to start listening on the message bus", e);
+                    }
+                });
     }
 
     @Override

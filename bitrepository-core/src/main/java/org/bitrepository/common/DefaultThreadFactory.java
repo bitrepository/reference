@@ -37,6 +37,15 @@ import java.util.concurrent.ThreadFactory;
  * </ul>
  */
 public class DefaultThreadFactory implements ThreadFactory {
+    private static final Thread.UncaughtExceptionHandler LOGGING_HANDLER = (thread, throwable) -> {
+        StackTraceElement[] stackTrace = throwable.getStackTrace();
+        String throwingClass = stackTrace.length > 0
+                ? stackTrace[0].getClassName()
+                : DefaultThreadFactory.class.getName();
+        Logger logger = LoggerFactory.getLogger(throwingClass);
+        logger.error("UncaughtExceptionHandler caught Exception:", throwable);
+    };
+
     private final String prefix;
     private final int priority;
     private final boolean daemonic;
@@ -54,16 +63,23 @@ public class DefaultThreadFactory implements ThreadFactory {
         this.daemonic = daemonic;
     }
 
+    /**
+     * Creates a builder for virtual threads with the same error handler as the platform threads of this factory.
+     * Priority does not apply to virtual threads and they are always daemon threads, so unlike the constructors
+     * of this class the builder cannot change either. The caller should name the threads.
+     *
+     * @return a builder with the bit repository uncaught exception handler set
+     */
+    public static Thread.Builder.OfVirtual virtualThreadBuilder() {
+        return Thread.ofVirtual().uncaughtExceptionHandler(LOGGING_HANDLER);
+    }
+
     @Override
     public synchronized Thread newThread(@NonNull Runnable runnable) {
         Thread newThread = new Thread(runnable, prefix + "-Thread" + counter);
         newThread.setPriority(priority);
         newThread.setDaemon(daemonic);
-        newThread.setUncaughtExceptionHandler((thread, throwable) -> {
-            String throwingClass = throwable.getStackTrace()[0].getClassName();
-            Logger logger = LoggerFactory.getLogger(throwingClass);
-            logger.error("UncaughtExceptionHandler caught Exception:", throwable);
-        });
+        newThread.setUncaughtExceptionHandler(LOGGING_HANDLER);
         counter++;
         return newThread;
     }

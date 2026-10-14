@@ -21,6 +21,9 @@
  */
 package org.bitrepository.protocol.messagebus;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.Appender;
 import org.bitrepository.TestGroups;
 import org.bitrepository.bitrepositorymessages.GetStatusRequest;
 import org.bitrepository.bitrepositorymessages.Message;
@@ -31,14 +34,22 @@ import org.bitrepository.settings.referencesettings.MessageThreadPool;
 import org.bitrepository.settings.referencesettings.MessageThreadPools;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addFixture;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -56,6 +67,52 @@ class ReceivedMessageHandlerTest {
         MessageContext testMessageContext = new MessageContext("fingerprint");
         handler.deliver(defaultListener, testMessage, testMessageContext);
         verify(defaultListener, timeout(100)).onMessage(testMessage, testMessageContext);
+    }
+
+    @Test
+    @Tag(TestGroups.REGRESSIONTEST)
+    void defaultPoolNamesThreadsAndLogsUncaughtExceptions() {
+        addDescription("Tests that listeners in the default pool run on named threads, and that an exception " +
+                "a listener throws is logged instead of only being printed to stderr.");
+        ReceivedMessageHandler handler = new ReceivedMessageHandler(null);
+        String exceptionMessage = "Listener failed on purpose";
+        AtomicReference<String> listenerThreadName = new AtomicReference<>();
+        MessageListener failingListener = mock(MessageListener.class);
+        doAnswer(invocation -> {
+            listenerThreadName.set(Thread.currentThread().getName());
+            throw new RuntimeException(exceptionMessage);
+        }).when(failingListener).onMessage(any(), any());
+
+        ch.qos.logback.classic.Logger rootLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(
+                ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+        @SuppressWarnings("unchecked")
+        Appender<ILoggingEvent> mockAppender = mock(Appender.class);
+        rootLogger.addAppender(mockAppender);
+        try {
+            addStep("Dispatch a message to a listener that throws.", "The exception should be logged as an error.");
+            handler.deliver(failingListener, new Message(), null);
+            verify(mockAppender, timeout(5000)).doAppend(argThat(event ->
+                    event.getLevel() == Level.ERROR && event.getThrowableProxy() != null
+                            && exceptionMessage.equals(event.getThrowableProxy().getMessage())));
+        } finally {
+            rootLogger.detachAppender(mockAppender);
+        }
+
+        addStep("Check the thread the listener ran on.", "It should be named by the ReceivedMessageHandler.");
+        assertTrue(listenerThreadName.get().startsWith("ReceivedMessageHandler-"),
+                "Unexpected thread name " + listenerThreadName.get());
+    }
+
+    @Test
+    @Tag(TestGroups.REGRESSIONTEST)
+    void poolSizeBeyondIntRangeIsRejected() {
+        addDescription("Tests that a pool size too large for an int is rejected instead of silently wrapping " +
+                "around to another size.");
+        MessageThreadPool tooLargePool = createMessageThreadPool(null, null, null, null);
+        tooLargePool.setPoolSize(BigInteger.valueOf(Integer.MAX_VALUE).add(BigInteger.ONE));
+
+        assertThrows(ArithmeticException.class,
+                () -> new ReceivedMessageHandler(createMessageThreadPools(tooLargePool)));
     }
 
     @Test

@@ -1,6 +1,7 @@
 package org.bitrepository.common;
 
 import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 import org.bitrepository.TestGroups;
@@ -27,8 +28,8 @@ class DefaultThreadFactoryTest {
         // Technique from https://dzone.com/articles/unit-testing-asserting-line
 
         //Get the logger as a logback logger so we can set properties on it
-        ch.qos.logback.classic.Logger rootLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(
-                ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+        Logger rootLogger = (Logger) LoggerFactory.getLogger(
+                Logger.ROOT_LOGGER_NAME);
 
         //We mock an appender so we can catch the log messages
         @SuppressWarnings("unchecked")
@@ -63,5 +64,64 @@ class DefaultThreadFactoryTest {
         assertEquals(Level.ERROR, logLine.getLevel());
         assertEquals(DefaultThreadFactoryTest.class.getName(), logLine.getLoggerName());
         assertEquals(message, logLine.getThrowableProxy().getMessage());
+    }
+
+    @Test
+    @Tag(TestGroups.REGRESSIONTEST)
+    void testVirtualThreadBuilderLogsUncaughtExceptions() throws Exception {
+        Logger rootLogger = (Logger) LoggerFactory.getLogger(
+                Logger.ROOT_LOGGER_NAME);
+        @SuppressWarnings("unchecked")
+        final Appender<ILoggingEvent> mockAppender = mock(Appender.class);
+        rootLogger.addAppender(mockAppender);
+        ArgumentCaptor<ILoggingEvent> argument = ArgumentCaptor.forClass(ILoggingEvent.class);
+
+        Thread thread;
+        try {
+            thread = DefaultThreadFactory.virtualThreadBuilder().name("virtual-", 0).unstarted(() -> {
+                throw new RuntimeException(message);
+            });
+            thread.start();
+            thread.join();
+            verify(mockAppender).doAppend(argument.capture());
+        } finally {
+            rootLogger.detachAppender(mockAppender);
+        }
+
+        assertThat(thread.isVirtual(), is(true));
+        assertThat(thread.getName(), startsWith("virtual-"));
+        ILoggingEvent logLine = argument.getValue();
+        assertThat(logLine.getLevel(), is(equalTo(Level.ERROR)));
+        assertThat(logLine.getLoggerName(), is(equalTo(DefaultThreadFactoryTest.class.getName())));
+        assertThat(logLine.getThrowableProxy().getMessage(), is(equalTo(DefaultThreadFactoryTest.this.message)));
+    }
+
+    @Test
+    @Tag(TestGroups.REGRESSIONTEST)
+    void testUncaughtExceptionWithoutStackTraceIsStillLogged() throws Exception {
+        Logger rootLogger = (Logger) LoggerFactory.getLogger(
+                Logger.ROOT_LOGGER_NAME);
+        @SuppressWarnings("unchecked")
+        final Appender<ILoggingEvent> mockAppender = mock(Appender.class);
+        rootLogger.addAppender(mockAppender);
+        ArgumentCaptor<ILoggingEvent> argument = ArgumentCaptor.forClass(ILoggingEvent.class);
+
+        RuntimeException withoutStackTrace = new RuntimeException(message);
+        withoutStackTrace.setStackTrace(new StackTraceElement[0]);
+        try {
+            Thread thread = DefaultThreadFactory.virtualThreadBuilder().unstarted(() -> {
+                throw withoutStackTrace;
+            });
+            thread.start();
+            thread.join();
+            verify(mockAppender).doAppend(argument.capture());
+        } finally {
+            rootLogger.detachAppender(mockAppender);
+        }
+
+        ILoggingEvent logLine = argument.getValue();
+        assertThat(logLine.getLevel(), is(equalTo(Level.ERROR)));
+        assertThat(logLine.getLoggerName(), is(equalTo(DefaultThreadFactory.class.getName())));
+        assertThat(logLine.getThrowableProxy().getMessage(), is(equalTo(DefaultThreadFactoryTest.this.message)));
     }
 }

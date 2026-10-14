@@ -36,9 +36,12 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Takes care of handling the further processing by the listeners in separated thread.
@@ -46,7 +49,10 @@ import java.util.concurrent.ThreadFactory;
 public class ReceivedMessageHandler implements Closeable {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final ExecutorModel executorModel;
-    private final ThreadFactory threadFactory = new DefaultThreadFactory("ReceivedMessageHandler-", Thread.NORM_PRIORITY, false);
+    /** Builds the named, error-logging virtual threads backing all the executors below. */
+    private final ThreadFactory threadFactory = DefaultThreadFactory.virtualThreadBuilder()
+            .name("ReceivedMessageHandler-", 0)
+            .factory();
 
     public ReceivedMessageHandler(MessageThreadPools messageThreadPools) {
         executorModel = new ExecutorModel(messageThreadPools);
@@ -103,6 +109,53 @@ public class ReceivedMessageHandler implements Closeable {
         }
     }
 
+    private static final class ConcurrencyLimitedExecutorService extends AbstractExecutorService {
+        private final ExecutorService delegate;
+        private final Semaphore concurrencyLimiter;
+
+        ConcurrencyLimitedExecutorService(int maxConcurrency, ThreadFactory virtualThreadFactory) {
+            delegate = Executors.newThreadPerTaskExecutor(virtualThreadFactory);
+            concurrencyLimiter = new Semaphore(maxConcurrency, true);
+        }
+
+        @Override
+        public void execute(Runnable task) {
+            delegate.execute(() -> {
+                concurrencyLimiter.acquireUninterruptibly();
+                try {
+                    task.run();
+                } finally {
+                    concurrencyLimiter.release();
+                }
+            });
+        }
+
+        @Override
+        public void shutdown() {
+            delegate.shutdown();
+        }
+
+        @Override
+        public List<Runnable> shutdownNow() {
+            return delegate.shutdownNow();
+        }
+
+        @Override
+        public boolean isShutdown() {
+            return delegate.isShutdown();
+        }
+
+        @Override
+        public boolean isTerminated() {
+            return delegate.isTerminated();
+        }
+
+        @Override
+        public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
+            return delegate.awaitTermination(timeout, unit);
+        }
+    }
+
     /**
      * Contains the different executors based on collections and message types.
      */
@@ -140,7 +193,7 @@ public class ReceivedMessageHandler implements Closeable {
                 defaultCollectionExecutorModel = new CollectionExecutorModel();
             }
             if (defaultCollectionExecutorModel.defaultExecutor == null) {
-                defaultCollectionExecutorModel.defaultExecutor = Executors.newCachedThreadPool(threadFactory);
+                defaultCollectionExecutorModel.defaultExecutor = Executors.newThreadPerTaskExecutor(threadFactory);
             }
         }
 
@@ -167,11 +220,13 @@ public class ReceivedMessageHandler implements Closeable {
 
         private ExecutorService createExecutorService(BigInteger poolSize) {
             if (poolSize == null) {
-                return Executors.newCachedThreadPool(threadFactory);
-            } else if (poolSize.intValue() == 1) {
+                return Executors.newThreadPerTaskExecutor(threadFactory);
+            }
+            int maxConcurrency = poolSize.intValueExact();
+            if (poolSize.equals(BigInteger.ONE)) {
                 return Executors.newSingleThreadExecutor(threadFactory);
             } else {
-                return Executors.newFixedThreadPool(poolSize.intValue(), threadFactory);
+                return new ConcurrencyLimitedExecutorService(maxConcurrency, threadFactory);
             }
         }
 

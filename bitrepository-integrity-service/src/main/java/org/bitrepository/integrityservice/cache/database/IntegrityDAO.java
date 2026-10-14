@@ -48,6 +48,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -379,30 +380,69 @@ public abstract class IntegrityDAO implements AutoCloseable {
     }
 
     /**
-     * Method that should deliver the database specific SQL for finding files with less than N copies
+     * @param count The number of placeholders to generate.
+     * @return A comma-separated string of {@code count} "?" placeholders, for use in a SQL {@code IN (...)} clause.
+     */
+    protected static String placeholders(int count) {
+        return String.join(", ", Collections.nCopies(count, "?"));
+    }
+
+    /**
+     * Method that should deliver the database specific SQL for finding files with less than N copies among a
+     * given set of pillars.
      *
+     * @param numberOfPillars The number of pillars to check for copies on.
      * @return the database specific SQL for finding files with less than N copies
      */
-    protected abstract String getFindFilesWithMissingCopiesSql();
+    protected abstract String getFindFilesWithMissingCopiesSql(int numberOfPillars);
+
+    /**
+     * Method to find files in a given collection missing on one of the given pillars.
+     * <p>
+     * Only copies on the given pillars are counted, so that a file is not mistakenly considered to have enough
+     * copies because of leftover fileinfo rows from a pillar that has since been removed from the collection.
+     *
+     * @param collectionID The ID of the collection
+     * @param pillarIDs    The currently active pillars in the collection to check for copies on
+     * @param firstIndex   start the iterator at this index, or 0 if null
+     * @param maxResults   maxResults
+     * @return Iterator with the fileIDs that could not be found on one of the given pillars
+     */
+    public IntegrityIssueIterator findFilesWithMissingCopies(String collectionID, List<String> pillarIDs,
+                                                             Long firstIndex, Long maxResults) {
+        ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
+        ArgumentValidator.checkNotNullOrEmpty(pillarIDs, "List<String> pillarIDs");
+
+        long first = firstIndex == null ? 0 : firstIndex;
+        long maxRes = maxResults == null ? Long.MAX_VALUE : maxResults;
+
+        String findFileSql = getFindFilesWithMissingCopiesSql(pillarIDs.size());
+        List<Object> args = new ArrayList<>();
+        args.add(collectionID);
+        args.addAll(pillarIDs);
+        args.add(pillarIDs.size());
+        args.add(first);
+        args.add(maxRes);
+        return makeIntegrityIssueIterator(findFileSql, args.toArray());
+    }
 
     /**
      * Method to find files in a given collection missing on a given pillar
      *
      * @param collectionID   The ID of the collection
-     * @param expectedCopies The number of copies that should be present
+     * @param expectedCopies Ignored. The number of copies is now given by the pillars configured for the collection.
      * @param firstIndex     start the iterator at this index, or 0 if null
      * @param maxResults     maxResults
-     * @return Iterator with the fileIDs that could not be found on the pillar
+     * @return Iterator with the fileIDs that could not be found on one of the collection's pillars
+     * @deprecated Counting copies against a number is unreliable, as leftover fileinfo rows from a pillar removed
+     * from the collection can hide a file missing from an active pillar. This now delegates to
+     * {@link #findFilesWithMissingCopies(String, List, Long, Long)} with the pillars configured for the collection.
      */
+    @Deprecated(forRemoval = true)
     public IntegrityIssueIterator findFilesWithMissingCopies(String collectionID, int expectedCopies,
                                                              Long firstIndex, Long maxResults) {
-        ArgumentValidator.checkNotNullOrEmpty(collectionID, "String collectionID");
-
-        long first = firstIndex == null ? 0 : firstIndex;
-        long maxRes = maxResults == null ? Long.MAX_VALUE : maxResults;
-
-        String findFileSql = getFindFilesWithMissingCopiesSql();
-        return makeIntegrityIssueIterator(findFileSql, collectionID, expectedCopies, first, maxRes);
+        return findFilesWithMissingCopies(collectionID, SettingsUtils.getPillarIDsForCollection(collectionID),
+                firstIndex, maxResults);
     }
 
     /**

@@ -26,6 +26,7 @@ package org.bitrepository.integrityservice.cache;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FileIDsData;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.integrityservice.cache.database.IntegrityIssueIterator;
 import org.bitrepository.integrityservice.statistics.StatisticsCollector;
 
@@ -100,18 +101,39 @@ public interface IntegrityModel {
     IntegrityIssueIterator getFilesOnPillar(String pillarID, long firstIndex, long maxResults, String collectionID);
 
     /**
+     * An IntegrityIssueIterator for files with less than the expected number of copies among the given pillars,
+     * restricted by first index and max results.
+     *
+     * @param collectionID The ID of the collection to get missing files from
+     * @param pillarIDs    The currently active pillars in the collection to check for copies on.
+     * @param firstIndex   The first index to get results from.
+     * @param maxResults   The maximum number of results.
+     * @return The IntegrityIssueIterator for fileids of files that don't have the expected number of files,
+     * between min and max.
+     */
+    IntegrityIssueIterator findFilesWithMissingCopies(String collectionID, List<String> pillarIDs,
+                                                      Long firstIndex, Long maxResults);
+
+    /**
      * An IntegrityIssueIterator for files with less than the expected number of copies, restricted by first index
      * and max results.
      *
      * @param collectionID   The ID of the collection to get missing files from
-     * @param expectedCopies The number of expected copies.
+     * @param expectedCopies Ignored. The number of copies is now given by the pillars configured for the collection.
      * @param firstIndex     The first index to get results from.
      * @param maxResults     The maximum number of results.
      * @return The IntegrityIssueIterator for fileids of files that don't have the expected number of files,
      * between min and max.
+     * @deprecated Counting copies against a number is unreliable, as leftover data from a pillar removed from the
+     * collection can hide a file missing from an active pillar. This now delegates to
+     * {@link #findFilesWithMissingCopies(String, List, Long, Long)} with the pillars configured for the collection.
      */
-    IntegrityIssueIterator findFilesWithMissingCopies(String collectionID, int expectedCopies,
-                                                      Long firstIndex, Long maxResults);
+    @Deprecated(forRemoval = true)
+    default IntegrityIssueIterator findFilesWithMissingCopies(String collectionID, int expectedCopies,
+                                                              Long firstIndex, Long maxResults) {
+        return findFilesWithMissingCopies(collectionID, SettingsUtils.getPillarIDsForCollection(collectionID),
+                firstIndex, maxResults);
+    }
 
     /**
      * Removes the record of the given fileID for the given pillar

@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_CODE;
 import static org.bitrepository.alarm.store.AlarmDatabaseConstants.ALARM_COLLECTION_ID;
@@ -193,6 +194,10 @@ public class AlarmDatabaseIngestor {
         return res.toArray();
     }
 
+    /**
+     * Standard SQL SqlState value meaning attempt to violate the uniqueness of a unique index.
+     * See <a href = "https://www.postgresql.org/docs/current/errcodes-appendix.html">PostgreSQL Error Codes</a>.
+     */
     private static final String SQLSTATE_UNIQUE_VIOLATION = "23505";
 
     /**
@@ -230,6 +235,6 @@ public class AlarmDatabaseIngestor {
 
     private boolean isUniqueConstraintViolation(IllegalStateException e) {
         return e.getCause() instanceof SQLException sqlException
-                && SQLSTATE_UNIQUE_VIOLATION.equals(sqlException.getSQLState());
+                && Objects.equals(sqlException.getSQLState(), SQLSTATE_UNIQUE_VIOLATION);
     }
 }

@@ -56,7 +56,7 @@ import java.util.List;
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -112,7 +112,7 @@ class RepairMissingFilesWorkflowTest {
     void testNoMissingFiles() {
         addDescription("Test that the workflow does nothing, when it has no missing files.");
         addStep("Prepare for calls to mocks", "");
-        when(model.findFilesWithMissingCopies(anyString(), anyInt(), anyLong(), anyLong()))
+        when(model.findFilesWithMissingCopies(anyString(), anyList(), anyLong(), anyLong()))
                 .thenReturn(createMockIterator());
 
         addStep("Run workflow for repairing missing files.", "Should not try to repair anything.");
@@ -127,7 +127,7 @@ class RepairMissingFilesWorkflowTest {
         verifyNoMoreInteractions(alerter);
         verifyNoMoreInteractions(auditManager);
 
-        verify(model, times(1)).findFilesWithMissingCopies(eq(TEST_COLLECTION), eq(2), anyLong(), anyLong());
+        verify(model, times(1)).findFilesWithMissingCopies(eq(TEST_COLLECTION), eq(List.of(PILLAR_1, PILLAR_2)), anyLong(), anyLong());
         verifyNoMoreInteractions(model);
     }
 
@@ -137,7 +137,7 @@ class RepairMissingFilesWorkflowTest {
     void testSuccessRepair() {
         addDescription("Test that the workflow makes calls to the collector, when a file is missing");
         addStep("Prepare for calls to mocks to handle a repair", "");
-        when(model.findFilesWithMissingCopies(eq(TEST_COLLECTION), anyInt(), anyLong(), anyLong()))
+        when(model.findFilesWithMissingCopies(eq(TEST_COLLECTION), anyList(), anyLong(), anyLong()))
                 .thenReturn(createMockIterator(TEST_FILE_1));
 
         when(model.getFileInfos(eq(TEST_FILE_1), eq(TEST_COLLECTION)))
@@ -179,7 +179,7 @@ class RepairMissingFilesWorkflowTest {
                 any(EventHandler.class), anyString());
         verifyNoMoreInteractions(collector);
 
-        verify(model, times(1)).findFilesWithMissingCopies(eq(TEST_COLLECTION), eq(2),
+        verify(model, times(1)).findFilesWithMissingCopies(eq(TEST_COLLECTION), eq(List.of(PILLAR_1, PILLAR_2)),
                 anyLong(), anyLong());
         verify(model).getFileInfos(eq(TEST_FILE_1), eq(TEST_COLLECTION));
         verifyNoMoreInteractions(model);
@@ -191,7 +191,7 @@ class RepairMissingFilesWorkflowTest {
     void testFailedGetFile() {
         addDescription("Test that the workflow does not try to put a file, if it fails to get it.");
         addStep("Prepare for calls to mocks to fail when performing get-file", "");
-        when(model.findFilesWithMissingCopies(eq(TEST_COLLECTION), anyInt(), anyLong(), anyLong()))
+        when(model.findFilesWithMissingCopies(eq(TEST_COLLECTION), anyList(), anyLong(), anyLong()))
                 .thenReturn(createMockIterator(TEST_FILE_1));
 
         when(model.getFileInfos(eq(TEST_FILE_1), eq(TEST_COLLECTION)))
@@ -222,7 +222,7 @@ class RepairMissingFilesWorkflowTest {
         verify(collector).getFile(eq(TEST_COLLECTION), eq(TEST_FILE_1), any(URL.class), any(EventHandler.class), anyString());
         verifyNoMoreInteractions(collector);
 
-        verify(model, times(1)).findFilesWithMissingCopies(eq(TEST_COLLECTION), eq(2),
+        verify(model, times(1)).findFilesWithMissingCopies(eq(TEST_COLLECTION), eq(List.of(PILLAR_1, PILLAR_2)),
                 anyLong(), anyLong());
         verify(model).getFileInfos(eq(TEST_FILE_1), eq(TEST_COLLECTION));
         verifyNoMoreInteractions(model);
@@ -234,7 +234,7 @@ class RepairMissingFilesWorkflowTest {
     void testFailedPutFile() {
         addDescription("Test that the workflow makes calls to the collector for get and put file, even when put file fails.");
         addStep("Prepare for calls to mocks", "");
-        when(model.findFilesWithMissingCopies(eq(TEST_COLLECTION), anyInt(), anyLong(), anyLong()))
+        when(model.findFilesWithMissingCopies(eq(TEST_COLLECTION), anyList(), anyLong(), anyLong()))
                 .thenReturn(createMockIterator(TEST_FILE_1));
 
         when(model.getFileInfos(eq(TEST_FILE_1), eq(TEST_COLLECTION)))
@@ -278,7 +278,7 @@ class RepairMissingFilesWorkflowTest {
         verify(collector).putFile(eq(TEST_COLLECTION), eq(TEST_FILE_1), any(URL.class), any(), any(EventHandler.class), anyString());
         verifyNoMoreInteractions(collector);
 
-        verify(model, times(1)).findFilesWithMissingCopies(eq(TEST_COLLECTION), eq(2), anyLong(), anyLong());
+        verify(model, times(1)).findFilesWithMissingCopies(eq(TEST_COLLECTION), eq(List.of(PILLAR_1, PILLAR_2)), anyLong(), anyLong());
         verify(model).getFileInfos(eq(TEST_FILE_1), eq(TEST_COLLECTION));
         verifyNoMoreInteractions(model);
     }
