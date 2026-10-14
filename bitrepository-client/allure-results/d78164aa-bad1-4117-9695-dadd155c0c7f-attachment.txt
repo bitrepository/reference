@@ -1,0 +1,4 @@
+Collection: SinglePillarCollection
+Contributor Queries: null
+Address for Result: null
+EventHandler: org.bitrepository.client.TestEventHandler@36ab2c76

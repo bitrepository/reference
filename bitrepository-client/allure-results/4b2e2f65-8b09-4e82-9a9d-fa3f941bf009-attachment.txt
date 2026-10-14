@@ -1,0 +1,5 @@
+Collection: SinglePillarCollection
+Contributor Queries: null
+Checksum Spec: null
+Address for Result: null
+Audit Info: null

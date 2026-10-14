@@ -1,0 +1,1 @@
+It should send a identify message

@@ -1,0 +1,1 @@
+A GetChecksumsRequest should be sent to both pillars with the appropriate MinTimestamp, MaxTimestamp, MaxNumberOfResults values.

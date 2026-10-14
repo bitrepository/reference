@@ -1,0 +1,1 @@
+An failed event should be generated followed by a FAILED event

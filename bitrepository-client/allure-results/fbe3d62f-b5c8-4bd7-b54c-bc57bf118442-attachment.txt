@@ -1,0 +1,1 @@
+The client should generate a COMPONENT_FAILED followed by a OperationEventType.FAILED.

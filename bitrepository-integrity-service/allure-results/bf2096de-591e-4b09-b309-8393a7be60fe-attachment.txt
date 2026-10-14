@@ -1,0 +1,1 @@
+hasIntegrityIssues() should return false and the summary report should state that no  inform of the missing file.

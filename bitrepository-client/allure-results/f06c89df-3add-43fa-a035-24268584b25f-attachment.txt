@@ -1,0 +1,1 @@
+A IDENTIFY_REQUEST_SENT event should be received.
