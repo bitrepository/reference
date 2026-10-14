@@ -1,0 +1,1 @@
+Both listeners received the message, and it is identical

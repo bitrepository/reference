@@ -1,0 +1,4 @@
+Collection: SinglePillarCollection
+FilePart: null
+Upload URL: file:/home/olvi/IdeaProjects/reference/bitrepository-client/../bitrepository-core/src/test/resources/test-files/default-test-file.txt
+Audit Info: null

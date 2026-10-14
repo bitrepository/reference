@@ -1,0 +1,1 @@
+Should be caught by the event handler. First a PartiallyComplete, then a Complete.

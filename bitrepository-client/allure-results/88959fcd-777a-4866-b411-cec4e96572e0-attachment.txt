@@ -1,0 +1,1 @@
+Following events should be generated: COMPONENT_IDENTIFIED, IDENTIFICATION_COMPLETE and a REQUEST_SENT.a request should be sent to pillar1

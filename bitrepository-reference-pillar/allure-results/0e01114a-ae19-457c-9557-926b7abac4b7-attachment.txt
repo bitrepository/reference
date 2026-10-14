@@ -1,0 +1,1 @@
+Should say no, and throw exception when attempted to be retrieved.

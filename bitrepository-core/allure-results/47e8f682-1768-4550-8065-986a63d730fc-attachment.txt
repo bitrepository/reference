@@ -1,0 +1,1 @@
+Verify that the message bus ignores this before parsing the message.

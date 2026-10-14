@@ -1,0 +1,1 @@
+Should be caught by the event handler. First a COMPONENT_FAILED, then a COMPLETE.

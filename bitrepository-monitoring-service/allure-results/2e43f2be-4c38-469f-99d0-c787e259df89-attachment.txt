@@ -1,0 +1,1 @@
+Should send an alarm and make another call for the GetStatusMap

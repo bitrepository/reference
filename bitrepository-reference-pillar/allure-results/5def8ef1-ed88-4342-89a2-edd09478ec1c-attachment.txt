@@ -1,0 +1,1 @@
+Not throw an exception when calling the verifyFileExists method.

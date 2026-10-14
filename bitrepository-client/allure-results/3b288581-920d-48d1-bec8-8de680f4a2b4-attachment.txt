@@ -1,0 +1,5 @@
+Collection: TwoPillarCollection
+Contributor Queries: [ContributorQuery{componentID='Pillar1', minTimestamp=null, maxTimestamp=null, maxNumberOfResults=null}]
+Checksum Spec: org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE@59108fbf[checksumType=MD5, checksumSalt=<null>(default), otherChecksumType=<null>(default)]
+Address for Result: null
+Audit Info: TEST-AUDIT

@@ -1,0 +1,1 @@
+A COMPONENT_FAILED event should be generated followed by at FAILURE event.
