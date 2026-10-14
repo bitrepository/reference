@@ -1,0 +1,1 @@
+hasIntegrityIssues() should return false and the summary report should inform that no issues where found.

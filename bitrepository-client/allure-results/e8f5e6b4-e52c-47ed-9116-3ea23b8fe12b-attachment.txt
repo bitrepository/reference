@@ -1,0 +1,1 @@
+The client should send a getFileRequest to the fast pillar. The event handler should receive the following events: 3 x PillarIdentified, a PillarSelected and a RequestSent

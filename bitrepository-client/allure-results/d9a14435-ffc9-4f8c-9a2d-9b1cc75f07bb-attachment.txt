@@ -1,0 +1,1 @@
+An failed event should be received

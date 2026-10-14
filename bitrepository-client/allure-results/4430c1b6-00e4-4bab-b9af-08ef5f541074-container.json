@@ -1,0 +1,1 @@
+{"uuid":"4430c1b6-00e4-4bab-b9af-08ef5f541074","name":"Tests that the AuditTrailClient can be created from the AccessComponentFactory.","children":["401f120b-d2c5-4ba0-ae00-0ccbc8694ead"],"befores":[],"afters":[],"start":1791968501273,"stop":1791968503551}

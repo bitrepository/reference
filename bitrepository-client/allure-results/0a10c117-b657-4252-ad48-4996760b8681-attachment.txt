@@ -1,0 +1,1 @@
+A getChecksumRequest should be sendt to pillar1 and the following events should be received: COMPONENT_IDENTIFIED, IDENTIFICATION_COMPLETE and REQUEST_SENT.

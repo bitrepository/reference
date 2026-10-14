@@ -1,0 +1,1 @@
+<a href="https://sbforge.org/jira/browse/BITMAG-677">BITMAG-677put, replace and delete clients fails if return checksums are requested and a checksumpillar is involved</a>

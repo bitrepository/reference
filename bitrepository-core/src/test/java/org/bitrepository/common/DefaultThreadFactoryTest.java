@@ -9,9 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.LoggerFactory;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -62,10 +60,8 @@ class DefaultThreadFactoryTest {
         verify(mockAppender).doAppend(argument.capture());
         ILoggingEvent logLine = argument.getValue();
 
-        assertThat( logLine.getLevel(), is( equalTo( Level.ERROR)));
-
-        assertThat( logLine.getLoggerName(), is( equalTo( DefaultThreadFactoryTest.class.getName())));
-
-        assertThat( logLine.getThrowableProxy().getMessage(), is( equalTo( DefaultThreadFactoryTest.this.message)));
+        assertEquals(Level.ERROR, logLine.getLevel());
+        assertEquals(DefaultThreadFactoryTest.class.getName(), logLine.getLoggerName());
+        assertEquals(message, logLine.getThrowableProxy().getMessage());
     }
 }

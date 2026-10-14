@@ -98,14 +98,14 @@
 
   <licenses>
     <license>
-      <name>LGPL v2.1</name>
+      <name>LGPL-3.0-or-later</name>
       <distribution>repo</distribution>
-      <url>http://www.gnu.org/licenses/lgpl-2.1.txt</url>
+      <url>https://www.gnu.org/licenses/lgpl-3.0.en.html</url>
     </license>
   </licenses>
 
   <issueManagement>
-    <system>JIRA</system>
+    <system>Jira</system>
     <url>https://sbforge.org/jira/browse/BITMAG</url>
   </issueManagement>
 
@@ -114,11 +114,11 @@
     <url>https://sbforge.org/jenkins/</url>
   </ciManagement>
 
-  <description>The Bit Repository system enables long-term preservation of data in a distributed, highly redundant
-    architecture. The data integrity is ensured by using multiple, independently developed data storage systems
-    (﻿Pillars)
-    across different organizations, together with functionality for maintaining the ﻿integrity of the data over
-    time.
+  <description>
+    The Bit Repository system enables long-term preservation of data in a distributed, highly redundant architecture.
+    The data integrity is ensured by using multiple independently developed data storage systems (Pillars)
+    across different organizations,
+    together with functionality for maintaining the integrity of the data over time.
   </description>
   <url>https://sbforge.org/display/BITMAG</url>
 
@@ -256,11 +256,6 @@
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-server</artifactId>
         <version>12.1.13</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hamcrest</groupId>
-        <artifactId>hamcrest-core</artifactId>
-        <version>3.0</version>
       </dependency>
 
       <!--Tools-->
@@ -454,7 +449,7 @@
           <verbose>true</verbose>
           <generateBundle>true</generateBundle>
           <failIfWarning>true</failIfWarning>
-          <licenseName>lgpl_v2_1</licenseName>
+          <licenseName>LGPL-3.0-or-later</licenseName>
           <useMissingFile>true</useMissingFile>
           <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
           <includes>
@@ -623,7 +618,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.6.0</version>
+          <version>3.5.6</version>
           <configuration>
             <systemPropertyVariables>
               <allure.results.directory>${project.basedir}/../target/allure-results
