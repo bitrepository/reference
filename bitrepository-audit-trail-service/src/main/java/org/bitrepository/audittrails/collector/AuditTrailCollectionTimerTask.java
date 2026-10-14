@@ -29,6 +29,9 @@ import org.slf4j.LoggerFactory;
 import java.time.Instant;
 import java.util.Date;
 
+/**
+ * In a future major version this inheritance relationship may change.
+ */
 public class AuditTrailCollectionTimerTask implements Runnable {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
