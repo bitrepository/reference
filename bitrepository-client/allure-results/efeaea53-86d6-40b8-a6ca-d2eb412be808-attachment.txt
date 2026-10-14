@@ -1,0 +1,1 @@
+A IdentifyPillarsForGetFileRequest will be sent to the pillar and a IDENTIFY_REQUEST_SENT should be generated.

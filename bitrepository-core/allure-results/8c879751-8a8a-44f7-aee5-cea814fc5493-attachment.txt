@@ -1,0 +1,1 @@
+No exception should be thrown while closing.

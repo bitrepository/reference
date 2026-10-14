@@ -1,0 +1,1 @@
+<a href=https://sbforge.org/jira/browse/BITMAG-925>BITMAG-925 Client will always try to put to the pillars defined in the first collection</a>

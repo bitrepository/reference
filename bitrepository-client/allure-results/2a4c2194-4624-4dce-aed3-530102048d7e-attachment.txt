@@ -1,0 +1,1 @@
+A component COMPONENT_IDENTIFIED event should be generated followed by a IDENTIFICATION_COMPLETE.

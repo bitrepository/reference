@@ -1,0 +1,1 @@
+The GetFileIDsClient should notify about the response through the callback interface.

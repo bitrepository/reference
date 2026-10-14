@@ -1,0 +1,1 @@
+The client should emit a COMPONENT_FAILED event and fail the put operation

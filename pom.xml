@@ -98,9 +98,9 @@
 
   <licenses>
     <license>
-      <name>LGPL v2.1</name>
+      <name>LGPL-3.0-or-later</name>
       <distribution>repo</distribution>
-      <url>http://www.gnu.org/licenses/lgpl-2.1.txt</url>
+      <url>https://www.gnu.org/licenses/lgpl-3.0.en.html</url>
     </license>
   </licenses>
 
@@ -449,7 +449,7 @@
           <verbose>true</verbose>
           <generateBundle>true</generateBundle>
           <failIfWarning>true</failIfWarning>
-          <licenseName>lgpl_v2_1</licenseName>
+          <licenseName>LGPL-3.0-or-later</licenseName>
           <useMissingFile>true</useMissingFile>
           <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
           <includes>

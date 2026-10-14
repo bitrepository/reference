@@ -1,0 +1,1 @@
+Should fail, unless asked for the default checksum spec.

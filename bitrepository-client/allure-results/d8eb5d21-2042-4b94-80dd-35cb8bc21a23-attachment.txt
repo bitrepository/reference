@@ -1,0 +1,1 @@
+A COMPONENT_IDENTIFIED event and a IDENTIFICATION_COMPLETE event should be received.Rights after this a REQUEST_SENT should be received and a GetAuditTrailsRequest should be sent to pillar1

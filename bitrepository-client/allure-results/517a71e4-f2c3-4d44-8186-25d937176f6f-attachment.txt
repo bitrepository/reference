@@ -1,0 +1,1 @@
+A component failed event should be generated.

@@ -1,0 +1,1 @@
+A IdentifyPillarsForReplaceFileRequest should be sent to the pillar.
