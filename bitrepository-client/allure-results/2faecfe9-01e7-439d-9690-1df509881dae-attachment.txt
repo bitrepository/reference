@@ -1,0 +1,1 @@
+<a href=https://sbforge.org/jira/browse/BITMAG-810>BITMAG-810 Reference client should be able to retry failed file transfers</a>

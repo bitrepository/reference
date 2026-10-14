@@ -1,0 +1,1 @@
+An COMPONENT_IDENTIFIED event should be generate followed by a COMPONENT_IDENTIFIED, a IDENTIFICATION_COMPLETE and a REQUEST_SENT event. A replace request should be set to the checksum pillar without a request for a salted return checksum for the new file

@@ -1,0 +1,1 @@
+Should return non-null object, unless asked for non-default checksum spec which must raise exception.

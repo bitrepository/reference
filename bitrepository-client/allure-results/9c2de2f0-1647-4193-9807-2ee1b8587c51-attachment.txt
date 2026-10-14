@@ -1,0 +1,1 @@
+A REQUEST_SENT event should be generated and a OperationRequest should be sent only to contributor2.

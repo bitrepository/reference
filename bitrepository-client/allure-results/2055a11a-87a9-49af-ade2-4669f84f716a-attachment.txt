@@ -1,0 +1,1 @@
+Should trigger a 'event failed'.

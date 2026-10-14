@@ -1,0 +1,1 @@
+This should be ignored, i.e. no events should be generated.

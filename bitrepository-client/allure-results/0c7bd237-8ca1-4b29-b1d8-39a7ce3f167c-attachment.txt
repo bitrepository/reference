@@ -1,0 +1,1 @@
+EventManager and GetFileIDsClient should be instantiated.
