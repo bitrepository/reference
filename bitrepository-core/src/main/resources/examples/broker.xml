@@ -63,7 +63,7 @@
             <acceptor name="invm">vm://0?protocols=CORE</acceptor>
 
             <!-- TLS acceptor matching the example secure MessageBusConfiguration URL (ssl://messagebus:61601).
-                 Comment the two lines in to enable TLS. -->
+                 Uncomment the two lines in to enable TLS. -->
             <!-- <acceptor name="core-ssl">ssl://0.0.0.0:61601?protocols=CORE;keyStorePath=/etc/broker/broker.keystore;keyStorePassword=${KEYSTORE_PASSWORD}</acceptor> -->
         </acceptors>
 
