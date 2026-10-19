@@ -1,1 +1,0 @@
-Should make send a Failure event to the eventhandler.

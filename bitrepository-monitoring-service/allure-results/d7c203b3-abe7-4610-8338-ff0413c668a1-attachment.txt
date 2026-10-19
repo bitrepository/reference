@@ -1,1 +1,0 @@
-Should make another call for the GetStatusMap

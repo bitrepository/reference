@@ -1,4 +1,0 @@
-Collection: TwoPillarCollection
-URL: file:/home/olvi/IdeaProjects/reference/bitrepository-client/../bitrepository-core/src/test/resources/test-files/default-test-file.txt
-Size: 0
-Audit Info: TEST-AUDIT-TRAIL

@@ -1,1 +1,0 @@
-An identify request should be sent and an IdentifyPillarsRequestSent event should be generate

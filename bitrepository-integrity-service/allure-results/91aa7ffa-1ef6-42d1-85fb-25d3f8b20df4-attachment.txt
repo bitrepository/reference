@@ -1,1 +1,0 @@
-hasIntegrityIssues() should return true and the summary report should correctly inform of the checksum issue.

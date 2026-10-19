@@ -1,1 +1,0 @@
-The final response should tell about the error, and not contain the file.

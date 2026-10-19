@@ -1,1 +1,0 @@
-A COMPONENT_IDENTIFIED event should be generated for pillar2 followed by an IDENTIFICATION_COMPLETE event. The client should then proceed to requesting the file from pillar2 by sending a GetFileRequest with the correct and parametersgenerating a REQUEST_SENT event.

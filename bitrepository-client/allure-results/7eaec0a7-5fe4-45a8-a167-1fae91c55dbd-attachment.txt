@@ -1,1 +1,0 @@
-This should be interpreted as a request for getting statuses from all contributors defined in the collection settings.

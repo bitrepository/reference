@@ -1,1 +1,0 @@
-An IDENTIFY_TIMEOUT and IDENTIFICATION_COMPLETE event should be receivedRight after this a GetStatusRequest should be sent to pillar1

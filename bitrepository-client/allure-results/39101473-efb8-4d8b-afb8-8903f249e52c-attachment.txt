@@ -1,1 +1,0 @@
-An COMPONENT_IDENTIFIED event should be generate followed by an IDENTIFICATION_COMPLETE and a REQUEST_SENT. <br>Requests for put files should be received, neither requesting a return checksum.

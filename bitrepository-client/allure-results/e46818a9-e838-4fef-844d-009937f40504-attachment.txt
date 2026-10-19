@@ -1,4 +1,0 @@
-Collection: TwoPillarCollection
-Contributor Queries: [ContributorQuery{componentID='Pillar1', minTimestamp=2026-10-14T09:00:37.130712491Z, maxTimestamp=2026-10-14T09:00:38.030712491Z, maxNumberOfResults=1}, ContributorQuery{componentID='Pillar2', minTimestamp=2026-10-14T09:00:38.030712491Z, maxTimestamp=2026-10-14T09:00:38.130712491Z, maxNumberOfResults=2}]
-Address for Result: null
-EventHandler: org.bitrepository.client.TestEventHandler@3840b4e6

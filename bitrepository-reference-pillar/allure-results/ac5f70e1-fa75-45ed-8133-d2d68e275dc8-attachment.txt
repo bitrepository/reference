@@ -1,1 +1,0 @@
-Contains OPERATION_COMPLETE, with only the requested amount of audits, and acknowledges that it is only a partial result set.
