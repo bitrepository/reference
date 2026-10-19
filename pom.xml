@@ -449,7 +449,7 @@
           <verbose>true</verbose>
           <generateBundle>true</generateBundle>
           <failIfWarning>true</failIfWarning>
-          <licenseName>LGPL-3.0-or-later</licenseName>
+          <licenseName>lgpl_v2_1</licenseName>
           <useMissingFile>true</useMissingFile>
           <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
           <includes>
