@@ -1,1 +1,0 @@
-A REQUEST_SENT event should be generated and a PutFileRequest should be received on the pillar.

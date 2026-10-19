@@ -1,1 +1,0 @@
-The client should generate a COMPONENT_IDENTIFIED, a COMPONENT_COMPLETE and an IDENTIFICATION_COMPLETE event.

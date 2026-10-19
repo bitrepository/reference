@@ -1,1 +1,0 @@
-The client should generate 2 PillarIdentified events followed by a Failed event.

@@ -1,4 +1,0 @@
-Collection: TwoPillarCollection
-Component Queries: null
-URL for Result: null
-Audit Info: null

@@ -1,1 +1,0 @@
-An COMPONENT_IDENTIFIED event should be generate followed by an IDENTIFICATION_COMPLETE and a REQUEST_SENT. <br>Requests for put files should be received, both requesting a return checksum of the default type  a request for a return checksum, and the request to the normal pillarshould specify that a salted checksum should be returned.

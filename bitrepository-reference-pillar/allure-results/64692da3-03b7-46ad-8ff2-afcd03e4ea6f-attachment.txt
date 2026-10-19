@@ -1,1 +1,0 @@
-Should not throw an exception

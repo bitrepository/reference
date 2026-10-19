@@ -1,4 +1,0 @@
-Collection: TwoPillarCollection
-Component Queries: [AuditTrailQuery{componentID='Pillar1', minTimestamp=null, maxTimestamp=null, maxNumberOfResults=10000}minSequenceNumber=1, maxSequenceNumber=3}]
-URL for Result: null
-Audit Info: null

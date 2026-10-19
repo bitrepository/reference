@@ -1,1 +1,0 @@
-An COMPONENT_IDENTIFIED event should be generate folled by a IDENTIFICATION_COMPLETE and a REQUEST_SENT. A GetChecksumsFileRequest should be sent to pillar2
