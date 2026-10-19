@@ -38,6 +38,9 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 
@@ -79,7 +82,14 @@ class AuditTrailContributorDatabaseTest {
         databaseSpecifics.setUsername(postgreSQLContainer.getUsername());
         databaseSpecifics.setPassword(postgreSQLContainer.getPassword());
 
-        firstCollectionID = settings.getCollections().get(0).getID();
+        try (Connection connection = DriverManager.getConnection(databaseSpecifics.getDatabaseURL(),
+                                                          databaseSpecifics.getUsername(),
+                                                          databaseSpecifics.getPassword());
+             Statement statement = connection.createStatement()) {
+            statement.execute("TRUNCATE TABLE audittrail, file, actor RESTART IDENTITY");
+        }
+
+        firstCollectionID = settings.getCollections().getFirst().getID();
     }
 
     @Test
