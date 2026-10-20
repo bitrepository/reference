@@ -100,9 +100,7 @@ class GetChecksumsClientComponentIT extends DefaultClientIT {
     void verifyGetChecksumsClientFromFactory() {
         Assertions.assertInstanceOf(ConversationBasedGetChecksumsClient.class,
                 AccessComponentFactory.getInstance().createGetChecksumsClient(settingsForCUT, securityManager,
-                        settingsForTestClient.getComponentID()),
-                "The default GetFileClient from the Access factory should be of the type '" +
-                        ConversationBasedGetChecksumsClient.class.getName() + "'.");
+                        settingsForTestClient.getComponentID()));
     }
 
     @Test

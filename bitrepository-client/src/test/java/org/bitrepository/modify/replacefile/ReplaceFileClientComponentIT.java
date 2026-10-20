@@ -75,8 +75,7 @@ public class ReplaceFileClientComponentIT extends DefaultFixtureClientIT {
                 "It should be an instance of ConversationBasedReplaceFileClient");
         ReplaceFileClient rfc = ModifyComponentFactory.getInstance().retrieveReplaceFileClient(
                 settingsForCUT, securityManager, settingsForTestClient.getComponentID());
-        Assertions.assertInstanceOf(ConversationBasedReplaceFileClient.class, rfc, "The ReplaceFileClient '" + rfc
-                + "' should be instance of '" + ConversationBasedReplaceFileClient.class.getName() + "'");
+        Assertions.assertInstanceOf(ConversationBasedReplaceFileClient.class, rfc);
     }
 
     @Test

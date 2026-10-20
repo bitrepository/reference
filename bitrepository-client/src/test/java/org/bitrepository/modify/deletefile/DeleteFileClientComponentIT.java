@@ -74,8 +74,7 @@ public class DeleteFileClientComponentIT extends DefaultFixtureClientIT {
                 "It should be an instance of SimplePutFileClient");
         DeleteFileClient dfc = ModifyComponentFactory.getInstance().retrieveDeleteFileClient(
                 settingsForCUT, securityManager, settingsForTestClient.getComponentID());
-        Assertions.assertInstanceOf(ConversationBasedDeleteFileClient.class, dfc, "The DeleteFileClient '" + dfc
-                + "' should be instance of '" + ConversationBasedDeleteFileClient.class.getName() + "'");
+        Assertions.assertInstanceOf(ConversationBasedDeleteFileClient.class, dfc);
     }
 
     @Test
