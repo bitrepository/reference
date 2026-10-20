@@ -88,9 +88,7 @@ class GetFileIDsClientComponentIT extends DefaultClientIT {
     void verifyGetFileIDsClientFromFactory() {
         Assertions.assertInstanceOf(ConversationBasedGetFileIDsClient.class,
                 AccessComponentFactory.getInstance().createGetFileIDsClient(settingsForCUT, securityManager,
-                        settingsForTestClient.getComponentID()),
-                "The default GetFileClient from the Access factory should be of the type '" +
-                ConversationBasedGetFileIDsClient.class.getName() + "'.");
+                        settingsForTestClient.getComponentID()));
     }
 
     @Test

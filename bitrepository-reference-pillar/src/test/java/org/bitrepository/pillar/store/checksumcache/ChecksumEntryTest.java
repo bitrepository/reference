@@ -54,10 +54,7 @@ class ChecksumEntryTest {
     @Tag("pillartest")
     void compactConstructorRejectsNullFileID() {
         addDescription("The compact constructor must reject a null fileID");
-        RuntimeException exception = Assertions.assertThrows(
-                RuntimeException.class, () -> new ChecksumEntry(null, CE_CHECKSUM, CE_DATE));
-        Assertions.assertTrue(exception instanceof NullPointerException || exception instanceof IllegalArgumentException,
-                "Expected: NullPointerException or IllegalArgumentException. Actual: " + exception);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new ChecksumEntry(null, CE_CHECKSUM, CE_DATE));
     }
 
     @Test
