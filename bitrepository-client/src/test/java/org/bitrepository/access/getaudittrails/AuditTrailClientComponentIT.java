@@ -90,9 +90,7 @@ class AuditTrailClientComponentIT extends DefaultClientIT {
     void verifyAuditTrailClientFromFactory() {
         Assertions.assertInstanceOf(ConversationBasedAuditTrailClient.class,
                 AccessComponentFactory.getInstance().createAuditTrailClient(
-                settingsForCUT, securityManager, settingsForTestClient.getComponentID()), "The default " +
-                        "AuditTrailClient from the Access factory should be of the type '" +
-                        ConversationBasedAuditTrailClient.class.getName() + "'.");
+                        settingsForCUT, securityManager, settingsForTestClient.getComponentID()));
     }
 
     @Test

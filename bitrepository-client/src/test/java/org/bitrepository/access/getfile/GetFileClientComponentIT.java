@@ -66,9 +66,7 @@ class GetFileClientComponentIT extends AbstractGetFileClientIT {
     void verifyGetFileClientFromFactory() {
         Assertions.assertInstanceOf(ConversationBasedGetFileClient.class,
                 AccessComponentFactory.getInstance().createGetFileClient(
-                        settingsForCUT, securityManager, settingsForTestClient.getComponentID()),
-                "The default GetFileClient from the Access factory should be of the type '" +
-                        ConversationBasedGetFileClient.class.getName() + "'.");
+                        settingsForCUT, securityManager, settingsForTestClient.getComponentID()));
     }
 
     @Test
