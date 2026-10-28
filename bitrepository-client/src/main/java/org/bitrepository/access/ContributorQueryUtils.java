@@ -2,7 +2,7 @@ package org.bitrepository.access;/*
  * #%L
  * BitRepository Integrity Service
  * %%
- * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
+ * Copyright (C) 2010 - 2026 The Royal Danish Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -21,10 +21,9 @@ package org.bitrepository.access;/*
  */
 
 import java.time.Instant;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
+import java.util.stream.Collectors;
 
 public class ContributorQueryUtils {
 
@@ -35,11 +34,9 @@ public class ContributorQueryUtils {
      * @return A <code>AuditTrailQuery[]</code> array requesting all audit trails from all the defined contributors.
      */
     public static ContributorQuery[] createFullContributorQuery(Collection<String> contributorIDs) {
-        List<ContributorQuery> componentQueryList = new ArrayList<>(contributorIDs.size());
-        for (String contributor : contributorIDs) {
-            componentQueryList.add(new ContributorQuery(contributor, (Instant) null, (Instant) null, null));
-        }
-        return componentQueryList.toArray(new ContributorQuery[0]);
+        return contributorIDs.stream()
+                .map(contributor -> new ContributorQuery(contributor, null, (Instant) null, null))
+                .toArray(ContributorQuery[]::new);
     }
 
     /**
@@ -49,10 +46,8 @@ public class ContributorQueryUtils {
      * @return The list of ContributorIDs in the supplied queries
      */
     public static Collection<String> getContributors(ContributorQuery[] queries) {
-        Collection<String> contributors = new HashSet<>();
-        for (ContributorQuery query : queries) {
-            contributors.add(query.getComponentID());
-        }
-        return contributors;
+        return Arrays.stream(queries)
+                .map(ContributorQuery::getComponentID)
+                .collect(Collectors.toSet());
     }
 }

@@ -2,7 +2,7 @@
  * #%L
  * Bitrepository Command Line
  * %%
- * Copyright (C) 2010 - 2013 The State and University Library, The Royal Library and The State Archives, Denmark
+ * Copyright (C) 2010 - 2026 The Royal Danish Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -24,11 +24,10 @@ package org.bitrepository.commandline.outputformatter;
 import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.commandline.resultmodel.ChecksumResult;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Class to deliver GetChecksums client output in a format showing the distribution of the checksum between the pillars.
@@ -83,20 +82,7 @@ public class GetChecksumDistributionFormatter implements GetChecksumsOutputForma
      * @return The map between checksum and pillars.
      */
     private Map<String, List<String>> retrieveChecksumDistribution(ChecksumResult result) {
-        Map<String, List<String>> res = new HashMap<>();
-
-        for (String pillarID : result.getContributors()) {
-            String checksum = result.getChecksum(pillarID);
-            List<String> pillarIDs;
-            if (res.containsKey(checksum)) {
-                pillarIDs = res.get(checksum);
-            } else {
-                pillarIDs = new ArrayList<>();
-            }
-            pillarIDs.add(pillarID);
-            res.put(checksum, pillarIDs);
-        }
-
-        return res;
+        return result.getContributors().stream()
+                .collect(Collectors.groupingBy(result::getChecksum));
     }
 }

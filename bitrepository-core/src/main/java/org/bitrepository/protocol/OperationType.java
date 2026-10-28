@@ -8,6 +8,8 @@
 
 package org.bitrepository.protocol;
 
+import java.util.Arrays;
+
 /*
  * #%L
  * BitRepository Core
@@ -54,12 +56,10 @@ public enum OperationType {
     }
 
     public static OperationType fromValue(String v) {
-        for (OperationType c : OperationType.values()) {
-            if (c.value.equals(v)) {
-                return c;
-            }
-        }
-        throw new IllegalArgumentException(v);
+        return Arrays.stream(values())
+                .filter(c -> c.value.equals(v))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(v));
     }
 
 }

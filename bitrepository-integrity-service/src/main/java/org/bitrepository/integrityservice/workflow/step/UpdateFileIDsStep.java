@@ -2,7 +2,7 @@
  * #%L
  * Bitrepository Integrity Service
  * %%
- * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
+ * Copyright (C) 2010 - 2026 The Royal Danish Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as 
@@ -38,10 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -136,12 +133,9 @@ public abstract class UpdateFileIDsStep extends AbstractWorkFlowStep {
      * @return The queries for the pillars for collecting the file ids.
      */
     private ContributorQuery[] getQueries(Collection<String> pillars) {
-        List<ContributorQuery> res = new ArrayList<>();
-        for (String pillar : pillars) {
-            Date latestFileIDEntry = store.getDateForNewestFileEntryForPillar(pillar, collectionID);
-            res.add(new ContributorQuery(pillar, latestFileIDEntry, null, maxNumberOfResultsPerConversation));
-        }
-
-        return res.toArray(new ContributorQuery[pillars.size()]);
+        return pillars.stream()
+                .map(pillar -> new ContributorQuery(pillar, store.getDateForNewestFileEntryForPillar(pillar, collectionID),
+                        null, maxNumberOfResultsPerConversation))
+                .toArray(ContributorQuery[]::new);
     }
 }

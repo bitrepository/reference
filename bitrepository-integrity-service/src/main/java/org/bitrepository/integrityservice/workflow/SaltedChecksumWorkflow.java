@@ -2,7 +2,7 @@
  * #%L
  * Bitrepository Integrity Service
  * %%
- * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
+ * Copyright (C) 2010 - 2026 The Royal Danish Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -35,7 +35,6 @@ import org.bitrepository.service.workflow.WorkflowStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -176,13 +175,7 @@ public class SaltedChecksumWorkflow extends Workflow {
                     + currentFileID + "'.");
             return;
         }
-        List<String> cs = new ArrayList<>();
-        for (Map.Entry<String, String> entry : checksums.entrySet()) {
-            if (!cs.contains(entry.getValue())) {
-                cs.add(entry.getValue());
-            }
-        }
-        if (cs.size() > 1) {
+        if (checksums.values().stream().distinct().count() > 1) {
             sendFailure("Inconsistent salted checksum found for file '" + currentFileID +
                     "' with checksumSpecTYPE '" + currentChecksumSpec.getChecksumType() + "' and salt '" +
                     Base16Utils.decodeBase16(currentChecksumSpec.getChecksumSalt()) + "'." +

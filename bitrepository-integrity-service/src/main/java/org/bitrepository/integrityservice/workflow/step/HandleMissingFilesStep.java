@@ -2,7 +2,7 @@
  * #%L
  * Bitrepository Integrity Service
  * %%
- * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
+ * Copyright (C) 2010 - 2026 The Royal Danish Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -36,14 +36,13 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * A workflow step for finding missing files.
@@ -140,12 +139,9 @@ public class HandleMissingFilesStep extends AbstractWorkFlowStep {
     }
 
     private Set<String> getPillarsWithFile(String fileID, String collectionID) {
-        Collection<FileInfo> fileInfos = store.getFileInfos(fileID, collectionID);
-        Set<String> pillarsWithFile = new HashSet<>();
-        for (FileInfo fi : fileInfos) {
-            pillarsWithFile.add(fi.getPillarId());
-        }
-        return pillarsWithFile;
+        return store.getFileInfos(fileID, collectionID).stream()
+                .map(FileInfo::getPillarId)
+                .collect(Collectors.toSet());
     }
 
     public static String getDescription() {

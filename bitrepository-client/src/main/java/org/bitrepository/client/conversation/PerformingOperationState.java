@@ -2,7 +2,7 @@
  * #%L
  * Bitrepository Protocol
  * %%
- * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
+ * Copyright (C) 2010 - 2026 The Royal Danish Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -31,9 +31,9 @@ import org.bitrepository.common.utils.TimeUtils;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Handles the booking of performing the request phase messaging. Only the specialized workflow steps are required to
@@ -112,11 +112,9 @@ public abstract class PerformingOperationState extends GeneralConversationState 
     protected abstract void generateContributorCompleteEvent(MessageResponse msg) throws UnexpectedResponseException;
 
     private static Collection<String> toComponentIDs(Collection<SelectedComponentInfo> contributors) {
-        Collection<String> componentIDs = new HashSet<>();
-        for (SelectedComponentInfo componentInfo : contributors) {
-            componentIDs.add(componentInfo.componentID());
-        }
-        return componentIDs;
+        return contributors.stream()
+                .map(SelectedComponentInfo::componentID)
+                .collect(Collectors.toSet());
     }
 
     /**
