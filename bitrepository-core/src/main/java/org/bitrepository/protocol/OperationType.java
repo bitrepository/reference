@@ -9,6 +9,7 @@
 package org.bitrepository.protocol;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 /*
  * #%L
@@ -57,7 +58,7 @@ public enum OperationType {
 
     public static OperationType fromValue(String v) {
         return Arrays.stream(values())
-                .filter(c -> c.value.equals(v))
+                .filter(c -> Objects.equals(c.value, v))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(v));
     }

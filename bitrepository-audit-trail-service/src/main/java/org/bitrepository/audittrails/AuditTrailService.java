@@ -170,7 +170,8 @@ public class AuditTrailService implements LifeCycledService {
      */
     public List<CollectorInfo> getCollectorInfos() {
         return settings.getRepositorySettings().getCollections().getCollection().stream()
-                .map(c -> collector.getCollectorInfo(c.getID()))
+                .map(c -> c.getID())
+                .map(collector::getCollectorInfo)
                 .toList();
     }
 

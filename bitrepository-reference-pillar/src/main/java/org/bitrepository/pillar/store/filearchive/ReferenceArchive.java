@@ -91,7 +91,8 @@ public class ReferenceArchive {
      */
     public Collection<String> getAllFileIds() {
         return directories.stream()
-                .flatMap(dir -> dir.getFileIds().stream())
+                .map(dir -> dir.getFileIds())
+                .flatMap(list -> list.stream())
                 .toList();
     }
 

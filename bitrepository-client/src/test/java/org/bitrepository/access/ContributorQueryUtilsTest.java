@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -41,11 +42,11 @@ class ContributorQueryUtilsTest {
         assertEquals(2, queries.length);
         assertEquals("pillar1", queries[0].getComponentID());
         assertEquals("pillar2", queries[1].getComponentID());
-        for (ContributorQuery query : queries) {
+        Arrays.stream(queries).forEach(query -> {
             assertNull(query.getMinTimestampInstant());
             assertNull(query.getMaxTimestampInstant());
             assertNull(query.getMaxNumberOfResults());
-        }
+        });
     }
 
     @Test
