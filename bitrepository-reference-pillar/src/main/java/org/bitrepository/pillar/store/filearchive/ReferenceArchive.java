@@ -5,7 +5,7 @@
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2010 The State and University Library, The Royal Library and The State Archives, Denmark
+ * Copyright (C) 2010 - 2026 The Royal Danish Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -83,23 +83,17 @@ public class ReferenceArchive {
     public boolean hasFile(String fileID) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
 
-        for (ArchiveDirectory dir : directories) {
-            if (dir.hasFile(fileID)) {
-                return true;
-            }
-        }
-        return false;
+        return directories.stream().anyMatch(dir -> dir.hasFile(fileID));
     }
 
     /**
      * @return All the file ids within this archive.
      */
     public Collection<String> getAllFileIds() {
-        List<String> res = new ArrayList<>();
-        for (ArchiveDirectory dir : directories) {
-            res.addAll(dir.getFileIds());
-        }
-        return res;
+        return directories.stream()
+                .map(dir -> dir.getFileIds())
+                .flatMap(list -> list.stream())
+                .toList();
     }
 
     /**
@@ -250,13 +244,11 @@ public class ReferenceArchive {
      * @return The archive directory with the file.
      */
     private ArchiveDirectory getDirWithFile(String fileID) {
-        for (ArchiveDirectory dir : directories) {
-            if (dir.hasFile(fileID)) {
-                return dir;
-            }
-        }
-
-        throw new IllegalStateException("Does not have the file '" + fileID + "' within any archive dirs.");
+        return directories.stream()
+                .filter(dir -> dir.hasFile(fileID))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException(
+                        "Does not have the file '" + fileID + "' within any archive dirs."));
     }
 
     /**
@@ -266,13 +258,11 @@ public class ReferenceArchive {
      * @return The archive directory with the file in its tmp dir.
      */
     private ArchiveDirectory getDirWithTmpFile(String fileID) {
-        for (ArchiveDirectory dir : directories) {
-            if (dir.hasFileInTempDir(fileID)) {
-                return dir;
-            }
-        }
-
-        throw new IllegalStateException("Does not have the file '" + fileID + "' within any archive dirs.");
+        return directories.stream()
+                .filter(dir -> dir.hasFileInTempDir(fileID))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException(
+                        "Does not have the file '" + fileID + "' within any archive dirs."));
     }
 
     /**

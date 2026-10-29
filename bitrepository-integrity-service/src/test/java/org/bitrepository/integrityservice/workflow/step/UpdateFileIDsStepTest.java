@@ -2,7 +2,7 @@
  * #%L
  * Bitrepository Integrity Service
  * %%
- * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
+ * Copyright (C) 2010 - 2026 The Royal Danish Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as 
@@ -35,15 +35,19 @@ import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.IdentificationCompleteEvent;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.common.utils.CalendarUtils;
+import org.bitrepository.common.utils.SettingsUtils;
 import org.bitrepository.service.exception.WorkflowAbortedException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import java.math.BigInteger;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
@@ -87,7 +91,37 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
                 any(EventHandler.class));
         verifyNoMoreInteractions(alerter);
     }
-    
+
+    @Test
+    @Tag(TestGroups.REGRESSIONTEST)
+    void testQueryIsCreatedForEachActivePillarFromItsNewestFileEntry() throws WorkflowAbortedException {
+        addDescription("Test that the step queries every active pillar, each starting from its own newest file entry.");
+        String testPillar2 = "test-pillar-2";
+        Date newestEntryPillar1 = new Date(1_000_000L);
+        Date newestEntryPillar2 = new Date(2_000_000L);
+        when(model.getDateForNewestFileEntryForPillar(TEST_PILLAR_1, TEST_COLLECTION)).thenReturn(newestEntryPillar1);
+        when(model.getDateForNewestFileEntryForPillar(testPillar2, TEST_COLLECTION)).thenReturn(newestEntryPillar2);
+        doAnswer(invocation -> {
+            invocation.getArgument(4, EventHandler.class).handleEvent(new CompleteEvent(TEST_COLLECTION, null));
+            return null;
+        }).when(collector).getFileIDs(
+                eq(TEST_COLLECTION), any(), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
+        when(integrityContributors.getActiveContributors())
+                .thenReturn(new LinkedHashSet<>(List.of(TEST_PILLAR_1, testPillar2))).thenReturn(new HashSet<>());
+
+        UpdateFileIDsStep step = new FullUpdateFileIDsStep(collector, model, alerter, settings, TEST_COLLECTION,
+                integrityContributors);
+        step.performStep();
+
+        ArgumentCaptor<ContributorQuery[]> queries = ArgumentCaptor.forClass(ContributorQuery[].class);
+        verify(collector).getFileIDs(eq(TEST_COLLECTION), any(), anyString(), queries.capture(), any(EventHandler.class));
+        Integer pageSize = SettingsUtils.getMaxClientPageSize();
+        Assertions.assertArrayEquals(new ContributorQuery[]{
+                new ContributorQuery(TEST_PILLAR_1, newestEntryPillar1.toInstant(), null, pageSize),
+                new ContributorQuery(testPillar2, newestEntryPillar2.toInstant(), null, pageSize)
+        }, queries.getValue());
+    }
+
     @Test
     @Tag(TestGroups.REGRESSIONTEST)
     void testAbortWorkflowWhenNegativeReply() {

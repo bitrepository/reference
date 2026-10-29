@@ -5,7 +5,7 @@
  * $Id$
  * $HeadURL$
  * %%
- * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
+ * Copyright (C) 2010 - 2026 Royal Danish Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -41,10 +41,9 @@ import org.bitrepository.service.contributor.ContributorMediator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
-import java.time.Instant;
 
 /**
  * Class to expose the functionality of the AuditTrailService.
@@ -170,13 +169,10 @@ public class AuditTrailService implements LifeCycledService {
      * @return The list of CollectorInfo
      */
     public List<CollectorInfo> getCollectorInfos() {
-        List<CollectorInfo> infos = new ArrayList<>();
-        for (org.bitrepository.settings.repositorysettings.Collection c
-                : settings.getRepositorySettings().getCollections().getCollection()) {
-            infos.add(collector.getCollectorInfo(c.getID()));
-        }
-
-        return infos;
+        return settings.getRepositorySettings().getCollections().getCollection().stream()
+                .map(c -> c.getID())
+                .map(collector::getCollectorInfo)
+                .toList();
     }
 
     /**
