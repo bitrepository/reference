@@ -27,11 +27,13 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ContributorQueryUtilsTest {
     @Test
@@ -39,9 +41,8 @@ class ContributorQueryUtilsTest {
     void createFullContributorQueryTest() {
         ContributorQuery[] queries = ContributorQueryUtils.createFullContributorQuery(List.of("pillar1", "pillar2"));
 
-        assertEquals(2, queries.length);
-        assertEquals("pillar1", queries[0].getComponentID());
-        assertEquals("pillar2", queries[1].getComponentID());
+        assertEquals(List.of("pillar1", "pillar2"),
+                Arrays.stream(queries).map(ContributorQuery::getComponentID).sorted().toList());
         Arrays.stream(queries).forEach(query -> {
             assertNull(query.getMinTimestampInstant());
             assertNull(query.getMaxTimestampInstant());
@@ -52,7 +53,9 @@ class ContributorQueryUtilsTest {
     @Test
     @Tag(TestGroups.REGRESSIONTEST)
     void createFullContributorQueryWithoutContributorsTest() {
-        assertEquals(0, ContributorQueryUtils.createFullContributorQuery(List.of()).length);
+        ContributorQuery[] queries = ContributorQueryUtils.createFullContributorQuery(List.of());
+
+        assertEquals(0, queries.length, "Expected no queries but got " + Arrays.toString(queries));
     }
 
     @Test
@@ -71,6 +74,8 @@ class ContributorQueryUtilsTest {
     @Test
     @Tag(TestGroups.REGRESSIONTEST)
     void getContributorsWithoutQueriesTest() {
-        assertEquals(0, ContributorQueryUtils.getContributors(new ContributorQuery[0]).size());
+        Collection<String> contributors = ContributorQueryUtils.getContributors(new ContributorQuery[0]);
+
+        assertTrue(contributors.isEmpty(), "Expected no contributors but got " + contributors);
     }
 }

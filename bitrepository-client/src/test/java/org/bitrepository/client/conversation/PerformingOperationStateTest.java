@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PerformingOperationStateTest {
     @Test
@@ -58,7 +59,9 @@ class PerformingOperationStateTest {
     @Test
     @Tag(TestGroups.REGRESSIONTEST)
     void noSelectedComponentsMeansNoExpectedContributorsTest() {
-        assertEquals(0, new StubState(List.of()).outstandingComponents().size());
+        Collection<String> outstandingComponents = new StubState(List.of()).outstandingComponents();
+
+        assertTrue(outstandingComponents.isEmpty(), "Expected no outstanding components but got " + outstandingComponents);
     }
 
     /** Implements only what the constructor-time behaviour under test does not need. */

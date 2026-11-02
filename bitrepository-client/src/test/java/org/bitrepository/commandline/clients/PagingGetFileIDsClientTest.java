@@ -41,9 +41,10 @@ import java.math.BigInteger;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -84,13 +85,13 @@ class PagingGetFileIDsClientTest {
 
         assertTrue(result);
         assertEquals(2, requestedQueries.size());
-        assertArrayEquals(new ContributorQuery[]{
+        assertEquals(List.of(
                 new ContributorQuery("pillar1", Instant.EPOCH, null, PAGE_SIZE),
                 new ContributorQuery("pillar2", Instant.EPOCH, null, PAGE_SIZE)
-        }, requestedQueries.get(0));
-        assertArrayEquals(new ContributorQuery[]{
+        ), sortedByPillar(requestedQueries.get(0)));
+        assertEquals(List.of(
                 new ContributorQuery("pillar1", latestModification, null, PAGE_SIZE)
-        }, requestedQueries.get(1));
+        ), sortedByPillar(requestedQueries.get(1)));
     }
 
     @Test
@@ -99,6 +100,10 @@ class PagingGetFileIDsClientTest {
         assertTrue(pagingClient.getFileIDs(COLLECTION_ID, null, List.of()));
 
         verifyNoInteractions(client);
+    }
+
+    private static List<ContributorQuery> sortedByPillar(ContributorQuery[] queries) {
+        return Arrays.stream(queries).sorted(Comparator.comparing(ContributorQuery::getComponentID)).toList();
     }
 
     private ResultingFileIDs fileIDs(String fileID, Instant lastModification) {

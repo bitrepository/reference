@@ -45,9 +45,10 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
@@ -107,7 +108,7 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
         }).when(collector).getFileIDs(
                 eq(TEST_COLLECTION), any(), anyString(), any(ContributorQuery[].class), any(EventHandler.class));
         when(integrityContributors.getActiveContributors())
-                .thenReturn(new LinkedHashSet<>(List.of(TEST_PILLAR_1, testPillar2))).thenReturn(new HashSet<>());
+                .thenReturn(new HashSet<>(List.of(TEST_PILLAR_1, testPillar2))).thenReturn(new HashSet<>());
 
         UpdateFileIDsStep step = new FullUpdateFileIDsStep(collector, model, alerter, settings, TEST_COLLECTION,
                 integrityContributors);
@@ -116,10 +117,14 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
         ArgumentCaptor<ContributorQuery[]> queries = ArgumentCaptor.forClass(ContributorQuery[].class);
         verify(collector).getFileIDs(eq(TEST_COLLECTION), any(), anyString(), queries.capture(), any(EventHandler.class));
         Integer pageSize = SettingsUtils.getMaxClientPageSize();
-        Assertions.assertArrayEquals(new ContributorQuery[]{
+        Assertions.assertEquals(List.of(
                 new ContributorQuery(TEST_PILLAR_1, newestEntryPillar1.toInstant(), null, pageSize),
                 new ContributorQuery(testPillar2, newestEntryPillar2.toInstant(), null, pageSize)
-        }, queries.getValue());
+        ), sortedByPillar(queries.getValue()));
+    }
+
+    private static List<ContributorQuery> sortedByPillar(ContributorQuery[] queries) {
+        return Arrays.stream(queries).sorted(Comparator.comparing(ContributorQuery::getComponentID)).toList();
     }
 
     @Test
