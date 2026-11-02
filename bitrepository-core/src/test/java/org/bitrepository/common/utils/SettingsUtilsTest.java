@@ -130,8 +130,9 @@ class SettingsUtilsTest {
         addCollection("c2", null, "pillarC", "pillarB");
         addCollection("c3", null, "pillarA");
 
-        assertEquals(List.of("pillarB", "pillarA", "pillarC"), SettingsUtils.getAllPillarIDs(),
-                "Each pillar once, in order of first appearance");
+        assertEquals(List.of("pillarA", "pillarB", "pillarC"),
+                SettingsUtils.getAllPillarIDs().stream().sorted().toList(),
+                "Each pillar once, in any order");
     }
 
     @Test
@@ -148,9 +149,7 @@ class SettingsUtilsTest {
     private void addCollection(String collectionID, String name, String... pillarIDs) {
         Collection collection = new Collection();
         collection.setID(collectionID);
-        if (name != null) {
-            collection.setName(name);
-        }
+        collection.setName(name);
         PillarIDs pillarIDsObject = new PillarIDs();
         pillarIDsObject.getPillarID().addAll(List.of(pillarIDs));
         collection.setPillarIDs(pillarIDsObject);

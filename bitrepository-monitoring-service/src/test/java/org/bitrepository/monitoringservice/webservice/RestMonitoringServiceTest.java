@@ -30,9 +30,11 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -45,9 +47,7 @@ class RestMonitoringServiceTest {
     void getComponentStatusReturnsAWebStatusForEachComponentTest() {
         ComponentStatus unresponsiveStatus = new ComponentStatus();
         unresponsiveStatus.markAsUnresponsive();
-        Map<String, ComponentStatus> statusMap = new LinkedHashMap<>();
-        statusMap.put("pillar1", new ComponentStatus());
-        statusMap.put("pillar2", unresponsiveStatus);
+        Map<String, ComponentStatus> statusMap = Map.of("pillar1", new ComponentStatus(), "pillar2", unresponsiveStatus);
         MonitoringService monitoringService = mock(MonitoringService.class);
         when(monitoringService.getStatus()).thenReturn(statusMap);
 
@@ -57,12 +57,15 @@ class RestMonitoringServiceTest {
             statuses = new RestMonitoringService().getComponentStatus();
         }
 
+        // The status map has no defined order, so look the statuses up by component ID.
+        Map<String, WebStatus> statusesByComponentID = statuses.stream()
+                .collect(Collectors.toMap(WebStatus::getComponentID, Function.identity()));
+
         assertEquals(2, statuses.size());
-        assertEquals("pillar1", statuses.get(0).getComponentID());
-        assertEquals(ComponentStatusCode.UNKNOWN.toString(), statuses.get(0).getStatus());
-        assertEquals("N/A", statuses.get(0).getTimeStamp());
-        assertEquals("pillar2", statuses.get(1).getComponentID());
-        assertEquals(ComponentStatusCode.UNRESPONSIVE.toString(), statuses.get(1).getStatus());
+        assertEquals(Set.of("pillar1", "pillar2"), statusesByComponentID.keySet());
+        assertEquals(ComponentStatusCode.UNKNOWN.toString(), statusesByComponentID.get("pillar1").getStatus());
+        assertEquals("N/A", statusesByComponentID.get("pillar1").getTimeStamp());
+        assertEquals(ComponentStatusCode.UNRESPONSIVE.toString(), statusesByComponentID.get("pillar2").getStatus());
     }
 
     @Test

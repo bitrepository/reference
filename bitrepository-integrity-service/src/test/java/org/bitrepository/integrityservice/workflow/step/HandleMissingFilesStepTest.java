@@ -30,7 +30,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -98,7 +97,7 @@ class HandleMissingFilesStepTest extends WorkflowstepTest {
         assertEquals(0L, statisticsCollector.getPillarCollectionStat(TEST_PILLAR_2).getMissingFiles());
     }
 
-    private void whenFileIsMissingSomewhere(Instant earliestFileInstant, FileInfo... fileInfos) throws IOException {
+    private void whenFileIsMissingSomewhere(Instant earliestFileInstant, FileInfo... fileInfos) {
         IntegrityIssueIterator issues = mock(IntegrityIssueIterator.class);
         when(issues.getNextIntegrityIssue()).thenReturn(TEST_FILE).thenReturn(null);
         when(model.findFilesWithMissingCopies(eq(TEST_COLLECTION), any(), any(), any())).thenReturn(issues);

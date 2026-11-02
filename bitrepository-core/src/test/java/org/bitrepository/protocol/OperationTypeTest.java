@@ -24,17 +24,18 @@ package org.bitrepository.protocol;
 import org.bitrepository.TestGroups;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class OperationTypeTest {
-    @Test
+    @ParameterizedTest
+    @EnumSource(OperationType.class)
     @Tag(TestGroups.REGRESSIONTEST)
-    void fromValueRoundTripsEveryOperationTypeTest() {
-        for (OperationType operationType : OperationType.values()) {
-            assertEquals(operationType, OperationType.fromValue(operationType.value()));
-        }
+    void fromValueRoundTripsEveryOperationTypeTest(OperationType operationType) {
+        assertEquals(operationType, OperationType.fromValue(operationType.value()));
     }
 
     @Test

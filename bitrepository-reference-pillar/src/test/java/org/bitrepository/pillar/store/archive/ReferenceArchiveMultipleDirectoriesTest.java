@@ -49,7 +49,7 @@ class ReferenceArchiveMultipleDirectoriesTest {
     private static final String FILE_ID = "test-file";
 
     @TempDir
-    Path baseDir;
+    private Path baseDir;
     private Path dir1;
     private Path dir2;
     private ReferenceArchive archive;
@@ -79,7 +79,7 @@ class ReferenceArchiveMultipleDirectoriesTest {
 
         File result = archive.getFile(FILE_ID);
 
-        assertTrue(Files.isSameFile(file, result.toPath()));
+        assertTrue(Files.isSameFile(file, result.toPath()), "Expected " + file + " but got " + result);
         assertThrows(IllegalArgumentException.class, () -> archive.getFile("other-file"));
     }
 
@@ -138,7 +138,9 @@ class ReferenceArchiveMultipleDirectoriesTest {
     void getFileInTmpDirReturnsTheFileFromTheDirectoryHoldingIt() throws IOException {
         Path tmpFile = createFile(dir2, ArchiveDirectory.TEMPORARY_DIR, FILE_ID);
 
-        assertTrue(Files.isSameFile(tmpFile, archive.getFileInTmpDir(FILE_ID).toPath()));
+        File result = archive.getFileInTmpDir(FILE_ID);
+
+        assertTrue(Files.isSameFile(tmpFile, result.toPath()), "Expected " + tmpFile + " but got " + result);
         assertThrows(IllegalStateException.class, () -> archive.getFileInTmpDir("other-file"));
     }
 
