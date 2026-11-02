@@ -134,7 +134,7 @@ public abstract class UpdateFileIDsStep extends AbstractWorkFlowStep {
      */
     private ContributorQuery[] getQueries(Collection<String> pillars) {
         return pillars.stream()
-                .map(pillar -> new ContributorQuery(pillar, store.getDateForNewestFileEntryForPillar(pillar, collectionID),
+                .map(pillar -> new ContributorQuery(pillar, store.getDateForNewestFileEntryForPillarInstant(pillar, collectionID),
                         null, maxNumberOfResultsPerConversation))
                 .toArray(ContributorQuery[]::new);
     }

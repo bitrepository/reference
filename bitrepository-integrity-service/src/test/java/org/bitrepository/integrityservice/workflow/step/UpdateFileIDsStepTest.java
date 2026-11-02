@@ -45,9 +45,9 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import java.math.BigInteger;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
@@ -98,10 +98,10 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
     void testQueryIsCreatedForEachActivePillarFromItsNewestFileEntry() throws WorkflowAbortedException {
         addDescription("Test that the step queries every active pillar, each starting from its own newest file entry.");
         String testPillar2 = "test-pillar-2";
-        Date newestEntryPillar1 = new Date(1_000_000L);
-        Date newestEntryPillar2 = new Date(2_000_000L);
-        when(model.getDateForNewestFileEntryForPillar(TEST_PILLAR_1, TEST_COLLECTION)).thenReturn(newestEntryPillar1);
-        when(model.getDateForNewestFileEntryForPillar(testPillar2, TEST_COLLECTION)).thenReturn(newestEntryPillar2);
+        Instant newestEntryPillar1 = Instant.ofEpochMilli(1_000_000L);
+        Instant newestEntryPillar2 = Instant.ofEpochMilli(2_000_000L);
+        when(model.getDateForNewestFileEntryForPillarInstant(TEST_PILLAR_1, TEST_COLLECTION)).thenReturn(newestEntryPillar1);
+        when(model.getDateForNewestFileEntryForPillarInstant(testPillar2, TEST_COLLECTION)).thenReturn(newestEntryPillar2);
         doAnswer(invocation -> {
             invocation.getArgument(4, EventHandler.class).handleEvent(new CompleteEvent(TEST_COLLECTION, null));
             return null;
@@ -118,8 +118,8 @@ public class UpdateFileIDsStepTest extends WorkflowstepTest {
         verify(collector).getFileIDs(eq(TEST_COLLECTION), any(), anyString(), queries.capture(), any(EventHandler.class));
         Integer pageSize = SettingsUtils.getMaxClientPageSize();
         Assertions.assertEquals(List.of(
-                new ContributorQuery(TEST_PILLAR_1, newestEntryPillar1.toInstant(), null, pageSize),
-                new ContributorQuery(testPillar2, newestEntryPillar2.toInstant(), null, pageSize)
+                new ContributorQuery(TEST_PILLAR_1, newestEntryPillar1, null, pageSize),
+                new ContributorQuery(testPillar2, newestEntryPillar2, null, pageSize)
         ), sortedByPillar(queries.getValue()));
     }
 
