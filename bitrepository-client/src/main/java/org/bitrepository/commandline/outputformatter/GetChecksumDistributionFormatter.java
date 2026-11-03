@@ -81,7 +81,7 @@ public class GetChecksumDistributionFormatter implements GetChecksumsOutputForma
      * @param result The checksum results.
      * @return The map between checksum and pillars.
      */
-    private Map<String, List<String>> retrieveChecksumDistribution(ChecksumResult result) {
+    Map<String, List<String>> retrieveChecksumDistribution(ChecksumResult result) {
         return result.getContributors().stream()
                 .collect(Collectors.groupingBy(result::getChecksum));
     }

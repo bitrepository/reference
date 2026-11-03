@@ -1,6 +1,6 @@
-package org.bitrepository.access;/*
+/*
  * #%L
- * BitRepository Integrity Service
+ * Bitrepository Access
  * %%
  * Copyright (C) 2010 - 2026 The Royal Danish Library and The State Archives, Denmark
  * %%
@@ -19,6 +19,7 @@ package org.bitrepository.access;/*
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
+package org.bitrepository.access;
 
 import java.time.Instant;
 import java.util.Arrays;
@@ -28,10 +29,10 @@ import java.util.stream.Collectors;
 public class ContributorQueryUtils {
 
     /**
-     * Used to create a <code>AuditTrailQuery[]</code> array in case no array is defined.
+     * Used to create a <code>ContributorQuery[]</code> array in case no array is defined.
      *
      * @param contributorIDs The collection of contributor IDs to create ContributorQueries for
-     * @return A <code>AuditTrailQuery[]</code> array requesting all audit trails from all the defined contributors.
+     * @return A <code>ContributorQuery[]</code> array requesting all results from all the defined contributors.
      */
     public static ContributorQuery[] createFullContributorQuery(Collection<String> contributorIDs) {
         return contributorIDs.stream()
@@ -42,8 +43,8 @@ public class ContributorQueryUtils {
     /**
      * Extracts the collection of ContributorIDs from the ContributorQueries.
      *
-     * @param queries The contributor queries to extract nonPillarContributors from
-     * @return The list of ContributorIDs in the supplied queries
+     * @param queries The contributor queries to extract the ContributorIDs from
+     * @return The collection of distinct ContributorIDs in the supplied queries
      */
     public static Collection<String> getContributors(ContributorQuery[] queries) {
         return Arrays.stream(queries)
