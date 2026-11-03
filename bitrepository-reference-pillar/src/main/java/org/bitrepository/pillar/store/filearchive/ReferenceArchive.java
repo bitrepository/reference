@@ -63,6 +63,7 @@ public class ReferenceArchive {
      *
      * @param fileID The id of the file to retrieve.
      * @return The file.
+     * @throws IllegalArgumentException If none of the archive directories holds the file.
      */
     public File getFile(String fileID) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
@@ -144,6 +145,7 @@ public class ReferenceArchive {
      * Moves a file from the tmpDir to fileDir.
      *
      * @param fileID The id of the file.
+     * @throws IllegalStateException If none of the archive directories holds the file in its tmpDir.
      */
     public void moveToArchive(String fileID) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
@@ -159,6 +161,7 @@ public class ReferenceArchive {
      * Removes a file from the archive.
      *
      * @param fileID The id of the file.
+     * @throws IllegalStateException If none of the archive directories holds the file.
      */
     public void deleteFile(String fileID) {
         ArgumentValidator.checkNotNullOrEmpty(fileID, "String fileID");
@@ -200,6 +203,7 @@ public class ReferenceArchive {
      *
      * @param fileID The id of the file to locate within the tmpDir.
      * @return The file in the tmpDir.
+     * @throws IllegalStateException If none of the archive directories holds the file in its tmpDir.
      */
     public File getFileInTmpDir(String fileID) {
         return getDirWithTmpFile(fileID).getFileInTempDir(fileID);
