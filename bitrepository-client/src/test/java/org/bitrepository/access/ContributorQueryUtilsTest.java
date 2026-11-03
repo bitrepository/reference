@@ -44,9 +44,10 @@ class ContributorQueryUtilsTest {
         assertEquals(List.of("pillar1", "pillar2"),
                 Arrays.stream(queries).map(ContributorQuery::getComponentID).sorted().toList());
         Arrays.stream(queries).forEach(query -> {
-            assertNull(query.getMinTimestampInstant());
-            assertNull(query.getMaxTimestampInstant());
-            assertNull(query.getMaxNumberOfResults());
+            String pillarID = query.getComponentID();
+            assertNull(query.getMinTimestampInstant(), "Unexpected min timestamp for " + pillarID);
+            assertNull(query.getMaxTimestampInstant(), "Unexpected max timestamp for " + pillarID);
+            assertNull(query.getMaxNumberOfResults(), "Unexpected max number of results for " + pillarID);
         });
     }
 
