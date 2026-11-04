@@ -2,7 +2,7 @@
  * #%L
  * Bitrepository Monitoring Service
  * %%
- * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
+ * Copyright (C) 2010 - 2026 The Royal Danish Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -27,11 +27,9 @@ import jakarta.ws.rs.Produces;
 import org.bitrepository.common.utils.TimeUtils;
 import org.bitrepository.monitoringservice.MonitoringService;
 import org.bitrepository.monitoringservice.MonitoringServiceFactory;
-import org.bitrepository.monitoringservice.status.ComponentStatus;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Path("/MonitoringService")
 public class RestMonitoringService {
@@ -57,13 +55,9 @@ public class RestMonitoringService {
     @Path("/getComponentStatus/")
     @Produces("application/json")
     public List<WebStatus> getComponentStatus() {
-        Map<String, ComponentStatus> statusMap = service.getStatus();
-        List<WebStatus> statuses = new ArrayList<>();
-
-        for (String component : statusMap.keySet()) {
-            statuses.add(new WebStatus(component, statusMap.get(component)));
-        }
-        return statuses;
+        return service.getStatus().entrySet().stream()
+                .map(entry -> new WebStatus(entry.getKey(), entry.getValue()))
+                .toList();
     }
 
 }

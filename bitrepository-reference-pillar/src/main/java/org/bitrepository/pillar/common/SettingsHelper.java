@@ -2,7 +2,7 @@
  * #%L
  * Bitrepository Integrity Service
  * %%
- * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
+ * Copyright (C) 2010 - 2026 The Royal Danish Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -24,7 +24,6 @@ package org.bitrepository.pillar.common;
 
 import org.bitrepository.settings.repositorysettings.Collection;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,15 +40,9 @@ public final class SettingsHelper {
      * @return all pillars in collections with the provided pillarID
      */
     public static List<String> getPillarCollections(String pillarID, List<Collection> collections) {
-        List<String> relevantCollectionIDs = new ArrayList<>();
-        for (Collection collection : collections) {
-            for (String pillar : collection.getPillarIDs().getPillarID()) {
-                if (pillarID.equals(pillar)) {
-                    relevantCollectionIDs.add(collection.getID());
-                    break;
-                }
-            }
-        }
-        return relevantCollectionIDs;
+        return collections.stream()
+                .filter(collection -> collection.getPillarIDs().getPillarID().contains(pillarID))
+                .map(Collection::getID)
+                .toList();
     }
 }

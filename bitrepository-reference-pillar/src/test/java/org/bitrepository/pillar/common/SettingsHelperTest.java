@@ -2,7 +2,7 @@
  * #%L
  * Bitrepository Integrity Service
  * %%
- * Copyright (C) 2010 - 2012 The State and University Library, The Royal Library and The State Archives, Denmark
+ * Copyright (C) 2010 - 2026 The Royal Danish Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -54,6 +54,19 @@ class SettingsHelperTest {
         Assertions.assertEquals(2, otherCollections.size());
         Assertions.assertEquals("mySecondCollection", otherCollections.get(0));
         Assertions.assertEquals("otherCollection", otherCollections.get(1));
+    }
+
+    @Test
+    @Tag(TestGroups.REGRESSIONTEST)
+    void getPillarCollectionsListsEachCollectionOnceAndIgnoresUnknownPillarsTest() {
+        List<Collection> collections = List.of(
+                createCollection("repeatedPillarCollection", new String[]{"myPillarID", "myPillarID"}),
+                createCollection("otherCollection", new String[]{"OtherPillar"}));
+
+        Assertions.assertEquals(List.of("repeatedPillarCollection"),
+                SettingsHelper.getPillarCollections("myPillarID", collections));
+        Assertions.assertEquals(List.of(), SettingsHelper.getPillarCollections("unknownPillar", collections));
+        Assertions.assertEquals(List.of(), SettingsHelper.getPillarCollections("myPillarID", List.of()));
     }
 
     private Collection createCollection(String collectionID, String[] pillarIDs) {

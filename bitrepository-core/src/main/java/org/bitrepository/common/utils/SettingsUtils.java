@@ -2,7 +2,7 @@
  * #%L
  * Bitrepository Core
  * %%
- * Copyright (C) 2010 - 2013 The State and University Library, The Royal Library and The State Archives, Denmark
+ * Copyright (C) 2010 - 2026 The Royal Danish Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -28,7 +28,6 @@ import org.bitrepository.settings.referencesettings.PillarType;
 import org.bitrepository.settings.repositorysettings.Collection;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -55,14 +54,10 @@ public class SettingsUtils {
      * @return The list of collection ids, which this pillar is part of.
      */
     public static List<String> getCollectionIDsForPillar(String pillarID) {
-        List<String> res = new ArrayList<>();
-        for (Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
-            if (c.getPillarIDs().getPillarID().contains(pillarID)) {
-                res.add(c.getID());
-            }
-        }
-
-        return res;
+        return settings.getRepositorySettings().getCollections().getCollection().stream()
+                .filter(c -> c.getPillarIDs().getPillarID().contains(pillarID))
+                .map(Collection::getID)
+                .toList();
     }
 
     /**
@@ -71,11 +66,9 @@ public class SettingsUtils {
      * @return all collections in the repository
      */
     public static List<String> getAllCollectionsIDs() {
-        List<String> res = new ArrayList<>();
-        for (Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
-            res.add(c.getID());
-        }
-        return res;
+        return settings.getRepositorySettings().getCollections().getCollection().stream()
+                .map(Collection::getID)
+                .toList();
     }
 
     /**
@@ -86,20 +79,11 @@ public class SettingsUtils {
      * @return The name of the collection
      */
     public static String getCollectionName(String collectionID) {
-        String name = null;
-
-        for (Collection collection : settings.getRepositorySettings().getCollections().getCollection()) {
-            if (collection.getID().equals(collectionID)) {
-                if (collection.isSetName()) {
-                    name = collection.getName();
-                } else {
-                    name = collection.getID();
-                }
-                break;
-            }
-        }
-
-        return name;
+        return settings.getRepositorySettings().getCollections().getCollection().stream()
+                .filter(c -> c.getID().equals(collectionID))
+                .findFirst()
+                .map(c -> c.isSetName() ? c.getName() : c.getID())
+                .orElse(null);
     }
 
     public static IntegrityServiceSettings getIntegrityServiceSettings() {
@@ -129,12 +113,11 @@ public class SettingsUtils {
      * @return Returns the pillar name for the given pillar ID.
      */
     public static String getPillarName(String pillarID) {
-        for (PillarIntegrityDetails.PillarDetails d : getPillarIntegrityDetails()) {
-            if (d.getPillarID().equals(pillarID)) {
-                return d.getPillarName();
-            }
-        }
-        return null;
+        return getPillarIntegrityDetails().stream()
+                .filter(d -> d.getPillarID().equals(pillarID))
+                .findFirst()
+                .map(PillarIntegrityDetails.PillarDetails::getPillarName)
+                .orElse(null);
     }
 
     /**
@@ -144,12 +127,11 @@ public class SettingsUtils {
      * @return Returns the {@link PillarType} for the given pillar ID.
      */
     public static PillarType getPillarType(String pillarID) {
-        for (PillarIntegrityDetails.PillarDetails d : getPillarIntegrityDetails()) {
-            if (d.getPillarID().equals(pillarID)) {
-                return d.getPillarType();
-            }
-        }
-        return null;
+        return getPillarIntegrityDetails().stream()
+                .filter(d -> d.getPillarID().equals(pillarID))
+                .findFirst()
+                .map(PillarIntegrityDetails.PillarDetails::getPillarType)
+                .orElse(null);
     }
 
     /**
@@ -167,25 +149,17 @@ public class SettingsUtils {
      * @return The list of pillar ids.
      */
     public static List<String> getAllPillarIDs() {
-        List<String> res = new ArrayList<>();
-        for (Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
-            for (String pillarID : c.getPillarIDs().getPillarID()) {
-                if (!res.contains(pillarID)) {
-                    res.add(pillarID);
-                }
-            }
-        }
-        return res;
+        return settings.getRepositorySettings().getCollections().getCollection().stream()
+                .flatMap(c -> c.getPillarIDs().getPillarID().stream())
+                .distinct()
+                .toList();
     }
 
     public static List<String> getPillarIDsForCollection(String collectionID) {
-        List<String> res = new ArrayList<>();
-        for (Collection c : settings.getRepositorySettings().getCollections().getCollection()) {
-            if (c.getID().equals(collectionID)) {
-                res.addAll(c.getPillarIDs().getPillarID());
-            }
-        }
-        return res;
+        return settings.getRepositorySettings().getCollections().getCollection().stream()
+                .filter(c -> c.getID().equals(collectionID))
+                .flatMap(c -> c.getPillarIDs().getPillarID().stream())
+                .toList();
     }
 
     /**

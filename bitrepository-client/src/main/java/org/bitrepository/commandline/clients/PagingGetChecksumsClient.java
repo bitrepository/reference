@@ -2,7 +2,7 @@
  * #%L
  * Bitrepository Command Line
  * %%
- * Copyright (C) 2010 - 2013 The State and University Library, The Royal Library and The State Archives, Denmark
+ * Copyright (C) 2010 - 2026 The Royal Danish Library and The State Archives, Denmark
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -31,8 +31,6 @@ import org.bitrepository.commandline.outputformatter.GetChecksumsOutputFormatter
 import org.bitrepository.commandline.resultmodel.GetChecksumsResultModel;
 
 import java.time.Duration;
-import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -79,11 +77,8 @@ public class PagingGetChecksumsClient {
 
 
     private ContributorQuery[] makeQuery(List<String> pillars) {
-        List<ContributorQuery> res = new ArrayList<>();
-        for (String pillar : pillars) {
-            Instant latestResult = model.getLatestContributionInstant(pillar);
-            res.add(new ContributorQuery(pillar, latestResult, null, pageSize));
-        }
-        return res.toArray(new ContributorQuery[pillars.size()]);
+        return pillars.stream()
+                .map(pillar -> new ContributorQuery(pillar, model.getLatestContributionInstant(pillar), null, pageSize))
+                .toArray(ContributorQuery[]::new);
     }
 }
