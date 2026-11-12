@@ -32,9 +32,15 @@
     overflow-y: auto;
 }
 
+/* Bootstrap's own .modal.show .modal-dialog / .modal.fade .modal-dialog rules outrank plain
+   class selectors here on specificity, so the positioning properties need !important to keep
+   this dialog's custom fixed-and-centered layout regardless of Bootstrap's show/fade state. */
 .modal-dialog {
-    position: fixed;
-    z-index: 1050;
+    position: fixed !important;
+    /* Bootstrap sets pointer-events: none on .modal-dialog, expecting a nested .modal-content
+       to re-enable it. This dialog has no such wrapper, so it needs re-enabling directly. */
+    pointer-events: auto !important;
+    z-index: 1056;
     background-color: #fff;
     border: 1px solid rgba(0, 0, 0, 0.3);
     border-radius: 6px;
@@ -48,7 +54,8 @@
     left: 50%;
     top: 10%;
     bottom: 2%;
-    transform: translate(-50%, 0);
+    margin: 0 !important;
+    transform: translate(-50%, 0) !important;
     min-width: 70%;
     /*height: 86%;*/
 }

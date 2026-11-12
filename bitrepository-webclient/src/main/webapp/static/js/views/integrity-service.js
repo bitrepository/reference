@@ -49,7 +49,7 @@ function attachWorkflowInfoButton(id, type) {
         title = "Last run details";
     }
     if (element != null) {
-        $(element).popover({
+        new bootstrap.Popover(document.querySelector(element), {
             placement: "right",
             title: title,
             html: true,
@@ -119,7 +119,7 @@ function showModal(type, propertyName, title, url, pillarID) {
         $("#modalLabel").html(title);
         $("#modalBody").html("<p>Loading</p>");
         modal.getModal(1);
-        $("#modalDialog").modal('show');
+        bootstrap.Modal.getOrCreateInstance("#modalDialog").show();
     }
 }
 
@@ -129,7 +129,7 @@ function showDownloadModal(integrityURL) {
         $("#modalLabel").html("Select Reports to Download");
         $("#modalBody").html("<p>Loading</p>");
         downloadModal.getModal();
-        $("#modalDialog").modal('show');
+        bootstrap.Modal.getOrCreateInstance("#modalDialog").show();
     }
 }
 

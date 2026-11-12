@@ -25,180 +25,169 @@
   <title>Bitrepository audit-trail service</title>
   <!-- Bootstrap -->
   <link href="static/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
-  <link href="static/css/datepicker.css" rel="stylesheet">
+  <link href="static/bootstrap-icons/bootstrap-icons.min.css" rel="stylesheet">
 </head>
 <body>
 
 <div id="pageMenu"></div>
 <div class="container-fluid">
-  <div class="row-fluid">
-    <div class="span11">
-      <div class="span11" style="height:0; min-height:0"></div>
-      <div class="span11">
-        <div class="row-fluid">
-          <div class="span6">
-            <h2>Audit-trail service</h2>
-          </div>
-          <div class="span6">
-            <h2 class="pull-right">
-              <button type="submit" class="btn" id="collectAuditTrails" disabled="disabled">Collect audit trails</button>
-            </h2>
-          </div>
+  <div class="row">
+    <div class="col-11">
+      <div class="row">
+        <div class="col-6">
+          <h2>Audit-trail service</h2>
+        </div>
+        <div class="col-6">
+          <h2 class="float-end">
+            <button type="submit" class="btn btn-secondary" id="collectAuditTrails" disabled="disabled">Collect audit trails</button>
+          </h2>
         </div>
       </div>
 
-      <div class="span11">
-        <div class="accordion" id="collection-schedule-accordion">
-          <div class="accordion-group">
-            <div class="accordion-heading">
-              <a class="accordion-toggle" data-toggle="collapse" data-parent="#collection-schedule-accordion" href="#collapseOne">
-                Show collection schedule <i class="icon-chevron-down"></i>
-              </a>
-            </div>
-            <div id="collapseOne" class="accordion-body collapse">
-              <div class="accordion-inner" id="collection-schedule-table">
-                <table class="table table-bordered">
-                  <thead>
-                  <tr>
-                    <th>Collection ID</th>
-                    <th>Last start</th>
-                    <th>Last duration</th>
-                    <th>Last collected number of audits</th>
-                    <th>Next start</th>
-                  </tr>
-                  </thead>
-                  <tbody id="collection-schedule-table-body"></tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- By default we do not show the preservation-accordion - if preservation is enabled it will show -->
-        <div class="accordion" id="preservation-schedule-accordion" style="display: none;">
-          <div class="accordion-group">
-            <div class="accordion-heading">
-              <a class="accordion-toggle" data-toggle="collapse" data-parent="#preservation-schedule-accordion" href="#collapsePreservation">
-                Show preservation schedule <i class="icon-chevron-down"></i>
-              </a>
-            </div>
-            <div id="collapsePreservation" class="accordion-body collapse">
-              <div class="accordion-inner" id="preservation-schedule-table">
-                <table class="table table-bordered">
-                  <thead>
-                  <tr>
-                    <th>Collection ID</th>
-                    <th>Last start</th>
-                    <th>Last duration</th>
-                    <th>Last preserved number of audits</th>
-                    <th>Next start</th>
-                  </tr>
-                  </thead>
-                  <tbody id="preservation-schedule-table-body"></tbody>
-                </table>
-              </div>
+      <div class="accordion" id="collection-schedule-accordion">
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+              Show collection schedule
+            </button>
+          </h2>
+          <div id="collapseOne" class="accordion-collapse collapse">
+            <div class="accordion-body" id="collection-schedule-table">
+              <table class="table table-bordered">
+                <thead>
+                <tr>
+                  <th>Collection ID</th>
+                  <th>Last start</th>
+                  <th>Last duration</th>
+                  <th>Last collected number of audits</th>
+                  <th>Next start</th>
+                </tr>
+                </thead>
+                <tbody id="collection-schedule-table-body"></tbody>
+              </table>
             </div>
           </div>
         </div>
       </div>
 
+      <!-- By default we do not show the preservation-accordion - if preservation is enabled it will show -->
+      <div class="accordion" id="preservation-schedule-accordion" style="display: none;">
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePreservation">
+              Show preservation schedule
+            </button>
+          </h2>
+          <div id="collapsePreservation" class="accordion-collapse collapse">
+            <div class="accordion-body" id="preservation-schedule-table">
+              <table class="table table-bordered">
+                <thead>
+                <tr>
+                  <th>Collection ID</th>
+                  <th>Last start</th>
+                  <th>Last duration</th>
+                  <th>Last preserved number of audits</th>
+                  <th>Next start</th>
+                </tr>
+                </thead>
+                <tbody id="preservation-schedule-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      <div class="span11">
-        <form class="form-inline">
-          <legend>Audit trails display filters</legend>
-          <label> From date: <br>
-            <div class="input-append">
-              <input class="input-small" type="text" id="fromDate" placeholder="From date">
-              <button class="btn" id="fromDateClearButton" type="button"><i class="icon-remove"></i></button>
-            </div>
-          </label>
-          <label> To date: <br>
-            <div class="input-append">
-              <input class="input-small" type="text" id="toDate" placeholder="To date">
-              <button class="btn" id="toDateClearButton" type="button"><i class="icon-remove"></i></button>
-            </div>
-          </label>
-          <label> FileID: <br>
-            <div class="input-append">
-              <input id="fileIDFilter" type="text" placeholder="FileID">
-              <button class="btn" id="fileIDClearButton" type="button"><i class="icon-remove"></i></button>
-            </div>
-          </label>
-          <label> Component: <br>
-            <div class="input-append">
-              <select class="input-medium" id="componentFilter"></select>
-            </div>
-          </label>
-          <label> Actor: <br>
-            <div class="input-append" style="padding: 0">
-              <input class="input-medium" id="actorFilter" type="text" placeholder="Actor">
-              <button class="btn" id="actorClearButton" type="button"><i class="icon-remove"></i></button>
-            </div>
-          </label>
-          <label> Action: <br>
-            <div class="input-append">
-              <select id="actionFilter">
-                <option>ALL</option>
-                <option>GET_FILE</option>
-                <option>PUT_FILE</option>
-                <option>DELETE_FILE</option>
-                <option>REPLACE_FILE</option>
-                <option>GET_CHECKSUMS</option>
-                <option>GET_FILEID</option>
-                <option>CHECKSUM_CALCULATED</option>
-                <option>FILE_MOVED</option>
-                <option>INTEGRITY_CHECK</option>
-                <option>INCONSISTENCY</option>
-                <option>FAILURE</option>
-                <option>OTHER</option>
-              </select>
-            </div>
-          </label>
-          <label> Collection: <br>
-            <div class="input-append">
-              <select class="input-medium" id="collectionIDFilter"></select>
-            </div>
-          </label>
-          <label> Max audit trails: <br>
-            <div class="input-append">
-              <select class="input-small" id="maxAuditTrails">
-                <option>10</option>
-                <option>20</option>
-                <option>50</option>
-                <option>100</option>
-              </select>
-            </div>
-          </label>
-          <label> Certificate fingerprint: <br>
-            <div class="input-append" style="padding: 0">
-              <input class="input-medium" id="fingerprintFilter" type="text" placeholder="Fingerprint">
-              <button class="btn" id="fingerprintClearButton" type="button"><i class="icon-remove"></i></button>
-            </div>
-          </label>
-          <label> OperationID: <br>
-            <div class="input-append" style="padding: 0">
-              <input class="input-medium" id="operationIDFilter" type="text" placeholder="OperationID">
-              <button class="btn" id="operationIDClearButton" type="button"><i class="icon-remove"></i></button>
-            </div>
-          </label>
-          <label> <br>
-            <div class="input-append">
-              <button class="btn" id="queryAuditTrails" disabled="disabled">Filter</button>
-            </div>
-          </label>
-        </form>
-      </div>
-      <div class="span11">
-        <legend>Audit trails</legend>
-        <div id="auditTrailsTableDiv">No request sent yet</div>
-      </div>
+      <form class="row row-cols-auto g-3 align-items-end mt-2">
+        <legend>Audit trails display filters</legend>
+        <div class="col">
+          <label class="form-label" for="fromDate">From date:</label>
+          <div class="input-group">
+            <input class="form-control" type="date" id="fromDate" placeholder="From date">
+            <button class="btn btn-outline-secondary" id="fromDateClearButton" type="button"><i class="bi bi-x"></i></button>
+          </div>
+        </div>
+        <div class="col">
+          <label class="form-label" for="toDate">To date:</label>
+          <div class="input-group">
+            <input class="form-control" type="date" id="toDate" placeholder="To date">
+            <button class="btn btn-outline-secondary" id="toDateClearButton" type="button"><i class="bi bi-x"></i></button>
+          </div>
+        </div>
+        <div class="col">
+          <label class="form-label" for="fileIDFilter">FileID:</label>
+          <div class="input-group">
+            <input class="form-control" id="fileIDFilter" type="text" placeholder="FileID">
+            <button class="btn btn-outline-secondary" id="fileIDClearButton" type="button"><i class="bi bi-x"></i></button>
+          </div>
+        </div>
+        <div class="col">
+          <label class="form-label" for="componentFilter">Component:</label>
+          <select class="form-select" id="componentFilter"></select>
+        </div>
+        <div class="col">
+          <label class="form-label" for="actorFilter">Actor:</label>
+          <div class="input-group">
+            <input class="form-control" id="actorFilter" type="text" placeholder="Actor">
+            <button class="btn btn-outline-secondary" id="actorClearButton" type="button"><i class="bi bi-x"></i></button>
+          </div>
+        </div>
+        <div class="col">
+          <label class="form-label" for="actionFilter">Action:</label>
+          <select class="form-select" id="actionFilter">
+            <option>ALL</option>
+            <option>GET_FILE</option>
+            <option>PUT_FILE</option>
+            <option>DELETE_FILE</option>
+            <option>REPLACE_FILE</option>
+            <option>GET_CHECKSUMS</option>
+            <option>GET_FILEID</option>
+            <option>CHECKSUM_CALCULATED</option>
+            <option>FILE_MOVED</option>
+            <option>INTEGRITY_CHECK</option>
+            <option>INCONSISTENCY</option>
+            <option>FAILURE</option>
+            <option>OTHER</option>
+          </select>
+        </div>
+        <div class="col">
+          <label class="form-label" for="collectionIDFilter">Collection:</label>
+          <select class="form-select" id="collectionIDFilter"></select>
+        </div>
+        <div class="col">
+          <label class="form-label" for="maxAuditTrails">Max audit trails:</label>
+          <select class="form-select" id="maxAuditTrails">
+            <option>10</option>
+            <option>20</option>
+            <option>50</option>
+            <option>100</option>
+          </select>
+        </div>
+        <div class="col">
+          <label class="form-label" for="fingerprintFilter">Certificate fingerprint:</label>
+          <div class="input-group">
+            <input class="form-control" id="fingerprintFilter" type="text" placeholder="Fingerprint">
+            <button class="btn btn-outline-secondary" id="fingerprintClearButton" type="button"><i class="bi bi-x"></i></button>
+          </div>
+        </div>
+        <div class="col">
+          <label class="form-label" for="operationIDFilter">OperationID:</label>
+          <div class="input-group">
+            <input class="form-control" id="operationIDFilter" type="text" placeholder="OperationID">
+            <button class="btn btn-outline-secondary" id="operationIDClearButton" type="button"><i class="bi bi-x"></i></button>
+          </div>
+        </div>
+        <div class="col">
+          <button class="btn btn-secondary" id="queryAuditTrails" disabled="disabled">Filter</button>
+        </div>
+      </form>
+      <legend class="mt-2">Audit trails</legend>
+      <div id="auditTrailsTableDiv">No request sent yet</div>
     </div>
   </div>
 
 </div>
 <script src="static/js/jquery/jquery-3.6.1.min.js"></script>
-<script src="static/bootstrap/js/bootstrap.min.js"></script>
-<script src="static/js/bootstrap-datepicker.js"></script>
+<script src="static/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="static/js/menu.js"></script>
 <script src="static/js/views/audit-trail-service.js"></script>
 </body>

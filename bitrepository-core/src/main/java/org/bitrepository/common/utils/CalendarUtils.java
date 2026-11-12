@@ -45,7 +45,7 @@ import java.util.Locale;
  */
 public final class CalendarUtils {
     private static final Logger log = LoggerFactory.getLogger(CalendarUtils.class);
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd", Locale.ROOT);
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ROOT);
 
     private static ZoneId localZoneId = ZoneId.systemDefault();
 
