@@ -24,7 +24,7 @@
 <head>
   <title>Bitrepository alarm service</title>
   <link href="static/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
-  <link href="static/css/datepicker.css" rel="stylesheet">
+  <link href="static/bootstrap-icons/bootstrap-icons.min.css" rel="stylesheet">
   <style>
       .complete {
           display: none;
@@ -39,96 +39,89 @@
 
 <div id="pageMenu"></div>
 <div class="container-fluid">
-  <div class="row-fluid">
-    <div class="span11">
-      <div class="span11" style="height:0; min-height:0"></div>
-      <div class="span11">
-        <h2>Alarm service</h2>
-      </div>
-      <div class="span11">
-        <form class="form-inline">
-          <legend>Alarm display filters</legend>
-          <label> From date: <br>
-            <div class="input-append">
-              <input class="input-small" type="text" id="fromDate" placeholder="From date">
-              <button class="btn" id="fromDateClearButton" type="button"><i class="icon-remove"></i></button>
-            </div>
-          </label>
-          <label> To date: <br>
-            <div class="input-append">
-              <input class="input-small" type="text" id="toDate" placeholder="To date">
-              <button class="btn" id="toDateClearButton" type="button"><i class="icon-remove"></i></button>
-            </div>
-          </label>
-          <label> FileID: <br>
-            <div class="input-append">
-              <input id="fileIDFilter" type="text" placeholder="FileID">
-              <button class="btn" id="fileIDClearButton" type="button"><i class="icon-remove"></i></button>
-            </div>
-          </label>
-          <label> Component: <br>
-            <div class="input-append">
-              <input id="componentFilter" type="text" placeholder="ComponentID">
-              <button class="btn" id="componentIDClearButton" type="button"><i class="icon-remove"></i></button>
-            </div>
-          </label>
-          <label> Alarm code: <br>
-            <div class="input-append">
-              <select id="alarmCodeFilter">
-                <option>ALL</option>
-                <option>INCONSISTENT_REQUEST</option>
-                <option>COMPONENT_FAILURE</option>
-                <option>CHECKSUM_ALARM</option>
-                <option>FAILED_TRANSFER</option>
-                <option>FAILED_OPERATION</option>
-                <option>INVALID_MESSAGE</option>
-                <option>INVALID_MESSAGE_VERSION</option>
-                <option>TIMEOUT</option>
-                <option>INTEGRITY_ISSUE</option>
-              </select>
-            </div>
-          </label>
-          <label> Collection: <br>
-            <div class="input-append">
-              <select class="input-medium" id="collectionIDFilter">
-                <option>ALL</option>
-              </select>
-            </div>
-          </label>
-          <label> Max alarms: <br>
-            <div class="input-append">
-              <select class="input-small" id="maxAlarms">
-                <option>10</option>
-                <option>20</option>
-                <option>50</option>
-                <option>100</option>
-              </select>
-            </div>
-          </label>
-        </form>
-      </div>
-      <div class="span11">
-        <legend>Alarms</legend>
-        <table class="table table-bordered table-striped">
-          <thead>
-          <tr>
-            <th>Date</th>
-            <th>Component</th>
-            <th>Collection</th>
-            <th>FileID</th>
-            <th>Alarm code</th>
-            <th>Description</th>
-          </tr>
-          </thead>
-          <tbody id="alarms-table-body"></tbody>
-        </table>
-      </div>
+  <div class="row">
+    <div class="col-11">
+      <h2>Alarm service</h2>
+      <form class="row row-cols-auto g-3 align-items-end">
+        <legend>Alarm display filters</legend>
+        <div class="col">
+          <label class="form-label" for="fromDate">From date:</label>
+          <div class="input-group">
+            <input class="form-control" type="date" id="fromDate" placeholder="From date">
+            <button class="btn btn-outline-secondary" id="fromDateClearButton" type="button"><i class="bi bi-x"></i></button>
+          </div>
+        </div>
+        <div class="col">
+          <label class="form-label" for="toDate">To date:</label>
+          <div class="input-group">
+            <input class="form-control" type="date" id="toDate" placeholder="To date">
+            <button class="btn btn-outline-secondary" id="toDateClearButton" type="button"><i class="bi bi-x"></i></button>
+          </div>
+        </div>
+        <div class="col">
+          <label class="form-label" for="fileIDFilter">FileID:</label>
+          <div class="input-group">
+            <input class="form-control" id="fileIDFilter" type="text" placeholder="FileID">
+            <button class="btn btn-outline-secondary" id="fileIDClearButton" type="button"><i class="bi bi-x"></i></button>
+          </div>
+        </div>
+        <div class="col">
+          <label class="form-label" for="componentFilter">Component:</label>
+          <div class="input-group">
+            <input class="form-control" id="componentFilter" type="text" placeholder="ComponentID">
+            <button class="btn btn-outline-secondary" id="componentIDClearButton" type="button"><i class="bi bi-x"></i></button>
+          </div>
+        </div>
+        <div class="col">
+          <label class="form-label" for="alarmCodeFilter">Alarm code:</label>
+          <select class="form-select" id="alarmCodeFilter">
+            <option>ALL</option>
+            <option>INCONSISTENT_REQUEST</option>
+            <option>COMPONENT_FAILURE</option>
+            <option>CHECKSUM_ALARM</option>
+            <option>FAILED_TRANSFER</option>
+            <option>FAILED_OPERATION</option>
+            <option>INVALID_MESSAGE</option>
+            <option>INVALID_MESSAGE_VERSION</option>
+            <option>TIMEOUT</option>
+            <option>INTEGRITY_ISSUE</option>
+          </select>
+        </div>
+        <div class="col">
+          <label class="form-label" for="collectionIDFilter">Collection:</label>
+          <select class="form-select" id="collectionIDFilter">
+            <option>ALL</option>
+          </select>
+        </div>
+        <div class="col">
+          <label class="form-label" for="maxAlarms">Max alarms:</label>
+          <select class="form-select" id="maxAlarms">
+            <option>10</option>
+            <option>20</option>
+            <option>50</option>
+            <option>100</option>
+          </select>
+        </div>
+      </form>
+      <legend>Alarms</legend>
+      <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+          <th>Date</th>
+          <th>Component</th>
+          <th>Collection</th>
+          <th>FileID</th>
+          <th>Alarm code</th>
+          <th>Description</th>
+        </tr>
+        </thead>
+        <tbody id="alarms-table-body"></tbody>
+      </table>
     </div>
   </div>
 </div>
 <script src="static/js/jquery/jquery-3.6.1.min.js"></script>
-<script src="static/bootstrap/js/bootstrap.min.js"></script>
-<script src="static/js/bootstrap-datepicker.js"></script>
+<script src="static/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="static/js/menu.js"></script>
 <script src="static/js/utils.js"></script>
 <script src="static/js/CollectionNameMapper.js"></script>

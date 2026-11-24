@@ -29,7 +29,11 @@ function closePopoverOnClick() {
     $("html").on("mouseup", function (e) {
         if (!$(e.target).closest(".popover").length) {
             $(".popover").each(function () {
-                $(this.previousSibling).popover("hide");
+                let trigger = document.querySelector(`[aria-describedby="${this.id}"]`);
+                let popover = trigger && bootstrap.Popover.getInstance(trigger);
+                if (popover) {
+                    popover.hide();
+                }
             });
         }
     });

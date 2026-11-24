@@ -26,23 +26,24 @@
   <title>Bitrepository status service</title>
   <!-- Bootstrap -->
   <link href="static/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+  <link href="static/bootstrap-icons/bootstrap-icons.min.css" rel="stylesheet">
 </head>
 <body>
 
 <div id="pageMenu"></div>
 <div class="container">
   <div class="row">
-    <div class="span9"><h2>Status service</h2></div>
-    <div class="span9">
+    <div class="col-9"><h2>Status service</h2></div>
+    <div class="col-9">
       <div class="accordion" id="configuration-accordion">
-        <div class="accordion-group">
-          <div class="accordion-heading">
-            <a class="accordion-toggle" data-toggle="collapse" data-parent="#configuration-accordion" href="#collapseOne">
-              Show monitoring service configuration <i class="icon-chevron-down"></i>
-            </a>
-          </div>
-          <div id="collapseOne" class="accordion-body collapse">
-            <div class="accordion-inner" id="configuration-table">
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+              Show monitoring service configuration
+            </button>
+          </h2>
+          <div id="collapseOne" class="accordion-collapse collapse">
+            <div class="accordion-body" id="configuration-table">
               <table class="table table-bordered">
                 <thead>
                 <tr>
@@ -59,7 +60,7 @@
     </div>
   </div>
   <div class="row">
-    <div class="span9">
+    <div class="col-9">
       <table class="table table-bordered">
         <thead>
         <tr>
@@ -75,7 +76,7 @@
   </div>
 </div>
 <script src="static/js/jquery/jquery-3.6.1.min.js"></script>
-<script src="static/bootstrap/js/bootstrap.min.js"></script>
+<script src="static/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="static/js/menu.js"></script>
 <script src="static/js/utils.js"></script>
 <script src="static/js/views/status-service.js"></script>

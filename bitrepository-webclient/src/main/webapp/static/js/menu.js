@@ -30,30 +30,27 @@ let pages = [{page : "dashboard.html", title : "Dashboard"},
 
 function makeMenu(page, element) {
     let menuHtml = "";
-    menuHtml += "<div class=\"navbar navbar-inverse navbar-static-top\">";
-    menuHtml += "<img src='static/img/bitreplogo.png' alt='BitRepository Logo' style='float: left; right:0; top:0; margin: 0.4em 1em 0 1.5em;" +
-        " height: 28px'/>";
-    menuHtml += "<div class=\"navbar-inner\">";
+    menuHtml += "<nav class=\"navbar navbar-expand-lg navbar-dark bg-dark\">";
     menuHtml += "<div class=\"container-fluid\">";
-    menuHtml += "<a class=\"btn btn-navbar\" data-toggle=\"collapse\" data-target=\".nav-collapse\">";
-    menuHtml += "<span class=\"icon-bar\"></span>";
-    menuHtml += "<span class=\"icon-bar\"></span>";
-    menuHtml += "<span class=\"icon-bar\"></span>";
+    menuHtml += "<a class=\"navbar-brand\" href=\"bitrepository-frontpage.html\">";
+    menuHtml += "<img src='static/img/bitreplogo.png' alt='BitRepository Logo' height='28' class='d-inline-block align-text-top'/>";
+    menuHtml += " Bitrepository";
     menuHtml += "</a>";
-    menuHtml += "<a class=\"brand\" href=\"bitrepository-frontpage.html\">Bitrepository</a>";
-    menuHtml += "<div class=\"nav-collapse collapse\">";
-    menuHtml += "<ul class=\"nav\">";
+    menuHtml += "<button class=\"navbar-toggler\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#navbarNav\" aria-label=\"Toggle navigation\">";
+    menuHtml += "<span class=\"navbar-toggler-icon\"></span>";
+    menuHtml += "</button>";
+    menuHtml += "<div class=\"collapse navbar-collapse\" id=\"navbarNav\">";
+    menuHtml += "<ul class=\"navbar-nav\">";
     for (let i = 0; i < pages.length; i++) {
-        let linkClass = "";
+        let linkClass = "nav-link";
         if (pages[i].page === page) {
-            linkClass = "class=\"active\"";
+            linkClass += " active";
         }
-        menuHtml += "<li " + linkClass +"><a href=\"" + pages[i].page + "\">"+ pages[i].title + "</a></li>";
+        menuHtml += "<li class=\"nav-item\"><a class=\"" + linkClass + "\" href=\"" + pages[i].page + "\">"+ pages[i].title + "</a></li>";
     }
     menuHtml += "</ul>";
-    menuHtml += "</div><!--/.nav-collapse -->";
+    menuHtml += "</div><!--/.navbar-collapse -->";
     menuHtml += "</div>";
-    menuHtml += "</div>";
-    menuHtml += "</div>";
+    menuHtml += "</nav>";
     $(element).html(menuHtml);
 }

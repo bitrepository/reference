@@ -8,8 +8,9 @@ function clearElement(element) {
 }
 
 function updateAlarms() {
-    let fromDateStr = $("#fromDate").val();
-    let toDateStr = $("#toDate").val();
+    // The date inputs return yyyy-MM-dd; the REST service expects yyyy/MM/dd
+    let fromDateStr = $("#fromDate").val().replaceAll("-", "/");
+    let toDateStr = $("#toDate").val().replaceAll("-", "/");
     let fileIDStr = $("#fileIDFilter").val();
     let component = $("#componentFilter").val();
     let alarmCodeStr = $("#alarmCodeFilter").val();
@@ -109,8 +110,6 @@ function init() {
 $(document).ready(function () {
     makeMenu("alarm-service.html", "#pageMenu");
     init();
-    $("#fromDate").datepicker({format: "yyyy/mm/dd"});
-    $("#toDate").datepicker({format: "yyyy/mm/dd"});
     $("#toDateClearButton").on("click", function (event) {
         event.preventDefault();
         clearElement("#toDate")

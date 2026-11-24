@@ -4,33 +4,33 @@ let update_component_status;
 
 function makeComponentRow(id, status, time) {
     let html = "";
-    let classAttr = "class=\"success\"";
+    let classAttr = "class=\"table-success\"";
     if (status === "WARNING") {
-        classAttr = "class=\"alert\"";
+        classAttr = "class=\"table-warning\"";
     } else if (status === "UNRESPONSIVE" || status === "ERROR") {
-        classAttr = "class=\"alert alert-error\"";
+        classAttr = "class=\"table-danger\"";
     } else if (status === "UNKNOWN") {
-        classAttr = "class=\"info\"";
+        classAttr = "class=\"table-info\"";
     }
     html += "<tr " + classAttr + " id=\"" + id +"-row\">";
     html += "<td>" + id + "</td>";
     html += "<td id=\"" + id + "-status\">" + status + " </td>";
     html += "<td id=\"" + id + "-time\">" + time + "</td>";
-    html += "<td> <button class=\"btn btn-mini\" id=\"" + id + "-msg-btn\"> Show details <i class=\"icon-chevron-right\"></i></button></td>";
+    html += "<td> <button class=\"btn btn-sm btn-outline-secondary\" id=\"" + id + "-msg-btn\"> Show details <i class=\"bi bi-chevron-right\"></i></button></td>";
     html += "<tr>";
     return html;
 }
 
 function updateComponentRow(id, status, time) {
     let rowElement = $("#" + id + "-row");
-    rowElement.removeClass("success alert alert-error info");
-    let newClass = "success";
+    rowElement.removeClass("table-success table-warning table-danger table-info");
+    let newClass = "table-success";
     if (status === "WARNING") {
-        newClass = "alert";
+        newClass = "table-warning";
     } else if (status === "UNRESPONSIVE" || status === "ERROR") {
-        newClass = "alert alert-error";
+        newClass = "table-danger";
     } else if (status === "UNKNOWN") {
-        newClass = "info";
+        newClass = "table-info";
     }
     rowElement.addClass(newClass);
     $("#" + id + "-status").html(status);
@@ -49,8 +49,8 @@ function populateStatusServiceConfiguration() {
 }
 
 function attachButtonAction(id, message) {
-    let element = "#" + id + "-msg-btn";
-    $(element).popover({
+    let element = document.querySelector("#" + id + "-msg-btn");
+    new bootstrap.Popover(element, {
         placement : "right",
         html: true,
         title: id + " status message",

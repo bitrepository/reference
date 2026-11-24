@@ -113,8 +113,6 @@ class CalendarUtilsTest {
         CalendarUtils cu = CalendarUtils.getInstance(ZoneId.of("Europe/Copenhagen"));
         Instant expectedEndOfDay = Instant.parse("2015-12-31T22:59:59.999Z");
 
-        // Note: New implementation uses strict parsing, so 2015/12/32 is invalid. 
-        // Changed to 2015/12/31 to test end-of-year.
         Instant parsedEndOfDay = cu.makeEndInstant("2015/12/31");
         Assertions.assertEquals(expectedEndOfDay, parsedEndOfDay);
     }
