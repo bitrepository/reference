@@ -34,13 +34,13 @@ CREATE TABLE tableversions (
     version SMALLINT NOT NULL        -- version of table
 );
 
-INSERT INTO tableversions ( tablename, version ) VALUES ( 'audittrail', 5);
+INSERT INTO tableversions ( tablename, version ) VALUES ( 'audittrail', 6);
 INSERT INTO tableversions ( tablename, version ) VALUES ( 'file', 2);
 INSERT INTO tableversions ( tablename, version ) VALUES ( 'contributor', 2);
 INSERT INTO tableversions ( tablename, version ) VALUES ( 'actor', 2);
 INSERT INTO tableversions ( tablename, version ) VALUES ( 'collection', 1);
 INSERT INTO tableversions ( tablename, version ) VALUES ( 'collection_progress', 1);
-INSERT INTO tableversions ( tablename, version ) VALUES ( 'auditservicedb', 6);
+INSERT INTO tableversions ( tablename, version ) VALUES ( 'auditservicedb', 7);
 
 --*************************************************************************--
 -- Name:     collection
@@ -145,7 +145,7 @@ create table collection_progress (
 -- Expected entry count: Very, very many.
 --*************************************************************************--
 CREATE TABLE audittrail (
-    audit_key SERIAL PRIMARY KEY,   -- The key for this table.
+    audit_key BIGSERIAL PRIMARY KEY,-- The key for this table.
     sequence_number BIGINT NOT NULL,-- The sequence number for the given audit trail.
     contributor_key INT NOT NULL,   -- The identifier for the contributor of this audittrail.
                                     -- Used for looking up in the contributor table.

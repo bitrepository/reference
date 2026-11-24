@@ -36,13 +36,13 @@ create table tableversions (
     version int not null             -- version of table
 );
 
-insert into tableversions ( tablename, version ) values ( 'audittrail', 5);
+insert into tableversions ( tablename, version ) values ( 'audittrail', 6);
 insert into tableversions ( tablename, version ) values ( 'file', 2);
 insert into tableversions ( tablename, version ) values ( 'contributor', 2);
 insert into tableversions ( tablename, version ) values ( 'actor', 2);
 insert into tableversions ( tablename, version ) values ( 'collection', 1);
 insert into tableversions ( tablename, version ) values ( 'collection_progress', 1);
-insert into tableversions ( tablename, version ) values ( 'auditservicedb', 6);
+insert into tableversions ( tablename, version ) values ( 'auditservicedb', 7);
 
 --*************************************************************************--
 -- Name:     collection

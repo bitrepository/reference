@@ -36,6 +36,9 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Types;
 
 import static org.bitrepository.common.utils.AllureTestUtils.addDescription;
 import static org.bitrepository.common.utils.AllureTestUtils.addStep;
@@ -73,7 +76,7 @@ class AuditServiceDatabaseMigrationTest {
     @Test
     @Tag(TestGroups.REGRESSIONTEST)
     @Tag(TestGroups.DATABASETEST)
-    void testMigratingAuditServiceDatabase() {
+    void testMigratingAuditServiceDatabase() throws Exception {
         addDescription("Tests that the database can be migrated to latest version with the provided scripts.");
         DBConnector connector = new DBConnector(
                 settings.getReferenceSettings().getAuditTrailServiceSettings().getAuditTrailServiceDatabase());
@@ -85,12 +88,19 @@ class AuditServiceDatabaseMigrationTest {
         int dbTableVersionBefore = DatabaseUtils.selectIntValue(connector, extractVersionSql, AuditDatabaseConstants.DATABASE_VERSION_ENTRY);
         Assertions.assertEquals(2, dbTableVersionBefore, "Table version before migration");
 
-        addStep("Perform migration", "audit table version 5 and database-version is 6");
+        addStep("Perform migration", "audit table version 6 and database-version is 7");
         AuditTrailServiceDatabaseMigrator migrator = new AuditTrailServiceDatabaseMigrator(connector);
         migrator.migrate();
         int auditTableVersionAfter = DatabaseUtils.selectIntValue(connector, extractVersionSql, AuditDatabaseConstants.AUDIT_TRAIL_TABLE);
-        Assertions.assertEquals(5, auditTableVersionAfter, "Table version after migration");
+        Assertions.assertEquals(6, auditTableVersionAfter, "Table version after migration");
         int dbTableVersionAfter = DatabaseUtils.selectIntValue(connector, extractVersionSql, AuditDatabaseConstants.DATABASE_VERSION_ENTRY);
-        Assertions.assertEquals(6, dbTableVersionAfter, "Table version after migration");
+        Assertions.assertEquals(7, dbTableVersionAfter, "Table version after migration");
+
+        addStep("Validate audit key type", "audit_key is a 64 bit integer");
+        try (Connection conn = connector.getConnection();
+             ResultSet column = conn.getMetaData().getColumns(null, null, "AUDITTRAIL", "AUDIT_KEY")) {
+            Assertions.assertTrue(column.next(), "audit_key column exists");
+            Assertions.assertEquals(Types.BIGINT, column.getInt("DATA_TYPE"), "audit_key type");
+        }
     }
 }
