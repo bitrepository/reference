@@ -15,8 +15,9 @@ function startAuditTrailsCollection() {
 }
 
 function getAuditTrails() {
-    let fromDateStr = $("#fromDate").val();
-    let toDateStr = $("#toDate").val();
+    // The date inputs return yyyy-MM-dd; the REST service expects yyyy/MM/dd
+    let fromDateStr = $("#fromDate").val().replaceAll("-", "/");
+    let toDateStr = $("#toDate").val().replaceAll("-", "/");
     let fileIDStr = $("#fileIDFilter").val();
     let component = $("#componentFilter").val();
     let actorStr = $("#actorFilter").val();

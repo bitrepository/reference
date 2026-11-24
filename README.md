@@ -26,10 +26,10 @@ The newest release of the [Message-XML](https://github.com/bitrepository/message
 ### Running the tests on Ubuntu 26.04
 Several tests start a PostgreSQL container (`postgres:18-alpine`) through Testcontainers, for example
 `AuditDatabaseTest`, `AlarmDatabaseTest`, `ChecksumDatabaseTest` and `AuditTrailContributorDatabaseTest`.
-On a stock Ubuntu 26.04 host with Docker these tests fail, because the container hangs on startup.
+On a stock Ubuntu 26.04 host with Docker these tests fail because the container hangs on startup.
 
 **Symptoms**
-* Testcontainers fails with `ContainerLaunchException: Container startup failed for image postgres:18-alpine`.
+* Testcontainers fail with `ContainerLaunchException: Container startup failed for image postgres:18-alpine`.
 * `docker run postgres:18-alpine` never finishes starting. The `gosu` process in the container uses about 100% CPU.
 * `journalctl -k` shows `apparmor="DENIED" operation="signal" profile="docker-default"` for `comm="gosu"`.
 
