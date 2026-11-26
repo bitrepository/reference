@@ -28,6 +28,7 @@ import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
+import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
@@ -37,14 +38,16 @@ import org.bitrepository.modify.putfile.conversation.PutFileCompletePillarEvent;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PutFileEventHandlerTest {
     private static final String COLLECTION_ID = "collection";
 
     private final Settings settings = TestSettingsProvider.getSettings(getClass().getSimpleName());
-    private final OutputHandler output = mock(OutputHandler.class);
+    private final RecordingOutputHandler output = new RecordingOutputHandler();
 
     @Test
     @Tag(TestGroups.REGRESSIONTEST)
@@ -56,8 +59,9 @@ class PutFileEventHandlerTest {
         handler.handleComponentComplete(new PutFileCompletePillarEvent("pillar", COLLECTION_ID, checksum,
                 responseInfo(ResponseCode.DUPLICATE_FILE_FAILURE), null));
 
-        verify(output).resultLine("pillar \t " + ChecksumUtils.getDefaultChecksumType(settings).value()
-                + " \t d41d8cd98f00b204e9800998ecf8427e \t(file already existed, HMAC_SHA1 not calculated)");
+        assertEquals(List.of("pillar \t " + ChecksumUtils.getDefaultChecksumType(settings).value()
+                + " \t d41d8cd98f00b204e9800998ecf8427e \t(file already existed, HMAC_SHA1 not calculated)"),
+                output.resultLines);
     }
 
     private static ChecksumSpecTYPE hmacSha1Spec() throws DecoderException {
@@ -71,5 +75,38 @@ class PutFileEventHandlerTest {
         ResponseInfo info = new ResponseInfo();
         info.setResponseCode(responseCode);
         return info;
+    }
+
+    private static class RecordingOutputHandler implements OutputHandler {
+        private final List<String> resultLines = new ArrayList<>();
+
+        @Override
+        public void resultLine(String line) {
+            resultLines.add(line);
+        }
+
+        @Override
+        public void debug(String debug) {}
+
+        @Override
+        public void startupInfo(String info) {}
+
+        @Override
+        public void completeEvent(String msg, OperationEvent event) {}
+
+        @Override
+        public void warn(String warning) {}
+
+        @Override
+        public void error(String error) {}
+
+        @Override
+        public void error(String error, Throwable e) {}
+
+        @Override
+        public void resultHeader(String header) {}
+
+        @Override
+        public void setVerbosity(boolean verbose) {}
     }
 }
