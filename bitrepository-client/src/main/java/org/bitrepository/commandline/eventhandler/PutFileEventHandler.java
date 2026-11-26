@@ -71,8 +71,9 @@ public class PutFileEventHandler extends CompleteEventAwaiter {
         if (printOutput && pillarEvent.getChecksums() != null) {
             String checksum = Base16Utils.decodeBase16(pillarEvent.getChecksums().getChecksumValue());
             if (isDuplicate) {
-                output.resultLine(
-                        String.format(Locale.ROOT, "%s \t %s \t %s", pillarEvent.getContributorID(), defaultChecksumType, checksum));
+                output.resultLine(String.format(Locale.ROOT, "%s \t %s \t %s \t(file already existed, %s not calculated)",
+                        pillarEvent.getContributorID(), defaultChecksumType.value(), checksum,
+                        checksumSpecTYPE.getChecksumType().value()));
             } else {
                 output.resultLine(String.format(Locale.ROOT, "%s \t %s \t %s \t*", pillarEvent.getContributorID(),
                         checksumSpecTYPE.getChecksumType().value(), checksum));
