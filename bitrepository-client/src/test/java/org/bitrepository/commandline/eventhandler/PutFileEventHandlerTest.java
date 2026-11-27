@@ -28,6 +28,7 @@ import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.ChecksumType;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositoryelements.ResponseInfo;
+import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.commandline.output.OutputHandler;
 import org.bitrepository.common.settings.Settings;
 import org.bitrepository.common.settings.TestSettingsProvider;
@@ -36,14 +37,16 @@ import org.bitrepository.modify.putfile.conversation.PutFileCompletePillarEvent;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PutFileEventHandlerTest {
     private static final String COLLECTION_ID = "collection";
 
     private final Settings settings = TestSettingsProvider.getSettings(getClass().getSimpleName());
-    private final OutputHandler output = mock(OutputHandler.class);
+    private final RecordingOutputHandler output = new RecordingOutputHandler();
 
     @Test
     @Tag(TestGroups.REGRESSIONTEST)
@@ -51,9 +54,10 @@ class PutFileEventHandlerTest {
         PutFileEventHandler handler = new PutFileEventHandler(settings, output, hmacSha1Spec());
 
         handler.handleComponentComplete(new PutFileCompletePillarEvent("checksum-pillar", COLLECTION_ID, null,
-                completed(), null));
+                responseInfo(ResponseCode.OPERATION_COMPLETED), null));
 
-        verify(output).resultLine("checksum-pillar \t HMAC_SHA1 \t - \t(no checksum returned, e.g. a checksum pillar)");
+        assertEquals(List.of("checksum-pillar \t HMAC_SHA1 \t - \t(no checksum returned, e.g. a checksum pillar)"),
+                output.resultLines);
     }
 
     @Test
@@ -64,9 +68,10 @@ class PutFileEventHandlerTest {
         checksum.setChecksumValue(Base16Utils.encodeBase16("cae4d2161fb551e70a4176c1ae463ef37ade11f3"));
 
         handler.handleComponentComplete(new PutFileCompletePillarEvent("pillar", COLLECTION_ID, checksum,
-                completed(), null));
+                responseInfo(ResponseCode.OPERATION_COMPLETED), null));
 
-        verify(output).resultLine("pillar \t HMAC_SHA1 \t cae4d2161fb551e70a4176c1ae463ef37ade11f3 \t*");
+        assertEquals(List.of("pillar \t HMAC_SHA1 \t cae4d2161fb551e70a4176c1ae463ef37ade11f3 \t*"),
+                output.resultLines);
     }
 
     private static ChecksumSpecTYPE hmacSha1Spec() throws DecoderException {
@@ -76,9 +81,42 @@ class PutFileEventHandlerTest {
         return spec;
     }
 
-    private static ResponseInfo completed() {
+    private static ResponseInfo responseInfo(ResponseCode responseCode) {
         ResponseInfo info = new ResponseInfo();
-        info.setResponseCode(ResponseCode.OPERATION_COMPLETED);
+        info.setResponseCode(responseCode);
         return info;
+    }
+
+    private static class RecordingOutputHandler implements OutputHandler {
+        private final List<String> resultLines = new ArrayList<>();
+
+        @Override
+        public void resultLine(String line) {
+            resultLines.add(line);
+        }
+
+        @Override
+        public void debug(String debug) {}
+
+        @Override
+        public void startupInfo(String info) {}
+
+        @Override
+        public void completeEvent(String msg, OperationEvent event) {}
+
+        @Override
+        public void warn(String warning) {}
+
+        @Override
+        public void error(String error) {}
+
+        @Override
+        public void error(String error, Throwable e) {}
+
+        @Override
+        public void resultHeader(String header) {}
+
+        @Override
+        public void setVerbosity(boolean verbose) {}
     }
 }
