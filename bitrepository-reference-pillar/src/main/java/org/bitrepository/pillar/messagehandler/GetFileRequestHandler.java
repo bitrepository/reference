@@ -24,6 +24,8 @@
  */
 package org.bitrepository.pillar.messagehandler;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.BoundedInputStream;
 import org.bitrepository.bitrepositoryelements.FileAction;
 import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.bitrepositoryelements.ResponseCode;
@@ -32,6 +34,7 @@ import org.bitrepository.bitrepositorymessages.GetFileFinalResponse;
 import org.bitrepository.bitrepositorymessages.GetFileProgressResponse;
 import org.bitrepository.bitrepositorymessages.GetFileRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
+import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.common.filestore.FileInfo;
 import org.bitrepository.pillar.common.MessageHandlerContext;
 import org.bitrepository.pillar.store.StorageModel;
@@ -44,10 +47,11 @@ import org.bitrepository.service.exception.RequestHandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -79,8 +83,52 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
         validateCollectionID(request);
         validatePillarID(request.getPillarID());
         validateFileIDFormat(request.getFileID());
+        // Parsed here only to reject an invalid address before the progress response is sent.
+        toUploadUrl(request.getFileAddress());
 
         getPillarModel().verifyFileExists(request.getFileID(), request.getCollectionID());
+        if (request.getFilePart() != null) {
+            FileInfo requestedFi = getPillarModel().getFileInfoForActualFile(request.getFileID(),
+                    request.getCollectionID());
+            validateFilePart(request.getFilePart(), request.getFileID(), requestedFi.getSize());
+        }
+    }
+
+    /**
+     * Validates that the file part lies within the file, so the part can be delivered in full.
+     *
+     * @param filePart The requested file part.
+     * @param fileID   The id of the requested file.
+     * @param fileSize The size of the requested file.
+     * @throws InvalidMessageException If the file part is not within the file.
+     */
+    private void validateFilePart(FilePart filePart, String fileID, long fileSize) throws InvalidMessageException {
+        BigInteger offset = filePart.getPartOffSet();
+        BigInteger length = filePart.getPartLength();
+        if (offset.signum() < 0 || length.signum() < 0
+                || offset.add(length).compareTo(BigInteger.valueOf(fileSize)) > 0) {
+            throw new InvalidMessageException(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE,
+                    "The file part with offset " + offset + " and length " + length + " is not within the file '"
+                            + fileID + "' of " + fileSize + " bytes.");
+        }
+    }
+
+    /**
+     * Parses the address to deliver the file to, and checks that there is a file exchange for its protocol.
+     *
+     * @param fileAddress The address to deliver the file to.
+     * @return The address as a URL.
+     * @throws InvalidMessageException If the address is not a valid absolute URL with a supported protocol.
+     */
+    private static URL toUploadUrl(String fileAddress) throws InvalidMessageException {
+        try {
+            URL uploadUrl = new URI(fileAddress).toURL();
+            FileExchangeResolver.getBasicFileExchangeFromURL(uploadUrl);
+            return uploadUrl;
+        } catch (URISyntaxException | MalformedURLException | IllegalArgumentException e) {
+            throw new InvalidMessageException(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE,
+                    "Invalid file address '" + fileAddress + "', cause: " + e.getMessage(), e);
+        }
     }
 
     @Override
@@ -120,17 +168,17 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
         FileInfo requestedFile = getPillarModel().getFileInfoForActualFile(message.getFileID(),
                 message.getCollectionID());
         String fileAddress = message.getFileAddress();
+        URL uploadUrl = toUploadUrl(fileAddress);
+        FilePart filePart = message.getFilePart();
+        if (filePart != null) {
+            log.debug("Extracting {} bytes with offset {} from {}", filePart.getPartLength(),
+                    filePart.getPartOffSet(), message.getFileID());
+        }
 
-        try {
-            InputStream is;
-            if (message.getFilePart() == null) {
-                is = requestedFile.getInputStream();
-            } else {
-                is = extractFilePart(requestedFile, message.getFilePart());
-            }
-
+        try (InputStream is = filePart == null
+                ? requestedFile.getInputStream()
+                : extractFilePart(requestedFile, filePart)) {
             log.info("Uploading file '{}' to {}", message.getFileID(), fileAddress);
-            final URL uploadUrl = new URI(fileAddress).toURL();
             FileExchange fileExchange = FileExchangeResolver.getBasicFileExchangeFromURL(uploadUrl);
             fileExchange.putFile(is, uploadUrl);
         } catch (IOException e) {
@@ -138,39 +186,44 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
                     message.getFileID(), message.getCollectionID(), fileAddress, e.getMessage());
             throw new InvalidMessageException(ResponseCode.FILE_TRANSFER_FAILURE,
                     "Could not deliver file to address '" + fileAddress + "', cause: " + e.getMessage(), e);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
         }
     }
 
     /**
-     * Extracts a given file part
+     * Extracts a given file part as a stream, so the part is not buffered in memory.
      *
      * @param fileInfo The requested file to extract the file part from.
-     * @param filePart The defined interval for the file part.
-     * @return A InputStream with the requested file part.
-     * @throws IOException If anything goes wrong.
+     * @param filePart The defined interval for the file part. It must lie within the file.
+     * @return A InputStream with the requested file part, which the caller must close. Reading it fails with an
+     * {@link EOFException} if the file ends before the part does.
+     * @throws IOException If the file cannot be read.
      */
-    private InputStream extractFilePart(FileInfo fileInfo, FilePart filePart) throws IOException {
-        int offset = filePart.getPartOffSet().intValue();
-        int size = filePart.getPartLength().intValue();
-        byte[] partOfFile = new byte[size];
-        InputStream fis = null;
+    static InputStream extractFilePart(FileInfo fileInfo, FilePart filePart) throws IOException {
+        long offset = filePart.getPartOffSet().longValueExact();
+        long length = filePart.getPartLength().longValueExact();
+        ArgumentValidator.checkNotNegative(offset, "long offset");
+        ArgumentValidator.checkNotNegative(length, "long length");
+        String endedEarlyMessage = "The stored file '" + fileInfo.getFileID() + "' ended before the end of the "
+                + "requested part with offset " + offset + " and length " + length
+                + ". It may have been replaced since the request was validated.";
+        InputStream fis = fileInfo.getInputStream();
         try {
-            log.debug("Extracting {} bytes with offset {} from {}", size, offset, fileInfo.getFileID());
-            fis = fileInfo.getInputStream();
-
-            long skipped = fis.skip(offset);
-            int bytesRead = fis.read(partOfFile);
-            if (bytesRead == size) {
-                log.debug("Skipped {} bytes and extracted {} bytes successfully.", skipped, bytesRead);
-            }
-        } finally {
-            if (fis != null) {
+            fis.skipNBytes(offset);
+            return BoundedInputStream.builder().setInputStream(fis).setMaxCount(length)
+                    .setAfterRead(n -> {
+                        if (n == IOUtils.EOF) {
+                            throw new EOFException(endedEarlyMessage);
+                        }
+                    })
+                    .get();
+        } catch (IOException e) {
+            try {
                 fis.close();
+            } catch (IOException closeFailure) {
+                e.addSuppressed(closeFailure);
             }
+            throw e;
         }
-        return new ByteArrayInputStream(partOfFile);
     }
 
     /**

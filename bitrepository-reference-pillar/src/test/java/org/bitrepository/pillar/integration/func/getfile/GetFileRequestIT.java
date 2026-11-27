@@ -138,9 +138,8 @@ class GetFileRequestIT extends PillarFunctionIT {
 
         try (InputStream localFileIS = TestFileHelper.getDefaultFile();
              InputStream getFileIS = fe.getFile(testFileURL)) {
-            byte[] localFilePartContent = new byte[offsetAndLength];
-            localFileIS.skip(offsetAndLength);
-            localFileIS.read(localFilePartContent, 0, offsetAndLength);
+            localFileIS.skipNBytes(offsetAndLength);
+            byte[] localFilePartContent = localFileIS.readNBytes(offsetAndLength);
             String getFileContent = IOUtils.toString(getFileIS, StandardCharsets.UTF_8);
             Assertions.assertEquals(new String(localFilePartContent, StandardCharsets.UTF_8), getFileContent,
                     "Differing content between original file and file from GetFileRequest");
