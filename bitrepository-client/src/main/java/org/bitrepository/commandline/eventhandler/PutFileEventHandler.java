@@ -68,7 +68,10 @@ public class PutFileEventHandler extends CompleteEventAwaiter {
         assert event instanceof PutFileCompletePillarEvent;
         PutFileCompletePillarEvent pillarEvent = (PutFileCompletePillarEvent) event;
         boolean isDuplicate = pillarEvent.getResponseInfo().getResponseCode().equals(ResponseCode.DUPLICATE_FILE_FAILURE);
-        if (printOutput && pillarEvent.getChecksums() != null) {
+        if (printOutput && pillarEvent.getChecksums() == null) {
+            output.resultLine(String.format(Locale.ROOT, "%s \t %s \t - \t(no checksum returned, e.g. a checksum pillar)",
+                    pillarEvent.getContributorID(), checksumSpecTYPE.getChecksumType().value()));
+        } else if (printOutput) {
             String checksum = Base16Utils.decodeBase16(pillarEvent.getChecksums().getChecksumValue());
             if (isDuplicate) {
                 output.resultLine(
