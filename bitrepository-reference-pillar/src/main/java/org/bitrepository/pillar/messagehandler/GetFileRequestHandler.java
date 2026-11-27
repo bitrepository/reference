@@ -51,9 +51,6 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 
 public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest> {
@@ -110,24 +107,6 @@ public class GetFileRequestHandler extends PerformRequestHandler<GetFileRequest>
             throw new InvalidMessageException(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE,
                     "The file part with offset " + offset + " and length " + length + " is not within the file '"
                             + fileID + "' of " + fileSize + " bytes.");
-        }
-    }
-
-    /**
-     * Parses the address to deliver the file to, and checks that there is a file exchange for its protocol.
-     *
-     * @param fileAddress The address to deliver the file to.
-     * @return The address as a URL.
-     * @throws InvalidMessageException If the address is not a valid absolute URL with a supported protocol.
-     */
-    private static URL toUploadUrl(String fileAddress) throws InvalidMessageException {
-        try {
-            URL uploadUrl = new URI(fileAddress).toURL();
-            FileExchangeResolver.getBasicFileExchangeFromURL(uploadUrl);
-            return uploadUrl;
-        } catch (URISyntaxException | MalformedURLException | IllegalArgumentException e) {
-            throw new InvalidMessageException(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE,
-                    "Invalid file address '" + fileAddress + "', cause: " + e.getMessage(), e);
         }
     }
 

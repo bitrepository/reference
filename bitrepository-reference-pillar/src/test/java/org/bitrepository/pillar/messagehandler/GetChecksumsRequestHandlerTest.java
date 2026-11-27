@@ -19,6 +19,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -168,6 +170,20 @@ class GetChecksumsRequestHandlerTest {
         assertResponseCode(ResponseCode.FILE_TRANSFER_FAILURE, e);
         Assertions.assertEquals(1, fixture.dispatchedResponses().size(),
                 "Only the progress response should have been sent");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"file:///has space", "relative/path", "ftp://host/result"})
+    @Tag(TestGroups.REGRESSIONTEST)
+    void invalidResultAddressIsRejectedBeforeAnyResponse(String resultAddress) {
+        GetChecksumsRequest request = createRequest(allFiles());
+        request.setResultAddress(resultAddress);
+
+        InvalidMessageException e = Assertions.assertThrows(InvalidMessageException.class,
+                () -> handler.processRequest(request, fixture.messageContext()));
+
+        assertResponseCode(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE, e);
+        verifyNoInteractions(fixture.responseDispatcher());
     }
 
     @Test

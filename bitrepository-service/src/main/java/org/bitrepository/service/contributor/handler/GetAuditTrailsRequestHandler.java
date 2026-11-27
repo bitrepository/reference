@@ -52,7 +52,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -102,6 +101,9 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
     protected void validateMessage(GetAuditTrailsRequest message) throws InvalidMessageException {
         if (!message.getContributor().equals(getContext().getSettings().getComponentID())) {
             throw new InvalidMessageException(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE, "Invalid contributor id.");
+        }
+        if (isUploadRequested(message)) {
+            toUploadUrl(message.getResultAddress());
         }
     }
 
@@ -168,15 +170,15 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
      */
     protected void handleUpload(GetAuditTrailsRequest message, AuditTrailDatabaseResults extractedAuditTrails)
             throws InvalidMessageException {
-        if (message.getResultAddress() == null || message.getResultAddress().isEmpty()) {
+        if (!isUploadRequested(message)) {
             log.trace("The audit trails are not uploaded.");
             return;
         }
 
         log.debug("Creating audit trail file and uploading it.");
+        URL uploadUrl = toUploadUrl(message.getResultAddress());
         try {
             File fileToUpload = createAuditTrailFile(message, extractedAuditTrails);
-            URL uploadUrl = new URI(message.getResultAddress()).toURL();
 
             log.debug("Uploading file '{}' to {}", fileToUpload.getName(), uploadUrl.toExternalForm());
             FileExchange fileExchange = FileExchangeResolver.getBasicFileExchangeFromURL(uploadUrl);
@@ -185,6 +187,14 @@ public class GetAuditTrailsRequestHandler extends AbstractRequestHandler<GetAudi
             throw new InvalidMessageException(ResponseCode.FILE_TRANSFER_FAILURE,
                     "Could not handle the creation and upload of the results due to: " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * @param message The request for the audit trails.
+     * @return Whether the audit trails should be uploaded to the result address instead of sent in the response.
+     */
+    private static boolean isUploadRequested(GetAuditTrailsRequest message) {
+        return message.getResultAddress() != null && !message.getResultAddress().isEmpty();
     }
 
     /**

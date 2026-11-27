@@ -21,13 +21,20 @@
  */
 package org.bitrepository.service.contributor.handler;
 
+import org.bitrepository.bitrepositoryelements.ResponseCode;
 import org.bitrepository.bitrepositorymessages.MessageRequest;
 import org.bitrepository.bitrepositorymessages.MessageResponse;
 import org.bitrepository.common.ArgumentValidator;
 import org.bitrepository.protocol.ProtocolVersionLoader;
+import org.bitrepository.protocol.utils.FileExchangeResolver;
 import org.bitrepository.service.contributor.ContributorContext;
+import org.bitrepository.service.exception.InvalidMessageException;
 
 import java.math.BigInteger;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 /**
  * The interface for the request handlers.
@@ -75,6 +82,25 @@ public abstract class AbstractRequestHandler<T extends MessageRequest> implement
         if (!request.isSetCollectionID()) {
             throw new IllegalArgumentException(request.getClass().getSimpleName() +
                     "'s requires a CollectionID");
+        }
+    }
+
+    /**
+     * Parses an address to upload data to, and checks that a file exchange supports its protocol, so an invalid
+     * address can be rejected before the operation is accepted.
+     *
+     * @param address The address from the request.
+     * @return The address as a URL.
+     * @throws InvalidMessageException If the address is not an absolute URL with a supported protocol.
+     */
+    protected static URL toUploadUrl(String address) throws InvalidMessageException {
+        try {
+            URL uploadUrl = new URI(address).toURL();
+            FileExchangeResolver.getBasicFileExchangeFromURL(uploadUrl);
+            return uploadUrl;
+        } catch (URISyntaxException | MalformedURLException | IllegalArgumentException e) {
+            throw new InvalidMessageException(ResponseCode.REQUEST_NOT_UNDERSTOOD_FAILURE,
+                    "Invalid address '" + address + "', cause: " + e.getMessage(), e);
         }
     }
 }

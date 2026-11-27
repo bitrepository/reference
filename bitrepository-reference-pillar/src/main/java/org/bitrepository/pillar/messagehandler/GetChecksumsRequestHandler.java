@@ -57,8 +57,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -93,6 +91,9 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
         if (request.getFileIDs() != null && request.getFileIDs().getFileID() != null) {
             validateFileIDFormat(request.getFileIDs().getFileID());
             verifyFileIDExistence(request.getFileIDs(), request.getCollectionID());
+        }
+        if (request.getResultAddress() != null) {
+            toUploadUrl(request.getResultAddress());
         }
 
         log.debug("{} validated and accepted.", MessageUtils.createMessageIdentifier(request));
@@ -168,9 +169,10 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
         ResultingChecksums res = new ResultingChecksums();
 
         String url = request.getResultAddress();
+        URL uploadUrl = toUploadUrl(url);
         try {
             File fileToUpload = makeTemporaryChecksumFile(request, checksumResultSet);
-            uploadFile(fileToUpload, url);
+            uploadFile(fileToUpload, uploadUrl);
         } catch (Exception e) {
             throw new InvalidMessageException(ResponseCode.FILE_TRANSFER_FAILURE, "Could not handle the creation "
                     + "and upload of the results due to: " + e.getMessage(), e);
@@ -238,14 +240,12 @@ public class GetChecksumsRequestHandler extends PerformRequestHandler<GetChecksu
      * Method for uploading a file to a given URL.
      *
      * @param fileToUpload The File to upload.
-     * @param url          The location where the file should be uploaded.
+     * @param uploadUrl    The location where the file should be uploaded.
      * @throws IOException If something goes wrong.
      */
-    private void uploadFile(File fileToUpload, String url) throws IOException, URISyntaxException {
-        final URL uploadUrl = new URI(url).toURL();
-
+    private void uploadFile(File fileToUpload, URL uploadUrl) throws IOException {
         // Upload the file.
-        log.debug("Uploading file '{}' to {}", fileToUpload.getName(), url);
+        log.debug("Uploading file '{}' to {}", fileToUpload.getName(), uploadUrl);
         try (InputStream in = new BufferedInputStream(new FileInputStream(fileToUpload))) {
             FileExchange fileExchange = FileExchangeResolver.getBasicFileExchangeFromURL(uploadUrl);
             fileExchange.putFile(in, uploadUrl);
